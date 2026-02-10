@@ -1,0 +1,1762 @@
+{% comment %}
+  社群媒體頁面 Section
+  檔案位置: sections/social-media.liquid
+{% endcomment %}
+
+<section class="social-media-section">
+  <style>
+    .social-media-section {
+      background: #000000;
+      color: #ffffff;
+      padding: 0;
+      min-height: 100vh;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .social-media-section * {
+      box-sizing: border-box;
+    }
+
+    /* HERO 影片區塊 */
+    .social-hero {
+      position: relative;
+      height: clamp(60vh, 72vh, 86vh);
+      overflow: hidden;
+      margin-bottom: 0;
+    }
+
+    .hero-video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: saturate(1.05) contrast(1.05);
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(60% 60% at 80% 20%, rgba(240,132,24,.15), transparent 60%),
+        linear-gradient(180deg, rgba(0,0,0,.35) 0%, rgba(0,0,0,.65) 60%, rgba(0,0,0,.85) 100%);
+      mix-blend-mode: normal;
+    }
+
+    .hero-content {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-content: end start;
+      padding: clamp(20px, 6vw, 60px);
+      gap: 10px;
+      z-index: 2;
+    }
+
+    .hero-title {
+      margin: 0;
+      font-size: clamp(28px, 4.2vw, 56px);
+      color: #fff;
+      letter-spacing: .5px;
+      font-weight: bold;
+    }
+
+    .hero-subtitle {
+      color: #ccc;
+      max-width: 60ch;
+      margin: 6px 0 14px;
+      font-size: clamp(0.95rem, 2vw, 1.1rem);
+    }
+
+    .hero-cta {
+      display: inline-block;
+      background: #f08418;
+      color: #ffffff;
+      padding: 14px 32px;
+      border-radius: 25px;
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(240, 132, 24, 0.3);
+    }
+
+    .hero-cta:active {
+      transform: scale(0.98);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hero-video { display: none; }
+      .hero-overlay { background: linear-gradient(180deg, rgba(0,0,0,.3), rgba(0,0,0,.85)); }
+    }
+
+    /* Reels 短影片走馬燈 */
+    .reels-section {
+      background: rgba(255, 255, 255, 0.02);
+      padding: 24px 0;
+      margin-bottom: 32px;
+    }
+
+    .reels-header {
+      padding: 0 16px;
+      margin-bottom: 16px;
+    }
+
+    .reels-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 4px;
+    }
+
+    .reels-subtitle {
+      font-size: 0.9rem;
+      color: #999;
+    }
+
+    .reels-wrap {
+      margin: 0;
+      padding-bottom: 8px;
+      --gap: 14px;
+      overflow: hidden;
+    }
+
+    /* 走馬燈容器：橫向捲動 + 不換行 */
+    .reels-track{
+      display:flex;
+      flex-wrap:nowrap;
+      gap:var(--gap);
+      overflow-x:auto;
+      scroll-snap-type:x mandatory;
+      scroll-padding: 16px;
+      padding:6px 16px;
+      scrollbar-width:none;
+      -webkit-overflow-scrolling:touch;
+    }
+    .reels-track::-webkit-scrollbar{display:none}
+
+    /* 手機友善的卡片尺寸：固定寬度的 flex item，避免被擠扁 */
+    .reels-track{ --reel-w: clamp(200px, 72vw, 260px); }  /* 手機：偏寬好點擊 */
+
+    @media (min-width: 768px){
+      .reels-track{ --reel-w: clamp(200px, 28vw, 280px); } /* 平板+桌機 */
+    }
+
+    .reel{
+      flex: 0 0 var(--reel-w);     /* 關鍵：固定 flex 基準且不縮 */
+      width: var(--reel-w);
+      min-width: var(--reel-w);
+      border-radius:16px;
+      overflow:hidden;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);
+      scroll-snap-align:start;
+      transition:transform .3s ease, box-shadow .3s ease;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .reel-media{position:relative; aspect-ratio:9/16; background:#000}
+    .reel-media video{width:100%; height:100%; object-fit:cover; display:block}
+
+    /* 下方說明列（保持不變） */
+    .reel-caption{
+      display:flex; flex-direction:column; gap:6px;
+      padding:10px 10px 12px;
+      background:rgba(255,255,255,.02);
+      border-top:1px solid rgba(255,255,255,.06);
+    }
+    .reel-title{
+      font-weight:700; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+      font-size:16px; /* 會被 JS 自動縮小到不換行 */
+    }
+    .reel-platform{
+      font-size:12px; color:#ddd; display:inline-block;
+      background:rgba(0,0,0,.45); border:1px solid rgba(255,255,255,.12);
+      padding:4px 8px; border-radius:999px; width:max-content;
+    }
+
+    /* 移除舊的覆蓋在影片上的 meta */
+    .reel-meta{display:none}
+
+    /* 確保被切換成 hidden 的 Reels 真的不顯示、不佔位 */
+    .reels-track[hidden] { display: none !important; }
+
+    /* YouTube Spotlight */
+    .video-spotlight {
+      padding: 0 16px;
+      margin-bottom: 40px;
+    }
+
+    .spotlight-header {
+      margin-bottom: 16px;
+    }
+
+    .spotlight-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 4px;
+    }
+
+    .yt-videos {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .yt-lite {
+      position: relative;
+      aspect-ratio: 16/9;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.08);
+      cursor: pointer;
+      background: #000;
+      transition: all 0.3s ease;
+    }
+
+    .yt-lite:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(240, 132, 24, 0.2);
+      border-color: rgba(240, 132, 24, 0.3);
+    }
+
+    .yt-lite img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(.9);
+    }
+
+    .yt-play {
+      position: absolute;
+      inset: auto auto 14px 14px;
+      background: #f08418;
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(240, 132, 24, 0.4);
+    }
+
+    .yt-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      font-size: 12px;
+      background: rgba(0,0,0,.55);
+      color: #fff;
+      padding: 6px 8px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,.12);
+      backdrop-filter: blur(10px);
+    }
+
+    /* 主要內容容器 */
+    .social-container {
+      max-width: 100%;
+      padding: 40px 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* 調整縮排寬度與影片區塊一致 */
+    .social-container {
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+
+    @media (min-width: 768px) {
+      .social-container {
+        padding-left: 24px;
+        padding-right: 24px;
+      }
+    }
+
+    .social-container::before {
+      content: '';
+      position: absolute;
+      top: -100px;
+      right: -100px;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(240, 132, 24, 0.1) 0%, transparent 70%);
+      animation: float-bg 20s ease-in-out infinite;
+      z-index: -1;
+    }
+
+    @keyframes float-bg {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(-30px, 30px) scale(1.1); }
+    }
+
+    /* 地區切換標籤 */
+    .region-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 0;
+      margin-bottom: 32px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 25px;
+      padding: 4px;
+      backdrop-filter: blur(10px);
+    }
+
+    .region-tab {
+      flex: 1;
+      padding: 12px 20px;
+      background: none;
+      border: none;
+      color: #999999;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-radius: 22px;
+      position: relative;
+      white-space: nowrap;
+    }
+
+    .region-tab.active {
+      background: #f08418;
+      color: #ffffff;
+      box-shadow: 0 4px 15px rgba(240, 132, 24, 0.3);
+    }
+
+    /* 平台內容區 */
+    .region-content {
+      display: none;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .region-content.active {
+      display: block;
+      animation: fadeInContent 0.5s ease forwards;
+    }
+
+    @keyframes fadeInContent {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* 平台分類標題 */
+    .platform-group {
+      margin-bottom: 32px;
+    }
+
+    .platform-title {
+      font-size: 1.1rem;
+      color: #ffffff;
+      margin-bottom: 16px;
+      padding-left: 12px;
+      position: relative;
+      font-weight: 600;
+    }
+
+    .platform-title::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 3px;
+      height: 18px;
+      background: #f08418;
+      border-radius: 2px;
+    }
+
+    /* 社群媒體卡片 */
+    .social-cards {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .social-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .social-card:active {
+      transform: scale(0.98);
+    }
+
+    .social-card:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(240, 132, 24, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(240, 132, 24, 0.2);
+    }
+
+    .icon-wrapper {
+      width: 48px;
+      height: 48px;
+      background: rgba(240, 132, 24, 0.1);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.3s ease;
+    }
+
+    .social-card:hover .icon-wrapper {
+      background: rgba(240, 132, 24, 0.2);
+      transform: rotate(5deg);
+    }
+
+    .icon-wrapper svg {
+      width: 24px;
+      height: 24px;
+      fill: #f08418;
+    }
+
+    .card-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .card-name {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-desc {
+      font-size: 0.85rem;
+      color: #999999;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-followers {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+      margin-right: 8px;
+      flex-shrink: 0;
+    }
+
+    .followers-count {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #f08418;
+    }
+
+    .followers-label {
+      font-size: 0.75rem;
+      color: #999999;
+    }
+
+    .card-arrow {
+      width: 20px;
+      height: 20px;
+      fill: #666666;
+      flex-shrink: 0;
+      transition: all 0.3s ease;
+    }
+
+    .social-card:hover .card-arrow {
+      fill: #f08418;
+      transform: translateX(4px);
+    }
+
+    /* 統計數據區 */
+    .stats-section {
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 20px;
+      padding: 24px 20px;
+      margin-top: 40px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .stats-title {
+      font-size: 1.1rem;
+      color: #ffffff;
+      text-align: center;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .stat-item {
+      text-align: center;
+      padding: 16px;
+      background: rgba(240, 132, 24, 0.05);
+      border-radius: 12px;
+      border: 1px solid rgba(240, 132, 24, 0.1);
+    }
+
+    .stat-number {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #f08418;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: #999999;
+    }
+
+    /* 底部CTA */
+    .social-cta {
+      text-align: center;
+      margin-top: 40px;
+      padding: 32px 20px;
+      background: linear-gradient(135deg, rgba(240, 132, 24, 0.1) 0%, transparent 100%);
+      border-radius: 20px;
+    }
+
+    .cta-text {
+      font-size: 1.1rem;
+      color: #ffffff;
+      margin-bottom: 16px;
+      font-weight: 500;
+    }
+
+    .cta-button {
+      display: inline-block;
+      background: #f08418;
+      color: #ffffff;
+      padding: 14px 32px;
+      border-radius: 25px;
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(240, 132, 24, 0.3);
+    }
+
+    .cta-button:active {
+      transform: scale(0.98);
+    }
+
+    /* 確保隱藏權重夠高 */
+    .region-content[hidden] {
+      display: none !important;
+    }
+
+    /* 響應式優化 */
+    @media (min-width: 768px) {
+      .social-container {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+
+      .social-cards {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+      }
+
+
+
+      .yt-videos {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .social-container {
+        max-width: 1200px;
+      }
+
+      .social-cards {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+      }
+
+      .yt-videos {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    /* Reels 分頁 tabs（沿用 region-tabs 風格） */
+    .reels-tabs {
+      display: flex; gap: 0; margin: 12px 16px 0; background: rgba(255,255,255,.05);
+      border-radius: 25px; padding: 4px; backdrop-filter: blur(10px);
+    }
+    .reels-tab { flex:1; padding: 10px 16px; background:none; border:none; color:#999; font-weight:500; border-radius:22px; cursor:pointer; transition:.3s; }
+    .reels-tab.active { background:#f08418; color:#fff; box-shadow:0 4px 15px rgba(240,132,24,.3); }
+
+    /* 放大預覽按鈕（卡片右上） */
+    .reel-zoom {
+      position: absolute; right: 8px; bottom: 8px; z-index: 2;
+      background: rgba(0,0,0,.5); color:#fff; border:0; border-radius:10px; padding:6px 8px; cursor:pointer; backdrop-filter: blur(8px);
+    }
+
+    /* Modal */
+    .reel-modal[hidden] { display:none !important; }
+    .reel-modal { position: fixed; inset: 0; z-index: 9999; display: grid; place-items: center; }
+    .reel-modal__backdrop { position:absolute; inset:0; background: rgba(0,0,0,.7); }
+    .reel-modal__content {
+      position: relative; width: min(92vw, 980px); aspect-ratio: 9/16;
+      background:#000; border-radius: 16px; overflow:hidden; border:1px solid rgba(255,255,255,.12);
+    }
+    @media (min-width: 768px) {
+      .reel-modal__content { aspect-ratio: 16/9; }
+    }
+    .reel-modal__close {
+      position: absolute; top: 10px; right: 10px; z-index: 2;
+      background: rgba(0,0,0,.6); color:#fff; border:0; border-radius: 999px; padding:8px 10px; cursor:pointer;
+    }
+    .reel-modal__video { width:100%; height:100%; object-fit: contain; background:#000; }
+  </style>
+
+  <!-- HERO 影片區塊 -->
+  {% if section.settings.show_hero %}
+  <section class="social-hero">
+    <video class="hero-video" autoplay muted loop playsinline preload="metadata"
+           poster="{{ section.settings.hero_poster | image_url: width: 1600 }}">
+      {% if section.settings.hero_video_webm != blank %}
+        <source src="{{ section.settings.hero_video_webm }}" type="video/webm">
+      {% endif %}
+      {% if section.settings.hero_video_mp4 != blank %}
+        <source src="{{ section.settings.hero_video_mp4 }}" type="video/mp4">
+      {% endif %}
+    </video>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <h1 class="hero-title">{{ section.settings.hero_title }}</h1>
+      <p class="hero-subtitle">{{ section.settings.hero_subtitle }}</p>
+      <a href="#reels" class="hero-cta">{{ section.settings.hero_button_text }}</a>
+    </div>
+  </section>
+  {% endif %}
+
+      <!-- 短影片走馬燈 -->
+  {% if section.settings.show_reels %}
+  <section id="reels" class="reels-section">
+    <div class="reels-header">
+      <h2 class="reels-title">{{ section.settings.reels_title }}</h2>
+      <p class="reels-subtitle">{{ section.settings.reels_subtitle }}</p>
+    </div>
+    
+    {% if section.settings.reels_pagination_enabled %}
+      <div class="reels-tabs" role="tablist" aria-label="Reels 分頁">
+        <button class="reels-tab active" role="tab" data-page="tw" aria-selected="true">台灣</button>
+        <button class="reels-tab" role="tab" data-page="sg" aria-selected="false">新加坡/馬來西亞</button>
+      </div>
+    {% endif %}
+    
+    <div class="reels-wrap">
+      {%- assign all_reels = section.blocks | where: 'type', 'reel' -%}
+
+      {% if section.settings.reels_pagination_enabled %}
+        <!-- 分頁：台灣 -->
+        <div class="reels-track" id="reels-track-tw" data-page="tw">
+          {%- assign shown = 0 -%}
+          {% for block in all_reels %}
+            {% if block.settings.region == 'taiwan' %}
+              {%- assign shown = shown | plus: 1 -%}
+              {% if shown > section.settings.reels_items_per_page %}{% break %}{% endif %}
+              <article class="reel" {{ block.shopify_attributes }}>
+                <div class="reel-media">
+                  <video class="reel-video" preload="none" playsinline muted loop
+                         poster="{{ block.settings.poster | image_url: width: 420 }}">
+                    {% if block.settings.video_file != blank %}
+                      <source data-src="{{ block.settings.video_file }}" type="video/mp4">
+                    {% elsif block.settings.video != blank %}
+                      <source data-src="{{ block.settings.video }}" type="video/mp4">
+                    {% endif %}
+                  </video>
+                  <!-- 保留 ⤢ 鈕也可以，但手機直接點影片即可放大 -->
+                  <button class="reel-zoom" aria-label="放大預覽">⤢</button>
+                </div>
+                <div class="reel-caption">
+                  <div class="reel-title" data-autoshrink="true">{{ block.settings.badge }}</div>
+                  <span class="reel-platform">{{ block.settings.platform }}</span>
+                </div>
+              </article>
+            {% endif %}
+          {% endfor %}
+        </div>
+
+        <!-- 分頁：新加坡/馬來西亞 -->
+        <div class="reels-track" id="reels-track-sg" data-page="sg" hidden>
+          {%- assign shown = 0 -%}
+          {% for block in all_reels %}
+            {% if block.settings.region == 'singapore' %}
+              {%- assign shown = shown | plus: 1 -%}
+              {% if shown > section.settings.reels_items_per_page %}{% break %}{% endif %}
+              <article class="reel" {{ block.shopify_attributes }}>
+                <div class="reel-media">
+                  <video class="reel-video" preload="none" playsinline muted loop
+                         poster="{{ block.settings.poster | image_url: width: 420 }}">
+                    {% if block.settings.video_file != blank %}
+                      <source data-src="{{ block.settings.video_file }}" type="video/mp4">
+                    {% elsif block.settings.video != blank %}
+                      <source data-src="{{ block.settings.video }}" type="video/mp4">
+                    {% endif %}
+                  </video>
+                  <!-- 保留 ⤢ 鈕也可以，但手機直接點影片即可放大 -->
+                  <button class="reel-zoom" aria-label="放大預覽">⤢</button>
+                </div>
+                <div class="reel-caption">
+                  <div class="reel-title" data-autoshrink="true">{{ block.settings.badge }}</div>
+                  <span class="reel-platform">{{ block.settings.platform }}</span>
+                </div>
+              </article>
+            {% endif %}
+          {% endfor %}
+        </div>
+
+      {% else %}
+        <!-- 合併模式 -->
+        <div class="reels-track" id="reels-track-all" data-page="all">
+          {% for block in all_reels %}
+            {% if section.settings.reels_mix_regions_when_pagination_off or block.settings.region == 'taiwan' %}
+              <article class="reel" {{ block.shopify_attributes }}>
+                <div class="reel-media">
+                  <video class="reel-video" preload="none" playsinline muted loop
+                         poster="{{ block.settings.poster | image_url: width: 420 }}">
+                    {% if block.settings.video_file != blank %}
+                      <source data-src="{{ block.settings.video_file }}" type="video/mp4">
+                    {% elsif block.settings.video != blank %}
+                      <source data-src="{{ block.settings.video }}" type="video/mp4">
+                    {% endif %}
+                  </video>
+                  <!-- 保留 ⤢ 鈕也可以，但手機直接點影片即可放大 -->
+                  <button class="reel-zoom" aria-label="放大預覽">⤢</button>
+                </div>
+                <div class="reel-caption">
+                  <div class="reel-title" data-autoshrink="true">{{ block.settings.badge }}</div>
+                  <span class="reel-platform">{{ block.settings.platform }}</span>
+                </div>
+              </article>
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+    
+    <div class="reel-modal" id="reel-modal" hidden>
+      <div class="reel-modal__backdrop"></div>
+      <div class="reel-modal__content" role="dialog" aria-modal="true" aria-label="Reel 預覽">
+        <button class="reel-modal__close" aria-label="關閉">✕</button>
+        <video class="reel-modal__video" controls playsinline preload="metadata"></video>
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- YouTube 代表作影片 -->
+  {% if section.settings.show_youtube %}
+  <section class="video-spotlight">
+    <div class="spotlight-header">
+      <h2 class="spotlight-title">{{ section.settings.youtube_title }}</h2>
+    </div>
+    <div class="yt-videos">
+      {% for block in section.blocks %}
+        {% if block.type == 'youtube' %}
+        <div class="yt-lite" data-yt="{{ block.settings.youtube_id }}" aria-label="播放：{{ block.settings.title }}" {{ block.shopify_attributes }}>
+          <img loading="lazy" alt="{{ block.settings.title }}" 
+               src="https://i.ytimg.com/vi/{{ block.settings.youtube_id }}/hqdefault.jpg"
+               width="480" height="360">
+          <span class="yt-play">▶</span>
+          <span class="yt-badge">YouTube</span>
+        </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <div class="social-container">
+    <!-- 地區切換 -->
+    <div class="region-tabs" role="tablist" aria-label="切換地區">
+      <button class="region-tab active" role="tab" aria-selected="true" data-region="taiwan">台灣</button>
+      <button class="region-tab" role="tab" aria-selected="false" data-region="singapore">新加坡/馬來西亞</button>
+    </div>
+
+    <!-- 台灣地區內容 -->
+    <div class="region-content active" id="taiwan-content" role="tabpanel">
+      {% assign taiwan_blocks = section.blocks | where: "type", "taiwan_social" %}
+      {% assign social_links_taiwan = section.blocks | where: "type", "social_link" | where: "settings.region", "taiwan" %}
+      {% assign all_taiwan_blocks = taiwan_blocks | concat: social_links_taiwan %}
+      {% assign prev_platform = '' %}
+      
+      {% for block in all_taiwan_blocks %}
+        {% assign platform = block.settings.platform %}
+        {% if platform != prev_platform %}
+          {% unless forloop.first %}</div></div>{% endunless %}
+          <div class="platform-group">
+            <h2 class="platform-title">{{ block.settings.platform_title }}</h2>
+            <div class="social-cards">
+        {% endif %}
+        
+        <a href="{{ block.settings.url | default: '#' }}" class="social-card" target="_blank" rel="noopener noreferrer" {{ block.shopify_attributes }}>
+          <div class="icon-wrapper">
+            {% if platform == 'facebook' %}
+              <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            {% elsif platform == 'instagram' %}
+              <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zM5.838 12a6.162 6.162 0 1112.324 0 6.162 6.162 0 01-12.324 0zM12 16a4 4 0 110-8 4 4 0 010 8zm4.965-10.405a1.44 1.44 0 112.881.001 1.44 1.44 0 01-2.881-.001z"/></svg>
+            {% elsif platform == 'threads' %}
+              <svg viewBox="0 0 16 16" aria-hidden="true">
+                <path d="M6.321 6.016c-.27-.18-1.166-.802-1.166-.802.756-1.081 1.753-1.502 3.132-1.502.975 0 1.803.327 2.394.948s.928 1.509 1.005 2.644q.492.207.905.484c1.109.745 1.719 1.86 1.719 3.137 0 2.716-2.226 5.075-6.256 5.075C4.594 16 1 13.987 1 7.994 1 2.034 4.482 0 8.044 0 9.69 0 13.55.243 15 5.036l-1.36.353C12.516 1.974 10.163 1.43 8.006 1.43c-3.565 0-5.582 2.171-5.582 6.79 0 4.143 2.254 6.343 5.63 6.343 2.777 0 4.847-1.443 4.847-3.556 0-1.438-1.208-2.127-1.27-2.127-.236 1.234-.868 3.31-3.644 3.31-1.618 0-3.013-1.118-3.013-2.582 0-2.09 1.984-2.847 3.55-2.847.586 0 1.294.04 1.663.114 0-.637-.54-1.728-1.9-1.728-1.25 0-1.566.405-1.967.868ZM8.716 8.19c-2.04 0-2.304.87-2.304 1.416 0 .878 1.043 1.168 1.6 1.168 1.02 0 2.067-.282 2.232-2.423a6.2 6.2 0 0 0-1.528-.161"/>
+              </svg>
+            {% elsif platform == 'tiktok' %}
+              <svg viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+            {% elsif platform == 'youtube' %}
+              <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            {% elsif platform == 'xiaohongshu' %}
+              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.82 5.6-3.1 7.82-.57.56-1.29.88-2.11.88-.38 0-.72-.07-1.03-.2-.52.88-1.27 1.33-2.19 1.33-.28 0-.56-.05-.86-.15-.88-.3-1.49-1.05-1.51-1.88-.01-.33.08-.67.27-.97.19-.3.48-.51.84-.61.37-.1.74-.03 1.04.16.19.11.35.27.47.47.12.2.18.43.17.66 0 .06-.01.11-.02.17l-.02.09c-.05.2-.14.35-.27.45.03.08.1.12.19.15.24.08.48-.07.62-.29.23-.35.42-.76.53-1.14.39-1.33.07-2.43-.57-3.08-.42-.42-.98-.68-1.58-.76-.83-.13-1.72.02-2.46.42-.99.53-1.71 1.54-1.92 2.59-.14.68-.06 1.32.2 1.8.14.24.34.44.58.58-.4.24-.75.56-1.03.94-.59.8-.75 1.94-.37 2.92.08.2.2.39.34.56.46.52 1.11.78 1.74.73 1.12-.08 2.18-.76 2.77-1.87.16-.3.27-.61.33-.92.22.07.46.1.68.1 1.17 0 2.16-.47 2.85-1.15 2.77-2.74 3.5-7.38 3.67-9.07.02-.15.02-.3.02-.45C16.94 9.24 16.8 8.97 16.64 8.8z"/></svg>
+            {% endif %}
+          </div>
+          <div class="card-content">
+            <h3 class="card-name">{{ block.settings.name }}</h3>
+            <p class="card-desc">{{ block.settings.description }}</p>
+          </div>
+          <div class="card-followers">
+            <div class="followers-count">{{ block.settings.followers_count }}</div>
+            <div class="followers-label">{{ block.settings.followers_label }}</div>
+          </div>
+          <svg class="card-arrow" viewBox="0 0 24 24">
+            <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/>
+          </svg>
+        </a>
+        
+        {% assign prev_platform = platform %}
+        {% if forloop.last %}</div></div>{% endif %}
+      {% endfor %}
+    </div>
+
+    <!-- 新加坡/馬來西亞地區內容 -->
+    <div class="region-content" id="singapore-content" role="tabpanel">
+      {% assign singapore_blocks = section.blocks | where: "type", "singapore_social" %}
+      {% assign social_links_singapore = section.blocks | where: "type", "social_link" | where: "settings.region", "singapore" %}
+      {% assign all_singapore_blocks = singapore_blocks | concat: social_links_singapore %}
+      {% assign prev_sg_platform = '' %}
+      
+      {% for block in all_singapore_blocks %}
+        {% assign platform = block.settings.platform %}
+        {% if platform != prev_sg_platform %}
+          {% unless forloop.first %}</div></div>{% endunless %}
+          <div class="platform-group">
+            <h2 class="platform-title">{{ block.settings.platform_title }}</h2>
+            <div class="social-cards">
+        {% endif %}
+        
+        <a href="{{ block.settings.url | default: '#' }}" class="social-card" target="_blank" rel="noopener noreferrer" {{ block.shopify_attributes }}>
+          <div class="icon-wrapper">
+            {% if platform == 'facebook' %}
+              <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            {% elsif platform == 'instagram' %}
+              <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zM5.838 12a6.162 6.162 0 1112.324 0 6.162 6.162 0 01-12.324 0zM12 16a4 4 0 110-8 4 4 0 010 8zm4.965-10.405a1.44 1.44 0 112.881.001 1.44 1.44 0 01-2.881-.001z"/></svg>
+            {% elsif platform == 'threads' %}
+              <svg viewBox="0 0 16 16" aria-hidden="true">
+                <path d="M6.321 6.016c-.27-.18-1.166-.802-1.166-.802.756-1.081 1.753-1.502 3.132-1.502.975 0 1.803.327 2.394.948s.928 1.509 1.005 2.644q.492.207.905.484c1.109.745 1.719 1.86 1.719 3.137 0 2.716-2.226 5.075-6.256 5.075C4.594 16 1 13.987 1 7.994 1 2.034 4.482 0 8.044 0 9.69 0 13.55.243 15 5.036l-1.36.353C12.516 1.974 10.163 1.43 8.006 1.43c-3.565 0-5.582 2.171-5.582 6.79 0 4.143 2.254 6.343 5.63 6.343 2.777 0 4.847-1.443 4.847-3.556 0-1.438-1.208-2.127-1.27-2.127-.236 1.234-.868 3.31-3.644 3.31-1.618 0-3.013-1.118-3.013-2.582 0-2.09 1.984-2.847 3.55-2.847.586 0 1.294.04 1.663.114 0-.637-.54-1.728-1.9-1.728-1.25 0-1.566.405-1.967.868ZM8.716 8.19c-2.04 0-2.304.87-2.304 1.416 0 .878 1.043 1.168 1.6 1.168 1.02 0 2.067-.282 2.232-2.423a6.2 6.2 0 0 0-1.528-.161"/>
+              </svg>
+            {% elsif platform == 'tiktok' %}
+              <svg viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+            {% elsif platform == 'youtube' %}
+              <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            {% elsif platform == 'xiaohongshu' %}
+              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.82 5.6-3.1 7.82-.57.56-1.29.88-2.11.88-.38 0-.72-.07-1.03-.2-.52.88-1.27 1.33-2.19 1.33-.28 0-.56-.05-.86-.15-.88-.3-1.49-1.05-1.51-1.88-.01-.33.08-.67.27-.97.19-.3.48-.51.84-.61.37-.1.74-.03 1.04.16.19.11.35.27.47.47.12.2.18.43.17.66 0 .06-.01.11-.02.17l-.02.09c-.05.2-.14.35-.27.45.03.08.1.12.19.15.24.08.48-.07.62-.29.23-.35.42-.76.53-1.14.39-1.33.07-2.43-.57-3.08-.42-.42-.98-.68-1.58-.76-.83-.13-1.72.02-2.46.42-.99.53-1.71 1.54-1.92 2.59-.14.68-.06 1.32.2 1.8.14.24.34.44.58.58-.4.24-.75.56-1.03.94-.59.8-.75 1.94-.37 2.92.08.2.2.39.34.56.46.52 1.11.78 1.74.73 1.12-.08 2.18-.76 2.77-1.87.16-.3.27-.61.33-.92.22.07.46.1.68.1 1.17 0 2.16-.47 2.85-1.15 2.77-2.74 3.5-7.38 3.67-9.07.02-.15.02-.3.02-.45C16.94 9.24 16.8 8.97 16.64 8.8z"/></svg>
+            {% endif %}
+          </div>
+          <div class="card-content">
+            <h3 class="card-name">{{ block.settings.name }}</h3>
+            <p class="card-desc">{{ block.settings.description }}</p>
+          </div>
+          <div class="card-followers">
+            <div class="followers-count">{{ block.settings.followers_count }}</div>
+            <div class="followers-label">{{ block.settings.followers_label }}</div>
+          </div>
+          <svg class="card-arrow" viewBox="0 0 24 24">
+            <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/>
+          </svg>
+        </a>
+        
+        {% assign prev_sg_platform = platform %}
+        {% if forloop.last %}</div></div>{% endif %}
+      {% endfor %}
+    </div>
+
+    <!-- 統計區塊 -->
+    {% if section.settings.show_stats %}
+    <div class="stats-section">
+      <h3 class="stats-title">{{ section.settings.stats_title }}</h3>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-number">{{ section.settings.stat_1_number }}</div>
+          <div class="stat-label">{{ section.settings.stat_1_label }}</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">{{ section.settings.stat_2_number }}</div>
+          <div class="stat-label">{{ section.settings.stat_2_label }}</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">{{ section.settings.stat_3_number }}</div>
+          <div class="stat-label">{{ section.settings.stat_3_label }}</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">{{ section.settings.stat_4_number }}</div>
+          <div class="stat-label">{{ section.settings.stat_4_label }}</div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- 底部CTA -->
+    {% if section.settings.show_cta %}
+    <div class="social-cta">
+      <p class="cta-text">{{ section.settings.cta_text }}</p>
+      <a href="{{ section.settings.cta_button_url | default: '#' }}" class="cta-button">{{ section.settings.cta_button_text }}</a>
+    </div>
+    {% endif %}
+  </div>
+
+  <script>
+    // 地區切換功能 - 修正版
+    (function initRegionTabs(scope = document) {
+      const tabs = scope.querySelectorAll('.region-tab');
+      const panels = {
+        taiwan: scope.getElementById('taiwan-content'),
+        singapore: scope.getElementById('singapore-content')
+      };
+      
+      if (!tabs.length || !panels.taiwan || !panels.singapore) return;
+      
+      const setRegion = (key, btn) => {
+        tabs.forEach(t => {
+          const active = t === btn;
+          t.classList.toggle('active', active);
+          t.setAttribute('aria-selected', active ? 'true' : 'false');
+        });
+        
+        Object.entries(panels).forEach(([k, el]) => {
+          const isActive = (k === key);
+          el.classList.toggle('active', isActive);
+          el.hidden = !isActive; // 關鍵：確實隱藏另一個面板
+        });
+        
+        localStorage.setItem('apgo-region', key);
+
+        // 同步 Reels 的分頁（若有啟用）
+        const reelsBtn = document.querySelector(
+          `.reels-tab[data-page="${key === 'taiwan' ? 'tw' : 'sg'}"]`
+        );
+        if (reelsBtn) reelsBtn.click();
+      };
+      
+      tabs.forEach(btn => {
+        btn.addEventListener('click', e => {
+          setRegion(e.currentTarget.dataset.region, e.currentTarget);
+        }, { passive: true });
+      });
+      
+      // 初始狀態
+      const saved = localStorage.getItem('apgo-region') || 'taiwan';
+      const initBtn = scope.querySelector(`.region-tab[data-region="${saved}"]`) || tabs[0];
+      setRegion(saved, initBtn);
+    })(document);
+
+    // Shopify 編輯器：動態載入/選取時重新初始化
+    document.addEventListener('shopify:section:load', (e) => {
+      const root = e.target;
+      // 只重新初始化該 section 範圍內的 tabs
+      (function initRegionTabs(scope) {
+        const tabs = scope.querySelectorAll('.region-tab');
+        const panels = {
+          taiwan: scope.getElementById('taiwan-content'),
+          singapore: scope.getElementById('singapore-content')
+        };
+        
+        if (!tabs.length || !panels.taiwan || !panels.singapore) return;
+        
+        const setRegion = (key, btn) => {
+          tabs.forEach(t => {
+            const active = t === btn;
+            t.classList.toggle('active', active);
+            t.setAttribute('aria-selected', active ? 'true' : 'false');
+          });
+          
+          Object.entries(panels).forEach(([k, el]) => {
+            const isActive = (k === key);
+            el.classList.toggle('active', isActive);
+            el.hidden = !isActive;
+          });
+          
+          localStorage.setItem('apgo-region', key);
+        };
+        
+        tabs.forEach(btn => {
+          btn.addEventListener('click', e => {
+            setRegion(e.currentTarget.dataset.region, e.currentTarget);
+          }, { passive: true });
+        });
+        
+        const saved = localStorage.getItem('apgo-region') || 'taiwan';
+        const initBtn = scope.querySelector(`.region-tab[data-region="${saved}"]`) || tabs[0];
+        setRegion(saved, initBtn);
+      })(root);
+    });
+
+    // ---- 封裝成可重複呼叫的初始化（限制在 root 範圍）----
+    function initSocialFeatures(root = document) {
+      // ====== Reels 播放管理與 Lazy-load ======
+      const tracks = root.querySelectorAll('.reels-track');
+      if (!tracks.length) return; // 本 section 沒有 Reels 就跳過
+
+      // 只允許單一播放
+      const allVideos = () => Array.from(root.querySelectorAll('video.reel-video, .reel-modal__video'));
+      const pauseAll = () => allVideos().forEach(v => { v.pause(); });
+
+      // 將 <source data-src> 轉正
+      const attachSources = (video) => {
+        const sources = video.querySelectorAll('source[data-src]');
+        let changed = false;
+        sources.forEach(s => {
+          if (s.dataset.src) {
+            s.src = s.dataset.src;
+            s.removeAttribute('data-src');
+            changed = true;
+          }
+        });
+        if (changed) video.load();
+      };
+
+      // 觀察可見時才灌 src
+      const io = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          const video = entry.target;
+          if (entry.isIntersecting) {
+            attachSources(video);
+          } else {
+            video.pause();
+          }
+        });
+      }, { rootMargin: '200px 0px' });
+
+      root.querySelectorAll('video.reel-video').forEach(v => io.observe(v));
+
+      // 最近中心播放
+      const playClosestInTrack = (track) => {
+        const vids = Array.from(track.querySelectorAll('video.reel-video'));
+        if (!vids.length) return;
+        const rect = track.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        let best = null, bestDist = Infinity;
+        vids.forEach(v => {
+          const r = v.getBoundingClientRect();
+          const cx = r.left + r.width / 2;
+          const d = Math.abs(cx - centerX);
+          if (d < bestDist) { best = v; bestDist = d; }
+        });
+        if (!best) return;
+        pauseAll();
+        attachSources(best);
+        best.play().catch(()=>{});
+      };
+
+      tracks.forEach(track => {
+        playClosestInTrack(track);
+        track.addEventListener('scroll', () => {
+          window.requestAnimationFrame(() => playClosestInTrack(track));
+        }, { passive: true });
+      });
+
+
+
+      // Reels 分頁（若有開）
+      const reelsTabs = root.querySelectorAll('.reels-tab');
+      if (reelsTabs.length) {
+        const trackTW = root.getElementById('reels-track-tw');
+        const trackSG = root.getElementById('reels-track-sg');
+        const setPage = (page) => {
+          reelsTabs.forEach(t => {
+            const active = t.dataset.page === page;
+            t.classList.toggle('active', active);
+            t.setAttribute('aria-selected', active ? 'true' : 'false');
+          });
+          if (trackTW && trackSG) {
+            const twActive = page === 'tw';
+            trackTW.hidden = !twActive;
+            trackSG.hidden = twActive;
+            
+            const inactiveTrack = twActive ? trackSG : trackTW;
+            if (inactiveTrack) inactiveTrack.scrollLeft = 0;
+            
+            const activeTrack = twActive ? trackTW : trackSG;
+            // 立刻灌 src + 播放最近中心（避免剛顯示時沒觸發 IO）
+            setTimeout(() => playClosestInTrack(activeTrack), 0);
+          }
+        };
+        reelsTabs.forEach(btn => {
+          btn.addEventListener('click', () => setPage(btn.dataset.page), { passive: true });
+        });
+      }
+
+      // 放大預覽（Modal）—保持你原本邏輯，但限定在 root
+      const modal = root.querySelector('#reel-modal') || document.getElementById('reel-modal');
+      const modalVideo = modal ? modal.querySelector('.reel-modal__video') : null;
+
+      const openModalWithVideo = (sourceUrl, posterUrl) => {
+        if (!modal || !modalVideo) return;
+        pauseAll();
+        modalVideo.innerHTML = '';
+        const s = document.createElement('source');
+        s.src = sourceUrl;
+        s.type = 'video/mp4';
+        modalVideo.appendChild(s);
+        if (posterUrl) modalVideo.setAttribute('poster', posterUrl);
+        modal.removeAttribute('hidden');
+        modalVideo.load();
+        modalVideo.play().catch(()=>{});
+      };
+
+      const closeModal = () => {
+        if (!modal || !modalVideo) return;
+        modal.setAttribute('hidden', '');
+        modalVideo.pause();
+        modalVideo.removeAttribute('poster');
+        modalVideo.innerHTML = '';
+        const activeTrack = root.querySelector('.reels-track:not([hidden])') || root.getElementById('reels-track-all');
+        if (activeTrack) playClosestInTrack(activeTrack);
+      };
+
+      root.addEventListener('click', e => {
+        // 放大預覽（點影片或放大鈕都可以；手機友好）
+        const zoomBtn = e.target.closest('.reel-zoom');
+        const isMediaClick = !!e.target.closest('.reel-media');
+        if (zoomBtn || isMediaClick) {
+          const card = (zoomBtn ? zoomBtn.closest('.reel') : e.target.closest('.reel'));
+          const v = card.querySelector('video.reel-video');
+          const poster = v.getAttribute('poster') || '';
+          const srcEl = v.querySelector('source[src]') || v.querySelector('source[data-src]');
+          const src = srcEl ? (srcEl.getAttribute('src') || srcEl.getAttribute('data-src')) : '';
+          if (src) openModalWithVideo(src, poster);
+          return;
+        }
+
+        // 關閉：點 backdrop 或關閉鈕
+        if (e.target.closest('.reel-modal__backdrop') || e.target.closest('.reel-modal__close')) {
+          closeModal();
+        }
+      }, { passive: true });
+
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && modal && !modal.hasAttribute('hidden')) {
+          closeModal();
+        }
+      });
+
+      // 延遲將 preload 提升到 metadata（第一次進視窗）
+      const lazyVideos = root.querySelectorAll('video[preload="none"]');
+      const videoObserver = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const video = entry.target;
+            video.preload = 'metadata';
+            videoObserver.unobserve(video);
+          }
+        });
+      }, { rootMargin: '50px' });
+      lazyVideos.forEach(video => videoObserver.observe(video));
+
+      // 自動縮字：單行顯示不截斷
+      function autoShrinkTitles(scope=root){
+        const els = scope.querySelectorAll('.reel-title[data-autoshrink="true"]');
+        els.forEach(el=>{
+          // 初始大小（對應 CSS 16px）
+          let size = 16;
+          el.style.fontSize = size + 'px';
+          el.style.whiteSpace = 'nowrap';
+          el.style.overflow = 'hidden';
+          el.style.textOverflow = 'ellipsis';
+          // 如果還是超出，就遞減（下限 11px）
+          while(el.scrollWidth > el.clientWidth && size > 11){
+            size -= 1;
+            el.style.fontSize = size + 'px';
+          }
+        });
+      }
+      autoShrinkTitles(root);
+
+      // 視窗尺寸改變時，重新壓縮
+      window.addEventListener('resize', ()=>autoShrinkTitles(root));
+    }
+
+    // 前台/編輯器初載
+    document.addEventListener('DOMContentLoaded', () => initSocialFeatures(document));
+
+    // 編輯器動態載入本 section 時重新初始化
+    document.addEventListener('shopify:section:load', (e) => {
+      initSocialFeatures(e.target);
+    });
+
+    // （可選）選取某個 block 時也跑一次，方便預覽
+    document.addEventListener('shopify:block:select', (e) => {
+      const section = e.target.closest('.shopify-section') || document;
+      initSocialFeatures(section);
+    });
+
+    // 其他功能初始化（保留原有功能）
+    document.addEventListener('DOMContentLoaded', function() {
+      // 輕量載入 YouTube
+      document.querySelectorAll('.yt-lite').forEach(el => {
+        el.addEventListener('click', () => {
+          const id = el.dataset.yt;
+          const iframe = document.createElement('iframe');
+          iframe.width = '560';
+          iframe.height = '315';
+          iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+          iframe.allowFullscreen = true;
+          iframe.loading = 'lazy';
+          iframe.src = `https://www.youtube.com/embed/${id}?autoplay=1&mute=1&playsinline=1&rel=0`;
+          iframe.style.width = '100%';
+          iframe.style.height = '100%';
+          iframe.style.border = 'none';
+          iframe.style.borderRadius = '16px';
+          el.replaceWith(iframe);
+        }, {passive: true});
+      });
+
+      // 數字動畫效果
+      function animateNumbers() {
+        const numbers = document.querySelectorAll('.stat-number');
+        const observer = new IntersectionObserver(entries => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting && !entry.target.dataset.animated) {
+              entry.target.dataset.animated = 'true';
+              const num = entry.target;
+              const finalText = num.textContent;
+              const finalValue = parseInt(finalText.replace(/[^0-9]/g, ''));
+              const duration = 2000;
+              const increment = finalValue / (duration / 16);
+              let current = 0;
+
+              const timer = setInterval(() => {
+                current += increment;
+                if (current >= finalValue) {
+                  current = finalValue;
+                  clearInterval(timer);
+                  num.textContent = finalText;
+                } else {
+                  num.textContent = Math.floor(current).toLocaleString() + '+';
+                }
+              }, 16);
+            }
+          });
+        }, { threshold: 0.5 });
+
+        numbers.forEach(num => observer.observe(num));
+      }
+
+      animateNumbers();
+    });
+  </script>
+</section>
+
+{% schema %}
+{
+  "name": "社群媒體頁面",
+  "tag": "section",
+  "class": "social-media-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Hero 影片設定"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_hero",
+      "label": "顯示 Hero 區塊",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "hero_title",
+      "label": "主標題",
+      "default": "連結全球，共創卓越"
+    },
+    {
+      "type": "text",
+      "id": "hero_subtitle",
+      "label": "副標題",
+      "default": "追蹤APGO的社群平台，掌握最新動態與專業知識"
+    },
+    {
+      "type": "text",
+      "id": "hero_button_text",
+      "label": "按鈕文字",
+      "default": "觀看短影片"
+    },
+    {
+      "type": "url",
+      "id": "hero_video_mp4",
+      "label": "Hero 影片 (MP4)"
+    },
+    {
+      "type": "url",
+      "id": "hero_video_webm",
+      "label": "Hero 影片 (WebM)"
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_poster",
+      "label": "影片預覽圖"
+    },
+    {
+      "type": "header",
+      "content": "Reels 設定"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_reels",
+      "label": "顯示 Reels 區塊",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "reels_title",
+      "label": "Reels 標題",
+      "default": "精選短影片"
+    },
+    {
+      "type": "text",
+      "id": "reels_subtitle",
+      "label": "Reels 副標題",
+      "default": "來自各大社群平台的精彩內容"
+    },
+    {
+      "type": "checkbox",
+      "id": "reels_pagination_enabled",
+      "label": "啟用 Reels 分頁（兩頁）",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "reels_items_per_page",
+      "label": "每頁顯示幾支 Reel",
+      "min": 4,
+      "max": 24,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "checkbox",
+      "id": "reels_mix_regions_when_pagination_off",
+      "label": "關閉分頁時合併兩區 Reels",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "YouTube 設定"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_youtube",
+      "label": "顯示 YouTube 區塊",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "youtube_title",
+      "label": "YouTube 標題",
+      "default": "精選長影片"
+    },
+    {
+      "type": "header",
+      "content": "統計數據"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_stats",
+      "label": "顯示統計區塊",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "stats_title",
+      "label": "統計標題",
+      "default": "社群影響力"
+    },
+    {
+      "type": "text",
+      "id": "stat_1_number",
+      "label": "統計 1 - 數字",
+      "default": "150K+"
+    },
+    {
+      "type": "text",
+      "id": "stat_1_label",
+      "label": "統計 1 - 標籤",
+      "default": "總粉絲數"
+    },
+    {
+      "type": "text",
+      "id": "stat_2_number",
+      "label": "統計 2 - 數字",
+      "default": "20M+"
+    },
+    {
+      "type": "text",
+      "id": "stat_2_label",
+      "label": "統計 2 - 標籤",
+      "default": "月觸及人數"
+    },
+    {
+      "type": "text",
+      "id": "stat_3_number",
+      "label": "統計 3 - 數字",
+      "default": "500+"
+    },
+    {
+      "type": "text",
+      "id": "stat_3_label",
+      "label": "統計 3 - 標籤",
+      "default": "每月發布內容"
+    },
+    {
+      "type": "text",
+      "id": "stat_4_number",
+      "label": "統計 4 - 數字",
+      "default": "12"
+    },
+    {
+      "type": "text",
+      "id": "stat_4_label",
+      "label": "統計 4 - 標籤",
+      "default": "社群平台數"
+    },
+    {
+      "type": "header",
+      "content": "CTA 設定"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cta",
+      "label": "顯示 CTA 區塊",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "CTA 文字",
+      "default": "加入APGO社群，掌握最新動態"
+    },
+    {
+      "type": "text",
+      "id": "cta_button_text",
+      "label": "CTA 按鈕文字",
+      "default": "立即關注"
+    },
+    {
+      "type": "url",
+      "id": "cta_button_url",
+      "label": "CTA 按鈕連結"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "reel",
+      "name": "Reel 短影片",
+      "settings": [
+        {
+          "type": "url",
+          "id": "video",
+          "label": "影片路徑 (MP4)"
+        },
+        {
+          "type": "url",
+          "id": "video_file",
+          "label": "影片檔（MP4，上傳到 Files 後貼上 CDN 網址；優先使用）"
+        },
+        {
+          "type": "image_picker",
+          "id": "poster",
+          "label": "預覽圖"
+        },
+        {
+          "type": "text",
+          "id": "badge",
+          "label": "標籤文字",
+          "default": "內容類型"
+        },
+        {
+          "type": "text",
+          "id": "platform",
+          "label": "平台名稱",
+          "default": "TikTok"
+        },
+        {
+          "type": "select",
+          "id": "region",
+          "label": "所屬地區（用於分頁）",
+          "options": [
+            { "value": "taiwan", "label": "台灣" },
+            { "value": "singapore", "label": "新加坡/馬來西亞" }
+          ],
+          "default": "taiwan"
+        }
+      ]
+    },
+    {
+      "type": "youtube",
+      "name": "YouTube 影片",
+      "settings": [
+        {
+          "type": "text",
+          "id": "youtube_id",
+          "label": "YouTube 影片 ID"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "影片標題"
+        }
+      ]
+    },
+    {
+      "type": "taiwan_social",
+      "name": "台灣社群連結",
+      "settings": [
+        {
+          "type": "select",
+          "id": "platform",
+          "label": "平台",
+          "options": [
+            { "value": "facebook", "label": "Facebook" },
+            { "value": "instagram", "label": "Instagram" },
+            { "value": "threads", "label": "Threads" },
+            { "value": "tiktok", "label": "TikTok" },
+            { "value": "youtube", "label": "YouTube" },
+            { "value": "xiaohongshu", "label": "小紅書" }
+          ],
+          "default": "facebook"
+        },
+        {
+          "type": "text",
+          "id": "platform_title",
+          "label": "平台標題",
+          "default": "Facebook"
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "帳號名稱"
+        },
+        {
+          "type": "text",
+          "id": "description",
+          "label": "描述"
+        },
+        {
+          "type": "text",
+          "id": "followers_count",
+          "label": "追蹤數",
+          "default": "50K+"
+        },
+        {
+          "type": "text",
+          "id": "followers_label",
+          "label": "追蹤數標籤",
+          "default": "粉絲"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "連結網址"
+        }
+      ]
+    },
+    {
+      "type": "singapore_social",
+      "name": "新加坡/馬來西亞社群連結",
+      "settings": [
+        {
+          "type": "select",
+          "id": "platform",
+          "label": "平台",
+          "options": [
+            { "value": "facebook", "label": "Facebook" },
+            { "value": "instagram", "label": "Instagram" },
+            { "value": "threads", "label": "Threads" },
+            { "value": "tiktok", "label": "TikTok" },
+            { "value": "youtube", "label": "YouTube" },
+            { "value": "xiaohongshu", "label": "小紅書" }
+          ],
+          "default": "facebook"
+        },
+        {
+          "type": "text",
+          "id": "platform_title",
+          "label": "平台標題",
+          "default": "Facebook"
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "帳號名稱"
+        },
+        {
+          "type": "text",
+          "id": "description",
+          "label": "描述"
+        },
+        {
+          "type": "text",
+          "id": "followers_count",
+          "label": "追蹤數",
+          "default": "30K+"
+        },
+        {
+          "type": "text",
+          "id": "followers_label",
+          "label": "追蹤數標籤",
+          "default": "粉絲"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "連結網址"
+        }
+      ]
+    },
+    {
+      "type": "social_link",
+      "name": "社群連結",
+      "settings": [
+        {
+          "type": "select",
+          "id": "region",
+          "label": "地區",
+          "options": [
+            { "value": "taiwan", "label": "台灣" },
+            { "value": "singapore", "label": "新加坡/馬來西亞" }
+          ],
+          "default": "taiwan"
+        },
+        {
+          "type": "select",
+          "id": "platform",
+          "label": "平台",
+          "options": [
+            { "value": "facebook", "label": "Facebook" },
+            { "value": "instagram", "label": "Instagram" },
+            { "value": "threads", "label": "Threads" },
+            { "value": "tiktok", "label": "TikTok" },
+            { "value": "youtube", "label": "YouTube" },
+            { "value": "xiaohongshu", "label": "小紅書" }
+          ],
+          "default": "facebook"
+        },
+        {
+          "type": "text",
+          "id": "platform_title",
+          "label": "平台標題",
+          "default": "Facebook"
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "帳號名稱"
+        },
+        {
+          "type": "text",
+          "id": "description",
+          "label": "描述"
+        },
+        {
+          "type": "text",
+          "id": "followers_count",
+          "label": "追蹤數",
+          "default": "50K+"
+        },
+        {
+          "type": "text",
+          "id": "followers_label",
+          "label": "追蹤數標籤",
+          "default": "粉絲"
+        },
+        {
+          "type": "url",
+          "id": "url",
+          "label": "連結網址"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "社群媒體頁面",
+      "blocks": [
+        {
+          "type": "reel",
+          "settings": {
+            "badge": "DIY教學",
+            "platform": "TikTok"
+          }
+        },
+        {
+          "type": "reel",
+          "settings": {
+            "badge": "產品展示",
+            "platform": "Instagram"
+          }
+        },
+        {
+          "type": "youtube",
+          "settings": {
+            "title": "APGO 技術講座"
+          }
+        },
+        {
+          "type": "social_link",
+          "settings": {
+            "region": "taiwan",
+            "platform": "facebook",
+            "platform_title": "Facebook 官方平台",
+            "name": "APGO 台灣總部",
+            "description": "官方最新消息與活動",
+            "followers_count": "50K+",
+            "followers_label": "粉絲"
+          }
+        },
+        {
+          "type": "social_link",
+          "settings": {
+            "region": "singapore",
+            "platform": "facebook",
+            "platform_title": "Facebook",
+            "name": "APGO Singapore",
+            "description": "新馬地區官方資訊",
+            "followers_count": "30K+",
+            "followers_label": "粉絲"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

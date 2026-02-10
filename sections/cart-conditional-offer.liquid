@@ -1,0 +1,633 @@
+{% comment %}
+  購物車頁-條件式優惠區塊
+  檔案位置: sections/cart-conditional-offer.liquid
+  主要功能: 根據購物車金額顯示不同的優惠條件
+{% endcomment %}
+
+<!-- 內聯關鍵樣式防止閃爍 -->
+<style>
+  /* 移除所有可能的容器背景色 */
+  .shopify-section,
+  .shopify-section[class*="cart-conditional"],
+  [class*="shopify-section-template"][class*="cart_conditional"],
+  .section-cart-conditional {
+    background-color: transparent !important;
+    background: transparent !important;
+    background-image: none !important;
+  }
+  
+  /* 確保 wrapper 完全透明 */
+  .conditional-offer-wrapper {
+    background-color: transparent !important;
+    background: transparent !important;
+    background-image: none !important;
+  }
+  
+  /* 確保只有內部容器有背景色 */
+  .conditional-offer-section {
+    background-color: {{ section.settings.loading_bg_color }} !important;
+    min-height: 80px;
+  }
+</style>
+
+<style>
+  /* ========================================
+     購物車條件式優惠區塊 - 手機版優先設計
+     ======================================== */
+  
+  /* 外層包裝器 */
+  .conditional-offer-wrapper {
+    width: 100%;
+    max-width: 800px;
+    margin: 12px auto 0;
+    padding: 0 16px;
+    position: relative;
+    background: transparent !important;
+  }
+  
+  /* 主容器 */
+  .conditional-offer-section {
+    background: linear-gradient(145deg, #2d2d2d, #1a1a1a) !important;
+    border: 1px solid #404040 !important;
+    border-radius: 10px;
+    padding: 12px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .conditional-offer-section:hover {
+    border-color: #ff6b35 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 107, 53, 0.2);
+  }
+  
+  /* 頂部橘色線條 */
+  .conditional-offer-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: {% if section.settings.use_accent_gradient %}
+      linear-gradient(90deg, {{ section.settings.accent_color_start }}, {{ section.settings.accent_color_end }})
+    {% else %}
+      {{ section.settings.accent_color_start }}
+    {% endif %} !important;
+  }
+  
+  /* 進度條容器 */
+  .progress-container {
+    margin-bottom: 12px;
+  }
+  
+  /* 進度條標題 */
+  .progress-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: {{ section.settings.text_color }} !important;
+    margin: 0 0 6px 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  
+  .progress-title::before {
+    content: '🎯';
+    font-size: 14px;
+  }
+  
+  /* 進度條背景 */
+  .progress-bar-bg {
+    width: 100%;
+    height: 6px;
+    background: #333333 !important;
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  /* 進度條填充 */
+  .progress-bar-fill {
+    height: 100%;
+    background: {% if section.settings.use_accent_gradient %}
+      linear-gradient(90deg, {{ section.settings.accent_color_start }}, {{ section.settings.accent_color_end }})
+    {% else %}
+      {{ section.settings.accent_color_start }}
+    {% endif %} !important;
+    border-radius: 4px;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  /* 進度條動畫效果 */
+  .progress-bar-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: shimmer 2s infinite;
+  }
+  
+  @keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+  }
+  
+  /* 進度文字 */
+  .progress-text {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 6px;
+    font-size: 11px;
+    color: {{ section.settings.text_secondary_color }} !important;
+  }
+  
+  .current-amount {
+    font-weight: 600;
+    color: {{ section.settings.accent_color_start }} !important;
+  }
+  
+  .target-amount {
+    font-weight: 500;
+  }
+  
+  /* 優惠訊息容器 */
+  .offer-message-container {
+    margin-top: 8px;
+  }
+  
+  /* 優惠訊息 */
+  .offer-message {
+    font-size: 12px;
+    line-height: 1.3;
+    color: {{ section.settings.text_color }} !important;
+    margin: 0;
+    padding: 8px 10px;
+    border-radius: 6px;
+    background: rgba(255, 107, 53, 0.1) !important;
+    border: 1px solid rgba(255, 107, 53, 0.2) !important;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .offer-message::before {
+    content: '💡';
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+  }
+  
+  .offer-message .message-text {
+    margin-left: 24px;
+  }
+  
+  /* 已達成優惠樣式 */
+  .offer-message.achieved {
+    background: rgba(76, 175, 80, 0.1) !important;
+    border-color: rgba(76, 175, 80, 0.3) !important;
+  }
+  
+  .offer-message.achieved::before {
+    content: '🎉';
+    font-size: 14px;
+  }
+  
+  /* 優惠金額強調 */
+  .offer-amount {
+    font-weight: 700;
+    color: {{ section.settings.accent_color_start }} !important;
+    text-shadow: 0 0 8px rgba(255, 107, 53, 0.3);
+  }
+  
+  /* 載入狀態 */
+  .conditional-offer-section.loading {
+    min-height: 100px;
+    position: relative;
+  }
+  
+  .conditional-offer-section.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 32px;
+    height: 32px;
+    border: 3px solid #333333 !important;
+    border-top-color: #ff6b35 !important;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  
+  @keyframes spin {
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+  
+  /* 平板版樣式 */
+  @media (min-width: 768px) {
+    .conditional-offer-wrapper {
+      padding: 0 20px;
+      margin: 16px auto 0;
+    }
+    
+    .conditional-offer-section {
+      padding: 16px;
+      border-radius: 12px;
+    }
+    
+    .progress-title {
+      font-size: 14px;
+    }
+    
+    .offer-message {
+      font-size: 13px;
+      padding: 12px;
+    }
+  }
+  
+  /* 桌面版樣式 */
+  @media (min-width: 1024px) {
+    .conditional-offer-section {
+      padding: 18px;
+    }
+    
+    .progress-title {
+      font-size: 15px;
+    }
+    
+    .offer-message {
+      font-size: 14px;
+      padding: 14px;
+    }
+  }
+  
+  /* 隱藏選項 */
+  .conditional-offer-wrapper[data-hide-progress="true"] .progress-container {
+    display: none;
+  }
+</style>
+
+<!-- 重要：加上 ID 以便替換整個區塊 -->
+<div class="conditional-offer-wrapper" 
+     id="conditional-offer-wrapper-{{ section.id }}"
+     data-hide-progress="{{ section.settings.hide_progress }}">
+  
+  <div class="conditional-offer-section" id="conditional-offer-{{ section.id }}">
+    
+    <!-- 進度條區域 -->
+    {% unless section.settings.hide_progress %}
+    <div class="progress-container">
+      <h4 class="progress-title">{{ section.settings.progress_title }}</h4>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progress-fill-{{ section.id }}" style="width: 0%"></div>
+      </div>
+      <div class="progress-text">
+        <span class="current-amount" id="current-amount-{{ section.id }}">NT$ 0</span>
+        <span class="target-amount" id="target-amount-{{ section.id }}">NT$ {{ section.settings.target_amount }}</span>
+      </div>
+    </div>
+    {% endunless %}
+    
+    <!-- 優惠訊息區域 -->
+    <div class="offer-message-container">
+      <div class="offer-message" id="offer-message-{{ section.id }}">
+        <div class="message-text">
+          <span id="offer-text-{{ section.id }}">{{ section.settings.initial_message }}</span>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+<script>
+  // 條件式優惠功能 - 強化版
+  class ConditionalOffer {
+    constructor(sectionId, settings) {
+      this.sectionId = sectionId;
+      this.settings = settings;
+      this.currentAmount = 0;
+      this.targetAmount = parseFloat(settings.target_amount);
+      this.wrapperId = `conditional-offer-wrapper-${sectionId}`;
+      this.init();
+    }
+    
+    init() {
+      this.updateCartAmount();
+      this.setupEventListeners();
+    }
+    
+    // 雙重更新策略：先本地快速更新，再伺服器端精確更新
+    refreshAll() {
+      this.updateCartAmount({ noStore: true });
+      // 延遲執行 section render，確保購物車已更新完成
+      clearTimeout(this._srTimer);
+      this._srTimer = setTimeout(() => this.refreshSectionFromServer(), 220);
+    }
+    
+    updateCartAmount(opts = {}) {
+      const fetchOpts = {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' }
+      };
+      if (opts.noStore) fetchOpts.cache = 'no-store';
+      
+      // 加時間戳避免快取
+      const url = `/cart.js?_=${Date.now()}`;
+      fetch(url, fetchOpts)
+        .then(r => r.json())
+        .then(cart => {
+          this.currentAmount = (cart.total_price || 0) / 100;
+          this.updateDisplay();
+        })
+        .catch(err => console.error('無法取得購物車資料:', err));
+    }
+    
+    updateDisplay() {
+      const progressFill = document.getElementById(`progress-fill-${this.sectionId}`);
+      const currentAmountEl = document.getElementById(`current-amount-${this.sectionId}`);
+      const offerMessage = document.getElementById(`offer-message-${this.sectionId}`);
+      const offerText = document.getElementById(`offer-text-${this.sectionId}`);
+      
+      // 防呆處理：避免除以 0
+      const target = Number.isFinite(this.targetAmount) && this.targetAmount > 0 ? this.targetAmount : 1;
+      const progress = Math.min((this.currentAmount / target) * 100, 100);
+      
+      if (progressFill) {
+        progressFill.style.width = `${progress}%`;
+      }
+      
+      if (currentAmountEl) {
+        currentAmountEl.textContent = `NT$ ${this.currentAmount.toLocaleString()}`;
+      }
+      
+      if (offerMessage && offerText) {
+        if (this.currentAmount >= this.targetAmount) {
+          // 已達成目標
+          offerMessage.classList.add('achieved');
+          const amt = Number(this.settings.discount_amount || 0);
+          offerText.innerHTML = this.settings.achieved_message.replace(
+            '{amount}',
+            `<span class="offer-amount">NT$ ${amt.toLocaleString()}</span>`
+          );
+        } else {
+          // 未達成目標
+          offerMessage.classList.remove('achieved');
+          const remainingRaw = Math.max(this.targetAmount - this.currentAmount, 0);
+          const msg = this.settings.progress_message.replace(
+            '{remaining}',
+            `<span class="offer-amount">NT$ ${remainingRaw.toLocaleString()}</span>`
+          );
+          offerText.innerHTML = msg;
+        }
+      }
+    }
+    
+    // 使用 Section Rendering API 從伺服器取得最新 HTML
+    refreshSectionFromServer() {
+      const wrapper = document.getElementById(this.wrapperId);
+      if (!wrapper) return;
+      
+      const url = `${window.location.pathname}?sections={{ section.id }}&_=${Date.now()}`;
+      fetch(url, {
+        method: 'GET',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        cache: 'no-store'
+      })
+        .then(r => r.json())
+        .then(payload => {
+          const html = payload['{{ section.id }}'];
+          if (!html) return;
+          
+          const temp = document.createElement('div');
+          temp.innerHTML = html.trim();
+          
+          // 取得新區塊的 wrapper
+          const newWrapper = temp.querySelector(`#${this.wrapperId}`);
+          if (!newWrapper) return;
+          
+          // 替換整個區塊
+          wrapper.replaceWith(newWrapper);
+          
+          // 重要：替換後重新初始化
+          const sectionEl = document.getElementById(`conditional-offer-{{ section.id }}`);
+          if (sectionEl) {
+            new ConditionalOffer('{{ section.id }}', {
+              target_amount: {{ section.settings.target_amount }},
+              discount_amount: {{ section.settings.discount_amount }},
+              initial_message: `{{ section.settings.initial_message | escape }}`,
+              progress_message: `{{ section.settings.progress_message | escape }}`,
+              achieved_message: `{{ section.settings.achieved_message | escape }}`
+            });
+          }
+        })
+        .catch(err => console.error('Section render 失敗:', err));
+    }
+    
+    setupEventListeners() {
+      // 防抖處理
+      const debounce = (fn, wait = 250) => {
+        let t;
+        return (...args) => {
+          clearTimeout(t);
+          t = setTimeout(() => fn.apply(this, args), wait);
+        };
+      };
+      const debouncedRefresh = debounce(() => this.refreshAll(), 250);
+      
+      // 監聽所有可能的購物車更新事件
+      const EVENT_NAMES = [
+        'cart:refresh',
+        'cart:updated',
+        'cart:update',
+        'cart:change',
+        'product:added',
+        'ajaxProduct:added',
+        'cart:request:complete',
+        'theme:cart:update',
+        'CartUpdateEvent'
+      ];
+      
+      // 三個目標都監聽，確保接收到所有事件
+      const targets = [document, document.documentElement, window];
+      targets.forEach(target => {
+        EVENT_NAMES.forEach(name => {
+          target.addEventListener(name, debouncedRefresh, { passive: true });
+        });
+        // 類別型事件也監聽
+        target.addEventListener('CartUpdateEvent', debouncedRefresh, { passive: true });
+      });
+      
+      // Dawn 等主題的 section 載入事件
+      document.addEventListener('shopify:section:load', (e) => {
+        try {
+          if (e?.detail?.sectionId === '{{ section.id }}') {
+            this.refreshAll();
+          }
+        } catch(_) {}
+      });
+      
+      // MutationObserver 備援：監視購物車 DOM 變化
+      try {
+        const observerTargets = [
+          document.querySelector('.cart-drawer__footer'),
+          document.querySelector('#cart, .cart-items, cart-drawer-component')
+        ].filter(Boolean);
+        
+        if (observerTargets.length) {
+          const mo = new MutationObserver(() => {
+            setTimeout(() => this.refreshAll(), 120);
+          });
+          observerTargets.forEach(t => {
+            mo.observe(t, { childList: true, subtree: true });
+          });
+        }
+      } catch(_) {}
+      
+      // 跨分頁同步
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'cart-updated') debouncedRefresh();
+      });
+    }
+  }
+  
+  // 初始化條件式優惠
+  document.addEventListener('DOMContentLoaded', function() {
+    const section = document.getElementById('conditional-offer-{{ section.id }}');
+    if (section) {
+      new ConditionalOffer('{{ section.id }}', {
+        target_amount: {{ section.settings.target_amount }},
+        discount_amount: {{ section.settings.discount_amount }},
+        initial_message: `{{ section.settings.initial_message | escape }}`,
+        progress_message: `{{ section.settings.progress_message | escape }}`,
+        achieved_message: `{{ section.settings.achieved_message | escape }}`
+      });
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "購物車頁-條件式優惠區塊",
+  "class": "section-cart-conditional",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "基本設定"
+    },
+    {
+      "type": "text",
+      "id": "progress_title",
+      "label": "進度條標題",
+      "default": "距離免運費還差"
+    },
+    {
+      "type": "number",
+      "id": "target_amount",
+      "label": "目標金額",
+      "default": 1500,
+      "info": "達到此金額即可享受優惠"
+    },
+    {
+      "type": "number",
+      "id": "discount_amount",
+      "label": "優惠金額",
+      "default": 100,
+      "info": "達到目標後可享受的優惠金額"
+    },
+    {
+      "type": "header",
+      "content": "訊息設定"
+    },
+    {
+      "type": "textarea",
+      "id": "initial_message",
+      "label": "初始訊息",
+      "default": "再買一點就能享受優惠！",
+      "info": "使用 {amount} 來顯示優惠金額"
+    },
+    {
+      "type": "textarea",
+      "id": "progress_message",
+      "label": "進度訊息",
+      "default": "再買 {remaining} 即可享受優惠！",
+      "info": "使用 {remaining} 來顯示剩餘金額"
+    },
+    {
+      "type": "textarea",
+      "id": "achieved_message",
+      "label": "達成訊息",
+      "default": "恭喜！您已獲得 {amount} 優惠！",
+      "info": "使用 {amount} 來顯示優惠金額"
+    },
+    {
+      "type": "header",
+      "content": "顯示設定"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_progress",
+      "label": "隱藏進度條",
+      "default": false,
+      "info": "只顯示優惠訊息，不顯示進度條"
+    },
+    {
+      "type": "header",
+      "content": "顏色設定"
+    },
+    {
+      "type": "color",
+      "id": "loading_bg_color",
+      "label": "載入背景色",
+      "default": "#1a1a1a",
+      "info": "防止載入時白色閃爍的預設背景色"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_accent_gradient",
+      "label": "使用強調色漸變",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "accent_color_start",
+      "label": "強調色（起始）",
+      "default": "#ff6b35"
+    },
+    {
+      "type": "color",
+      "id": "accent_color_end",
+      "label": "強調色（結束）",
+      "default": "#f7931e"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "主要文字顏色",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_secondary_color",
+      "label": "次要文字顏色",
+      "default": "#cccccc"
+    }
+  ],
+  "presets": [
+    {
+      "name": "購物車條件式優惠",
+      "category": "銷售功能"
+    }
+  ]
+}
+{% endschema %}

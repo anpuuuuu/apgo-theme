@@ -1,0 +1,335 @@
+{% comment %}
+  購物車商品區塊 - 包含標題
+  檔案位置: snippets/cart-products-with-header.liquid
+{% endcomment %}
+
+<style>
+  /* 購物車商品標題區塊 - 使用加購區塊相同樣式 */
+  .cart-products-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 16px;
+    padding: 0 12px;
+  }
+
+  .cart-products-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary, #000000);
+    margin: 0;
+    position: relative;
+    padding-left: 12px;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .cart-products-title::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 20px;
+    background: linear-gradient(135deg, #ff6b35, #f7931e);
+    border-radius: 2px;
+  }
+
+  /* 可選的操作按鈕（如清空購物車） */
+  .cart-products-action {
+    background: transparent;
+    color: #ff6b35;
+    border: 1px solid #ff6b35;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+    justify-self: end;
+  }
+
+  .cart-products-action:hover {
+    background: linear-gradient(135deg, #ff6b35, #f7931e);
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+  }
+
+  /* 響應式設計 */
+  @media (max-width: 768px) {
+    .cart-products-header {
+      margin-bottom: 12px;
+      padding: 0 8px;
+    }
+
+    .cart-products-title {
+      font-size: 16px;
+    }
+
+    .cart-products-action {
+      padding: 5px 12px;
+      font-size: 12px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .cart-products-header {
+      gap: 8px;
+    }
+
+    .cart-products-title {
+      font-size: 14px;
+      padding-left: 10px;
+    }
+
+    .cart-products-title::before {
+      width: 3px;
+      height: 16px;
+    }
+
+    .cart-products-action {
+      padding: 4px 8px;
+      font-size: 11px;
+      border-radius: 16px;
+    }
+  }
+
+  @media (max-width: 375px) {
+    .cart-products-title {
+      font-size: 13px;
+      padding-left: 8px;
+    }
+
+    .cart-products-title::before {
+      width: 2px;
+      height: 14px;
+    }
+
+    .cart-products-action {
+      padding: 3px 8px;
+      font-size: 10px;
+    }
+  }
+
+  /* 原始購物車樣式保持 */
+  .cart-page--empty .cart-items__wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-block-start: 0;
+    text-align: center;
+  }
+
+  .cart-page__title + .cart-page__items {
+    margin-block-start: var(--margin-lg);
+  }
+</style>
+
+<!-- 購物車商品標題 -->
+<div class="cart-products-header">
+  <h3 class="cart-products-title">{{ section.settings.header_title | default: 'Cart Item' }}</h3>
+  {% if section.settings.show_action_button %}
+    {% if section.settings.action_type == 'clear' %}
+      <button type="button" class="cart-products-action" onclick="clearCart(event)">
+        {{ section.settings.action_text | default: '清空購物車' }}
+      </button>
+    {% elsif section.settings.action_type == 'link' %}
+      <a href="{{ section.settings.action_url }}" class="cart-products-action">
+        {{ section.settings.action_text | default: '繼續購物' }}
+        <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z"/>
+        </svg>
+      </a>
+    {% endif %}
+  {% endif %}
+</div>
+
+<!-- 原始購物車商品內容 -->
+{% render 'cart-products' %}
+
+{% if section.settings.show_action_button and section.settings.action_type == 'clear' %}
+<script>
+  function clearCart(event) {
+    event.preventDefault();
+    
+    if (!confirm('確定要清空購物車嗎？')) {
+      return;
+    }
+    
+    // 清空購物車
+    fetch(window.Shopify.routes.root + 'cart/clear.js', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      // 重新載入頁面或更新購物車顯示
+      window.location.reload();
+    })
+    .catch(error => {
+      console.error('清空購物車失敗:', error);
+    });
+  }
+</script>
+{% endif %}
+
+{% schema %}
+{
+  "name": "購物車商品（含標題）",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "標題設定"
+    },
+    {
+      "type": "text",
+      "id": "header_title",
+      "label": "標題文字",
+      "default": "購物車商品"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_action_button",
+      "label": "顯示操作按鈕",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "action_type",
+      "label": "按鈕類型",
+      "options": [
+        {
+          "value": "clear",
+          "label": "清空購物車"
+        },
+        {
+          "value": "link",
+          "label": "自訂連結"
+        }
+      ],
+      "default": "clear",
+      "info": "選擇按鈕的功能"
+    },
+    {
+      "type": "text",
+      "id": "action_text",
+      "label": "按鈕文字",
+      "default": "清空購物車"
+    },
+    {
+      "type": "url",
+      "id": "action_url",
+      "label": "按鈕連結",
+      "info": "僅在選擇「自訂連結」時使用"
+    },
+    {
+      "type": "header",
+      "content": "購物車商品設定"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "t:settings.gap",
+      "min": 8,
+      "max": 36,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "options": [
+        {
+          "value": "adapt",
+          "label": "t:options.auto"
+        },
+        {
+          "value": "portrait",
+          "label": "t:options.portrait"
+        },
+        {
+          "value": "square",
+          "label": "t:options.square"
+        }
+      ],
+      "default": "adapt",
+      "label": "t:settings.aspect_ratio"
+    },
+    {
+      "type": "checkbox",
+      "id": "dividers",
+      "label": "t:settings.dividers",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "vendor",
+      "label": "t:settings.vendor",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "t:settings.left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "t:settings.right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "購物車商品（含標題）"
+    }
+  ]
+}
+{% endschema %}

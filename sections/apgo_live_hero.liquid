@@ -1,0 +1,291 @@
+{% comment %}
+  APGO 直播時程頁面 Section
+  檔案位置: sections/apgo-live-schedule.liquid
+  命名規範: 直播時程頁-[區塊名稱]
+{% endcomment %}
+
+<section class="apgo-live-schedule-section">
+    <style>
+      /* ====== 全域容器（做法A：移除100vh，交由hero吃高度） ====== */
+      .apgo-live-schedule-section {
+        font-family: 'Inter', 'Microsoft JhengHei', sans-serif;
+        background-color: #0a0a0a;
+        color: #e5e7eb;
+        /* 做法A：不要再用 min-height:100vh，避免露出背景 */
+        /* min-height: 100vh; */
+        /* 提供可調變數（桌機/手機） */
+        --hero-min-desktop: {{ section.settings.hero_height_desktop | default: 100 }}vh;
+        --hero-min-mobile:  {{ section.settings.hero_height_mobile  | default: 100 }}svh;
+
+        /* 新增：可調 hero 內文字區塊底部間距 */
+        --hero-padding-bottom-desktop: {{ section.settings.hero_padding_bottom_desktop | default: 60 }}px;
+        --hero-padding-bottom-mobile:  {{ section.settings.hero_padding_bottom_mobile  | default: 40 }}px;
+      }
+  
+      /* ====== HERO 區塊樣式 - 直播時程頁-主視覺區塊 ====== */
+      .apgo-live-schedule-section .hero-section {
+        position: relative;
+        /* 做法A：用 min-height 吃滿畫面（預設 100vh / 100svh，可在主題設定調整） */
+        min-height: var(--hero-min-desktop);
+        height: auto;
+        overflow: hidden;
+        margin-bottom: 0;
+      }
+      @media (max-width: 767px){
+        .apgo-live-schedule-section .hero-section{
+          min-height: var(--hero-min-mobile);
+        }
+      }
+  
+      .apgo-live-schedule-section .hero-video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: saturate(1.05) contrast(1.05);
+      }
+  
+      .apgo-live-schedule-section .hero-image {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: brightness(0.6) contrast(1.1);
+      }
+  
+      .apgo-live-schedule-section .hero-overlay {
+        position: absolute;
+        inset: 0;
+        /* 調整：底部黑漸層拉長，讓Hero與下一區塊黑底無縫接軌 */
+        background:
+          radial-gradient(60% 60% at 80% 20%, rgba(240,132,24,.15), transparent 60%),
+          linear-gradient(
+            180deg,
+            rgba(0,0,0,0.35) 0%,     /* 上方淡黑 */
+            rgba(0,0,0,0.6) 50%,     /* 中間加深 */
+            rgba(0,0,0,0.85) 80%,    /* 漸深 */
+            rgba(0,0,0,1) 100%       /* 最底純黑 → 和下方背景融合 */
+          );
+        mix-blend-mode: normal;
+        pointer-events: none;
+      }
+  
+      .apgo-live-schedule-section .hero-content {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-content: end start;
+        padding: clamp(20px, 6vw, 60px);
+        padding-bottom: var(--hero-padding-bottom-desktop);
+        gap: 10px;
+        z-index: 2;
+      }
+      @media (max-width: 767px){
+        .apgo-live-schedule-section .hero-content{
+          padding-bottom: var(--hero-padding-bottom-mobile);
+        }
+      }
+  
+      .apgo-live-schedule-section .hero-title {
+        margin: 0;
+        font-size: clamp(28px, 4.2vw, 56px);
+        color: #fff;
+        letter-spacing: .5px;
+        font-weight: bold;
+        display: inline-flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      .apgo-live-schedule-section .hero-title img {
+        height: clamp(40px, 5vw, 64px);
+        width: auto;
+      }
+  
+      .apgo-live-schedule-section .hero-subtitle {
+        color: #ccc;
+        max-width: 60ch;
+        margin: 6px 0 14px;
+        font-size: clamp(0.95rem, 2vw, 1.1rem);
+      }
+  
+      .apgo-live-schedule-section .hero-cta {
+        display: inline-block;
+        background: #f08418;
+        color: #ffffff;
+        padding: 14px 32px;
+        border-radius: 25px;
+        font-size: 1rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(240, 132, 24, 0.3);
+      }
+      .apgo-live-schedule-section .hero-cta:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(240, 132, 24, 0.4);
+      }
+      .apgo-live-schedule-section .hero-cta:active {
+        transform: scale(0.98);
+      }
+  
+      @media (prefers-reduced-motion: reduce) {
+        .apgo-live-schedule-section .hero-video { display: none; }
+        .apgo-live-schedule-section .hero-overlay { background: linear-gradient(180deg, rgba(0,0,0,.3), rgba(0,0,0,.85)); }
+      }
+  
+      /* LIVE 紅點指示器 */
+      .apgo-live-schedule-section .live-label{
+        position: relative;
+        display: inline-block;
+        line-height: 1;
+      }
+      .apgo-live-schedule-section .live-label::before{
+        content: "";
+        position: absolute;
+        top: -0.25em;
+        right: -0.55em;
+        width: 10px;
+        height: 10px;
+        background: #ff3b30;
+        border-radius: 50%;
+        animation: liveDot 1.6s ease-in-out infinite;
+      }
+      @keyframes liveDot {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.4); opacity: 0.7; }
+      }
+      @media (prefers-reduced-motion: reduce){
+        .apgo-live-schedule-section .live-label::before{ animation: none; }
+      }
+    </style>
+  
+    <!-- HERO 區塊 - 直播時程頁-主視覺區塊 -->
+    {% if section.settings.show_hero %}
+    <section class="hero-section">
+      {% if section.settings.hero_video != blank %}
+        <video class="hero-video" autoplay muted loop playsinline preload="metadata"
+               {% if section.settings.hero_poster != blank %}
+               poster="{{ section.settings.hero_poster | image_url: width: 1920 }}"
+               {% endif %}>
+          <source src="{{ section.settings.hero_video }}" type="video/mp4">
+        </video>
+      {% elsif section.settings.hero_image != blank %}
+        {{ section.settings.hero_image | image_url: width: 1920 | image_tag:
+          class: 'hero-image',
+          loading: 'eager',
+          alt: section.settings.hero_title
+        }}
+      {% endif %}
+  
+      <div class="hero-overlay"></div>
+  
+      <div class="hero-content">
+        <h1 class="hero-title">
+          {% if section.settings.show_logo and section.settings.logo != blank %}
+            {{ section.settings.logo | image_url: width: 200 | image_tag:
+              loading: 'lazy',
+              alt: 'Logo'
+            }}
+          {% endif %}
+          <span class="live-label">{{ section.settings.hero_title }}</span>
+        </h1>
+        <p class="hero-subtitle">{{ section.settings.hero_subtitle }}</p>
+        {% if section.settings.hero_button_text != blank %}
+          <a href="{{ section.settings.hero_button_link }}" class="hero-cta">
+            {{ section.settings.hero_button_text }}
+          </a>
+        {% endif %}
+      </div>
+    </section>
+    {% endif %}
+  </section>
+  
+  {% schema %}
+  {
+    "name": "APGO 直播時程",
+    "tag": "section",
+    "class": "apgo-live-schedule-section",
+    "settings": [
+      { "type": "header", "content": "🎬 HERO 區塊設定" },
+      {
+        "type": "checkbox",
+        "id": "show_hero",
+        "label": "顯示 Hero 區塊",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_logo",
+        "label": "顯示 Logo",
+        "default": true
+      },
+      { "type": "image_picker", "id": "logo", "label": "Logo 圖片" },
+      { "type": "text", "id": "hero_title", "label": "主標題", "default": "LIVE" },
+      {
+        "type": "textarea",
+        "id": "hero_subtitle",
+        "label": "副標題",
+        "default": "每週與我們的專業鍍膜團隊線上相見，解答您的所有疑惑，並展示第一手實測效果！"
+      },
+  
+      { "type": "header", "content": "🖼 背景媒體" },
+      { "type": "text", "id": "hero_video", "label": "背景影片 URL", "info": "請輸入完整的影片網址" },
+      { "type": "image_picker", "id": "hero_image", "label": "背景圖片（影片備用）" },
+      { "type": "image_picker", "id": "hero_poster", "label": "影片預覽圖" },
+  
+             { "type": "header", "content": "📏 Hero 高度（做法A）" },
+       {
+         "type": "range",
+         "id": "hero_height_desktop",
+         "min": 60,
+         "max": 120,
+         "step": 1,
+         "unit": "vh",
+         "label": "桌機視窗高度（vh）",
+         "default": 100
+       },
+       {
+         "type": "range",
+         "id": "hero_height_mobile",
+         "min": 60,
+         "max": 120,
+         "step": 1,
+         "unit": "svh",
+         "label": "手機視窗高度（svh）",
+         "default": 100
+       },
+
+       { "type": "header", "content": "📐 Hero 內容間距" },
+       {
+         "type": "range",
+         "id": "hero_padding_bottom_desktop",
+         "min": 0,
+         "max": 200,
+         "step": 5,
+         "unit": "px",
+         "label": "桌機 Hero 底部距離",
+         "default": 60
+       },
+       {
+         "type": "range",
+         "id": "hero_padding_bottom_mobile",
+         "min": 0,
+         "max": 200,
+         "step": 5,
+         "unit": "px",
+         "label": "手機 Hero 底部距離",
+         "default": 40
+       },
+  
+      { "type": "header", "content": "🔘 CTA 按鈕" },
+      { "type": "text", "id": "hero_button_text", "label": "按鈕文字", "default": "立即觀看直播" },
+      { "type": "text", "id": "hero_button_link", "label": "按鈕連結", "default": "#" }
+    ],
+    "presets": [
+      { "name": "APGO 直播時程" }
+    ]
+  }
+  {% endschema %}
+  

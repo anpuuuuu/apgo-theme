@@ -1,0 +1,1669 @@
+{% comment %}
+  APGO 直播時程頁面 Section
+  檔案位置: sections/apgo-live-schedule.liquid
+  命名規範: 直播時程頁-[區塊名稱]
+{% endcomment %}
+
+<section class="apgo-live-schedule-section">
+    <style>
+      .apgo-live-schedule-section {
+        font-family: 'Inter', 'Microsoft JhengHei', sans-serif;
+        background-color: #0a0a0a;
+        color: #e5e7eb;
+        min-height: 100vh;
+      }
+      
+      /* HERO 區塊樣式 - 直播時程頁-主視覺區塊 */
+      .hero-section {
+        position: relative;
+        height: clamp(60vh, 72vh, 86vh);
+        overflow: hidden;
+        margin-bottom: 0;
+      }
+  
+      .hero-video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: saturate(1.05) contrast(1.05);
+      }
+  
+      .hero-image {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: brightness(0.6) contrast(1.1);
+      }
+  
+      .hero-overlay {
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(60% 60% at 80% 20%, rgba(240,132,24,.15), transparent 60%),
+          linear-gradient(180deg, rgba(0,0,0,.35) 0%, rgba(0,0,0,.65) 60%, rgba(0,0,0,.85) 100%);
+        mix-blend-mode: normal;
+      }
+  
+      .hero-content {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-content: end start;
+        padding: clamp(20px, 6vw, 60px);
+        gap: 10px;
+        z-index: 2;
+      }
+  
+      .hero-title {
+        margin: 0;
+        font-size: clamp(28px, 4.2vw, 56px);
+        color: #fff;
+        letter-spacing: .5px;
+        font-weight: bold;
+        display: inline-flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      
+      .hero-title img {
+        height: clamp(40px, 5vw, 64px);
+        width: auto;
+      }
+  
+      .hero-subtitle {
+        color: #ccc;
+        max-width: 60ch;
+        margin: 6px 0 14px;
+        font-size: clamp(0.95rem, 2vw, 1.1rem);
+      }
+  
+      .hero-cta {
+        display: inline-block;
+        background: #f08418;
+        color: #ffffff;
+        padding: 14px 32px;
+        border-radius: 25px;
+        font-size: 1rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(240, 132, 24, 0.3);
+      }
+  
+      .hero-cta:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(240, 132, 24, 0.4);
+      }
+  
+      .hero-cta:active {
+        transform: scale(0.98);
+      }
+  
+      @media (prefers-reduced-motion: reduce) {
+        .hero-video { display: none; }
+        .hero-overlay { background: linear-gradient(180deg, rgba(0,0,0,.3), rgba(0,0,0,.85)); }
+      }
+  
+      /* 主要內容容器 */
+      .main-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 40px 20px;
+      }
+  
+      /* 共用樣式 */
+      .gradient-text {
+        background: linear-gradient(45deg, #f08418, #ff9a3c);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+  
+      .section-title {
+        font-size: 2.5rem;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 2rem;
+        color: #ffffff;
+      }
+  
+      /* 精選直播區塊 - 直播時程頁-本週熱門直播 */
+      .featured-stream-section {
+        margin-bottom: 60px;
+      }
+  
+      .featured-card {
+        background: #111827;
+        border-radius: 20px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+  
+      @media (min-width: 768px) {
+        .featured-card {
+          flex-direction: row;
+          align-items: center;
+        }
+      }
+  
+      .featured-preview {
+        flex: 0 0 300px;
+        aspect-ratio: 9/16;
+        background: #000;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 2px solid rgba(240, 132, 24, 0.3);
+        margin: 0 auto;
+      }
+  
+      @media (min-width: 768px) {
+        .featured-preview {
+          margin: 0;
+        }
+      }
+  
+      .featured-preview img,
+      .featured-preview video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+  
+      .featured-info {
+        flex: 1;
+      }
+  
+      .featured-title {
+        font-size: 1.8rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+      }
+  
+      .featured-host {
+        color: #999;
+        margin-bottom: 1rem;
+      }
+  
+      .featured-desc {
+        color: #ccc;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+      }
+  
+      /* 平台連結按鈕 */
+      .platform-links {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+  
+      .platform-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+  
+      .platform-group-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 0.5rem;
+      }
+  
+      .platform-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+      }
+  
+      .platform-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 10px 16px;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        flex: 1;
+        min-width: 150px;
+        justify-content: center;
+      }
+  
+      .fb-button {
+        background-color: #1877F2;
+        color: white;
+      }
+  
+      .fb-button:hover {
+        background-color: #166fe5;
+        transform: translateY(-2px);
+      }
+  
+      .shopee-button {
+        background-color: #ffffff;
+        color: #EE4D2D;
+        border: 1px solid #e0e0e0;
+      }
+  
+      .shopee-button:hover {
+        background-color: #f5f5f5;
+        transform: translateY(-2px);
+      }
+  
+      .tiktok-button {
+        background-color: #010101;
+        color: white;
+        border: 1px solid #333;
+      }
+  
+      .tiktok-button:hover {
+        background-color: #1a1a1a;
+        border-color: #444;
+        transform: translateY(-2px);
+      }
+  
+      .platform-icon {
+        width: 20px;
+        height: 20px;
+      }
+  
+      /* 每週時程區塊 - 直播時程頁-每週時程表 */
+      .schedule-section {
+        margin-bottom: 60px;
+      }
+  
+      .schedule-tabs {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        border-bottom: 2px solid #1f2937;
+      }
+  
+      .tab-button {
+        background: none;
+        border: none;
+        color: #999;
+        font-size: 1.1rem;
+        font-weight: 600;
+        padding: 12px 24px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+  
+      .tab-button.active {
+        color: #f08418;
+      }
+  
+      .tab-button.active::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: #f08418;
+      }
+  
+      .tab-content {
+        display: none;
+      }
+  
+      .tab-content.active {
+        display: block;
+        animation: fadeIn 0.5s ease;
+      }
+  
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+  
+      .schedule-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+      }
+  
+      .day-card {
+        background: #111827;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 1rem;
+        transition: all 0.3s ease;
+      }
+  
+      .day-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 20px rgba(240, 132, 24, 0.1);
+        border-color: rgba(240, 132, 24, 0.3);
+      }
+  
+      .day-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 1rem;
+        color: #fff;
+      }
+  
+      .time-slots {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+  
+      .time-slot {
+        background: rgba(240, 132, 24, 0.1);
+        border: 1px solid rgba(240, 132, 24, 0.2);
+        border-radius: 8px;
+        padding: 8px;
+        text-align: center;
+        transition: all 0.3s ease;
+      }
+  
+      .time-slot:hover {
+        background: rgba(240, 132, 24, 0.2);
+        transform: scale(1.02);
+      }
+  
+      .slot-time {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #f08418;
+        margin-bottom: 4px;
+      }
+  
+      .slot-platforms {
+        font-size: 0.8rem;
+        color: #ccc;
+      }
+  
+      .no-stream {
+        text-align: center;
+        color: #666;
+        padding: 2rem 0;
+      }
+  
+      /* 團隊介紹區塊 - 直播時程頁-直播團隊 */
+      .team-section {
+        margin-bottom: 60px;
+      }
+  
+      .team-region {
+        margin-bottom: 3rem;
+      }
+  
+      .team-region-title {
+        font-size: 1.8rem;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+  
+      .team-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 2rem;
+      }
+  
+      .team-card {
+        background: #111827;
+        border-radius: 16px;
+        overflow: visible;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+        position: relative;
+      }
+  
+      .team-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(240, 132, 24, 0.2);
+        border-color: rgba(240, 132, 24, 0.3);
+      }
+  
+      .team-media-wrapper {
+        overflow: hidden;
+        border-radius: 16px;
+        margin-bottom: 1.25rem;
+      }
+
+      .team-media {
+        aspect-ratio: 9/16;
+        background: #000;
+        position: relative;
+      }
+
+      /* 桌面版調整：降低媒體比例、放大 Q 版人物 */
+      @media (min-width: 769px) {
+        .team-media {
+          aspect-ratio: 4/5;
+        }
+        .q-character {
+          height: 170px;
+        }
+      }
+  
+      .team-media img,
+      .team-media video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+  
+      .team-video {
+        display: block;
+      }
+  
+      .team-info {
+        padding: 1.25rem;
+      }
+  
+      .team-name {
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: #fff;
+        margin-bottom: 0.25rem;
+      }
+  
+      .team-role {
+        color: #f08418;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+      }
+  
+      .team-desc {
+        color: #999;
+        font-size: 0.85rem;
+        line-height: 1.4;
+      }
+  
+      /* Q版人物 */
+      .q-character {
+        position: absolute;
+        bottom: -10px;
+        right: -15px;
+        height: 120px;
+        width: auto;
+        z-index: 10;
+        pointer-events: none;
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.6));
+      }
+  
+      .team-card:hover .q-character {
+        transform: scale(1.15) rotate(8deg) translateY(-10px);
+      }
+  
+      /* ===== Carousel 版面：滿版置中、邊界空間、邊緣漸隱 ===== */
+      :root{
+        --carousel-pad: clamp(16px, 6vw, 72px);
+        --card-w: clamp(240px, 28vw, 380px);
+        --card-h: clamp(320px, 62vh, 560px);
+        --card-scale-inactive: .86;
+        --card-scale-active: 1;
+        --card-gap: clamp(12px, 2.2vw, 20px);
+      }
+
+      .team-section{ margin-bottom: 60px; }
+
+      /* 讓輪播不被 main-container 限制，做成 full-bleed */
+      .team-section .team-carousel{
+        position: relative;
+        width: 100vw;
+        margin-left: 50%;
+        transform: translateX(-50%);
+        padding-inline: var(--carousel-pad);
+      }
+      /* 邊緣漸隱（質感） */
+      .team-section .carousel-viewport{
+        overflow: hidden;
+        position: relative;
+        height: var(--card-h);
+        -webkit-mask-image: linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%);
+        mask-image: linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%);
+      }
+      .carousel-track{ position: relative; height: 100%; display: block; perspective: 1000px; }
+
+      .carousel-card{
+        position: absolute; left: 50%; top: 0;
+        width: var(--card-w); height: var(--card-h);
+        background: #111827; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1);
+        overflow: hidden; transform: translateX(-50%) scale(var(--card-scale-inactive));
+        transition: transform .6s cubic-bezier(0.4, 0, 0.2, 1), box-shadow .35s ease, border-color .35s ease, opacity .35s ease;
+      }
+      .carousel-card.active{
+        transform: translateX(-50%) translateZ(50px) scale(1);
+        z-index: 5; opacity: 1;
+        box-shadow: 0 20px 40px rgba(240, 132, 24, 0.2);
+        border-color: rgba(240, 132, 24, 0.3);
+      }
+      .carousel-card.next{
+        transform: translateX(calc(-50% + 85%)) translateZ(-150px) scale(0.85);
+        opacity: .85; z-index: 3;
+      }
+      .carousel-card.prev{
+        transform: translateX(calc(-50% - 85%)) translateZ(-150px) scale(0.85);
+        opacity: .85; z-index: 3;
+      }
+      .carousel-card.far-next{
+        transform: translateX(calc(-50% + 170%)) translateZ(-300px) scale(0.7);
+        opacity: .5; z-index: 1;
+      }
+      .carousel-card.far-prev{
+        transform: translateX(calc(-50% - 170%)) translateZ(-300px) scale(0.7);
+        opacity: .5; z-index: 1;
+      }
+      .carousel-card.hidden{ opacity: 0; transform: translateX(-50%) translateZ(-500px) scale(0.5); z-index: 0; }
+
+      /* active 卡片發光邊框（參考 video_ref） */
+      .carousel-card.active::before {
+        content: '';
+        position: absolute;
+        top: -3px; left: -3px; right: -3px; bottom: -3px;
+        background: linear-gradient(45deg, #f08418, #ff9a3c, #ffb366, #ff9a3c, #f08418);
+        background-size: 400% 400%;
+        border-radius: 18px;
+        z-index: -1;
+        animation: borderGradient 4s ease-in-out infinite;
+      }
+      @keyframes borderGradient { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
+
+      /* 輪播指示點（參考 video_ref 視覺） */
+      .team-carousel { position: relative; }
+      .team-carousel .carousel-dots {
+        display: flex; gap: 12px; justify-content: center; align-items: center;
+        padding: 10px 0; margin-top: 8px;
+      }
+      .team-carousel .carousel-dot {
+        width: 10px; height: 10px; border-radius: 50%;
+        background: rgba(255,255,255,0.3); transition: all .3s ease; cursor: pointer;
+      }
+      .team-carousel .carousel-dot.active {
+        width: 30px; border-radius: 5px; background: #f08418;
+        box-shadow: 0 0 10px rgba(240,132,24,.6);
+      }
+
+      .carousel-card .team-media-wrapper{ height: 68%; min-height: 64%; border-radius: 16px 16px 0 0; overflow: hidden; }
+      .carousel-card .team-media{ width: 100%; height: 100%; background:#000; }
+      .carousel-card .team-media img, .carousel-card .team-media video{ width: 100%; height: 100%; object-fit: cover; }
+      .carousel-card .team-info{ height: 32%; padding: 14px 16px 16px; display: grid; grid-template-rows: auto auto 1fr; gap: 6px; }
+
+      .carousel-card .q-character{ position: absolute; bottom: 8px; right: 8px; height: 90px; width: auto; pointer-events: none; filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.6)); transition: transform .35s ease; }
+      .carousel-card.is-active .q-character{ transform: scale(1.05) translateY(-4px); }
+
+      .team-region{ margin-bottom: 3rem; }
+      .team-region-title{ margin-bottom: 1.25rem; }
+
+      @media (max-width: 768px){
+        :root{ --card-h: clamp(300px, 56vh, 500px); --card-w: clamp(240px, 82vw, 340px); }
+        .team-section .team-carousel{ padding-inline: clamp(12px, 5vw, 48px); }
+        /* 行動裝置邊緣漸隱再寬一點，避免吃到內容 */
+        .team-section .carousel-viewport{
+          -webkit-mask-image: linear-gradient(to right, transparent 0, #000 9%, #000 91%, transparent 100%);
+          mask-image: linear-gradient(to right, transparent 0, #000 9%, #000 91%, transparent 100%);
+        }
+      }
+
+      .carousel-arrow{
+        position: absolute; top: 50%; translate: 0 -50%; width: 40px; height: 40px; display: grid; place-items: center;
+        background: rgba(17,24,39,.7); border: 1px solid rgba(255,255,255,.12); border-radius: 12px; cursor: pointer; z-index: 2;
+        transition: background .2s ease, transform .2s ease; user-select: none;
+      }
+      .carousel-arrow:hover{ background: rgba(17,24,39,.9); transform: scale(1.04); }
+      .carousel-arrow svg{ width: 18px; height: 18px; color:#fff; }
+      .carousel-arrow.prev{ left: clamp(6px, 2vw, 24px); }
+      .carousel-arrow.next{ right: clamp(6px, 2vw, 24px); }
+      .carousel-viewport, .carousel-track{ scroll-behavior: smooth; }
+
+      /* LIVE 紅點指示器 */
+      .live-label{
+        position: relative;
+        display: inline-block;
+        line-height: 1;
+      }
+
+      /* 紅點呼吸動畫 */
+      .live-label::before{
+        content: "";
+        position: absolute;
+        top: -0.25em;
+        right: -0.55em;
+        width: 10px;
+        height: 10px;
+        background: #ff3b30;
+        border-radius: 50%;
+        animation: liveDot 1.6s ease-in-out infinite;
+      }
+
+      @keyframes liveDot {
+        0%, 100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(1.4);
+          opacity: 0.7;
+        }
+      }
+
+      /* 若使用者偏好減少動態，改為靜止紅點 */
+      @media (prefers-reduced-motion: reduce){
+        .live-label::before{ animation: none; }
+      }
+
+      /* 響應式設計 */
+      @media (max-width: 768px) {
+        .section-title {
+          font-size: 1.8rem;
+        }
+  
+        .featured-title {
+          font-size: 1.4rem;
+        }
+  
+        .schedule-grid {
+          grid-template-columns: 1fr;
+        }
+  
+        .team-grid {
+          grid-template-columns: 1fr;
+        }
+  
+        .platform-buttons {
+          flex-direction: column;
+        }
+  
+        .platform-button {
+          width: 100%;
+        }
+      }
+    </style>
+  
+    <!-- HERO 區塊 - 直播時程頁-主視覺區塊 -->
+    {% if section.settings.show_hero %}
+    <section class="hero-section">
+      {% if section.settings.hero_video != blank %}
+        <video class="hero-video" autoplay muted loop playsinline preload="metadata"
+               {% if section.settings.hero_poster != blank %}
+               poster="{{ section.settings.hero_poster | image_url: width: 1920 }}"
+               {% endif %}>
+          <source src="{{ section.settings.hero_video }}" type="video/mp4">
+        </video>
+      {% elsif section.settings.hero_image != blank %}
+        {{ section.settings.hero_image | image_url: width: 1920 | image_tag:
+          class: 'hero-image',
+          loading: 'eager',
+          alt: section.settings.hero_title
+        }}
+      {% endif %}
+      
+      <div class="hero-overlay"></div>
+      
+      <div class="hero-content">
+        <h1 class="hero-title">
+          {% if section.settings.show_logo and section.settings.logo != blank %}
+            {{ section.settings.logo | image_url: width: 200 | image_tag:
+              loading: 'lazy',
+              alt: 'Logo'
+            }}
+          {% endif %}
+          <span class="live-label">{{ section.settings.hero_title }}</span>
+        </h1>
+        <p class="hero-subtitle">{{ section.settings.hero_subtitle }}</p>
+        {% if section.settings.hero_button_text != blank %}
+          <a href="{{ section.settings.hero_button_link }}" class="hero-cta">
+            {{ section.settings.hero_button_text }}
+          </a>
+        {% endif %}
+      </div>
+    </section>
+    {% endif %}
+  
+    <div class="main-container">
+      <!-- 精選直播區塊 - 直播時程頁-本週熱門直播 -->
+      {% if section.settings.show_featured %}
+      <section class="featured-stream-section" id="featured-stream">
+        <h2 class="section-title">{{ section.settings.featured_title }}</h2>
+        
+        <div class="featured-card">
+          <div class="featured-preview">
+            {% if section.settings.featured_video != blank %}
+              <video autoplay muted loop playsinline>
+                <source src="{{ section.settings.featured_video }}" type="video/mp4">
+              </video>
+            {% elsif section.settings.featured_image != blank %}
+              {{ section.settings.featured_image | image_url: width: 600 | image_tag:
+                loading: 'lazy',
+                alt: section.settings.featured_stream_title
+              }}
+            {% endif %}
+          </div>
+          
+          <div class="featured-info">
+            <h3 class="featured-title gradient-text">{{ section.settings.featured_stream_title }}</h3>
+            <p class="featured-host">主持人：{{ section.settings.featured_host }}</p>
+            <p class="featured-desc">{{ section.settings.featured_description }}</p>
+            
+            <div class="platform-links">
+              <!-- 台灣平台連結 -->
+              {% if section.settings.show_taiwan_platforms %}
+              <div class="platform-group">
+                <div class="platform-group-title">{{ section.settings.taiwan_platform_title }}</div>
+                <div class="platform-buttons">
+                  {% for block in section.blocks %}
+                    {% if block.type == 'taiwan_platform' %}
+                      <a href="{{ block.settings.url }}" 
+                         target="_blank" 
+                         rel="noopener noreferrer"
+                         class="platform-button {{ block.settings.platform_style }}"
+                         {{ block.shopify_attributes }}>
+                        {% if block.settings.show_icon %}
+                          {% case block.settings.platform_type %}
+                            {% when 'facebook' %}
+                              <svg class="platform-icon" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                              </svg>
+                            {% when 'tiktok' %}
+                              <svg class="platform-icon" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/>
+                              </svg>
+                            {% when 'shopee' %}
+                              {% if block.settings.custom_icon != blank %}
+                                {{ block.settings.custom_icon | image_url: width: 40 | image_tag:
+                                  class: 'platform-icon',
+                                  loading: 'lazy',
+                                  alt: block.settings.platform_type
+                                }}
+                              {% endif %}
+                          {% endcase %}
+                        {% endif %}
+                        <span>{{ block.settings.platform_name }}</span>
+                      </a>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              </div>
+              {% endif %}
+  
+              <!-- 新馬平台連結 -->
+              {% if section.settings.show_sgmy_platforms %}
+              <div class="platform-group">
+                <div class="platform-group-title">{{ section.settings.sgmy_platform_title }}</div>
+                <div class="platform-buttons">
+                  {% for block in section.blocks %}
+                    {% if block.type == 'sgmy_platform' %}
+                      <a href="{{ block.settings.url }}" 
+                         target="_blank" 
+                         rel="noopener noreferrer"
+                         class="platform-button {{ block.settings.platform_style }}"
+                         {{ block.shopify_attributes }}>
+                        {% if block.settings.show_icon %}
+                          {% if block.settings.custom_icon != blank %}
+                            {{ block.settings.custom_icon | image_url: width: 40 | image_tag:
+                              class: 'platform-icon',
+                              loading: 'lazy',
+                              alt: block.settings.platform_type
+                            }}
+                          {% endif %}
+                        {% endif %}
+                        <span>{{ block.settings.platform_name }}</span>
+                      </a>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </section>
+      {% endif %}
+  
+      <!-- 每週時程區塊 - 直播時程頁-每週時程表 -->
+      {% if section.settings.show_schedule %}
+      <section class="schedule-section" id="weekly-schedule">
+        <h2 class="section-title">{{ section.settings.schedule_title }}</h2>
+        
+        {% if section.settings.enable_schedule_tabs %}
+        <div class="schedule-tabs">
+          <button class="tab-button active" onclick="openTab(event, 'taiwan-schedule')">
+            {{ section.settings.taiwan_tab_title }}
+          </button>
+          <button class="tab-button" onclick="openTab(event, 'sgmy-schedule')">
+            {{ section.settings.sgmy_tab_title }}
+          </button>
+        </div>
+        {% endif %}
+  
+        <!-- 台灣時程 -->
+        <div id="taiwan-schedule" class="tab-content active">
+          <div class="schedule-grid">
+            {% for block in section.blocks %}
+              {% if block.type == 'schedule_day' and block.settings.region == 'taiwan' %}
+                <div class="day-card" {{ block.shopify_attributes }}>
+                  <h4 class="day-title">{{ block.settings.day_name }}</h4>
+                  {% if block.settings.has_streams %}
+                    <div class="time-slots">
+                      {% if block.settings.slot1_time != blank %}
+                        <div class="time-slot">
+                          <div class="slot-time">{{ block.settings.slot1_time }}</div>
+                          <div class="slot-platforms">{{ block.settings.slot1_platforms }}</div>
+                        </div>
+                      {% endif %}
+                      {% if block.settings.slot2_time != blank %}
+                        <div class="time-slot">
+                          <div class="slot-time">{{ block.settings.slot2_time }}</div>
+                          <div class="slot-platforms">{{ block.settings.slot2_platforms }}</div>
+                        </div>
+                      {% endif %}
+                      {% if block.settings.slot3_time != blank %}
+                        <div class="time-slot">
+                          <div class="slot-time">{{ block.settings.slot3_time }}</div>
+                          <div class="slot-platforms">{{ block.settings.slot3_platforms }}</div>
+                        </div>
+                      {% endif %}
+                    </div>
+                  {% else %}
+                    <div class="no-stream">{{ block.settings.no_stream_text }}</div>
+                  {% endif %}
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+  
+        <!-- 新馬時程 -->
+        <div id="sgmy-schedule" class="tab-content">
+          <div class="schedule-grid">
+            {% for block in section.blocks %}
+              {% if block.type == 'schedule_day' and block.settings.region == 'sgmy' %}
+                <div class="day-card" {{ block.shopify_attributes }}>
+                  <h4 class="day-title">{{ block.settings.day_name }}</h4>
+                  {% if block.settings.has_streams %}
+                    <div class="time-slots">
+                      {% if block.settings.slot1_time != blank %}
+                        <div class="time-slot">
+                          <div class="slot-time">{{ block.settings.slot1_time }}</div>
+                          <div class="slot-platforms">{{ block.settings.slot1_platforms }}</div>
+                        </div>
+                      {% endif %}
+                      {% if block.settings.slot2_time != blank %}
+                        <div class="time-slot">
+                          <div class="slot-time">{{ block.settings.slot2_time }}</div>
+                          <div class="slot-platforms">{{ block.settings.slot2_platforms }}</div>
+                        </div>
+                      {% endif %}
+                      {% if block.settings.slot3_time != blank %}
+                        <div class="time-slot">
+                          <div class="slot-time">{{ block.settings.slot3_time }}</div>
+                          <div class="slot-platforms">{{ block.settings.slot3_platforms }}</div>
+                        </div>
+                      {% endif %}
+                    </div>
+                  {% else %}
+                    <div class="no-stream">{{ block.settings.no_stream_text }}</div>
+                  {% endif %}
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      </section>
+      {% endif %}
+  
+      <!-- 團隊介紹區塊 - 直播時程頁-直播團隊 -->
+      {% if section.settings.show_team %}
+      <section class="team-section" id="team">
+        <h2 class="section-title">{{ section.settings.team_title }}</h2>
+
+        {%- if section.settings.show_taiwan_team -%}
+        <div class="team-region">
+          <h3 class="team-region-title gradient-text">{{ section.settings.taiwan_team_title }}</h3>
+
+          <div class="team-carousel" data-carousel="taiwan">
+            <button class="carousel-arrow prev" aria-label="上一張" data-arrow="prev">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+            <div class="carousel-viewport">
+              <div class="carousel-track">
+                {%- for block in section.blocks -%}
+                  {%- if block.type == 'team_member' and block.settings.team_region == 'taiwan' -%}
+                  <article class="carousel-card" {{ block.shopify_attributes }}>
+                    <div class="team-media-wrapper">
+                      <div class="team-media">
+                        {%- if block.settings.member_video != blank -%}
+                          <video class="team-video" loop muted playsinline
+                            {%- if block.settings.member_poster != blank -%}
+                              poster="{{ block.settings.member_poster | image_url: width: 600 }}"
+                            {%- endif -%}>
+                            <source src="{{ block.settings.member_video }}" type="video/mp4">
+                          </video>
+                        {%- elsif block.settings.member_image != blank -%}
+                          {{ block.settings.member_image | image_url: width: 800 | image_tag: loading: 'lazy', alt: block.settings.member_name }}
+                        {%- endif -%}
+                      </div>
+                    </div>
+                    <div class="team-info">
+                      <h4 class="team-name">{{ block.settings.member_name }}</h4>
+                      <p class="team-role">{{ block.settings.member_role }}</p>
+                      <p class="team-desc">{{ block.settings.member_description }}</p>
+                    </div>
+                    {%- if block.settings.q_character != blank -%}
+                      {{ block.settings.q_character | image_url: width: 200 | image_tag: class: 'q-character', loading: 'lazy', alt: block.settings.member_name | append: ' Q版' }}
+                    {%- endif -%}
+                  </article>
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+            </div>
+            <button class="carousel-arrow next" aria-label="下一張" data-arrow="next">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+            <div class="carousel-dots" aria-label="指示點"></div>
+          </div>
+        </div>
+        {%- endif -%}
+
+        {%- if section.settings.show_sgmy_team -%}
+        <div class="team-region">
+          <h3 class="team-region-title gradient-text">{{ section.settings.sgmy_team_title }}</h3>
+
+          <div class="team-carousel" data-carousel="sgmy">
+            <button class="carousel-arrow prev" aria-label="上一張" data-arrow="prev">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+            <div class="carousel-viewport">
+              <div class="carousel-track">
+                {%- for block in section.blocks -%}
+                  {%- if block.type == 'team_member' and block.settings.team_region == 'sgmy' -%}
+                  <article class="carousel-card" {{ block.shopify_attributes }}>
+                    <div class="team-media-wrapper">
+                      <div class="team-media">
+                        {%- if block.settings.member_video != blank -%}
+                          <video class="team-video" loop muted playsinline
+                            {%- if block.settings.member_poster != blank -%}
+                              poster="{{ block.settings.member_poster | image_url: width: 600 }}"
+                            {%- endif -%}>
+                            <source src="{{ block.settings.member_video }}" type="video/mp4">
+                          </video>
+                        {%- elsif block.settings.member_image != blank -%}
+                          {{ block.settings.member_image | image_url: width: 800 | image_tag: loading: 'lazy', alt: block.settings.member_name }}
+                        {%- endif -%}
+                      </div>
+                    </div>
+                    <div class="team-info">
+                      <h4 class="team-name">{{ block.settings.member_name }}</h4>
+                      <p class="team-role">{{ block.settings.member_role }}</p>
+                      <p class="team-desc">{{ block.settings.member_description }}</p>
+                    </div>
+                    {%- if block.settings.q_character != blank -%}
+                      {{ block.settings.q_character | image_url: width: 200 | image_tag: class: 'q-character', loading: 'lazy', alt: block.settings.member_name | append: ' Q版' }}
+                    {%- endif -%}
+                  </article>
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+            </div>
+            <button class="carousel-arrow next" aria-label="下一張" data-arrow="next">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+            <div class="carousel-dots" aria-label="指示點"></div>
+          </div>
+        </div>
+        {%- endif -%}
+      </section>
+      {% endif %}
+    </div>
+  
+    <script>
+      // Tab 切換功能
+      function openTab(evt, tabName) {
+        const tabcontent = document.getElementsByClassName("tab-content");
+        for (let i = 0; i < tabcontent.length; i++) {
+          tabcontent[i].classList.remove("active");
+        }
+        const tablinks = document.getElementsByClassName("tab-button");
+        for (let i = 0; i < tablinks.length; i++) {
+          tablinks[i].classList.remove("active");
+        }
+        document.getElementById(tabName).classList.add("active");
+        evt.currentTarget.classList.add("active");
+      }
+  
+      // 團隊影片互動
+      document.addEventListener('DOMContentLoaded', () => {
+        const teamVideos = document.querySelectorAll('.team-video');
+        teamVideos.forEach(video => {
+          const card = video.closest('.team-card');
+          if (card) {
+            card.addEventListener('mouseenter', () => {
+              video.play();
+            });
+            card.addEventListener('mouseleave', () => {
+              video.pause();
+            });
+          }
+        });
+      });
+  
+      // Shopify 編輯器支援
+      if (Shopify && Shopify.designMode) {
+        document.addEventListener('shopify:section:load', function(event) {
+          // 重新初始化功能
+          const section = event.target;
+          const teamVideos = section.querySelectorAll('.team-video');
+          teamVideos.forEach(video => {
+            const card = video.closest('.team-card');
+            if (card) {
+              card.addEventListener('mouseenter', () => {
+                video.play();
+              });
+              card.addEventListener('mouseleave', () => {
+                video.pause();
+              });
+            }
+          });
+        });
+      }
+    </script>
+    <!-- 參考 video_ref.html：索引類別切換 + 指示點 + 自動播放 + 觸控 -->
+    <script>
+    (function(){
+      const carousels = document.querySelectorAll('.team-carousel');
+      carousels.forEach(root => {
+        const track = root.querySelector('.carousel-track');
+        const cards = Array.from(track.children);
+        const prevBtn = root.querySelector('[data-arrow="prev"]');
+        const nextBtn = root.querySelector('[data-arrow="next"]');
+        const dotsWrap = root.querySelector('.carousel-dots');
+        if(cards.length === 0) return;
+
+        let current = 0;
+        let autoTimer = null;
+        const delay = 4000;
+        const positions = ['active','next','far-next','far-prev','prev'];
+
+        // 建立指示點
+        if(dotsWrap){
+          dotsWrap.innerHTML = cards.map((_,i)=>`<span class="carousel-dot" data-idx="${i}"></span>`).join('');
+        }
+        const dots = dotsWrap ? Array.from(dotsWrap.children) : [];
+
+        function applyClasses(){
+          cards.forEach((card, i) => {
+            card.classList.remove(...positions, 'hidden');
+            const rel = (i - current + cards.length) % cards.length;
+            switch(rel){
+              case 0: card.classList.add('active'); break;
+              case 1: card.classList.add('next'); break;
+              case 2: card.classList.add('far-next'); break;
+              case cards.length-1: card.classList.add('prev'); break;
+              case cards.length-2: card.classList.add('far-prev'); break;
+              default: card.classList.add('hidden');
+            }
+          });
+          dots.forEach((d,i)=> d.classList.toggle('active', i===current));
+        }
+
+        function go(delta){
+          current = (current + delta + cards.length) % cards.length;
+          applyClasses();
+        }
+
+        prevBtn && prevBtn.addEventListener('click', ()=> { stop(); go(-1); start(); });
+        nextBtn && nextBtn.addEventListener('click', ()=> { stop(); go(1); start(); });
+        dots.forEach((d,i)=> d.addEventListener('click', ()=> { stop(); current=i; applyClasses(); start(); }));
+
+        // 自動播放
+        function start(){ stop(); autoTimer = setInterval(()=> go(1), delay); }
+        function stop(){ if(autoTimer){ clearInterval(autoTimer); autoTimer = null; } }
+
+        // 觸控滑動
+        let sx=0, cx=0, dragging=false;
+        track.addEventListener('touchstart', e=>{ dragging=true; sx=e.touches[0].clientX; stop(); }, {passive:true});
+        track.addEventListener('touchmove', e=>{ if(!dragging) return; cx=e.touches[0].clientX; }, {passive:true});
+        track.addEventListener('touchend', ()=>{ if(!dragging) return; dragging=false; const dx=cx-sx; const th=40; if(Math.abs(dx)>th){ go(dx>0?-1:1); } start(); });
+
+        // 滑入播放 / 滑出暫停影片
+        cards.forEach(card => {
+          const v = card.querySelector('.team-video');
+          if(!v) return;
+          card.addEventListener('mouseenter', ()=> v.play());
+          card.addEventListener('mouseleave', ()=> v.pause());
+        });
+
+        applyClasses();
+        start();
+      });
+    })();
+    </script>
+  </section>
+  
+  {% schema %}
+  {
+    "name": "APGO 直播時程",
+    "tag": "section",
+    "class": "apgo-live-schedule-section",
+    "settings": [
+      {
+        "type": "header",
+        "content": "🎬 HERO 區塊設定"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_hero",
+        "label": "顯示 Hero 區塊",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_logo",
+        "label": "顯示 Logo",
+        "default": true
+      },
+      {
+        "type": "image_picker",
+        "id": "logo",
+        "label": "Logo 圖片"
+      },
+      {
+        "type": "text",
+        "id": "hero_title",
+        "label": "主標題",
+        "default": "LIVE"
+      },
+      {
+        "type": "textarea",
+        "id": "hero_subtitle",
+        "label": "副標題",
+        "default": "每週與我們的專業鍍膜團隊線上相見，解答您的所有疑惑，並展示第一手實測效果！"
+      },
+      {
+        "type": "text",
+        "id": "hero_video",
+        "label": "背景影片 URL",
+        "info": "請輸入完整的影片網址"
+      },
+      {
+        "type": "image_picker",
+        "id": "hero_image",
+        "label": "背景圖片（影片備用）"
+      },
+      {
+        "type": "image_picker",
+        "id": "hero_poster",
+        "label": "影片預覽圖"
+      },
+      {
+        "type": "text",
+        "id": "hero_button_text",
+        "label": "按鈕文字",
+        "default": "立即觀看直播"
+      },
+      {
+        "type": "text",
+        "id": "hero_button_link",
+        "label": "按鈕連結",
+        "default": "#featured-stream"
+      },
+      {
+        "type": "header",
+        "content": "🔥 精選直播設定"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_featured",
+        "label": "顯示精選直播區塊",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "featured_title",
+        "label": "區塊標題",
+        "default": "本週熱門直播"
+      },
+      {
+        "type": "text",
+        "id": "featured_stream_title",
+        "label": "直播標題",
+        "default": "鍍膜全系列實戰"
+      },
+      {
+        "type": "text",
+        "id": "featured_host",
+        "label": "主持人",
+        "default": "APGO 直播團隊"
+      },
+      {
+        "type": "textarea",
+        "id": "featured_description",
+        "label": "直播描述",
+        "default": "從基礎保養到專業級鍍膜，本週我們將帶您深入了解 APGO 全系列產品的實際應用效果。準備好您的問題，我們直播間見！"
+      },
+      {
+        "type": "text",
+        "id": "featured_video",
+        "label": "預覽影片 URL",
+        "info": "請輸入完整的影片網址"
+      },
+      {
+        "type": "image_picker",
+        "id": "featured_image",
+        "label": "預覽圖片"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_taiwan_platforms",
+        "label": "顯示台灣平台連結",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "taiwan_platform_title",
+        "label": "台灣平台標題",
+        "default": "台灣直播平台"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_sgmy_platforms",
+        "label": "顯示新馬平台連結",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "sgmy_platform_title",
+        "label": "新馬平台標題",
+        "default": "新馬直播平台"
+      },
+      {
+        "type": "header",
+        "content": "📅 每週時程設定"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_schedule",
+        "label": "顯示每週時程",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "schedule_title",
+        "label": "區塊標題",
+        "default": "每週直播時程"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_schedule_tabs",
+        "label": "啟用地區分頁",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "taiwan_tab_title",
+        "label": "台灣分頁標題",
+        "default": "台灣團隊"
+      },
+      {
+        "type": "text",
+        "id": "sgmy_tab_title",
+        "label": "新馬分頁標題",
+        "default": "新馬團隊"
+      },
+      {
+        "type": "header",
+        "content": "👥 團隊介紹設定"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_team",
+        "label": "顯示團隊介紹",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "team_title",
+        "label": "區塊標題",
+        "default": "認識我們的直播團隊"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_taiwan_team",
+        "label": "顯示台灣團隊",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "taiwan_team_title",
+        "label": "台灣團隊標題",
+        "default": "台灣團隊"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_sgmy_team",
+        "label": "顯示新馬團隊",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "sgmy_team_title",
+        "label": "新馬團隊標題",
+        "default": "新馬團隊"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "taiwan_platform",
+        "name": "台灣平台連結",
+        "settings": [
+          {
+            "type": "select",
+            "id": "platform_type",
+            "label": "平台類型",
+            "options": [
+              { "value": "facebook", "label": "Facebook" },
+              { "value": "tiktok", "label": "TikTok" },
+              { "value": "shopee", "label": "蝦皮" },
+              { "value": "custom", "label": "自訂" }
+            ],
+            "default": "facebook"
+          },
+          {
+            "type": "text",
+            "id": "platform_name",
+            "label": "平台名稱",
+            "default": "台灣物聯網apgo"
+          },
+          {
+            "type": "text",
+            "id": "url",
+            "label": "連結網址",
+            "default": "#"
+          },
+          {
+            "type": "select",
+            "id": "platform_style",
+            "label": "按鈕樣式",
+            "options": [
+              { "value": "fb-button", "label": "Facebook 樣式" },
+              { "value": "tiktok-button", "label": "TikTok 樣式" },
+              { "value": "shopee-button", "label": "蝦皮樣式" }
+            ],
+            "default": "fb-button"
+          },
+          {
+            "type": "checkbox",
+            "id": "show_icon",
+            "label": "顯示圖標",
+            "default": true
+          },
+          {
+            "type": "image_picker",
+            "id": "custom_icon",
+            "label": "自訂圖標"
+          }
+        ]
+      },
+      {
+        "type": "sgmy_platform",
+        "name": "新馬平台連結",
+        "settings": [
+          {
+            "type": "select",
+            "id": "platform_type",
+            "label": "平台類型",
+            "options": [
+              { "value": "facebook", "label": "Facebook" },
+              { "value": "tiktok", "label": "TikTok" },
+              { "value": "shopee", "label": "蝦皮" },
+              { "value": "custom", "label": "自訂" }
+            ],
+            "default": "shopee"
+          },
+          {
+            "type": "text",
+            "id": "platform_name",
+            "label": "平台名稱",
+            "default": "APGO MASTER"
+          },
+          {
+            "type": "text",
+            "id": "url",
+            "label": "連結網址",
+            "default": "#"
+          },
+          {
+            "type": "select",
+            "id": "platform_style",
+            "label": "按鈕樣式",
+            "options": [
+              { "value": "fb-button", "label": "Facebook 樣式" },
+              { "value": "tiktok-button", "label": "TikTok 樣式" },
+              { "value": "shopee-button", "label": "蝦皮樣式" }
+            ],
+            "default": "shopee-button"
+          },
+          {
+            "type": "checkbox",
+            "id": "show_icon",
+            "label": "顯示圖標",
+            "default": true
+          },
+          {
+            "type": "image_picker",
+            "id": "custom_icon",
+            "label": "自訂圖標"
+          }
+        ]
+      },
+      {
+        "type": "schedule_day",
+        "name": "時程表日期",
+        "settings": [
+          {
+            "type": "select",
+            "id": "region",
+            "label": "地區",
+            "options": [
+              { "value": "taiwan", "label": "台灣" },
+              { "value": "sgmy", "label": "新馬" }
+            ],
+            "default": "taiwan"
+          },
+          {
+            "type": "text",
+            "id": "day_name",
+            "label": "星期",
+            "default": "週一"
+          },
+          {
+            "type": "checkbox",
+            "id": "has_streams",
+            "label": "當天有直播",
+            "default": false
+          },
+          {
+            "type": "text",
+            "id": "no_stream_text",
+            "label": "無直播文字",
+            "default": "本日無直播"
+          },
+          {
+            "type": "header",
+            "content": "時段 1"
+          },
+          {
+            "type": "text",
+            "id": "slot1_time",
+            "label": "時間"
+          },
+          {
+            "type": "text",
+            "id": "slot1_platforms",
+            "label": "平台"
+          },
+          {
+            "type": "header",
+            "content": "時段 2"
+          },
+          {
+            "type": "text",
+            "id": "slot2_time",
+            "label": "時間"
+          },
+          {
+            "type": "text",
+            "id": "slot2_platforms",
+            "label": "平台"
+          },
+          {
+            "type": "header",
+            "content": "時段 3"
+          },
+          {
+            "type": "text",
+            "id": "slot3_time",
+            "label": "時間"
+          },
+          {
+            "type": "text",
+            "id": "slot3_platforms",
+            "label": "平台"
+          }
+        ]
+      },
+      {
+        "type": "team_member",
+        "name": "團隊成員",
+        "settings": [
+          {
+            "type": "select",
+            "id": "team_region",
+            "label": "所屬團隊",
+            "options": [
+              { "value": "taiwan", "label": "台灣團隊" },
+              { "value": "sgmy", "label": "新馬團隊" }
+            ],
+            "default": "taiwan"
+          },
+          {
+            "type": "text",
+            "id": "member_name",
+            "label": "成員名稱",
+            "default": "直播主名稱"
+          },
+          {
+            "type": "text",
+            "id": "member_role",
+            "label": "職稱/角色",
+            "default": "資深主播"
+          },
+          {
+            "type": "textarea",
+            "id": "member_description",
+            "label": "成員介紹",
+            "default": "專業的直播主，帶給您最精彩的內容。"
+          },
+          {
+            "type": "text",
+            "id": "member_video",
+            "label": "個人影片 URL",
+            "info": "請輸入完整的影片網址"
+          },
+          {
+            "type": "image_picker",
+            "id": "member_image",
+            "label": "個人照片"
+          },
+          {
+            "type": "image_picker",
+            "id": "member_poster",
+            "label": "影片預覽圖"
+          },
+          {
+            "type": "image_picker",
+            "id": "q_character",
+            "label": "Q版人物圖"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "APGO 直播時程",
+        "blocks": [
+          {
+            "type": "taiwan_platform",
+            "settings": {
+              "platform_type": "facebook",
+              "platform_name": "台灣物聯網apgo",
+              "url": "https://www.facebook.com/APGO1080",
+              "platform_style": "fb-button"
+            }
+          },
+          {
+            "type": "taiwan_platform",
+            "settings": {
+              "platform_type": "tiktok",
+              "platform_name": "APGO汽車美容商城",
+              "url": "https://www.tiktok.com/@apgotw/live",
+              "platform_style": "tiktok-button"
+            }
+          },
+          {
+            "type": "sgmy_platform",
+            "settings": {
+              "platform_type": "shopee",
+              "platform_name": "APGO MASTER",
+              "url": "https://my.shp.ee/iSSdptz",
+              "platform_style": "shopee-button"
+            }
+          },
+          {
+            "type": "schedule_day",
+            "settings": {
+              "region": "taiwan",
+              "day_name": "週二",
+              "has_streams": true,
+              "slot1_time": "15:00 - 17:00",
+              "slot1_platforms": "蝦皮 & TikTok",
+              "slot2_time": "18:00 - 20:00",
+              "slot2_platforms": "蝦皮 & TikTok",
+              "slot3_time": "20:00 - 22:00",
+              "slot3_platforms": "蝦皮 & TikTok"
+            }
+          },
+          {
+            "type": "team_member",
+            "settings": {
+              "team_region": "taiwan",
+              "member_name": "郭哥",
+              "member_role": "資深主播",
+              "member_description": "風趣幽默，總能用最生活化的方式講解產品。"
+            }
+          },
+          {
+            "type": "team_member",
+            "settings": {
+              "team_region": "sgmy",
+              "member_name": "JC",
+              "member_role": "魅力主播",
+              "member_description": "用流利的雙語，征服新馬地區的觀眾。"
+            }
+          }
+        ]
+      }
+    ]
+  }
+  {% endschema %}

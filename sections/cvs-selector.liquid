@@ -1,0 +1,112 @@
+{% schema %}
+{
+  "name": "超商門市選擇",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "區塊標題",
+      "default": "請選擇取貨門市"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "背景顏色",
+      "default": "#f9f9f9"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "文字顏色",
+      "default": "#000000"
+    }
+  ],
+  "presets": [
+    {
+      "name": "超商門市選擇器",
+      "category": "客製功能"
+    }
+  ]
+}
+{% endschema %}
+
+<div style="background-color: {{ section.settings.bg_color }}; color: {{ section.settings.text_color }}; padding: 1.5rem; border-radius: 8px;">
+  <h3 style="margin-bottom: 1rem;">{{ section.settings.title }}</h3>
+  <div id="cvs-selector">
+    <select id="cityDropdown" style="margin-bottom: 0.5rem;"><option>請選擇縣市</option></select><br />
+    <select id="districtDropdown" disabled style="margin-bottom: 0.5rem;"><option>請選擇區域</option></select><br />
+    <select id="roadDropdown" disabled style="margin-bottom: 0.5rem;"><option>請選擇路段</option></select><br />
+    <select id="storeDropdown" disabled><option>請選擇門市</option></select>
+    <input type="hidden" name="attributes[取貨門市]" id="selectedStoreAttr" />
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const response = await fetch("https://script.google.com/macros/s/AKfycbycG8wpMGtra9r9EB94-5ZhjOKuB2mtqIe3dh3avTyY40hnFcw9VvHqse9l4foLPQcHGQ/exec");
+    const stores = await response.json();
+
+    const citySelect = document.getElementById("cityDropdown");
+    const districtSelect = document.getElementById("districtDropdown");
+    const roadSelect = document.getElementById("roadDropdown");
+    const storeSelect = document.getElementById("storeDropdown");
+    const attrInput = document.getElementById("selectedStoreAttr");
+
+    const cities = [...new Set(stores.map(s => s["縣市"]))];
+    cities.forEach(city => {
+      citySelect.innerHTML += `<option value="${city}">${city}</option>`;
+    });
+
+    citySelect.addEventListener("change", () => {
+      const city = citySelect.value;
+      const districts = [...new Set(stores.filter(s => s["縣市"] === city).map(s => s["區域"]))];
+      districtSelect.innerHTML = `<option>請選擇區域</option>`;
+      districts.forEach(d => {
+        districtSelect.innerHTML += `<option value="${d}">${d}</option>`;
+      });
+      districtSelect.disabled = false;
+      roadSelect.innerHTML = `<option>請選擇路段</option>`;
+      roadSelect.disabled = true;
+      storeSelect.innerHTML = `<option>請選擇門市</option>`;
+      storeSelect.disabled = true;
+    });
+
+    districtSelect.addEventListener("change", () => {
+      const city = citySelect.value;
+      const district = districtSelect.value;
+      const roads = [...new Set(stores.filter(s => s["縣市"] === city && s["區域"] === district).map(s => s["路段"]))];
+      roadSelect.innerHTML = `<option>請選擇路段</option>`;
+      roads.forEach(road => {
+        roadSelect.innerHTML += `<option value="${road}">${road}</option>`;
+      });
+      roadSelect.disabled = false;
+      storeSelect.innerHTML = `<option>請選擇門市</option>`;
+      storeSelect.disabled = true;
+    });
+
+    roadSelect.addEventListener("change", () => {
+      const city = citySelect.value;
+      const district = districtSelect.value;
+      const road = roadSelect.value;
+      const filteredStores = stores.filter(s =>
+        s["縣市"] === city && s["區域"] === district && s["路段"] === road
+      );
+      storeSelect.innerHTML = `<option>請選擇門市</option>`;
+      filteredStores.forEach(store => {
+        const label = `【${store["店號"]}】${store["店名"]} - ${store["地址(完整地址)"]}`;
+        storeSelect.innerHTML += `<option value="${label}">${label}</option>`;
+      });
+      storeSelect.disabled = false;
+    });
+
+    storeSelect.addEventListener("change", () => {
+      attrInput.value = storeSelect.value;
+    });
+
+  } catch (error) {
+    console.error("❌ 資料載入失敗", error);
+  }
+});
+</script>

@@ -1,0 +1,1663 @@
+{% comment %}
+  超商門市選擇器 - 支援 7-ELEVEN 與全家便利商店
+  整合 Ako Commerce 插件，提供完整的超商取貨功能
+{% endcomment %}
+
+{% schema %}
+{
+  "name": "配送方式選擇",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "區塊標題",
+      "default": "選擇配送方式"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "副標題",
+      "default": "請選擇您偏好的配送方式"
+    }
+  ],
+  "presets": [
+    {
+      "name": "配送選擇",
+      "category": "客製功能"
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  /* 隱藏 AKO 的 UI 元素 */
+  .ako-cvs-section,
+  .ako-invoice-section,
+  .akocommerce-logistics-buttons,
+  .akocommerce-description {
+    display: none !important;
+  }
+
+  /* 顏色定義 - 高級黑橘色配色 */
+  :root {
+    --primary-orange: #f08418;
+    --secondary-orange: #ff6b35;
+    --gradient-orange: linear-gradient(135deg, #ff6b35, #f7931e);
+    --dark-bg: #000000;
+    --dark-gray: #1a1a1a;
+    --card-bg: rgba(255, 255, 255, 0.03);
+    --border-color: rgba(255, 255, 255, 0.1);
+    --text-white: #ffffff;
+    --text-gray: #cccccc;
+    --text-light-gray: #999999;
+  }
+
+  #shopify-section-{{ section.id }} {
+    background: var(--dark-bg);
+    padding: 60px 0;
+    position: relative;
+  }
+
+  /* 背景裝飾效果 */
+  #shopify-section-{{ section.id }}::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--primary-orange), transparent);
+    opacity: 0.3;
+  }
+
+  .cvs-selector-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* 標題區域 */
+  .cvs-selector-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .cvs-selector-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--primary-orange);
+    margin-bottom: 0.5rem;
+    position: relative;
+    display: inline-block;
+  }
+
+  .cvs-selector-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: var(--gradient-orange);
+    border-radius: 2px;
+  }
+
+  .cvs-selector-subtitle {
+    font-size: 1rem;
+    color: var(--text-gray);
+    margin-top: 1.5rem;
+  }
+
+  /* 配送選項 */
+  .shipping-options {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin: 3rem 0;
+  }
+
+  .shipping-option {
+    display: inline-flex;
+    align-items: center;
+    padding: 12px 24px;
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .shipping-option::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--gradient-orange);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .shipping-option:hover {
+    border-color: var(--primary-orange);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(240, 132, 24, 0.1);
+  }
+
+  .shipping-option.selected {
+    background: var(--gradient-orange);
+    border-color: transparent;
+    color: var(--text-white);
+    box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3);
+  }
+
+  .shipping-option input[type="radio"] {
+    width: 20px;
+    height: 20px;
+    margin-right: 12px;
+    accent-color: var(--primary-orange);
+    cursor: pointer;
+  }
+
+  .shipping-option-label {
+    font-size: 1.1rem;
+    font-weight: 600;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* 選中資訊顯示 */
+  .selected-info {
+    background: linear-gradient(135deg, rgba(240, 132, 24, 0.1), rgba(255, 107, 53, 0.05));
+    border: 2px solid var(--primary-orange);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 2rem auto;
+    max-width: 600px;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.4s ease;
+    display: none;
+  }
+
+  .selected-info.show {
+    opacity: 1;
+    transform: translateY(0);
+    display: block;
+  }
+
+  .selected-info strong {
+    color: var(--primary-orange);
+    font-size: 1rem;
+    display: block;
+    margin-bottom: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .selected-info .store-details {
+    color: var(--text-white);
+    font-size: 1.1rem;
+    line-height: 1.8;
+  }
+
+  .selected-info .store-name {
+    font-weight: 700;
+    color: var(--primary-orange);
+    font-size: 1.2rem;
+  }
+
+  .selected-info .store-number {
+    color: var(--text-gray);
+    font-size: 0.9rem;
+    margin: 0 0.5rem;
+  }
+
+  .selected-info .store-address {
+    display: block;
+    margin-top: 0.5rem;
+    color: var(--text-gray);
+    font-size: 0.95rem;
+  }
+
+  /* Modal Overlay */
+  .cvs-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(10px);
+    z-index: 9999;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .cvs-modal-overlay.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Modal Content */
+  .cvs-modal {
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
+    border-radius: 16px;
+    box-shadow: 
+      0 25px 50px rgba(0, 0, 0, 0.5),
+      0 0 0 1px rgba(240, 132, 24, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    overflow: hidden;
+    transform: translateY(30px);
+    opacity: 0;
+    transition: all 0.4s ease;
+  }
+
+  .cvs-modal-overlay.active .cvs-modal {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  /* Modal Header */
+  .cvs-modal-header {
+    background: linear-gradient(135deg, #2a1810, #1a1a1a);
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .cvs-modal-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--primary-orange);
+    margin: 0;
+  }
+
+  .cvs-modal-close {
+    width: 40px;
+    height: 40px;
+    border: 2px solid var(--border-color);
+    background: transparent;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-gray);
+    font-size: 1.5rem;
+  }
+
+  .cvs-modal-close:hover {
+    border-color: var(--primary-orange);
+    color: var(--primary-orange);
+    transform: rotate(90deg);
+    background: rgba(240, 132, 24, 0.1);
+  }
+
+  /* Modal Body */
+  .cvs-modal-body {
+    padding: 1.5rem;
+    overflow-y: auto;
+    max-height: calc(80vh - 80px);
+  }
+
+  /* 超商品牌選擇 */
+  .cvs-brand-selector {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+    justify-content: center;
+  }
+
+  .cvs-brand-btn {
+    flex: 1;
+    max-width: 200px;
+    padding: 1.2rem;
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-white);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cvs-brand-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: var(--gradient-orange);
+    opacity: 0.2;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.4s ease;
+  }
+
+  .cvs-brand-btn:hover {
+    border-color: var(--primary-orange);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(240, 132, 24, 0.2);
+  }
+
+  .cvs-brand-btn:hover::before {
+    width: 200%;
+    height: 200%;
+  }
+
+  .cvs-brand-btn.active {
+    background: var(--gradient-orange);
+    border-color: transparent;
+    color: var(--text-white);
+    box-shadow: 
+      0 12px 35px rgba(255, 107, 53, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+
+  /* 店家選擇器 */
+  .cvs-store-selector {
+    display: none;
+  }
+
+  .cvs-store-selector.show {
+    display: block;
+    animation: fadeIn 0.4s ease;
+  }
+
+  /* 選擇器群組 */
+  .cvs-select-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .cvs-select-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--primary-orange);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .cvs-select {
+    width: 100%;
+    padding: 12px 16px;
+    padding-right: 40px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2.5px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-white);
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%23f08418' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    background-size: 12px;
+  }
+
+  .cvs-select:focus {
+    outline: none;
+    border-color: var(--primary-orange);
+    border-width: 2.5px;
+    background-color: rgba(240, 132, 24, 0.05);
+    box-shadow: 0 0 0 3px rgba(240, 132, 24, 0.2);
+  }
+
+  .cvs-select:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: rgba(255, 255, 255, 0.02);
+  }
+
+  .cvs-select option {
+    background: var(--dark-gray);
+    color: var(--text-white);
+    padding: 12px;
+  }
+
+  /* 門市列表網格 */
+  .cvs-stores-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-top: 1.5rem;
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+  }
+
+  /* 自訂滾動條 */
+  .cvs-stores-grid::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .cvs-stores-grid::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+  }
+
+  .cvs-stores-grid::-webkit-scrollbar-thumb {
+    background: var(--primary-orange);
+    border-radius: 4px;
+  }
+
+  /* 門市卡片 */
+  .store-card {
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .store-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--gradient-orange);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .store-card:hover {
+    border-color: var(--primary-orange);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(240, 132, 24, 0.2);
+  }
+
+  .store-card.selected {
+    background: var(--gradient-orange);
+    border-color: transparent;
+    color: var(--text-white);
+    box-shadow: 
+      0 10px 30px rgba(255, 107, 53, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  .store-number {
+    font-size: 0.85rem;
+    color: var(--text-light-gray);
+    margin-bottom: 0.3rem;
+    font-weight: 500;
+  }
+
+  .store-card.selected .store-number {
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .store-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-white);
+    margin-bottom: 0.75rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .store-address {
+    font-size: 0.9rem;
+    color: var(--text-gray);
+    line-height: 1.4;
+    position: relative;
+    z-index: 1;
+  }
+
+  .store-card.selected .store-address {
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  /* 確認按鈕 */
+  .cvs-confirm-btn {
+    display: block;
+    width: 100%;
+    max-width: 300px;
+    margin: 2rem auto 0;
+    padding: 16px 32px;
+    background: var(--gradient-orange);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 
+      0 10px 30px rgba(255, 107, 53, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    position: relative;
+  }
+
+  .cvs-confirm-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(240, 132, 24, 0.4);
+  }
+
+  .cvs-confirm-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* Loading 狀態 */
+  .cvs-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    color: var(--text-gray);
+  }
+
+  .cvs-loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid var(--border-color);
+    border-top-color: var(--primary-orange);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  .cvs-loading p {
+    margin-top: 1rem;
+    font-size: 1.1rem;
+  }
+
+  /* 動畫效果 */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(30px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* 響應式設計 */
+  @media (max-width: 768px) {
+    .cvs-selector-title {
+      font-size: 2rem;
+    }
+
+    .shipping-options {
+      gap: 1rem;
+    }
+
+    .shipping-option {
+      padding: 10px 20px;
+      font-size: 0.95rem;
+    }
+
+    .cvs-modal {
+      width: 95%;
+      max-width: 500px;
+      max-height: 85vh;
+      border-radius: 12px;
+    }
+
+    .cvs-modal-header {
+      padding: 1.2rem 1.5rem;
+    }
+
+    .cvs-modal-body {
+      padding: 1.2rem 1.5rem;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .cvs-brand-selector {
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .cvs-brand-btn {
+      padding: 1rem;
+      font-size: 1rem;
+      border-radius: 10px;
+    }
+
+    /* 手機版選擇器樣式 */
+    .cvs-select {
+      padding: 16px 20px;
+      padding-right: 50px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      border-width: 3px;
+      border-radius: 12px;
+    }
+
+    .cvs-select:focus {
+      border-width: 3px;
+    }
+
+    /* 門市卡片手機版優化 */
+    .cvs-stores-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      max-height: none;
+      background: transparent;
+      border: none;
+      padding: 0;
+      margin-top: 1.5rem;
+    }
+
+    .store-card {
+      padding: 1.2rem;
+      border-radius: 10px;
+    }
+
+    .store-number {
+      font-size: 0.8rem;
+    }
+
+    .store-name {
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .store-address {
+      font-size: 0.85rem;
+      line-height: 1.3;
+    }
+
+    /* 確認按鈕手機版 - 保持在內容流中 */
+    .cvs-confirm-btn {
+      margin-top: 1.5rem;
+      border-radius: 10px;
+    }
+
+    /* Loading 狀態手機版 */
+    .cvs-loading {
+      padding: 4rem 2rem;
+    }
+
+    .cvs-loading-spinner {
+      width: 60px;
+      height: 60px;
+      border-width: 4px;
+    }
+
+    .cvs-loading p {
+      font-size: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    /* 選中資訊手機版 */
+    .selected-info {
+      margin: 1.5rem 0;
+      padding: 16px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+    }
+
+    .selected-info strong {
+      font-size: 0.8rem;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .selected-info .store-details {
+      font-size: 0.95rem;
+    }
+    
+    .selected-info .store-name {
+      font-size: 1.05rem;
+    }
+    
+    .selected-info .store-number {
+      font-size: 0.85rem;
+    }
+    
+    .selected-info .store-address {
+      font-size: 0.9rem;
+      margin-top: 0.4rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .cvs-selector-title {
+      font-size: 1.75rem;
+    }
+
+    .shipping-option {
+      padding: 8px 16px;
+      font-size: 0.9rem;
+    }
+
+    .shipping-option input[type="radio"] {
+      width: 16px;
+      height: 16px;
+      margin-right: 8px;
+    }
+
+    .cvs-modal-header {
+      padding: 1rem 1.2rem;
+    }
+
+    .cvs-modal-title {
+      font-size: 1.3rem;
+    }
+
+    .cvs-modal-close {
+      width: 36px;
+      height: 36px;
+      font-size: 1.3rem;
+    }
+
+    .cvs-modal-body {
+      padding: 1.2rem;
+    }
+
+    .cvs-brand-btn {
+      padding: 0.9rem;
+      font-size: 0.95rem;
+    }
+  }
+
+  /* iOS 防止縮放 */
+  @media screen and (-webkit-min-device-pixel-ratio: 0) {
+    select,
+    textarea,
+    input {
+      font-size: 16px !important;
+    }
+  }
+</style>
+
+<div class="cvs-selector-container">
+  <div class="cvs-selector-header">
+    <h2 class="cvs-selector-title">{{ section.settings.title }}</h2>
+    <p class="cvs-selector-subtitle">{{ section.settings.subtitle }}</p>
+  </div>
+
+  <form id="shipping-form-{{ section.id }}">
+    <div class="shipping-options">
+      <label class="shipping-option" for="home-delivery-{{ section.id }}">
+        <input type="radio" id="home-delivery-{{ section.id }}" name="shipping_method" value="home_delivery">
+        <span class="shipping-option-label">宅配到府</span>
+      </label>
+
+      <label class="shipping-option" for="cvs-pickup-{{ section.id }}">
+        <input type="radio" id="cvs-pickup-{{ section.id }}" name="shipping_method" value="cvs_pickup">
+        <span class="shipping-option-label">超商取貨</span>
+      </label>
+    </div>
+
+    <div class="selected-info" id="selected-info-{{ section.id }}">
+      <strong id="selected-title-{{ section.id }}">已選擇配送方式</strong>
+      <div class="store-details" id="selected-text-{{ section.id }}"></div>
+    </div>
+
+    <input type="hidden" name="attributes[shipping_method]" id="shipping-method-attr-{{ section.id }}">
+    <input type="hidden" name="attributes[pickup_store]" id="pickup-store-attr-{{ section.id }}">
+  </form>
+</div>
+
+<!-- CVS Modal -->
+<div class="cvs-modal-overlay" id="cvs-modal-{{ section.id }}">
+  <div class="cvs-modal">
+    <div class="cvs-modal-header">
+      <h3 class="cvs-modal-title">選擇取貨門市</h3>
+      <button class="cvs-modal-close" onclick="closeCVSModal('{{ section.id }}')">&times;</button>
+    </div>
+    <div class="cvs-modal-body">
+      <!-- 超商品牌選擇 -->
+      <div class="cvs-brand-selector">
+        <button class="cvs-brand-btn" onclick="selectCVSBrand('{{ section.id }}', '711')">
+          7-ELEVEN
+        </button>
+        <button class="cvs-brand-btn" onclick="selectCVSBrand('{{ section.id }}', 'family')">
+          全家便利商店
+        </button>
+      </div>
+
+      <!-- 門市選擇器 -->
+      <div class="cvs-store-selector" id="store-selector-{{ section.id }}">
+        <div id="selectors-container-{{ section.id }}" style="display: none;">
+          <!-- 縣市選擇 -->
+          <div class="cvs-select-group">
+            <label class="cvs-select-label">選擇縣市</label>
+            <select class="cvs-select" id="city-select-{{ section.id }}">
+              <option value="">請選擇縣市</option>
+            </select>
+          </div>
+
+          <!-- 區域選擇 -->
+          <div class="cvs-select-group">
+            <label class="cvs-select-label" id="district-label-{{ section.id }}">選擇區域</label>
+            <select class="cvs-select" id="district-select-{{ section.id }}" disabled>
+              <option value="">請先選擇縣市</option>
+            </select>
+          </div>
+
+          <!-- 路段選擇 -->
+          <div class="cvs-select-group">
+            <label class="cvs-select-label" id="road-label-{{ section.id }}">選擇路段</label>
+            <select class="cvs-select" id="road-select-{{ section.id }}" disabled>
+              <option value="">請先選擇區域</option>
+            </select>
+          </div>
+
+          <!-- 門市列表 -->
+          <div class="cvs-stores-grid" id="stores-grid-{{ section.id }}" style="display: none;">
+            <!-- 門市卡片將動態插入這裡 -->
+          </div>
+
+          <!-- 確認按鈕 -->
+          <button class="cvs-confirm-btn" id="confirm-btn-{{ section.id }}" onclick="confirmStore('{{ section.id }}')" disabled style="display: none;">
+            確認選擇門市
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const sectionId = '{{ section.id }}';
+  
+  // 全域函數：從地址中解析城市名稱
+  function getCityFromAddress(address) {
+    const cities = ['台北市', '新北市', '基隆市', '宜蘭縣', '桃園市', '新竹市', '新竹縣', 
+                    '苗栗縣', '台中市', '彰化縣', '南投縣', '雲林縣', '嘉義市', '嘉義縣', 
+                    '台南市', '高雄市', '屏東縣', '花蓮縣', '台東縣', '澎湖縣', '金門縣', '連江縣'];
+    
+    for (let city of cities) {
+      if (address && address.includes(city)) {
+        return city;
+      }
+    }
+    return '';
+  }
+  
+  let storeData711 = [];
+  let storeDataFamily = [];
+  let currentStoreData = [];
+  let selectedBrand = '';
+  let selectedStore = null;
+  let isLoading711 = false;
+  let isLoadingFamily = false;
+  let dataLoaded711 = false;
+  let dataLoadedFamily = false;
+  
+  // API URLs
+  const API_URLS = {
+    '711': 'https://script.google.com/macros/s/AKfycbycG8wpMGtra9r9EB94-5ZhjOKuB2mtqIe3dh3avTyY40hnFcw9VvHqse9l4foLPQcHGQ/exec',
+    'family': 'https://script.google.com/macros/s/AKfycbwaVFTQ8vwMPKUFVbNjzskeTaCUFZsaAGIR3V-w81MVrfW0WJA5uRUubsx-PIyCr0JA/exec'
+  };
+  
+  // 初始化事件監聽器
+  document.addEventListener('DOMContentLoaded', function() {
+    // 預載入門市資料
+    preloadStoreData();
+    
+    const shippingOptions = document.querySelectorAll(`#shipping-form-${sectionId} input[name="shipping_method"]`);
+    
+    shippingOptions.forEach(option => {
+      option.addEventListener('change', function() {
+        handleShippingMethodChange(sectionId, this.value);
+      });
+    });
+
+    // 選擇器事件
+    const citySelect = document.getElementById(`city-select-${sectionId}`);
+    const districtSelect = document.getElementById(`district-select-${sectionId}`);
+    const roadSelect = document.getElementById(`road-select-${sectionId}`);
+
+    if (citySelect) {
+      citySelect.addEventListener('change', function() {
+        handleCityChange(sectionId);
+      });
+    }
+
+    if (districtSelect) {
+      districtSelect.addEventListener('change', function() {
+        handleDistrictChange(sectionId);
+      });
+    }
+
+    if (roadSelect) {
+      roadSelect.addEventListener('change', function() {
+        handleRoadChange(sectionId);
+      });
+    }
+
+    // 檢查 localStorage 中是否有已選擇的超商資訊
+    const savedCVSInfo = localStorage.getItem('selected_cvs_info');
+    
+    if (savedCVSInfo) {
+      const cvsInfo = JSON.parse(savedCVSInfo);
+      
+      // 顯示已選擇的資訊
+      const selectedInfo = document.getElementById(`selected-info-${sectionId}`);
+      const selectedTitle = document.getElementById(`selected-title-${sectionId}`);
+      const selectedText = document.getElementById(`selected-text-${sectionId}`);
+      const cvsPickupRadio = document.getElementById(`cvs-pickup-${sectionId}`);
+      
+      if (selectedInfo && selectedTitle && selectedText && cvsPickupRadio) {
+        const brandName = cvsInfo.logisticsSubType === 'UNIMART' ? '7-ELEVEN' : '全家便利商店';
+        selectedTitle.textContent = '已選擇取貨地點';
+        selectedText.innerHTML = `
+          <span class="store-name">${brandName} ${cvsInfo.cvsStoreName}</span>
+          <span class="store-number">店號：${cvsInfo.cvsStoreId}</span>
+          <span class="store-address">${cvsInfo.cvsAddress}</span>
+        `;
+        selectedInfo.classList.add('show');
+        cvsPickupRadio.checked = true;
+        document.querySelector(`#shipping-form-${sectionId} .shipping-option:has(#cvs-pickup-${sectionId})`).classList.add('selected');
+      }
+    }
+
+    // 監聽結帳按鈕點擊
+    attachCheckoutListener();
+    observeCheckoutButtons();
+  });
+
+  // 預載入門市資料
+  function preloadStoreData() {
+    if (!isLoading711 && !dataLoaded711) {
+      isLoading711 = true;
+      fetch(API_URLS['711'])
+        .then(response => response.json())
+        .then(data => {
+          storeData711 = data;
+          dataLoaded711 = true;
+          isLoading711 = false;
+        })
+        .catch(error => {
+          console.error('載入7-11門市資料失敗:', error);
+          isLoading711 = false;
+        });
+    }
+    
+    if (!isLoadingFamily && !dataLoadedFamily) {
+      isLoadingFamily = true;
+      fetch(API_URLS['family'])
+        .then(response => response.json())
+        .then(data => {
+          storeDataFamily = data;
+          dataLoadedFamily = true;
+          isLoadingFamily = false;
+        })
+        .catch(error => {
+          console.error('載入全家門市資料失敗:', error);
+          isLoadingFamily = false;
+        });
+    }
+  }
+
+  // 處理配送方式變更
+  // 修正後的代碼
+  window.handleShippingMethodChange = function(sectionId, value) {
+      const selectedInfo = document.getElementById(`selected-info-${sectionId}`);
+      const selectedTitle = document.getElementById(`selected-title-${sectionId}`);
+      const selectedText = document.getElementById(`selected-text-${sectionId}`);
+      
+      // 更新選中狀態
+      document.querySelectorAll(`#shipping-form-${sectionId} .shipping-option`).forEach(opt => {
+        opt.classList.remove('selected');
+      });
+      
+      const selectedOption = document.querySelector(`#shipping-form-${sectionId} input[name="shipping_method"]:checked`);
+      if (selectedOption) {
+        selectedOption.closest('.shipping-option').classList.add('selected');
+      }
+      
+      if (value === 'home_delivery') {
+        selectedTitle.textContent = '已選擇配送方式';
+        selectedText.innerHTML = '宅配到府';
+        selectedInfo.classList.add('show');
+        
+        // 更新購物車屬性
+        updateCart({
+          'attributes[運送方法(ShippingMethod)]': '宅配',
+          'attributes[包裹尺寸(Specification)]': '',
+          'attributes[包裹溫層(Temperature)]': '',
+          'attributes[超商類型(CvsCompany)]': '',
+          'attributes[超商門市(CvsStoreName)]': '',
+          'attributes[門市代號(CvsStoreId)]': '',
+          'attributes[物流子代碼(LogisticsSubType)]': '',
+          'attributes[門市地址(CvsAddress)]': '',
+          'attributes[門市城市(CvsCity)]': '',
+          'attributes[門市郵遞區號(CvsZip)]': '',
+          'attributes[超取串接類型(CvsVendor)]': ''
+        });
+        
+        // 清除超商相關資訊
+        localStorage.removeItem('selected_cvs_info');
+        sessionStorage.removeItem('selected_cvs_info');
+        
+      } else if (value === 'cvs_pickup') {
+        const savedCVSInfo = localStorage.getItem('selected_cvs_info');
+        
+        if (savedCVSInfo) {
+          const cvsInfo = JSON.parse(savedCVSInfo);
+          const brandName = cvsInfo.logisticsSubType === 'UNIMART' ? '7-ELEVEN' : '全家便利商店';
+          selectedTitle.textContent = '已選擇取貨地點';
+          selectedText.innerHTML = `
+            ${brandName} ${cvsInfo.cvsStoreName}
+            店號：${cvsInfo.cvsStoreId}
+            ${cvsInfo.cvsAddress}
+          `;
+          selectedInfo.classList.add('show');
+        } else {
+          // 沒有已儲存的超商資訊，開啟選擇視窗
+          selectedInfo.classList.remove('show');
+          openCVSModal(sectionId);
+        }
+      }
+  };
+  // 開啟超商選擇 Modal
+  window.openCVSModal = function(sectionId) {
+    const modal = document.getElementById(`cvs-modal-${sectionId}`);
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  };
+
+  // 關閉 Modal
+  window.closeCVSModal = function(sectionId) {
+    const modal = document.getElementById(`cvs-modal-${sectionId}`);
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  };
+
+  // 選擇超商品牌
+  window.selectCVSBrand = function(sectionId, brand) {
+    selectedBrand = brand;
+    
+    // 更新品牌按鈕狀態
+    document.querySelectorAll(`#cvs-modal-${sectionId} .cvs-brand-btn`).forEach(btn => {
+      btn.classList.remove('active');
+    });
+    event.target.classList.add('active');
+    
+    // 顯示選擇器
+    const storeSelector = document.getElementById(`store-selector-${sectionId}`);
+    storeSelector.classList.add('show');
+    
+    // 載入資料
+    if (brand === '711') {
+      if (dataLoaded711) {
+        currentStoreData = storeData711;
+        showSelectors();
+      } else {
+        showLoading();
+        const checkInterval = setInterval(() => {
+          if (dataLoaded711) {
+            clearInterval(checkInterval);
+            currentStoreData = storeData711;
+            hideLoading();
+            showSelectors();
+          }
+        }, 100);
+      }
+    } else if (brand === 'family') {
+      if (dataLoadedFamily) {
+        currentStoreData = storeDataFamily;
+        showSelectors();
+      } else {
+        showLoading();
+        const checkInterval = setInterval(() => {
+          if (dataLoadedFamily) {
+            clearInterval(checkInterval);
+            currentStoreData = storeDataFamily;
+            hideLoading();
+            showSelectors();
+          }
+        }, 100);
+      }
+    }
+  };
+
+  // 顯示載入中
+  function showLoading() {
+    const container = document.getElementById(`selectors-container-${sectionId}`);
+    container.innerHTML = `
+      <div class="cvs-loading">
+        <div class="cvs-loading-spinner"></div>
+        <p>載入門市資料中...</p>
+      </div>
+    `;
+    container.style.display = 'block';
+  }
+
+  // 隱藏載入中
+  function hideLoading() {
+    const container = document.getElementById(`selectors-container-${sectionId}`);
+    container.innerHTML = `
+      <!-- 縣市選擇 -->
+      <div class="cvs-select-group">
+        <label class="cvs-select-label">選擇縣市</label>
+        <select class="cvs-select" id="city-select-${sectionId}">
+          <option value="">請選擇縣市</option>
+        </select>
+      </div>
+
+      <!-- 區域選擇 -->
+      <div class="cvs-select-group">
+        <label class="cvs-select-label" id="district-label-${sectionId}">選擇區域</label>
+        <select class="cvs-select" id="district-select-${sectionId}" disabled>
+          <option value="">請先選擇縣市</option>
+        </select>
+      </div>
+
+      <!-- 路段選擇 -->
+      <div class="cvs-select-group">
+        <label class="cvs-select-label" id="road-label-${sectionId}">選擇路段</label>
+        <select class="cvs-select" id="road-select-${sectionId}" disabled>
+          <option value="">請先選擇區域</option>
+        </select>
+      </div>
+
+      <!-- 門市列表 -->
+      <div class="cvs-stores-grid" id="stores-grid-${sectionId}" style="display: none;">
+        <!-- 門市卡片將動態插入這裡 -->
+      </div>
+
+      <!-- 確認按鈕 -->
+      <button class="cvs-confirm-btn" id="confirm-btn-${sectionId}" onclick="confirmStore('${sectionId}')" disabled style="display: none;">
+        確認選擇門市
+      </button>
+    `;
+    
+    // 重新綁定事件
+    document.getElementById(`city-select-${sectionId}`).addEventListener('change', function() {
+      handleCityChange(sectionId);
+    });
+    document.getElementById(`district-select-${sectionId}`).addEventListener('change', function() {
+      handleDistrictChange(sectionId);
+    });
+    document.getElementById(`road-select-${sectionId}`).addEventListener('change', function() {
+      handleRoadChange(sectionId);
+    });
+  }
+
+  // 顯示選擇器
+  function showSelectors() {
+    const container = document.getElementById(`selectors-container-${sectionId}`);
+    container.style.display = 'block';
+    
+    // 填充縣市選項
+    const citySelect = document.getElementById(`city-select-${sectionId}`);
+    const cities = [...new Set(currentStoreData.map(store => store['縣市']))].sort();
+    
+    citySelect.innerHTML = '<option value="">請選擇縣市</option>';
+    cities.forEach(city => {
+      if (city) {
+        citySelect.innerHTML += `<option value="${city}">${city}</option>`;
+      }
+    });
+  }
+
+  // 處理縣市選擇
+  window.handleCityChange = function(sectionId) {
+    const citySelect = document.getElementById(`city-select-${sectionId}`);
+    const districtSelect = document.getElementById(`district-select-${sectionId}`);
+    const roadSelect = document.getElementById(`road-select-${sectionId}`);
+    const storesGrid = document.getElementById(`stores-grid-${sectionId}`);
+    const confirmBtn = document.getElementById(`confirm-btn-${sectionId}`);
+    
+    const selectedCity = citySelect.value;
+    
+    // 重置下級選項
+    districtSelect.innerHTML = '<option value="">請選擇區域</option>';
+    roadSelect.innerHTML = '<option value="">請先選擇區域</option>';
+    roadSelect.disabled = true;
+    storesGrid.style.display = 'none';
+    confirmBtn.style.display = 'none';
+    confirmBtn.disabled = true;
+    
+    if (selectedCity) {
+      const districts = [...new Set(
+        currentStoreData
+          .filter(store => store['縣市'] === selectedCity)
+          .map(store => store['區域'])
+      )].sort();
+      
+      districtSelect.disabled = false;
+      districts.forEach(district => {
+        if (district) {
+          districtSelect.innerHTML += `<option value="${district}">${district}</option>`;
+        }
+      });
+    } else {
+      districtSelect.disabled = true;
+    }
+  };
+
+  // 處理區域選擇
+  window.handleDistrictChange = function(sectionId) {
+    const citySelect = document.getElementById(`city-select-${sectionId}`);
+    const districtSelect = document.getElementById(`district-select-${sectionId}`);
+    const roadSelect = document.getElementById(`road-select-${sectionId}`);
+    const storesGrid = document.getElementById(`stores-grid-${sectionId}`);
+    const confirmBtn = document.getElementById(`confirm-btn-${sectionId}`);
+    
+    const selectedCity = citySelect.value;
+    const selectedDistrict = districtSelect.value;
+    
+    // 重置下級選項
+    roadSelect.innerHTML = '<option value="">請選擇路段</option>';
+    storesGrid.style.display = 'none';
+    confirmBtn.style.display = 'none';
+    confirmBtn.disabled = true;
+    
+    if (selectedDistrict) {
+      const roads = [...new Set(
+        currentStoreData
+          .filter(store => 
+            store['縣市'] === selectedCity && 
+            store['區域'] === selectedDistrict
+          )
+          .map(store => store['路段'])
+      )].sort();
+      
+      roadSelect.disabled = false;
+      roads.forEach(road => {
+        if (road) {
+          roadSelect.innerHTML += `<option value="${road}">${road}</option>`;
+        }
+      });
+    } else {
+      roadSelect.disabled = true;
+    }
+  };
+
+  // 處理路段選擇
+  window.handleRoadChange = function(sectionId) {
+    const citySelect = document.getElementById(`city-select-${sectionId}`);
+    const districtSelect = document.getElementById(`district-select-${sectionId}`);
+    const roadSelect = document.getElementById(`road-select-${sectionId}`);
+    const storesGrid = document.getElementById(`stores-grid-${sectionId}`);
+    const confirmBtn = document.getElementById(`confirm-btn-${sectionId}`);
+    
+    const selectedCity = citySelect.value;
+    const selectedDistrict = districtSelect.value;
+    const selectedRoad = roadSelect.value;
+    
+    if (selectedRoad) {
+      const stores = currentStoreData.filter(store => 
+        store['縣市'] === selectedCity && 
+        store['區域'] === selectedDistrict && 
+        store['路段'] === selectedRoad
+      );
+      
+      // 顯示門市列表
+      storesGrid.innerHTML = '';
+      stores.forEach((store, index) => {
+        const storeCard = document.createElement('div');
+        storeCard.className = 'store-card';
+        storeCard.innerHTML = `
+          <div class="store-number">店號：${store['店號'] || '無店號'}</div>
+          <div class="store-name">${store['店名'] || '未命名門市'}</div>
+          <div class="store-address">${store['地址(完整地址)'] || '地址不詳'}</div>
+        `;
+        
+        storeCard.addEventListener('click', function() {
+          selectStore(store, storeCard);
+        });
+        
+        storesGrid.appendChild(storeCard);
+      });
+      
+      storesGrid.style.display = 'grid';
+    } else {
+      storesGrid.style.display = 'none';
+      confirmBtn.style.display = 'none';
+      confirmBtn.disabled = true;
+    }
+  };
+
+  // 選擇門市
+  function selectStore(store, cardElement) {
+    // 移除其他選中狀態
+    document.querySelectorAll(`#stores-grid-${sectionId} .store-card`).forEach(card => {
+      card.classList.remove('selected');
+    });
+    
+    // 設定選中狀態
+    cardElement.classList.add('selected');
+    selectedStore = store;
+    
+    // 顯示確認按鈕
+    const confirmBtn = document.getElementById(`confirm-btn-${sectionId}`);
+    confirmBtn.style.display = 'block';
+    confirmBtn.disabled = false;
+  }
+
+  // 確認選擇門市
+  window.confirmStore = function(sectionId) {
+    if (!selectedStore) return;
+    
+    const brandCode = selectedBrand === '711' ? 'UNIMART' : 'FAMI';
+    const brandName = selectedBrand === '711' ? '7-ELEVEN' : '全家便利商店';
+    const cvsCompany = selectedBrand === '711' ? '7-ELEVEN' : '全家';
+    const cvsVendor = 'ecpay';
+    
+    // 準備儲存的資料
+    const cvsInfo = {
+      logisticsSubType: brandCode,
+      cvsStoreId: selectedStore['店號'] || '',
+      cvsStoreName: selectedStore['店名'] || '',
+      cvsAddress: selectedStore['地址(完整地址)'] || '',
+      cvsZipCode: selectedStore['郵遞區號'] || '',
+      servicetype: '1',
+      outside: '0'
+    };
+    
+    // 儲存到 localStorage 和 sessionStorage
+    localStorage.setItem('selected_cvs_info', JSON.stringify(cvsInfo));
+    sessionStorage.setItem('selected_cvs_info', JSON.stringify(cvsInfo));
+    
+    // 更新顯示
+    const selectedInfo = document.getElementById(`selected-info-${sectionId}`);
+    const selectedTitle = document.getElementById(`selected-title-${sectionId}`);
+    const selectedText = document.getElementById(`selected-text-${sectionId}`);
+    
+    selectedTitle.textContent = '已選擇取貨地點';
+    selectedText.innerHTML = `
+      <span class="store-name">${brandName} ${cvsInfo.cvsStoreName}</span>
+      <span class="store-number">店號：${cvsInfo.cvsStoreId}</span>
+      <span class="store-address">${cvsInfo.cvsAddress}</span>
+    `;
+    selectedInfo.classList.add('show');
+    
+    const cvsCity = getCityFromAddress(cvsInfo.cvsAddress);
+
+    // 更新購物車屬性 - 只處理配送相關參數
+    updateCart({
+      'attributes[運送方法(ShippingMethod)]': '超商取貨',
+      'attributes[包裹尺寸(Specification)]': '',
+      'attributes[包裹溫層(Temperature)]': '',
+      'attributes[超商類型(CvsCompany)]': cvsCompany,
+      'attributes[超商門市(CvsStoreName)]': cvsInfo.cvsStoreName,
+      'attributes[門市代號(CvsStoreId)]': cvsInfo.cvsStoreId,
+      'attributes[物流子代碼(LogisticsSubType)]': brandCode,
+      'attributes[門市地址(CvsAddress)]': cvsInfo.cvsAddress,
+      'attributes[門市城市(CvsCity)]': cvsCity,
+      'attributes[門市郵遞區號(CvsZip)]': cvsInfo.cvsZipCode || '',
+      'attributes[超取串接類型(CvsVendor)]': cvsVendor
+      // 移除所有發票相關參數
+    }, () => {
+      updateURLWithCVSParams(cvsInfo);
+    });
+    
+    closeCVSModal(sectionId);
+  };
+
+  // 更新 URL 參數
+  function updateURLWithCVSParams(cvsInfo) {
+    const params = new URLSearchParams({
+      logisticsSubType: cvsInfo.logisticsSubType,
+      cvsStoreId: cvsInfo.cvsStoreId,
+      cvsStoreName: cvsInfo.cvsStoreName,
+      cvsAddress: cvsInfo.cvsAddress,
+      cvsZipCode: cvsInfo.cvsZipCode || '',
+      servicetype: cvsInfo.servicetype,
+      outside: cvsInfo.outside
+    });
+    
+    // 重新載入頁面以觸發 Ako 插件
+    window.location.href = window.location.pathname + '?' + params.toString();
+  }
+
+  // 更新購物車
+  function updateCart(attributes, callback) {
+    fetch('/cart/update.js', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ attributes: attributes })
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('購物車已更新:', data);
+      if (callback) callback(data);
+    })
+    .catch(error => {
+      console.error('更新購物車失敗:', error);
+    });
+  }
+
+  // 監聽結帳按鈕
+  function attachCheckoutListener() {
+    const checkoutButtons = document.querySelectorAll('a[href*="/checkout"], button[name="add"][type="submit"], input[type="submit"][name="add"], .cart__checkout-button, #checkout');
+    
+    checkoutButtons.forEach(button => {
+      button.addEventListener('click', handleCheckoutClick);
+    });
+  }
+
+  // 處理結帳點擊
+  function handleCheckoutClick(e) {
+    // 從當前 URL 獲取超商參數
+    const currentUrl = new URL(window.location.href);
+    const cvsParams = new URLSearchParams();
+    
+    // 收集所有超商相關參數
+    const paramKeys = ['logisticsSubType', 'cvsStoreId', 'cvsStoreName', 'cvsAddress', 'cvsZipCode', 'servicetype', 'outside'];
+    paramKeys.forEach(key => {
+      if (currentUrl.searchParams.has(key)) {
+        cvsParams.append(key, currentUrl.searchParams.get(key));
+      }
+    });
+    
+    const paramsString = cvsParams.toString();
+    
+    if (paramsString) {
+      // 如果是連結，修改 href
+      if (e.target.tagName === 'A' && e.target.href.includes('/checkout')) {
+        e.preventDefault();
+        const checkoutUrl = new URL(e.target.href);
+        // 將參數加到結帳 URL
+        cvsParams.forEach((value, key) => {
+          checkoutUrl.searchParams.set(key, value);
+        });
+        window.location.href = checkoutUrl.toString();
+      }
+      // 如果是表單提交按鈕，等待購物車更新後再跳轉
+      else if (e.target.type === 'submit' || e.target.closest('form')) {
+        // 不阻止預設行為，讓表單正常提交
+        setTimeout(() => {
+          redirectToCheckout(paramsString);
+        }, 1500);
+      }
+    }
+  }
+
+  // 跳轉到結帳頁面
+  function redirectToCheckout(paramsString) {
+    const checkoutUrl = '/checkout';
+    const separator = checkoutUrl.includes('?') ? '&' : '?';
+    window.location.href = checkoutUrl + separator + paramsString;
+  }
+
+  // 使用 MutationObserver 監聽動態加入的結帳按鈕
+  function observeCheckoutButtons() {
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'childList') {
+          // 檢查是否有超商參數在 URL 中
+          const currentUrl = new URL(window.location.href);
+          if (currentUrl.searchParams.has('logisticsSubType') || sessionStorage.getItem('cvs_checkout_params')) {
+            attachCheckoutListener();
+          }
+        }
+      });
+    });
+    
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  }
+
+  // 清除超商選擇（可選功能）
+  window.clearCVSSelection = function() {
+    localStorage.removeItem('selected_cvs_info');
+    sessionStorage.removeItem('selected_cvs_info');
+    sessionStorage.removeItem('cvs_checkout_params');
+    
+    // 重設表單
+    const sectionId = '{{ section.id }}';
+    document.getElementById(`selected-info-${sectionId}`).classList.remove('show');
+    document.querySelectorAll(`#shipping-form-${sectionId} input[name="shipping_method"]`).forEach(radio => {
+      radio.checked = false;
+    });
+    document.querySelectorAll(`#shipping-form-${sectionId} .shipping-option`).forEach(opt => {
+      opt.classList.remove('selected');
+    });
+    
+    // 清除購物車屬性
+    updateCart({
+      'attributes[運送方法(ShippingMethod)]': '',
+      'attributes[包裹尺寸(Specification)]': '',
+      'attributes[包裹溫層(Temperature)]': '',
+      'attributes[超商類型(CvsCompany)]': '',
+      'attributes[超商門市(CvsStoreName)]': '',
+      'attributes[門市代號(CvsStoreId)]': '',
+      'attributes[物流子代碼(LogisticsSubType)]': '',
+      'attributes[門市地址(CvsAddress)]': '',
+      'attributes[門市城市(CvsCity)]': '',
+      'attributes[門市郵遞區號(CvsZip)]': '',
+      'attributes[超取串接類型(CvsVendor)]': '',
+      'attributes[發票種類(InvoiceType)]': '',
+      'attributes[載具類型(CarrierType)]': '',
+      'attributes[載具編號(CarrierNum)]': '',
+      'attributes[捐贈碼(LoveCode)]': '',
+      'attributes[公司名稱(CompanyName)]': '',
+      'attributes[統一編號(CompanyId)]': '',
+      'attributes[代處理發票(DelegateInvoice)]': ''
+    }, () => {
+      // 清除 URL 參數
+      const cleanUrl = window.location.pathname;
+      window.history.replaceState({}, document.title, cleanUrl);
+    });
+  };
+
+  // Modal 外部點擊關閉
+  document.getElementById(`cvs-modal-${sectionId}`).addEventListener('click', function(e) {
+    if (e.target === this) {
+      closeCVSModal(sectionId);
+    }
+  });
+
+  // 檢查並同步 Ako 插件資料
+  (function checkAkoData() {
+    const currentUrl = new URL(window.location.href);
+    
+    // 如果 URL 有超商參數，同步到 localStorage
+    if (currentUrl.searchParams.has('logisticsSubType')) {
+      const cvsInfo = {
+        logisticsSubType: currentUrl.searchParams.get('logisticsSubType'),
+        cvsStoreId: currentUrl.searchParams.get('cvsStoreId'),
+        cvsStoreName: currentUrl.searchParams.get('cvsStoreName'),
+        cvsAddress: currentUrl.searchParams.get('cvsAddress'),
+        cvsZipCode: currentUrl.searchParams.get('cvsZipCode') || '',
+        servicetype: currentUrl.searchParams.get('servicetype') || '1',
+        outside: currentUrl.searchParams.get('outside') || '0'
+      };
+      
+      // 儲存到 localStorage
+      localStorage.setItem('selected_cvs_info', JSON.stringify(cvsInfo));
+      sessionStorage.setItem('selected_cvs_info', JSON.stringify(cvsInfo));
+      
+      // 更新顯示
+      const brandName = cvsInfo.logisticsSubType === 'UNIMART' ? '7-ELEVEN' : '全家便利商店';
+      const selectedInfo = document.getElementById(`selected-info-${sectionId}`);
+      const selectedTitle = document.getElementById(`selected-title-${sectionId}`);
+      const selectedText = document.getElementById(`selected-text-${sectionId}`);
+      const cvsPickupRadio = document.getElementById(`cvs-pickup-${sectionId}`);
+      
+      if (selectedInfo && selectedTitle && selectedText) {
+        selectedTitle.textContent = '已選擇取貨地點';
+        selectedText.innerHTML = `
+          <span class="store-name">${brandName} ${cvsInfo.cvsStoreName}</span>
+          <span class="store-number">店號：${cvsInfo.cvsStoreId}</span>
+          <span class="store-address">${cvsInfo.cvsAddress}</span>
+        `;
+        selectedInfo.classList.add('show');
+        
+        if (cvsPickupRadio) {
+          cvsPickupRadio.checked = true;
+          document.querySelector(`#shipping-form-${sectionId} .shipping-option:has(#cvs-pickup-${sectionId})`).classList.add('selected');
+        }
+      }
+      
+      // 更新購物車屬性
+      const cvsCompany = cvsInfo.logisticsSubType === 'UNIMART' ? '7-ELEVEN' : '全家';
+      const cvsCity = getCityFromAddress(cvsInfo.cvsAddress);
+      
+      updateCart({
+        'attributes[運送方法(ShippingMethod)]': '超商取貨',
+        'attributes[包裹尺寸(Specification)]': '',
+        'attributes[包裹溫層(Temperature)]': '',
+        'attributes[超商類型(CvsCompany)]': cvsCompany,
+        'attributes[超商門市(CvsStoreName)]': cvsInfo.cvsStoreName,
+        'attributes[門市代號(CvsStoreId)]': cvsInfo.cvsStoreId,
+        'attributes[物流子代碼(LogisticsSubType)]': cvsInfo.logisticsSubType,
+        'attributes[門市地址(CvsAddress)]': cvsInfo.cvsAddress,
+        'attributes[門市城市(CvsCity)]': cvsCity,
+        'attributes[門市郵遞區號(CvsZip)]': cvsInfo.cvsZipCode || '',
+        'attributes[超取串接類型(CvsVendor)]': 'ecpay',
+        'attributes[發票種類(InvoiceType)]': 'carrier',
+        'attributes[載具類型(CarrierType)]': '手機條碼',
+        'attributes[載具編號(CarrierNum)]': '',
+        'attributes[捐贈碼(LoveCode)]': '',
+        'attributes[公司名稱(CompanyName)]': '',
+        'attributes[統一編號(CompanyId)]': '',
+        'attributes[代處理發票(DelegateInvoice)]': 'Y'
+      }, () => {
+        // 清除 URL 參數
+        const cleanUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, cleanUrl);
+      });
+    }
+  })();
+})();
+</script>

@@ -1,0 +1,1057 @@
+{% comment %}
+  購物車頁-加購推薦區塊
+  檔案位置: sections/cart-upsell-recommendations.liquid
+{% endcomment %}
+
+<!-- 內聯關鍵樣式防止閃爍 -->
+<style>
+  /* 移除所有可能的容器背景色 */
+  .shopify-section,
+  .shopify-section[class*="cart-upsell"],
+  [class*="shopify-section-template"][class*="cart_upsell"],
+  .section-cart-upsell {
+    background-color: transparent !important;
+    background: transparent !important;
+    background-image: none !important;
+  }
+  
+  /* 確保 wrapper 完全透明 */
+  .cart-upsell-wrapper {
+    background-color: transparent !important;
+    background: transparent !important;
+    background-image: none !important;
+  }
+  
+  /* 確保只有內部容器有背景色 */
+  .cart-upsell-section {
+    background-color: {{ section.settings.loading_bg_color }} !important;
+    min-height: 120px;
+  }
+  
+  /* 防止瀏覽器預設的綠色焦點樣式 */
+  .cart-upsell-wrapper button:focus,
+  .cart-upsell-wrapper a:focus {
+    outline: none !important;
+    outline-color: transparent !important;
+    outline-style: none !important;
+  }
+</style>
+
+<style>
+  /* ========================================
+     購物車加購區塊 - AKO 風格設計
+     ======================================== */
+  
+  /* 外層包裝器 */
+  .cart-upsell-wrapper {
+    width: 100%;
+    max-width: 1240px;
+    margin: 20px auto 0;
+    padding: 0 20px;
+    position: relative;
+    background: transparent !important;
+    background-color: transparent !important;
+  }
+  
+  /* 頂部標題區域 */
+  .upsell-header-outside {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding: 0 4px;
+  }
+  
+  /* 標題樣式 - 保持原有設計 */
+  .upsell-title-outside {
+    font-size: 18px;
+    font-weight: 600;
+    color: {{ section.settings.text_color }} !important;
+    margin: 0;
+    position: relative;
+    padding-left: 12px;
+  }
+  
+  .upsell-title-outside::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 20px;
+    background: {% if section.settings.use_accent_gradient %}
+      linear-gradient(135deg, {{ section.settings.accent_color_start }}, {{ section.settings.accent_color_end }})
+    {% else %}
+      {{ section.settings.accent_color_start }}
+    {% endif %} !important;
+    border-radius: 2px;
+  }
+  
+  /* 主容器 - 仿 AKO 容器風格 */
+  .cart-upsell-section {
+    background: transparent !important;
+    border-radius: 0;
+    box-shadow: none;
+    border: none;
+    padding: 20px;
+    overflow: hidden;
+    box-sizing: border-box;
+    position: relative;
+    will-change: transform;
+  }
+
+  /* 頂部橘色線條 - 已移除 */
+  .cart-upsell-section::before {
+    display: none;
+  }
+  
+  /* 查看熱門加購按鈕 - 放在容器外右下角 */
+  .view-popular-btn-wrapper {
+    position: absolute;
+    bottom: -40px;
+    right: 20px;
+    z-index: 10;
+  }
+  
+  .view-popular-btn {
+    background: transparent !important;
+    color: {{ section.settings.accent_color_start }} !important;
+    border: 1px solid {{ section.settings.accent_color_start }} !important;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+  }
+
+  .view-popular-btn:hover {
+    background: {% if section.settings.use_accent_gradient %}
+      linear-gradient(135deg, {{ section.settings.accent_color_start }}, {{ section.settings.accent_color_end }})
+    {% else %}
+      {{ section.settings.accent_color_start }}
+    {% endif %} !important;
+    color: #ffffff !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+  }
+
+  /* 商品滑動容器 */
+  .upsell-slider-container {
+    position: relative;
+    overflow: hidden;
+    margin: 0 -20px;
+    padding: 0 20px;
+  }
+
+  .upsell-slider {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding: 12px 0;
+    scrollbar-width: thin;
+    scrollbar-color: #ff6b35 #333333;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .upsell-slider::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .upsell-slider::-webkit-scrollbar-track {
+    background: #333333 !important;
+    border-radius: 3px;
+  }
+
+  .upsell-slider::-webkit-scrollbar-thumb {
+    background: linear-gradient(90deg, #ff6b35, #f7931e) !important;
+    border-radius: 3px;
+  }
+
+  /* 商品卡片 - 橫式佈局 */
+  .upsell-product-card {
+    flex: 0 0 var(--card-width-desktop, 320px);
+    background: linear-gradient(145deg, #2d2d2d, #1a1a1a) !important;
+    border: 1px solid #404040 !important;
+    border-radius: 10px;
+    padding: 16px 10px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .upsell-product-card:hover {
+    border-color: #ff6b35 !important;
+    transform: translateY(-4px);
+    box-shadow: 
+      0 12px 35px rgba(255, 107, 53, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  /* 商品圖片 */
+  .upsell-product-image {
+    width: 60px;
+    height: 70px;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .upsell-product-image.portrait {
+    width: 60px;
+    height: 75px;
+  }
+
+  .upsell-product-image.landscape {
+    width: 70px;
+    height: 60px;
+  }
+
+  .upsell-product-image img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Placeholder SVG 樣式 */
+  .upsell-product-image .placeholder-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.3;
+    filter: invert(1);
+  }
+
+  /* 產品連結樣式 */
+  .upsell-product-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .upsell-product-card:hover .upsell-product-title {
+    color: #ff6b35 !important;
+  }
+
+  /* 載入狀態樣式 */
+  .cart-upsell-section.loading {
+    min-height: 150px;
+    position: relative;
+  }
+
+  .cart-upsell-section.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    border: 3px solid #333333 !important;
+    border-top-color: #ff6b35 !important;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+
+  /* 商品資訊 */
+  .upsell-product-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .upsell-product-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: {{ section.settings.text_color }} !important;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    line-height: 1.3;
+  }
+
+  .upsell-product-price {
+    font-size: 14px;
+    font-weight: 700;
+    color: {{ section.settings.accent_color_start }} !important;
+    margin: 0;
+    text-shadow: 0 0 10px rgba(255, 107, 53, 0.3);
+  }
+
+  /* 加入購物車按鈕 */
+  .upsell-add-to-cart {
+    width: 36px;
+    height: 36px;
+    background: transparent !important;
+    border: 2px solid {{ section.settings.accent_color_start }} !important;
+    border-radius: 6px;
+    color: {{ section.settings.accent_color_start }} !important;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+    outline: none !important;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .upsell-add-to-cart:focus {
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
+  .upsell-add-to-cart:focus-visible {
+    outline: none !important;
+    box-shadow: 0 0 0 2px {{ section.settings.accent_color_start }}40 !important;
+  }
+
+  .upsell-add-to-cart:active {
+    transform: scale(0.95);
+  }
+
+  .upsell-add-to-cart * {
+    pointer-events: none;
+  }
+
+  .upsell-add-to-cart::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: {% if section.settings.use_accent_gradient %}
+      linear-gradient(135deg, {{ section.settings.accent_color_start }}, {{ section.settings.accent_color_end }})
+    {% else %}
+      {{ section.settings.accent_color_start }}
+    {% endif %} !important;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 0;
+  }
+
+  .upsell-add-to-cart:hover::before {
+    left: 0;
+  }
+
+  .upsell-add-to-cart span {
+    position: relative;
+    z-index: 1;
+    transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .upsell-add-to-cart:hover {
+    border-color: #ff6b35 !important;
+    color: #ffffff !important;
+  }
+
+  .upsell-add-to-cart:hover span {
+    color: #ffffff !important;
+  }
+
+  .upsell-add-to-cart.loading {
+    pointer-events: none;
+    opacity: 0.7;
+  }
+
+  .upsell-add-to-cart.added {
+    border-color: {{ section.settings.accent_color_start }} !important;
+    color: {{ section.settings.accent_color_start }} !important;
+  }
+
+  .upsell-add-to-cart.added span {
+    color: {{ section.settings.accent_color_start }} !important;
+  }
+
+  /* 響應式設計 */
+  @media (max-width: 768px) {
+    .cart-upsell-wrapper {
+      padding: 0 16px;
+    }
+    
+    .upsell-header-outside {
+      margin-bottom: 12px;
+    }
+
+    .cart-upsell-section {
+      padding: 16px;
+      border-radius: 16px;
+    }
+
+    .upsell-title-outside {
+      font-size: 16px;
+    }
+    
+    .view-popular-btn-wrapper {
+      bottom: -50px;
+      right: 16px;
+    }
+
+    .view-popular-btn {
+      padding: 8px 20px;
+      font-size: 14px;
+    }
+
+    .upsell-slider-container {
+      margin: 0 -16px;
+      padding: 0 16px;
+    }
+
+    .upsell-product-card {
+      flex: 0 0 280px;
+    }
+
+    .upsell-product-image {
+      width: 70px;
+      height: 70px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .view-popular-btn-wrapper {
+      position: static;
+      margin-top: 16px;
+      text-align: right;
+      padding-right: 4px;
+    }
+    
+    .upsell-product-card {
+      flex: 0 0 240px;
+    }
+
+    .upsell-product-title {
+      font-size: 13px;
+    }
+
+    .upsell-product-price {
+      font-size: 14px;
+    }
+
+    .upsell-add-to-cart {
+      height: 36px;
+      font-size: 14px;
+    }
+  }
+
+  /* 手機版直式佈局選項 */
+  @media (max-width: 480px) {
+    .cart-upsell-wrapper[data-mobile-layout="vertical"] .upsell-product-card {
+      flex-direction: column;
+      width: 140px;
+      flex: 0 0 140px;
+      padding: 12px;
+    }
+
+    .cart-upsell-wrapper[data-mobile-layout="vertical"] .upsell-product-link {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .cart-upsell-wrapper[data-mobile-layout="vertical"] .upsell-product-image {
+      width: 100%;
+      height: 116px;
+      margin-bottom: 8px;
+    }
+
+    .cart-upsell-wrapper[data-mobile-layout="vertical"] .upsell-product-info {
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .cart-upsell-wrapper[data-mobile-layout="vertical"] .upsell-add-to-cart {
+      width: 100%;
+    }
+  }
+
+  /* 手機版隱藏價格選項 */
+  @media (max-width: 480px) {
+    .cart-upsell-wrapper[data-hide-price-mobile="true"] .upsell-product-price {
+      display: none;
+    }
+  }
+
+  /* 手機版可見商品數控制 */
+  @media (max-width: 480px) {
+    .upsell-slider {
+      gap: 12px;
+    }
+    
+    .cart-upsell-wrapper[data-products-visible="1.2"] .upsell-product-card {
+      flex: 0 0 calc((100vw - 48px) / 1.2);
+    }
+    
+    .cart-upsell-wrapper[data-products-visible="1.5"] .upsell-product-card {
+      flex: 0 0 calc((100vw - 48px) / 1.5);
+    }
+    
+    .cart-upsell-wrapper[data-products-visible="2"] .upsell-product-card {
+      flex: 0 0 calc((100vw - 60px) / 2);
+    }
+  }
+
+  /* 手機版隱藏按鈕文字選項 */
+  @media (max-width: 480px) {
+    .cart-upsell-wrapper[data-hide-button-text="true"] .view-popular-btn {
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      border-radius: 50%;
+      justify-content: center;
+    }
+    
+    .cart-upsell-wrapper[data-hide-button-text="true"] .view-popular-btn span {
+      display: none;
+    }
+  }
+</style>
+
+<div class="cart-upsell-wrapper" 
+     style="--card-width-desktop: {{ section.settings.card_width_desktop }}px;
+            --card-width-tablet: {{ section.settings.card_width_tablet }}px;
+            --card-width-mobile-large: {{ section.settings.card_width_mobile_large }}px;
+            --card-width-mobile: {{ section.settings.card_width_mobile }}px;
+            --button-max-width: {{ section.settings.button_max_width }}px;"
+     data-mobile-layout="{{ section.settings.mobile_layout }}"
+     data-hide-price-mobile="{{ section.settings.hide_price_mobile }}"
+     data-products-visible="{{ section.settings.products_visible_mobile }}"
+     data-hide-button-text="{{ section.settings.hide_button_text_mobile }}">
+  
+  <!-- 標題在容器外 -->
+  <div class="upsell-header-outside">
+    <h3 class="upsell-title-outside">{{ section.settings.section_title }}</h3>
+  </div>
+  
+  <!-- 主容器 -->
+  <div class="cart-upsell-section">
+    <div class="upsell-slider-container">
+      <div class="upsell-slider" id="upsell-slider-{{ section.id }}">
+        {% if section.settings.product_list != blank %}
+          {% for product in section.settings.product_list limit: section.settings.max_products %}
+            {% assign img_width = 400 %}
+            {% case section.settings.image_ratio %}
+              {% when 'square' %}
+                {% assign img_height = 400 %}
+              {% when 'portrait' %}
+                {% assign img_height = 500 %}
+              {% when 'landscape' %}
+                {% assign img_height = 300 %}
+              {% else %}
+                {% assign img_height = 400 %}
+            {% endcase %}
+            
+            <div class="upsell-product-card">
+              <a href="{{ product.url }}" class="upsell-product-link">
+                <div class="upsell-product-image {{ section.settings.image_ratio }}">
+                  {% if product.featured_image %}
+                    <img src="{{ product.featured_image | image_url: width: img_width }}"
+                         alt="{{ product.title | escape }}"
+                         width="{{ img_width }}"
+                         height="{{ img_height }}"
+                         loading="lazy">
+                  {% else %}
+                    {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                  {% endif %}
+                </div>
+                <div class="upsell-product-info">
+                  <h4 class="upsell-product-title">{{ product.title }}</h4>
+                  {% if section.settings.show_prices %}
+                    <p class="upsell-product-price">{{ product.price | money }}</p>
+                  {% endif %}
+                </div>
+              </a>
+              {% if section.settings.enable_quick_add %}
+                <button type="button" 
+                        class="upsell-add-to-cart"
+                        data-variant-id="{{ product.selected_or_first_available_variant.id }}"
+                        data-product-id="{{ product.id }}"
+                        onclick="event.preventDefault(); event.stopPropagation(); addToCartUpsell(this, event);">
+                  <span>+</span>
+                </button>
+              {% endif %}
+            </div>
+          {% endfor %}
+        {% else %}
+          <!-- 預設商品顯示（編輯器預覽用） -->
+          {% assign img_width = 400 %}
+          {% case section.settings.image_ratio %}
+            {% when 'square' %}
+              {% assign img_height = 400 %}
+            {% when 'portrait' %}
+              {% assign img_height = 500 %}
+            {% when 'landscape' %}
+              {% assign img_height = 300 %}
+            {% else %}
+              {% assign img_height = 400 %}
+          {% endcase %}
+          
+          {% for i in (1..4) %}
+            <div class="upsell-product-card">
+              <div class="upsell-product-image {{ section.settings.image_ratio }}">
+                {{ 'product-' | append: i | placeholder_svg_tag: 'placeholder-svg' }}
+              </div>
+              <div class="upsell-product-info">
+                <h4 class="upsell-product-title">範例商品 {{ i }}</h4>
+                {% if section.settings.show_prices %}
+                  <p class="upsell-product-price">NT$ {{ i | times: 580 }}</p>
+                {% endif %}
+              </div>
+              {% if section.settings.enable_quick_add %}
+                <button type="button" class="upsell-add-to-cart" disabled>
+                  <span>+</span>
+                </button>
+              {% endif %}
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  
+  <!-- 查看熱門按鈕在容器外右下角 -->
+  {% if section.settings.show_popular_button %}
+    <div class="view-popular-btn-wrapper">
+      <a href="{{ section.settings.popular_items_url }}" class="view-popular-btn">
+        <span>{{ section.settings.button_text }}</span>
+        <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z"/>
+        </svg>
+      </a>
+    </div>
+  {% endif %}
+</div>
+
+<script>
+  // 防止載入時的白色閃爍
+  document.addEventListener('DOMContentLoaded', function() {
+    const wrapper = document.querySelector('.cart-upsell-wrapper');
+    if (wrapper) {
+      wrapper.style.opacity = '0';
+      wrapper.style.transition = 'opacity 0.3s ease';
+      
+      // 確保內容載入後再顯示
+      setTimeout(() => {
+        wrapper.style.opacity = '1';
+      }, 100);
+    }
+  });
+
+  // 加入購物車功能 - Savor 主題專用
+  function addToCartUpsell(button, event) {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    const variantId = button.dataset.variantId;
+    const productId = button.dataset.productId;
+    
+    if (!variantId) return;
+    
+    // 顯示載入狀態
+    button.classList.add('loading');
+    button.innerHTML = '<span>...</span>';
+    
+    // 使用 Shopify Cart API
+    fetch(window.Shopify.routes.root + 'cart/add.js', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        items: [{
+          id: parseInt(variantId),
+          quantity: 1
+        }]
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      // 成功加入購物車
+      button.classList.remove('loading');
+      button.classList.add('added');
+      button.innerHTML = '<span>✓</span>';
+      
+      // Savor/Horizon AI 主題專用更新方法
+      console.log('🔄 開始更新購物車...');
+      
+      import('@theme/events').then(({ CartUpdateEvent }) => {
+        console.log('✅ 成功載入 @theme/events');
+        const cartDrawer = document.querySelector('cart-drawer-component');
+        
+        // 取得最新購物車資料
+        fetch('/cart.js')
+          .then(res => res.json())
+          .then(cart => {
+            console.log('📦 購物車資料:', cart);
+            
+            // 發送 CartUpdateEvent
+            const event = new CartUpdateEvent(cart, 'manual-trigger', {
+              itemCount: cart.item_count,
+              source: 'upsell-block',
+              sections: {}
+            });
+            console.log('📤 發送 CartUpdateEvent');
+            document.dispatchEvent(event);
+            
+            // 開啟購物車抽屜
+            if (cartDrawer) {
+              console.log('🔍 找到購物車抽屜:', cartDrawer);
+              if (cartDrawer.hasAttribute('auto-open')) {
+                console.log('🚪 嘗試開啟購物車抽屜 (auto-open)');
+                cartDrawer.open();
+              } else {
+                console.log('🚪 嘗試開啟購物車抽屜 (手動)');
+                if (typeof cartDrawer.open === 'function') {
+                  cartDrawer.open();
+                } else if (typeof cartDrawer.toggle === 'function') {
+                  cartDrawer.toggle(true);
+                }
+              }
+            }
+          });
+      }).catch((error) => {
+        console.error('❌ 無法載入 @theme/events:', error);
+        console.log('🔄 使用備用方法更新購物車...');
+        
+        // 備用方法
+        const cartDrawer = document.querySelector('cart-drawer-component, cart-drawer, .cart-drawer');
+        
+        // 嘗試觸發購物車更新
+        fetch('/cart.js')
+          .then(res => res.json())
+          .then(cart => {
+            // 標準 cart:refresh 事件
+            document.documentElement.dispatchEvent(new CustomEvent('cart:refresh', {
+              bubbles: true,
+              detail: { cart: cart }
+            }));
+            
+            // 嘗試開啟購物車
+            if (cartDrawer && typeof cartDrawer.open === 'function') {
+              cartDrawer.open();
+            } else {
+              // 嘗試點擊購物車按鈕
+              const cartButton = document.querySelector('[data-cart-drawer-toggle], [data-cart-toggle], .cart-toggle');
+              if (cartButton) cartButton.click();
+            }
+          });
+      });
+      
+      // 3秒後恢復原狀
+      setTimeout(() => {
+        button.classList.remove('added');
+        button.innerHTML = '<span>+</span>';
+      }, 3000);
+    })
+    .catch(error => {
+      console.error('加入購物車失敗:', error);
+      button.classList.remove('loading');
+      button.innerHTML = '<span>✗</span>';
+      
+      setTimeout(() => {
+        button.innerHTML = '<span>+</span>';
+      }, 2000);
+    });
+  }
+</script>
+
+{% schema %}
+{
+  "name": "購物車頁-加購推薦區塊",
+  "class": "section-cart-upsell",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "基本設定"
+    },
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "區塊標題",
+      "default": "推薦加購商品"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_popular_button",
+      "label": "顯示查看熱門按鈕",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "按鈕文字",
+      "default": "查看熱門加購項目"
+    },
+    {
+      "type": "url",
+      "id": "popular_items_url",
+      "label": "熱門商品頁面連結"
+    },
+    {
+      "type": "header",
+      "content": "顏色設定"
+    },
+    {
+      "type": "color",
+      "id": "loading_bg_color",
+      "label": "載入背景色",
+      "default": "#1a1a1a",
+      "info": "防止載入時白色閃爍的預設背景色"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_gradient",
+      "label": "使用漸變背景",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "bg_color_start",
+      "label": "背景色（起始）",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "bg_color_end",
+      "label": "背景色（結束）",
+      "default": "#2d2d2d",
+      "info": "僅在啟用漸變時使用"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "邊框顏色",
+      "default": "#333333"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_accent_gradient",
+      "label": "使用強調色漸變",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "accent_color_start",
+      "label": "強調色（起始）",
+      "default": "#ff6b35"
+    },
+    {
+      "type": "color",
+      "id": "accent_color_end",
+      "label": "強調色（結束）",
+      "default": "#f7931e",
+      "info": "用於頂部線條、按鈕、價格等"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "文字顏色",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_secondary_color",
+      "label": "次要文字顏色",
+      "default": "#cccccc"
+    },
+    {
+      "type": "header",
+      "content": "商品設定"
+    },
+    {
+      "type": "product_list",
+      "id": "product_list",
+      "label": "選擇推薦商品",
+      "limit": 12
+    },
+    {
+      "type": "range",
+      "id": "max_products",
+      "label": "最多顯示商品數",
+      "min": 3,
+      "max": 12,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "checkbox",
+      "id": "show_prices",
+      "label": "顯示價格",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_quick_add",
+      "label": "啟用快速加入購物車",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "顯示設定"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "圖片比例",
+      "options": [
+        {
+          "value": "square",
+          "label": "正方形 (1:1)"
+        },
+        {
+          "value": "portrait",
+          "label": "直式 (4:5)"
+        },
+        {
+          "value": "landscape",
+          "label": "橫式 (4:3)"
+        }
+      ],
+      "default": "square"
+    },
+    {
+      "type": "header",
+      "content": "響應式設計"
+    },
+    {
+      "type": "range",
+      "id": "card_width_desktop",
+      "label": "桌面版卡片寬度",
+      "min": 280,
+      "max": 400,
+      "step": 10,
+      "unit": "px",
+      "default": 320
+    },
+    {
+      "type": "range",
+      "id": "card_width_tablet",
+      "label": "平板版卡片寬度",
+      "min": 240,
+      "max": 340,
+      "step": 10,
+      "unit": "px",
+      "default": 280
+    },
+    {
+      "type": "range",
+      "id": "card_width_mobile_large",
+      "label": "大手機版卡片寬度",
+      "min": 240,
+      "max": 320,
+      "step": 10,
+      "unit": "px",
+      "default": 300
+    },
+    {
+      "type": "range",
+      "id": "card_width_mobile",
+      "label": "手機版卡片寬度",
+      "min": 220,
+      "max": 300,
+      "step": 10,
+      "unit": "px",
+      "default": 260
+    },
+    {
+      "type": "range",
+      "id": "button_max_width",
+      "label": "熱門按鈕最大寬度",
+      "min": 80,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "default": 150,
+      "info": "限制按鈕的最大寬度，手機版建議設定 100-120px"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_button_text_mobile",
+      "label": "手機版只顯示圖標",
+      "default": false,
+      "info": "在小螢幕上隱藏按鈕文字，只保留箭頭圖標"
+    },
+    {
+      "type": "header",
+      "content": "進階設定"
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "手機版佈局",
+      "options": [
+        {
+          "value": "horizontal",
+          "label": "橫式（圖片在左）"
+        },
+        {
+          "value": "vertical",
+          "label": "直式（圖片在上）"
+        }
+      ],
+      "default": "horizontal",
+      "info": "選擇在小螢幕上的顯示方式"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_price_mobile",
+      "label": "手機版隱藏價格",
+      "default": false,
+      "info": "在小螢幕上隱藏價格以節省空間"
+    },
+    {
+      "type": "range",
+      "id": "products_visible_mobile",
+      "label": "手機版可見商品數",
+      "min": 1.2,
+      "max": 2.5,
+      "step": 0.1,
+      "default": 1.5,
+      "info": "控制手機版一次可見的商品數量"
+    }
+  ],
+  "presets": [
+    {
+      "name": "購物車加購推薦",
+      "category": "銷售功能"
+    }
+  ]
+}
+{% endschema %}

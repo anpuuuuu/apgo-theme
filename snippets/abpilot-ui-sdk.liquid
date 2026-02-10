@@ -1,0 +1,18 @@
+<script type="text/javascript">
+{% if shop.metafields.abpilot.config %}
+    window.abpilotConfig = {{ shop.metafields.abpilot.config }};
+  {% else %}
+    window.abpilotConfig = {};
+  {% endif %}
+
+window.product = {{ product | json }};
+window.useComma = {% if shop.metafields.abpilot.use_comma != nil %}{{ shop.metafields.abpilot.use_comma | Boolean }}{% else %}true{% endif %};
+window.showIntegerOnly = {% if shop.metafields.abpilot.show_integer_only != nil %}{{ shop.metafields.abpilot.show_integer_only | Boolean }}{% else %}false{% endif %};
+window.templateView = {{ template | json }};
+window.themeId = {{ theme.id | json }};
+window.designMode = {{ request.design_mode | json }};
+
+</script>
+
+<link href="https://script.abpilot.io/abpilot.js" rel="preload" as="script">
+<script type="text/javascript" src="https://script.abpilot.io/abpilot.js"></script>

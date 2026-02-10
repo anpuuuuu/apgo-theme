@@ -1,0 +1,3039 @@
+<!-- sections/apgo-coating-products.liquid -->
+<style>
+    /* 基礎重置與變數 */
+    .apgo-coating-products * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    .apgo-coating-products {
+      --primary-orange: {{ section.settings.primary_color | default: '#f08418' }};
+      --secondary-orange: {{ section.settings.secondary_color | default: '#ff9a3c' }};
+      --text-white: {{ section.settings.text_white | default: '#ffffff' }};
+      --text-gray: {{ section.settings.text_gray | default: '#cccccc' }};
+      --text-light-gray: {{ section.settings.text_light_gray | default: '#b0b0b0' }};
+      --dark-bg: {{ section.settings.background_color | default: '#000000' }};
+      --card-bg: {{ section.settings.card_background | default: '#1a1a1a' }};
+      
+      font-family: 'Arial', 'Microsoft JhengHei', sans-serif;
+      background: var(--dark-bg);
+      color: var(--text-white);
+      overflow-x: hidden;
+      padding: {{ section.settings.section_padding_top }}px 0 {{ section.settings.section_padding_bottom }}px;
+    }
+    
+    /* 標題樣式 */
+    .apgo-coating-products h2,
+    .apgo-coating-products .h2 {
+      font-size: {{ section.settings.heading_size | divided_by: 16.0 }}rem;
+      font-weight: 600;
+      color: var(--text-white);
+      line-height: 1.3;
+      margin: 0;
+    }
+    
+    .apgo-coating-products h3,
+    .apgo-coating-products .h3 {
+      font-size: {{ section.settings.product_title_size | divided_by: 16.0 }}rem;
+      font-weight: 600;
+      color: var(--primary-orange);
+      line-height: 1.3;
+      margin: 0;
+    }
+    
+    /* 文字樣式 */
+    .apgo-coating-products .text-secondary {
+      font-size: 0.9rem;
+      color: var(--text-gray);
+      line-height: 1.5;
+      font-weight: 400;
+    }
+    
+    .apgo-coating-products .text-small {
+      font-size: 0.8rem;
+      color: var(--text-light-gray);
+      line-height: 1.4;
+      font-weight: 400;
+    }
+    
+    .apgo-coating-products .text-tiny {
+      font-size: 0.75rem;
+      color: var(--text-light-gray);
+      line-height: 1.3;
+      font-weight: 400;
+    }
+    
+    .apgo-coating-products .button-text {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-white);
+    }
+    
+    /* 標題區塊 */
+    .apgo-coating-products .products-header {
+      text-align: {{ section.settings.header_alignment }};
+      padding: 40px 20px 20px 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    
+    .apgo-coating-products .products-title {
+      margin-bottom: 12px;
+      color: var(--primary-orange);
+    }
+    
+    .apgo-coating-products .products-subtitle {
+      max-width: 700px;
+      {% if section.settings.header_alignment == 'center' %}
+      margin: 0 auto;
+      {% endif %}
+    }
+    
+    /* 產品容器 */
+    .apgo-coating-products .products-container {
+      padding: 20px 20px 60px 20px;
+      position: relative;
+      width: 100%;
+      max-width: 100vw;
+    }
+    
+    /* 輪播包裝器 */
+    .apgo-coating-products .carousel-wrapper {
+      display: flex;
+      gap: {{ section.settings.card_gap }}px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 15px 0 25px 0;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      scrollbar-color: var(--primary-orange) rgba(255, 255, 255, 0.1);
+      cursor: grab;
+    }
+    
+    .apgo-coating-products .carousel-wrapper:active {
+      cursor: grabbing;
+    }
+    
+    /* 滾動條樣式 */
+    .apgo-coating-products .carousel-wrapper::-webkit-scrollbar {
+      height: 8px;
+      display: block;
+    }
+    
+    .apgo-coating-products .carousel-wrapper::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+    
+    .apgo-coating-products .carousel-wrapper::-webkit-scrollbar-thumb {
+      background: var(--primary-orange);
+      border-radius: 4px;
+      transition: background 0.3s ease;
+    }
+    
+    .apgo-coating-products .carousel-wrapper::-webkit-scrollbar-thumb:hover {
+      background: var(--secondary-orange);
+    }
+    
+    /* 邊緣漸層效果 */
+    {% if section.settings.show_edge_gradient %}
+    .apgo-coating-products .products-container::after {
+      content: '';
+      position: absolute;
+      top: 20px;
+      right: 0;
+      width: 30px;
+      height: calc(100% - 80px);
+      background: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.8) 100%);
+      pointer-events: none !important;
+      z-index: 5;
+      outline: 1px dashed rgba(255,255,255,.15); /* 暫時可視化，之後可移除 */
+    }
+    {% endif %}
+    
+    /* 產品項目 */
+    .apgo-coating-products .product-item {
+      flex: 0 0 auto;
+      width: {{ section.settings.card_width }}px;
+      height: {{ section.settings.card_height_desktop }}px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    /* 產品卡片 */
+    .apgo-coating-products .product-card {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: var(--card-bg);
+      border-radius: {{ section.settings.card_radius }}px;
+      padding: 18px;
+      border: 1px solid {{ section.settings.card_border_color | default: '#333' }};
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    {% if section.settings.enable_hover_effect %}
+    .apgo-coating-products .product-card:hover {
+      box-shadow: 0 12px 32px rgba(240, 132, 24, 0.3);
+      transform: translateY(-4px);
+    }
+    {% endif %}
+    
+    /* 頂部強調線 */
+    {% if section.settings.show_top_accent %}
+    .apgo-coating-products .top-accent {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 85%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary-orange), var(--secondary-orange));
+      border-radius: 16px;
+      z-index: 1;
+    }
+    {% endif %}
+    
+    /* 產品標籤 */
+    {% if section.settings.show_product_labels %}
+    .apgo-coating-products .product-label {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      background: var(--primary-orange);
+      color: var(--text-white);
+      padding: 2px 12px;
+      border-radius: 15px;
+      font-weight: 700;
+      z-index: 10;
+    }
+    {% endif %}
+    
+    /* 主要內容區 */
+    .apgo-coating-products .main-content {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      flex: 1;
+      min-height: 0;
+      margin-bottom: 0;
+    }
+    
+    /* 圖片區域 */
+    .apgo-coating-products .visual-area {
+      width: 150px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    
+    .apgo-coating-products .visual-area img {
+      width: auto;
+      height: 95%;
+      max-width: 100%;
+      object-fit: contain;
+      display: block;
+      filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.4));
+    }
+    
+    /* 資訊區域 */
+    .apgo-coating-products .info-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding-left: 15px;
+      padding-top: 35px;
+      height: 100%;
+      position: relative;
+    }
+    
+    /* 標題區域 */
+    .apgo-coating-products .title-area {
+      height: 70px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      margin-bottom: 20px;
+      flex-shrink: 0;
+    }
+    
+    .apgo-coating-products .product-title {
+      margin-bottom: 8px;
+      height: 30px;
+      display: flex;
+      align-items: flex-start;
+    }
+    
+    .apgo-coating-products .product-intro {
+      height: 32px;
+      display: flex;
+      align-items: flex-start;
+    }
+    
+    /* 規格區域 */
+    .apgo-coating-products .specs-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 0;
+    }
+    
+    .apgo-coating-products .spec-item {
+      margin-bottom: 0;
+      position: relative;
+    }
+    
+    .apgo-coating-products .spec-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .apgo-coating-products .spec-label {
+      color: #aaa;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .apgo-coating-products .spec-data {
+      font-weight: 700;
+      color: var(--text-white);
+      background: linear-gradient(45deg, var(--primary-orange), var(--secondary-orange));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    /* 進度條 */
+    {% if section.settings.show_spec_meters %}
+    .apgo-coating-products .meter-bg {
+      height: 6px;
+      background: #0a0a0a;
+      border-radius: 6px;
+      overflow: visible;
+      position: relative;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.8), 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+    
+    .apgo-coating-products .meter-fill {
+      height: 100%;
+      border-radius: 6px;
+      position: relative;
+      overflow: hidden;
+      transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 6px rgba(240, 132, 24, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+    
+    /* 進度條漸層色 */
+    .apgo-coating-products .spec-item:nth-child(1) .meter-fill {
+      background: linear-gradient(90deg, var(--primary-orange) 0%, var(--secondary-orange) 100%);
+    }
+    
+    .apgo-coating-products .spec-item:nth-child(2) .meter-fill {
+      background: linear-gradient(90deg, var(--primary-orange) 0%, #ffa847 100%);
+    }
+    
+    .apgo-coating-products .spec-item:nth-child(3) .meter-fill {
+      background: linear-gradient(90deg, #ff7a18 0%, #ffaa3c 100%);
+    }
+    
+    .apgo-coating-products .spec-item:nth-child(4) .meter-fill {
+      background: linear-gradient(90deg, var(--primary-orange) 0%, #ff8f3c 100%);
+    }
+    
+    {% if section.settings.enable_meter_animation %}
+    .apgo-coating-products .meter-fill::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.4) 50%, transparent 100%);
+      animation: apgo-shine 3s ease-in-out infinite;
+    }
+    
+    @keyframes apgo-shine {
+      0% { left: -100%; }
+      100% { left: 200%; }
+    }
+    {% endif %}
+    {% endif %}
+    
+    /* CTA 區域 */
+    .apgo-coating-products .cta-section {
+      width: 100%;
+      height: 110px;
+      padding: 15px;
+      border-radius: 12px;
+      margin-top: {{ section.settings.content_cta_gap_desktop }}px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .apgo-coating-products .simple-cta {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      height: 100%;
+      justify-content: center;
+    }
+    
+    .apgo-coating-products .price-display {
+      text-align: center;
+    }
+    
+    .apgo-coating-products .price-range {
+      color: var(--primary-orange);
+      font-weight: 600;
+    }
+    
+    /* CTA 按鈕容器 */
+    .apgo-coating-products .cta-buttons {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+    }
+    
+    .apgo-coating-products .view-more-btn {
+      background: transparent;
+      color: var(--primary-orange);
+      border: 2px solid var(--primary-orange);
+      border-radius: {{ section.settings.button_radius }}px;
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: none;
+      letter-spacing: 0.5px;
+      flex: 1;
+      font-weight: 600;
+      min-width: 0;
+      font-size: 0.9rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .apgo-coating-products .view-more-btn:hover {
+      background: var(--primary-orange);
+      color: var(--text-white);
+      transform: translateY(-1px);
+    }
+    
+    /* 加入購物車按鈕 */
+    .apgo-coating-products .add-to-cart-btn {
+      background: linear-gradient(45deg, var(--primary-orange), var(--secondary-orange));
+      color: var(--text-white);
+      border: none;
+      border-radius: {{ section.settings.button_radius }}px;
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: none;
+      letter-spacing: 0.5px;
+      position: relative;
+      overflow: hidden;
+      flex: 1;
+      min-width: 0;
+      font-size: 0.9rem;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    
+    .apgo-coating-products .add-to-cart-btn:hover {
+      background: linear-gradient(45deg, var(--secondary-orange), var(--primary-orange));
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(240, 132, 24, 0.3);
+    }
+    
+    .apgo-coating-products .add-to-cart-btn:disabled {
+      background: #666;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    /* 產品樣式變化 */
+    {% if section.settings.enable_product_styles %}
+    .apgo-coating-products .titanium-style .product-title {
+      background: linear-gradient(45deg, #4FC3F7, #81E6F3, #4DD0E1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: apgo-titanium-glow 3s ease-in-out infinite;
+    }
+    
+    @keyframes apgo-titanium-glow {
+      0%, 100% {
+        background: linear-gradient(45deg, #4FC3F7, #81E6F3, #4DD0E1);
+        -webkit-background-clip: text;
+        background-clip: text;
+      }
+      50% {
+        background: linear-gradient(45deg, #81E6F3, #4DD0E1, #4FC3F7);
+        -webkit-background-clip: text;
+        background-clip: text;
+      }
+    }
+    
+    .apgo-coating-products .aurora-style .product-title {
+      color: #4DD0E1 !important;
+      position: relative;
+    }
+    
+    .apgo-coating-products .aurora-style .product-title::before {
+      content: '✦';
+      position: absolute;
+      top: -5px;
+      right: -8px;
+      font-size: 0.7rem;
+      color: #4DD0E1;
+      animation: apgo-star-sparkle 2s ease-in-out infinite;
+    }
+    
+    @keyframes apgo-star-sparkle {
+      0%, 100% {
+        opacity: 0.3;
+        transform: scale(0.8);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1.2);
+      }
+    }
+    
+    .apgo-coating-products .glaze-style .product-title {
+      color: #66BB6A !important;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .apgo-coating-products .glaze-style .product-title::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      animation: apgo-glaze-shine 4s ease-in-out infinite;
+    }
+    
+    @keyframes apgo-glaze-shine {
+      0% { left: -100%; }
+      20% { left: 100%; }
+      100% { left: 100%; }
+    }
+    
+    .apgo-coating-products .crystal-style .product-title {
+      color: #81C784 !important;
+    }
+    
+    .apgo-coating-products .sealant-style .product-title {
+      color: #D4AF37 !important;
+    }
+    
+    .apgo-coating-products .basic-style .product-title {
+      color: var(--primary-orange) !important;
+    }
+    {% endif %}
+    
+    /* 彈窗樣式 */
+    .apgo-coating-products .apgo-variant-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 999999;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .apgo-coating-products .apgo-variant-modal.show {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .apgo-coating-products .apgo-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(4px);
+    }
+    
+    .apgo-coating-products .apgo-modal-content {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #1a1a1a;
+      border-radius: 16px;
+      border: 1px solid rgba(240, 132, 24, 0.3);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+      max-width: 450px;
+      width: 90%;
+      max-height: 85vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+    
+    /* 詳細資訊彈窗樣式 */
+    .apgo-coating-products .apgo-details-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 999999;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .apgo-coating-products .apgo-details-modal.show {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .apgo-coating-products .apgo-details-content {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #1a1a1a;
+      border-radius: 16px;
+      border: 1px solid rgba(240, 132, 24, 0.3);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+      max-width: 800px;
+      width: 90%;
+      max-height: 85vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+    
+    .apgo-coating-products .apgo-modal-header {
+      padding: {{ section.settings.modal_header_padding }}px;
+      border-bottom: 1px solid rgba(240, 132, 24, 0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .apgo-coating-products .apgo-modal-header h3 {
+      color: var(--primary-orange);
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin: 0;
+    }
+    
+    .apgo-coating-products .apgo-modal-close {
+      background: transparent;
+      border: none;
+      color: #ccc;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+    
+    .apgo-coating-products .apgo-modal-close:hover {
+      background: rgba(240, 132, 24, 0.1);
+      color: var(--primary-orange);
+    }
+    
+    .apgo-coating-products .apgo-modal-body {
+      padding: {{ section.settings.modal_padding }}px;
+    }
+    
+    .apgo-coating-products .apgo-variant-options {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .apgo-coating-products .apgo-variant-choice {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      background: rgba(240, 132, 24, 0.05);
+      border: 2px solid rgba(240, 132, 24, 0.2);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .apgo-coating-products .apgo-variant-choice:hover {
+      background: rgba(240, 132, 24, 0.1);
+      border-color: rgba(240, 132, 24, 0.4);
+      transform: translateY(-2px);
+    }
+    
+    .apgo-coating-products .apgo-variant-choice.loading {
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+    
+    .apgo-coating-products .apgo-choice-info h4 {
+      color: var(--primary-orange);
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    
+    .apgo-coating-products .apgo-choice-info p {
+      color: #b0b0b0;
+      font-size: 0.85rem;
+      margin: 0;
+      line-height: 1.4;
+    }
+    
+    .apgo-coating-products .apgo-choice-price {
+      color: var(--text-white);
+      font-size: 1.1rem;
+      font-weight: 700;
+      background: linear-gradient(45deg, var(--primary-orange), var(--secondary-orange));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    /* 詳細資訊彈窗內部樣式 */
+    .apgo-coating-products .details-header {
+      padding: {{ section.settings.modal_header_padding }}px;
+      border-bottom: 1px solid rgba(240, 132, 24, 0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+      position: sticky;
+      top: 0;
+      background: #1a1a1a;
+      z-index: 10;
+    }
+    
+    .apgo-coating-products .details-header-info h3 {
+      color: var(--primary-orange);
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    
+    .apgo-coating-products .details-body {
+      padding: {{ section.settings.modal_padding }}px;
+    }
+    
+    /* 圖片輪播 */
+    .apgo-coating-products .product-images-carousel {
+      position: relative;
+      width: 100%;
+      max-height: 400px;
+      overflow: hidden;
+      border-radius: 12px;
+      margin-bottom: 12px;
+    }
+    
+    .apgo-coating-products .product-detail-image {
+      width: 100%;
+      height: auto;
+      max-height: 400px;
+      object-fit: contain;
+      display: none;
+    }
+    
+    .apgo-coating-products .product-detail-image.active {
+      display: block;
+    }
+    
+    .apgo-coating-products .image-thumbnails {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    
+    .apgo-coating-products .thumbnail {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .apgo-coating-products .thumbnail:hover {
+      border-color: var(--primary-orange);
+      opacity: 0.8;
+    }
+    
+    .apgo-coating-products .thumbnail.active {
+      border-color: var(--primary-orange);
+    }
+    
+    /* 購買區域 */
+    .apgo-coating-products .product-purchase-section {
+      background: rgba(240, 132, 24, 0.05) !important;
+      border: 1px solid rgba(240, 132, 24, 0.2);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 24px 0;
+    }
+    
+    .apgo-coating-products .price-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .apgo-coating-products .original-price {
+      text-decoration: line-through;
+      color: #999;
+      font-size: 1.1rem;
+    }
+    
+    .apgo-coating-products .sale-price {
+      color: var(--primary-orange);
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+    
+    .apgo-coating-products .current-price {
+      color: var(--primary-orange);
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+    
+    .apgo-coating-products .discount-badge {
+      background: linear-gradient(45deg, var(--primary-orange), var(--secondary-orange));
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    
+    /* 變體選擇器 */
+    .apgo-coating-products .variant-selector {
+      margin-bottom: 16px;
+    }
+    
+    .apgo-coating-products .variant-selector label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--text-gray);
+      font-size: 0.9rem;
+    }
+    
+    .apgo-coating-products .variant-select {
+      width: 100%;
+      padding: 10px 12px;
+      background: #2a2a2a;
+      border: 1px solid rgba(240, 132, 24, 0.3);
+      border-radius: 8px;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    
+    /* 數量選擇器 */
+    .apgo-coating-products .quantity-selector {
+      margin-bottom: 20px;
+    }
+    
+    .apgo-coating-products .quantity-selector label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--text-gray);
+      font-size: 0.9rem;
+    }
+    
+    .apgo-coating-products .quantity-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .apgo-coating-products .quantity-controls button {
+      width: 36px;
+      height: 36px;
+      background: #2a2a2a !important;
+      border: 1px solid rgba(240, 132, 24, 0.3);
+      border-radius: 6px;
+      color: var(--primary-orange);
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      padding: 0;
+    }
+    
+    .apgo-coating-products .quantity-controls button:hover {
+      background: var(--primary-orange);
+      color: white;
+      border-color: var(--primary-orange);
+    }
+    
+    .apgo-coating-products .quantity-input {
+      width: 60px;
+      height: 36px;
+      text-align: center;
+      background: #2a2a2a !important;
+      border: 1px solid rgba(240, 132, 24, 0.3) !important;
+      border-radius: 6px;
+      color: white !important;
+      font-size: 1rem;
+      -moz-appearance: textfield;
+    }
+    
+    .apgo-coating-products .quantity-input::-webkit-outer-spin-button,
+    .apgo-coating-products .quantity-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    
+    /* 加入購物車按鈕 */
+    .apgo-coating-products .detail-add-to-cart-btn {
+      width: 100%;
+      padding: 14px 20px;
+      background: linear-gradient(45deg, var(--primary-orange), var(--secondary-orange));
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .apgo-coating-products .detail-add-to-cart-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(240, 132, 24, 0.4);
+    }
+    
+    /* 標籤頁 */
+    .apgo-coating-products .product-info-tabs {
+      margin-top: 30px;
+    }
+    
+    .apgo-coating-products .tab-buttons {
+      display: flex;
+      gap: 4px;
+      border-bottom: 2px solid rgba(240, 132, 24, 0.2);
+      margin-bottom: 20px;
+    }
+    
+    .apgo-coating-products .tab-btn {
+      padding: 10px 20px;
+      background: transparent;
+      border: none;
+      color: var(--text-gray);
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    
+    .apgo-coating-products .tab-btn:hover {
+      color: var(--primary-orange);
+    }
+    
+    .apgo-coating-products .tab-btn.active {
+      color: var(--primary-orange);
+    }
+    
+    .apgo-coating-products .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--primary-orange);
+    }
+    
+    .apgo-coating-products .tab-content {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    .apgo-coating-products .tab-content.active {
+      display: block;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    /* 規格網格 */
+    .apgo-coating-products .specs-grid {
+      display: grid;
+      gap: 12px;
+    }
+    
+    .apgo-coating-products .specs-grid .spec-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+    }
+    
+    .apgo-coating-products .specs-grid .spec-label {
+      color: var(--text-gray);
+      font-size: 0.9rem;
+    }
+    
+    .apgo-coating-products .specs-grid .spec-value {
+      color: white;
+      font-weight: 600;
+    }
+    
+    /* 通知樣式 */
+    .apgo-coating-products .apgo-notification {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      max-width: 350px;
+      padding: 16px 18px;
+      border-radius: 12px;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6), 0 4px 16px rgba(0, 0, 0, 0.4);
+      z-index: 99999;
+      transform: translateX(120%);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+      border: 1px solid rgba(240, 132, 24, 0.3);
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      opacity: 0;
+    }
+    
+    .apgo-coating-products .apgo-notification.show {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    
+    .apgo-coating-products .apgo-notification-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .apgo-coating-products .apgo-notification-message {
+      color: var(--text-white);
+      font-size: 0.9rem;
+      font-weight: 500;
+      line-height: 1.4;
+    }
+    
+    .apgo-coating-products .apgo-notification-link {
+      background: linear-gradient(45deg, var(--primary-orange), var(--secondary-orange));
+      color: var(--text-white);
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-align: center;
+      transition: all 0.3s ease;
+      display: inline-block;
+    }
+    
+    .apgo-coating-products .apgo-notification-link:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(240, 132, 24, 0.3);
+    }
+    
+    .apgo-coating-products .apgo-notification-close {
+      background: transparent;
+      border: none;
+      color: inherit;
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 0;
+      opacity: 0.7;
+      transition: opacity 0.3s ease;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .apgo-coating-products .apgo-notification-close:hover {
+      opacity: 1;
+    }
+    
+    /* 無障礙樣式 */
+    .apgo-coating-products .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    
+    /* 響應式設計 */
+    @media (max-width: 768px) {
+      .apgo-coating-products h2,
+      .apgo-coating-products .h2 {
+        font-size: 1.6rem;
+      }
+      
+      .apgo-coating-products h3,
+      .apgo-coating-products .h3 {
+        font-size: 1.3rem;
+      }
+      
+      .apgo-coating-products .text-secondary {
+        font-size: 0.85rem;
+      }
+      
+      .apgo-coating-products .text-small {
+        font-size: 0.75rem;
+      }
+      
+      .apgo-coating-products .text-tiny {
+        font-size: 0.7rem;
+      }
+      
+      .apgo-coating-products .button-text {
+        font-size: 0.9rem;
+      }
+      
+      .apgo-coating-products .products-header {
+        padding: 30px 20px 15px 20px;
+      }
+      
+      .apgo-coating-products .products-container {
+        padding: 15px 20px 50px 20px;
+      }
+      
+      .apgo-coating-products .product-item {
+        width: 350px;
+        height: {{ section.settings.card_height_mobile }}px;
+      }
+      
+      .apgo-coating-products .product-card {
+        padding: 14px;
+        border-radius: 12px;
+      }
+      
+      .apgo-coating-products .visual-area {
+        width: 140px;
+      }
+      
+      .apgo-coating-products .add-to-cart-btn {
+        padding: 10px 14px;
+        font-size: 0.8rem;
+      }
+      
+      .apgo-coating-products .view-more-btn {
+        padding: 10px 14px;
+        font-size: 0.8rem;
+      }
+      
+      .apgo-coating-products .cta-buttons {
+        gap: 6px;
+      }
+      
+      .apgo-coating-products .apgo-notification {
+        top: 70px;
+        right: 15px;
+        left: 15px;
+        max-width: calc(100vw - 30px);
+      }
+      
+      .apgo-coating-products .apgo-modal-content {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 92%;
+        max-width: none;
+        max-height: 80vh;
+        margin: 0;
+      }
+      
+      .apgo-coating-products .apgo-details-content {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 92%;
+        max-width: none;
+        max-height: 80vh;
+        margin: 0;
+      }
+      
+      .apgo-coating-products .apgo-modal-header {
+        padding: 15px;
+        position: sticky;
+        top: 0;
+        background: #1a1a1a;
+        z-index: 10;
+      }
+      
+      .apgo-coating-products .apgo-modal-body {
+        padding: 15px;
+        padding-bottom: 20px;
+      }
+      
+      .apgo-coating-products .details-header {
+        padding: 15px;
+        position: sticky;
+        top: 0;
+        background: #1a1a1a;
+        z-index: 10;
+      }
+      
+      .apgo-coating-products .details-body {
+        padding: 15px;
+        padding-bottom: 20px;
+      }
+      
+      .apgo-coating-products .apgo-variant-choice {
+        padding: 12px;
+        min-height: auto;
+      }
+      
+      .apgo-coating-products .details-info-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      
+      .apgo-coating-products .product-images-carousel {
+        max-height: 250px;
+      }
+      
+      .apgo-coating-products .product-detail-image {
+        max-height: 250px;
+      }
+      
+      .apgo-coating-products .detail-add-to-cart-btn {
+        padding: 12px 16px;
+        font-size: 1rem;
+      }
+      
+      .apgo-coating-products .tab-buttons {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      
+      .apgo-coating-products .tab-btn {
+        flex-shrink: 0;
+        padding: 8px 16px;
+        font-size: 0.85rem;
+      }
+      
+      .apgo-coating-products .cta-buttons {
+        flex-direction: column;
+      }
+      
+      .apgo-coating-products .view-more-btn,
+      .apgo-coating-products .add-to-cart-btn {
+        width: 100%;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .apgo-coating-products h2,
+      .apgo-coating-products .h2 {
+        font-size: 1.4rem;
+      }
+      
+      .apgo-coating-products h3,
+      .apgo-coating-products .h3 {
+        font-size: 1.2rem;
+      }
+      
+      .apgo-coating-products .apgo-modal-content,
+      .apgo-coating-products .apgo-details-content {
+        width: 94%;
+        max-height: 75vh;
+        border-radius: 12px;
+      }
+      
+      .apgo-coating-products .apgo-modal-header h3,
+      .apgo-coating-products .details-header-info h3 {
+        font-size: 1.1rem;
+      }
+      
+      .apgo-coating-products .apgo-choice-info h4 {
+        font-size: 0.9rem;
+      }
+      
+      .apgo-coating-products .apgo-choice-info p {
+        font-size: 0.75rem;
+      }
+      
+      .apgo-coating-products .apgo-choice-price {
+        font-size: 0.95rem;
+      }
+    }
+    
+    /* 高對比度模式 */
+    @media (prefers-contrast: high) {
+      .apgo-coating-products .product-card {
+        border: 2px solid var(--text-gray);
+      }
+      
+      .apgo-coating-products .product-card:hover {
+        border-color: var(--primary-orange);
+      }
+    }
+    
+    /* 減少動畫模式 */
+    @media (prefers-reduced-motion: reduce) {
+      .apgo-coating-products .product-card,
+      .apgo-coating-products .add-to-cart-btn,
+      .apgo-coating-products .meter-fill,
+      .apgo-coating-products .meter-fill::before {
+        transition: none;
+        animation: none;
+      }
+      
+      .apgo-coating-products .product-card:hover {
+        transform: none;
+      }
+    }
+    
+    /* 修正數量區塊白底＆顏色被主題覆蓋 */
+    .apgo-coating-products .quantity-selector,
+    .apgo-coating-products .quantity-controls { background: transparent !important; }
+
+    .apgo-coating-products .quantity-input {
+      background: #2a2a2a !important;
+      color: #fff !important;
+      border: 1px solid rgba(240,132,24,.3) !important;
+    }
+
+    .apgo-coating-products .quantity-controls button {
+      background: #2a2a2a !important;
+      color: var(--primary-orange) !important;
+      border: 1px solid rgba(240,132,24,.3) !important;
+    }
+    </style>
+    
+    <section class="apgo-coating-products apgo-section-{{ section.id | replace: '--', '-' | replace: '__', '-' }}">
+      {% if section.settings.show_header %}
+      <header class="products-header">
+        <h2 class="products-title">{{ section.settings.heading }}</h2>
+        {% if section.settings.subheading != blank %}
+        <p class="products-subtitle text-secondary">{{ section.settings.subheading }}</p>
+        {% endif %}
+      </header>
+      {% endif %}
+      
+      <div class="products-container" role="region">
+        <div class="carousel-wrapper" role="group">
+          {% for product in section.blocks %}
+            {% case product.type %}
+              {% when 'product' %}
+
+                
+                <article class="product-item">
+                  <div class="product-card {{ product.settings.style_class }}">
+                    {% if section.settings.show_top_accent %}
+                    <div class="top-accent"></div>
+                    {% endif %}
+                    
+                    {% if section.settings.show_product_labels and product.settings.label != blank %}
+                    <div class="product-label text-tiny">{{ product.settings.label }}</div>
+                    {% endif %}
+                    
+                    <div class="main-content">
+                      <div class="visual-area">
+                        {% if product.settings.image != blank %}
+                          <img src="{{ product.settings.image | image_url: width: 300 }}" 
+                               alt="{{ product.settings.title }} 產品圖片"
+                               width="300"
+                               height="300"
+                               loading="lazy" />
+                        {% endif %}
+                      </div>
+                      
+                      <div class="info-section">
+                        <div class="title-area">
+                          <h3 class="product-title">{{ product.settings.title }}</h3>
+                          <p class="product-intro text-small">{{ product.settings.description }}</p>
+                        </div>
+                        
+                        {% if section.settings.show_specs and product.settings.enable_specs_block %}
+                        <div class="specs-section">
+                          <div class="spec-item">
+                            <div class="spec-row">
+                              <span class="spec-label text-tiny">{{ section.settings.spec1_label }}</span>
+                              <span class="spec-data text-small">{{ product.settings.spec1_value }}</span>
+                            </div>
+                            {% if section.settings.show_spec_meters %}
+                            <div class="meter-bg">
+                              <div class="meter-fill" style="width: {{ product.settings.spec1_percentage }}%"></div>
+                            </div>
+                            {% endif %}
+                          </div>
+                          
+                          <div class="spec-item">
+                            <div class="spec-row">
+                              <span class="spec-label text-tiny">{{ section.settings.spec2_label }}</span>
+                              <span class="spec-data text-small">{{ product.settings.spec2_value }}</span>
+                            </div>
+                            {% if section.settings.show_spec_meters %}
+                            <div class="meter-bg">
+                              <div class="meter-fill" style="width: {{ product.settings.spec2_percentage }}%"></div>
+                            </div>
+                            {% endif %}
+                          </div>
+                          
+                          <div class="spec-item">
+                            <div class="spec-row">
+                              <span class="spec-label text-tiny">{{ section.settings.spec3_label }}</span>
+                              <span class="spec-data text-small">{{ product.settings.spec3_value }}</span>
+                            </div>
+                            {% if section.settings.show_spec_meters %}
+                            <div class="meter-bg">
+                              <div class="meter-fill" style="width: {{ product.settings.spec3_percentage }}%"></div>
+                            </div>
+                            {% endif %}
+                          </div>
+                          
+                          <div class="spec-item">
+                            <div class="spec-row">
+                              <span class="spec-label text-tiny">{{ section.settings.spec4_label }}</span>
+                              <span class="spec-data text-small">{{ product.settings.spec4_value }}</span>
+                            </div>
+                            {% if section.settings.show_spec_meters %}
+                            <div class="meter-bg">
+                              <div class="meter-fill" style="width: {{ product.settings.spec4_percentage }}%"></div>
+                            </div>
+                            {% endif %}
+                          </div>
+                        </div>
+                        {% endif %}
+                      </div>
+                    </div>
+                    
+                    <div class="cta-section">
+                      <div class="simple-cta">
+                        <div class="price-display">
+                          <span class="price-range text-secondary">{{ product.settings.price_range }}</span>
+                        </div>
+                        <div class="cta-buttons">
+                          <button type="button" class="view-more-btn button-text" 
+                                  data-action="open-details" 
+                                  data-target-id="details-{{ product.id }}"
+                                  onclick="(function(btn){ var id=btn.getAttribute('data-target-id'); var m=document.getElementById(id); if(m){ m.classList.add('show'); document.body.style.overflow='hidden'; } })(this)">
+                            {{ section.settings.view_more_text }}
+                          </button>
+                          <button type="button" class="add-to-cart-btn button-text" 
+                                  data-action="open-variants" 
+                                  data-target-id="modal-{{ product.id }}"
+                                  onclick="(function(btn){ var id=btn.getAttribute('data-target-id'); var m=document.getElementById(id); if(m){ m.classList.add('show'); document.body.style.overflow='hidden'; } })(this)">
+                            {{ section.settings.button_text }}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+            {% endcase %}
+          {% endfor %}
+        </div>
+      </div>
+      
+      <!-- 所有彈窗都移到滾動容器外面 -->
+      {% for product in section.blocks %}
+        {% case product.type %}
+          {% when 'product' %}
+            <!-- 產品變體選擇彈窗 -->
+            <div class="apgo-variant-modal" id="modal-{{ product.id }}">
+              <div class="apgo-modal-overlay" onclick="this.parentElement.classList.remove('show'); document.body.style.overflow = 'auto';"></div>
+              <div class="apgo-modal-content">
+                <div class="apgo-modal-header">
+                  <h3>選擇{{ product.settings.title }}規格</h3>
+                  <button class="apgo-modal-close" onclick="this.closest('.apgo-variant-modal').classList.remove('show'); document.body.style.overflow = 'auto';">&times;</button>
+                </div>
+                <div class="apgo-modal-body">
+                  <div class="apgo-variant-options">
+                    {% if product.settings.use_manual_variants %}
+                      {% comment %} 使用手動設定的變體 {% endcomment %}
+                      {% for variant in product.settings.variants %}
+                        {% assign variant_data = variant | split: '|' %}
+                        <div class="apgo-variant-choice" 
+                             data-variant-id="{{ variant_data[0] }}"
+                             data-variant-name="{{ variant_data[1] }}"
+                             onclick="APGOSection{{ section.id }}.addToCart('{{ variant_data[0] }}', 1, '{{ variant_data[1] }}')">
+                          <div class="apgo-choice-info">
+                            <h4>{{ variant_data[1] }}</h4>
+                            <p>{{ variant_data[2] }}</p>
+                          </div>
+                          <div class="apgo-choice-price">{{ variant_data[3] }}</div>
+                        </div>
+                      {% endfor %}
+                    {% elsif product.settings.shopify_product != blank %}
+                      {% comment %} 自動從 Shopify 產品載入變體 {% endcomment %}
+                      {% assign shopify_product = product.settings.shopify_product %}
+                      
+                      {% comment %} 收集指定的變體 ID {% endcomment %}
+                      {% assign allowed_ids = "" %}
+                      {% for i in (1..10) %}
+                        {% assign key = "preferred_variant_id_" | append: i %}
+                        {% assign val = product.settings[key] %}
+                        {% if val != blank %}
+                          {% assign allowed_ids = allowed_ids | append: val | append: "," %}
+                        {% endif %}
+                      {% endfor %}
+                      {% assign allowed_ids = allowed_ids | split: "," | compact %}
+                      
+                      {% for variant in shopify_product.variants %}
+                        {% comment %} 如果有指定 ID 則只顯示指定的變體，否則顯示全部 {% endcomment %}
+                        {% assign variant_id_str = variant.id | append: "" %}
+                        {% if allowed_ids == blank or allowed_ids contains variant_id_str %}
+                          <button type="button" class="apgo-variant-choice" 
+                                  data-variant-id="{{ variant.id }}"
+                                  data-variant-name="{{ variant.title }}"
+                                  onclick="APGOSection{{ section.id }}.addToCart('{{ variant.id }}', 1, '{{ shopify_product.title | escape }} - {{ variant.title | escape }}')">
+                            <div class="apgo-choice-info">
+                              <h4>{{ variant.title }}</h4>
+                              {% if variant.option1 %}
+                                <p>
+                                  {% if variant.option2 %}
+                                    {{ variant.option1 }} / {{ variant.option2 }}
+                                    {% if variant.option3 %} / {{ variant.option3 }}{% endif %}
+                                  {% else %}
+                                    {{ variant.option1 }}
+                                  {% endif %}
+                                </p>
+                              {% endif %}
+                            </div>
+                            <div class="apgo-choice-price">{{ variant.price | money }}</div>
+                          </button>
+                        {% endif %}
+                      {% endfor %}
+                    {% else %}
+                      {% comment %} 沒有設定變體時顯示提示 {% endcomment %}
+                      <div style="text-align: center; padding: 20px; color: #999;">
+                        <p>尚未設定產品變體</p>
+                        <p style="font-size: 0.85rem; margin-top: 10px;">請在區塊設定中選擇 Shopify 產品或設定手動變體</p>
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 產品詳細資訊彈窗 -->
+            <div class="apgo-details-modal" id="details-{{ product.id }}">
+              <div class="apgo-modal-overlay" onclick="this.parentElement.classList.remove('show'); document.body.style.overflow = 'auto';"></div>
+              <div class="apgo-details-content">
+                <div class="details-header">
+                  <div class="details-header-info">
+                    {% if product.settings.shopify_product != blank %}
+                      <h3>{{ product.settings.shopify_product.title | remove: 'APGO ' }}</h3>
+                      {% if product.settings.shopify_product.vendor != blank and product.settings.shopify_product.vendor != 'APGO' %}
+                        <p class="text-small" style="color: var(--primary-orange); margin-bottom: 8px;">{{ product.settings.shopify_product.vendor }}</p>
+                      {% endif %}
+                    {% else %}
+                      <h3>{{ product.settings.title }}</h3>
+                    {% endif %}
+                    <p class="text-secondary">{{ product.settings.description }}</p>
+                  </div>
+                  <button class="apgo-modal-close" onclick="this.closest('.apgo-details-modal').classList.remove('show'); document.body.style.overflow = 'auto';">&times;</button>
+                </div>
+                
+                <div class="details-body">
+                  {% if product.settings.shopify_product != blank %}
+                    {% assign shopify_product = product.settings.shopify_product %}
+                    
+                    {% comment %} 收集指定的變體 ID {% endcomment %}
+                    {% assign allowed_ids = "" %}
+                    {% for i in (1..10) %}
+                      {% assign key = "preferred_variant_id_" | append: i %}
+                      {% assign val = product.settings[key] %}
+                      {% if val != blank %}
+                        {% assign allowed_ids = allowed_ids | append: val | append: "," %}
+                      {% endif %}
+                    {% endfor %}
+                    {% assign allowed_ids = allowed_ids | split: "," | compact %}
+                    
+                    {% comment %} 找到第一個可用的變體作為預設 {% endcomment %}
+                    {% assign selected_variant = nil %}
+                    {% for v in shopify_product.variants %}
+                      {% assign v_id_str = v.id | append: "" %}
+                      {% if allowed_ids == blank or allowed_ids contains v_id_str %}
+                        {% if selected_variant == nil %}
+                          {% assign selected_variant = v %}
+                        {% endif %}
+                      {% endif %}
+                    {% endfor %}
+                    
+                    {% comment %} 如果沒有找到就用預設變體 {% endcomment %}
+                    {% if selected_variant == nil %}
+                      {% assign selected_variant = shopify_product.selected_or_first_available_variant %}
+                    {% endif %}
+                    
+                    <!-- 產品圖片輪播 -->
+                    {% if shopify_product.images.size > 0 %}
+                    <div class="details-image-section">
+                      <div class="product-images-carousel" id="carousel-{{ product.id }}">
+                        {% for image in shopify_product.images limit: 5 %}
+                          <img src="{{ image | image_url: width: 600 }}" 
+                               alt="{{ shopify_product.title }} - 圖片 {{ forloop.index }}"
+                               class="product-detail-image {% if forloop.first %}active{% endif %}"
+                               data-image-index="{{ forloop.index0 }}"
+                               width="600"
+                               height="600"
+                               loading="lazy" />
+                        {% endfor %}
+                      </div>
+                      {% if shopify_product.images.size > 1 %}
+                      <div class="image-thumbnails">
+                        {% for image in shopify_product.images limit: 5 %}
+                          <img src="{{ image | image_url: width: 100 }}" 
+                               alt="縮圖 {{ forloop.index }}"
+                               class="thumbnail {% if forloop.first %}active{% endif %}"
+                               data-index="{{ forloop.index0 }}"
+                               width="100"
+                               height="100" />
+                        {% endfor %}
+                      </div>
+                      {% endif %}
+                    </div>
+                    {% elsif product.settings.image != blank %}
+                    <div class="details-image-section">
+                      <img src="{{ product.settings.image | image_url: width: 600 }}" 
+                           alt="{{ product.settings.title }} 詳細圖片"
+                           style="width: 100%; border-radius: 12px;"
+                           width="600"
+                           height="600"
+                           loading="lazy" />
+                    </div>
+                    {% endif %}
+                    
+                    <!-- 產品說明區塊 -->
+                    <div class="product-description-section" style="margin-top: {{ section.settings.modal_section_gap }}px;">
+                      <h4 style="color: var(--primary-orange); margin-bottom: 15px; font-size: 1.2rem;">產品說明</h4>
+                      {% if shopify_product.description != blank %}
+                        <div style="color: var(--text-gray); line-height: 1.8;">
+                          {{ shopify_product.description }}
+                        </div>
+                      {% elsif product.settings.detailed_description != blank %}
+                        <p style="color: var(--text-gray); line-height: 1.8;">{{ product.settings.detailed_description }}</p>
+                      {% else %}
+                        <p style="color: var(--text-gray); line-height: 1.8;">{{ product.settings.description }}</p>
+                      {% endif %}
+                    </div>
+                    
+                    <!-- 產品特色 -->
+                    {% if section.settings.show_features_block and product.settings.enable_features_block and product.settings.features != blank %}
+                    <div class="product-features-section" style="margin-top: {{ section.settings.modal_section_gap | divided_by: 1.2 }}px; padding: 20px; background: rgba(240, 132, 24, 0.05); border-radius: 12px;">
+                      <h4 style="color: var(--primary-orange); margin-bottom: 15px; font-size: 1.1rem;">產品特色</h4>
+                      <ul style="list-style: none; padding: 0;">
+                        {% assign features = product.settings.features | split: ',' %}
+                        {% for feature in features %}
+                          <li style="color: var(--text-gray); padding: 8px 0; padding-left: 20px; position: relative;">
+                            <span style="position: absolute; left: 0; color: var(--primary-orange);">✓</span>
+                            {{ feature | strip }}
+                          </li>
+                        {% endfor %}
+                      </ul>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- 產品規格展示 -->
+                    {% if section.settings.show_specs_block and product.settings.enable_specs_block %}
+                    <div class="product-specs-display" style="margin-top: {{ section.settings.modal_section_gap | divided_by: 1.2 }}px; padding: 20px; background: rgba(255, 255, 255, 0.03); border-radius: 12px;">
+                      <h4 style="color: var(--primary-orange); margin-bottom: 15px; font-size: 1.1rem;">產品規格</h4>
+                      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                        <div>
+                          <span style="color: var(--text-light-gray); font-size: 0.85rem;">{{ section.settings.spec1_label }}</span>
+                          <p style="color: white; font-size: 1.1rem; font-weight: 600; margin-top: 5px;">{{ product.settings.spec1_value }}</p>
+                        </div>
+                        <div>
+                          <span style="color: var(--text-light-gray); font-size: 0.85rem;">{{ section.settings.spec2_label }}</span>
+                          <p style="color: white; font-size: 1.1rem; font-weight: 600; margin-top: 5px;">{{ product.settings.spec2_value }}</p>
+                        </div>
+                        <div>
+                          <span style="color: var(--text-light-gray); font-size: 0.85rem;">{{ section.settings.spec3_label }}</span>
+                          <p style="color: white; font-size: 1.1rem; font-weight: 600; margin-top: 5px;">{{ product.settings.spec3_value }}</p>
+                        </div>
+                        <div>
+                          <span style="color: var(--text-light-gray); font-size: 0.85rem;">{{ section.settings.spec4_label }}</span>
+                          <p style="color: white; font-size: 1.1rem; font-weight: 600; margin-top: 5px;">{{ product.settings.spec4_value }}</p>
+                        </div>
+                      </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- 購買區域 - 簡化版 -->
+                    <div class="product-purchase-section" style="margin-top: {{ section.settings.modal_section_gap }}px;">
+                      <div class="price-section">
+                        {% if selected_variant.compare_at_price > selected_variant.price %}
+                          <span class="original-price">{{ selected_variant.compare_at_price | money }}</span>
+                          <span class="sale-price">{{ selected_variant.price | money }}</span>
+                          <span class="discount-badge">
+                            省 {{ selected_variant.compare_at_price | minus: selected_variant.price | money }}
+                          </span>
+                        {% else %}
+                          <span class="current-price">{{ selected_variant.price | money }}</span>
+                        {% endif %}
+                        {% if allowed_ids.size > 0 %}
+                          <p class="text-small" style="color: #b0b0b0; margin-top: 8px;">
+                            已篩選 {{ allowed_ids.size }} 個指定變體
+                          </p>
+                        {% endif %}
+                        <span id="total-price-{{ product.id }}" class="text-small" style="color:#b0b0b0">
+                          合計：{{ selected_variant.price | money }}
+                        </span>
+                      </div>
+                      
+                      <!-- 變體選擇器 -->
+                      {% comment %} 計算要顯示的變體數量 {% endcomment %}
+                      {% assign display_variants_count = 0 %}
+                      {% for variant in shopify_product.variants %}
+                        {% assign variant_id_str = variant.id | append: "" %}
+                        {% if allowed_ids == blank or allowed_ids contains variant_id_str %}
+                          {% assign display_variants_count = display_variants_count | plus: 1 %}
+                        {% endif %}
+                      {% endfor %}
+                      
+                      {% if display_variants_count > 1 %}
+                      <div class="variant-selector">
+                        <label>選擇規格：</label>
+                        <select class="variant-select" id="variant-select-{{ product.id }}" data-product-id="{{ shopify_product.id }}">
+                          {% for variant in shopify_product.variants %}
+                            {% assign variant_id_str = variant.id | append: "" %}
+                            {% if allowed_ids == blank or allowed_ids contains variant_id_str %}
+                              <option value="{{ variant.id }}" 
+                                      data-price-cents="{{ variant.price | plus: 0 }}"
+                                      data-compare-cents="{{ variant.compare_at_price | default: 0 | plus: 0 }}"
+                                      {% unless variant.available %}disabled{% endunless %}
+                                      {% if variant.id == selected_variant.id %}selected{% endif %}>
+                                {{ variant.title }}
+                                {% unless variant.available %}(售完){% endunless %}
+                                - {{ variant.price | money }}
+                              </option>
+                            {% endif %}
+                          {% endfor %}
+                        </select>
+                      </div>
+                      {% elsif display_variants_count == 1 %}
+                      <!-- 只有一個變體時顯示鎖定資訊 -->
+                      <div class="locked-variant-info" style="padding: 12px; background: rgba(240, 132, 24, 0.1); border-radius: 8px; margin-bottom: 16px;">
+                        <label style="color: var(--text-gray); font-size: 0.9rem; display: block; margin-bottom: 8px;">規格：</label>
+                        <p style="color: var(--primary-orange); font-weight: 600; margin: 0;">
+                          {{ selected_variant.title }} - {{ selected_variant.price | money }}
+                          {% unless selected_variant.available %}<span style="color: #999;">（售完）</span>{% endunless %}
+                        </p>
+                      </div>
+                      {% endif %}
+                      
+                      <!-- 數量選擇 -->
+                      <div class="quantity-selector">
+                        <label>數量：</label>
+                        <div class="quantity-controls">
+                          <button type="button" class="quantity-btn minus" data-product-id="{{ product.id }}">−</button>
+                          <input type="number" class="quantity-input" id="quantity-{{ product.id }}" value="1" min="1" max="10" readonly>
+                          <button type="button" class="quantity-btn plus" data-product-id="{{ product.id }}">+</button>
+                        </div>
+                      </div>
+                      
+                      <!-- 加入購物車按鈕 -->
+                      <button class="detail-add-to-cart-btn" 
+                              id="add-to-cart-btn-{{ product.id }}"
+                              data-product-id="{{ product.id }}">
+                        加入購物車
+                      </button>
+                    </div>
+                    
+                    <!-- Theme Editor 專用變體查找工具 -->
+                    {% if request.design_mode %}
+                    <div style="margin-top:16px;padding:12px;border:1px dashed rgba(240,132,24,.4);border-radius:8px;background:rgba(240,132,24,.05)">
+                      <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+                        <strong style="color:var(--primary-orange)">變體管理工具（僅編輯器可見）</strong>
+                        <input id="variant-search-{{ product.id }}" placeholder="輸入關鍵字過濾變體"
+                               style="flex:1;padding:8px;border-radius:6px;border:1px solid rgba(240,132,24,.3);background:#2a2a2a;color:#fff">
+                      </div>
+                      {% if allowed_ids.size > 0 %}
+                        <p style="color:var(--primary-orange);font-size:0.85rem;margin-bottom:8px">
+                          ✓ 已設定 {{ allowed_ids.size }} 個指定變體，僅顯示以下變體：
+                        </p>
+                      {% else %}
+                        <p style="color:#999;font-size:0.85rem;margin-bottom:8px">
+                          ℹ️ 未設定指定變體，顯示所有變體：
+                        </p>
+                      {% endif %}
+                      <div id="variant-list-{{ product.id }}" style="max-height:220px;overflow:auto;font-size:.9rem;line-height:1.6">
+                        {% for v in shopify_product.variants %}
+                          {% assign is_selected = false %}
+                          {% assign v_id_str = v.id | append: "" %}
+                          {% if allowed_ids == blank or allowed_ids contains v_id_str %}
+                            {% assign is_selected = true %}
+                          {% endif %}
+                          <div data-title="{{ v.title | downcase }}" 
+                               style="display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06);{% unless is_selected %}opacity:0.5;{% endunless %}">
+                            <span>
+                              {% if is_selected %}✓{% else %}○{% endif %} 
+                              {{ v.title }}（ID：<code>{{ v.id }}</code>）
+                              {% unless v.available %}<em style="color:#999">｜售完</em>{% endunless %}
+                            </span>
+                            <button type="button" onclick="navigator.clipboard.writeText('{{ v.id }}')"
+                                    style="padding:4px 8px;border-radius:6px;border:1px solid rgba(240,132,24,.3);background:#2a2a2a;color:var(--primary-orange);cursor:pointer">
+                              複製 ID
+                            </button>
+                          </div>
+                        {% endfor %}
+                      </div>
+                      <script>
+                      (function(){
+                        const ip = document.getElementById('variant-search-{{ product.id }}');
+                        const list = document.getElementById('variant-list-{{ product.id }}');
+                        if (!ip || !list) return;
+                        ip.addEventListener('input', function(){
+                          const q = ip.value.trim().toLowerCase();
+                          list.querySelectorAll('[data-title]').forEach(function(row){
+                            row.style.display = q==='' || row.dataset.title.includes(q) ? 'flex' : 'none';
+                          });
+                        });
+                      })();
+                      </script>
+                    </div>
+                    {% endif %}
+                    
+                  {% else %}
+                    <!-- 如果沒有選擇 Shopify 產品，使用手動設定的內容 -->
+                    {% if product.settings.image != blank %}
+                    <div class="details-image-section">
+                      <img src="{{ product.settings.image | image_url: width: 600 }}" 
+                           alt="{{ product.settings.title }} 詳細圖片"
+                           width="600"
+                           height="600"
+                           loading="lazy" />
+                    </div>
+                    {% endif %}
+                    
+                    <div class="details-info-grid">
+                      <div class="detail-card">
+                        <h4>{{ section.settings.spec1_label }}</h4>
+                        <p>{{ product.settings.spec1_value }}</p>
+                      </div>
+                      <div class="detail-card">
+                        <h4>{{ section.settings.spec2_label }}</h4>
+                        <p>{{ product.settings.spec2_value }}</p>
+                      </div>
+                      <div class="detail-card">
+                        <h4>{{ section.settings.spec3_label }}</h4>
+                        <p>{{ product.settings.spec3_value }}</p>
+                      </div>
+                      <div class="detail-card">
+                        <h4>{{ section.settings.spec4_label }}</h4>
+                        <p>{{ product.settings.spec4_value }}</p>
+                      </div>
+                    </div>
+                    
+                    {% if product.settings.detailed_description != blank %}
+                    <div class="details-description">
+                      <h4>產品詳細說明</h4>
+                      <p>{{ product.settings.detailed_description }}</p>
+                    </div>
+                    {% endif %}
+                  {% endif %}
+                  
+                  <!-- 每個產品專用的 JavaScript 函數 -->
+                  <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                      // 圖片切換（更穩定的事件委派＋防呆）
+                      const detailsModal = document.getElementById('details-{{ product.id }}');
+                      if (detailsModal) {
+                        detailsModal.addEventListener('click', function(e){
+                          const thumb = e.target.closest('#details-{{ product.id }} .thumbnail');
+                          if (!thumb) return;
+                          e.preventDefault();
+
+                          const carousel = document.querySelector('#details-{{ product.id }} #carousel-{{ product.id }}');
+                          if (!carousel) return;
+
+                          const index = Number(thumb.getAttribute('data-index')) || 0;
+                          const imgs = carousel.querySelectorAll('.product-detail-image');
+                          const thumbs = detailsModal.querySelectorAll('.thumbnail');
+
+                          imgs.forEach(i => i.classList.remove('active'));
+                          thumbs.forEach(t => t.classList.remove('active'));
+
+                          if (imgs[index]) imgs[index].classList.add('active');
+                          thumb.classList.add('active');
+                        }, true);
+                      }
+                      
+                      // 數量控制已移至全域委派處理
+                        
+                        // 金額更新
+                        (function(){
+                          const fmt = new Intl.NumberFormat('zh-TW', { style: 'currency', currency: 'TWD' });
+                          const select = document.getElementById('variant-select-{{ product.id }}');
+                          const qtyInput = document.getElementById('quantity-{{ product.id }}');
+                          const priceBox = document.querySelector('#details-{{ product.id }} .price-section');
+                          if (!priceBox) return;
+
+                          const curEl   = priceBox.querySelector('.current-price');
+                          const saleEl  = priceBox.querySelector('.sale-price');
+                          const compEl  = priceBox.querySelector('.original-price');
+                          const totalEl = document.getElementById('total-price-{{ product.id }}');
+
+                          function centsToTWD(c){ return (parseInt(c,10) || 0) / 100; }
+
+                          function render(priceCents, compareCents){
+                            const price = centsToTWD(priceCents);
+                            const compare = centsToTWD(compareCents);
+
+                            // 顯示原價/特價或僅現價
+                            if (compare > price) {
+                              if (compEl) compEl.textContent = fmt.format(compare);
+                              if (saleEl) saleEl.textContent = fmt.format(price);
+                              if (curEl)  curEl.textContent  = fmt.format(price); // 若你只留一個 current-price 也會更新
+                            } else {
+                              if (compEl) compEl.textContent = '';
+                              if (saleEl) saleEl.textContent = '';
+                              if (curEl)  curEl.textContent  = fmt.format(price);
+                            }
+
+                            const qty = parseInt(qtyInput?.value || '1', 10) || 1;
+                            if (totalEl) totalEl.textContent = '合計：' + fmt.format(price * qty);
+                          }
+
+                          function recalc(){
+                            // 從 Liquid 帶進來的是整數分（保底）
+                            let priceCents   = parseInt('{{ selected_variant.price | default: 0 | plus: 0 }}', 10) || 0;
+                            let compareCents = parseInt('{{ selected_variant.compare_at_price | default: 0 | plus: 0 }}', 10) || 0;
+
+                            if (select && select.value) {
+                              const opt = select.options[select.selectedIndex];
+                              priceCents   = parseInt(opt.dataset.priceCents || priceCents, 10) || 0;
+                              compareCents = parseInt(opt.dataset.compareCents || compareCents, 10) || 0;
+                            }
+                            render(priceCents, compareCents);
+                          }
+
+                          if (select) select.addEventListener('change', recalc);
+                          if (qtyInput) qtyInput.addEventListener('change', recalc);
+                          recalc();
+                        })();
+                        
+                        // 加入購物車按鈕
+                        const addToCartBtn = document.getElementById('add-to-cart-btn-{{ product.id }}');
+                        if (addToCartBtn) {
+                          addToCartBtn.addEventListener('click', function() {
+                            const quantityInput = document.getElementById('quantity-{{ product.id }}');
+                            const quantity = parseInt(quantityInput.value) || 1;
+                            
+                            {% if product.settings.shopify_product != blank %}
+                              {% assign shopify_product = product.settings.shopify_product %}
+                              const variantSelect = document.getElementById('variant-select-{{ product.id }}');
+                              let variantId = '{{ selected_variant.id }}';
+                              let productName = '{{ shopify_product.title | escape }} - {{ selected_variant.title | escape }}';
+                              
+                              // 如果有變體選擇器且有選中值，使用選中的變體
+                              if (variantSelect && variantSelect.value) {
+                                variantId = variantSelect.value;
+                                const selectedOption = variantSelect.options[variantSelect.selectedIndex];
+                                const variantTitle = selectedOption.text.split(' - ')[0].replace('（售完）','').trim();
+                                productName = '{{ shopify_product.title | escape }}' + (variantTitle ? ' - ' + variantTitle : '');
+                                if (selectedOption.disabled) {
+                                  alert('此規格已售完');
+                                  return;
+                                }
+                              }
+                              
+                              // 檢查選定變體是否售完
+                              {% unless selected_variant.available %}
+                                alert('此規格已售完');
+                                return;
+                              {% endunless %}
+                              
+                              // 使用全域的加入購物車函數
+                              if (typeof APGOSection{{ section.id }} !== 'undefined' && APGOSection{{ section.id }}.addToCart) {
+                                // 禁用按鈕防止重複點擊
+                                addToCartBtn.disabled = true;
+                                addToCartBtn.textContent = '加入中...';
+                                
+                                APGOSection{{ section.id }}.addToCart(variantId, quantity, productName).then(function(result) {
+                                  if (result && result.success) {
+                                    // 成功後關閉彈窗
+                                    modal{{ product.id }}.classList.remove('show');
+                                    document.body.style.overflow = 'auto';
+                                  }
+                                }).finally(function() {
+                                  // 恢復按鈕狀態
+                                  addToCartBtn.disabled = false;
+                                  addToCartBtn.textContent = '加入購物車';
+                                });
+                              } else {
+                                console.error('加入購物車功能未載入');
+                                alert('系統錯誤，請重新整理頁面後再試');
+                              }
+                            {% else %}
+                              alert('請選擇產品規格');
+                            {% endif %}
+                          });
+                        }
+                      }
+                    });
+                  </script>
+                </div>
+              </div>
+            </div>
+        {% endcase %}
+      {% endfor %}
+    </section>
+    
+    <script>
+    // 全域標籤頁切換函數
+    function switchTab(event, tabId) {
+      const button = event.currentTarget;
+      const container = button.closest('.product-info-tabs');
+      
+      // 切換按鈕狀態
+      container.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      button.classList.add('active');
+      
+      // 切換內容顯示
+      container.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      const targetContent = document.getElementById(tabId);
+      if (targetContent) {
+        targetContent.classList.add('active');
+      }
+    }
+    
+    // 使用命名空間避免衝突
+    window.APGOSection{{ section.id }} = (function() {
+      'use strict';
+      
+      const DEBUG = true; // 切換除錯模式
+      const dbg = (...args) => DEBUG && console.log('[APGO {{ section.id }}]', ...args);
+      
+      const sectionId = '{{ section.id }}';
+      const cartManager = {
+        isAdding: false,
+        cartRoute: '/cart/add.js',
+        cartInfoRoute: '/cart.js',
+        
+        async addToCart(variantId, quantity = 1, productName = '商品') {
+          if (this.isAdding) return;
+          
+          this.isAdding = true;
+          
+          const cartData = {
+            id: parseInt(variantId),
+            quantity: quantity,
+            properties: {
+              '_source': '商品卡片',
+              '_timestamp': new Date().toISOString()
+            }
+          };
+    
+          try {
+            const response = await fetch(this.cartRoute, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+              },
+              body: JSON.stringify(cartData)
+            });
+    
+            if (response.ok) {
+              const data = await response.json();
+              this.showNotification(productName + ' 已成功加入購物車！', 'success');
+              this.updateCartUI();
+              
+              // 關閉彈窗
+              document.querySelectorAll('.apgo-variant-modal').forEach(modal => {
+                modal.classList.remove('show');
+              });
+              document.querySelectorAll('.apgo-details-modal').forEach(modal => {
+                modal.classList.remove('show');
+              });
+              document.body.style.overflow = 'auto';
+              
+              // 觸發事件
+              document.dispatchEvent(new CustomEvent('cart:item-added', {
+                detail: { item: data, product: productName }
+              }));
+              
+              return { success: true, data: data };
+            } else {
+              const error = await response.json();
+              throw new Error(error.description || '加入購物車失敗');
+            }
+            
+          } catch (error) {
+            console.error('Add to cart error:', error);
+            this.showNotification(error.message || '加入購物車失敗，請稍後再試', 'error');
+            alert('加入購物車失敗：' + (error && error.message ? error.message : '未知錯誤'));
+            return { success: false, error: error.message };
+          } finally {
+            this.isAdding = false;
+          }
+        },
+        
+        showNotification(message, type = 'info') {
+          const existingNotification = document.querySelector('.apgo-notification');
+          if (existingNotification) {
+            existingNotification.remove();
+          }
+    
+          const notification = document.createElement('div');
+          notification.className = 'apgo-notification ' + type;
+          
+          const isSuccess = type === 'success';
+          notification.innerHTML = `
+            <div class="apgo-notification-content">
+              <div class="apgo-notification-message">${message}</div>
+              ${isSuccess ? `<a href="/cart" class="apgo-notification-link">查看購物車</a>` : ''}
+            </div>
+            <button class="apgo-notification-close" onclick="this.parentNode.remove()">&times;</button>
+          `;
+    
+          document.body.appendChild(notification);
+          
+          setTimeout(() => {
+            notification.classList.add('show');
+          }, 100);
+          
+          setTimeout(() => {
+            if (notification.parentNode) {
+              notification.classList.remove('show');
+              setTimeout(() => {
+                if (notification.parentNode) {
+                  notification.remove();
+                }
+              }, 300);
+            }
+          }, 5000);
+        },
+        
+        async updateCartUI() {
+          try {
+            const cart = await fetch(this.cartInfoRoute).then(response => response.json());
+            
+            const cartCountElements = document.querySelectorAll('.cart-count, [data-cart-count]');
+            cartCountElements.forEach(element => {
+              element.textContent = cart.item_count;
+              element.style.display = cart.item_count > 0 ? 'block' : 'none';
+            });
+            
+            document.dispatchEvent(new CustomEvent('cart:updated', { detail: cart }));
+            
+          } catch (error) {
+            console.error('Failed to update cart UI:', error);
+          }
+        }
+      };
+      
+      // 公開的方法
+      return {
+        showDetailsModal(productId) {
+          const modal = document.getElementById('details-' + productId);
+          if (modal) {
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+          }
+        },
+        
+        closeDetailsModal(productId) {
+          const modal = document.getElementById('details-' + productId);
+          if (modal) {
+            modal.classList.remove('show');
+            document.body.style.overflow = 'auto';
+          }
+        },
+        
+        showVariantModal(productId) {
+          const modal = document.getElementById('modal-' + productId);
+          if (modal) {
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+          }
+        },
+        
+        closeModal(productId) {
+          const modal = document.getElementById('modal-' + productId);
+          if (modal) {
+            modal.classList.remove('show');
+            document.body.style.overflow = 'auto';
+          }
+        },
+        
+        addToCart(variantId, quantity, productName) {
+          return cartManager.addToCart(variantId, quantity, productName);
+        },
+        
+        init() {
+          const wrapper = document.querySelector('.apgo-section-' + sectionId + ' .carousel-wrapper');
+          dbg('init start, wrapper:', !!wrapper);
+
+          // 1) 按鈕點擊（事件委派）＋詳細除錯
+          document.addEventListener('click', function(e){
+            const btn = e.target.closest('[data-action="open-details"], [data-action="open-variants"]');
+            if (!btn) return;
+
+            const action = btn.dataset.action;
+            const targetId = btn.getAttribute('data-target-id');
+            const modal = document.getElementById(targetId);
+
+            dbg('button click', { action, targetId, btn, modalFound: !!modal });
+
+            if (!modal) {
+              console.warn('[APGO {{ section.id }}] 找不到目標 Modal：', targetId);
+              // 顯眼的視覺提示，幫助定位問題
+              btn.style.outline = '2px solid red';
+              setTimeout(()=> btn.style.outline = '', 1000);
+              return;
+            }
+
+            // 若有任何遮罩疑慮，檢查是否有覆蓋元素
+            const btnRect = btn.getBoundingClientRect();
+            const elAtPoint = document.elementFromPoint(btnRect.left + 5, btnRect.top + 5);
+            dbg('elementFromPoint over btn:', elAtPoint);
+
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+          }, true); // ← 用捕獲階段，避免被其它 listener 取消
+
+          // 2) 有 wrapper 才啟用水平捲動/拖曳，並避免干擾互動元件
+          if (wrapper) {
+            // 當目標是可互動元素時，直接退出（不要攔截）
+            const isInteractive = (el) => !!el.closest('button, a, select, input, textarea, label, [role="button"]');
+
+            wrapper.addEventListener('wheel', function(e) {
+              if (isInteractive(e.target)) return; // 不攔截滾輪
+              if (e.deltaY !== 0) {
+                e.preventDefault();
+                wrapper.scrollLeft += e.deltaY;
+                dbg('wheel scrollLeft:', wrapper.scrollLeft);
+              }
+            }, { passive: false });
+
+            let isDown = false;
+            let startX;
+            let scrollLeft;
+            let moved = false;
+
+            wrapper.addEventListener('mousedown', (e) => {
+              if (isInteractive(e.target)) { dbg('mousedown on interactive, ignore drag'); return; }
+              isDown = true;
+              moved = false;
+              wrapper.style.cursor = 'grabbing';
+              startX = e.pageX - wrapper.offsetLeft;
+              scrollLeft = wrapper.scrollLeft;
+              dbg('drag start');
+            });
+
+            wrapper.addEventListener('mouseleave', () => {
+              isDown = false;
+              wrapper.style.cursor = 'grab';
+            });
+
+            wrapper.addEventListener('mouseup', (e) => {
+              wrapper.style.cursor = 'grab';
+              // 若有拖曳過，阻止接下來的 click 觸發（避免點擊被視為拖曳後點不到）
+              if (moved) {
+                e.preventDefault();
+                e.stopPropagation();
+                dbg('drag end, consumed click');
+              }
+              isDown = false;
+            });
+
+            wrapper.addEventListener('mousemove', (e) => {
+              if (!isDown) return;
+              // 若拖曳起點是互動元素，就別阻止預設行為
+              if (isInteractive(e.target)) return;
+              e.preventDefault();
+              const x = e.pageX - wrapper.offsetLeft;
+              const walk = (x - startX) * 2;
+              if (Math.abs(walk) > 3) moved = true; // 超過閾值才當作拖曳
+              wrapper.scrollLeft = scrollLeft - walk;
+            });
+          } else {
+            console.warn('[APGO {{ section.id }}] 找不到 .carousel-wrapper，按鈕仍可用，但無法水平拖曳');
+          }
+
+          // 3) 其它初始化
+          document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+              document.querySelectorAll('.apgo-section-' + sectionId + ' .apgo-variant-modal.show').forEach(m => m.classList.remove('show'));
+              document.querySelectorAll('.apgo-section-' + sectionId + ' .apgo-details-modal.show').forEach(m => m.classList.remove('show'));
+              document.body.style.overflow = 'auto';
+              dbg('ESC close all modals');
+            }
+          });
+
+          {% if section.settings.show_spec_meters and section.settings.enable_meter_animation %}
+          setTimeout(() => {
+            const meters = document.querySelectorAll('.apgo-section-' + sectionId + ' .meter-fill');
+            meters.forEach(fill => {
+              const width = fill.style.width;
+              fill.style.width = '0%';
+              setTimeout(() => { fill.style.width = width; }, 100);
+            });
+          }, 500);
+          {% endif %}
+
+          cartManager.updateCartUI();
+        }
+      };
+    })();
+    
+    // 初始化
+    document.addEventListener('DOMContentLoaded', function() {
+      if (typeof APGOSection{{ section.id }} !== 'undefined') {
+        APGOSection{{ section.id }}.init();
+      }
+    });
+    
+    // 全域：數量加減（任何產品都吃得到），並觸發該彈窗內的價格重算
+    document.addEventListener('click', function(e){
+      const minus = e.target.closest('.quantity-btn.minus');
+      const plus  = e.target.closest('.quantity-btn.plus');
+      if (!minus && !plus) return;
+
+      const pid = (minus || plus).getAttribute('data-product-id');
+      const ip  = document.getElementById('quantity-' + pid);
+      if (!ip) return;
+
+      let v = parseInt(ip.value, 10) || 1;
+      if (minus) v = Math.max(1, v - 1);
+      if (plus)  v = Math.min(10, v + 1);
+
+      ip.value = v;
+      ip.dispatchEvent(new Event('change', { bubbles: true })); // 讓價格一起更新
+    }, true);
+    
+    // 為了確保相容性，也在 window.onload 時執行
+    window.addEventListener('load', function() {
+      if (typeof APGOSection{{ section.id }} !== 'undefined' && typeof APGOSection{{ section.id }}.init === 'function') {
+        APGOSection{{ section.id }}.init();
+      }
+    });
+    </script>
+    
+    {% schema %}
+    {
+      "name": "APGO 專業鍍膜產品系列",
+      "class": "apgo-coating-products-section",
+      "settings": [
+        {
+          "type": "header",
+          "content": "區塊設定"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_header",
+          "label": "顯示標題區塊",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "標題",
+          "default": "專業鍍膜產品系列"
+        },
+        {
+          "type": "text",
+          "id": "subheading",
+          "label": "副標題",
+          "default": "APGO研發的鍍膜皆不分任何車色、不分任何材質，開始挑選專屬自己的鍍膜吧"
+        },
+        {
+          "type": "select",
+          "id": "header_alignment",
+          "label": "標題對齊",
+          "options": [
+            {
+              "value": "left",
+              "label": "靠左"
+            },
+            {
+              "value": "center",
+              "label": "置中"
+            }
+          ],
+          "default": "left"
+        },
+        {
+          "type": "header",
+          "content": "顏色設定"
+        },
+        {
+          "type": "color",
+          "id": "primary_color",
+          "label": "主要顏色",
+          "default": "#f08418"
+        },
+        {
+          "type": "color",
+          "id": "secondary_color",
+          "label": "次要顏色",
+          "default": "#ff9a3c"
+        },
+        {
+          "type": "color",
+          "id": "background_color",
+          "label": "背景顏色",
+          "default": "#000000"
+        },
+        {
+          "type": "color",
+          "id": "card_background",
+          "label": "卡片背景顏色",
+          "default": "#1a1a1a"
+        },
+        {
+          "type": "color",
+          "id": "text_white",
+          "label": "白色文字",
+          "default": "#ffffff"
+        },
+        {
+          "type": "color",
+          "id": "text_gray",
+          "label": "灰色文字",
+          "default": "#cccccc"
+        },
+        {
+          "type": "color",
+          "id": "text_light_gray",
+          "label": "淺灰色文字",
+          "default": "#b0b0b0"
+        },
+        {
+          "type": "color",
+          "id": "card_border_color",
+          "label": "卡片邊框顏色",
+          "default": "#333333"
+        },
+        {
+          "type": "header",
+          "content": "尺寸設定"
+        },
+        {
+          "type": "range",
+          "id": "section_padding_top",
+          "label": "區塊上內距",
+          "min": 0,
+          "max": 100,
+          "step": 10,
+          "unit": "px",
+          "default": 0
+        },
+        {
+          "type": "range",
+          "id": "section_padding_bottom",
+          "label": "區塊下內距",
+          "min": 0,
+          "max": 100,
+          "step": 10,
+          "unit": "px",
+          "default": 0
+        },
+        {
+          "type": "range",
+          "id": "heading_size",
+          "label": "標題大小",
+          "min": 20,
+          "max": 48,
+          "step": 2,
+          "unit": "px",
+          "default": 32
+        },
+        {
+          "type": "range",
+          "id": "product_title_size",
+          "label": "產品標題大小",
+          "min": 16,
+          "max": 32,
+          "step": 2,
+          "unit": "px",
+          "default": 24
+        },
+        {
+          "type": "range",
+          "id": "card_width",
+          "label": "卡片寬度",
+          "min": 300,
+          "max": 500,
+          "step": 10,
+          "unit": "px",
+          "default": 380
+        },
+        {
+          "type": "range",
+          "id": "card_height_desktop",
+          "label": "卡片高度 (桌面版)",
+          "min": 400,
+          "max": 600,
+          "step": 10,
+          "unit": "px",
+          "default": 480
+        },
+        {
+          "type": "range",
+          "id": "card_height_mobile",
+          "label": "卡片高度 (手機版)",
+          "min": 350,
+          "max": 550,
+          "step": 10,
+          "unit": "px",
+          "default": 420,
+          "info": "手機版的卡片高度，可根據內容調整"
+        },
+        {
+          "type": "range",
+          "id": "card_gap",
+          "label": "卡片間距",
+          "min": 10,
+          "max": 50,
+          "step": 5,
+          "unit": "px",
+          "default": 25
+        },
+        {
+          "type": "range",
+          "id": "card_radius",
+          "label": "卡片圓角",
+          "min": 0,
+          "max": 24,
+          "step": 2,
+          "unit": "px",
+          "default": 16
+        },
+        {
+          "type": "range",
+          "id": "button_radius",
+          "label": "按鈕圓角",
+          "min": 0,
+          "max": 16,
+          "step": 2,
+          "unit": "px",
+          "default": 8
+        },
+        {
+          "type": "header",
+          "content": "間距設定"
+        },
+        {
+          "type": "range",
+          "id": "content_cta_gap_desktop",
+          "label": "內容與CTA間距 (桌面版)",
+          "min": 0,
+          "max": 50,
+          "step": 2,
+          "unit": "px",
+          "default": 18
+        },
+        {
+          "type": "range",
+          "id": "content_cta_gap_mobile",
+          "label": "內容與CTA間距 (手機版)",
+          "min": 0,
+          "max": 50,
+          "step": 2,
+          "unit": "px",
+          "default": 12,
+          "info": "調整資訊區塊與底部CTA按鈕區塊的間距"
+        },
+        {
+          "type": "header",
+          "content": "顯示設定"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_top_accent",
+          "label": "顯示頂部強調線",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_product_labels",
+          "label": "顯示產品標籤",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_specs",
+          "label": "顯示規格資訊",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_spec_meters",
+          "label": "顯示規格進度條",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "enable_meter_animation",
+          "label": "啟用進度條動畫",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "enable_hover_effect",
+          "label": "啟用懸停效果",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "enable_product_styles",
+          "label": "啟用產品樣式效果",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_edge_gradient",
+          "label": "顯示邊緣漸層",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_features_block",
+          "label": "在彈窗顯示產品特色",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "show_specs_block",
+          "label": "在彈窗顯示產品規格",
+          "default": true
+        },
+        {
+          "type": "header",
+          "content": "規格標籤設定"
+        },
+        {
+          "type": "text",
+          "id": "spec1_label",
+          "label": "規格1標籤",
+          "default": "持久度"
+        },
+        {
+          "type": "text",
+          "id": "spec2_label",
+          "label": "規格2標籤",
+          "default": "疏水度"
+        },
+        {
+          "type": "text",
+          "id": "spec3_label",
+          "label": "規格3標籤",
+          "default": "耐洗度"
+        },
+        {
+          "type": "text",
+          "id": "spec4_label",
+          "label": "規格4標籤",
+          "default": "光澤度"
+        },
+        {
+          "type": "header",
+          "content": "按鈕設定"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "購買按鈕文字",
+          "default": "挑選"
+        },
+        {
+          "type": "text",
+          "id": "view_more_text",
+          "label": "查看更多按鈕文字",
+          "default": "查看更多"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_shopify_product_link",
+          "label": "顯示產品頁面連結",
+          "default": false,
+          "info": "在詳細資訊彈窗中顯示前往 Shopify 產品頁面的連結"
+        },
+        {
+          "type": "header",
+          "content": "彈窗設定"
+        },
+        {
+          "type": "range",
+          "id": "modal_padding",
+          "label": "彈窗內間距",
+          "min": 15,
+          "max": 40,
+          "step": 5,
+          "unit": "px",
+          "default": 25,
+          "info": "設定彈窗內容的內間距"
+        },
+        {
+          "type": "range",
+          "id": "modal_header_padding",
+          "label": "彈窗標題內間距",
+          "min": 15,
+          "max": 30,
+          "step": 5,
+          "unit": "px",
+          "default": 25,
+          "info": "設定彈窗標題區域的內間距"
+        },
+        {
+          "type": "range",
+          "id": "modal_section_gap",
+          "label": "彈窗區塊間距",
+          "min": 20,
+          "max": 40,
+          "step": 5,
+          "unit": "px",
+          "default": 30,
+          "info": "設定彈窗內各區塊之間的間距"
+        }
+      ],
+      "blocks": [
+        {
+          "type": "product",
+          "name": "產品",
+          "settings": [
+            {
+              "type": "text",
+              "id": "title",
+              "label": "產品名稱",
+              "default": "鈦晶鍍膜"
+            },
+            {
+              "type": "text",
+              "id": "description",
+              "label": "產品描述",
+              "default": "高硬度鈦晶結構，極致防護與持久光澤。"
+            },
+            {
+              "type": "image_picker",
+              "id": "image",
+              "label": "產品圖片"
+            },
+            {
+              "type": "text",
+              "id": "label",
+              "label": "標籤文字",
+              "default": "頂規"
+            },
+            {
+              "type": "select",
+              "id": "style_class",
+              "label": "產品樣式",
+              "options": [
+                {
+                  "value": "titanium-style",
+                  "label": "鈦晶樣式"
+                },
+                {
+                  "value": "aurora-style",
+                  "label": "極光樣式"
+                },
+                {
+                  "value": "glaze-style",
+                  "label": "釉面樣式"
+                },
+                {
+                  "value": "crystal-style",
+                  "label": "微晶樣式"
+                },
+                {
+                  "value": "sealant-style",
+                  "label": "封體樣式"
+                },
+                {
+                  "value": "basic-style",
+                  "label": "基礎樣式"
+                }
+              ],
+              "default": "titanium-style"
+            },
+            {
+              "type": "text",
+              "id": "price_range",
+              "label": "價格範圍",
+              "default": "NT$388 ~ 1,880"
+            },
+            {
+              "type": "text",
+              "id": "preferred_variant_id_1",
+              "label": "指定變體 ID 1",
+              "info": "貼上要顯示的變體 ID（數字）"
+            },
+            {
+              "type": "text",
+              "id": "preferred_variant_id_2",
+              "label": "指定變體 ID 2",
+              "info": "貼上要顯示的變體 ID（數字）"
+            },
+            {
+              "type": "text",
+              "id": "preferred_variant_id_3",
+              "label": "指定變體 ID 3",
+              "info": "貼上要顯示的變體 ID（數字）"
+            },
+            {
+              "type": "text",
+              "id": "preferred_variant_id_4",
+              "label": "指定變體 ID 4",
+              "info": "貼上要顯示的變體 ID（數字）"
+            },
+            {
+              "type": "text",
+              "id": "preferred_variant_id_5",
+              "label": "指定變體 ID 5",
+              "info": "貼上要顯示的變體 ID（數字）"
+            },
+            {
+              "type": "text",
+              "id": "preferred_variant_id_6",
+              "label": "指定變體 ID 6",
+              "info": "貼上要顯示的變體 ID（數字）"
+            },
+            {
+              "type": "text",
+              "id": "preferred_variant_id_7",
+              "label": "指定變體 ID 7",
+              "info": "貼上要顯示的變體 ID（數字）"
+            },
+            {
+              "type": "text",
+              "id": "preferred_variant_id_8",
+              "label": "指定變體 ID 8",
+              "info": "貼上要顯示的變體 ID（數字）"
+            },
+            {
+              "type": "text",
+              "id": "preferred_variant_id_9",
+              "label": "指定變體 ID 9",
+              "info": "貼上要顯示的變體 ID（數字）"
+            },
+            {
+              "type": "text",
+              "id": "preferred_variant_id_10",
+              "label": "指定變體 ID 10",
+              "info": "貼上要顯示的變體 ID（數字）"
+            },
+            {
+              "type": "checkbox",
+              "id": "enable_features_block",
+              "label": "此商品顯示：產品特色",
+              "default": true
+            },
+            {
+              "type": "checkbox",
+              "id": "enable_specs_block",
+              "label": "此商品顯示：產品規格（彈窗）",
+              "default": true
+            },
+            {
+              "type": "header",
+              "content": "規格數值"
+            },
+            {
+              "type": "text",
+              "id": "spec1_value",
+              "label": "規格1數值",
+              "default": "180天"
+            },
+            {
+              "type": "range",
+              "id": "spec1_percentage",
+              "label": "規格1百分比",
+              "min": 0,
+              "max": 100,
+              "step": 1,
+              "unit": "%",
+              "default": 100
+            },
+            {
+              "type": "text",
+              "id": "spec2_value",
+              "label": "規格2數值",
+              "default": "95%"
+            },
+            {
+              "type": "range",
+              "id": "spec2_percentage",
+              "label": "規格2百分比",
+              "min": 0,
+              "max": 100,
+              "step": 1,
+              "unit": "%",
+              "default": 95
+            },
+            {
+              "type": "text",
+              "id": "spec3_value",
+              "label": "規格3數值",
+              "default": "30+次"
+            },
+            {
+              "type": "range",
+              "id": "spec3_percentage",
+              "label": "規格3百分比",
+              "min": 0,
+              "max": 100,
+              "step": 1,
+              "unit": "%",
+              "default": 100
+            },
+            {
+              "type": "text",
+              "id": "spec4_value",
+              "label": "規格4數值",
+              "default": "98%"
+            },
+            {
+              "type": "range",
+              "id": "spec4_percentage",
+              "label": "規格4百分比",
+              "min": 0,
+              "max": 100,
+              "step": 1,
+              "unit": "%",
+              "default": 98
+            },
+            {
+              "type": "textarea",
+              "id": "detailed_description",
+              "label": "產品詳細說明",
+              "info": "顯示在查看更多彈窗中"
+            },
+            {
+              "type": "textarea",
+              "id": "features",
+              "label": "產品特色",
+              "info": "用逗號分隔多個特色，例如：超強疏水效果,持久保護,易於施工",
+              "default": "超強疏水效果,持久保護,易於施工,不挑車色材質"
+            },
+            {
+              "type": "textarea",
+              "id": "usage_instructions",
+              "label": "使用說明",
+              "info": "顯示在查看更多彈窗中"
+            },
+            {
+              "type": "product",
+              "id": "shopify_product",
+              "label": "選擇 Shopify 產品",
+              "info": "選擇產品後會自動載入所有變體"
+            },
+            {
+              "type": "checkbox",
+              "id": "use_manual_variants",
+              "label": "使用手動變體設定",
+              "default": false,
+              "info": "勾選後使用下方的手動設定，否則自動從產品載入變體"
+            },
+            {
+              "type": "textarea",
+              "id": "variants",
+              "label": "手動產品變體 (選用)",
+              "info": "格式：變體ID|名稱|描述|價格，每行一個變體",
+              "default": "47298258206971|鈦晶鍍膜 300ml|適合完整車輛施工，提供全面保護|NT$1,880\n47325922918651|鈦晶鍍膜 30ml 試用組|體驗產品效果，適合小範圍測試|NT$388"
+            }
+          ]
+        }
+      ],
+      "presets": [
+        {
+          "name": "APGO 專業鍍膜產品系列",
+          "blocks": [
+            {
+              "type": "product",
+              "settings": {
+                "title": "鈦晶鍍膜",
+                "description": "高硬度鈦晶結構，極致防護與持久光澤。",
+                "label": "頂規",
+                "style_class": "titanium-style",
+                "price_range": "NT$388 ~ 1,880",
+                "spec1_value": "180天",
+                "spec1_percentage": 100,
+                "spec2_value": "95%",
+                "spec2_percentage": 95,
+                "spec3_value": "30+次",
+                "spec3_percentage": 100,
+                "spec4_value": "98%",
+                "spec4_percentage": 98
+              }
+            },
+            {
+              "type": "product",
+              "settings": {
+                "title": "原子極光鍍膜",
+                "description": "極光般亮澤，強化表面防護，提升美觀。",
+                "label": "乾濕兩用",
+                "style_class": "aurora-style",
+                "price_range": "NT$1,480",
+                "spec1_value": "150天",
+                "spec1_percentage": 83,
+                "spec2_value": "80%",
+                "spec2_percentage": 80,
+                "spec3_value": "20+次",
+                "spec3_percentage": 70,
+                "spec4_value": "80分",
+                "spec4_percentage": 80
+              }
+            }
+          ]
+        }
+      ]
+    }
+    {% endschema %}

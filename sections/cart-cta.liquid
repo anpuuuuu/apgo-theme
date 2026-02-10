@@ -1,0 +1,279 @@
+{%- comment -%} Cart Checkout CTA (standalone section) {%- endcomment -%}
+<div class="cart-cta color-{{ section.settings.color_scheme }}">
+    <button
+      type="submit"
+      id="checkout-standalone"
+      class="cart__checkout-button button"
+      name="checkout"
+      {%- if cart == empty -%}disabled{%- endif -%}
+      form="cart-form"
+    >
+      {{ 'content.checkout' | t }}
+    </button>
+  
+    {%- if section.settings.show_accelerated and additional_checkout_buttons and settings.show_accelerated_checkout_buttons -%}
+      <div class="additional-checkout-buttons additional-checkout-buttons--vertical">
+        {{ content_for_additional_checkout_buttons }}
+      </div>
+    {%- endif -%}
+  </div>
+  
+  {% stylesheet %}
+  /* ========================================
+     購物車結帳按鈕樣式設計
+     ======================================== */
+  
+  /* 主容器樣式 */
+  .cart-cta { 
+    display: flex; 
+    flex-direction: column; 
+    gap: var(--gap-md); 
+    margin: 32px 0 40px 0;
+  }
+  
+  /* 結帳按鈕主體樣式 */
+  .cart-cta .cart__checkout-button,
+  .cart-cta .button,
+  #checkout-standalone.cart__checkout-button {
+    background: linear-gradient(135deg, #ff6b35, #f7931e) !important;
+    border: none !important;
+    border-radius: 16px !important;
+    padding: 20px 40px !important;
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    color: #ffffff !important;
+    width: 100% !important;
+    max-width: 480px !important;
+    margin: 0 auto !important;
+    cursor: pointer !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: 
+        0 12px 35px rgba(255, 107, 53, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+    text-transform: none !important;
+    letter-spacing: 1px !important;
+    position: relative !important;
+    overflow: hidden !important;
+    display: block !important;
+    z-index: 100 !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif !important;
+    
+    /* 確保按鈕不會被覆蓋 */
+    clear: both !important;
+  }
+  
+  /* 結帳按鈕發光效果 */
+  .cart-cta .cart__checkout-button::before,
+  .cart-cta .button::before,
+  #checkout-standalone.cart__checkout-button::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: -100% !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent) !important;
+    transition: left 0.6s ease !important;
+  }
+  
+  /* 懸停效果 */
+  .cart-cta .cart__checkout-button:hover,
+  .cart-cta .button:hover,
+  #checkout-standalone.cart__checkout-button:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: 
+        0 16px 45px rgba(255, 107, 53, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+  }
+  
+  .cart-cta .cart__checkout-button:hover::before,
+  .cart-cta .button:hover::before,
+  #checkout-standalone.cart__checkout-button:hover::before {
+    left: 100% !important;
+  }
+  
+  /* 按下效果 */
+  .cart-cta .cart__checkout-button:active,
+  .cart-cta .button:active,
+  #checkout-standalone.cart__checkout-button:active {
+    transform: translateY(-2px) !important;
+    box-shadow: 
+        0 8px 25px rgba(255, 107, 53, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+  }
+  
+  /* 禁用狀態 */
+  .cart-cta .cart__checkout-button:disabled,
+  .cart-cta .button:disabled,
+  #checkout-standalone.cart__checkout-button:disabled,
+  .cart-cta .cart__checkout-button[style*="pointer-events: none"],
+  .cart-cta .button[style*="pointer-events: none"],
+  #checkout-standalone.cart__checkout-button[style*="pointer-events: none"] {
+    background: linear-gradient(135deg, #666666, #555555) !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: 
+        0 4px 15px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+    opacity: 0.6 !important;
+  }
+  
+  /* 額外結帳按鈕樣式 */
+  .additional-checkout-buttons {
+    margin-top: 16px !important;
+  }
+  
+  .additional-checkout-buttons .additional-checkout-button {
+    background: linear-gradient(145deg, #2d2d2d, #1a1a1a) !important;
+    border: 2px solid #404040 !important;
+    border-radius: 12px !important;
+    padding: 16px 20px !important;
+    font-size: 15px !important;
+    color: #ffffff !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: 
+        0 4px 15px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+    margin: 8px 0 !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+  }
+  
+  .additional-checkout-buttons .additional-checkout-button:hover {
+    border-color: #ff6b35 !important;
+    box-shadow: 
+        0 8px 25px rgba(255, 107, 53, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+    transform: translateY(-2px) !important;
+  }
+  
+  /* 響應式設計 */
+  @media (max-width: 768px) {
+    .cart-cta .cart__checkout-button,
+    .cart-cta .button,
+    #checkout-standalone.cart__checkout-button {
+      padding: 18px 32px !important;
+      font-size: 16px !important;
+      margin: 24px auto 32px auto !important;
+      border-radius: 14px !important;
+    }
+    
+    .cart-cta {
+      margin: 24px 0 32px 0;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .cart-cta .cart__checkout-button,
+    .cart-cta .button,
+    #checkout-standalone.cart__checkout-button {
+      padding: 16px 28px !important;
+      font-size: 15px !important;
+      margin: 20px auto 28px auto !important;
+      border-radius: 12px !important;
+    }
+    
+    .cart-cta {
+      margin: 20px 0 28px 0;
+    }
+  }
+  
+  /* 動畫效果 */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .cart-cta {
+    animation: fadeInUp 0.6s ease-out !important;
+  }
+  {% endstylesheet %}
+  
+  <script>
+  document.addEventListener('DOMContentLoaded', function(){
+    // === 設定 ===
+    // true: 以 GET 直接導到 /checkout?…（最保險，百分百帶參數）
+    // false: 保留主題原本的 POST，僅把 form.action 改為 /checkout?…
+    var REDIRECT_MODE = true;
+
+    var btn  = document.getElementById('checkout-standalone');
+    if (!btn) return;
+
+    var formId = btn.getAttribute('form') || 'cart-form';
+    var form   = document.getElementById(formId);
+
+    // 取目前 query（先嘗試把最新輸入寫進網址）
+    function getCurrentQuery() {
+      try {
+        // 你的收件欄位 section 內若有此函式，就會把當前輸入同步到 location.search
+        if (typeof window.buildCheckoutParams === 'function') {
+          window.buildCheckoutParams();
+        }
+      } catch(e) { /* ignore */ }
+      return window.location.search || '';
+    }
+
+    // 讓 a/form 也能同步（POST 模式時用得到；或主題別處有 checkout 連結）
+    function syncEntrancesNow(){
+      var qs = getCurrentQuery();
+
+      // 改本表單 action（POST 模式用）
+      if (!REDIRECT_MODE && form) {
+        form.action = '/checkout' + qs;
+      }
+
+      // 如果主題上還有其它 /checkout 連結，也幫它們接上 query
+      document.querySelectorAll('a[href^="/checkout"]').forEach(function(a){
+        a.setAttribute('href', '/checkout' + qs);
+      });
+    }
+
+    // 初始化同步一次（特別是 POST 模式要先設好 action）
+    syncEntrancesNow();
+
+    // 主要行為：點擊 CTA
+    btn.addEventListener('click', function(ev){
+      // 若按鈕 disabled（空購物車），就不處理
+      if (btn.disabled || btn.getAttribute('aria-disabled') === 'true') return;
+
+      var qs = getCurrentQuery();
+
+      if (REDIRECT_MODE) {
+        // 攔截提交，保證帶著 query 直達 /checkout
+        ev.preventDefault();
+        window.location.assign('/checkout' + qs);
+      } else {
+        // 保留原本 POST：只把 action 改成 /checkout?…
+        if (form) form.action = '/checkout' + qs;
+        // 不 preventDefault，照常提交
+      }
+    }, true);
+
+    // 若你的收件欄位用 history.replaceState 即時改網址，這裡再保險補一次
+    window.addEventListener('popstate', syncEntrancesNow);
+
+    // 有些主題/抽屜會晚載入或改動 DOM；短期輪詢補強一下
+    var tries = 0, iv = setInterval(function(){
+      syncEntrancesNow();
+      if (++tries > 10) clearInterval(iv);
+    }, 500);
+  });
+  </script>
+  
+  {% schema %}
+  {
+    "name": "Cart CTA (Standalone)",
+    "settings": [
+      { "type": "checkbox", "id": "show_accelerated", "label": "Show accelerated checkout buttons (uses theme settings)", "default": true },
+      { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-3" }
+    ],
+    "blocks": [],
+    "presets": [{ "name": "Cart CTA (Standalone)"}]
+  }
+  {% endschema %}
+  

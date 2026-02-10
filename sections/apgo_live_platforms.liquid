@@ -1,0 +1,937 @@
+<!-- sections/live-platforms.liquid -->
+<style>
+  /* Schedule 風格 Tokens（沿用原變數命名） */
+  #live-platforms-{{ section.id }} {
+    --live-primary-orange: {{ section.settings.primary_color }};
+    --live-secondary-orange: {{ section.settings.secondary_color }};
+    --live-text-white: #ffffff;
+    --live-text-gray: #cccccc;
+    --live-dark-bg: {{ section.settings.background_color }};
+    --live-card-bg: {{ section.settings.card_background }};
+    --live-border-color: {{ section.settings.border_color }};
+  }
+
+  #live-platforms-{{ section.id }} {
+    font-family: 'Inter', 'Arial', 'Microsoft JhengHei', sans-serif;
+    background: var(--live-dark-bg);
+    color: var(--live-text-white);
+    padding: {{ section.settings.section_padding_top }}px 0 {{ section.settings.section_padding_bottom }}px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* 頂部裝飾線（保留） */
+  #live-platforms-{{ section.id }}::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--live-primary-orange), transparent);
+    opacity: .9;
+  }
+
+  .live-platform-container {
+    max-width: {{ section.settings.max_width }}px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* 標題區（Schedule 風格：漸層字＋更大間距與字距） */
+  .live-section-header {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+
+  .live-section-title {
+    font-size: {{ section.settings.title_size }}rem;
+    font-weight: 300;
+    letter-spacing: 3px;
+    margin-bottom: 12px;
+    background: linear-gradient(45deg, var(--live-primary-orange), var(--live-secondary-orange));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .live-section-subtitle {
+    font-size: {{ section.settings.subtitle_size }}rem;
+    color: var(--live-text-gray);
+    font-weight: 300;
+    opacity: .9;
+  }
+
+  /* Tabs（與 Schedule 完全一致的分頁樣式） */
+  .live-tab-navigation {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 60px;
+    gap: 5px;
+    background: var(--live-card-bg);
+    padding: 8px;
+    border-radius: 50px;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .live-tab-btn {
+    flex: 1;
+    padding: 15px 30px;
+    background: transparent;
+    border: none;
+    color: var(--live-text-gray);
+    cursor: pointer;
+    border-radius: 40px;
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .live-tab-btn.active {
+    background: linear-gradient(135deg, var(--live-primary-orange) 0%, var(--live-secondary-orange) 100%);
+    color: var(--live-text-white);
+    box-shadow: 0 8px 25px rgba(240, 132, 24, 0.3);
+  }
+
+  .live-tab-btn:not(.active):hover {
+    color: var(--live-text-white);
+    background: rgba(240, 132, 24, 0.1);
+  }
+
+  /* 分頁內容切換 */
+  .live-tab-content {
+    display: none;
+    animation: liveFadeInUp 0.5s ease;
+  }
+
+  .live-tab-content.active { display: block; }
+
+  @keyframes liveFadeInUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* 平台網格（與 Schedule 卡片間距一致感） */
+  .live-platform-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax({{ section.settings.grid_min_width }}px, 1fr));
+    gap: {{ section.settings.grid_gap }}px;
+    margin-bottom: 30px;
+  }
+
+  /* 平台按鈕 = Schedule 卡片風格 */
+  .live-platform-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: {{ section.settings.button_padding }}px;
+    background: var(--live-card-bg);
+    border: 1px solid var(--live-border-color);
+    border-radius: 20px;
+    text-decoration: none;
+    color: var(--live-text-white);
+    font-weight: 500;
+    font-size: {{ section.settings.button_font_size }}rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,.25);
+    will-change: transform, box-shadow;
+  }
+
+  .live-platform-button::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(120px 60px at var(--x,50%) var(--y,50%), rgba(240,132,24,.12), transparent 60%);
+    opacity: 0;
+    transition: opacity .3s ease;
+    pointer-events: none;
+  }
+
+  .live-platform-button:hover::after { opacity: 1; }
+
+  .live-platform-button:hover {
+    transform: translateY(-10px);
+    border-color: var(--live-primary-orange);
+    box-shadow:
+      0 12px 30px rgba(240,132,24,.18),
+      0 0 0 1px rgba(255,255,255,.04) inset;
+  }
+
+  /* 圖標與文字（與 Schedule 色系一致） */
+  .live-platform-icon {
+    width: {{ section.settings.icon_size }}px;
+    height: {{ section.settings.icon_size }}px;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+  }
+
+  .live-platform-icon svg {
+    width: 100%;
+    height: 100%;
+    fill: var(--live-text-gray);
+    transition: all 0.3s ease;
+  }
+
+  .live-platform-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: all .3s ease;
+  }
+
+  .live-platform-button:hover .live-platform-icon svg {
+    fill: var(--live-primary-orange);
+    transform: scale(1.08) rotate(3deg);
+  }
+
+  .live-platform-button:hover .live-platform-icon img {
+    transform: scale(1.08) rotate(3deg);
+  }
+
+  .live-platform-name {
+    position: relative;
+    z-index: 1;
+    transition: all 0.3s ease;
+  }
+
+  .live-platform-button:hover .live-platform-name {
+    color: var(--live-primary-orange);
+  }
+
+  /* LIVE 標籤（保留，微調陰影以符合 Schedule 視感） */
+  .live-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: #ff0000;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    animation: livePulse 2s infinite;
+    box-shadow: 0 4px 10px rgba(255,0,0,.25);
+  }
+
+  @keyframes livePulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .6; }
+  }
+
+  /* 品牌色懸浮（仍保留，與 Schedule 橘色高光兼容） */
+  {% if section.settings.use_platform_colors %}
+  .live-platform-button.facebook:hover { border-color: #1877f2; box-shadow: 0 12px 30px rgba(24,119,242,.25); }
+  .live-platform-button.facebook:hover svg { fill: #1877f2; }
+
+  .live-platform-button.youtube:hover { border-color: #ff0000; box-shadow: 0 12px 30px rgba(255,0,0,.25); }
+  .live-platform-button.youtube:hover svg { fill: #ff0000; }
+
+  .live-platform-button.tiktok:hover { border-color: #ff0050; box-shadow: 0 12px 30px rgba(255,0,80,.25); }
+  .live-platform-button.tiktok:hover svg { fill: #ff0050; }
+
+  .live-platform-button.shopee:hover { border-color: #ee4d2d; box-shadow: 0 12px 30px rgba(238,77,45,.25); }
+  .live-platform-button.shopee:hover svg { fill: #ee4d2d; }
+
+  .live-platform-button.instagram:hover { border-color: #E4405F; box-shadow: 0 12px 30px rgba(228,64,95,.25); }
+  .live-platform-button.instagram:hover svg { fill: #E4405F; }
+
+  .live-platform-button.line:hover { border-color: #00C300; box-shadow: 0 12px 30px rgba(0,195,0,.25); }
+  .live-platform-button.line:hover svg { fill: #00C300; }
+
+  .live-platform-button.lazada:hover { border-color: #0f1e6b; box-shadow: 0 12px 30px rgba(15,30,107,.25); }
+  .live-platform-button.lazada:hover svg { fill: #0f1e6b; }
+  {% endif %}
+
+  /* 滑鼠位置高光（加強互動感） */
+  #live-platforms-{{ section.id }} .live-platform-button {
+    --x: 50%;
+    --y: 50%;
+  }
+  #live-platforms-{{ section.id }} .live-platform-button:hover {
+    /* 由 JS 事件更新 --x/--y 時生效；若無則居中 */
+  }
+
+  /* 響應式（與 Schedule 斷點相近） */
+  @media (max-width: 1200px) {
+    .live-tab-navigation { gap: 10px; }
+  }
+
+  @media (max-width: 768px) {
+    #live-platforms-{{ section.id }} {
+      padding: {{ section.settings.mobile_padding_top }}px 0 {{ section.settings.mobile_padding_bottom }}px;
+    }
+    .live-section-header { margin-bottom: 40px; }
+    .live-section-title { font-size: calc({{ section.settings.title_size }}rem * .85); }
+    .live-section-subtitle { font-size: calc({{ section.settings.subtitle_size }}rem * .95); }
+
+    .live-tab-btn {
+      padding: 12px 24px;
+      font-size: .95rem;
+    }
+
+    .live-platform-grid {
+      grid-template-columns: 1fr;
+      gap: {{ section.settings.mobile_grid_gap }}px;
+    }
+
+    .live-platform-button {
+      padding: {{ section.settings.mobile_button_padding }}px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .live-section-title { font-size: calc({{ section.settings.title_size }}rem * .78); }
+    .live-section-subtitle { font-size: calc({{ section.settings.subtitle_size }}rem * .9); }
+
+    .live-tab-btn {
+      padding: 10px 18px;
+      font-size: .9rem;
+    }
+
+    .live-platform-button {
+      font-size: calc({{ section.settings.button_font_size }}rem * .95);
+    }
+
+    .live-platform-icon {
+      width: calc({{ section.settings.icon_size }}px * .9);
+      height: calc({{ section.settings.icon_size }}px * .9);
+    }
+  }
+</style>
+  
+  <section id="live-platforms-{{ section.id }}">
+    <div class="live-platform-container">
+      <!-- 標題區域 -->
+      {% if section.settings.show_header %}
+      <div class="live-section-header">
+        {% if section.settings.title != blank %}
+          <h2 class="live-section-title">{{ section.settings.title }}</h2>
+        {% endif %}
+        {% if section.settings.subtitle != blank %}
+          <p class="live-section-subtitle">{{ section.settings.subtitle }}</p>
+        {% endif %}
+      </div>
+      {% endif %}
+  
+      <!-- 分頁標籤 -->
+      {% if section.settings.enable_tabs %}
+      <div class="live-tab-navigation">
+        <button class="live-tab-btn active" onclick="switchLiveTab('taiwan-{{ section.id }}', this)">
+          {{ section.settings.taiwan_tab_title }}
+        </button>
+        <button class="live-tab-btn" onclick="switchLiveTab('singapore-{{ section.id }}', this)">
+          {{ section.settings.singapore_tab_title }}
+        </button>
+      </div>
+      {% endif %}
+  
+      <!-- 台灣平台內容 -->
+      <div id="taiwan-{{ section.id }}" class="live-tab-content {% unless section.settings.enable_tabs %}active{% else %}active{% endunless %}">
+        {% if section.settings.taiwan_section_title != blank %}
+          <h3 style="text-align: center; margin-bottom: 30px; color: var(--live-text-white);">
+            {{ section.settings.taiwan_section_title }}
+          </h3>
+        {% endif %}
+        
+        <div class="live-platform-grid">
+          {% for block in section.blocks %}
+            {% if block.type == 'taiwan_platform' %}
+              <a href="{{ block.settings.url }}" 
+                 target="_blank" 
+                 rel="noopener noreferrer" 
+                 class="live-platform-button {{ block.settings.platform_type }}"
+                 {{ block.shopify_attributes }}>
+                
+                {% if block.settings.show_live_badge %}
+                  <span class="live-badge">LIVE</span>
+                {% endif %}
+                
+                <div class="live-platform-icon">
+                  {% if block.settings.custom_icon != blank %}
+                    {{ block.settings.custom_icon | image_url: width: 100 | image_tag: loading: 'lazy' }}
+                  {% else %}
+                    {% case block.settings.platform_type %}
+                      {% when 'facebook' %}
+                        <svg viewBox="0 0 24 24">
+                          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                        </svg>
+                      {% when 'youtube' %}
+                        <svg viewBox="0 0 24 24">
+                          <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                        </svg>
+                      {% when 'tiktok' %}
+                        <svg viewBox="0 0 24 24">
+                          <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/>
+                        </svg>
+                      {% when 'shopee' %}
+                        <svg viewBox="0 0 24 24">
+                          <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm6.227 8.633c-.185.23-.465.384-.77.424l-2.427.317c.191.353.296.757.296 1.185 0 1.325-1.008 2.409-2.298 2.54v1.484c0 .584.106 1.147.3 1.672.313.85.866 1.591 1.605 2.146.357.267.582.683.582 1.145 0 .803-.65 1.454-1.454 1.454-.396 0-.755-.159-1.017-.416-.906-.888-1.443-2.128-1.443-3.47v-1.93c-1.289-.132-2.297-1.216-2.297-2.54 0-.429.105-.832.296-1.185l-2.427-.317c-.305-.04-.585-.194-.77-.424-.185-.23-.262-.523-.212-.808l.355-2.031c.096-.549.576-.945 1.131-.935l1.743.031c.214-.523.542-.992.951-1.38.851-.807 1.977-1.253 3.172-1.253s2.321.446 3.172 1.253c.409.388.737.857.951 1.38l1.743-.031c.556-.01 1.035.386 1.131.935l.355 2.031c.05.285-.027.578-.212.808z"/>
+                        </svg>
+                      {% when 'instagram' %}
+                        <svg viewBox="0 0 24 24">
+                          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zM5.838 12a6.162 6.162 0 1112.324 0 6.162 6.162 0 01-12.324 0zM12 16a4 4 0 110-8 4 4 0 010 8zm4.965-10.405a1.44 1.44 0 112.881.001 1.44 1.44 0 01-2.881-.001z"/>
+                        </svg>
+                      {% when 'line' %}
+                        <svg viewBox="0 0 24 24">
+                          <path d="M24 10.304c0-5.369-5.383-9.738-12-9.738-6.616 0-12 4.369-12 9.738 0 4.814 4.269 8.846 10.036 9.608.391.084.922.258 1.057.592.121.303.079.778.039 1.085l-.171 1.027c-.053.303-.242 1.186 1.039.647 1.281-.54 6.911-4.069 9.428-6.967 1.739-1.907 2.572-3.843 2.572-5.992zm-18.988-2.595c.129 0 .234.105.234.234v4.153h2.287c.129 0 .233.105.233.234v.842c0 .129-.104.234-.233.234h-3.363c-.063 0-.119-.025-.161-.065l-.001-.001-.002-.002-.001-.001-.003-.003c-.04-.042-.065-.099-.065-.161v-5.231c0-.129.105-.234.234-.234h.841zm14.992 0c.129 0 .234.105.234.234v.842c0 .129-.105.234-.234.234h-2.287v.883h2.287c.129 0 .234.105.234.234v.842c0 .129-.105.234-.234.234h-2.287v.883h2.287c.129 0 .234.105.234.234v.842c0 .129-.105.234-.234.234h-3.363c-.063 0-.12-.025-.162-.065l-.003-.004-.003-.003c-.04-.042-.065-.099-.065-.161v-5.231c0-.063.025-.119.065-.161l.004-.004.003-.003c.042-.04.099-.065.162-.065h3.363zm-10.443.001c.129 0 .234.105.234.234v5.231c0 .129-.105.234-.234.234h-.842c-.129 0-.234-.105-.234-.234v-5.231c0-.129.105-.234.234-.234h.842z"/>
+                        </svg>
+                      {% when 'lazada' %}
+                        <svg viewBox="0 0 24 24">
+                          <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2zm-1.5 5v10h3V7h-3zm4.5 0v10h3V7h-3z"/>
+                        </svg>
+                      {% when 'custom' %}
+                        <!-- 自訂平台圖標 -->
+                        <svg viewBox="0 0 24 24">
+                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                    {% endcase %}
+                  {% endif %}
+                </div>
+                
+                {% if block.settings.platform_name != blank %}
+                  <span class="live-platform-name">{{ block.settings.platform_name }}</span>
+                {% endif %}
+              </a>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+  
+      <!-- 新馬平台內容 -->
+      <div id="singapore-{{ section.id }}" class="live-tab-content">
+        {% if section.settings.singapore_section_title != blank %}
+          <h3 style="text-align: center; margin-bottom: 30px; color: var(--live-text-white);">
+            {{ section.settings.singapore_section_title }}
+          </h3>
+        {% endif %}
+        
+        <div class="live-platform-grid">
+          {% for block in section.blocks %}
+            {% if block.type == 'singapore_platform' %}
+              <a href="{{ block.settings.url }}" 
+                 target="_blank" 
+                 rel="noopener noreferrer" 
+                 class="live-platform-button {{ block.settings.platform_type }}"
+                 {{ block.shopify_attributes }}>
+                
+                {% if block.settings.show_live_badge %}
+                  <span class="live-badge">LIVE</span>
+                {% endif %}
+                
+                <div class="live-platform-icon">
+                  {% if block.settings.custom_icon != blank %}
+                    {{ block.settings.custom_icon | image_url: width: 100 | image_tag: loading: 'lazy' }}
+                  {% else %}
+                    {% case block.settings.platform_type %}
+                      {% when 'facebook' %}
+                        <svg viewBox="0 0 24 24">
+                          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                        </svg>
+                      {% when 'youtube' %}
+                        <svg viewBox="0 0 24 24">
+                          <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                        </svg>
+                      {% when 'tiktok' %}
+                        <svg viewBox="0 0 24 24">
+                          <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/>
+                        </svg>
+                      {% when 'shopee' %}
+                        <svg viewBox="0 0 24 24">
+                          <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm6.227 8.633c-.185.23-.465.384-.77.424l-2.427.317c.191.353.296.757.296 1.185 0 1.325-1.008 2.409-2.298 2.54v1.484c0 .584.106 1.147.3 1.672.313.85.866 1.591 1.605 2.146.357.267.582.683.582 1.145 0 .803-.65 1.454-1.454 1.454-.396 0-.755-.159-1.017-.416-.906-.888-1.443-2.128-1.443-3.47v-1.93c-1.289-.132-2.297-1.216-2.297-2.54 0-.429.105-.832.296-1.185l-2.427-.317c-.305-.04-.585-.194-.77-.424-.185-.23-.262-.523-.212-.808l.355-2.031c.096-.549.576-.945 1.131-.935l1.743.031c.214-.523.542-.992.951-1.38.851-.807 1.977-1.253 3.172-1.253s2.321.446 3.172 1.253c.409.388.737.857.951 1.38l1.743-.031c.556-.01 1.035.386 1.131.935l.355 2.031c.05.285-.027.578-.212.808z"/>
+                        </svg>
+                      {% when 'instagram' %}
+                        <svg viewBox="0 0 24 24">
+                          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zM5.838 12a6.162 6.162 0 1112.324 0 6.162 6.162 0 01-12.324 0zM12 16a4 4 0 110-8 4 4 0 010 8zm4.965-10.405a1.44 1.44 0 112.881.001 1.44 1.44 0 01-2.881-.001z"/>
+                        </svg>
+                      {% when 'line' %}
+                        <svg viewBox="0 0 24 24">
+                          <path d="M24 10.304c0-5.369-5.383-9.738-12-9.738-6.616 0-12 4.369-12 9.738 0 4.814 4.269 8.846 10.036 9.608.391.084.922.258 1.057.592.121.303.079.778.039 1.085l-.171 1.027c-.053.303-.242 1.186 1.039.647 1.281-.54 6.911-4.069 9.428-6.967 1.739-1.907 2.572-3.843 2.572-5.992zm-18.988-2.595c.129 0 .234.105.234.234v4.153h2.287c.129 0 .233.105.233.234v.842c0 .129-.104.234-.233.234h-3.363c-.063 0-.119-.025-.161-.065l-.001-.001-.002-.002-.001-.001-.003-.003c-.04-.042-.065-.099-.065-.161v-5.231c0-.129.105-.234.234-.234h.841zm14.992 0c.129 0 .234.105.234.234v.842c0 .129-.105.234-.234.234h-2.287v.883h2.287c.129 0 .234.105.234.234v.842c0 .129-.105.234-.234.234h-2.287v.883h2.287c.129 0 .234.105.234.234v.842c0 .129-.105.234-.234.234h-3.363c-.063 0-.12-.025-.162-.065l-.003-.004-.003-.003c-.04-.042-.065-.099-.065-.161v-5.231c0-.063.025-.119.065-.161l.004-.004.003-.003c.042-.04.099-.065.162-.065h3.363zm-10.443.001c.129 0 .234.105.234.234v5.231c0 .129-.105.234-.234.234h-.842c-.129 0-.234-.105-.234-.234v-5.231c0-.129.105-.234.234-.234h.842z"/>
+                        </svg>
+                      {% when 'lazada' %}
+                        <svg viewBox="0 0 24 24">
+                          <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2zm-1.5 5v10h3V7h-3zm4.5 0v10h3V7h-3z"/>
+                        </svg>
+                      {% when 'custom' %}
+                        <!-- 自訂平台圖標 -->
+                        <svg viewBox="0 0 24 24">
+                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                    {% endcase %}
+                  {% endif %}
+                </div>
+                
+                {% if block.settings.platform_name != blank %}
+                  <span class="live-platform-name">{{ block.settings.platform_name }}</span>
+                {% endif %}
+              </a>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <script>
+    function switchLiveTab(tabId, button) {
+      const sectionId = '{{ section.id }}';
+      
+      // 隱藏所有內容
+      document.querySelectorAll(`#live-platforms-${sectionId} .live-tab-content`).forEach(content => {
+        content.classList.remove('active');
+      });
+      
+      // 移除所有按鈕的 active 狀態
+      document.querySelectorAll(`#live-platforms-${sectionId} .live-tab-btn`).forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      // 顯示選中的內容
+      document.getElementById(tabId).classList.add('active');
+      
+      // 設置按鈕為 active
+      button.classList.add('active');
+    }
+  </script>
+  
+  {% schema %}
+  {
+    "name": "直播平台區塊",
+    "tag": "section",
+    "class": "live-platforms-section",
+    "settings": [
+      {
+        "type": "header",
+        "content": "基本設定"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_header",
+        "label": "顯示標題區域",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "title",
+        "label": "主標題",
+        "default": "直播平台"
+      },
+      {
+        "type": "text",
+        "id": "subtitle",
+        "label": "副標題",
+        "default": "選擇您喜愛的平台觀看直播"
+      },
+      {
+        "type": "range",
+        "id": "title_size",
+        "label": "標題大小",
+        "min": 1.5,
+        "max": 3,
+        "step": 0.1,
+        "unit": "rem",
+        "default": 2
+      },
+      {
+        "type": "range",
+        "id": "subtitle_size",
+        "label": "副標題大小",
+        "min": 0.8,
+        "max": 1.5,
+        "step": 0.1,
+        "unit": "rem",
+        "default": 1.0
+      },
+      {
+        "type": "header",
+        "content": "分頁設定"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_tabs",
+        "label": "啟用分頁",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "taiwan_tab_title",
+        "label": "台灣分頁標題",
+        "default": "台灣團隊"
+      },
+      {
+        "type": "text",
+        "id": "singapore_tab_title",
+        "label": "新馬分頁標題",
+        "default": "新馬團隊"
+      },
+      {
+        "type": "text",
+        "id": "taiwan_section_title",
+        "label": "台灣區塊標題",
+        "default": "台灣直播平台"
+      },
+      {
+        "type": "text",
+        "id": "singapore_section_title",
+        "label": "新馬區塊標題",
+        "default": "新馬直播平台"
+      },
+      {
+        "type": "header",
+        "content": "顏色設定"
+      },
+      {
+        "type": "color",
+        "id": "primary_color",
+        "label": "主要顏色",
+        "default": "#f08418"
+      },
+      {
+        "type": "color",
+        "id": "secondary_color",
+        "label": "次要顏色",
+        "default": "#ff9a3c"
+      },
+      {
+        "type": "color",
+        "id": "background_color",
+        "label": "背景顏色",
+        "default": "#000000"
+      },
+      {
+        "type": "color",
+        "id": "card_background",
+        "label": "卡片背景顏色",
+        "default": "#0a0a0a"
+      },
+      {
+        "type": "color",
+        "id": "border_color",
+        "label": "邊框顏色",
+        "default": "rgba(240, 132, 24, 0.2)"
+      },
+      {
+        "type": "checkbox",
+        "id": "use_platform_colors",
+        "label": "使用平台品牌色",
+        "default": true,
+        "info": "懸浮時顯示各平台的品牌顏色"
+      },
+      {
+        "type": "header",
+        "content": "布局設定"
+      },
+      {
+        "type": "range",
+        "id": "max_width",
+        "label": "最大寬度",
+        "min": 1000,
+        "max": 1600,
+        "step": 100,
+        "unit": "px",
+        "default": 1200
+      },
+      {
+        "type": "range",
+        "id": "grid_min_width",
+        "label": "網格最小寬度",
+        "min": 150,
+        "max": 300,
+        "step": 10,
+        "unit": "px",
+        "default": 200
+      },
+      {
+        "type": "range",
+        "id": "grid_gap",
+        "label": "網格間距",
+        "min": 10,
+        "max": 40,
+        "step": 5,
+        "unit": "px",
+        "default": 20
+      },
+      {
+        "type": "range",
+        "id": "mobile_grid_gap",
+        "label": "手機版網格間距",
+        "min": 10,
+        "max": 30,
+        "step": 5,
+        "unit": "px",
+        "default": 15
+      },
+      {
+        "type": "header",
+        "content": "按鈕設定"
+      },
+      {
+        "type": "range",
+        "id": "button_padding",
+        "label": "按鈕內距",
+        "min": 10,
+        "max": 30,
+        "step": 2,
+        "unit": "px",
+        "default": 18
+      },
+      {
+        "type": "range",
+        "id": "mobile_button_padding",
+        "label": "手機版按鈕內距",
+        "min": 10,
+        "max": 24,
+        "step": 2,
+        "unit": "px",
+        "default": 16
+      },
+      {
+        "type": "range",
+        "id": "button_radius",
+        "label": "按鈕圓角",
+        "min": 0,
+        "max": 30,
+        "step": 2,
+        "unit": "px",
+        "default": 12
+      },
+      {
+        "type": "range",
+        "id": "button_font_size",
+        "label": "按鈕文字大小",
+        "min": 0.8,
+        "max": 1.5,
+        "step": 0.1,
+        "unit": "rem",
+        "default": 1
+      },
+      {
+        "type": "range",
+        "id": "icon_size",
+        "label": "圖標大小",
+        "min": 20,
+        "max": 40,
+        "step": 2,
+        "unit": "px",
+        "default": 24
+      },
+      {
+        "type": "header",
+        "content": "間距設定"
+      },
+      {
+        "type": "range",
+        "id": "section_padding_top",
+        "label": "區塊上間距",
+        "min": 0,
+        "max": 100,
+        "step": 10,
+        "unit": "px",
+        "default": 60
+      },
+      {
+        "type": "range",
+        "id": "section_padding_bottom",
+        "label": "區塊下間距",
+        "min": 0,
+        "max": 100,
+        "step": 10,
+        "unit": "px",
+        "default": 60
+      },
+      {
+        "type": "range",
+        "id": "mobile_padding_top",
+        "label": "手機版上間距",
+        "min": 0,
+        "max": 80,
+        "step": 10,
+        "unit": "px",
+        "default": 40
+      },
+      {
+        "type": "range",
+        "id": "mobile_padding_bottom",
+        "label": "手機版下間距",
+        "min": 0,
+        "max": 80,
+        "step": 10,
+        "unit": "px",
+        "default": 40
+      }
+    ],
+    "blocks": [
+      {
+        "type": "taiwan_platform",
+        "name": "台灣平台",
+        "settings": [
+          {
+            "type": "select",
+            "id": "platform_type",
+            "label": "平台類型",
+            "options": [
+              { "value": "facebook", "label": "Facebook" },
+              { "value": "youtube", "label": "YouTube" },
+              { "value": "tiktok", "label": "TikTok" },
+              { "value": "shopee", "label": "蝦皮購物" },
+              { "value": "instagram", "label": "Instagram" },
+              { "value": "line", "label": "LINE" },
+              { "value": "lazada", "label": "Lazada" },
+              { "value": "custom", "label": "自訂" }
+            ],
+            "default": "facebook"
+          },
+          {
+            "type": "text",
+            "id": "platform_name",
+            "label": "平台名稱",
+            "default": "Facebook"
+          },
+          {
+            "type": "url",
+            "id": "url",
+            "label": "連結網址"
+          },
+          {
+            "type": "image_picker",
+            "id": "custom_icon",
+            "label": "自訂圖標",
+            "info": "如果選擇自訂平台或想覆蓋預設圖標"
+          },
+          {
+            "type": "checkbox",
+            "id": "show_live_badge",
+            "label": "顯示 LIVE 標籤",
+            "default": false
+          }
+        ]
+      },
+      {
+        "type": "singapore_platform",
+        "name": "新馬平台",
+        "settings": [
+          {
+            "type": "select",
+            "id": "platform_type",
+            "label": "平台類型",
+            "options": [
+              { "value": "facebook", "label": "Facebook" },
+              { "value": "youtube", "label": "YouTube" },
+              { "value": "tiktok", "label": "TikTok" },
+              { "value": "shopee", "label": "蝦皮購物" },
+              { "value": "instagram", "label": "Instagram" },
+              { "value": "line", "label": "LINE" },
+              { "value": "lazada", "label": "Lazada" },
+              { "value": "custom", "label": "自訂" }
+            ],
+            "default": "shopee"
+          },
+          {
+            "type": "text",
+            "id": "platform_name",
+            "label": "平台名稱",
+            "default": "Shopee Malaysia"
+          },
+          {
+            "type": "url",
+            "id": "url",
+            "label": "連結網址"
+          },
+          {
+            "type": "image_picker",
+            "id": "custom_icon",
+            "label": "自訂圖標",
+            "info": "如果選擇自訂平台或想覆蓋預設圖標"
+          },
+          {
+            "type": "checkbox",
+            "id": "show_live_badge",
+            "label": "顯示 LIVE 標籤",
+            "default": false
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "直播平台區塊",
+        "blocks": [
+          {
+            "type": "taiwan_platform",
+            "settings": {
+              "platform_type": "facebook",
+              "platform_name": "Facebook",
+              "url": "https://facebook.com/apgo"
+            }
+          },
+          {
+            "type": "taiwan_platform",
+            "settings": {
+              "platform_type": "youtube",
+              "platform_name": "YouTube",
+              "url": "https://youtube.com/@apgo"
+            }
+          },
+          {
+            "type": "taiwan_platform",
+            "settings": {
+              "platform_type": "tiktok",
+              "platform_name": "TikTok",
+              "url": "https://tiktok.com/@apgo",
+              "show_live_badge": true
+            }
+          },
+          {
+            "type": "taiwan_platform",
+            "settings": {
+              "platform_type": "shopee",
+              "platform_name": "蝦皮直播",
+              "url": "https://shopee.tw/apgo"
+            }
+          },
+          {
+            "type": "singapore_platform",
+            "settings": {
+              "platform_type": "facebook",
+              "platform_name": "Facebook Malaysia",
+              "url": "https://facebook.com/apgo.my"
+            }
+          },
+          {
+            "type": "singapore_platform",
+            "settings": {
+              "platform_type": "shopee",
+              "platform_name": "Shopee Malaysia",
+              "url": "https://shopee.com.my/apgo"
+            }
+          },
+          {
+            "type": "singapore_platform",
+            "settings": {
+              "platform_type": "lazada",
+              "platform_name": "Lazada",
+              "url": "https://lazada.com.my/apgo"
+            }
+          },
+          {
+            "type": "singapore_platform",
+            "settings": {
+              "platform_type": "tiktok",
+              "platform_name": "TikTok Shop SG",
+              "url": "https://tiktok.com/@apgo.sg"
+            }
+          }
+        ]
+      }
+    ]
+  }
+  {% endschema %}

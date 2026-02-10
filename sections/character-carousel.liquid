@@ -1,0 +1,1835 @@
+{% comment %}
+  檔案名稱: character-carousel.liquid
+  放置位置: sections/
+  用途: 人物介紹直式輪播卡片
+{% endcomment %}
+
+<style>
+    #shopify-section-{{ section.id }} {
+      --primary-color: {{ section.settings.primary_color }};
+      --secondary-color: {{ section.settings.secondary_color }};
+      --bg-start: {{ section.settings.bg_gradient_start }};
+      --bg-end: {{ section.settings.bg_gradient_end }};
+      --transition-speed: {{ section.settings.transition_speed }}ms;
+      --card-width: {{ section.settings.card_width }}px;
+      --card-height: {{ section.settings.card_height }}px;
+    }
+  
+    #shopify-section-{{ section.id }} * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+  
+    #shopify-section-{{ section.id }} .character-carousel-section {
+      position: relative;
+      width: 100%;
+      min-height: {{ section.settings.section_height }}vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: {{ section.settings.section_padding_top }}px {{ section.settings.section_padding_side }}px {{ section.settings.section_padding_bottom }}px;
+      overflow: hidden;
+      background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%);
+    }
+  
+    /* 背景裝飾效果 */
+    {% if section.settings.enable_bg_decoration %}
+    #shopify-section-{{ section.id }} .carousel-bg-decoration {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 0;
+    }
+  
+    #shopify-section-{{ section.id }} .carousel-bg-decoration::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 150%;
+      height: 150%;
+      background: radial-gradient(
+        circle at center,
+        {{ section.settings.decoration_color | color_modify: 'alpha', 0.06 }} 0%,
+        {{ section.settings.decoration_color | color_modify: 'alpha', 0.03 }} 30%,
+        transparent 60%
+      );
+      animation: bgPulse {{ section.settings.bg_animation_speed }}s ease-in-out infinite;
+    }
+  
+    @keyframes bgPulse {
+      0%, 100% { 
+        transform: translate(-50%, -50%) scale(1); 
+        opacity: 0.6; 
+      }
+      50% { 
+        transform: translate(-50%, -50%) scale(1.2); 
+        opacity: 1; 
+      }
+    }
+    {% endif %}
+  
+    /* 浮動粒子 */
+    {% if section.settings.enable_particles %}
+    #shopify-section-{{ section.id }} .floating-particles {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 1;
+    }
+  
+    #shopify-section-{{ section.id }} .particle {
+      position: absolute;
+      width: {{ section.settings.particle_size }}px;
+      height: {{ section.settings.particle_size }}px;
+      background: {{ section.settings.particle_color | color_modify: 'alpha', 0.4 }};
+      border-radius: 50%;
+      animation: floatUp 15s infinite linear;
+    }
+  
+    @keyframes floatUp {
+      0% {
+        transform: translateY(100vh) translateX(0);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100vh) translateX(100px);
+        opacity: 0;
+      }
+    }
+    {% endif %}
+  
+    /* 區塊標題 */
+    #shopify-section-{{ section.id }} .section-title {
+      position: absolute;
+      top: {{ section.settings.title_position_top }}px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      text-align: center;
+    }
+  
+    #shopify-section-{{ section.id }} .section-title h1 {
+      font-size: {{ section.settings.title_size | divided_by: 10.0 }}rem;
+      font-weight: bold;
+      {% if section.settings.enable_title_gradient %}
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      {% else %}
+      color: {{ section.settings.title_color }};
+      {% endif %}
+      margin-bottom: 10px;
+      {% if section.settings.enable_title_shadow %}
+      text-shadow: 0 0 30px {{ section.settings.primary_color | color_modify: 'alpha', 0.3 }};
+      {% endif %}
+    }
+  
+    #shopify-section-{{ section.id }} .section-subtitle {
+      font-size: {{ section.settings.subtitle_size | divided_by: 10.0 }}rem;
+      color: {{ section.settings.subtitle_color }};
+      font-weight: 300;
+    }
+  
+    /* 直式卡片輪播容器 */
+    #shopify-section-{{ section.id }} .vertical-carousel-container {
+      position: relative;
+      width: var(--card-width);
+      height: var(--card-height);
+      perspective: 1000px;
+      z-index: 2;
+      cursor: {% if section.settings.enable_drag %}grab{% else %}default{% endif %};
+    }
+  
+    {% if section.settings.enable_drag %}
+    #shopify-section-{{ section.id }} .vertical-carousel-container:active {
+      cursor: grabbing;
+    }
+    {% endif %}
+  
+    /* 卡片軌道 */
+    #shopify-section-{{ section.id }} .card-track {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+    }
+  
+    /* 單個人物卡片 */
+    #shopify-section-{{ section.id }} .character-card {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: {{ section.settings.card_border_radius }}px;
+      overflow: visible;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, {{ section.settings.card_shadow_opacity | divided_by: 100.0 }});
+      transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+      user-select: none;
+    }
+  
+        /* 動態卡片排列位置 */
+    #shopify-section-{{ section.id }} .character-card.active {
+      transform: translateZ(50px) scale(1);
+      z-index: 100;
+      opacity: 1;
+      filter: blur(0);
+    }
+
+    /* 第一層側邊卡片 (直接相鄰) */
+    #shopify-section-{{ section.id }} .character-card.side-1 {
+      transform: translateX({{ section.settings.card_spacing }}%) translateZ(-150px) scale({{ section.settings.card_scale_next | divided_by: 100.0 }});
+      opacity: {{ section.settings.card_opacity_next | divided_by: 100.0 }};
+      z-index: 90;
+      {% if section.settings.enable_side_blur %}
+      filter: blur({{ section.settings.side_blur_amount }}px);
+      {% endif %}
+    }
+
+    #shopify-section-{{ section.id }} .character-card.side--1 {
+      transform: translateX(-{{ section.settings.card_spacing }}%) translateZ(-150px) scale({{ section.settings.card_scale_next | divided_by: 100.0 }});
+      opacity: {{ section.settings.card_opacity_next | divided_by: 100.0 }};
+      z-index: 90;
+      {% if section.settings.enable_side_blur %}
+      filter: blur({{ section.settings.side_blur_amount }}px);
+      {% endif %}
+    }
+
+    /* 第二層側邊卡片 */
+    #shopify-section-{{ section.id }} .character-card.side-2 {
+      transform: translateX({{ section.settings.card_spacing | times: 1.8 }}%) translateZ(-300px) scale({{ section.settings.card_scale_far | divided_by: 100.0 }});
+      opacity: {{ section.settings.card_opacity_far | divided_by: 100.0 }};
+      z-index: 80;
+      {% if section.settings.enable_far_blur %}
+      filter: blur({{ section.settings.far_blur_amount }}px);
+      {% endif %}
+    }
+
+    #shopify-section-{{ section.id }} .character-card.side--2 {
+      transform: translateX(-{{ section.settings.card_spacing | times: 1.8 }}%) translateZ(-300px) scale({{ section.settings.card_scale_far | divided_by: 100.0 }});
+      opacity: {{ section.settings.card_opacity_far | divided_by: 100.0 }};
+      z-index: 80;
+      {% if section.settings.enable_far_blur %}
+      filter: blur({{ section.settings.far_blur_amount }}px);
+      {% endif %}
+    }
+
+    /* 第三層側邊卡片 */
+    #shopify-section-{{ section.id }} .character-card.side-3 {
+      transform: translateX({{ section.settings.card_spacing | times: 2.5 }}%) translateZ(-450px) scale({{ section.settings.card_scale_far | times: 0.85 | divided_by: 100.0 }});
+      opacity: {{ section.settings.card_opacity_far | times: 0.7 | divided_by: 100.0 }};
+      z-index: 70;
+      {% if section.settings.enable_far_blur %}
+      filter: blur({{ section.settings.far_blur_amount | times: 1.5 | round }}px);
+      {% endif %}
+    }
+
+    #shopify-section-{{ section.id }} .character-card.side--3 {
+      transform: translateX(-{{ section.settings.card_spacing | times: 2.5 }}%) translateZ(-450px) scale({{ section.settings.card_scale_far | times: 0.85 | divided_by: 100.0 }});
+      opacity: {{ section.settings.card_opacity_far | times: 0.7 | divided_by: 100.0 }};
+      z-index: 70;
+      {% if section.settings.enable_far_blur %}
+      filter: blur({{ section.settings.far_blur_amount | times: 1.5 | round }}px);
+      {% endif %}
+    }
+
+    /* 更遠的卡片 - 隱藏或極小顯示 */
+    #shopify-section-{{ section.id }} .character-card.side-far {
+      transform: translateX({{ section.settings.card_spacing | times: 3.2 }}%) translateZ(-600px) scale({{ section.settings.card_scale_far | times: 0.6 | divided_by: 100.0 }});
+      opacity: {{ section.settings.card_opacity_far | times: 0.3 | divided_by: 100.0 }};
+      z-index: 60;
+      {% if section.settings.enable_far_blur %}
+      filter: blur({{ section.settings.far_blur_amount | times: 2 | round }}px);
+      {% endif %}
+    }
+
+    #shopify-section-{{ section.id }} .character-card.side--far {
+      transform: translateX(-{{ section.settings.card_spacing | times: 3.2 }}%) translateZ(-600px) scale({{ section.settings.card_scale_far | times: 0.6 | divided_by: 100.0 }});
+      opacity: {{ section.settings.card_opacity_far | times: 0.3 | divided_by: 100.0 }};
+      z-index: 60;
+      {% if section.settings.enable_far_blur %}
+      filter: blur({{ section.settings.far_blur_amount | times: 2 | round }}px);
+      {% endif %}
+    }
+
+    #shopify-section-{{ section.id }} .character-card.hidden {
+      opacity: 0;
+      transform: translateX(0) translateZ(-800px) scale(0.3);
+      z-index: 0;
+      pointer-events: none;
+    }
+  
+    /* 卡片背景層 */
+    #shopify-section-{{ section.id }} .card-background {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: {{ section.settings.card_border_radius }}px;
+      overflow: hidden;
+      background: transparent;
+    }
+  
+    #shopify-section-{{ section.id }} .card-background .video-wrapper {
+      width: 100%;
+      height: 100%;
+    }
+  
+    #shopify-section-{{ section.id }} .card-background video,
+    #shopify-section-{{ section.id }} .card-background .carousel-video,
+    #shopify-section-{{ section.id }} .card-background img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  
+    /* 發光邊框效果 */
+    {% if section.settings.enable_active_border %}
+    #shopify-section-{{ section.id }} .character-card.active::before {
+      content: '';
+      position: absolute;
+      top: -3px;
+      left: -3px;
+      right: -3px;
+      bottom: -3px;
+      background: linear-gradient(45deg,
+        var(--primary-color),
+        var(--secondary-color),
+        {{ section.settings.border_color_3 }},
+        var(--secondary-color),
+        var(--primary-color)
+      );
+      background-size: 400% 400%;
+      border-radius: {{ section.settings.card_border_radius }}px;
+      z-index: -1;
+      animation: borderGradient {{ section.settings.border_animation_speed }}s ease-in-out infinite;
+    }
+  
+    @keyframes borderGradient {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    {% endif %}
+  
+    /* Q版人物區域 */
+    {% if section.settings.enable_character_avatar %}
+    #shopify-section-{{ section.id }} .character-avatar {
+      position: absolute;
+      right: {{ section.settings.avatar_position_right }}px;
+      bottom: {{ section.settings.avatar_position_bottom }}px;
+      width: {{ section.settings.avatar_width }}px;
+      height: {{ section.settings.avatar_height }}px;
+      z-index: 10;
+      pointer-events: none;
+    }
+  
+    #shopify-section-{{ section.id }} .character-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    {% endif %}
+  
+    /* 左下角資訊 */
+    #shopify-section-{{ section.id }} .card-info {
+      position: absolute;
+      bottom: {{ section.settings.info_position_bottom }}px;
+      left: {{ section.settings.info_position_left }}px;
+      z-index: 5;
+    }
+  
+    #shopify-section-{{ section.id }} .card-title {
+      font-size: {{ section.settings.card_title_size | divided_by: 10.0 }}rem;
+      font-weight: bold;
+      color: {{ section.settings.card_title_color }};
+      margin-bottom: 10px;
+      {% if section.settings.enable_text_shadow %}
+      text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+      {% endif %}
+    }
+  
+    #shopify-section-{{ section.id }} .card-description {
+      font-size: {{ section.settings.card_desc_size | divided_by: 10.0 }}rem;
+      color: {{ section.settings.card_desc_color }};
+      line-height: 1.5;
+      max-width: {{ section.settings.desc_max_width }}px;
+      {% if section.settings.enable_text_shadow %}
+      text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+      {% endif %}
+    }
+  
+    /* 點狀指示器 */
+    {% if section.settings.enable_indicators %}
+    #shopify-section-{{ section.id }} .dots-indicator {
+      position: absolute;
+      bottom: {{ section.settings.indicators_position_bottom }}px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: {{ section.settings.indicators_gap }}px;
+      z-index: 10;
+    }
+  
+    #shopify-section-{{ section.id }} .dot {
+      width: {{ section.settings.indicator_size }}px;
+      height: {{ section.settings.indicator_size }}px;
+      border-radius: 50%;
+      background: {{ section.settings.indicator_color }};
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+  
+    #shopify-section-{{ section.id }} .dot.active {
+      width: {{ section.settings.indicator_size | times: 3 }}px;
+      border-radius: {{ section.settings.indicator_size | divided_by: 2 }}px;
+      background: {{ section.settings.indicator_active_color }};
+      box-shadow: 0 0 10px {{ section.settings.indicator_active_color | color_modify: 'alpha', 0.6 }};
+    }
+    {% endif %}
+  
+    /* 滑動提示 */
+    {% if section.settings.enable_swipe_hint %}
+    #shopify-section-{{ section.id }} .swipe-hint {
+      position: absolute;
+      bottom: {{ section.settings.hint_position_bottom }}px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: {{ section.settings.hint_color }};
+      font-size: {{ section.settings.hint_size | divided_by: 10.0 }}rem;
+      z-index: 10;
+      animation: fadeInOut 3s ease-in-out infinite;
+    }
+  
+    @keyframes fadeInOut {
+      0%, 100% { opacity: 0; }
+      50% { opacity: 1; }
+    }
+    {% endif %}
+  
+    /* 響應式設計 */
+    @media (max-width: 768px) {
+      #shopify-section-{{ section.id }} {
+        --card-width: {{ section.settings.card_width_mobile }}px;
+        --card-height: {{ section.settings.card_height_mobile }}px;
+      }
+  
+      #shopify-section-{{ section.id }} .section-title h1 {
+        font-size: {{ section.settings.title_size_mobile | divided_by: 10.0 }}rem;
+      }
+  
+      #shopify-section-{{ section.id }} .section-subtitle {
+        font-size: {{ section.settings.subtitle_size_mobile | divided_by: 10.0 }}rem;
+      }
+  
+      #shopify-section-{{ section.id }} .card-title {
+        font-size: {{ section.settings.card_title_size_mobile | divided_by: 10.0 }}rem;
+      }
+  
+      #shopify-section-{{ section.id }} .card-description {
+        font-size: {{ section.settings.card_desc_size_mobile | divided_by: 10.0 }}rem;
+      }
+  
+            /* 行動裝置的動態卡片位置 */
+      #shopify-section-{{ section.id }} .character-card.side-1 {
+        transform: translateX({{ section.settings.card_spacing_mobile }}%) translateZ(-100px) scale({{ section.settings.card_scale_next_mobile | divided_by: 100.0 }});
+        {% if section.settings.enable_side_blur %}
+        filter: blur({{ section.settings.side_blur_amount | times: 0.7 | round }}px);
+        {% endif %}
+      }
+
+      #shopify-section-{{ section.id }} .character-card.side--1 {
+        transform: translateX(-{{ section.settings.card_spacing_mobile }}%) translateZ(-100px) scale({{ section.settings.card_scale_next_mobile | divided_by: 100.0 }});
+        {% if section.settings.enable_side_blur %}
+        filter: blur({{ section.settings.side_blur_amount | times: 0.7 | round }}px);
+        {% endif %}
+      }
+
+      #shopify-section-{{ section.id }} .character-card.side-2 {
+        transform: translateX({{ section.settings.card_spacing_mobile | times: 1.6 }}%) translateZ(-200px) scale({{ section.settings.card_scale_far_mobile | divided_by: 100.0 }});
+        {% if section.settings.enable_far_blur %}
+        filter: blur({{ section.settings.far_blur_amount | times: 0.7 | round }}px);
+        {% endif %}
+      }
+
+      #shopify-section-{{ section.id }} .character-card.side--2 {
+        transform: translateX(-{{ section.settings.card_spacing_mobile | times: 1.6 }}%) translateZ(-200px) scale({{ section.settings.card_scale_far_mobile | divided_by: 100.0 }});
+        {% if section.settings.enable_far_blur %}
+        filter: blur({{ section.settings.far_blur_amount | times: 0.7 | round }}px);
+        {% endif %}
+      }
+
+      #shopify-section-{{ section.id }} .character-card.side-3 {
+        transform: translateX({{ section.settings.card_spacing_mobile | times: 2.2 }}%) translateZ(-300px) scale({{ section.settings.card_scale_far_mobile | times: 0.8 | divided_by: 100.0 }});
+        opacity: {{ section.settings.card_opacity_far | times: 0.5 | divided_by: 100.0 }};
+        {% if section.settings.enable_far_blur %}
+        filter: blur({{ section.settings.far_blur_amount }}px);
+        {% endif %}
+      }
+
+      #shopify-section-{{ section.id }} .character-card.side--3 {
+        transform: translateX(-{{ section.settings.card_spacing_mobile | times: 2.2 }}%) translateZ(-300px) scale({{ section.settings.card_scale_far_mobile | times: 0.8 | divided_by: 100.0 }});
+        opacity: {{ section.settings.card_opacity_far | times: 0.5 | divided_by: 100.0 }};
+        {% if section.settings.enable_far_blur %}
+        filter: blur({{ section.settings.far_blur_amount }}px);
+        {% endif %}
+      }
+
+      #shopify-section-{{ section.id }} .character-card.side-far,
+      #shopify-section-{{ section.id }} .character-card.side--far {
+        transform: translateX(0) translateZ(-400px) scale(0.4);
+        opacity: 0;
+      }
+    }
+  </style>
+  
+  <section class="character-carousel-section">
+    {% if section.settings.enable_bg_decoration %}
+      <div class="carousel-bg-decoration"></div>
+    {% endif %}
+    
+    {% if section.settings.enable_particles %}
+      <div class="floating-particles" id="particlesContainer-{{ section.id }}"></div>
+    {% endif %}
+  
+    <!-- 區塊標題 -->
+    {% if section.settings.show_title %}
+      <div class="section-title">
+        <h1>{{ section.settings.title }}</h1>
+        {% if section.settings.subtitle != blank %}
+          <p class="section-subtitle">{{ section.settings.subtitle }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+  
+    <!-- 直式卡片輪播容器 -->
+    <div class="vertical-carousel-container" data-section-id="{{ section.id }}">
+      <div class="card-track">
+        {% for block in section.blocks %}
+          {% case block.type %}
+            {% when 'character_card' %}
+              <div class="character-card {% if forloop.first %}active{% endif %}" 
+                   data-index="{{ forloop.index0 }}"
+                   {{ block.shopify_attributes }}>
+                <div class="card-background">
+                  {% if block.settings.media_type == 'video' %}
+                    {% if block.settings.video_url != blank %}
+                      <video 
+                        class="carousel-video"
+                        muted 
+                        loop 
+                        playsinline
+                        {% if section.settings.video_preload == 'auto' %}preload="auto"
+                        {% elsif section.settings.video_preload == 'metadata' %}preload="metadata"
+                        {% else %}preload="none"{% endif %}
+                        data-video-url="{{ block.settings.video_url }}"
+                        {% unless forloop.first %}data-lazy="true"{% endunless %}>
+                        <source src="{% if forloop.first and section.settings.autoplay_first %}{{ block.settings.video_url }}{% endif %}" type="video/mp4">
+                      </video>
+                    {% elsif block.settings.video != blank %}
+                      <div class="video-wrapper" {% unless forloop.first %}data-lazy="true"{% endunless %}>
+                        {{ block.settings.video | video_tag:
+                            autoplay: false,
+                            muted: true,
+                            loop: true,
+                            controls: false,
+                            class: 'carousel-video',
+                            playsinline: true,
+                            preload: section.settings.video_preload
+                        }}
+                      </div>
+                    {% endif %}
+                  {% elsif block.settings.media_type == 'image' %}
+                    {% if block.settings.image != blank %}
+                      {{ block.settings.image | image_url: width: 900 | image_tag }}
+                    {% endif %}
+                  {% endif %}
+                </div>
+                
+                {% if section.settings.enable_character_avatar and block.settings.avatar_image != blank %}
+                  <div class="character-avatar">
+                    {{ block.settings.avatar_image | image_url: width: 400 | image_tag }}
+                  </div>
+                {% endif %}
+                
+                <div class="card-info">
+                  <h2 class="card-title">{{ block.settings.name }}</h2>
+                  <p class="card-description">{{ block.settings.description }}</p>
+                </div>
+              </div>
+          {% endcase %}
+        {% endfor %}
+      </div>
+  
+      {% if section.settings.enable_indicators %}
+        <div class="dots-indicator">
+          {% for block in section.blocks %}
+            {% if block.type == 'character_card' %}
+              <span class="dot {% if forloop.first %}active{% endif %}" data-index="{{ forloop.index0 }}"></span>
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% endif %}
+  
+      {% if section.settings.enable_swipe_hint %}
+        <div class="swipe-hint">{{ section.settings.hint_text }}</div>
+      {% endif %}
+    </div>
+  </section>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const sectionId = '{{ section.id }}';
+      const container = document.querySelector(`#shopify-section-${sectionId}`);
+      
+      class CharacterCarousel {
+        constructor(container) {
+          this.container = container;
+          this.carouselContainer = container.querySelector('.vertical-carousel-container');
+          this.currentIndex = 0;
+          this.cards = container.querySelectorAll('.character-card');
+          this.dots = container.querySelectorAll('.dot');
+          this.totalCards = this.cards.length;
+          this.isAnimating = false;
+          
+          // 設定參數
+          this.enableDrag = {{ section.settings.enable_drag | json }};
+          this.enableTouch = {{ section.settings.enable_touch | json }};
+          this.enableKeyboard = {{ section.settings.enable_keyboard | json }};
+          this.enableIndicatorClick = {{ section.settings.enable_indicator_click | json }};
+          this.dragThreshold = {{ section.settings.drag_threshold }};
+          
+          // 拖曳相關
+          this.isDragging = false;
+          this.startX = 0;
+          this.currentX = 0;
+          
+          this.init();
+        }
+  
+        init() {
+          {% if section.settings.enable_particles %}
+          this.createParticles();
+          {% endif %}
+          
+          if (this.enableIndicatorClick) {
+            this.setupIndicators();
+          }
+          
+          if (this.enableTouch) {
+            this.setupTouchControls();
+          }
+          
+          if (this.enableDrag) {
+            this.setupMouseDrag();
+          }
+          
+          if (this.enableKeyboard) {
+            this.setupKeyboardControls();
+          }
+          
+          this.updatePositions();
+          
+          // 初始化第一個影片
+          {% if section.settings.autoplay_first %}
+          const firstCard = this.cards[0];
+          if (firstCard) {
+            let video = firstCard.querySelector('video.carousel-video');
+            
+            // 檢查是否在 wrapper 中
+            if (!video) {
+              const wrapper = firstCard.querySelector('.video-wrapper');
+              if (wrapper) {
+                video = wrapper.querySelector('video.carousel-video');
+              }
+            }
+            
+            if (video) {
+              // 確保影片已載入並準備播放
+              if (video.readyState >= 2) {
+                video.play().catch(e => console.log('Initial video play failed:', e));
+              } else {
+                video.addEventListener('loadeddata', () => {
+                  video.play().catch(e => console.log('Initial video play failed after load:', e));
+                }, { once: true });
+              }
+            }
+          }
+          {% endif %}
+          
+          // 效能優化：頁面可見性處理
+          document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+              // 頁面隱藏時暫停所有影片
+              this.cards.forEach(card => {
+                const video = card.querySelector('video.carousel-video');
+                if (video && !video.paused) {
+                  video.pause();
+                  video.dataset.wasPlaying = 'true';
+                }
+              });
+            } else {
+              // 頁面顯示時恢復活動影片
+              const activeCard = this.container.querySelector('.character-card.active');
+              if (activeCard) {
+                const video = activeCard.querySelector('video.carousel-video');
+                if (video && video.dataset.wasPlaying === 'true') {
+                  video.play().catch(e => console.log('Resume video play failed:', e));
+                  video.dataset.wasPlaying = 'false';
+                }
+              }
+            }
+          });
+          
+          // 效能優化：Intersection Observer
+          {% if section.settings.lazy_load_videos %}
+          if ('IntersectionObserver' in window) {
+            const observer = new IntersectionObserver((entries) => {
+              entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                  const container = entry.target;
+                  const activeCard = container.querySelector('.character-card.active');
+                  if (activeCard) {
+                    const video = activeCard.querySelector('video.carousel-video');
+                    if (video && video.dataset.lazy === 'true' && video.dataset.videoUrl) {
+                      const videoUrl = video.dataset.videoUrl;
+                      if (videoUrl && video.querySelector('source') && !video.querySelector('source').src) {
+                        video.querySelector('source').src = videoUrl;
+                        video.load();
+                        video.dataset.lazy = 'false';
+                      }
+                    }
+                  }
+                }
+              });
+            }, { threshold: 0.1 });
+            
+            observer.observe(this.carouselContainer);
+          }
+          {% endif %}
+        }
+  
+        {% if section.settings.enable_particles %}
+        createParticles() {
+          const particlesContainer = this.container.querySelector(`#particlesContainer-${sectionId}`);
+          const particleCount = {{ section.settings.particle_count }};
+          
+          for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 15 + 's';
+            particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+            particlesContainer.appendChild(particle);
+          }
+        }
+        {% endif %}
+  
+        setupIndicators() {
+          this.dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+              if (!this.isAnimating && index !== this.currentIndex) {
+                this.goToSlide(index);
+              }
+            });
+          });
+        }
+  
+        navigate(direction) {
+          if (this.isAnimating) return;
+          
+          this.isAnimating = true;
+          
+          if (direction === 'next') {
+            this.currentIndex = (this.currentIndex + 1) % this.totalCards;
+          } else {
+            this.currentIndex = (this.currentIndex - 1 + this.totalCards) % this.totalCards;
+          }
+          
+          this.updatePositions();
+          
+          setTimeout(() => {
+            this.isAnimating = false;
+          }, {{ section.settings.transition_speed }});
+        }
+  
+        goToSlide(index) {
+          if (this.isAnimating || index === this.currentIndex) return;
+          
+          this.isAnimating = true;
+          this.currentIndex = index;
+          this.updatePositions();
+          
+          setTimeout(() => {
+            this.isAnimating = false;
+          }, {{ section.settings.transition_speed }});
+        }
+  
+        updatePositions() {
+          // 移除所有位置類別
+          const allPositionClasses = ['active', 'side-1', 'side--1', 'side-2', 'side--2', 'side-3', 'side--3', 'side-far', 'side--far', 'hidden'];
+          
+          this.cards.forEach((card, index) => {
+            const wasActive = card.classList.contains('active');
+            card.classList.remove(...allPositionClasses);
+            
+            let relativePos = (index - this.currentIndex + this.totalCards) % this.totalCards;
+            let isNowActive = false;
+            
+            if (relativePos === 0) {
+              // 當前活動卡片
+              card.classList.add('active');
+              isNowActive = true;
+            } else {
+              // 計算側邊位置
+              let sideDistance;
+              let isLeft = false;
+              
+              if (relativePos <= Math.floor(this.totalCards / 2)) {
+                // 右側卡片
+                sideDistance = relativePos;
+              } else {
+                // 左側卡片
+                sideDistance = this.totalCards - relativePos;
+                isLeft = true;
+              }
+              
+              // 根據距離分配位置類別
+              let positionClass;
+              if (sideDistance === 1) {
+                positionClass = isLeft ? 'side--1' : 'side-1';
+              } else if (sideDistance === 2) {
+                positionClass = isLeft ? 'side--2' : 'side-2';
+              } else if (sideDistance === 3) {
+                positionClass = isLeft ? 'side--3' : 'side-3';
+              } else if (sideDistance <= 5) {
+                positionClass = isLeft ? 'side--far' : 'side-far';
+              } else {
+                positionClass = 'hidden';
+              }
+              
+              card.classList.add(positionClass);
+            }
+            
+            // 影片控制邏輯
+            let video = card.querySelector('video.carousel-video');
+            
+            // 如果影片在 wrapper 中，也要檢查
+            if (!video) {
+              const wrapper = card.querySelector('.video-wrapper');
+              if (wrapper) {
+                video = wrapper.querySelector('video.carousel-video');
+                // 將 lazy 屬性從 wrapper 複製到 video
+                if (wrapper.dataset.lazy && video) {
+                  video.dataset.lazy = wrapper.dataset.lazy;
+                }
+              }
+            }
+            
+            if (video) {
+              {% if section.settings.lazy_load_videos %}
+              // 延遲載入邏輯 - 只針對外部網址影片
+              if (isNowActive && video.dataset.lazy === 'true' && video.dataset.videoUrl) {
+                const videoUrl = video.dataset.videoUrl;
+                const source = video.querySelector('source');
+                if (videoUrl && source && !source.src) {
+                  source.src = videoUrl;
+                  video.load();
+                }
+                video.dataset.lazy = 'false';
+              }
+              {% endif %}
+              
+              {% if section.settings.pause_hidden_videos %}
+              // 播放/暫停控制
+              if (isNowActive) {
+                // 新的活動卡片，播放影片
+                if (video.paused && {% if section.settings.autoplay_first %}true{% else %}wasActive{% endif %}) {
+                  video.play().catch(e => console.log('Video play failed:', e));
+                }
+              } else if (wasActive) {
+                // 之前是活動卡片，現在不是，暫停影片
+                if (!video.paused) {
+                  video.pause();
+                }
+              }
+              {% else %}
+              // 所有影片都播放（原始行為）
+              if (video.paused) {
+                video.play().catch(e => console.log('Video play failed:', e));
+              }
+              {% endif %}
+            }
+          });
+  
+          this.dots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === this.currentIndex);
+          });
+  
+          {% if section.settings.enable_swipe_hint %}
+          const hint = this.container.querySelector('.swipe-hint');
+          if (hint) {
+            setTimeout(() => {
+              hint.style.display = 'none';
+            }, 5000);
+          }
+          {% endif %}
+        }
+  
+        setupKeyboardControls() {
+          document.addEventListener('keydown', (e) => {
+            if (!this.isAnimating) {
+              if (e.key === 'ArrowLeft') {
+                this.navigate('prev');
+              } else if (e.key === 'ArrowRight') {
+                this.navigate('next');
+              }
+            }
+          });
+        }
+  
+        setupTouchControls() {
+          let touchStartX = 0;
+          let touchEndX = 0;
+  
+          this.carouselContainer.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+          }, { passive: true });
+  
+          this.carouselContainer.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            this.handleSwipe(touchStartX, touchEndX);
+          }, { passive: true });
+        }
+  
+        setupMouseDrag() {
+          this.carouselContainer.addEventListener('mousedown', (e) => {
+            this.isDragging = true;
+            this.startX = e.clientX;
+            this.carouselContainer.style.cursor = 'grabbing';
+            e.preventDefault();
+          });
+  
+          document.addEventListener('mousemove', (e) => {
+            if (!this.isDragging) return;
+            this.currentX = e.clientX;
+          });
+  
+          document.addEventListener('mouseup', () => {
+            if (!this.isDragging) return;
+            
+            this.isDragging = false;
+            this.carouselContainer.style.cursor = 'grab';
+            
+            const diffX = this.currentX - this.startX;
+            if (Math.abs(diffX) > this.dragThreshold) {
+              if (diffX > 0) {
+                this.navigate('prev');
+              } else {
+                this.navigate('next');
+              }
+            }
+          });
+  
+          document.addEventListener('mouseleave', () => {
+            this.isDragging = false;
+            this.carouselContainer.style.cursor = 'grab';
+          });
+        }
+  
+        handleSwipe(startX, endX) {
+          if (this.isAnimating) return;
+          
+          const diffX = endX - startX;
+          
+          if (Math.abs(diffX) > this.dragThreshold) {
+            if (diffX > 0) {
+              this.navigate('prev');
+            } else {
+              this.navigate('next');
+            }
+          }
+        }
+      }
+  
+      new CharacterCarousel(container);
+    });
+  </script>
+  
+  {% schema %}
+  {
+    "name": "人物介紹輪播",
+    "tag": "section",
+    "class": "character-carousel",
+    "settings": [
+      {
+        "type": "header",
+        "content": "基本設定"
+      },
+      {
+        "type": "paragraph",
+        "content": "此輪播組件支援任意數量的人物卡片。您可以根據需要添加、刪除或重新排列卡片。"
+      },
+      {
+        "type": "text",
+        "id": "title",
+        "label": "標題",
+        "default": "團隊成員介紹"
+      },
+      {
+        "type": "text",
+        "id": "subtitle",
+        "label": "副標題",
+        "default": "認識我們的專業團隊"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_title",
+        "label": "顯示標題",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "版面配置"
+      },
+      {
+        "type": "range",
+        "id": "section_height",
+        "label": "區塊高度 (vh)",
+        "min": 50,
+        "max": 120,
+        "step": 5,
+        "default": 100
+      },
+      {
+        "type": "range",
+        "id": "section_padding_top",
+        "label": "上方內距",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "default": 40
+      },
+      {
+        "type": "range",
+        "id": "section_padding_bottom",
+        "label": "下方內距",
+        "min": 0,
+        "max": 100,
+        "step": 5,
+        "default": 40
+      },
+      {
+        "type": "range",
+        "id": "section_padding_side",
+        "label": "左右內距",
+        "min": 0,
+        "max": 50,
+        "step": 5,
+        "default": 20
+      },
+      {
+        "type": "header",
+        "content": "顏色設定"
+      },
+      {
+        "type": "color",
+        "id": "primary_color",
+        "label": "主要顏色",
+        "default": "#f08418"
+      },
+      {
+        "type": "color",
+        "id": "secondary_color",
+        "label": "次要顏色",
+        "default": "#ff9a3c"
+      },
+      {
+        "type": "color",
+        "id": "bg_gradient_start",
+        "label": "背景漸層起始色",
+        "default": "#1a1a1a"
+      },
+      {
+        "type": "color",
+        "id": "bg_gradient_end",
+        "label": "背景漸層結束色",
+        "default": "#2d2d2d"
+      },
+      {
+        "type": "header",
+        "content": "卡片設定"
+      },
+      {
+        "type": "range",
+        "id": "card_width",
+        "label": "卡片寬度 (px)",
+        "min": 300,
+        "max": 600,
+        "step": 10,
+        "default": 450
+      },
+      {
+        "type": "range",
+        "id": "card_height",
+        "label": "卡片高度 (px)",
+        "min": 500,
+        "max": 900,
+        "step": 10,
+        "default": 750
+      },
+      {
+        "type": "range",
+        "id": "card_border_radius",
+        "label": "卡片圓角",
+        "min": 0,
+        "max": 50,
+        "step": 5,
+        "default": 30
+      },
+      {
+        "type": "range",
+        "id": "card_spacing",
+        "label": "卡片間距 (%)",
+        "min": 50,
+        "max": 120,
+        "step": 5,
+        "default": 85
+      },
+      {
+        "type": "range",
+        "id": "card_scale_next",
+        "label": "側邊卡片縮放 (%)",
+        "min": 50,
+        "max": 100,
+        "step": 5,
+        "default": 85,
+        "info": "85 = 0.85倍縮放"
+      },
+      {
+        "type": "range",
+        "id": "card_scale_far",
+        "label": "遠端卡片縮放 (%)",
+        "min": 30,
+        "max": 80,
+        "step": 5,
+        "default": 70,
+        "info": "70 = 0.7倍縮放"
+      },
+      {
+        "type": "range",
+        "id": "card_opacity_next",
+        "label": "側邊卡片透明度 (%)",
+        "min": 30,
+        "max": 100,
+        "step": 10,
+        "default": 70,
+        "info": "70 = 0.7透明度"
+      },
+      {
+        "type": "range",
+        "id": "card_opacity_far",
+        "label": "遠端卡片透明度 (%)",
+        "min": 10,
+        "max": 70,
+        "step": 10,
+        "default": 40,
+        "info": "40 = 0.4透明度"
+      },
+      {
+        "type": "range",
+        "id": "card_shadow_opacity",
+        "label": "卡片陰影透明度 (%)",
+        "min": 10,
+        "max": 100,
+        "step": 10,
+        "default": 50,
+        "info": "50 = 0.5透明度"
+      },
+      {
+        "type": "header",
+        "content": "標題樣式"
+      },
+      {
+        "type": "range",
+        "id": "title_size",
+        "label": "標題大小 (rem × 10)",
+        "min": 10,
+        "max": 60,
+        "step": 5,
+        "default": 35,
+        "info": "35 = 3.5rem"
+      },
+      {
+        "type": "range",
+        "id": "subtitle_size",
+        "label": "副標題大小 (rem × 10)",
+        "min": 8,
+        "max": 20,
+        "step": 1,
+        "default": 12,
+        "info": "12 = 1.2rem"
+      },
+      {
+        "type": "color",
+        "id": "title_color",
+        "label": "標題顏色",
+        "default": "#ffffff"
+      },
+      {
+        "type": "color",
+        "id": "subtitle_color",
+        "label": "副標題顏色",
+        "default": "#b0b0b0"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_title_gradient",
+        "label": "啟用標題漸層",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_title_shadow",
+        "label": "啟用標題陰影",
+        "default": true
+      },
+      {
+        "type": "range",
+        "id": "title_position_top",
+        "label": "標題距頂部距離",
+        "min": 20,
+        "max": 150,
+        "step": 10,
+        "default": 60
+      },
+      {
+        "type": "header",
+        "content": "卡片資訊"
+      },
+      {
+        "type": "range",
+        "id": "card_title_size",
+        "label": "卡片標題大小 (rem × 10)",
+        "min": 10,
+        "max": 30,
+        "step": 1,
+        "default": 22,
+        "info": "22 = 2.2rem"
+      },
+      {
+        "type": "range",
+        "id": "card_desc_size",
+        "label": "卡片描述大小 (rem × 10)",
+        "min": 7,
+        "max": 15,
+        "step": 1,
+        "default": 10,
+        "info": "10 = 1.0rem"
+      },
+      {
+        "type": "color",
+        "id": "card_title_color",
+        "label": "卡片標題顏色",
+        "default": "#ffffff"
+      },
+      {
+        "type": "color",
+        "id": "card_desc_color",
+        "label": "卡片描述顏色",
+        "default": "#e6e6e6"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_text_shadow",
+        "label": "啟用文字陰影",
+        "default": true
+      },
+      {
+        "type": "range",
+        "id": "info_position_bottom",
+        "label": "資訊距底部距離",
+        "min": 10,
+        "max": 80,
+        "step": 5,
+        "default": 30
+      },
+      {
+        "type": "range",
+        "id": "info_position_left",
+        "label": "資訊距左側距離",
+        "min": 10,
+        "max": 80,
+        "step": 5,
+        "default": 30
+      },
+      {
+        "type": "range",
+        "id": "desc_max_width",
+        "label": "描述最大寬度",
+        "min": 150,
+        "max": 400,
+        "step": 10,
+        "default": 250
+      },
+      {
+        "type": "header",
+        "content": "Q版人物設定"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_character_avatar",
+        "label": "啟用Q版人物",
+        "default": true
+      },
+      {
+        "type": "range",
+        "id": "avatar_width",
+        "label": "Q版人物寬度",
+        "min": 100,
+        "max": 300,
+        "step": 10,
+        "default": 180
+      },
+      {
+        "type": "range",
+        "id": "avatar_height",
+        "label": "Q版人物高度",
+        "min": 150,
+        "max": 400,
+        "step": 10,
+        "default": 250
+      },
+      {
+        "type": "range",
+        "id": "avatar_position_right",
+        "label": "Q版人物右側位置",
+        "min": -100,
+        "max": 50,
+        "step": 5,
+        "default": -30
+      },
+      {
+        "type": "range",
+        "id": "avatar_position_bottom",
+        "label": "Q版人物底部位置",
+        "min": -100,
+        "max": 50,
+        "step": 5,
+        "default": -30
+      },
+      {
+        "type": "header",
+        "content": "霧化效果"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_side_blur",
+        "label": "啟用側邊卡片霧化",
+        "default": true
+      },
+      {
+        "type": "range",
+        "id": "side_blur_amount",
+        "label": "側邊卡片霧化程度 (px)",
+        "min": 0,
+        "max": 10,
+        "step": 1,
+        "default": 3,
+        "info": "左右第一張卡片的霧化程度"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_far_blur",
+        "label": "啟用遠端卡片霧化",
+        "default": true
+      },
+      {
+        "type": "range",
+        "id": "far_blur_amount",
+        "label": "遠端卡片霧化程度 (px)",
+        "min": 0,
+        "max": 15,
+        "step": 1,
+        "default": 6,
+        "info": "左右第二張卡片的霧化程度"
+      },
+      {
+        "type": "header",
+        "content": "動畫效果"
+      },
+      {
+        "type": "range",
+        "id": "transition_speed",
+        "label": "切換速度 (毫秒)",
+        "min": 300,
+        "max": 1500,
+        "step": 100,
+        "default": 600
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_active_border",
+        "label": "啟用活動卡片邊框",
+        "default": true
+      },
+      {
+        "type": "color",
+        "id": "border_color_3",
+        "label": "邊框第三色",
+        "default": "#ffb366"
+      },
+      {
+        "type": "range",
+        "id": "border_animation_speed",
+        "label": "邊框動畫速度 (秒)",
+        "min": 2,
+        "max": 10,
+        "step": 1,
+        "default": 4
+      },
+      {
+        "type": "header",
+        "content": "背景裝飾"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_bg_decoration",
+        "label": "啟用背景裝飾",
+        "default": true
+      },
+      {
+        "type": "color",
+        "id": "decoration_color",
+        "label": "裝飾顏色",
+        "default": "#f08418"
+      },
+      {
+        "type": "range",
+        "id": "bg_animation_speed",
+        "label": "背景動畫速度 (秒)",
+        "min": 5,
+        "max": 20,
+        "step": 1,
+        "default": 10
+      },
+      {
+        "type": "header",
+        "content": "粒子效果"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_particles",
+        "label": "啟用粒子效果",
+        "default": true
+      },
+      {
+        "type": "range",
+        "id": "particle_count",
+        "label": "粒子數量",
+        "min": 5,
+        "max": 50,
+        "step": 5,
+        "default": 20
+      },
+      {
+        "type": "range",
+        "id": "particle_size",
+        "label": "粒子大小",
+        "min": 2,
+        "max": 10,
+        "step": 1,
+        "default": 4
+      },
+      {
+        "type": "color",
+        "id": "particle_color",
+        "label": "粒子顏色",
+        "default": "#f08418"
+      },
+      {
+        "type": "header",
+        "content": "指示器設定"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_indicators",
+        "label": "顯示指示器",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_indicator_click",
+        "label": "啟用指示器點擊",
+        "default": true
+      },
+      {
+        "type": "range",
+        "id": "indicator_size",
+        "label": "指示器大小",
+        "min": 8,
+        "max": 20,
+        "step": 2,
+        "default": 10
+      },
+      {
+        "type": "range",
+        "id": "indicators_gap",
+        "label": "指示器間距",
+        "min": 8,
+        "max": 24,
+        "step": 2,
+        "default": 12
+      },
+      {
+        "type": "color",
+        "id": "indicator_color",
+        "label": "指示器顏色",
+        "default": "rgba(255, 255, 255, 0.3)"
+      },
+      {
+        "type": "color",
+        "id": "indicator_active_color",
+        "label": "活動指示器顏色",
+        "default": "#f08418"
+      },
+      {
+        "type": "range",
+        "id": "indicators_position_bottom",
+        "label": "指示器距底部距離",
+        "min": -100,
+        "max": 100,
+        "step": 10,
+        "default": -50
+      },
+      {
+        "type": "header",
+        "content": "互動控制"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_drag",
+        "label": "啟用滑鼠拖曳",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_touch",
+        "label": "啟用觸控滑動",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_keyboard",
+        "label": "啟用鍵盤控制",
+        "default": true
+      },
+      {
+        "type": "range",
+        "id": "drag_threshold",
+        "label": "拖曳觸發閾值",
+        "min": 20,
+        "max": 100,
+        "step": 10,
+        "default": 50
+      },
+      {
+        "type": "header",
+        "content": "滑動提示"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_swipe_hint",
+        "label": "顯示滑動提示",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "hint_text",
+        "label": "提示文字",
+        "default": "← 左右滑動切換 →"
+      },
+      {
+        "type": "color",
+        "id": "hint_color",
+        "label": "提示文字顏色",
+        "default": "rgba(255, 255, 255, 0.5)"
+      },
+      {
+        "type": "range",
+        "id": "hint_size",
+        "label": "提示文字大小 (rem × 10)",
+        "min": 7,
+        "max": 15,
+        "step": 1,
+        "default": 9,
+        "info": "9 = 0.9rem"
+      },
+      {
+        "type": "range",
+        "id": "hint_position_bottom",
+        "label": "提示距底部距離",
+        "min": 50,
+        "max": 150,
+        "step": 10,
+        "default": 100
+      },
+      {
+        "type": "header",
+        "content": "影片效能優化"
+      },
+      {
+        "type": "select",
+        "id": "video_preload",
+        "label": "影片預載模式",
+        "options": [
+          {
+            "value": "none",
+            "label": "不預載（最省資源）"
+          },
+          {
+            "value": "metadata",
+            "label": "只預載資訊（建議）"
+          },
+          {
+            "value": "auto",
+            "label": "自動預載（較耗資源）"
+          }
+        ],
+        "default": "metadata",
+        "info": "控制影片載入時機以優化效能"
+      },
+      {
+        "type": "checkbox",
+        "id": "autoplay_first",
+        "label": "自動播放第一個影片",
+        "default": true,
+        "info": "只有中央的影片會自動播放"
+      },
+      {
+        "type": "checkbox",
+        "id": "lazy_load_videos",
+        "label": "延遲載入非活動影片",
+        "default": true,
+        "info": "只在切換時載入影片，大幅減少初始載入"
+      },
+      {
+        "type": "checkbox",
+        "id": "pause_hidden_videos",
+        "label": "暫停隱藏的影片",
+        "default": true,
+        "info": "只播放當前顯示的影片"
+      },
+      {
+        "type": "range",
+        "id": "video_quality",
+        "label": "影片品質限制 (px)",
+        "min": 480,
+        "max": 1920,
+        "step": 240,
+        "default": 720,
+        "info": "建議使用較低解析度以提升效能"
+      },
+      {
+        "type": "header",
+        "content": "行動裝置設定"
+      },
+      {
+        "type": "range",
+        "id": "card_width_mobile",
+        "label": "手機卡片寬度",
+        "min": 250,
+        "max": 400,
+        "step": 10,
+        "default": 300
+      },
+      {
+        "type": "range",
+        "id": "card_height_mobile",
+        "label": "手機卡片高度",
+        "min": 400,
+        "max": 700,
+        "step": 10,
+        "default": 500
+      },
+      {
+        "type": "range",
+        "id": "card_spacing_mobile",
+        "label": "手機卡片間距 (%)",
+        "min": 40,
+        "max": 100,
+        "step": 5,
+        "default": 75
+      },
+      {
+        "type": "range",
+        "id": "card_scale_next_mobile",
+        "label": "手機側邊卡片縮放 (%)",
+        "min": 50,
+        "max": 100,
+        "step": 5,
+        "default": 80,
+        "info": "80 = 0.8倍縮放"
+      },
+      {
+        "type": "range",
+        "id": "card_scale_far_mobile",
+        "label": "手機遠端卡片縮放 (%)",
+        "min": 30,
+        "max": 80,
+        "step": 5,
+        "default": 65,
+        "info": "65 = 0.65倍縮放"
+      },
+      {
+        "type": "range",
+        "id": "title_size_mobile",
+        "label": "手機標題大小 (rem × 10)",
+        "min": 15,
+        "max": 30,
+        "step": 5,
+        "default": 25,
+        "info": "25 = 2.5rem"
+      },
+      {
+        "type": "range",
+        "id": "subtitle_size_mobile",
+        "label": "手機副標題大小 (rem × 10)",
+        "min": 8,
+        "max": 15,
+        "step": 1,
+        "default": 10,
+        "info": "10 = 1.0rem"
+      },
+      {
+        "type": "range",
+        "id": "card_title_size_mobile",
+        "label": "手機卡片標題大小 (rem × 10)",
+        "min": 10,
+        "max": 25,
+        "step": 1,
+        "default": 18,
+        "info": "18 = 1.8rem"
+      },
+      {
+        "type": "range",
+        "id": "card_desc_size_mobile",
+        "label": "手機卡片描述大小 (rem × 10)",
+        "min": 7,
+        "max": 12,
+        "step": 1,
+        "default": 9,
+        "info": "9 = 0.9rem"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "character_card",
+        "name": "人物卡片",
+        "settings": [
+          {
+            "type": "text",
+            "id": "name",
+            "label": "人物名稱",
+            "default": "姓名"
+          },
+          {
+            "type": "text",
+            "id": "description",
+            "label": "人物描述",
+            "default": "職稱與簡介"
+          },
+          {
+            "type": "select",
+            "id": "media_type",
+            "label": "媒體類型",
+            "options": [
+              {
+                "value": "video",
+                "label": "影片"
+              },
+              {
+                "value": "image",
+                "label": "圖片"
+              }
+            ],
+            "default": "video"
+          },
+          {
+            "type": "video",
+            "id": "video",
+            "label": "上傳影片"
+          },
+          {
+            "type": "text",
+            "id": "video_url",
+            "label": "或輸入影片網址"
+          },
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "選擇圖片"
+          },
+          {
+            "type": "image_picker",
+            "id": "avatar_image",
+            "label": "Q版人物圖片"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "人物介紹輪播",
+        "blocks": [
+          {
+            "type": "character_card",
+            "settings": {
+              "name": "陳威廷",
+              "description": "首席技術官，專精於高階鍍膜技術開發"
+            }
+          },
+          {
+            "type": "character_card",
+            "settings": {
+              "name": "林雅琪",
+              "description": "產品經理，專注於產品創新與用戶體驗"
+            }
+          },
+          {
+            "type": "character_card",
+            "settings": {
+              "name": "張志豪",
+              "description": "創意總監，國際設計獎項得主"
+            }
+          },
+          {
+            "type": "character_card",
+            "settings": {
+              "name": "王美玲",
+              "description": "市場總監，精通全方位行銷策略"
+            }
+          },
+          {
+            "type": "character_card",
+            "settings": {
+              "name": "李俊傑",
+              "description": "營運總監，優化服務流程與效率"
+            }
+          }
+        ]
+      }
+    ]
+  }
+  {% endschema %}

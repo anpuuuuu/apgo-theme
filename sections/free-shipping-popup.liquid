@@ -1,0 +1,270 @@
+{%- comment -%}
+  Tiered free shipping & promotion bar with customizable CTA
+{%- endcomment -%}
+
+<style>
+.shipping-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: {{ section.settings.bg_color }};
+  color: {{ section.settings.text_color }};
+  padding: 14px 20px;
+  box-shadow: 0 -4px 16px rgba(0,0,0,0.4);
+  z-index: 10000;
+  display: none;
+}
+.shipping-bar.show {
+  display: block;
+}
+.shipping-bar.success {
+  background-color: {{ section.settings.success_bg_color }};
+}
+.shipping-bar-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.shipping-bar-message {
+  font-size: 14px;
+  line-height: 1.5;
+}
+.shipping-bar-cta {
+  font-size: 14px;
+  color: {{ section.settings.cta_color }};
+  text-decoration: underline;
+  margin-left: 12px;
+  white-space: nowrap;
+}
+.shipping-bar .progress-bar {
+  width: 100%;
+  height: 6px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+.shipping-bar .progress-fill {
+  height: 100%;
+  width: 0%;
+  background: {{ section.settings.progress_color }};
+  transition: width .6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+</style>
+
+<div id="shippingBar" class="shipping-bar" aria-live="polite">
+  <div class="shipping-bar-row">
+    <div class="shipping-bar-message" id="shippingBarMessage"></div>
+    {%- if section.settings.cta_text != blank and section.settings.cta_url != blank -%}
+      <a href="{{ section.settings.cta_url }}" class="shipping-bar-cta">{{ section.settings.cta_text }}</a>
+    {%- endif -%}
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="shippingBarProgress"></div>
+  </div>
+</div>
+
+<script>
+class TieredShippingBar {
+  constructor(config, tiers) {
+    this.currency = config.currency || 'TWD';
+    this.bar   = document.getElementById('shippingBar');
+    this.msgEl = document.getElementById('shippingBarMessage');
+    this.progressEl = document.getElementById('shippingBarProgress');
+    this.tiers = (tiers || []).sort((a,b) => a.tier_threshold - b.tier_threshold);
+    this.showOnLoad = config.showOnLoad;
+    this.autoHideDelay = config.autoHideDelay || 0;
+
+    if (this.showOnLoad) this.update();
+
+    document.addEventListener('cart:change', () => this.update());
+    document.addEventListener('product:added', () => this.update());
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) this.update();
+    });
+    this.interceptFetch();
+  }
+
+  async fetchCart() {
+    try {
+      const res = await fetch('/cart.js');
+      return await res.json();
+    } catch (err) {
+      console.error('取得購物車資料失敗', err);
+      return null;
+    }
+  }
+
+  async update() {
+    const cart = await this.fetchCart();
+    if (!cart || cart.item_count === 0) {
+      this.bar.classList.remove('show','success');
+      return;
+    }
+    const total = cart.total_price;
+    let currentIndex = -1;
+    for (let i = 0; i < this.tiers.length; i++) {
+      if (total >= this.tiers[i].tier_threshold * 100) currentIndex = i;
+    }
+    const nextIndex = currentIndex + 1;
+    let message = '';
+    let progress = 0;
+    let isSuccess = false;
+
+    if (nextIndex < this.tiers.length) {
+      const nextTier = this.tiers[nextIndex];
+      const remaining = nextTier.tier_threshold * 100 - total;
+      const remainingFormatted = (remaining / 100).toLocaleString('zh-TW', { style:'currency', currency: this.currency, minimumFractionDigits:0 });
+      if (currentIndex >= 0) {
+        const currentTier = this.tiers[currentIndex];
+        message = `🎉 ${currentTier.tier_success_message} 再購買 ${remainingFormatted} 可享 ${nextTier.tier_message}`;
+      } else {
+        message = `再購買 ${remainingFormatted} 即可享 ${nextTier.tier_message}`;
+      }
+      progress = Math.min((total / (nextTier.tier_threshold * 100)) * 100, 100);
+    } else {
+      const lastTier = this.tiers[this.tiers.length - 1];
+      message = `🎉 ${lastTier.tier_success_message}`;
+      progress = 100;
+      isSuccess = true;
+    }
+
+    this.msgEl.textContent = message;
+    this.progressEl.style.width = progress + '%';
+    this.bar.classList.add('show');
+    if (isSuccess) {
+      this.bar.classList.add('success');
+    } else {
+      this.bar.classList.remove('success');
+    }
+
+    if (this.autoHideDelay > 0) {
+      clearTimeout(this.hideTimer);
+      this.hideTimer = setTimeout(() => {
+        this.bar.classList.remove('show');
+      }, this.autoHideDelay);
+    }
+  }
+
+  interceptFetch() {
+    const originalFetch = window.fetch;
+    window.fetch = async (...args) => {
+      const response = await originalFetch(...args);
+      try {
+        const url = args[0].url || args[0];
+        if (typeof url === 'string' && (url.includes('/cart/add') || url.includes('/cart/change') || url.includes('/cart/update') || url.includes('/cart/clear'))) {
+          setTimeout(() => this.update(), 200);
+        }
+      } catch (e) {}
+      return response;
+    };
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const tiersData = {{ section.blocks | map: 'settings' | json }};
+  window.shippingBar = new TieredShippingBar({
+    currency: '{{ cart.currency.iso_code | default: "TWD" }}',
+    showOnLoad: {{ section.settings.show_on_page_load | default: true }},
+    autoHideDelay: {{ section.settings.auto_hide_delay | default: 0 }}
+  }, tiersData);
+});
+</script>
+
+{% schema %}
+{
+  "name": "Free shipping bar",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_on_page_load",
+      "label": "頁面載入時顯示",
+      "default": true
+    },
+    {
+      "type": "number",
+      "id": "auto_hide_delay",
+      "label": "自動隱藏延遲（毫秒，0 代表不隱藏）",
+      "default": 0
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "右側 CTA 文字",
+      "default": "看看其他實用配件？",
+      "info": "放在進度條右側的連結文字，可留空不顯示"
+    },
+    {
+      "type": "url",
+      "id": "cta_url",
+      "label": "右側 CTA 連結",
+      "default": "/",
+      "info": "CTA 文字的連結網址，可在主題設定中自訂；若 CTA 文字留空則不顯示"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "背景顏色",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "success_bg_color",
+      "label": "達標背景顏色",
+      "default": "#1a3a20"
+    },
+    {
+      "type": "color",
+      "id": "progress_color",
+      "label": "進度條顏色",
+      "default": "#f58220"
+    },
+    {
+      "type": "color",
+      "id": "cta_color",
+      "label": "CTA 文字顏色",
+      "default": "#f58220"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "文字顏色",
+      "default": "#ffffff"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tier",
+      "name": "優惠階層",
+      "settings": [
+        {
+          "type": "number",
+          "id": "tier_threshold",
+          "label": "門檻金額（元）",
+          "default": 1500
+        },
+        {
+          "type": "text",
+          "id": "tier_message",
+          "label": "未達門檻提示",
+          "default": "免運"
+        },
+        {
+          "type": "text",
+          "id": "tier_success_message",
+          "label": "達標訊息",
+          "default": "您已享有免運優惠！"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Free shipping bar",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,1158 @@
+{% comment %}
+  電子發票選擇器 - 取代 Ako 發票功能
+  支援電子發票、手機載具、公司戶發票
+  高級專業風格設計
+{% endcomment %}
+
+{% schema %}
+{
+  "name": "電子發票選擇",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "區塊標題",
+      "default": "索取發票"
+    }
+  ],
+  "presets": [
+    {
+      "name": "發票選擇",
+      "category": "客製功能"
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+  /* ========================================
+    完全隱藏發票區塊 - 放在 CSS 最前面
+    ======================================== */
+
+  /* 主要發票區塊 */
+  .ako-invoice,
+  section.ako-invoice,
+  .ako-container .ako-invoice,
+  #akocommerce_cvs_section .ako-invoice {
+      display: none !important;
+      visibility: hidden !important;
+      height: 0 !important;
+      overflow: hidden !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+      position: absolute !important;
+      left: -9999px !important;
+  }
+
+  /* 發票相關的所有元素 */
+  .ako-invoice-title,
+  .ako-invoice-subtitle,
+  .ako-invoice-setting,
+  .ako-invoice-type,
+  .ako-info-box,
+  .ako-company-invoice,
+  .ako-lovecode__title,
+  .ako-lovecode__code,
+  [class^="ako-"][class*="invoice"],
+  [class^="akocommerce"][class*="invoice"] {
+      display: none !important;
+      visibility: hidden !important;
+      height: 0 !important;
+      overflow: hidden !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+  }
+
+  /* 調整容器 - 因為沒有任何內容了 */
+  .ako-container:empty,
+  .ako-container:has(> :only-child:not(:visible)) {
+      display: none !important;
+  }
+
+  /* 發票選擇器樣式 - 高級黑橘色主題 */
+  :root {
+    --invoice-primary: #f08418;
+    --invoice-secondary: #ff6b35;
+    --invoice-gradient: linear-gradient(135deg, #ff6b35, #f7931e);
+    --invoice-gradient-subtle: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(247, 147, 30, 0.05));
+    --invoice-dark: #0a0a0a;
+    --invoice-dark-secondary: #1a1a1a;
+    --invoice-dark-tertiary: #2d2d2d;
+    --invoice-card-bg: rgba(255, 255, 255, 0.02);
+    --invoice-border: rgba(255, 255, 255, 0.08);
+    --invoice-border-hover: rgba(240, 132, 24, 0.3);
+    --invoice-text-primary: #ffffff;
+    --invoice-text-secondary: #cccccc;
+    --invoice-text-muted: #888888;
+    --invoice-success: #4ade80;
+    --invoice-error: #f87171;
+  }
+
+  .invoice-selector-section {
+    background: var(--invoice-dark);
+    padding: 60px 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* 背景裝飾 - 頂部線條 */
+  .invoice-selector-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--invoice-primary), transparent);
+    opacity: 0.3;
+  }
+
+  .invoice-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* 標題區域 */
+  .invoice-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    position: relative;
+  }
+
+  .invoice-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--invoice-primary);
+    margin-bottom: 0.5rem;
+    position: relative;
+    display: inline-block;
+  }
+
+  .invoice-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: var(--invoice-gradient);
+    border-radius: 2px;
+  }
+
+  /* 發票類型選擇 - 調整間距和樣式 */
+  .invoice-types {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .invoice-type-option {
+    background: var(--invoice-card-bg);
+    border: 2px solid var(--invoice-border);
+    border-radius: 16px;
+    padding: 24px;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .invoice-type-option::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--invoice-gradient-subtle);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .invoice-type-option:hover {
+    border-color: var(--invoice-border-hover);
+    transform: translateY(-3px);
+    box-shadow: 
+      0 15px 30px rgba(240, 132, 24, 0.15),
+      0 5px 15px rgba(0, 0, 0, 0.3);
+  }
+
+  .invoice-type-option:hover::before {
+    opacity: 1;
+  }
+
+  .invoice-type-option.selected {
+    background: linear-gradient(135deg, rgba(255, 107, 53, 0.15), rgba(247, 147, 30, 0.1));
+    border-color: var(--invoice-primary);
+    box-shadow: 
+      0 20px 40px rgba(255, 107, 53, 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  /* 自訂圖示容器 */
+  .invoice-type-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--invoice-dark-tertiary), var(--invoice-dark-secondary));
+    border-radius: 12px;
+    position: relative;
+    box-shadow: 
+      0 4px 12px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  .invoice-type-option.selected .invoice-type-icon {
+    background: var(--invoice-gradient);
+    box-shadow: 
+      0 4px 12px rgba(240, 132, 24, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+
+  /* SVG 圖示樣式 */
+  .invoice-type-icon svg {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: var(--invoice-primary);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .invoice-type-option.selected .invoice-type-icon svg {
+    stroke: var(--invoice-text-primary);
+  }
+
+  .invoice-type-info {
+    flex: 1;
+    position: relative;
+    z-index: 1;
+  }
+
+  .invoice-type-name {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+    color: var(--invoice-text-primary);
+  }
+
+  .invoice-type-desc {
+    font-size: 0.9rem;
+    color: var(--invoice-text-muted);
+    line-height: 1.4;
+  }
+
+  .invoice-type-option.selected .invoice-type-desc {
+    color: var(--invoice-text-secondary);
+  }
+
+  /* 輸入欄位區域 - 限制寬度 */
+  .invoice-fields {
+    margin-top: 2rem;
+    display: none;
+    opacity: 0;
+    transform: translateY(10px);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .invoice-fields.show {
+    display: block;
+    animation: slideInFade 0.5s ease forwards;
+  }
+
+  @keyframes slideInFade {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .invoice-field-group {
+    margin-bottom: 1.75rem;
+  }
+
+  .invoice-label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--invoice-primary);
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 0 0 10px rgba(240, 132, 24, 0.3);
+  }
+
+  .invoice-input {
+    width: 100%;
+    padding: 16px 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 2px solid var(--invoice-border);
+    border-radius: 12px;
+    color: var(--invoice-text-primary);
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 
+      0 4px 12px rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.02);
+  }
+
+  .invoice-input:focus {
+    outline: none;
+    border-color: var(--invoice-primary);
+    background: rgba(240, 132, 24, 0.03);
+    box-shadow: 
+      0 0 0 4px rgba(240, 132, 24, 0.15),
+      0 4px 12px rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  .invoice-input::placeholder {
+    color: var(--invoice-text-muted);
+    font-weight: 400;
+  }
+
+  /* 輔助提示 */
+  .invoice-helper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 0.75rem;
+    font-size: 0.85rem;
+    color: var(--invoice-text-muted);
+    transition: all 0.3s ease;
+  }
+
+  .invoice-helper-icon {
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .invoice-helper-icon svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+  }
+
+  .invoice-helper.success {
+    color: var(--invoice-success);
+  }
+
+  .invoice-helper.error {
+    color: var(--invoice-error);
+  }
+
+  /* 同意勾選 - 限制寬度 */
+  .invoice-agreement {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+    border: 1px solid var(--invoice-border);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 2rem auto 0;
+    max-width: 600px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .invoice-agreement::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--invoice-gradient-subtle);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .invoice-agreement:hover {
+    border-color: rgba(240, 132, 24, 0.3);
+    box-shadow: 0 8px 20px rgba(240, 132, 24, 0.1);
+  }
+
+  .invoice-agreement:hover::before {
+    opacity: 1;
+  }
+
+  .invoice-checkbox {
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--invoice-primary);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+    position: relative;
+    background: var(--invoice-dark-secondary);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .invoice-checkbox.checked {
+    background: var(--invoice-gradient);
+    border-color: transparent;
+    box-shadow: 
+      0 4px 12px rgba(240, 132, 24, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+
+  .invoice-checkbox.checked svg {
+    stroke: var(--invoice-text-primary);
+    stroke-width: 3;
+    animation: checkmark 0.3s ease;
+  }
+
+  @keyframes checkmark {
+    from {
+      stroke-dasharray: 0 100;
+    }
+    to {
+      stroke-dasharray: 100 100;
+    }
+  }
+
+  .invoice-agreement-text {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--invoice-text-secondary);
+    position: relative;
+    z-index: 1;
+  }
+
+  /* 載具驗證狀態 */
+  .carrier-validation {
+    margin-top: 0.75rem;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    display: none;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+  }
+
+  .carrier-validation.show {
+    display: flex;
+  }
+
+  .carrier-validation.success {
+    background: rgba(74, 222, 128, 0.1);
+    border: 1px solid rgba(74, 222, 128, 0.3);
+    color: var(--invoice-success);
+  }
+
+  .carrier-validation.error {
+    background: rgba(248, 113, 113, 0.1);
+    border: 1px solid rgba(248, 113, 113, 0.3);
+    color: var(--invoice-error);
+  }
+
+  /* 響應式設計 */
+  @media (max-width: 768px) {
+    .invoice-selector-section {
+      padding: 40px 0;
+    }
+
+    .invoice-title {
+      font-size: 2rem;
+    }
+
+    .invoice-type-option {
+      padding: 16px;
+    }
+
+    .invoice-type-icon {
+      width: 40px;
+      height: 40px;
+    }
+    
+    .invoice-type-icon svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .invoice-type-name {
+      font-size: 1rem;
+    }
+    
+    .invoice-type-desc {
+      font-size: 0.85rem;
+    }
+
+    .invoice-input {
+      padding: 16px 18px;
+      font-size: 16px; /* 防止 iOS 縮放 */
+    }
+    
+    .invoice-agreement {
+      padding: 16px;
+    }
+    
+    .invoice-agreement-text {
+      font-size: 0.9rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .invoice-container {
+      padding: 0 16px;
+    }
+
+    .invoice-title {
+      font-size: 1.75rem;
+    }
+
+    .invoice-type-option {
+      padding: 14px;
+      gap: 14px;
+    }
+    
+    .invoice-type-icon {
+      width: 36px;
+      height: 36px;
+    }
+    
+    .invoice-type-icon svg {
+      width: 18px;
+      height: 18px;
+    }
+    
+    .invoice-type-name {
+      font-size: 0.95rem;
+    }
+    
+    .invoice-type-desc {
+      font-size: 0.8rem;
+    }
+
+    .invoice-agreement {
+      padding: 14px;
+      gap: 12px;
+    }
+
+    .invoice-agreement-text {
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+    
+    .invoice-label {
+      font-size: 0.8rem;
+    }
+    
+    .invoice-input {
+      padding: 14px 16px;
+    }
+    
+    .invoice-helper {
+      font-size: 0.8rem;
+    }
+  }
+</style>
+
+<div class="invoice-selector-section">
+  <div class="invoice-container">
+    <div class="invoice-header">
+      <h2 class="invoice-title">{{ section.settings.title }}</h2>
+    </div>
+
+    <form id="invoice-form-{{ section.id }}">
+      <!-- 發票類型選擇 -->
+      <div class="invoice-types">
+        <div class="invoice-type-option" data-type="e-invoice">
+          <div class="invoice-type-icon">
+            <!-- 電子發票圖示 -->
+            <svg viewBox="0 0 24 24">
+              <path d="M13 2L3 14h7l-2 8 10-12h-7l2-8z"/>
+            </svg>
+          </div>
+          <div class="invoice-type-info">
+            <div class="invoice-type-name">電子發票</div>
+            <div class="invoice-type-desc">開立雲端發票，中獎自動通知</div>
+          </div>
+        </div>
+
+        <div class="invoice-type-option" data-type="carrier">
+          <div class="invoice-type-icon">
+            <!-- 手機載具圖示 -->
+            <svg viewBox="0 0 24 24">
+              <rect x="6" y="2" width="12" height="20" rx="2" ry="2"/>
+              <line x1="12" y1="18" x2="12" y2="18"/>
+            </svg>
+          </div>
+          <div class="invoice-type-info">
+            <div class="invoice-type-name">手機條碼載具</div>
+            <div class="invoice-type-desc">發票存入載具，方便對獎</div>
+          </div>
+        </div>
+
+        <div class="invoice-type-option" data-type="company">
+          <div class="invoice-type-icon">
+            <!-- 公司戶圖示 -->
+            <svg viewBox="0 0 24 24">
+              <path d="M3 21h18M3 10h18M3 7l9-5 9 5M8 10v11M16 10v11"/>
+            </svg>
+          </div>
+          <div class="invoice-type-info">
+            <div class="invoice-type-name">公司戶發票（統一發票）</div>
+            <div class="invoice-type-desc">開立三聯式統一發票</div>
+          </div>
+        </div>
+
+        <div class="invoice-type-option" data-type="donate" style="display: none;">
+          <div class="invoice-type-icon">
+            <!-- 捐贈發票圖示 -->
+            <svg viewBox="0 0 24 24">
+              <path d="M21 8.5c0-2.5-2-4.5-4.5-4.5-1.5 0-2.8.7-3.5 1.9C12.3 4.7 11 4 9.5 4 7 4 5 6 5 8.5c0 .9.3 1.7.7 2.4L12 21l6.3-10.1c.4-.7.7-1.5.7-2.4z"/>
+            </svg>
+          </div>
+          <div class="invoice-type-info">
+            <div class="invoice-type-name">捐贈發票</div>
+            <div class="invoice-type-desc">將發票捐贈給慈善機構</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 載具輸入欄位 -->
+      <div class="invoice-fields" id="carrier-fields-{{ section.id }}">
+        <div class="invoice-field-group">
+          <label class="invoice-label" for="carrier-number-{{ section.id }}">手機條碼載具</label>
+          <input type="text" 
+                 id="carrier-number-{{ section.id }}" 
+                 class="invoice-input" 
+                 placeholder="/1234567"
+                 maxlength="8"
+                 pattern="^\/[A-Z0-9]{7}$">
+          <div class="invoice-helper">
+            <div class="invoice-helper-icon">
+              <svg viewBox="0 0 16 16">
+                <circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M8 12v-4M8 6v0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <span>請輸入載具編號（斜線開頭，共8碼）</span>
+          </div>
+          <div class="carrier-validation" id="carrier-validation-{{ section.id }}">
+            <div class="invoice-helper-icon">
+              <svg viewBox="0 0 16 16">
+                <path d="M3 8l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+              </svg>
+            </div>
+            <span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 公司戶輸入欄位 -->
+      <div class="invoice-fields" id="company-fields-{{ section.id }}">
+        <div class="invoice-field-group">
+          <label class="invoice-label" for="company-name-{{ section.id }}">公司名稱</label>
+          <input type="text" 
+                 id="company-name-{{ section.id }}" 
+                 class="invoice-input" 
+                 placeholder="新新股份有限公司">
+        </div>
+
+        <div class="invoice-field-group">
+          <label class="invoice-label" for="tax-id-{{ section.id }}">統一編號</label>
+          <input type="text" 
+                 id="tax-id-{{ section.id }}" 
+                 class="invoice-input" 
+                 placeholder="12345678"
+                 maxlength="8"
+                 pattern="[0-9]{8}">
+          <div class="invoice-helper" id="tax-id-helper-{{ section.id }}">
+            <div class="invoice-helper-icon">
+              <svg viewBox="0 0 16 16">
+                <circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M8 12v-4M8 6v0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <span>請輸入8位數統一編號</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 捐贈輸入欄位 -->
+      <div class="invoice-fields" id="donate-fields-{{ section.id }}">
+        <div class="invoice-field-group">
+          <label class="invoice-label" for="donate-code-{{ section.id }}">捐贈碼</label>
+          <input type="text" 
+                 id="donate-code-{{ section.id }}" 
+                 class="invoice-input" 
+                 placeholder="請輸入受贈單位捐贈碼"
+                 maxlength="7">
+          <div class="invoice-helper">
+            <div class="invoice-helper-icon">
+              <svg viewBox="0 0 16 16">
+                <circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M8 12v-4M8 6v0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <span>請輸入3-7碼捐贈碼</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 同意條款 -->
+      <div class="invoice-agreement" id="invoice-agreement-{{ section.id }}">
+        <div class="invoice-checkbox" id="agreement-checkbox-{{ section.id }}">
+          <svg viewBox="0 0 16 16" style="display: none;">
+            <path d="M3 8l3 3 7-7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="invoice-agreement-text">
+          我同意辦理退/換貨時，由賣方代為處理銷售憑證(發票處理/銷售折讓)以加速作業流程
+        </div>
+      </div>
+
+      <!-- 隱藏欄位 -->
+      <input type="hidden" name="invoice_type" id="invoice-type-{{ section.id }}">
+      <input type="hidden" name="carrier_number" id="carrier-hidden-{{ section.id }}">
+      <input type="hidden" name="company_name" id="company-name-hidden-{{ section.id }}">
+      <input type="hidden" name="tax_id" id="tax-id-hidden-{{ section.id }}">
+      <input type="hidden" name="donate_code" id="donate-code-hidden-{{ section.id }}">
+      <input type="hidden" name="delegate_invoice" id="delegate-invoice-{{ section.id }}" value="N">
+    </form>
+  </div>
+</div>
+
+<script>
+(function() {
+  const sectionId = '{{ section.id }}';
+  let selectedInvoiceType = '';
+  let isAgreed = false;
+
+  // 輔助函數：防抖動
+  function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  }
+
+  // 初始化
+  document.addEventListener('DOMContentLoaded', function() {
+    initInvoiceSelector();
+    setDefaultInvoiceType();
+    checkStoredInvoiceData();
+  });
+
+  function initInvoiceSelector() {
+    // 發票類型選擇
+    document.querySelectorAll('.invoice-type-option').forEach(option => {
+      option.addEventListener('click', function() {
+        selectInvoiceType(this.dataset.type);
+      });
+    });
+
+    // 同意條款
+    document.getElementById(`invoice-agreement-${sectionId}`).addEventListener('click', function() {
+      toggleAgreement();
+    });
+
+    // 載具編號輸入
+    const carrierInput = document.getElementById(`carrier-number-${sectionId}`);
+    if (carrierInput) {
+      carrierInput.addEventListener('input', handleCarrierInput);
+      carrierInput.addEventListener('blur', validateCarrier);
+      // 自動儲存
+      carrierInput.addEventListener('input', debounce(() => {
+        if (selectedInvoiceType === 'carrier') {
+          updateInvoiceAttributes();
+        }
+      }, 500));
+    }
+
+    // 統一編號輸入
+    const taxIdInput = document.getElementById(`tax-id-${sectionId}`);
+    if (taxIdInput) {
+      taxIdInput.addEventListener('input', handleTaxIdInput);
+      taxIdInput.addEventListener('blur', validateTaxId);
+      // 自動儲存
+      taxIdInput.addEventListener('input', debounce(() => {
+        if (selectedInvoiceType === 'company') {
+          updateInvoiceAttributes();
+        }
+      }, 500));
+    }
+
+    // 公司名稱輸入
+    const companyNameInput = document.getElementById(`company-name-${sectionId}`);
+    if (companyNameInput) {
+      companyNameInput.addEventListener('input', handleCompanyNameInput);
+      // 自動儲存
+      companyNameInput.addEventListener('input', debounce(() => {
+        if (selectedInvoiceType === 'company') {
+          updateInvoiceAttributes();
+        }
+      }, 500));
+    }
+
+    // 捐贈碼輸入
+    const donateCodeInput = document.getElementById(`donate-code-${sectionId}`);
+    if (donateCodeInput) {
+      donateCodeInput.addEventListener('input', function(e) {
+        let value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 7);
+        e.target.value = value;
+        document.getElementById(`donate-code-hidden-${sectionId}`).value = value;
+        
+        // 自動儲存
+        debounce(() => {
+          if (selectedInvoiceType === 'donate') {
+            updateInvoiceAttributes();
+          }
+        }, 500)();
+      });
+    }
+  }
+
+  // 設定預設選擇電子發票
+  function setDefaultInvoiceType() {
+    const storedData = localStorage.getItem('selected_invoice_data');
+    if (!storedData) {
+      const eInvoiceOption = document.querySelector('.invoice-type-option[data-type="e-invoice"]');
+      if (eInvoiceOption) {
+        eInvoiceOption.click();
+      }
+    }
+  }
+
+  // 選擇發票類型
+  function selectInvoiceType(type) {
+    selectedInvoiceType = type;
+
+    // 更新選中狀態
+    document.querySelectorAll('.invoice-type-option').forEach(option => {
+      option.classList.remove('selected');
+    });
+    
+    // 找到對應的選項並標記為選中
+    const selectedOption = document.querySelector(`.invoice-type-option[data-type="${type}"]`);
+    if (selectedOption) {
+      selectedOption.classList.add('selected');
+    }
+
+    // 隱藏所有輸入欄位
+    document.querySelectorAll('.invoice-fields').forEach(fields => {
+      fields.classList.remove('show');
+    });
+
+    // 顯示對應的輸入欄位
+    if (type === 'carrier') {
+      document.getElementById(`carrier-fields-${sectionId}`).classList.add('show');
+    } else if (type === 'company') {
+      document.getElementById(`company-fields-${sectionId}`).classList.add('show');
+    } else if (type === 'donate') {
+      document.getElementById(`donate-fields-${sectionId}`).classList.add('show');
+    }
+
+    // 更新隱藏欄位
+    document.getElementById(`invoice-type-${sectionId}`).value = type;
+
+    // 更新購物車屬性
+    updateInvoiceAttributes();
+  }
+
+  // 切換同意條款
+  function toggleAgreement() {
+    isAgreed = !isAgreed;
+    const checkbox = document.getElementById(`agreement-checkbox-${sectionId}`);
+    const checkmark = checkbox.querySelector('svg');
+    
+    checkbox.classList.toggle('checked', isAgreed);
+    checkmark.style.display = isAgreed ? 'block' : 'none';
+    
+    document.getElementById(`delegate-invoice-${sectionId}`).value = isAgreed ? 'Y' : 'N';
+    
+    // 更新購物車屬性
+    updateInvoiceAttributes();
+  }
+
+  // 處理載具編號輸入
+  function handleCarrierInput(e) {
+    let value = e.target.value.toUpperCase();
+    
+    // 確保以斜線開頭
+    if (value && !value.startsWith('/')) {
+      value = '/' + value;
+    }
+    
+    // 限制長度和字元
+    value = value.replace(/[^\/A-Z0-9]/g, '').slice(0, 8);
+    e.target.value = value;
+    
+    // 更新隱藏欄位
+    document.getElementById(`carrier-hidden-${sectionId}`).value = value;
+  }
+
+  // 驗證載具編號
+  function validateCarrier() {
+    const input = document.getElementById(`carrier-number-${sectionId}`);
+    const validation = document.getElementById(`carrier-validation-${sectionId}`);
+    const validationText = validation.querySelector('span');
+    const validationIcon = validation.querySelector('.invoice-helper-icon svg');
+    const value = input.value;
+    
+    if (!value) {
+      validation.classList.remove('show');
+      return;
+    }
+    
+    // 載具編號格式：/加7碼大寫英數字
+    const isValid = /^\/[A-Z0-9]{7}$/.test(value);
+    
+    validation.classList.add('show');
+    
+    if (isValid) {
+      validation.className = 'carrier-validation show success';
+      validationText.textContent = '載具編號格式正確';
+      validationIcon.innerHTML = '<path d="M3 8l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>';
+      updateInvoiceAttributes();
+    } else {
+      validation.className = 'carrier-validation show error';
+      validationText.textContent = '載具編號格式錯誤，請確認是否為斜線加7碼英數字';
+      validationIcon.innerHTML = '<path d="M5 5l6 6M11 5l-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>';
+    }
+  }
+
+  // 處理統一編號輸入
+  function handleTaxIdInput(e) {
+    // 只允許數字
+    let value = e.target.value.replace(/\D/g, '').slice(0, 8);
+    e.target.value = value;
+    
+    // 更新隱藏欄位
+    document.getElementById(`tax-id-hidden-${sectionId}`).value = value;
+  }
+
+  // 驗證統一編號
+  function validateTaxId() {
+    const input = document.getElementById(`tax-id-${sectionId}`);
+    const helper = document.getElementById(`tax-id-helper-${sectionId}`);
+    const helperText = helper.querySelector('span');
+    const helperIcon = helper.querySelector('.invoice-helper-icon svg');
+    const value = input.value;
+    
+    if (!value) return;
+    
+    if (value.length === 8) {
+      // 簡單的統編驗證邏輯
+      const isValid = validateTaxIdChecksum(value);
+      
+      if (isValid) {
+        helper.className = 'invoice-helper success';
+        helperText.textContent = '統一編號格式正確';
+        helperIcon.innerHTML = '<path d="M3 8l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>';
+        updateInvoiceAttributes();
+      } else {
+        helper.className = 'invoice-helper error';
+        helperText.textContent = '統一編號檢核錯誤';
+        helperIcon.innerHTML = '<path d="M5 5l6 6M11 5l-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>';
+      }
+    } else {
+      helper.className = 'invoice-helper error';
+      helperText.textContent = '統一編號需為8位數字';
+      helperIcon.innerHTML = '<path d="M5 5l6 6M11 5l-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>';
+    }
+  }
+
+  // 統編檢核邏輯
+  function validateTaxIdChecksum(taxId) {
+    const weights = [1, 2, 1, 2, 1, 2, 4, 1];
+    let sum = 0;
+    
+    for (let i = 0; i < 8; i++) {
+      const num = parseInt(taxId[i]);
+      const product = num * weights[i];
+      sum += Math.floor(product / 10) + (product % 10);
+    }
+    
+    return sum % 10 === 0;
+  }
+
+  // 處理公司名稱輸入
+  function handleCompanyNameInput(e) {
+    document.getElementById(`company-name-hidden-${sectionId}`).value = e.target.value;
+  }
+
+  // 獲取發票資料
+  function getInvoiceData() {
+    const data = {
+      type: selectedInvoiceType,
+      agreed: isAgreed
+    };
+    
+    if (selectedInvoiceType === 'carrier') {
+      data.carrierNumber = document.getElementById(`carrier-number-${sectionId}`).value;
+    } else if (selectedInvoiceType === 'company') {
+      data.companyName = document.getElementById(`company-name-${sectionId}`).value;
+      data.taxId = document.getElementById(`tax-id-${sectionId}`).value;
+    } else if (selectedInvoiceType === 'donate') {
+      data.donateCode = document.getElementById(`donate-code-${sectionId}`).value;
+    }
+    
+    return data;
+  }
+
+  // 更新購物車屬性（修正版本）
+  // 修正後的 updateInvoiceAttributes 函數
+  function updateInvoiceAttributes() {
+      const data = getInvoiceData();
+      const attributes = {};
+      
+      // 根據發票類型設定屬性 - 修正版本
+      if (data.type === 'e-invoice') {
+          // 電子發票
+          attributes['attributes[發票種類(InvoiceType)]'] = '2';  // 或 '電子發票'
+          attributes['attributes[載具類型(CarrierType)]'] = '';
+          attributes['attributes[載具編號(CarrierNum)]'] = '';
+          attributes['attributes[公司名稱(CompanyName)]'] = '';
+          attributes['attributes[統一編號(CompanyId)]'] = '';
+          attributes['attributes[捐贈碼(LoveCode)]'] = '';
+      } else if (data.type === 'carrier') {
+          // 手機載具 - 實際上也是電子發票，但有載具
+          attributes['attributes[發票種類(InvoiceType)]'] = '2';  // 或 '電子發票'
+          attributes['attributes[載具類型(CarrierType)]'] = '3';  // 3 代表手機條碼
+          attributes['attributes[載具編號(CarrierNum)]'] = data.carrierNumber || '';
+          attributes['attributes[公司名稱(CompanyName)]'] = '';
+          attributes['attributes[統一編號(CompanyId)]'] = '';
+          attributes['attributes[捐贈碼(LoveCode)]'] = '';
+      } else if (data.type === 'company') {
+          // 公司戶發票（三聯式）
+          attributes['attributes[發票種類(InvoiceType)]'] = '3';  // 或 '統一發票'
+          attributes['attributes[載具類型(CarrierType)]'] = '';
+          attributes['attributes[載具編號(CarrierNum)]'] = '';
+          attributes['attributes[公司名稱(CompanyName)]'] = data.companyName || '';
+          attributes['attributes[統一編號(CompanyId)]'] = data.taxId || '';
+          attributes['attributes[捐贈碼(LoveCode)]'] = '';
+      } else if (data.type === 'donate') {
+          // 捐贈 - 也是電子發票但捐贈
+          attributes['attributes[發票種類(InvoiceType)]'] = '2';  // 或 '電子發票'
+          attributes['attributes[載具類型(CarrierType)]'] = '';
+          attributes['attributes[載具編號(CarrierNum)]'] = '';
+          attributes['attributes[公司名稱(CompanyName)]'] = '';
+          attributes['attributes[統一編號(CompanyId)]'] = '';
+          attributes['attributes[捐贈碼(LoveCode)]'] = data.donateCode || '';
+      }
+      
+      // 設定代處理發票
+      attributes['attributes[代處理發票(DelegateInvoice)]'] = data.agreed ? 'Y' : 'N';
+      
+      // 更新購物車
+      fetch('/cart/update.js', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(attributes)
+      })
+      .then(response => response.json())
+      .then(data => {
+          console.log('發票屬性已更新:', data.attributes);
+          
+          // 儲存到 localStorage - 保持原始類型以便顯示
+          const storageData = {
+              '發票種類(InvoiceType)': selectedInvoiceType,  // 儲存原始選擇：e-invoice, carrier, company, donate
+              '載具類型(CarrierType)': attributes['attributes[載具類型(CarrierType)]'],
+              '載具編號(CarrierNum)': attributes['attributes[載具編號(CarrierNum)]'],
+              '公司名稱(CompanyName)': attributes['attributes[公司名稱(CompanyName)]'],
+              '統一編號(CompanyId)': attributes['attributes[統一編號(CompanyId)]'],
+              '捐贈碼(LoveCode)': attributes['attributes[捐贈碼(LoveCode)]'],
+              '代處理發票(DelegateInvoice)': attributes['attributes[代處理發票(DelegateInvoice)]']
+          };
+          localStorage.setItem('selected_invoice_data', JSON.stringify(storageData));
+      })
+      .catch(error => {
+          console.error('更新發票屬性失敗:', error);
+      });
+  }
+
+  // 檢查已儲存的發票資料
+  function checkStoredInvoiceData() {
+    const storedData = localStorage.getItem('selected_invoice_data');
+    
+    if (storedData) {
+      const data = JSON.parse(storedData);
+      
+      // 還原選擇狀態
+      if (data['發票種類(InvoiceType)']) {
+        // 找到對應的選項並點擊
+        const option = document.querySelector(`.invoice-type-option[data-type="${data['發票種類(InvoiceType)']}"]`);
+        if (option) {
+          option.click();
+        }
+        
+        // 還原輸入值
+        setTimeout(() => {
+          if (data['發票種類(InvoiceType)'] === 'carrier' && data['載具編號(CarrierNum)']) {
+            document.getElementById(`carrier-number-${sectionId}`).value = data['載具編號(CarrierNum)'];
+          } else if (data['發票種類(InvoiceType)'] === 'company') {
+            if (data['公司名稱(CompanyName)']) {
+              document.getElementById(`company-name-${sectionId}`).value = data['公司名稱(CompanyName)'];
+            }
+            if (data['統一編號(CompanyId)']) {
+              document.getElementById(`tax-id-${sectionId}`).value = data['統一編號(CompanyId)'];
+            }
+          } else if (data['發票種類(InvoiceType)'] === 'donate' && data['捐贈碼(LoveCode)']) {
+            document.getElementById(`donate-code-${sectionId}`).value = data['捐贈碼(LoveCode)'];
+          }
+        }, 100);
+        
+        // 還原同意狀態
+        if (data['代處理發票(DelegateInvoice)'] === 'Y' && !isAgreed) {
+          document.getElementById(`invoice-agreement-${sectionId}`).click();
+        }
+      }
+    }
+  }
+
+  // 監聽頁面載入完成，同步 Ako 資料
+  window.addEventListener('load', function() {
+    // 延遲執行，確保 Ako 已經處理完
+    setTimeout(() => {
+      // 檢查購物車屬性，確保資料同步
+      fetch('/cart.js')
+        .then(response => response.json())
+        .then(cart => {
+          console.log('當前購物車發票屬性:', cart.attributes);
+        });
+    }, 1000);
+  });
+})();
+</script>

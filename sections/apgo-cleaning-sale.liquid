@@ -1,0 +1,161 @@
+{% comment %}
+  File: sections/apgo-cleaning-sale.liquid (修正重複 ID：logo → logo_image)
+  - 修復錯誤「setting with id="logo" 已有人使用」：將設定 id 改為 logo_image，並新增 logo_height 控制高度
+  - 保留簡潔版樣式、品牌色 #F58220、主標微傾斜＋跑動光澤
+{% endcomment %}
+
+<section id="apgo-cleaning-sale" class="apgo-sale">
+  <div class="apgo-sale__inner">
+
+    {% if section.settings.logo_image != blank %}
+      <div class="apgo-sale__logo">
+        <img src="{{ section.settings.logo_image | img_url: '400x' }}"
+             alt="APGO Logo"
+             style="max-height: {{ section.settings.logo_height }}px; height:auto; width:auto; max-width:60vw; object-fit:contain;" />
+      </div>
+    {% endif %}
+
+    {% if section.settings.heading != blank %}
+      <h2 class="apgo-sale__title">
+        <span class="apgo-title__text">{{ section.settings.heading }}</span>
+        {% if section.settings.burst != blank %}
+          <span class="apgo-title__burst">{{ section.settings.burst }}</span>
+        {% endif %}
+      </h2>
+    {% endif %}
+
+    {% if section.settings.subheading != blank %}
+      <p class="apgo-sale__sub">{{ section.settings.subheading }}</p>
+    {% endif %}
+
+    {% if section.settings.enable_countdown and section.settings.countdown_end != blank %}
+      <div class="apgo-sale__countdown" data-ends-at="{{ section.settings.countdown_end }}">
+        <div class="cd__box"><span class="cd__num" data-dd>00</span><span class="cd__lab">天</span></div>
+        <div class="cd__box"><span class="cd__num" data-hh>00</span><span class="cd__lab">時</span></div>
+        <div class="cd__box"><span class="cd__num" data-mm>00</span><span class="cd__lab">分</span></div>
+        <div class="cd__box"><span class="cd__num" data-ss>00</span><span class="cd__lab">秒</span></div>
+      </div>
+    {% endif %}
+
+    {% assign the_collection = collections[section.settings.collection] %}
+    {% if the_collection and the_collection.products_count > 0 %}
+      <div class="apgo-grid">
+        {% for product in the_collection.products limit: section.settings.limit %}
+          {% assign first_variant = product.selected_or_first_available_variant %}
+
+          {% assign has_compare = false %}
+          {% assign discount = 0 %}
+          {% comment %}避免 String 與 0 比較錯誤，先把價錢轉數字並分段判斷{% endcomment %}
+          {% if first_variant.compare_at_price %}
+            {% assign cap = first_variant.compare_at_price | plus: 0 %}
+            {% assign prc = first_variant.price | plus: 0 %}
+            {% if cap > prc %}
+              {% assign has_compare = true %}
+              {% assign discount = cap | minus: prc | times: 100 | divided_by: cap | round %}
+            {% endif %}
+          {% endif %}
+
+          <article class="apgo-card">
+            <a href="{{ product.url }}" class="apgo-card__media">
+              {% if product.featured_image %}
+                <img src="{{ product.featured_image | img_url: '600x' }}" alt="{{ product.title }}" loading="lazy">
+              {% endif %}
+              {% if has_compare and section.settings.show_badges %}
+                <div class="apgo-card__badge">-{{ discount }}%</div>
+              {% endif %}
+            </a>
+            <div class="apgo-card__info">
+              <h3 class="apgo-card__title">{{ product.title }}</h3>
+              <div class="apgo-card__price">
+                <span class="apgo-price__now">{{ first_variant.price | money }}</span>
+                {% if has_compare %}<s class="apgo-price__was">{{ first_variant.compare_at_price | money }}</s>{% endif %}
+              </div>
+              <div class="apgo-card__cta">
+                <a class="apgo-btn" href="{{ product.url }}" aria-label="查看 {{ product.title }}">查看詳情</a>
+              </div>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+
+  <style>
+    .apgo-sale{padding:64px 18px 80px;background:#000;color:#fff;text-align:center}
+    .apgo-sale__logo{display:flex;justify-content:center}
+    .apgo-sale__logo img{display:block}
+    .apgo-sale__title{font-size:clamp(32px,5vw,64px);font-weight:900;color:#F58220;display:inline-flex;align-items:flex-end;gap:.5em;line-height:1.1}
+    .apgo-title__burst{background:#F58220;color:#000;padding:.2em .4em;border-radius:.4em;font-size:.5em;font-weight:800}
+    .apgo-title__text{position:relative;display:inline-block;padding:0 .15em;margin:0 -.15em;font-style:italic;transform:skewX(-6deg) translateZ(0);text-shadow:0 2px 10px rgba(245,130,32,.25);overflow:visible}
+    .apgo-title__text::after{content:"";position:absolute;top:0;bottom:0;left:-130%;width:65%;background:linear-gradient(100deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.55) 50%, rgba(255,255,255,0) 100%);opacity:.35;transform:skew(-8deg);animation:apgoSheen 3.2s linear infinite;pointer-events:none}
+    @keyframes apgoSheen{0%{left:-140%}100%{left:140%}}100%{left:130%}}
+
+    .apgo-sale__sub{margin:8px auto 24px;max-width:780px;color:#eaeaea;font-size:16px}
+    .apgo-sale__countdown{display:flex;gap:10px;justify-content:center;margin:14px auto 28px}
+    .cd__box{min-width:60px;padding:8px 10px;border-radius:10px;background:rgba(245,130,32,.1);border:1px solid rgba(245,130,32,.3)}
+    .cd__num{font-weight:700;font-size:22px;color:#F58220}
+    .cd__lab{font-size:12px;color:#fff}
+    .apgo-grid{--cols:2;display:grid;grid-template-columns:repeat(var(--cols),1fr);gap:16px;margin-top:22px}
+    @media(min-width:740px){.apgo-grid{--cols:3}}
+    @media(min-width:1100px){.apgo-grid{--cols:4}}
+    .apgo-card{background:#121212;border:1px solid rgba(255,255,255,.1);border-radius:12px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+    .apgo-card__media{display:block;aspect-ratio:1/1;background:#0f0f0f}
+    .apgo-card__media img{width:100%;height:100%;object-fit:cover}
+    .apgo-card__badge{position:absolute;top:10px;left:10px;background:#F58220;color:#fff;padding:4px 8px;border-radius:8px;font-size:12px;font-weight:700}
+    .apgo-card__info{padding:12px;text-align:left;display:flex;flex-direction:column;height:100%}
+    .apgo-card__title{font-size:14px;margin-bottom:6px;color:#fff}
+    .apgo-card__price{display:flex;gap:6px;align-items:baseline}
+    .apgo-price__now{color:#F58220;font-weight:700}
+    .apgo-price__was{color:#aaa}
+    .apgo-btn{display:inline-flex;align-items:center;justify-content:center;width:100%;padding:10px 12px;border-radius:8px;background:#F58220;color:#fff;font-weight:800;border:none;cursor:pointer;text-align:center}
+    .apgo-btn--ghost{background:transparent;color:#fff;border:1px solid #999}
+  .apgo-card__cta{margin-top:auto}
+  </style>
+  <script>
+    (function(){
+      var root = document.getElementById('apgo-cleaning-sale');
+      if(!root) return;
+      var cd = root.querySelector('.apgo-sale__countdown');
+      if(!cd) return;
+      var ends = cd.getAttribute('data-ends-at');
+      if(!ends) return;
+      var end = new Date(ends);
+      function pad(n){return (n<10?'0':'')+n}
+      function tick(){
+        var now = new Date();
+        var diff = Math.max(0, end - now);
+        var s = Math.floor(diff/1000);
+        var d = Math.floor(s/86400); s -= d*86400;
+        var h = Math.floor(s/3600); s -= h*3600;
+        var m = Math.floor(s/60); s -= m*60;
+        var dd = cd.querySelector('[data-dd]'); if(dd) dd.textContent = pad(d);
+        var hh = cd.querySelector('[data-hh]'); if(hh) hh.textContent = pad(h);
+        var mm = cd.querySelector('[data-mm]'); if(mm) mm.textContent = pad(m);
+        var ss = cd.querySelector('[data-ss]'); if(ss) ss.textContent = pad(s);
+      }
+      tick();
+      setInterval(tick, 1000);
+    })();
+  </script>
+</section>
+
+{% schema %}
+{
+  "name": "APGO 清潔類大降價",
+  "settings": [
+    {"type":"image_picker","id":"logo_image","label":"上方 LOGO"},
+    {"type":"range","id":"logo_height","label":"LOGO 最大高度(px)","min":24,"max":120,"step":2,"default":48},
+    {"type":"text","id":"heading","label":"主標題","default":"清潔大降價"},
+    {"type":"text","id":"burst","label":"主標右上爆點字","default":"限時"},
+    {"type":"richtext","id":"subheading","label":"副標/說明","default":"<p>黑霧系包裝 × 科技光環，限時優惠下殺。</p>"},
+    {"type":"collection","id":"collection","label":"選擇商品集合（清潔類）"},
+    {"type":"range","id":"limit","min":4,"max":24,"step":1,"label":"商品顯示數量","default":12},
+    {"type":"checkbox","id":"show_badges","label":"顯示折扣角標","default":true},
+    {"type":"checkbox","id":"enable_countdown","label":"啟用倒數計時","default":true},
+    {"type":"text","id":"countdown_end","label":"倒數截止（YYYY-MM-DDTHH:MM:SS）","default":"2025-09-30T23:59:59"}
+  ],
+  "presets": [
+    {"name":"APGO 清潔類大降價", "category":"APGO"}
+  ]
+}
+{% endschema %}

@@ -1,0 +1,3341 @@
+{% comment %}
+  APGO Product Section
+  檔案位置: sections/apgo-product.liquid
+  說明: 完整的 APGO 產品頁面 Section，包含所有互動功能
+{% endcomment %}
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  :root {
+    --primary-orange: #f08418;
+    --secondary-orange: #ff9a3c;
+    --dark-bg: #000000;
+    --card-bg: #1a1a1a;
+    --text-white: #ffffff;
+    --text-gray: #b0b0b0;
+    --text-light-gray: #cccccc;
+    --border-color: #333333;
+  }
+
+  .apgo-product-section {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Microsoft JhengHei', sans-serif;
+    background: var(--dark-bg);
+    color: var(--text-white);
+    overflow-x: hidden;
+    -ms-overflow-style: none; /* IE 和 Edge */
+    scrollbar-width: none; /* Firefox */
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* 頂部導航列 */
+  .apgo-nav-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    background: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(240, 132, 24, 0.2);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+  }
+
+  .apgo-back-btn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(240, 132, 24, 0.1);
+    border: 1px solid rgba(240, 132, 24, 0.3);
+    border-radius: 50%;
+    color: var(--primary-orange);
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .apgo-nav-logo {
+    height: 35px;
+    width: auto;
+    filter: brightness(1.1);
+  }
+
+  .apgo-nav-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .apgo-nav-btn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    color: var(--text-light-gray);
+    cursor: pointer;
+  }
+
+  .apgo-cart-count {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 18px;
+    height: 18px;
+    background: var(--primary-orange);
+    color: white;
+    border-radius: 50%;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+  }
+
+  /* 主內容區 */
+  .apgo-main-container {
+    min-height: 100vh;
+    padding-bottom: 100px;
+    -ms-overflow-style: none; /* IE 和 Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  /* 產品主視覺區 */
+  .apgo-hero-visual {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    background: linear-gradient(180deg, rgba(26, 26, 26, 0.8) 0%, rgba(0, 0, 0, 0.95) 100%);
+    overflow: hidden;
+  }
+
+  /* 動態光點效果 */
+  .apgo-floating-particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  .apgo-particle {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background: var(--primary-orange);
+    border-radius: 50%;
+    opacity: 0;
+    animation: apgoParticleFloat 10s infinite linear;
+  }
+
+  @keyframes apgoParticleFloat {
+    0% {
+      transform: translateY(100vh) translateX(0);
+      opacity: 0;
+    }
+    10% {
+      opacity: 0.6;
+    }
+    90% {
+      opacity: 0.6;
+    }
+    100% {
+      transform: translateY(-10vh) translateX(100px);
+      opacity: 0;
+    }
+  }
+
+  /* 產品展示 */
+  .apgo-product-showcase {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    overflow: hidden; /* 添加這行 */
+  }
+
+  /* 輪播容器樣式 */
+  .apgo-product-showcase {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    overflow: hidden; /* 添加這行 */
+  }
+
+  /* 輪播圖片容器 */
+  .apgo-carousel-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .apgo-carousel-track {
+    display: flex;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+    height: 100%;
+    align-items: center;
+  }
+
+  .apgo-carousel-slide {
+    flex: 0 0 100%;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .apgo-product-image-main {
+    animation: none !important;
+    transition: opacity 0.2s ease, transform 0.35s ease;
+  }
+
+  .apgo-product-image-main.is-float {
+    animation: apgoFloatImage 4s ease-in-out infinite !important;
+    width: auto;
+    max-width: 75%;
+    max-height: 80%;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .apgo-product-image-main.is-cover {
+    animation: none !important;
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  @keyframes apgoFloatImage {
+    0%,
+    100% {
+      transform: translateY(0) scale(1);
+    }
+    50% {
+      transform: translateY(-15px) scale(1.02);
+    }
+  }
+
+  /* 產品標籤 */
+  .apgo-product-badges {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .apgo-badge {
+    background: linear-gradient(45deg, var(--primary-orange), var(--secondary-orange));
+    color: white;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    animation: apgoPulseBadge 2s ease-in-out infinite;
+  }
+
+  @keyframes apgoPulseBadge {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+  }
+
+  /* 產品縮圖展示區 */
+  .apgo-product-thumbnails {
+    padding: 20px 16px 32px;
+    background: var(--dark-bg);
+    margin-bottom: 16px;
+  }
+
+  .apgo-thumbnails-container {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding: 12px 0;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    cursor: grab;
+    overflow-y: hidden;
+    touch-action: pan-x;
+    overscroll-behavior-x: contain;
+  }
+
+  .apgo-thumbnails-container::-webkit-scrollbar {
+    display: none;
+  }
+
+  .apgo-thumbnails-container.dragging {
+    cursor: grabbing;
+    scroll-snap-type: none;
+  }
+
+  .apgo-thumbnail-item {
+    flex: 0 0 auto;
+    width: 72px;
+    height: 72px;
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    scroll-snap-align: start;
+    border: 3px solid transparent;
+    background: var(--card-bg);
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  .apgo-thumbnail-item.active {
+    border-color: var(--primary-orange);
+    transform: scale(1.08);
+    box-shadow: 0 4px 12px rgba(240, 132, 24, 0.3);
+  }
+
+  .apgo-thumbnail-item:active {
+    transform: scale(0.95);
+  }
+
+  .apgo-thumbnail-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background: #2a2a2a;
+    transition: all 0.3s ease;
+    border-radius: 12px;
+  }
+
+  .apgo-thumbnail-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(240, 132, 24, 0.15);
+    opacity: 0;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+  }
+
+  .apgo-thumbnail-item.active .apgo-thumbnail-overlay {
+    opacity: 1;
+  }
+
+  .apgo-thumbnail-play-icon {
+    width: 20px;
+    height: 20px;
+    background: var(--primary-orange);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.7rem;
+    opacity: 0.9;
+  }
+
+  /* 手機優化 */
+  @media (max-width: 768px) {
+    .apgo-product-thumbnails {
+      padding: 16px 12px 24px;
+    }
+
+    .apgo-thumbnails-container {
+      gap: 10px;
+      padding: 8px 4px;
+    }
+
+    .apgo-thumbnail-item {
+      width: 68px;
+      height: 68px;
+      border-radius: 14px;
+    }
+
+    .apgo-thumbnail-item.active {
+      transform: scale(1.06);
+    }
+  }
+
+  /* 產品基本資訊 */
+  .apgo-product-info {
+    padding: 24px 16px;
+    background: var(--dark-bg);
+  }
+
+  .apgo-product-header {
+    text-align: center;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .apgo-product-name {
+    font-size: 2rem;
+    font-weight: bold;
+    background: linear-gradient(45deg, var(--primary-orange), var(--secondary-orange));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+  }
+
+  .apgo-product-tagline {
+    font-size: 1rem;
+    color: var(--text-light-gray);
+    line-height: 1.5;
+    margin-top: 12px;
+  }
+
+  /* 性能指標展示 */
+  .apgo-performance-metrics {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 24px;
+    border: 1px solid rgba(240, 132, 24, 0.2);
+  }
+
+  .apgo-metrics-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-white);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .apgo-metrics-title::before {
+    content: '';
+    width: 4px;
+    height: 20px;
+    background: var(--primary-orange);
+    border-radius: 2px;
+  }
+
+  .apgo-metric-item {
+    margin-bottom: 16px;
+  }
+
+  .apgo-metric-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .apgo-metric-label {
+    font-size: 0.85rem;
+    color: var(--text-gray);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .apgo-metric-value {
+    font-size: 0.95rem;
+    font-weight: bold;
+    background: linear-gradient(45deg, var(--primary-orange), var(--secondary-orange));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .apgo-metric-bar {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .apgo-metric-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-orange), var(--secondary-orange));
+    border-radius: 8px;
+    transition: width 1s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .apgo-metric-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    animation: apgoShine 3s ease-in-out infinite;
+  }
+
+  @keyframes apgoShine {
+    0% {
+      left: -100%;
+    }
+    100% {
+      left: 200%;
+    }
+  }
+
+  /* 短影音展示區 */
+  .apgo-video-showcase {
+    padding: 24px 0;
+    background: var(--dark-bg);
+    margin-bottom: 24px;
+  }
+
+  .apgo-video-header {
+    padding: 0 16px;
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .apgo-video-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-white);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .apgo-video-title::before {
+    content: '▶';
+    color: var(--primary-orange);
+    font-size: 0.9rem;
+  }
+
+  /* 短影音滾動容器 */
+  .apgo-video-scroll-container {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding: 0 16px 12px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .apgo-video-scroll-container::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* 短影音卡片 */
+  .apgo-video-card {
+    flex: 0 0 auto;
+    width: 200px;
+    height: 356px;
+    background: var(--card-bg);
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    scroll-snap-align: start;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(240, 132, 24, 0.2);
+  }
+
+  .apgo-video-thumbnail {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background: #0a0a0a;
+  }
+
+  .apgo-video-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 50%, rgba(0, 0, 0, 0.9) 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 16px;
+  }
+
+  .apgo-video-play-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50px;
+    height: 50px;
+    background: rgba(240, 132, 24, 0.9);
+    backdrop-filter: blur(10px);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+  }
+
+  .apgo-video-play-btn::after {
+    content: '';
+    width: 0;
+    height: 0;
+    border-left: 15px solid white;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    margin-left: 3px;
+  }
+
+  .apgo-video-info {
+    position: relative;
+    z-index: 2;
+  }
+
+  .apgo-video-subtitle {
+    font-size: 0.85rem;
+    color: var(--text-white);
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .apgo-video-views {
+    font-size: 0.75rem;
+    color: var(--text-gray);
+  }
+
+  .apgo-video-duration {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    color: white;
+  }
+
+  /* 使用步驟時間軸 */
+  .apgo-usage-timeline {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 20px;
+    margin: 0 16px;
+    position: relative;
+  }
+
+  .apgo-timeline-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-white);
+    margin-bottom: 20px;
+  }
+
+  .apgo-timeline-steps {
+    position: relative;
+    padding-left: 30px;
+  }
+
+  .apgo-timeline-steps::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 10px;
+    bottom: 10px;
+    width: 2px;
+    background: linear-gradient(180deg, var(--primary-orange), rgba(240, 132, 24, 0.3));
+  }
+
+  .apgo-timeline-step {
+    position: relative;
+    margin-bottom: 24px;
+    padding-left: 20px;
+  }
+
+  .apgo-step-dot {
+    position: absolute;
+    left: -24px;
+    top: 4px;
+    width: 12px;
+    height: 12px;
+    background: var(--primary-orange);
+    border: 3px solid var(--dark-bg);
+    border-radius: 50%;
+    z-index: 2;
+  }
+
+  .apgo-step-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--primary-orange);
+    margin-bottom: 4px;
+  }
+
+  .apgo-step-desc {
+    font-size: 0.85rem;
+    color: var(--text-light-gray);
+    line-height: 1.4;
+  }
+
+  /* 產品詳情標籤 */
+  .apgo-details-tabs {
+    background: var(--card-bg);
+    border-radius: 16px;
+    margin: 16px;
+    overflow: hidden;
+  }
+
+  .apgo-tab-headers {
+    display: flex;
+    background: rgba(0, 0, 0, 0.5);
+    border-bottom: 1px solid rgba(240, 132, 24, 0.2);
+  }
+
+  .apgo-tab-header {
+    flex: 1;
+    padding: 16px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text-gray);
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+  }
+
+  .apgo-tab-header.active {
+    color: var(--text-white);
+    font-weight: 600;
+  }
+
+  .apgo-tab-header.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--primary-orange);
+  }
+
+  .apgo-tab-content {
+    padding: 20px;
+    min-height: 200px;
+  }
+
+  .apgo-tab-panel {
+    display: none;
+    font-size: 0.9rem;
+    color: var(--text-light-gray);
+    line-height: 1.6;
+  }
+
+  .apgo-tab-panel.active {
+    display: block;
+  }
+
+  /* 相關產品推薦 */
+  .apgo-related-products {
+    padding: 24px 16px;
+  }
+
+  .apgo-related-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-white);
+    margin-bottom: 16px;
+  }
+
+  .apgo-related-scroll {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .apgo-related-product {
+    flex: 0 0 auto;
+    width: 140px;
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 12px;
+    text-align: center;
+    border: 1px solid rgba(240, 132, 24, 0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+  }
+
+  .apgo-related-img {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 8px;
+    object-fit: contain;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    padding: 10px;
+  }
+
+  .apgo-related-name {
+    height: 40px;
+    font-size: 0.85rem;
+    color: var(--text-white);
+    margin-bottom: 4px;
+  }
+
+  .apgo-related-price {
+    font-size: 0.9rem;
+    color: var(--primary-orange);
+    font-weight: bold;
+  }
+
+  /* 底部購買欄 */
+  .apgo-bottom-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: calc(var(--vvb, 0px)); /* ← 用变量控制到底部的偏移 */
+    width: 100%;
+    box-sizing: border-box;
+
+    background: rgba(0, 0, 0, 0.98);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(240, 132, 24, 0.2);
+
+    padding: 12px 16px;
+    padding-bottom: max(12px, env(safe-area-inset-bottom)); /* ← 覆盖 Home 指示条安全区 */
+    z-index: 1000;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+
+    will-change: transform, bottom, padding-bottom; /* 减少抖动 */
+    transform: translateZ(0);
+  }
+
+  .apgo-price-section {
+    flex: 1;
+  }
+
+  .apgo-original-price {
+    font-size: 0.8rem;
+    color: var(--text-gray);
+    text-decoration: line-through;
+    margin-bottom: 2px;
+  }
+
+  .apgo-price-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--primary-orange);
+  }
+
+  .apgo-action-buttons {
+    display: flex;
+    gap: 8px;
+    flex: 1.5;
+  }
+
+  .apgo-btn-favorite {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(240, 132, 24, 0.1);
+    border: 1px solid var(--primary-orange);
+    border-radius: 12px;
+    color: var(--primary-orange);
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .apgo-btn-favorite.active {
+    background: var(--primary-orange);
+    color: white;
+  }
+
+  .apgo-buy-button {
+    flex: 1;
+    background: linear-gradient(45deg, var(--primary-orange), var(--secondary-orange));
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* 變體選擇模態框 */
+  .apgo-variant-modal {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--card-bg);
+    border-radius: 24px 24px 0 0;
+    padding: 0px 16px 0px 16px;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 2000;
+    max-height: 85vh;
+    overflow-y: auto;
+    -ms-overflow-style: none; /* IE 和 Edge */
+    scrollbar-width: none; /* Firefox */
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
+    /* iOS Safari 滚动修复 */
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+  }
+
+  .apgo-variant-modal.active {
+    transform: translateY(0);
+  }
+
+  .apgo-modal-header {
+    position: sticky;
+    top: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--card-bg);
+    margin-bottom: 16px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(240, 132, 24, 0.2);
+    opacity: 1;
+    z-index: 1;
+  }
+
+  .apgo-modal-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    background: linear-gradient(45deg, var(--primary-orange), var(--secondary-orange));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .apgo-close-modal {
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    color: var(--text-gray);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.3rem;
+  }
+
+  /* 產品預覽區 */
+  .apgo-modal-product-preview {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding: 16px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 12px;
+  }
+
+  .apgo-modal-product-image {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    padding: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .apgo-modal-product-image:hover {
+    transform: scale(1.05);
+  }
+
+  .apgo-modal-product-info {
+    flex: 1;
+  }
+
+  .apgo-modal-product-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-white);
+    margin-bottom: 4px;
+  }
+
+  .apgo-modal-product-desc {
+    font-size: 0.85rem;
+    color: var(--text-gray);
+    line-height: 1.4;
+  }
+
+  /* 變體選擇區 */
+  .apgo-variant-section {
+    margin-bottom: 24px;
+  }
+
+  .apgo-variant-label {
+    font-size: 0.9rem;
+    color: var(--text-gray);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .apgo-variant-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .apgo-variant-option {
+    background: rgba(255, 255, 255, 0.03);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 22px 22px 40px 22px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .apgo-variant-option.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .apgo-variant-option.disabled:hover {
+    border-color: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .apgo-variant-quantity {
+    position: absolute;
+    bottom: 8px;
+    right: 12px;
+    font-size: 0.8rem;
+    color: var(--text-gray);
+    background: rgba(0,0,0,0.3);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  .apgo-variant-option.selected {
+    border-color: var(--primary-orange);
+    background: rgba(240, 132, 24, 0.1);
+  }
+
+  .apgo-variant-option.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 20px;
+    height: 20px;
+    background: var(--primary-orange);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: bold;
+  }
+
+  .apgo-variant-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-white);
+    margin-bottom: 4px;
+  }
+
+  .apgo-variant-price {
+    font-size: 1.1rem;
+    color: var(--primary-orange);
+    font-weight: bold;
+    position: absolute;
+    bottom: 8px;
+    left: 22px;
+  }
+
+  /* 數量選擇器 */
+  .apgo-quantity-selector {
+    margin-bottom: 24px;
+  }
+
+  .apgo-quantity-label {
+    font-size: 0.9rem;
+    color: var(--text-gray);
+    margin-bottom: 12px;
+  }
+
+  .apgo-quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 8px;
+    width: fit-content;
+  }
+
+  .apgo-quantity-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: rgba(240, 132, 24, 0.2);
+    color: var(--primary-orange);
+    border-radius: 8px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .apgo-quantity-value {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-white);
+    min-width: 40px;
+    text-align: center;
+  }
+
+  /* 價格摘要 */
+  .apgo-price-summary {
+    background: linear-gradient(135deg, rgba(240, 132, 24, 0.1), rgba(240, 132, 24, 0.05));
+    border: 1px solid rgba(240, 132, 24, 0.3);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+
+  .apgo-price-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .apgo-price-row:last-child {
+    margin-bottom: 0;
+    padding-top: 8px;
+    border-top: 1px solid rgba(240, 132, 24, 0.2);
+  }
+
+  .apgo-price-total-amount {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: var(--primary-orange);
+  }
+
+  /* 模態框按鈕 */
+  .apgo-modal-buttons {
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    gap: 12px;
+    background: var(--card-bg);
+    padding-bottom: 16px;
+    padding-top: 16px;
+  }
+
+  .apgo-modal-btn {
+    flex: 1;
+    padding: 16px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+  }
+
+  .apgo-modal-btn-secondary {
+    background: rgba(240, 132, 24, 0.1);
+    border: 2px solid var(--primary-orange);
+    color: var(--primary-orange);
+  }
+
+  .apgo-modal-btn-primary {
+    background: linear-gradient(45deg, var(--primary-orange), var(--secondary-orange));
+    color: white;
+  }
+
+  .apgo-modal-btn:disabled {
+    background: #333333 !important;
+    color: #888888 !important;
+    border-color: #333333 !important;
+    cursor: not-allowed !important;
+    background-image: none !important;
+  }
+
+  .apgo-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 1999;
+  }
+
+  .apgo-modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* 圖片預覽燈箱 */
+  .apgo-image-lightbox {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 3000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .apgo-image-lightbox.active {
+    display: flex;
+  }
+
+  .apgo-lightbox-content {
+    position: relative;
+    max-width: 90%;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .apgo-lightbox-image {
+    width: 100%;
+    height: auto;
+    max-height: 70vh;
+    object-fit: contain;
+    border-radius: 12px;
+  }
+
+  .apgo-lightbox-close {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.2rem;
+  }
+
+  /* 全螢幕影片播放器 */
+  .apgo-video-fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: black;
+    z-index: 3000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .apgo-video-fullscreen.active {
+    display: flex;
+  }
+
+  .apgo-fullscreen-video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .apgo-close-fullscreen {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    z-index: 3001;
+  }
+
+  /* 載入動畫 */
+  .apgo-loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: apgoSpin 1s linear infinite;
+  }
+
+  @keyframes apgoSpin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* 滑動指示器 */
+  .apgo-swipe-indicator {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  .apgo-swipe-dots {
+    display: flex;
+    gap: 6px;
+    padding: 8px 12px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+  }
+
+  .apgo-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+    transition: all 0.3s ease;
+  }
+
+  .apgo-dot.active {
+    width: 16px;
+    border-radius: 3px;
+    background: var(--primary-orange);
+  }
+
+  /* 視頻模態框 */
+  .apgo-video-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .apgo-video-modal.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .apgo-video-modal-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(10px);
+  }
+
+  .apgo-video-modal-content {
+    position: relative;
+    z-index: 1;
+    width: 90%;
+    max-width: 900px;
+    max-height: 80vh;
+    animation: apgoModalSlideIn 0.3s ease;
+  }
+
+  @keyframes apgoModalSlideIn {
+    from {
+      transform: translateY(30px) scale(0.95);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+  }
+
+  .apgo-video-modal-close {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 2;
+  }
+
+  .apgo-video-modal-close:hover {
+    background: rgba(240, 132, 24, 0.3);
+    border-color: var(--primary-orange);
+    transform: rotate(90deg);
+  }
+
+  .apgo-video-modal-player {
+    width: 100%;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  }
+
+  .apgo-video-modal-player video {
+    width: 100%;
+    height: auto;
+    max-height: 70vh;
+    display: block;
+  }
+
+  .apgo-video-hidden {
+    display: none !important;
+  }
+
+  .apgo-video-card.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    margin: -20px 0 0 -20px;
+    border: 3px solid rgba(240, 132, 24, 0.3);
+    border-top-color: var(--primary-orange);
+    border-radius: 50%;
+    animation: apgoSpin 1s linear infinite;
+    z-index: 10;
+  }
+
+  /* iOS Safari 模態框開啟時的 body 樣式 */
+  body.modal-open {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+  }
+
+  /* 成功通知樣式 */
+  .add-on-notification {
+    position: fixed;
+    left: 75%;
+    top: 10%;
+    transform: translate(-50%, calc(-50% + 10px)) scale(0.98);
+    opacity: 0;
+    width: min(92vw, 460px);
+    max-width: 92vw;
+    padding: 18px 20px 18px 20px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    border: 1px solid rgba(240, 132, 24, 0.35);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55), 0 6px 20px rgba(0, 0, 0, 0.35);
+    z-index: 99999;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .add-on-notification.show {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+
+  .add-on-notification-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .add-on-notification-message {
+    color: var(--text-white, #fff);
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.5;
+    text-align: center;
+  }
+
+  .add-on-notification-link {
+    background: linear-gradient(45deg, var(--primary-orange, #f08418), var(--secondary-orange, #ff9a3c));
+    color: var(--text-white, #fff);
+    text-decoration: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-align: center;
+    transition: all 0.25s ease;
+    display: inline-block;
+    margin: 4px auto 0;
+    min-width: 160px;
+  }
+
+  .add-on-notification-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(240, 132, 24, 0.35);
+  }
+
+  .add-on-notification-close {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0;
+    opacity: 0.8;
+    transition: opacity 0.25s ease;
+    width: 24px;
+    height: 24px;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .add-on-notification-close:hover {
+    opacity: 1;
+  }
+
+  @media (max-width: 768px) {
+    .apgo-video-modal-content {
+      width: 100%;
+      height: 100%;
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    .apgo-video-modal-player {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      border-radius: 0;
+    }
+
+    .apgo-video-modal-player video {
+      max-height: 100vh;
+    }
+
+    .apgo-video-modal-close {
+      top: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.7);
+    }
+
+    .add-on-notification {
+      top: 70px;
+      right: 45%;
+      left: 55%;
+      max-width: calc(100vw - 30px);
+      padding: 14px 16px;
+      gap: 10px;
+    }
+
+    .add-on-notification-message {
+      font-size: 0.85rem;
+    }
+
+    .add-on-notification-link {
+      padding: 10px 16px;
+      font-size: 0.82rem;
+      justify-content: center;
+    }
+
+    .add-on-notification-close {
+      width: 22px;
+      height: 22px;
+      font-size: 1rem;
+    }
+
+    .add-on-notification {
+      width: min(94vw, 420px);
+      padding: 16px 16px 18px;
+    }
+
+    .add-on-notification-message {
+      font-size: 0.92rem;
+    }
+
+    .add-on-notification-link {
+      min-width: 140px;
+      font-size: 0.88rem;
+    }
+    .apgo-price-value {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: var(--primary-orange);
+    }
+  }
+  /* 輪播容器樣式 */
+  .apgo-product-showcase {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    overflow: hidden; /* 添加這行 */
+  }
+
+  /* 輪播圖片容器 */
+  .apgo-carousel-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .apgo-carousel-track {
+    display: flex;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+    height: 100%;
+    align-items: center;
+  }
+
+  .apgo-carousel-slide {
+    flex: 0 0 100%;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .apgo-product-showcase,
+.apgo-carousel-container,
+.apgo-carousel-track {
+  touch-action: pan-y;     /* 现代浏览器 */
+  -ms-touch-action: pan-y; /* 旧 Edge */
+}
+</style>
+
+<div class="apgo-product-section">
+  <!-- 頂部導航 -->
+
+  <!-- 主內容區 -->
+  <main class="apgo-main-container">
+    <!-- 產品主視覺區 -->
+    <section class="apgo-hero-visual">
+      {% if section.settings.show_particles %}
+        <div class="apgo-floating-particles">
+          <div class="apgo-particle" style="left: 10%; animation-delay: 0s;"></div>
+          <div class="apgo-particle" style="left: 30%; animation-delay: 2s;"></div>
+          <div class="apgo-particle" style="left: 50%; animation-delay: 4s;"></div>
+          <div class="apgo-particle" style="left: 70%; animation-delay: 6s;"></div>
+          <div class="apgo-particle" style="left: 90%; animation-delay: 8s;"></div>
+        </div>
+      {% endif %}
+
+      <div class="apgo-product-showcase" id="apgoProductShowcase">
+        <div class="apgo-carousel-container">
+          <div class="apgo-carousel-track" id="apgoCarouselTrack">
+            {% for image in product.images %}
+              <div class="apgo-carousel-slide">
+                <img
+                  src="{{ image | image_url: width: 800 }}"
+                  alt="{{ product.title }} - {{ 'product.image_alt' | t: index: forloop.index }}"
+                  class="apgo-product-image-main {% if forloop.first %}is-float{% else %}is-cover{% endif %}"
+                  loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                >
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- 輪播指示點 -->
+        <div class="apgo-swipe-indicator">
+          <div class="apgo-swipe-dots">
+            {% for image in product.images %}
+              <span
+                class="apgo-dot {% if forloop.first %}active{% endif %}"
+                data-index="{{ forloop.index0 }}"
+                onclick="apgoGoToSlide({{ forloop.index0 }})"
+              ></span>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <div class="apgo-product-badges">
+        {% if product.metafields.apgo.badges %}
+          {% for badge_text in product.metafields.apgo.badges.value %}
+            <span class="apgo-badge">{{ badge_text }}</span>
+          {% endfor %}
+        {% else %}
+          {% for block in section.blocks %}
+            {% if block.type == 'badge' %}
+              <span class="apgo-badge">{{ block.settings.text }}</span>
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+      </div>
+    </section>
+
+    <!-- 產品縮圖展示區 -->
+    <section class="apgo-product-thumbnails">
+      <div class="apgo-thumbnails-container">
+        {% for image in product.images %}
+          <div
+            class="apgo-thumbnail-item {% if forloop.first %}active{% endif %}"
+            onclick="apgoSelectThumbnail(this, '{{ image | image_url: width: 1200 }}')"
+            data-index="{{ forloop.index0 }}"
+          >
+            <img
+              src="{{ image | image_url: width: 150 }}"
+              alt="{{ product.title }} - {{ 'product.image_alt' | t: index: forloop.index }}"
+              class="apgo-thumbnail-image"
+              loading="lazy"
+            >
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- 產品基本資訊 -->
+    <section class="apgo-product-info">
+      <div class="apgo-product-header">
+        <h1 class="apgo-product-name">{{ product.title }}</h1>
+        <p class="apgo-product-tagline">
+          {{ product.metafields.apgo.subtitle | default: section.settings.subtitle_fallback }}
+        </p>
+      </div>
+
+      {% if product.metafields.apgo.performance_metrics.value %}
+        <div class="apgo-performance-metrics">
+          <h3 class="apgo-metrics-title">{{ 'product.performance_metrics' | t }}</h3>
+
+          {% if product.metafields.apgo.performance_metrics %}
+            {% assign metrics = product.metafields.apgo.performance_metrics.value %}
+            {% for metric in metrics %}
+              <div class="apgo-metric-item">
+                <div class="apgo-metric-header">
+                  <span class="apgo-metric-label">{{ metric.label }}</span>
+                  <span class="apgo-metric-value">{{ metric.value }}</span>
+                </div>
+                <div class="apgo-metric-bar">
+                  <div class="apgo-metric-fill" style="width: {{ metric.percent }}%;"></div>
+                </div>
+              </div>
+            {% endfor %}
+          {% else %}
+            {% for block in section.blocks %}
+              {% if block.type == 'metric' %}
+                <div class="apgo-metric-item">
+                  <div class="apgo-metric-header">
+                    <span class="apgo-metric-label">{{ block.settings.label }}</span>
+                    <span class="apgo-metric-value">{{ block.settings.value }}</span>
+                  </div>
+                  <div class="apgo-metric-bar">
+                    <div class="apgo-metric-fill" style="width: {{ block.settings.percent }}%;"></div>
+                  </div>
+                </div>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        </div>
+      {% endif %}
+    </section>
+
+    <!-- 短影音展示區 -->
+    <section class="apgo-video-showcase">
+      <div class="apgo-video-header">
+        <h3 class="apgo-video-title">{{ 'product.video_showcase' | t }}</h3>
+      </div>
+
+      <div class="apgo-video-scroll-container">
+        {% if product.metafields.apgo.demo_videos and product.metafields.apgo.demo_videos.value %}
+          {% assign video_objects = product.metafields.apgo.demo_videos.value %}
+          {% assign sorted_videos = video_objects | sort: 'sort_order' %}
+
+          {% for video_obj in sorted_videos %}
+            {% assign video_url = video_obj.video_file | file_url %}
+            {% assign poster_url = '' %}
+            {% if video_obj.poster %}
+              {% assign poster_url = video_obj.poster | image_url: width: 800 %}
+            {% endif %}
+
+            <div
+              class="apgo-video-card"
+              data-source="metaobject"
+              data-video-url="{{ video_url | escape }}"
+              data-video-index="{{ forloop.index }}"
+            >
+              {% if poster_url != blank %}
+                <img
+                  class="apgo-video-thumbnail"
+                  src="{{ poster_url }}"
+                  alt="{{ video_obj.title | default: product.title }}"
+                  loading="lazy"
+                >
+              {% else %}
+                <div class="apgo-video-thumbnail apgo-video-placeholder" style="position: relative;">
+                  <svg
+                    width="60"
+                    height="60"
+                    viewBox="0 0 24 24"
+                    fill="#f08418"
+                    style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"
+                  >
+                    <path d="M8 5v14l11-7z"/>
+                  </svg>
+                  <div style="background: #333; width: 100%; height: 100%;"></div>
+                </div>
+              {% endif %}
+
+              <div class="apgo-video-overlay">
+                <div class="apgo-video-play-btn"></div>
+                <div class="apgo-video-info">
+                  <div class="apgo-video-subtitle">
+                    {% if video_obj.title %}
+                      {{ video_obj.title }}
+                    {% else %}
+                      {{ 'product.video_default_title' | t }}
+                    {% endif %}
+                  </div>
+                  <div class="apgo-video-views">
+                    {{ 'product.video_views' | t: count: video_obj.views | default: '1.2萬' }}
+                  </div>
+                </div>
+              </div>
+              <span class="apgo-video-duration">
+                {{ video_obj.duration | default: '0:45' }}
+              </span>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="apgo-no-videos">
+            <p>{{ 'product.no_videos' | t }}</p>
+          </div>
+        {% endif %}
+      </div>
+    </section>
+
+    <!-- 視頻模態框 -->
+    <div class="apgo-video-modal" id="apgoVideoModal" aria-hidden="true">
+      <div class="apgo-video-modal-overlay"></div>
+      <div class="apgo-video-modal-content">
+        <button class="apgo-video-modal-close" aria-label="{{ 'general.accessibility.close_modal' | t }}">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+          </svg>
+        </button>
+        <div class="apgo-video-modal-player" id="apgoVideoPlayer"></div>
+      </div>
+    </div>
+
+    <!-- 使用步驟時間軸 -->
+    <section class="apgo-usage-timeline">
+      <h3 class="apgo-timeline-title">{{ 'product.construction_steps' | t }}</h3>
+      <div class="apgo-timeline-steps">
+        {% if product.metafields.apgo.construction_steps %}
+          {% assign steps = product.metafields.apgo.construction_steps.value %}
+          {% for step in steps %}
+            <div class="apgo-timeline-step">
+              <div class="apgo-step-dot"></div>
+              <div class="apgo-step-content">
+                <div class="apgo-step-title">{{ step.title }}</div>
+                <div class="apgo-step-desc">{{ step.desc }}</div>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          {% for block in section.blocks %}
+            {% if block.type == 'step' %}
+              <div class="apgo-timeline-step">
+                <div class="apgo-step-dot"></div>
+                <div class="apgo-step-content">
+                  <div class="apgo-step-title">{{ block.settings.title }}</div>
+                  <div class="apgo-step-desc">{{ block.settings.desc }}</div>
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+      </div>
+    </section>
+
+    <!-- 產品詳情標籤 -->
+    {% assign tabs = product.metafields.apgo.product_tabs.value %}
+    <section class="apgo-details-tabs">
+      <div class="apgo-tab-headers">
+        {% for tab in tabs %}
+          <div
+            class="apgo-tab-header {% if forloop.first %}active{% endif %}"
+            data-tab="{{ forloop.index0 }}"
+            onclick="apgoSwitchTab({{ forloop.index0 }})"
+          >
+            {{ tab.title }}
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="apgo-tab-content">
+        {% for tab in tabs %}
+          <div
+            class="apgo-tab-panel {% if forloop.first %}active{% endif %}"
+            data-tab="{{ forloop.index0 }}"
+          >
+            {% if forloop.first %}
+              {% if product.description != blank %}
+                {{ product.description }}
+              {% else %}
+                {{ tab.content | default: 'product.no_description' | t }}
+              {% endif %}
+            {% else %}
+              {{ tab.content }}
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- 相關產品推薦 -->
+    <section class="apgo-related-products">
+      <h3 class="apgo-related-title">{{ 'product.recommended_products' | t }}</h3>
+      <div class="apgo-related-scroll">
+        {% if product.metafields.apgo.related_products %}
+          {% for related_product in product.metafields.apgo.related_products.value %}
+            {% if related_product %}
+              <a href="{{ related_product.url }}" class="apgo-related-product">
+                <img
+                  src="{{ related_product.featured_media | image_url: width: 200 }}"
+                  alt="{{ related_product.title }}"
+                  class="apgo-related-img"
+                  loading="lazy"
+                >
+                <div class="apgo-related-name">{{ related_product.title }}</div>
+                {% if related_product.variants.size > 1 %}
+                  {% assign min_price = related_product.variants | map: 'price' | sort | first %}
+                  {% assign max_price = related_product.variants | map: 'price' | sort | last %}
+                  {% if min_price == max_price %}
+                    <p class="apgo-related-price">{{ min_price | money }}</p>
+                  {% else %}
+                    <p class="apgo-related-price">{{ min_price | money }} ~ {{ max_price | money }}</p>
+                  {% endif %}
+                {% else %}
+                  <p class="apgo-related-price">{{ related_product.price | money }}</p>
+                {% endif %}
+                {% comment %} <div class="apgo-related-price">{{ related_product.price | money }}</div> {% endcomment %}
+              </a>
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+      </div>
+    </section>
+  </main>
+
+  <!-- 底部購買欄 -->
+  {% if section.settings.show_bottom_bar %}
+    <div class="apgo-bottom-bar">
+      <div class="apgo-price-section">
+        {% if product.compare_at_price > product.price %}
+          <div class="apgo-original-price">{{ product.compare_at_price | money }}</div>
+        {% endif %}
+        <div>
+          {% if product.variants.size > 1 %}
+            {% assign min_price = product.variants | map: 'price' | sort | first %}
+            {% assign max_price = product.variants | map: 'price' | sort | last %}
+            {% if min_price == max_price %}
+              <span class="apgo-price-value" id="apgoCurrentPrice">{{ min_price | money }}</span>
+            {% else %}
+              <span class="apgo-price-value" id="apgoCurrentPrice">
+                {{- min_price | money }} ~ {{ max_price | money -}}
+              </span>
+            {% endif %}
+          {% else %}
+            <span class="apgo-price-value" id="apgoCurrentPrice">{{ product.price | money }}</span>
+          {% endif %}
+          {% comment %} <span class="apgo-price-value" id="apgoCurrentPrice">{{ product.price | money }}</span> {% endcomment %}
+        </div>
+      </div>
+      <div class="apgo-action-buttons">
+        <button class="apgo-buy-button" onclick="apgoShowVariantModal()">{{ 'product.select_variant' | t }}</button>
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- 變體選擇模態框 -->
+  <div class="apgo-modal-overlay" id="apgoModalOverlay" onclick="apgoCloseVariantModal()"></div>
+  <div class="apgo-variant-modal" id="apgoVariantModal">
+    <div class="apgo-modal-header">
+      <h3 class="apgo-modal-title">{{ 'product.select_variant' | t }}</h3>
+      <button class="apgo-close-modal" onclick="apgoCloseVariantModal()">✕</button>
+    </div>
+
+    <!-- 產品預覽 -->
+    <div class="apgo-modal-product-preview">
+      <img
+  src="{{ product.featured_media | image_url: width: 200 }}"
+  alt="{{ product.title }}"
+  class="apgo-modal-product-image"
+  id="apgoModalImage"
+  width="200"
+  height="200"
+  loading="lazy"
+  onclick="apgoOpenCurrentImageLightbox()"
+  data-default-src="{{ product.featured_media | image_url: width: 200 }}"
+  data-default-high-res="{{ product.featured_media | image_url: width: 1200 }}"
+  data-current-high-res="{{ product.featured_media | image_url: width: 1200 }}"
+>
+
+            {% comment %} <img
+        src="{{ product.featured_media | image_url: width: 200 }}"
+        alt="{{ product.title }}"
+        class="apgo-modal-product-image"
+        id="apgoModalImage"
+        width="200"
+        height="200"
+        loading="lazy"
+        onclick="apgoOpenImageLightbox('{{ product.featured_media | image_url: width: 1200 }}', '{{ product.title }}')"
+        data-default-src="{{ product.featured_media | image_url: width: 200 }}"
+        data-high-res-src="{{ product.featured_media | image_url: width: 1200 }}"
+      > {% endcomment %}
+      <div class="apgo-modal-product-info">
+        <div class="apgo-modal-product-name">{{ product.title }}</div>
+        <div class="apgo-modal-product-desc">
+          {{ product.metafields.apgo.subtitle | default: section.settings.subtitle_fallback }}
+        </div>
+      </div>
+    </div>
+
+    <!-- 單罐選購 -->
+    {%- assign first_available_variant = product.first_available_variant -%}
+    <div class="apgo-variant-section">
+      <div class="apgo-variant-label">{{ 'product.single_purchase' | t }}</div>
+      <div class="apgo-variant-options">
+        {% for variant in product.variants %}
+          {% unless variant.metafields.apgo.is_bundle %}
+            
+              <div
+  class="apgo-variant-option {% if variant == first_available_variant %}selected{% endif %} {% unless variant.available %}disabled{% endunless %}"
+  {% if variant.available %}
+    onclick="apgoSelectVariant(this, {{ variant.id }}, {{ variant.price | divided_by: 100.0 }}, '{{ variant.featured_media | image_url: width: 200 }}')"
+  {% endif %}
+  {% if variant.featured_media %}
+    data-variant-image="{{ variant.featured_media | image_url: width: 200 }}"
+    data-variant-image-high-res="{{ variant.featured_media | image_url: width: 1200 }}"
+  {% endif %}
+>
+              <div class="apgo-variant-name">
+                {% if product.has_only_default_variant %}
+                  {{ product.title }}
+                {% else %}
+                  {{ variant.title }}
+                {% endif %}
+              </div>
+              <div class="apgo-variant-price">{{ variant.price | money }}</div>
+              {% unless variant.available %}
+                <div class="apgo-variant-quantity">
+                  {{ 'products.product.sold_out' | t }}
+                </div>
+              {% else %}
+                {% if variant.metafields.custom.show_inventory == true %}
+                  <div class="apgo-variant-quantity">
+                    {{ 'products.product.inventory_label' | t }}: {{ variant.inventory_quantity }}
+                  </div>
+                {% endif %}
+              {% endunless %}
+            </div>
+          {% endunless %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- 優惠套裝 -->
+    {% assign has_bundles = false %}
+    {% for variant in product.variants %}
+      {% if variant.metafields.apgo.is_bundle %}
+        {% assign has_bundles = true %}
+        {% break %}
+      {% endif %}
+    {% endfor %}
+
+    {% if has_bundles %}
+      <div class="apgo-variant-section">
+        <div class="apgo-variant-label">{{ 'product.bundle_deals' | t }}</div>
+        <div class="apgo-variant-options">
+          {% for variant in product.variants %}
+            {% if variant.metafields.apgo.is_bundle %}
+                <div
+  class="apgo-variant-option {% if variant == first_available_variant %}selected{% endif %} {% unless variant.available %}disabled{% endunless %}"
+  {% if variant.available %}
+    onclick="apgoSelectVariant(this, {{ variant.id }}, {{ variant.price | divided_by: 100.0 }}, '{{ variant.featured_media | image_url: width: 200 }}')"
+  {% endif %}
+  {% if variant.featured_media %}
+    data-variant-image="{{ variant.featured_media | image_url: width: 200 }}"
+    data-variant-image-high-res="{{ variant.featured_media | image_url: width: 1200 }}"
+  {% endif %}
+>
+                <div class="apgo-variant-name">{{ variant.title }}</div>
+                <div class="apgo-variant-price">{{ variant.price | money }}</div>
+                {% unless variant.available %}
+                  <div class="apgo-variant-quantity">
+                    {{ 'products.product.sold_out' | t }}
+                  </div>
+                {% else %}
+                  {% if variant.metafields.custom.show_inventory == true %}
+                    <div class="apgo-variant-quantity">
+                      {{ 'products.product.inventory_label' | t }}: {{ variant.inventory_quantity }}
+                    </div>
+                  {% endif %}
+                {% endunless %}
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- 數量選擇 -->
+    <div class="apgo-quantity-selector">
+      <div class="apgo-quantity-label">{{ 'product.quantity' | t }}</div>
+      <div class="apgo-quantity-controls">
+        <button class="apgo-quantity-btn" onclick="apgoUpdateQuantity(-1)">−</button>
+        <span class="apgo-quantity-value" id="apgoQuantityValue">1</span>
+        <button class="apgo-quantity-btn" onclick="apgoUpdateQuantity(1)">+</button>
+      </div>
+    </div>
+
+    <!-- 價格摘要 -->
+    <div class="apgo-price-summary">
+      <div class="apgo-price-row">
+        <span>{{ 'product.subtotal' | t }}</span>
+        <span id="apgoSubtotal">{{ product.price | money }}</span>
+      </div>
+      <div class="apgo-price-row">
+        <span>{{ 'product.total' | t }}</span>
+        <span class="apgo-price-total-amount" id="apgoTotalPrice">{{ product.price | money }}</span>
+      </div>
+    </div>
+    <!-- 操作按鈕 -->
+    <div class="apgo-modal-buttons">
+      <button class="apgo-modal-btn apgo-modal-btn-secondary" onclick="apgoAddToCart(event)">
+        {{ 'product.add_to_cart' | t }}
+      </button>
+      <button class="apgo-modal-btn apgo-modal-btn-primary" onclick="apgoBuyNow()">{{ 'product.buy_now' | t }}</button>
+    </div>
+  </div>
+
+  <!-- 圖片預覽燈箱 -->
+   <div class="apgo-image-lightbox" id="apgoImageLightbox">
+    <div class="apgo-lightbox-content">
+      <button class="apgo-lightbox-close" onclick="apgoCloseLightbox()">✕</button>
+      <img
+        id="apgoLightboxImage"
+        class="apgo-lightbox-image"
+        alt="{{ 'product.enlarged_image' | t }}"
+        width="1200"
+        height="1200"
+        loading="lazy"
+      >
+    </div>
+  </div>
+</div>
+
+<script>
+// APGO Product Section JavaScript
+
+// === 全局變數 ===
+{% if product.available %}
+  let currentVariantId = {{ product.first_available_variant.id }};
+  let currentPrice = {{ product.first_available_variant.price | divided_by: 100.0 }};
+{% else %}
+  let currentVariantId = null;
+  let currentPrice = 0;
+{% endif %}
+let currentQuantity = 1;
+
+
+// === 輪播功能類 ===
+class APGOCarousel {
+  constructor() {
+    this.track = document.getElementById('apgoCarouselTrack');
+    this.showcase = document.getElementById('apgoProductShowcase');
+    this.slides = this.track ? this.track.querySelectorAll('.apgo-carousel-slide') : [];
+    this.dots = document.querySelectorAll('.apgo-dot');
+    this.thumbnails = document.querySelectorAll('.apgo-thumbnail-item');
+
+    this.currentIndex = 0;
+
+    // 手势状态
+    this.startX = 0;
+    this.startY = 0;
+    this.currentX = 0;
+    this.currentY = 0;
+    this.isDragging = false;
+    this.lock = null;            // 'x' | 'y' | null
+    this.lockThreshold = 8;      // 判定方向的阈值（像素）
+    this.threshold = 50;         // 切换幻灯片的阈值（像素）
+
+    if (this.track && this.slides.length > 0) {
+      this.init();
+    }
+  }
+
+  init() {
+    // 触摸事件（注意 touchmove 必须 passive:false 才能有条件地 preventDefault）
+    this.showcase.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: true });
+    this.showcase.addEventListener('touchmove', this.handleTouchMove.bind(this), { passive: false });
+    this.showcase.addEventListener('touchend', this.handleTouchEnd.bind(this));
+    this.showcase.addEventListener('touchcancel', this.handleTouchEnd.bind(this));
+
+    // 鼠标事件（桌面）
+    this.showcase.addEventListener('mousedown', this.handleMouseDown.bind(this));
+    this.showcase.addEventListener('mousemove', this.handleMouseMove.bind(this));
+    this.showcase.addEventListener('mouseup', this.handleMouseUp.bind(this));
+    this.showcase.addEventListener('mouseleave', this.handleMouseUp.bind(this));
+
+    // 防止图片拖拽
+    this.slides.forEach(slide => {
+      const img = slide.querySelector('img');
+      if (img) {
+        img.addEventListener('dragstart', e => e.preventDefault());
+      }
+    });
+  }
+
+  handleTouchStart(e) {
+    const t = e.touches[0];
+    this.startX = t.clientX;
+    this.startY = t.clientY;
+    this.currentX = this.startX;
+    this.currentY = this.startY;
+
+    this.isDragging = false;
+    this.lock = null;
+    this.track.style.transition = 'none';
+  }
+
+  handleTouchMove(e) {
+    const t = e.touches[0];
+    this.currentX = t.clientX;
+    this.currentY = t.clientY;
+
+    const dx = this.currentX - this.startX;
+    const dy = this.currentY - this.startY;
+
+    // 未锁定方向时，先判断方向
+    if (!this.lock) {
+      if (Math.abs(dx) > this.lockThreshold || Math.abs(dy) > this.lockThreshold) {
+        this.lock = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+      }
+    }
+
+    // 纵向手势：交给浏览器滚动（不要 preventDefault）
+    if (this.lock === 'y') {
+      this.track.style.transition = '';
+      return;
+    }
+
+    // 横向手势：我们自己处理（阻止默认以避免页面滚动）
+    if (this.lock === 'x') {
+      e.preventDefault(); // 只在横向时阻止默认
+      const currentTranslate = -this.currentIndex * 100;
+      const translate = currentTranslate + (dx / this.showcase.offsetWidth) * 100;
+      this.track.style.transform = `translateX(${translate}%)`;
+      this.isDragging = true;
+    }
+  }
+
+  handleTouchEnd() {
+    // 若并非在横向拖拽，直接返回（让纵向滚动自然进行）
+    if (!this.isDragging) {
+      this.track.style.transition = '';
+      this.lock = null;
+      return;
+    }
+
+    const dx = this.currentX - this.startX;
+    if (Math.abs(dx) > this.threshold) {
+      if (dx > 0 && this.currentIndex > 0) {
+        this.goToSlide(this.currentIndex - 1);
+      } else if (dx < 0 && this.currentIndex < this.slides.length - 1) {
+        this.goToSlide(this.currentIndex + 1);
+      } else {
+        this.goToSlide(this.currentIndex);
+      }
+    } else {
+      this.goToSlide(this.currentIndex);
+    }
+
+    this.isDragging = false;
+    this.lock = null;
+  }
+
+  // 以下为桌面鼠标拖动（保持你原来的逻辑）
+  handleMouseDown(e) {
+    this.startX = e.clientX;
+    this.currentX = this.startX;
+    this.isDragging = true;
+    this.track.style.transition = 'none';
+    this.showcase.style.cursor = 'grabbing';
+  }
+
+  handleMouseMove(e) {
+    if (!this.isDragging) return;
+    e.preventDefault();
+    this.currentX = e.clientX;
+    const diff = this.currentX - this.startX;
+    const currentTranslate = -this.currentIndex * 100;
+    const translate = currentTranslate + (diff / this.showcase.offsetWidth) * 100;
+    this.track.style.transform = `translateX(${translate}%)`;
+  }
+
+  handleMouseUp() {
+    if (!this.isDragging) return;
+    this.isDragging = false;
+    this.showcase.style.cursor = '';
+    const diff = this.currentX - this.startX;
+
+    if (Math.abs(diff) > this.threshold) {
+      if (diff > 0 && this.currentIndex > 0) {
+        this.goToSlide(this.currentIndex - 1);
+      } else if (diff < 0 && this.currentIndex < this.slides.length - 1) {
+        this.goToSlide(this.currentIndex + 1);
+      } else {
+        this.goToSlide(this.currentIndex);
+      }
+    } else {
+      this.goToSlide(this.currentIndex);
+    }
+  }
+
+  goToSlide(index) {
+    if (index < 0 || index >= this.slides.length) return;
+    this.currentIndex = index;
+    this.track.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+    this.track.style.transform = `translateX(-${index * 100}%)`;
+
+    // 更新指示点
+    this.dots.forEach((dot, i) => {
+      dot.classList.toggle('active', i === index);
+    });
+
+    // 更新缩略图
+    this.thumbnails.forEach((thumb, i) => {
+      thumb.classList.toggle('active', i === index);
+    });
+
+    if (navigator.vibrate) {
+      navigator.vibrate(20);
+    }
+  }
+}
+
+// === 全局函數定義（重要：必須在全局作用域） ===
+
+// 選擇縮略圖
+window.apgoSelectThumbnail = function(element, imageUrl) {
+  const index = parseInt(element.getAttribute('data-index') || '0', 10);
+  
+  
+  // 使用輪播功能切換
+  if (window.apgoCarousel) {
+    window.apgoCarousel.goToSlide(index);
+  }
+  
+  // 高亮縮略圖
+  document.querySelectorAll('.apgo-thumbnail-item').forEach(item => {
+    item.classList.remove('active');
+  });
+  element.classList.add('active');
+};
+
+// 跳轉到指定幻燈片
+window.apgoGoToSlide = function(index) {
+  if (window.apgoCarousel) {
+    window.apgoCarousel.goToSlide(index);
+  }
+};
+
+// 顯示變體選擇模態框
+window.apgoShowVariantModal = function() {
+  const modal = document.getElementById('apgoVariantModal');
+  const overlay = document.getElementById('apgoModalOverlay');
+  const body = document.body;
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+  modal.classList.add('active');
+  overlay.classList.add('active');
+
+  if (isIOS) {
+    // iOS 使用 position: fixed 並保持視覺位置
+    body.dataset.scrollY = window.scrollY;
+    body.classList.add('modal-open');
+    body.style.top = `-${body.dataset.scrollY}px`;
+  } else {
+    // 非 iOS 設備只用 overflow: hidden
+    body.style.overflow = 'hidden';
+  }
+
+  // 防止 iOS Safari 彈窗滾動穿透
+  modal.touchMoveHandler = function(e) {
+    const modalContent = modal;
+    const isAtTop = modalContent.scrollTop === 0;
+    const isAtBottom = modalContent.scrollHeight - modalContent.scrollTop <= modalContent.clientHeight;
+
+    if (isAtTop && e.touches[0].clientY > e.touches[0].clientY) {
+      e.preventDefault();
+    }
+    if (isAtBottom && e.touches[0].clientY < e.touches[0].clientY) {
+      e.preventDefault();
+    }
+  };
+  modal.addEventListener('touchmove', modal.touchMoveHandler, { passive: false });
+  updateModalButtonState();
+};
+
+// 關閉變體選擇模態框
+window.apgoCloseVariantModal = function() {
+  const modal = document.getElementById('apgoVariantModal');
+  const overlay = document.getElementById('apgoModalOverlay');
+  const body = document.body;
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+  modal.classList.remove('active');
+  overlay.classList.remove('active');
+
+  if (isIOS) {
+    // iOS 移除樣式並瞬間恢復滾動位置
+    const scrollY = body.dataset.scrollY || 0;
+    body.classList.remove('modal-open');
+    body.style.top = '';
+
+    // 使用 requestAnimationFrame 確保樣式更新後再滾動
+    requestAnimationFrame(() => {
+      window.scrollTo(0, parseInt(scrollY));
+    });
+
+    delete body.dataset.scrollY;
+  } else {
+    // 非 iOS 設備恢復 overflow
+    body.style.overflow = '';
+  }
+
+  // 移除事件監聽器
+  if (modal.touchMoveHandler) {
+    modal.removeEventListener('touchmove', modal.touchMoveHandler);
+    modal.touchMoveHandler = null;
+  }
+};
+
+window.apgoSelectVariant = function(element, variantId, price, imageUrl) {
+  if (element.classList.contains('disabled')) {
+    return;
+  }
+  
+  // 移除其他選項的選中狀態
+  document.querySelectorAll('.apgo-variant-option').forEach(option => {
+    option.classList.remove('selected');
+  });
+  
+  // 添加現在選項的選中狀態
+  element.classList.add('selected');
+  
+  // 更新當前變體ID和價格
+  currentVariantId = variantId;
+  currentPrice = price;
+  
+  // 更新模態框中的圖片
+  const modalImage = document.getElementById('apgoModalImage');
+  if (modalImage) {
+    if (imageUrl && imageUrl !== 'null' && imageUrl !== '') {
+      // 更新缩略图
+      modalImage.src = imageUrl;
+      // 更新高清图 URL（将 width: 200 替换为 width: 1200）
+      const highResUrl = imageUrl.replace(/width=200/g, 'width=1200')
+                                  .replace(/width%3D200/g, 'width%3D1200');
+      modalImage.setAttribute('data-current-high-res', highResUrl);
+    } else {
+      // 使用默认图片
+      modalImage.src = modalImage.getAttribute('data-default-src');
+      modalImage.setAttribute('data-current-high-res', modalImage.getAttribute('data-default-high-res'));
+    }
+  }
+  
+  // 更新價格顯示
+  updatePriceDisplay();
+  
+  // 觸覺反饋
+  if (navigator.vibrate) {
+    navigator.vibrate(30);
+  }
+  updateModalButtonState();
+};
+
+// 放大当前模态框图片
+window.apgoOpenCurrentImageLightbox = function() {
+  const modalImage = document.getElementById('apgoModalImage');
+  if (modalImage) {
+    const highResUrl = modalImage.getAttribute('data-current-high-res');
+    const caption = '{{ product.title | escape }}';
+    apgoOpenImageLightbox(highResUrl, caption);
+  }
+};
+
+// 更新數量
+window.apgoUpdateQuantity = function(change) {
+  const newQuantity = currentQuantity + change;
+  if (newQuantity >= 1 && newQuantity <= 10) {
+    currentQuantity = newQuantity;
+    document.getElementById('apgoQuantityValue').textContent = currentQuantity;
+    updatePriceDisplay();
+    if (navigator.vibrate) {
+      navigator.vibrate(20);
+    }
+  }
+};
+
+// 標籤切換
+window.apgoSwitchTab = function(index) {
+  const headers = document.querySelectorAll('.apgo-tab-header');
+  const panels = document.querySelectorAll('.apgo-tab-panel');
+  headers.forEach((header, i) => {
+    header.classList.toggle('active', i === index);
+  });
+  panels.forEach((panel, i) => {
+    panel.classList.toggle('active', i === index);
+  });
+};
+
+// 開啟圖片燈箱
+window.apgoOpenImageLightbox = function(imageSrc, caption) {
+  const lightbox = document.getElementById('apgoImageLightbox');
+  const lightboxImage = document.getElementById('apgoLightboxImage');
+  lightboxImage.src = imageSrc;
+  lightbox.classList.add('active');
+  document.body.style.overflow = 'hidden';
+  if (navigator.vibrate) {
+    navigator.vibrate(30);
+  }
+};
+
+// 關閉燈箱
+window.apgoCloseLightbox = function() {
+  const lightbox = document.getElementById('apgoImageLightbox');
+  lightbox.classList.remove('active');
+  document.body.style.overflow = '';
+};
+
+// 加入購物車
+window.apgoAddToCart = async function(event) {
+  const button = event ? event.target : document.querySelector('.apgo-modal-btn-secondary');
+  
+  if (!button) {
+    return;
+  }
+  
+  const originalText = button.innerHTML;
+  let productName = '{{ product.title | escape }}';
+  
+  if (button.disabled) {
+    return;
+  }
+  
+  button.innerHTML = '<span class="apgo-loading-spinner"></span> ' + '{{ 'product.adding_to_cart' | t }}';
+  button.disabled = true;
+
+  try {
+    const response = await fetch('/cart/add.js', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        id: currentVariantId,
+        quantity: currentQuantity
+      })
+    });
+
+    const item = await response.json();
+    
+    const cartResponse = await fetch('/cart.js');
+    const cart = await cartResponse.json();
+    
+    updateAllCartCounts(cart.item_count);
+    showSuccessNotification(productName + ' {{ 'product.added_to_cart' | t }}');
+    
+    if (navigator.vibrate) {
+      navigator.vibrate([50, 30, 50]);
+    }
+    
+    setTimeout(() => {
+      button.innerHTML = originalText;
+      button.style.background = '';
+      button.disabled = false;
+      
+      apgoCloseVariantModal();
+      
+      currentQuantity = 1;
+      const quantityElement = document.getElementById('apgoQuantityValue');
+      if (quantityElement) {
+        quantityElement.textContent = '1';
+      }
+    }, 1500);
+    
+  } catch (error) {
+    button.innerHTML = originalText;
+    button.disabled = false;
+    alert('{{ 'products.product.add_to_cart_error' | t }}');
+  }
+};
+
+// 立即購買
+window.apgoBuyNow = async function() {
+  const button = event.target;
+  const originalText = button.innerHTML;
+  button.innerHTML = '<span class="apgo-loading-spinner"></span> ' + '{{ 'product.processing' | t }}';
+  button.disabled = true;
+
+  try {
+    await fetch('/cart/add.js', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        id: currentVariantId,
+        quantity: currentQuantity
+      })
+    });
+    window.location.href = '/cart';
+  } catch (error) {
+    console.error('{{ 'products.product.add_to_cart_error' | t }}:', error);
+    button.innerHTML = originalText;
+    button.disabled = false;
+  }
+};
+
+// === 輔助函數 ===
+
+// 更新模態框按鈕狀態
+function updateModalButtonState() {
+  const selectedVariant = document.querySelector('.apgo-variant-option.selected');
+  const addToCartButton = document.querySelector('.apgo-modal-btn-secondary');
+  const buyNowButton = document.querySelector('.apgo-modal-btn-primary');
+
+  if (!selectedVariant) {
+    addToCartButton.disabled = true;
+    buyNowButton.disabled = true;
+  } else {
+    addToCartButton.disabled = false;
+    buyNowButton.disabled = false;
+  }
+}
+
+// 更新價格顯示
+function updatePriceDisplay() {
+  const subtotal = currentPrice * currentQuantity;
+  const formatter = new Intl.NumberFormat('zh-TW', {
+    style: 'currency',
+    currency: 'TWD',
+    minimumFractionDigits: 0
+  });
+  document.getElementById('apgoSubtotal').textContent = formatter.format(subtotal);
+  document.getElementById('apgoTotalPrice').textContent = formatter.format(subtotal);
+}
+
+// 更新所有購物車數量
+function updateAllCartCounts(count) {
+    
+    // 1. 更新購物車氣泡數字
+    const cartBubbleCount = document.querySelector('.cart-bubble__text-count, [ref="cartBubbleCount"]');
+    if (cartBubbleCount) {
+      cartBubbleCount.textContent = count;
+      console.log('更新購物車氣泡:', count);
+    }
+    
+    // 2. 更新視覺隱藏的文字（無障礙用途）
+    const visuallyHidden = document.querySelector('.cart-bubble__text .visually-hidden');
+    if (visuallyHidden) {
+      visuallyHidden.textContent = `購物車內品項總數: ${count}`;
+    }
+    
+    // 3. 更新 aria-label
+    const cartLink = document.querySelector('.action__cart');
+    if (cartLink) {
+      cartLink.setAttribute('aria-label', `購物車 購物車內品項總數: ${count}`);
+    }
+    
+    // 4. 更新購物車圖標狀態（顯示/隱藏氣泡）
+    const cartIcon = document.querySelector('cart-icon');
+    if (cartIcon) {
+      if (count > 0) {
+        cartIcon.classList.add('header-actions__cart-icon--has-cart');
+        const bubble = cartIcon.querySelector('.cart-bubble');
+        if (bubble) {
+          bubble.style.display = '';
+        }
+      } else {
+        cartIcon.classList.remove('header-actions__cart-icon--has-cart');
+        const bubble = cartIcon.querySelector('.cart-bubble');
+        if (bubble) {
+          bubble.style.display = 'none';
+        }
+      }
+    }
+    
+    // 5. 觸發自定義事件（某些主題可能監聽這個）
+    window.dispatchEvent(new CustomEvent('cart:updated', { 
+      detail: { count: count } 
+    }));
+  }
+
+// 顯示成功通知
+function showSuccessNotification(message) {
+  const existing = document.querySelector('.add-on-notification');
+  if (existing) {
+    existing.remove();
+  }
+
+  const notification = document.createElement('div');
+  notification.className = 'add-on-notification';
+  notification.innerHTML = `
+    <div class="add-on-notification-content">
+      <div class="add-on-notification-message">${message}</div>
+      <a href="/cart" class="add-on-notification-link">{{ 'product.view_cart' | t }}</a>
+    </div>
+    <button class="add-on-notification-close" onclick="this.parentElement.remove()">&times;</button>
+  `;
+
+  document.body.appendChild(notification);
+  
+  setTimeout(() => {
+    notification.classList.add('show');
+  }, 100);
+  
+  setTimeout(() => {
+    if (notification && notification.parentElement) {
+      notification.classList.remove('show');
+      setTimeout(() => {
+        if (notification.parentElement) {
+          notification.remove();
+        }
+      }, 300);
+    }
+  }, 5000);
+}
+
+// 桌機啟用拖拽滑動
+function initThumbDragScroll() {
+  const cont = document.querySelector('.apgo-thumbnails-container');
+  if (!cont) return;
+
+  const isDesktop = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  if (!isDesktop) return;
+
+  let isDown = false, startX = 0, scrollLeft = 0, moved = false;
+
+  cont.addEventListener('mousedown', e => {
+    isDown = true;
+    moved = false;
+    cont.classList.add('dragging');
+    startX = e.pageX;
+    scrollLeft = cont.scrollLeft;
+  });
+
+  window.addEventListener('mousemove', e => {
+    if (!isDown) return;
+    const dx = e.pageX - startX;
+    if (Math.abs(dx) > 3) moved = true;
+    cont.scrollLeft = scrollLeft - dx;
+  });
+
+  window.addEventListener('mouseup', () => {
+    if (!isDown) return;
+    isDown = false;
+    cont.classList.remove('dragging');
+    setTimeout(() => { moved = false; }, 0);
+  });
+
+  cont.addEventListener('click', e => {
+    if (moved) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }, true);
+}
+
+// 視頻播放器類
+class APGOVideoPlayerMO {
+  constructor() {
+    this.modal = document.getElementById('apgoVideoModal');
+    this.player = document.getElementById('apgoVideoPlayer');
+    this.currentVideo = null;
+    this.init();
+  }
+
+  init() {
+    this.bindCards();
+    this.bindClose();
+    this.bindKeyboard();
+  }
+  // 新增方法：提取视频第一帧作为封面
+  async generateThumbnailFromVideo(videoUrl, cardElement) {
+    try {
+      const video = document.createElement('video');
+      video.crossOrigin = 'anonymous';
+      video.muted = true;
+      
+      // 当视频元数据加载完成时
+      video.addEventListener('loadedmetadata', () => {
+        // 设置视频时间为第一帧
+        video.currentTime = 0.1; // 通常0.1秒处的画面更稳定
+      });
+      
+      // 当视频时间更新时
+      video.addEventListener('timeupdate', () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 设置canvas尺寸与视频一致
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        
+        // 绘制当前视频帧到canvas
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        // 将canvas转换为图片URL
+        const thumbnailUrl = canvas.toDataURL('image/jpeg', 0.8);
+        
+        // 更新卡片封面
+        const thumbnailElement = cardElement.querySelector('.apgo-video-thumbnail');
+        if (thumbnailElement) {
+          if (thumbnailElement.tagName === 'IMG') {
+            thumbnailElement.src = thumbnailUrl;
+          } else {
+            // 如果是占位符div，则替换为img元素
+            const img = document.createElement('img');
+            img.className = 'apgo-video-thumbnail';
+            img.src = thumbnailUrl;
+            img.alt = cardElement.querySelector('.apgo-video-subtitle').textContent;
+            img.loading = 'lazy';
+            thumbnailElement.parentNode.replaceChild(img, thumbnailElement);
+          }
+        }
+        
+        // 清理资源
+        video.remove();
+        canvas.remove();
+      });
+      
+      video.src = videoUrl;
+    } catch (error) {
+      console.error('生成视频封面失败:', error);
+    }
+  }
+  bindCards() {
+    const cards = document.querySelectorAll('.apgo-video-card[data-source="metaobject"]');
+    cards.forEach(card => {
+      const videoUrl = card.getAttribute('data-video-url');
+      
+      // 如果没有设置封面图，则尝试自动生成
+      const thumbnailElement = card.querySelector('.apgo-video-thumbnail');
+      if (thumbnailElement && 
+          (thumbnailElement.classList.contains('apgo-video-placeholder') || 
+           !thumbnailElement.src || 
+           thumbnailElement.src.includes('data:image'))) {
+        
+        if (videoUrl && videoUrl !== '' && videoUrl !== 'VideoDrop') {
+          // 延迟执行以避免阻塞
+          setTimeout(() => {
+            this.generateThumbnailFromVideo(videoUrl, card);
+          }, 100);
+        }
+      }
+      
+      card.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.openFromCard(card);
+      });
+    });
+  }
+
+  openFromCard(card) {
+    card.classList.add('loading');
+    const videoUrl = card.getAttribute('data-video-url');
+
+    if (videoUrl && videoUrl !== '' && videoUrl !== 'VideoDrop') {
+      const v = document.createElement('video');
+      v.src = videoUrl;
+      v.controls = true;
+      v.autoplay = true;
+      v.muted = true;
+      v.playsinline = true;
+      v.style.width = '100%';
+      v.style.height = 'auto';
+
+      v.addEventListener('error', (e) => {
+        this.showError('視頻載入失敗');
+      });
+
+      this.showModal(v);
+    } else {
+      this.showError('找不到視頻資源');
+    }
+
+    setTimeout(() => card.classList.remove('loading'), 400);
+  }
+
+  showModal(media) {
+    this.player.innerHTML = '';
+    this.player.appendChild(media);
+    this.currentVideo = media;
+
+    this.modal.classList.add('active');
+    this.modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+
+    if (media.tagName === 'VIDEO') {
+      media.muted = true;
+      media.play().catch(() => {
+        media.muted = true;
+        media.play();
+      });
+    }
+  }
+
+  closeModal() {
+    if (this.currentVideo && this.currentVideo.tagName === 'VIDEO') {
+      this.currentVideo.pause();
+      this.currentVideo.currentTime = 0;
+    }
+    this.currentVideo = null;
+    this.player.innerHTML = '';
+    this.modal.classList.remove('active');
+    this.modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  bindClose() {
+    const closeBtn = this.modal.querySelector('.apgo-video-modal-close');
+    const overlay = this.modal.querySelector('.apgo-video-modal-overlay');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => this.closeModal());
+    }
+    if (overlay) {
+      overlay.addEventListener('click', () => this.closeModal());
+    }
+  }
+
+  bindKeyboard() {
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && this.modal.classList.contains('active')) {
+        this.closeModal();
+      }
+    });
+  }
+
+  showError(msg) {
+    const div = document.createElement('div');
+    div.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(255,0,0,.1);color:#ff6666;padding:20px 30px;border-radius:8px;border:1px solid rgba(255,0,0,.3);';
+    div.textContent = msg;
+    this.player.innerHTML = '';
+    this.player.appendChild(div);
+    setTimeout(() => this.closeModal(), 2500);
+  }
+}
+
+// === DOM 載入完成後初始化 ===
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('DOM 載入完成，開始初始化');
+  
+  // 初始化輪播
+  window.apgoCarousel = new APGOCarousel();
+  console.log('輪播初始化完成');
+  
+  // 初始化視頻播放器
+  if (document.getElementById('apgoVideoModal')) {
+    window.apgoVideoPlayerMO = new APGOVideoPlayerMO();
+    console.log('視頻播放器初始化完成');
+  }
+  
+  // 啟用桌機拖拽滑動
+  initThumbDragScroll();
+  console.log('縮略圖拖拽初始化完成');
+  
+  // 點擊燈箱背景關閉
+  const lightbox = document.getElementById('apgoImageLightbox');
+  if (lightbox) {
+    lightbox.addEventListener('click', function(e) {
+      if (e.target === this) {
+        apgoCloseLightbox();
+      }
+    });
+  }
+});
+
+(function () {
+  const bar = document.querySelector('.apgo-bottom-bar');
+  if (!bar || !window.visualViewport) return;
+
+  const update = () => {
+    const vv = window.visualViewport;
+    // 计算可视视口底部相对 layout viewport 的偏移
+    const bottomOffset = Math.max(0, window.innerHeight - (vv.height + vv.offsetTop));
+    bar.style.setProperty('--vvb', bottomOffset + 'px');
+  };
+
+  update();
+  visualViewport.addEventListener('resize', update);
+  visualViewport.addEventListener('scroll', update);
+  window.addEventListener('orientationchange', () => setTimeout(update, 250));
+})();
+</script>
+{% schema %}
+{
+  "name": "APGO 商品頁",
+  "tag": "section",
+  "class": "apgo-product",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_particles",
+      "label": "啟用粒子動效",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "導航列 Logo"
+    },
+    {
+      "type": "text",
+      "id": "subtitle_fallback",
+      "label": "產品副標（預設）",
+      "default": "釉面質感，提升表面滑順與抗污能力"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_bottom_bar",
+      "label": "显示底部购买栏",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "badge",
+      "name": "產品徽章",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "徽章文字",
+          "default": "暢銷冠軍"
+        }
+      ]
+    },
+    {
+      "type": "metric",
+      "name": "性能指標",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "指標名稱",
+          "default": "持久度"
+        },
+        {
+          "type": "text",
+          "id": "value",
+          "label": "指標數值",
+          "default": "120天"
+        },
+        {
+          "type": "range",
+          "id": "percent",
+          "label": "百分比",
+          "min": 0,
+          "max": 100,
+          "step": 5,
+          "default": 65
+        }
+      ]
+    },
+    {
+      "type": "video",
+      "name": "短影音",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "影片標題",
+          "default": "專業施工流程"
+        },
+        {
+          "type": "image_picker",
+          "id": "poster",
+          "label": "影片封面"
+        },
+        {
+          "type": "url",
+          "id": "mp4_url",
+          "label": "影片連結"
+        },
+        {
+          "type": "text",
+          "id": "views",
+          "label": "觀看次數",
+          "default": "1.2萬"
+        },
+        {
+          "type": "text",
+          "id": "duration",
+          "label": "影片長度",
+          "default": "0:45"
+        }
+      ]
+    },
+    {
+      "type": "step",
+      "name": "施工步驟",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "步驟標題",
+          "default": "步驟一：清潔"
+        },
+        {
+          "type": "textarea",
+          "id": "desc",
+          "label": "步驟說明",
+          "default": "徹底清潔車身，去除灰塵髒污"
+        }
+      ]
+    },
+    {
+      "type": "tab",
+      "name": "詳情標籤",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "標籤標題",
+          "default": "產品描述"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "標籤內容",
+          "default": "<p>產品詳細說明內容</p>"
+        }
+      ]
+    },
+    {
+      "type": "related",
+      "name": "推薦商品",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product_ref",
+          "label": "選擇產品"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "APGO 商品頁",
+      "category": "商品",
+      "blocks": [
+        {
+          "type": "badge",
+          "settings": {
+            "text": "暢銷冠軍"
+          }
+        },
+        {
+          "type": "badge",
+          "settings": {
+            "text": "釉面質感"
+          }
+        },
+        {
+          "type": "metric",
+          "settings": {
+            "label": "持久度",
+            "value": "120天",
+            "percent": 65
+          }
+        },
+        {
+          "type": "metric",
+          "settings": {
+            "label": "疏水度",
+            "value": "80%",
+            "percent": 80
+          }
+        },
+        {
+          "type": "metric",
+          "settings": {
+            "label": "耐洗次數",
+            "value": "20+次",
+            "percent": 65
+          }
+        },
+        {
+          "type": "metric",
+          "settings": {
+            "label": "光澤度",
+            "value": "80分",
+            "percent": 80
+          }
+        },
+        {
+          "type": "video",
+          "settings": {
+            "title": "專業施工流程",
+            "views": "1.2萬",
+            "duration": "0:45"
+          }
+        },
+        {
+          "type": "video",
+          "settings": {
+            "title": "95%疏水實測",
+            "views": "8.5K",
+            "duration": "0:30"
+          }
+        },
+        {
+          "type": "video",
+          "settings": {
+            "title": "極光鏡面效果",
+            "views": "6.3K",
+            "duration": "0:25"
+          }
+        },
+        {
+          "type": "video",
+          "settings": {
+            "title": "180天持久測試",
+            "views": "5.1K",
+            "duration": "1:20"
+          }
+        },
+        {
+          "type": "video",
+          "settings": {
+            "title": "車主真實分享",
+            "views": "4.2K",
+            "duration": "2:15"
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "title": "步驟一：清潔",
+            "desc": "徹底清潔車身，去除灰塵髒污"
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "title": "步驟二：塗抹",
+            "desc": "均勻塗抹鍍膜劑於海綿"
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "title": "步驟三：施工",
+            "desc": "劃圓方式塗抹全車"
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "title": "步驟四：擦拭",
+            "desc": "靜置3-5分鐘後擦拭"
+          }
+        },
+        {
+          "type": "tab",
+          "settings": {
+            "title": "產品描述",
+            "content": "<p><strong>原子釉鍍膜</strong>採用先進的釉面科技，為您的愛車提供卓越的保護。</p><p>獨特的釉面配方能在車漆表面形成一層透明保護膜，不僅提升表面的滑順度，更能有效抵抗環境污染物的侵害。</p><p><strong>產品特色：</strong><br>• 釉面質感，觸感滑順<br>• 提升80%疏水性能<br>• 持久度達120天<br>• 耐洗20次以上<br>• 增強車漆光澤度</p>"
+          }
+        },
+        {
+          "type": "tab",
+          "settings": {
+            "title": "產品規格",
+            "content": "<p><strong>產品容量：</strong>50ml / 100ml</p><p><strong>適用範圍：</strong>全車系適用</p><p><strong>施工時間：</strong>30-45分鐘</p><p><strong>硬度等級：</strong>7H</p><p><strong>保固期限：</strong>4個月</p><p><strong>產地：</strong>台灣製造</p><p><strong>主要成分：</strong>奈米釉面聚合物</p><p><strong>保存期限：</strong>未開封3年</p>"
+          }
+        },
+        {
+          "type": "tab",
+          "settings": {
+            "title": "注意事項",
+            "content": "<p>• 避免在高溫或陽光直射下施工</p><p>• 施工後24小時內避免洗車</p><p>• 請放置於兒童無法觸及處</p><p>• 避免接觸眼睛和皮膚</p><p>• 保存於陰涼乾燥處</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

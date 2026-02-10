@@ -1,0 +1,1164 @@
+{% comment %}
+Section: checkout-prefill-apgo.liquid
+Purpose: APGO 風格的購物車頁面「宅配／超商」運送方式地址收集 UI
+Style: 黑橘主題，手機優先設計
+Version: 1.0.0
+{% endcomment %}
+
+<section id="checkout-prefill" class="apgo-checkout-section">
+  <div class="apgo-checkout-container">
+    <!-- 頂部橘色強調線 -->
+    <div class="apgo-top-accent"></div>
+    
+    <div class="apgo-checkout-card">
+      <div class="apgo-checkout-header">
+        <h3 class="apgo-checkout-title">{{ section.settings.title }}</h3>
+        <p class="apgo-checkout-subtitle">{{ section.settings.subtitle }}</p>
+      </div>
+
+      <!-- 運送方式切換 -->
+      <div class="apgo-shipping-toggle">
+        {% if section.settings.enable_home and section.settings.enable_cvs %}
+        <label class="apgo-radio-option" data-method="home">
+          <input type="radio" name="cp-method" value="home" checked>
+          <span class="apgo-radio-button">
+            <svg class="apgo-radio-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+            <span class="apgo-radio-label">宅配到府</span>
+          </span>
+        </label>
+        <label class="apgo-radio-option" data-method="cvs">
+          <input type="radio" name="cp-method" value="cvs">
+          <span class="apgo-radio-button">
+            <svg class="apgo-radio-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/>
+              <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>
+            </svg>
+            <span class="apgo-radio-label">超商取貨</span>
+          </span>
+        </label>
+        {% elsif section.settings.enable_home %}
+          <input type="hidden" name="cp-method" value="home">
+        {% elsif section.settings.enable_cvs %}
+          <input type="hidden" name="cp-method" value="cvs">
+        {% endif %}
+      </div>
+
+      <!-- 表單區域 -->
+      <div class="apgo-form-container">
+        <!-- 共用欄位：姓名、電話 -->
+        <div class="apgo-form-group">
+          <label class="apgo-label">
+            收件人姓名 <span class="apgo-required">*</span>
+          </label>
+          <input id="cp-name" type="text" class="apgo-input" placeholder="例：王小明" maxlength="30">
+        </div>
+        
+        <div class="apgo-form-group">
+          <label class="apgo-label">
+            聯絡電話 <span class="apgo-required">*</span>
+          </label>
+          <input id="cp-phone" type="tel" class="apgo-input" inputmode="tel" placeholder="例：0912345678">
+        </div>
+
+        <!-- 宅配表單 -->
+        {% if section.settings.enable_home %}
+        <div id="cp-home" class="apgo-shipping-pane">
+          <div class="apgo-notice">
+            <svg class="apgo-notice-icon" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"/>
+            </svg>
+            <span>請填寫完整地址以便寄送</span>
+          </div>
+          
+          <div class="apgo-form-row">
+            <div class="apgo-form-group">
+              <label class="apgo-label">
+                縣市 <span class="apgo-required">*</span>
+              </label>
+              <select id="cp-home-county" class="apgo-select">
+                <option value="">請選擇</option>
+                <option>臺北市</option><option>新北市</option><option>基隆市</option><option>桃園市</option>
+                <option>新竹市</option><option>新竹縣</option><option>苗栗縣</option><option>臺中市</option>
+                <option>彰化縣</option><option>南投縣</option><option>雲林縣</option><option>嘉義市</option>
+                <option>嘉義縣</option><option>臺南市</option><option>高雄市</option><option>屏東縣</option>
+                <option>宜蘭縣</option><option>花蓮縣</option><option>臺東縣</option><option>澎湖縣</option>
+                <option>金門縣</option><option>連江縣</option>
+              </select>
+            </div>
+            
+                         <div class="apgo-form-group">
+               <label class="apgo-label">
+                 鄉鎮市區 <span class="apgo-required">*</span>
+               </label>
+               <select id="cp-home-district" class="apgo-select" disabled>
+                 <option value="">請先選縣市</option>
+               </select>
+               <!-- ★ 郵遞區號提示（宅配） -->
+               <div id="cp-home-zip-hint" class="apgo-zip-hint" data-empty="true">
+                 郵遞區號：<span id="cp-home-zip-text">—</span>
+               </div>
+             </div>
+          </div>
+          
+          
+          
+          <div class="apgo-form-group">
+            <label class="apgo-label">
+              詳細地址 <span class="apgo-required">*</span>
+            </label>
+            <input id="cp-home-address1" type="text" class="apgo-input" placeholder="例：忠孝東路四段 100 號 5 樓">
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- 超商表單 -->
+        {% if section.settings.enable_cvs %}
+        <div id="cp-cvs" class="apgo-shipping-pane" {% if section.settings.enable_home %}style="display:none"{% endif %}>
+          <div class="apgo-notice">
+            <svg class="apgo-notice-icon" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"/>
+            </svg>
+            <span>選擇區域後將在結帳頁面顯示附近超商</span>
+          </div>
+          
+          <div class="apgo-form-row">
+            <div class="apgo-form-group">
+              <label class="apgo-label">
+                縣市 <span class="apgo-required">*</span>
+              </label>
+              <select id="cp-cvs-county" class="apgo-select">
+                <option value="">請選擇</option>
+                <option>臺北市</option><option>新北市</option><option>基隆市</option><option>桃園市</option>
+                <option>新竹市</option><option>新竹縣</option><option>苗栗縣</option><option>臺中市</option>
+                <option>彰化縣</option><option>南投縣</option><option>雲林縣</option><option>嘉義市</option>
+                <option>嘉義縣</option><option>臺南市</option><option>高雄市</option><option>屏東縣</option>
+                <option>宜蘭縣</option><option>花蓮縣</option><option>臺東縣</option><option>澎湖縣</option>
+                <option>金門縣</option><option>連江縣</option>
+              </select>
+            </div>
+            
+                         <div class="apgo-form-group">
+               <label class="apgo-label">
+                 鄉鎮市區 <span class="apgo-required">*</span>
+               </label>
+               <select id="cp-cvs-district" class="apgo-select" disabled>
+                 <option value="">請先選縣市</option>
+               </select>
+               <!-- ★ 郵遞區號提示（超商） -->
+               <div id="cp-cvs-zip-hint" class="apgo-zip-hint" data-empty="true">
+                 郵遞區號：<span id="cp-cvs-zip-text">—</span>
+               </div>
+             </div>
+          </div>
+          
+          {% if section.settings.enable_road_dropdown %}
+          <div class="apgo-form-group">
+            <label class="apgo-label">
+              路名 <span class="apgo-required">*</span>
+            </label>
+            <select id="cp-cvs-road" class="apgo-select" disabled>
+              <option value="">請先選區</option>
+            </select>
+          </div>
+          {% else %}
+          <div class="apgo-form-group">
+            <label class="apgo-label">
+              路名（可含段） <span class="apgo-required">*</span>
+            </label>
+            <input id="cp-cvs-road-input" type="text" class="apgo-input" placeholder="例：忠孝東路四段">
+          </div>
+          {% endif %}
+          
+          {% if section.settings.enable_detail_address %}
+          <div class="apgo-form-group">
+            <label class="apgo-label">詳細地址 <span class="apgo-optional">選填</span></label>
+            <input id="cp-cvs-address1-extra" type="text" class="apgo-input" placeholder="例：100 號">
+          </div>
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- 訊息顯示區 -->
+      <div class="apgo-actions">
+        <div id="cp-msg" class="apgo-message" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+/* APGO 主題變數 */
+:root {
+  --apgo-primary: #f08418;
+  --apgo-primary-hover: #ff9a3c;
+  --apgo-dark-bg: #000000;
+  --apgo-card-bg: #1a1a1a;
+  --apgo-card-hover: #2d2d2d;
+  --apgo-border: #333333;
+  --apgo-text-white: #ffffff;
+  --apgo-text-gray: #cccccc;
+  --apgo-text-light: #b0b0b0;
+  --apgo-success: #4caf50;
+  --apgo-error: #ef4444;
+  --apgo-radius: 16px;
+  --apgo-radius-sm: 12px;
+}
+
+/* 主容器 - 手機優先 */
+.apgo-checkout-section {
+  width: 100%;
+  padding: 20px 16px;
+  background: var(--apgo-dark-bg);
+}
+
+.apgo-checkout-container {
+  max-width: 600px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* 頂部橘色強調線 */
+.apgo-top-accent {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 85%;
+  height: 4px;
+  background: linear-gradient(90deg, var(--apgo-primary), var(--apgo-primary-hover));
+  border-radius: var(--apgo-radius);
+  z-index: 2;
+}
+
+/* 卡片容器 */
+.apgo-checkout-card {
+  background: linear-gradient(145deg, var(--apgo-card-bg), var(--apgo-card-hover));
+  border-radius: var(--apgo-radius);
+  border: 1px solid var(--apgo-border);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5),
+              inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  padding: 24px 20px;
+  margin-top: 8px;
+}
+
+/* 標題區 */
+.apgo-checkout-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.apgo-checkout-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--apgo-primary);
+  margin: 0 0 8px 0;
+  background: linear-gradient(45deg, var(--apgo-primary), var(--apgo-primary-hover));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.apgo-checkout-subtitle {
+  font-size: 0.9rem;
+  color: var(--apgo-text-gray);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* 運送方式切換按鈕 */
+.apgo-shipping-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.apgo-radio-option {
+  position: relative;
+  cursor: pointer;
+}
+
+.apgo-radio-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.apgo-radio-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px solid var(--apgo-border);
+  border-radius: var(--apgo-radius-sm);
+  transition: all 0.3s ease;
+}
+
+.apgo-radio-icon {
+  width: 24px;
+  height: 24px;
+  color: var(--apgo-text-gray);
+  transition: all 0.3s ease;
+}
+
+.apgo-radio-label {
+  font-size: 0.9rem;
+  color: var(--apgo-text-gray);
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.apgo-radio-option input:checked ~ .apgo-radio-button {
+  background: rgba(240, 132, 24, 0.1);
+  border-color: var(--apgo-primary);
+  box-shadow: 0 4px 12px rgba(240, 132, 24, 0.2);
+}
+
+.apgo-radio-option input:checked ~ .apgo-radio-button .apgo-radio-icon {
+  color: var(--apgo-primary);
+}
+
+.apgo-radio-option input:checked ~ .apgo-radio-button .apgo-radio-label {
+  color: var(--apgo-primary);
+}
+
+/* 表單樣式 */
+.apgo-form-container {
+  margin-bottom: 24px;
+}
+
+.apgo-form-group {
+  margin-bottom: 16px;
+}
+
+.apgo-form-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.apgo-label {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--apgo-text-white);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.apgo-required {
+  color: var(--apgo-primary);
+  font-weight: bold;
+}
+
+.apgo-optional {
+  color: var(--apgo-text-light);
+  font-size: 0.8rem;
+}
+
+/* 輸入框樣式 */
+.apgo-input,
+.apgo-select {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--apgo-border);
+  border-radius: var(--apgo-radius-sm);
+  color: var(--apgo-text-white);
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.apgo-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23cccccc' d='M10.293 3.293L6 7.586 1.707 3.293A1 1 0 00.293 4.707l5 5a1 1 0 001.414 0l5-5a1 1 0 10-1.414-1.414z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  padding-right: 40px;
+}
+
+.apgo-input:hover,
+.apgo-select:hover {
+  border-color: var(--apgo-primary);
+  background: rgba(240, 132, 24, 0.03);
+}
+
+.apgo-input:focus,
+.apgo-select:focus {
+  outline: none;
+  border-color: var(--apgo-primary);
+  background: rgba(240, 132, 24, 0.05);
+  box-shadow: 0 0 0 3px rgba(240, 132, 24, 0.1);
+}
+
+.apgo-input::placeholder {
+  color: var(--apgo-text-light);
+  opacity: 0.7;
+}
+
+.apgo-select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.02);
+  border-color: var(--apgo-border);
+}
+
+/* 提示訊息 */
+.apgo-notice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: rgba(240, 132, 24, 0.1);
+  border: 1px solid rgba(240, 132, 24, 0.3);
+  border-radius: var(--apgo-radius-sm);
+  margin-bottom: 20px;
+  font-size: 0.85rem;
+  color: var(--apgo-text-gray);
+}
+
+.apgo-notice-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--apgo-primary);
+  flex-shrink: 0;
+}
+
+/* 訊息顯示區 */
+.apgo-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* 訊息顯示 */
+.apgo-message {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--apgo-text-gray);
+  min-height: 20px;
+}
+
+.apgo-message.error {
+  color: var(--apgo-error);
+  font-weight: 500;
+}
+
+.apgo-message.success {
+  color: var(--apgo-success);
+  font-weight: 500;
+}
+
+/* 載入動畫 */
+@keyframes apgo-spin {
+  to { transform: rotate(360deg); }
+}
+
+.apgo-loading {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--apgo-border);
+  border-top-color: var(--apgo-primary);
+  border-radius: 50%;
+  animation: apgo-spin 0.8s linear infinite;
+}
+
+/* 平板響應式 */
+@media (min-width: 768px) {
+  .apgo-checkout-section {
+    padding: 40px 20px;
+  }
+  
+  .apgo-checkout-container {
+    max-width: 700px;
+  }
+  
+  .apgo-checkout-card {
+    padding: 32px 28px;
+  }
+  
+  .apgo-checkout-title {
+    font-size: 1.8rem;
+  }
+  
+  .apgo-checkout-subtitle {
+    font-size: 1rem;
+  }
+  
+  .apgo-form-row {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .apgo-shipping-toggle {
+    max-width: 400px;
+    margin: 0 auto 28px;
+  }
+}
+
+/* 桌面響應式 */
+@media (min-width: 1024px) {
+  .apgo-checkout-section {
+    padding: 60px 20px;
+  }
+  
+  .apgo-checkout-container {
+    max-width: 800px;
+  }
+  
+  .apgo-checkout-card {
+    padding: 40px 36px;
+  }
+  
+  .apgo-checkout-title {
+    font-size: 2rem;
+  }
+  
+  .apgo-input,
+  .apgo-select {
+    padding: 14px 18px;
+  }
+  
+  .apgo-actions {
+    align-items: center;
+  }
+}
+
+/* 動畫效果 */
+@keyframes apgo-fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.apgo-checkout-card {
+  animation: apgo-fadeInUp 0.6s ease-out;
+}
+
+.apgo-shipping-pane {
+  animation: apgo-fadeInUp 0.4s ease-out;
+}
+
+  /* ★ 郵遞區號小提示（貼在下拉下方） */
+  .apgo-zip-hint{
+    margin-top: 6px;
+    font-size: 0.8rem;
+    line-height: 1.2;
+    color: var(--apgo-text-light);
+  }
+  .apgo-zip-hint span{ font-weight: 700; color: var(--apgo-text-white); }
+  .apgo-zip-hint[data-empty="true"] span{ opacity:.6; }
+</style>
+
+  <script>
+(function(){
+  const s = {{ section.settings | json }};
+  const el = (id) => document.getElementById(id);
+  const q = (sel, root) => (root || document).querySelector(sel);
+  const msg = el('cp-msg');
+
+  // 元素引用
+  const nameEl = el('cp-name');
+  const phoneEl = el('cp-phone');
+
+  // === 即時同步到網址 query：checkout 預填 & attributes ===
+  const qp = new URLSearchParams(location.search);
+
+  // 將目前欄位值 → 轉成 Shopify checkout 預填參數 + attributes
+  function buildCheckoutParams({previewOnly=false} = {}) {
+    const method = document.querySelector('input[name="cp-method"]:checked')?.value || (s.enable_home ? 'home' : 'cvs');
+    const fullName = (nameEl?.value || '').trim();
+    const phone = normPhone(phoneEl?.value || '');
+    const { first: first_name, last: last_name } = splitName(fullName);
+
+    // 共用：姓名、電話
+    setQP(`checkout[shipping_address][first_name]`, first_name);
+    setQP(`checkout[shipping_address][last_name]`,  last_name);
+    setQP(`checkout[shipping_address][phone]`,      phone);
+    setQP(`checkout[shipping_address][country]`,    s.country || 'Taiwan');
+
+    // 依運送方式組地址
+    if (method === 'home') {
+      const c = homeCounty?.value || '';      // 縣市（例：臺北市）
+      const d = homeDistrict?.value || '';    // 區（例：大安區）
+      const a1 = el('cp-home-address1')?.value?.trim() || '';
+      // ★ 取自動偵測 zip（若偵測不到就不帶）
+      const zFinal = detectedZipHome || '';
+
+      // ✅ city 只放縣市；address1 前面加上區
+      const cityOnly = c;
+      const address1 = (d ? (d + ' ') : '') + a1;
+
+      setQP(`checkout[shipping_address][city]`,      cityOnly);
+      setQP(`checkout[shipping_address][province]`,  cityOnly); // 兼容性加強（可保留）
+      setQP(`checkout[shipping_address][address1]`,  address1);
+      if (zFinal) setQP(`checkout[shipping_address][zip]`, zFinal);
+      else delQP(`checkout[shipping_address][zip]`);
+
+      if (s.enable_attr) {
+        setQP(`attributes[運送方式]`, '宅配');
+        setQP(`attributes[縣市]`, c);
+        setQP(`attributes[鄉鎮市區]`, d);
+        setQP(`attributes[地址_address1]`, a1);
+        setQP(`attributes[姓名]`, fullName);
+        setQP(`attributes[電話]`, phone);
+        if (zFinal) setQP(`attributes[地址_zip]`, zFinal); else delQP(`attributes[地址_zip]`);
+        // 移除舊的合併欄位（若曾存在）
+        delQP(`attributes[地址_city]`);
+      }
+    } else {
+      const c = cvsCounty?.value || '';
+      const d = cvsDistrict?.value || '';
+      const road = (el('cp-cvs-road') ? (el('cp-cvs-road').value || '') : (el('cp-cvs-road-input')?.value?.trim() || ''));
+      const extra = el('cp-cvs-address1-extra')?.value?.trim() || '';
+
+      // ✅ city=縣市；address1=「區 + 路名 +（門牌）」；不帶 zip
+      const cityOnly = c;
+      const address1 = (d ? (d + ' ') : '') + (road ? road : '') + (extra ? (' ' + extra) : '');
+
+              setQP(`checkout[shipping_address][city]`,      cityOnly);
+        setQP(`checkout[shipping_address][province]`,  cityOnly); // 兼容性加強（可保留）
+        setQP(`checkout[shipping_address][address1]`,  address1);
+        
+        // ★ 超商也帶入郵遞區號（Shopify 規定）
+        const cvsZip = getZipByCityDistrict(addressData || [], c, d);
+        if (cvsZip) setQP(`checkout[shipping_address][zip]`, cvsZip);
+        else delQP(`checkout[shipping_address][zip]`);
+
+        if (s.enable_attr) {
+          setQP(`attributes[運送方式]`, '超商');
+          setQP(`attributes[縣市]`, c);
+          setQP(`attributes[鄉鎮市區]`, d);
+          setQP(`attributes[地址_路名]`, road);
+          setQP(`attributes[地址_address1]`, (road + (extra ? (' ' + extra) : '')));
+          setQP(`attributes[姓名]`, fullName);
+          setQP(`attributes[電話]`, phone);
+          if (cvsZip) setQP(`attributes[地址_zip]`, cvsZip); else delQP(`attributes[地址_zip]`);
+          delQP(`attributes[地址_city]`);
+        }
+    }
+
+    // 沒值的 key 就從網址剔除（避免髒參數）
+    cleanEmptyParams();
+
+    // 預覽模式僅回傳，不寫網址
+    if (previewOnly) return new URLSearchParams(qp);
+
+    // 寫回當前網址（不重整）
+    history.replaceState(null, '', `${location.pathname}?${qp.toString()}`);
+  }
+
+  // 工具：設/刪 query 參數（支援陣列風格 key）
+  function setQP(key, val) {
+    if (val == null) return;
+    const v = String(val).trim();
+    if (v) { qp.set(key, v); }
+    else { qp.delete(key); }
+  }
+  function delQP(key) { qp.delete(key); }
+
+  function cleanEmptyParams() {
+    // 移除空值、undefined、null
+    [...qp.keys()].forEach(k => {
+      const v = qp.get(k);
+      if (v == null || v === 'null' || v === 'undefined' || v.trim() === '') qp.delete(k);
+    });
+  }
+
+  // 將每個欄位變更 → 立即同步到網址
+  function wireLiveSync() {
+    const ids = [
+      'cp-name','cp-phone','cp-home-address1',
+      'cp-home-county','cp-home-district',
+      'cp-cvs-county','cp-cvs-district','cp-cvs-road','cp-cvs-road-input','cp-cvs-address1-extra'
+    ];
+          ids.forEach(id => {
+        const e = el(id);
+        if (!e) return;
+        const evt = (e.tagName === 'INPUT') ? 'input' : 'change';
+        e.addEventListener(evt, () => {
+          buildCheckoutParams();
+          // ★ 宅配欄位變更時順便偵測 zip
+          if (id === 'cp-home-county' || id === 'cp-home-district' || id === 'cp-home-address1') {
+            updateZipHomeDisplay();
+          }
+          // 超商欄位變更時更新 zip 提示
+          if (id === 'cp-cvs-county' || id === 'cp-cvs-district') {
+            updateZipCvsDisplay();
+          }
+        });
+      });
+
+    // 運送方式切換也即時同步
+    document.querySelectorAll('input[name="cp-method"]').forEach(r => {
+      r.addEventListener('change', () => {
+        buildCheckoutParams();
+        const v = document.querySelector('input[name="cp-method"]:checked')?.value;
+        if (v === 'home') updateZipHomeDisplay();
+      });
+    });
+  }
+
+  // 面板切換（宅配/超商）
+  document.querySelectorAll('input[name="cp-method"]').forEach(r => {
+    r.addEventListener('change', () => {
+      const v = document.querySelector('input[name="cp-method"]:checked')?.value;
+      togglePane(v);
+    });
+  });
+
+  function togglePane(v) {
+    const home = el('cp-home');
+    const cvs = el('cp-cvs');
+    if (home) home.style.display = (v === 'home') ? '' : 'none';
+    if (cvs) cvs.style.display = (v === 'cvs') ? '' : 'none';
+  }
+
+  // 初始化預設值
+  (function() {
+    const checked = document.querySelector('input[name="cp-method"]:checked');
+    if (checked) togglePane(checked.value);
+  })();
+
+  // OpenSheet API
+  const OPENSHEET_URL = 'https://opensheet.elk.sh/1S81a-nrJR1yzmEnWVjuGJuiiW1S2UWP2VpGaxmBuoJ4/taiwan_road';
+  let addressData = null; // 快取資料
+  let detectedZipHome = ''; // ★ 新增：偵測到的宅配郵遞區號
+  
+  // 載入完整地址資料（只載入一次）
+  async function loadAddressData() {
+    if (addressData) {
+      console.log('使用快取資料');
+      return addressData;
+    }
+    
+    try {
+      console.log('開始載入 OpenSheet 資料...');
+      showLoading('載入地址資料中...');
+      
+      const response = await fetch(OPENSHEET_URL);
+      console.log('API 回應狀態:', response.status);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log('成功載入資料，共', data.length, '筆');
+      
+      // 檢查資料結構
+      if (data.length > 0) {
+        console.log('資料欄位:', Object.keys(data[0]));
+        console.log('第一筆資料範例:', data[0]);
+      }
+      
+      addressData = data;
+      hideMessage();
+      return data;
+    } catch (error) {
+      console.error('載入地址資料失敗:', error);
+      showError('地址資料載入失敗，請重新整理頁面');
+      return [];
+    }
+  }
+  
+  // 取得不重複的縣市列表
+  function getUniqueCounties(data) {
+    const counties = [...new Set(data.map(item => item['city']))];
+    return counties.filter(c => c).sort();
+  }
+  
+  // 取得指定縣市的區域列表
+  function getDistricts(data, county) {
+    const c = canonicalCounty(county);
+    const filtered = data.filter(item => canonicalCounty(item['city']) === c);
+    const districts = [...new Set(filtered.map(item => canonicalDistrict(item['district'])))];
+    return districts.filter(Boolean).sort();
+  }
+  
+  // 取得指定縣市+區域的路名列表
+  function getRoads(data, county, district) {
+    const c = canonicalCounty(county);
+    const d = canonicalDistrict(district);
+    const filtered = data.filter(item =>
+      canonicalCounty(item['city']) === c && canonicalDistrict(item['district']) === d
+    );
+    const roads = [...new Set(filtered.map(item => item['road']))];
+    return roads.filter(Boolean).sort();
+  }
+  
+  function fillSelect(select, list, placeholder) {
+    select.innerHTML = '';
+    const ph = document.createElement('option');
+    ph.value = '';
+    ph.textContent = placeholder || '請選擇';
+    select.appendChild(ph);
+    list.forEach(v => {
+      const o = document.createElement('option');
+      o.value = v;
+      o.textContent = v;
+      select.appendChild(o);
+    });
+    select.disabled = list.length === 0;
+  }
+
+  // ★ 新增：從 taiwan_road 直接推算 zip（以「縣市+行政區」為主，若每列皆有同一 zip，取其一）
+  function getZipByCityDistrict(data, county, district) {
+    if (!data || !data.length) return '';
+    const c = canonicalCounty(county);
+    const d = canonicalDistrict(district);
+    // 篩出該縣市+區的所有列
+    const rows = data.filter(item =>
+      canonicalCounty(item['city']) === c && canonicalDistrict(item['district']) === d
+    );
+    if (!rows.length) return '';
+    // 優先取該集合中唯一的 zip；如果有多個不同 zip，就先取第一個（多半台灣同區同一 zip）
+    const zset = [...new Set(rows.map(r => (r.zip || r.ZIP || r['郵遞區號'] || '').toString().trim()).filter(Boolean))];
+    return zset[0] || '';
+  }
+
+  // 更新 UI 與內部狀態
+  async function updateZipHomeDisplay() {
+    const city = el('cp-home-county')?.value || '';
+    const dist = el('cp-home-district')?.value || '';
+    if (!city || !dist) {
+      detectedZipHome = '';
+      setZipHint('cp-home-zip-hint','cp-home-zip-text','');
+      buildCheckoutParams(); // 清除 zip
+      return;
+    }
+    const data = await loadAddressData();
+    const z = getZipByCityDistrict(data, city, dist);
+    detectedZipHome = z || '';
+    setZipHint('cp-home-zip-hint','cp-home-zip-text', detectedZipHome);
+    buildCheckoutParams(); // 宅配 zip 會帶到 checkout & attributes
+  }
+
+  // ★ 新增：超商 zip 顯示（只顯示，不帶參數）
+  async function updateZipCvsDisplay() {
+    const city = el('cp-cvs-county')?.value || '';
+    const dist = el('cp-cvs-district')?.value || '';
+    if (!city || !dist) {
+      setZipHint('cp-cvs-zip-hint','cp-cvs-zip-text','');
+      return;
+    }
+    const data = await loadAddressData();
+    const z = getZipByCityDistrict(data, city, dist);
+    setZipHint('cp-cvs-zip-hint','cp-cvs-zip-text', z || '');
+  }
+
+  // 頁面載入時立即載入資料並檢查縣市名稱
+  window.addEventListener('DOMContentLoaded', async () => {
+    console.log('頁面載入完成，開始載入地址資料...');
+    const data = await loadAddressData();
+    if (data && data.length > 0) {
+      console.log('✅ 地址資料載入成功');
+      
+      // 顯示實際的縣市列表供對照
+      const actualCounties = getUniqueCounties(data);
+      console.log('📍 資料庫中的縣市列表:', actualCounties);
+      console.log('💡 提示: 請確認選單中的縣市名稱與資料庫一致');
+      
+      // 檢查第一個縣市的資料範例
+      if (actualCounties.length > 0) {
+        const sampleCity = actualCounties[0];
+        const sampleDistricts = getDistricts(data, sampleCity);
+        console.log(`📋 ${sampleCity} 的區域範例:`, sampleDistricts.slice(0, 5));
+      }
+      
+      // ★ 新增：把縣市選單用資料覆蓋，避免台/臺不一致
+      try {
+        const actualCounties = [...new Set(addressData.map(r => canonicalCounty(r.city)))].filter(Boolean).sort();
+        if (homeCounty) fillSelect(homeCounty, actualCounties, '請選擇');
+        if (cvsCounty)  fillSelect(cvsCounty,  actualCounties, '請選擇');
+      } catch(e){ console.warn('覆蓋縣市選單失敗', e); }
+    } else {
+      console.log('⚠️ 地址資料為空或載入失敗');
+    }
+
+          // 初始：把現有（若有）值同步一次到網址
+      wireLiveSync();
+      buildCheckoutParams();
+      updateZipHomeDisplay();
+      updateZipCvsDisplay();
+
+    // ★ 新增：修正所有「前往結帳」入口，確保帶上 query
+    patchCheckoutEntrances();
+
+    function patchCheckoutEntrances(){
+      // 1) <a href="/checkout">：點擊前動態補上目前 query
+      document.addEventListener('click', (ev) => {
+        const a = ev.target.closest && ev.target.closest('a[href^="/checkout"]');
+        if (!a) return;
+        buildCheckoutParams(); // 先把當前欄位同步到網址
+        a.setAttribute('href', '/checkout' + (location.search || ''));
+      }, true);
+
+      // 2) 表單提交類（多數主題的結帳按鈕）
+      document.querySelectorAll('form').forEach(form => {
+        const btn = form.querySelector('button[name="checkout"], input[name="checkout"]');
+        if (!btn) return;
+
+        // 方案 A（最穩）：阻止預設提交，改導向 GET /checkout?...
+        btn.addEventListener('click', (e) => {
+          buildCheckoutParams();
+          e.preventDefault();
+          location.href = '/checkout' + (location.search || '');
+        }, true);
+
+        // 方案 B（要保留 POST 時，改 action；註解掉上面 A）
+        // btn.addEventListener('click', () => {
+        //   buildCheckoutParams();
+        //   form.action = '/checkout' + (location.search || '');
+        // }, true);
+      });
+    }
+  });
+
+  // 載入區/路：宅配
+  const homeCounty = el('cp-home-county');
+  const homeDistrict = el('cp-home-district');
+  
+  homeCounty?.addEventListener('change', async () => {
+    console.log('宅配縣市變更:', homeCounty.value);
+    const c = homeCounty.value;
+    
+    if (!c) {
+      fillSelect(homeDistrict, [], '請先選縣市');
+      return;
+    }
+    
+    // 確保資料已載入
+    const data = await loadAddressData();
+    console.log('資料載入狀態:', data ? `${data.length}筆` : '無資料');
+    
+    if (data && data.length > 0) {
+      const districts = getDistricts(data, c);
+      console.log(`${c} 的區域:`, districts);
+      fillSelect(homeDistrict, districts, '請選擇區');
+    } else {
+      fillSelect(homeDistrict, [], '無法載入區');
+      showError('無法載入區域資料');
+    }
+    // 監聽結尾加：
+    updateZipHomeDisplay();
+  });
+
+  // 載入區/路：超商
+  const cvsCounty = el('cp-cvs-county');
+  const cvsDistrict = el('cp-cvs-district');
+  const cvsRoadSel = el('cp-cvs-road');
+  const cvsRoadInput = el('cp-cvs-road-input');
+
+  cvsCounty?.addEventListener('change', async () => {
+    console.log('超商縣市變更:', cvsCounty.value);
+    const c = cvsCounty.value;
+    
+    if (!c) {
+      fillSelect(cvsDistrict, [], '請先選縣市');
+      if (cvsRoadSel) fillSelect(cvsRoadSel, [], '請先選區');
+      return;
+    }
+    
+    // 確保資料已載入
+    const data = await loadAddressData();
+    console.log('資料載入狀態:', data ? `${data.length}筆` : '無資料');
+    
+    if (data && data.length > 0) {
+      const districts = getDistricts(data, c);
+      console.log(`${c} 的區域:`, districts);
+      fillSelect(cvsDistrict, districts, '請選擇區');
+      if (cvsRoadSel) fillSelect(cvsRoadSel, [], '請先選區');
+          } else {
+        fillSelect(cvsDistrict, [], '無法載入區');
+        showError('無法載入區域資料');
+      }
+      updateZipCvsDisplay();
+    });
+
+  cvsDistrict?.addEventListener('change', async () => {
+    console.log('超商區域變更:', cvsDistrict.value);
+    const c = cvsCounty.value;
+    const d = cvsDistrict.value;
+    
+    if (!c || !d) return;
+    
+    if (cvsRoadSel) {
+      const data = await loadAddressData();
+      
+      if (data && data.length > 0) {
+        const roads = getRoads(data, c, d);
+        console.log(`${c} ${d} 的路名:`, roads);
+        fillSelect(cvsRoadSel, roads, '請選擇路名');
+              } else {
+          fillSelect(cvsRoadSel, [], '無法載入路名');
+          showError('無法載入路名資料');
+        }
+      }
+      updateZipCvsDisplay();
+    });
+
+  // ★ 新增：台/臺與空白正規化
+  function normalizeTW(str) {
+    if (!str) return '';
+    return String(str).replace(/台/g, '臺').replace(/\s+/g, '');
+  }
+  function canonicalCounty(v){ return normalizeTW(v); }
+  function canonicalDistrict(v){ return normalizeTW(v); }
+
+  // ★ 新增：郵遞區號提示共用函式
+  function setZipHint(idWrap, idText, zip){
+    const wrap = document.getElementById(idWrap);
+    const txt  = document.getElementById(idText);
+    if (!wrap || !txt) return;
+    txt.textContent = zip || '—';
+    wrap.setAttribute('data-empty', zip ? 'false' : 'true');
+  }
+
+  // 工具：姓名拆分（中文優先，但回傳 first=名, last=姓）
+  function splitName(full) {
+    if (!full) return { first: '', last: '' };
+    const raw = full.trim();
+    // 英文：最後一個 token 視為姓，其餘是名
+    if (/[A-Za-z]/.test(raw)) {
+      const parts = raw.split(/\s+/);
+      if (parts.length === 1) return { first: parts[0], last: '' };
+      return { first: parts.slice(0, -1).join(' '), last: parts.slice(-1)[0] };
+    }
+    // 中文：第一字為姓，其餘為名（王小明 => 姓=王, 名=小明）
+    const name = raw.replace(/\s+/g, '');
+    if (name.length <= 1) return { first: name, last: '' };
+    return { first: name.slice(1), last: name[0] };
+  }
+
+  function normPhone(v) {
+    return (v || '').replace(/[^\d+]/g, '');
+  }
+
+  async function saveCartAttributes(obj) {
+    if (!s.enable_attr) return;
+    try {
+      await fetch('/cart/update.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ attributes: obj })
+      });
+    } catch (e) {
+      console.warn('cart attributes failed', e);
+    }
+  }
+
+  // 訊息顯示功能
+  function showLoading(text) {
+    if (msg) {
+      msg.innerHTML = `<span class="apgo-loading"></span> ${text}`;
+      msg.className = 'apgo-message';
+    }
+  }
+
+  function showError(text) {
+    if (msg) {
+      msg.textContent = text;
+      msg.className = 'apgo-message error';
+    }
+  }
+
+  function showSuccess(text) {
+    if (msg) {
+      msg.textContent = text;
+      msg.className = 'apgo-message success';
+    }
+  }
+
+  function hideMessage() {
+    if (msg) {
+      msg.textContent = '';
+      msg.className = 'apgo-message';
+    }
+  }
+
+
+})();
+</script>
+
+{% schema %}
+{
+  "name": "APGO 結帳預填｜宅配/超商",
+  "enabled_on": { "templates": ["cart"] },
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "標題",
+      "default": "填寫收件資料"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "說明",
+      "default": "選擇運送方式並填寫資料，下一步自動帶入結帳頁"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_home",
+      "label": "啟用『宅配』表單",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_cvs",
+      "label": "啟用『超商』表單",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_zip",
+      "label": "顯示郵遞區號欄位（宅配）",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_attr",
+      "label": "寫入 cart attributes",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_road_dropdown",
+      "label": "超商：啟用路名下拉選單",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_detail_address",
+      "label": "超商：顯示詳細地址欄位",
+      "default": true
+    },
+
+    {
+      "type": "text",
+      "id": "country",
+      "label": "Country（結帳預填）",
+      "default": "Taiwan"
+    }
+  ],
+  "presets": [
+    {
+      "name": "APGO 結帳預填｜宅配/超商"
+    }
+  ]
+}
+{% endschema %}
