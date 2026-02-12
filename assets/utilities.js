@@ -580,10 +580,11 @@ Theme.utilities = {
   window.__apgoSpaceGuardInstalled = true;
 
   function isTypingTarget(t) {
-    if (!t) return false;
+    if (!t || !t.closest) return false;
     if (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable) return true;
     const role = t.getAttribute && t.getAttribute('role');
     if (role === 'textbox') return true;
+    if (t.closest('input, textarea, [contenteditable="true"]')) return true;
     const root = t.getRootNode && t.getRootNode();
     if (root && root.host) {
       const host = root.host;
@@ -599,29 +600,21 @@ Theme.utilities = {
     return role === 'button' || role === 'link';
   }
 
-  function isChatPanelVisible() {
-    // Shopify Inbox / chat: usually iframe in bottom-right
+  function isChatPanelExpanded() {
+    // Only when chat WINDOW is open (large iframe), not just the launcher button
     const iframes = document.querySelectorAll('iframe');
     const vw = window.innerWidth;
     const vh = window.innerHeight;
     for (const iframe of iframes) {
       try {
         const rect = iframe.getBoundingClientRect();
-        if (rect.width < 100 || rect.height < 100) continue;
-        if (rect.top + rect.height < vh - 80) continue;
-        if (rect.left + rect.width < vw - 100) continue;
+        if (rect.width < 250 || rect.height < 300) continue; // Must be expanded panel
+        if (rect.top + rect.height < vh - 50) continue;
+        if (rect.left + rect.width < vw - 50) continue;
         const style = window.getComputedStyle(iframe);
         if (style.visibility === 'hidden' || style.display === 'none') continue;
         return true;
       } catch (_) { /* cross-origin */ }
-    }
-    // Chat-like containers in main doc
-    const chatContainers = document.querySelectorAll(
-      '[id*="chat" i], [id*="inbox" i], [class*="chat" i], [class*="inbox" i], [data-shopify-chat]'
-    );
-    for (const el of chatContainers) {
-      const rect = el.getBoundingClientRect();
-      if (rect.width > 50 && rect.height > 50 && rect.bottom > vh - 150) return true;
     }
     return false;
   }
@@ -631,7 +624,7 @@ Theme.utilities = {
 
     const target = e.target;
 
-    // Typing: let Space insert, only stop propagation so video section doesn't intercept
+    // Typing: let Space insert, only stop propagation
     if (isTypingTarget(target)) {
       e.stopPropagation();
       if (typeof e.stopImmediatePropagation === 'function') {
@@ -640,18 +633,11 @@ Theme.utilities = {
       return;
     }
 
-    // Button/link: let Space activate (e.g. submit buttons)
+    // Button/link: let Space activate
     if (isButtonOrLink(target)) return;
 
-    // Focus in iframe (e.g. chat): main doc shouldn't scroll - prevent
-    if (document.activeElement && document.activeElement.tagName === 'IFRAME') {
-      e.preventDefault();
-      e.stopPropagation();
-      return;
-    }
-
-    // Chat panel visible: user likely typing in chat, prevent scroll to cinematic-video-section
-    if (isChatPanelVisible()) {
+    // Only when chat panel is EXPANDED: prevent scroll (user likely typing in chat)
+    if (isChatPanelExpanded()) {
       e.preventDefault();
       e.stopPropagation();
     }
