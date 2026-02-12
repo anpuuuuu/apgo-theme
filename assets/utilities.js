@@ -579,18 +579,28 @@ Theme.utilities = {
   if (window.__apgoSpaceGuardInstalled) return;
   window.__apgoSpaceGuardInstalled = true;
 
-  function isTypingTarget(t) {
-    if (!t || !t.closest) return false;
-    if (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable) return true;
-    const role = t.getAttribute && t.getAttribute('role');
-    if (role === 'textbox') return true;
-    if (t.closest('input, textarea, [contenteditable="true"]')) return true;
-    const root = t.getRootNode && t.getRootNode();
+  function isTypingTarget(el) {
+    if (!el || typeof el.closest !== 'function') return false;
+    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable) return true;
+    const role = el.getAttribute && el.getAttribute('role');
+    if (role === 'textbox' || role === 'searchbox') return true;
+    if (el.closest('input, textarea, [contenteditable="true"], [contenteditable]')) return true;
+    const root = el.getRootNode && el.getRootNode();
     if (root && root.host) {
       const host = root.host;
       if (host.tagName === 'INPUT' || host.tagName === 'TEXTAREA' || host.isContentEditable) return true;
+      if (host.closest && host.closest('input, textarea, [contenteditable]')) return true;
     }
     return false;
+  }
+
+  function isInsideAppEmbed(el) {
+    if (!el || typeof el.closest !== 'function') return false;
+    return !!el.closest(
+      '[id^="shopify-section-inline-chat"], [id*="inline-chat"], [id*="inbox"], [id*="chat"], ' +
+      '[class*="shopify-app-embed"], [class*="app-embed"], [data-shopify-chat], [data-app-embed], ' +
+      'section[data-section-type="app-embed"]'
+    );
   }
 
   function isButtonOrLink(t) {
@@ -623,20 +633,31 @@ Theme.utilities = {
     if (e.code !== 'Space' && e.key !== ' ') return;
 
     const target = e.target;
+    const path = e.composedPath ? e.composedPath() : (target ? [target] : []);
 
-    // Typing: let Space insert, only stop propagation
-    if (isTypingTarget(target)) {
-      e.stopPropagation();
-      if (typeof e.stopImmediatePropagation === 'function') {
-        e.stopImmediatePropagation();
+    // Check full path (incl. Shadow DOM) - supports App Embeds like Shopify Inbox
+    for (let i = 0; i < path.length; i++) {
+      const el = path[i];
+      if (el === document) break;
+      if (isTypingTarget(el)) {
+        e.stopPropagation();
+        if (typeof e.stopImmediatePropagation === 'function') {
+          e.stopImmediatePropagation();
+        }
+        return;
       }
+    }
+
+    // Target inside App Embed (chat): likely typing - don't prevent
+    if (isInsideAppEmbed(target)) {
+      e.stopPropagation();
       return;
     }
 
     // Button/link: let Space activate
     if (isButtonOrLink(target)) return;
 
-    // Only when chat panel is EXPANDED: prevent scroll (user likely typing in chat)
+    // Chat iframe expanded: prevent scroll when not typing
     if (isChatPanelExpanded()) {
       e.preventDefault();
       e.stopPropagation();
