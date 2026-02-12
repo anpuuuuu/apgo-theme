@@ -1,0 +1,14 @@
+---
+description: 完成程式碼修改後自動執行 git add、commit 與 push
+alwaysApply: true
+---
+
+# 自動推送規則
+
+完成程式碼編輯後，請主動幫我執行以下流程：
+
+1. `git add` 已修改的檔案
+2. `git commit`（使用簡潔的中文或英文 commit message 描述變更）
+3. `git push origin main`
+
+執行前無需再詢問，直接執行即可。

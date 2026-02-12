@@ -101,16 +101,20 @@
       opacity: var(--disabled-opacity);
     }
 
-    &[aria-selected='true'],
+    /* 僅當前頁顯示白色，不要用 aria-selected（JS 會在 hover 時設為 true 導致全部變白） */
     &[aria-current='true'] {
       opacity: 1;
       color: var(--color-foreground) !important;
     }
 
+    &[aria-selected='true']:not([aria-current='true']) {
+      opacity: 1;
+    }
+
     /* 非當前頁的連結 hover 時顯示橙色與下劃線（與 footer 一致） */
     &:not([aria-current='true']):hover,
     &:not([aria-current='true']):focus {
-      color: #f08418;
+      color: #f08418 !important;
       opacity: 1;
     }
 
