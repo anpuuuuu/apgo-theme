@@ -574,27 +574,68 @@ Theme.utilities = {
 };
 
 // --- Spacebar typing guard (resilient version) ---
+// Fixes: Space key should insert space when typing in inputs/chat, not scroll page to video
 (function ensureSpaceGuard() {
   if (window.__apgoSpaceGuardInstalled) return;
   window.__apgoSpaceGuardInstalled = true;
 
   function isTypingTarget(t) {
-    return (
-      t &&
-      (t.tagName === 'INPUT' ||
-       t.tagName === 'TEXTAREA' ||
-       t.isContentEditable)
-    );
+    if (!t) return false;
+    if (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable) return true;
+    // Chat/Inbox may use role="textbox" or custom elements
+    const role = t.getAttribute && t.getAttribute('role');
+    if (role === 'textbox') return true;
+    // Check if target is inside a typing element (e.g. Shadow DOM host)
+    const root = t.getRootNode && t.getRootNode();
+    if (root && root.host) {
+      const host = root.host;
+      if (host.tagName === 'INPUT' || host.tagName === 'TEXTAREA' || host.isContentEditable) return true;
+    }
+    return false;
+  }
+
+  function isChatPanelVisible() {
+    const iframes = document.querySelectorAll('iframe');
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    for (const iframe of iframes) {
+      try {
+        const rect = iframe.getBoundingClientRect();
+        if (rect.width < 150 || rect.height < 150) continue;
+        if (rect.top + rect.height < vh - 100) continue; // Must be near bottom (chat launcher area)
+        if (rect.left + rect.width < vw - 150) continue;  // Must be on right side
+        const style = window.getComputedStyle(iframe);
+        if (style.visibility === 'hidden' || style.display === 'none') continue;
+        return true; // Likely Shopify Inbox / chat widget expanded
+      } catch (_) { /* cross-origin */ }
+    }
+    return false;
   }
 
   function guardSpacebar(e) {
-    if (e.code === 'Space' || e.key === ' ') {
-      if (isTypingTarget(e.target)) {
-        e.stopPropagation();
-        if (typeof e.stopImmediatePropagation === 'function') {
-          e.stopImmediatePropagation();
-        }
+    if (e.code !== 'Space' && e.key !== ' ') return;
+
+    const target = e.target;
+
+    if (isTypingTarget(target)) {
+      e.stopPropagation();
+      if (typeof e.stopImmediatePropagation === 'function') {
+        e.stopImmediatePropagation();
       }
+      return;
+    }
+
+    // Chat open but focus not in input (e.g. iframe not focused, or custom UI)
+    // Prevent scroll so Space doesn't jump page to video
+    if (document.activeElement && document.activeElement.tagName === 'IFRAME') {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+
+    if (isChatPanelVisible()) {
+      e.preventDefault();
+      e.stopPropagation();
     }
   }
 
