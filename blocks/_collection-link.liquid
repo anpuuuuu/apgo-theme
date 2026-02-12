@@ -80,6 +80,18 @@
     text-decoration: none;
     text-wrap: pretty;
     font-size: clamp(var(--min-font-size), 4.5vw, var(--max-font-size));
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -2px;
+      width: 0;
+      height: 2px;
+      background-color: #f08418;
+      transition: width 0.2s ease;
+    }
 
     @media (hover: hover) {
       opacity: var(--disabled-opacity);
@@ -89,8 +101,22 @@
       opacity: var(--disabled-opacity);
     }
 
-    &[aria-selected='true'] {
+    &[aria-selected='true'],
+    &[aria-current='true'] {
       opacity: 1;
+      color: var(--color-foreground) !important;
+    }
+
+    /* 非當前頁的連結 hover 時顯示橙色與下劃線（與 footer 一致） */
+    &:not([aria-current='true']):hover,
+    &:not([aria-current='true']):focus {
+      color: #f08418;
+      opacity: 1;
+    }
+
+    &:not([aria-current='true']):hover::before,
+    &:not([aria-current='true']):focus::before {
+      width: 100%;
     }
 
     .text-block {
