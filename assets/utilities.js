@@ -589,7 +589,6 @@ Theme.utilities = {
     if (root && root.host) {
       const host = root.host;
       if (host.tagName === 'INPUT' || host.tagName === 'TEXTAREA' || host.isContentEditable) return true;
-      if (host.closest && host.closest('input, textarea, [contenteditable]')) return true;
     }
     return false;
   }
@@ -608,25 +607,6 @@ Theme.utilities = {
     if (t.tagName === 'BUTTON' || t.tagName === 'A') return true;
     const role = t.getAttribute && t.getAttribute('role');
     return role === 'button' || role === 'link';
-  }
-
-  function isChatPanelExpanded() {
-    // Only when chat WINDOW is open (large iframe), not just the launcher button
-    const iframes = document.querySelectorAll('iframe');
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-    for (const iframe of iframes) {
-      try {
-        const rect = iframe.getBoundingClientRect();
-        if (rect.width < 250 || rect.height < 300) continue; // Must be expanded panel
-        if (rect.top + rect.height < vh - 50) continue;
-        if (rect.left + rect.width < vw - 50) continue;
-        const style = window.getComputedStyle(iframe);
-        if (style.visibility === 'hidden' || style.display === 'none') continue;
-        return true;
-      } catch (_) { /* cross-origin */ }
-    }
-    return false;
   }
 
   function guardSpacebar(e) {
@@ -656,12 +636,6 @@ Theme.utilities = {
 
     // Button/link: let Space activate
     if (isButtonOrLink(target)) return;
-
-    // Chat iframe expanded: prevent scroll when not typing
-    if (isChatPanelExpanded()) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
   }
 
   // Run once now
