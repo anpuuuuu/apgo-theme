@@ -79,6 +79,7 @@
     {% endif %}
     <div class="cart__summary-item tax-note cart-primary-typography">
       {% render 'tax-info', has_discounts_enabled: settings.show_add_discount_code %}
+      <span class="cart__checkout-redirect-notice">{{ 'content.checkout_redirect_notice' | t }}</span>
     </div>
   </div>
 </div>
@@ -122,5 +123,12 @@
 
   .cart__installments {
     color: var(--color-foreground);
+  }
+
+  .cart__checkout-redirect-notice {
+    display: block;
+    margin-top: 0.5em;
+    font-size: var(--cart-font-size--sm, 0.75rem);
+    color: rgb(from var(--color-foreground) r g b / var(--opacity-subdued-text, 0.7));
   }
 {% endstylesheet %}
