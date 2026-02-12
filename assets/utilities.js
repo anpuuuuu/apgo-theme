@@ -582,10 +582,8 @@ Theme.utilities = {
   function isTypingTarget(t) {
     if (!t) return false;
     if (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable) return true;
-    // Chat/Inbox may use role="textbox" or custom elements
     const role = t.getAttribute && t.getAttribute('role');
     if (role === 'textbox') return true;
-    // Check if target is inside a typing element (e.g. Shadow DOM host)
     const root = t.getRootNode && t.getRootNode();
     if (root && root.host) {
       const host = root.host;
@@ -594,20 +592,36 @@ Theme.utilities = {
     return false;
   }
 
+  function isButtonOrLink(t) {
+    if (!t) return false;
+    if (t.tagName === 'BUTTON' || t.tagName === 'A') return true;
+    const role = t.getAttribute && t.getAttribute('role');
+    return role === 'button' || role === 'link';
+  }
+
   function isChatPanelVisible() {
+    // Shopify Inbox / chat: usually iframe in bottom-right
     const iframes = document.querySelectorAll('iframe');
     const vw = window.innerWidth;
     const vh = window.innerHeight;
     for (const iframe of iframes) {
       try {
         const rect = iframe.getBoundingClientRect();
-        if (rect.width < 150 || rect.height < 150) continue;
-        if (rect.top + rect.height < vh - 100) continue; // Must be near bottom (chat launcher area)
-        if (rect.left + rect.width < vw - 150) continue;  // Must be on right side
+        if (rect.width < 100 || rect.height < 100) continue;
+        if (rect.top + rect.height < vh - 80) continue;
+        if (rect.left + rect.width < vw - 100) continue;
         const style = window.getComputedStyle(iframe);
         if (style.visibility === 'hidden' || style.display === 'none') continue;
-        return true; // Likely Shopify Inbox / chat widget expanded
+        return true;
       } catch (_) { /* cross-origin */ }
+    }
+    // Chat-like containers in main doc
+    const chatContainers = document.querySelectorAll(
+      '[id*="chat" i], [id*="inbox" i], [class*="chat" i], [class*="inbox" i], [data-shopify-chat]'
+    );
+    for (const el of chatContainers) {
+      const rect = el.getBoundingClientRect();
+      if (rect.width > 50 && rect.height > 50 && rect.bottom > vh - 150) return true;
     }
     return false;
   }
@@ -617,6 +631,7 @@ Theme.utilities = {
 
     const target = e.target;
 
+    // Typing: let Space insert, only stop propagation so video section doesn't intercept
     if (isTypingTarget(target)) {
       e.stopPropagation();
       if (typeof e.stopImmediatePropagation === 'function') {
@@ -625,14 +640,17 @@ Theme.utilities = {
       return;
     }
 
-    // Chat open but focus not in input (e.g. iframe not focused, or custom UI)
-    // Prevent scroll so Space doesn't jump page to video
+    // Button/link: let Space activate (e.g. submit buttons)
+    if (isButtonOrLink(target)) return;
+
+    // Focus in iframe (e.g. chat): main doc shouldn't scroll - prevent
     if (document.activeElement && document.activeElement.tagName === 'IFRAME') {
       e.preventDefault();
       e.stopPropagation();
       return;
     }
 
+    // Chat panel visible: user likely typing in chat, prevent scroll to cinematic-video-section
     if (isChatPanelVisible()) {
       e.preventDefault();
       e.stopPropagation();

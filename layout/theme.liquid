@@ -73,9 +73,19 @@
     const video = document.getElementById('brandVideo');
     if (!video) return;
 
-    // Prevent video from stealing keyboard focus (fix spacebar issue)
+    // Prevent video from stealing keyboard focus (fix Space-in-chat scroll issue)
+    video.setAttribute('tabindex', '-1');
     video.addEventListener('pointerdown', () => video.blur());
     video.addEventListener('click', () => video.blur());
+    video.addEventListener('focus', () => video.blur());
+
+    // When video has focus and user presses Space, blur so page doesn't scroll to it
+    video.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' || e.key === ' ') {
+        e.preventDefault();
+        video.blur();
+      }
+    });
   });
 </script>
 
