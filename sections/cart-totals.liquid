@@ -71,9 +71,9 @@
       {%- endif -%}
 
       <!-- 稅務資訊 -->
-      <div class="cart__summary-item cart__tax">
+      <div class="cart__summary-item cart__tax cart__tax-notice-stack">
         {% render 'tax-info', has_discounts_enabled: settings.show_add_discount_code %}
-        <span class="cart__checkout-redirect-notice">{{ 'content.checkout_redirect_notice' | t }}</span>
+        <small class="cart__checkout-redirect-notice">{{ 'content.checkout_redirect_notice' | t }}</small>
       </div>
     </div>
   </div>
@@ -199,13 +199,18 @@
     padding-top: 6px !important;
   }
 
-  /* 結帳跳轉提示（在稅務資訊下方、checkout 按鈕上方） */
-  .cart-totals--standalone .cart__checkout-redirect-notice {
+  /* 稅務說明與結帳跳轉提示：上下排列、字體一致 */
+  .cart-totals--standalone .cart__tax-notice-stack {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+
+  .cart-totals--standalone .cart__tax-notice-stack .cart__checkout-redirect-notice {
     display: block !important;
-    margin-top: 8px !important;
-    font-size: 12px !important;
-    color: #aaa !important;
-    line-height: 1.4 !important;
+    margin-top: 6px !important;
+    font-size: inherit !important;
+    color: inherit !important;
+    line-height: inherit !important;
   }
   
   /* 響應式設計 */
