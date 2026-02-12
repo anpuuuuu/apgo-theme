@@ -108,6 +108,29 @@
 
     & a {
       color: var(--color-foreground);
+      position: relative;
+      transition: color var(--animation-speed) var(--animation-easing);
+    }
+
+    & a::before {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: #f08418;
+      transition: width var(--animation-speed) var(--animation-easing);
+    }
+
+    & a:hover,
+    & a:focus {
+      color: #f08418;
+    }
+
+    & a:hover::before,
+    & a:focus::before {
+      width: 100%;
     }
   }
 
@@ -193,10 +216,28 @@
     display: flex;
     min-height: var(--minimum-touch-target);
     align-items: center;
+    position: relative;
+
+    /* Footer-style hover: orange + underline */
+    &::before {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: #f08418;
+      transition: width var(--animation-speed) var(--animation-easing);
+    }
 
     &:hover,
     &:focus {
-      color: var(--menu-top-level-font-color);
+      color: #f08418;
+    }
+
+    &:hover::before,
+    &:focus::before {
+      width: 100%;
     }
 
     @media screen and (width >= 750px) {
@@ -217,10 +258,19 @@
   }
 
   /* stylelint-disable-next-line selector-max-specificity */
-  .menu-list:not(:has(.menu-list__list-item:hover)) .menu-list__link--active,
+  .menu-list:not(:has(.menu-list__list-item:hover)) .menu-list__link--active {
+    color: var(--menu-top-level-font-color);
+  }
+
+  /* Hovered/focused link: footer-style orange + underline */
   .menu-list .menu-list__list-item:where(:hover, :focus-within) .menu-list__link,
   .menu-list .menu-list__list-item[slot='overflow'] .menu-list__link[aria-expanded='true'] {
-    color: var(--menu-top-level-font-color);
+    color: #f08418;
+  }
+
+  .menu-list .menu-list__list-item:where(:hover, :focus-within) .menu-list__link::before,
+  .menu-list .menu-list__list-item[slot='overflow'] .menu-list__link[aria-expanded='true']::before {
+    width: 100%;
   }
 
   .overflow-menu::part(list) {
