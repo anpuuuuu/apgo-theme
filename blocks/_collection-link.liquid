@@ -12,10 +12,6 @@
   {% assign loading = 'lazy' %}
 {% endunless %}
 
-{% if closest.collection.url == block.settings.collection.url %}
-  {% assign is_current = true %}
-{% endif %}
-
 {% if block.settings.show_count %}
   {% assign count = block.settings.collection.all_products_count %}
   {%- capture count -%}
@@ -53,7 +49,7 @@
     on:pointerenter="/select/{{ index }}"
     on:focus="/select/{{ index }}"
     aria-selected="{{ selected }}"
-    aria-current="{{ is_current }}"
+    aria-current="{{ selected }}"
     {{ block.shopify_attributes }}
   >
     {{ title_block }}
