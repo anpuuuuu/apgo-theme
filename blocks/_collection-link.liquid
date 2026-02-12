@@ -107,15 +107,15 @@
       opacity: 1;
     }
 
-    /* 非當前頁的連結 hover 時顯示橙色與下劃線（與 footer 一致） */
-    &:not([aria-current='true']):hover,
-    &:not([aria-current='true']):focus {
+    /* 所有連結 hover 時顯示橙色與下劃線（含當前頁） */
+    &:hover,
+    &:focus {
       color: #f08418 !important;
       opacity: 1;
     }
 
-    &:not([aria-current='true']):hover::before,
-    &:not([aria-current='true']):focus::before {
+    &:hover::before,
+    &:focus::before {
       width: 100%;
     }
 
