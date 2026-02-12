@@ -77,9 +77,8 @@
         {% endform %}
       </span>
     {% endif %}
-    <div class="cart__summary-item tax-note cart-primary-typography cart__tax-notice-stack">
+    <div class="cart__summary-item tax-note cart-primary-typography">
       {% render 'tax-info', has_discounts_enabled: settings.show_add_discount_code %}
-      <small class="cart__checkout-redirect-notice">{{ 'content.checkout_redirect_notice' | t }}</small>
     </div>
   </div>
 </div>
@@ -103,6 +102,7 @@
       {{ content_for_additional_checkout_buttons }}
     </div>
   {% endif %}
+  <small class="cart__checkout-redirect-notice">{{ 'content.checkout_redirect_notice' | t }}</small>
 </div>
 
 {% stylesheet %}
@@ -125,17 +125,10 @@
     color: var(--color-foreground);
   }
 
-  /* 稅務說明與結帳跳轉提示：上下排列、字體一致 */
-  .cart__tax-notice-stack {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    justify-content: flex-start !important;
-    gap: 0.25em;
-  }
-
-  /* 與 tax-info 的 <small> 完全一致：不覆寫字體，只設排版 */
-  .cart__tax-notice-stack .cart__checkout-redirect-notice {
+  /* 結帳按鈕下方的跳轉提示 */
+  .cart__ctas .cart__checkout-redirect-notice {
     display: block;
+    margin-top: 0.75em;
+    text-align: center;
   }
 {% endstylesheet %}
