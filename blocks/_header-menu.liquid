@@ -451,6 +451,40 @@
     }
   }
 
+  /* Child links (secondary menu): active=white, hover=orange+underline (footer style) */
+  .mega-menu__link:not(.mega-menu__link--parent) {
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: #f08418;
+      transition: width var(--animation-speed) var(--animation-easing);
+    }
+
+    &.mega-menu__link--active {
+      color: var(--color-foreground);
+
+      &:hover,
+      &:focus {
+        color: var(--color-foreground);
+      }
+    }
+
+    &:not(.mega-menu__link--active):hover,
+    &:not(.mega-menu__link--active):focus {
+      color: #f08418;
+
+      &::before {
+        width: 100%;
+      }
+    }
+  }
+
   .mega-menu__link--parent {
     font-family: var(--menu-parent-font-family);
     font-style: var(--menu-parent-font-style);
