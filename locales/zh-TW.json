@@ -133,6 +133,7 @@
     "duties_included_taxes_at_checkout_shipping_at_checkout_without_policy": "已包含關稅。結帳時計算稅額、折扣和運費。",
     "taxes_at_checkout_shipping_at_checkout_with_policy_html": "結帳時計算稅額、折扣和<a href=\"{{ link }}\">運費</a>。",
     "taxes_at_checkout_shipping_at_checkout_without_policy": "結帳時計算稅額、折扣和運費。",
+    "checkout_redirect_notice": "您將被導向至受信任的第三方結帳頁面。",
     "checkout": "結帳",
     "cart_title": "購物車",
     "product_image": "產品圖片",
