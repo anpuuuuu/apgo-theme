@@ -10,10 +10,38 @@
   <!-- 👉 只替換這個內容區，外層 wrapper 不動 -->
   <div id="CartTotalsContent-{{ section.id }}">
     {%- liquid
+      assign is_mysg_market = false
+      if localization.country.iso_code == 'MY' or localization.country.iso_code == 'SG'
+        assign is_mysg_market = true
+      endif
+
+      assign promo_threshold_minor = 10000
+      assign promo_discount_minor = 1000
+      assign shipping_fee_minor = 0
+      if is_mysg_market
+        assign shipping_fee_minor = 1000
+      endif
+
+      assign projected_discount_minor = 0
+      if is_mysg_market and cart.original_total_price >= promo_threshold_minor
+        assign projected_discount_minor = promo_discount_minor
+      endif
+
+      assign discount_total_minor = cart.total_discount
+      if discount_total_minor < projected_discount_minor
+        assign discount_total_minor = projected_discount_minor
+      endif
+
+      assign discounted_subtotal_minor = cart.original_total_price | minus: discount_total_minor
+      if discounted_subtotal_minor < 0
+        assign discounted_subtotal_minor = 0
+      endif
+      assign final_total_with_shipping_minor = discounted_subtotal_minor | plus: shipping_fee_minor
+
       if settings.currency_code_enabled_cart_total
-        assign total_price_formatted = cart.total_price | money_with_currency
+        assign total_price_formatted = final_total_with_shipping_minor | money_with_currency
       else
-        assign total_price_formatted = cart.total_price | money
+        assign total_price_formatted = final_total_with_shipping_minor | money
       endif
     -%}
 
@@ -37,6 +65,18 @@
         <span class="cart__value">{{ cart.original_total_price | money }}</span>
       </div>
 
+      {%- if is_mysg_market -%}
+        <div class="cart__summary-item cart__shipping-fee">
+          <span class="cart__label">{{ 'apgo_cart.shipping_fee' | t }}</span>
+          <span class="cart__value">{{ shipping_fee_minor | money }}</span>
+        </div>
+      {%- endif -%}
+
+      <div class="cart__summary-item cart__discount-total">
+        <span class="cart__label">{{ 'content.discount' | t }}</span>
+        <span class="cart__value">-{{ discount_total_minor | money }}</span>
+      </div>
+
       <!-- 折扣清單 -->
       {%- if cart.cart_level_discount_applications.size > 0 -%}
         {%- for discount in cart.cart_level_discount_applications -%}
@@ -52,7 +92,7 @@
 
       <!-- 總計 -->
       <div class="cart__summary-item cart__total" role="status">
-        <span class="cart__label">{{ 'content.cart_estimated_total' | t }}</span>
+        <span class="cart__label">{{ 'apgo_cart.total_after_discount' | t }}</span>
         <text-component
           ref="cartTotalStandalone"
           value="{{ total_price_formatted | strip_html }}"

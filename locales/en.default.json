@@ -404,6 +404,9 @@
   "apgo_live": {
     "host": "Host"
   },
+  "apgo_promotions": {
+    "mysg_discount_banner": "MY/SG promotion: Get 10 off on orders over 100."
+  },
   "cart": {
     "exclusive_coupon": "Exclusive Coupon",
     "progress_title": "Amount left to goal",
@@ -519,6 +522,8 @@
     "cta_text": "Learn more"
   },
   "apgo_cart": {
-    "cart_products_title": "Cart items"
+    "cart_products_title": "Cart items",
+    "shipping_fee": "Shipping fee",
+    "total_after_discount": "Total"
   }
 }

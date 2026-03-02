@@ -13,6 +13,19 @@
   style="{% render 'spacing-padding', settings: section.settings %}; --border-bottom-width: {{ section.settings.divider_width }}px;"
 >
   {% liquid
+    assign show_market_promo = false
+    if section.settings.show_mysg_discount_promo and template.name == 'index'
+      if localization.country.iso_code == 'MY' or localization.country.iso_code == 'SG'
+        assign show_market_promo = true
+      endif
+    endif
+  %}
+
+  {% if show_market_promo %}
+    <p class="announcement-bar__promo">{{ 'apgo_promotions.mysg_discount_banner' | t }}</p>
+  {% endif %}
+
+  {% liquid
     assign autoplay = false
     assign show_arrows = false
     if section.blocks.size > 1
@@ -122,6 +135,14 @@
     position: absolute;
     inset: 0;
   }
+
+  .announcement-bar__promo {
+    margin: 0 0 var(--margin-2xs) 0;
+    text-align: center;
+    font-size: var(--font-size--xs);
+    font-weight: 600;
+    color: var(--color-foreground);
+  }
 {% endstylesheet %}
 
 {% schema %}
@@ -180,6 +201,12 @@
       "step": 0.5,
       "unit": "px",
       "default": 0
+    },
+    {
+      "type": "checkbox",
+      "id": "show_mysg_discount_promo",
+      "label": "Show MY/SG promotion on homepage",
+      "default": true
     },
     {
       "type": "header",

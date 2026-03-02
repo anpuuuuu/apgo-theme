@@ -404,6 +404,9 @@
   "apgo_live": {
     "host": "主持人"
   },
+  "apgo_promotions": {
+    "mysg_discount_banner": "馬來西亞/新加坡活動：訂單滿100立減10。"
+  },
   "cart": {
     "exclusive_coupon": "專屬優惠券",
     "progress_title": "距離目標還差",
@@ -519,6 +522,8 @@
     "cta_text": "了解更多"
   },
   "apgo_cart": {
-    "cart_products_title": "購物車商品"
+    "cart_products_title": "購物車商品",
+    "shipping_fee": "運費",
+    "total_after_discount": "總計"
   }
 }

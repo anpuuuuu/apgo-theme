@@ -3,15 +3,62 @@
 {%- enddoc -%}
 
 <div class="cart__summary-totals">
+  {%- liquid
+    assign is_mysg_market = false
+    if localization.country.iso_code == 'MY' or localization.country.iso_code == 'SG'
+      assign is_mysg_market = true
+    endif
+
+    assign promo_threshold_minor = 10000
+    assign promo_discount_minor = 1000
+    assign shipping_fee_minor = 0
+    if is_mysg_market
+      assign shipping_fee_minor = 1000
+    endif
+
+    assign projected_discount_minor = 0
+    if is_mysg_market and cart.original_total_price >= promo_threshold_minor
+      assign projected_discount_minor = promo_discount_minor
+    endif
+
+    assign discount_total_minor = cart.total_discount
+    if discount_total_minor < projected_discount_minor
+      assign discount_total_minor = projected_discount_minor
+    endif
+
+    assign discounted_subtotal_minor = cart.original_total_price | minus: discount_total_minor
+    if discounted_subtotal_minor < 0
+      assign discounted_subtotal_minor = 0
+    endif
+    assign final_total_with_shipping_minor = discounted_subtotal_minor | plus: shipping_fee_minor
+  -%}
+
   {% # We need to keep this node in place to allow morphing to work properly # %}
   <div class="cart__original-total-container cart-primary-typography">
-    {%- if cart.cart_level_discount_applications.size > 0 -%}
-      <span class="cart__summary-item cart__original-total">
-        <span class="cart__original-total-label">{{ 'content.cart_subtotal' | t }}</span>
-        <span class="cart__original-total-value cart-secondary-typography">
-          {{- cart.original_total_price | money -}}
+    <span class="cart__summary-item cart__original-total">
+      <span class="cart__original-total-label">{{ 'content.cart_subtotal' | t }}</span>
+      <span class="cart__original-total-value cart-secondary-typography">
+        {{- cart.original_total_price | money -}}
+      </span>
+    </span>
+
+    {%- if is_mysg_market -%}
+      <span class="cart__summary-item cart__shipping-fee">
+        <span class="cart__shipping-fee-label">{{ 'apgo_cart.shipping_fee' | t }}</span>
+        <span class="cart__shipping-fee-value cart-secondary-typography">
+          {{- shipping_fee_minor | money -}}
         </span>
       </span>
+    {%- endif -%}
+
+    <span class="cart__summary-item cart__discount-total">
+      <span class="cart__discount-total-label">{{ 'content.discount' | t }}</span>
+      <span class="cart__discount-total-value cart-secondary-typography">
+        -{{- discount_total_minor | money -}}
+      </span>
+    </span>
+
+    {%- if cart.cart_level_discount_applications.size > 0 -%}
       <div class="cart__summary-discounts">
         <ul
           class="discounts list-unstyled"
@@ -59,15 +106,15 @@
       class="cart__summary-item cart__total"
       role="status"
     >
-      <span class="cart__total-label cart-primary-typography">{{ 'content.cart_estimated_total' | t }}</span>
+      <span class="cart__total-label cart-primary-typography">{{ 'apgo_cart.total_after_discount' | t }}</span>
       <text-component
         ref="cartTotal"
-        value="{{ total_price | strip_html }}"
+        value="{{ final_total_with_shipping_minor | money | strip_html }}"
         class="cart__total-value cart-secondary-typography"
         {% comment %} Used by payment_terms web component {% endcomment %}
         data-cart-subtotal
       >
-        {{ total_price }}
+        {{ final_total_with_shipping_minor | money }}
       </text-component>
     </span>
     {% if settings.show_installments %}
