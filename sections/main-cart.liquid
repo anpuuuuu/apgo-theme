@@ -83,7 +83,7 @@
 
   .cart-page__shipping-estimator .cart-shipping-estimator--enhanced {
     border: 1px solid #313131;
-    border-radius: 14px;
+    border-radius: 18px;
     background: linear-gradient(145deg, #151515, #0f0f0f);
     box-shadow: 0 10px 24px rgb(0 0 0 / 25%);
     padding: 20px;
@@ -108,14 +108,14 @@
 
     .cart-page__summary {
       display: grid;
-      height: 100%;
+      height: fit-content;
       grid-column: 2;
       grid-row: 1 / -1;
-      align-self: stretch;
+      align-self: start;
       grid-template-rows: subgrid;
       padding-top: 0;
-      /* needed to support blurred effect from hero section */
-      position: relative;
+      position: sticky;
+      top: calc(var(--header-group-height, 0px) + 16px);
     }
 
     .cart-page__shipping-estimator {
