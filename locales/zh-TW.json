@@ -524,6 +524,18 @@
   "apgo_cart": {
     "cart_products_title": "購物車商品",
     "shipping_fee": "運費",
-    "total_after_discount": "總計"
+    "total_after_discount": "預估總計",
+    "shipping_estimate_title": "購物車運費預估",
+    "country": "國家",
+    "province": "州 / 省",
+    "city": "城市",
+    "zip": "郵遞區號",
+    "address1": "地址",
+    "estimate_shipping": "估算運費",
+    "estimating_shipping": "正在估算運費...",
+    "shipping_not_estimated": "尚未估算",
+    "shipping_estimate_error": "請填寫有效地址後再估算運費。",
+    "use_for_checkout": "結帳時使用此地址",
+    "save_default_preference": "結帳後將此地址設為預設"
   }
 }

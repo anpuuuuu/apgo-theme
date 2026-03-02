@@ -4,20 +4,11 @@
 
 <div class="cart__summary-totals">
   {%- liquid
-    assign is_mysg_market = false
-    if localization.country.iso_code == 'MY' or localization.country.iso_code == 'SG'
-      assign is_mysg_market = true
-    endif
-
     assign promo_threshold_minor = 10000
     assign promo_discount_minor = 1000
-    assign shipping_fee_minor = 0
-    if is_mysg_market
-      assign shipping_fee_minor = 1000
-    endif
 
     assign projected_discount_minor = 0
-    if is_mysg_market and cart.original_total_price >= promo_threshold_minor
+    if localization.country.iso_code == 'MY' and cart.original_total_price >= promo_threshold_minor
       assign projected_discount_minor = promo_discount_minor
     endif
 
@@ -30,11 +21,115 @@
     if discounted_subtotal_minor < 0
       assign discounted_subtotal_minor = 0
     endif
-    assign final_total_with_shipping_minor = discounted_subtotal_minor | plus: shipping_fee_minor
+    assign final_total_with_shipping_minor = discounted_subtotal_minor
+
+    assign default_country_code = localization.country.iso_code
+    assign default_province = ''
+    assign default_city = ''
+    assign default_zip = ''
+    assign default_address1 = ''
+
+    if customer and customer.default_address
+      if customer.default_address.country_code != blank
+        assign default_country_code = customer.default_address.country_code
+      endif
+      assign default_province = customer.default_address.province
+      assign default_city = customer.default_address.city
+      assign default_zip = customer.default_address.zip
+      assign default_address1 = customer.default_address.address1
+    endif
   -%}
 
-  {% # We need to keep this node in place to allow morphing to work properly # %}
-  <div class="cart__original-total-container cart-primary-typography">
+  <div
+    class="cart__summary-totals-content"
+    data-cart-estimator
+    data-discounted-subtotal-minor="{{ discounted_subtotal_minor }}"
+    data-currency-code="{{ cart.currency.iso_code | escape }}"
+    data-locale="{{ request.locale.iso_code | escape }}"
+  >
+    <div class="cart-shipping-estimator">
+      <p class="cart-shipping-estimator__title">{{ 'apgo_cart.shipping_estimate_title' | t }}</p>
+      <div class="cart-shipping-estimator__grid">
+        <label class="cart-shipping-estimator__field">
+          <span>{{ 'apgo_cart.country' | t }}</span>
+          <select data-estimator-country>
+            {% for country in localization.available_countries %}
+              {% if country.iso_code == 'MY' or country.iso_code == 'SG' %}
+                <option
+                  value="{{ country.iso_code }}"
+                  {% if country.iso_code == default_country_code %}
+                    selected
+                  {% endif %}
+                >
+                  {{ country.name }}
+                </option>
+              {% endif %}
+            {% endfor %}
+            {% if default_country_code != 'MY' and default_country_code != 'SG' %}
+              <option value="{{ default_country_code }}" selected>{{ default_country_code }}</option>
+            {% endif %}
+          </select>
+        </label>
+        <label class="cart-shipping-estimator__field">
+          <span>{{ 'apgo_cart.province' | t }}</span>
+          <input
+            type="text"
+            value="{{ default_province | escape }}"
+            data-estimator-province
+            autocomplete="address-level1"
+          >
+        </label>
+        <label class="cart-shipping-estimator__field">
+          <span>{{ 'apgo_cart.city' | t }}</span>
+          <input
+            type="text"
+            value="{{ default_city | escape }}"
+            data-estimator-city
+            autocomplete="address-level2"
+          >
+        </label>
+        <label class="cart-shipping-estimator__field">
+          <span>{{ 'apgo_cart.zip' | t }}</span>
+          <input
+            type="text"
+            value="{{ default_zip | escape }}"
+            data-estimator-zip
+            autocomplete="postal-code"
+          >
+        </label>
+      </div>
+      <label class="cart-shipping-estimator__field cart-shipping-estimator__field--full">
+        <span>{{ 'apgo_cart.address1' | t }}</span>
+        <input
+          type="text"
+          value="{{ default_address1 | escape }}"
+          data-estimator-address1
+          autocomplete="address-line1"
+        >
+      </label>
+
+      <div class="cart-shipping-estimator__actions">
+        <button type="button" class="button button--secondary" data-estimate-shipping>
+          {{ 'apgo_cart.estimate_shipping' | t }}
+        </button>
+        <label class="cart-shipping-estimator__checkbox">
+          <input type="checkbox" data-estimator-use-on-checkout checked>
+          <span>{{ 'apgo_cart.use_for_checkout' | t }}</span>
+        </label>
+        {% if customer %}
+          <label class="cart-shipping-estimator__checkbox">
+            <input type="checkbox" data-estimator-save-default {% if customer.default_address == blank %}checked{% endif %}>
+            <span>{{ 'apgo_cart.save_default_preference' | t }}</span>
+          </label>
+        {% endif %}
+      </div>
+      <small class="cart-shipping-estimator__message" data-estimate-message>
+        {{ 'apgo_cart.shipping_not_estimated' | t }}
+      </small>
+    </div>
+
+    {% # We need to keep this node in place to allow morphing to work properly # %}
+    <div class="cart__original-total-container cart-primary-typography">
     <span class="cart__summary-item cart__original-total">
       <span class="cart__original-total-label">{{ 'content.cart_subtotal' | t }}</span>
       <span class="cart__original-total-value cart-secondary-typography">
@@ -42,14 +137,12 @@
       </span>
     </span>
 
-    {%- if is_mysg_market -%}
       <span class="cart__summary-item cart__shipping-fee">
         <span class="cart__shipping-fee-label">{{ 'apgo_cart.shipping_fee' | t }}</span>
-        <span class="cart__shipping-fee-value cart-secondary-typography">
-          {{- shipping_fee_minor | money -}}
+        <span class="cart__shipping-fee-value cart-secondary-typography" data-estimated-shipping-text>
+          {{- 'apgo_cart.shipping_not_estimated' | t -}}
         </span>
       </span>
-    {%- endif -%}
 
     <span class="cart__summary-item cart__discount-total">
       <span class="cart__discount-total-label">{{ 'content.discount' | t }}</span>
@@ -58,40 +151,40 @@
       </span>
     </span>
 
-    {%- if cart.cart_level_discount_applications.size > 0 -%}
-      <div class="cart__summary-discounts">
-        <ul
-          class="discounts list-unstyled"
-          role="list"
-          aria-label="{{ 'content.discounts' | t }}"
-        >
-          {%- for discount in cart.cart_level_discount_applications -%}
-            <li class="cart__summary-item cart__discount">
-              <span class="cart__discount-label">
-                {{- 'icon-discount.svg' | inline_asset_content -}}
-                {{ discount.title | escape }}
-              </span>
-              <span class="cart__discount-value cart-secondary-typography"
-                >-{{ discount.total_allocated_amount | money -}}
-              </span>
-            </li>
-          {%- endfor -%}
-        </ul>
-      </div>
-    {%- endif -%}
-  </div>
-
-  {% if settings.show_cart_note or settings.show_add_discount_code %}
-    <div class="cart-actions">
-      {% if settings.show_cart_note %}
-        {% render 'cart-note' %}
-      {% endif %}
-
-      {% if settings.show_add_discount_code %}
-        {% render 'cart-discount', section_id: section.id %}
-      {% endif %}
+      {%- if cart.cart_level_discount_applications.size > 0 -%}
+        <div class="cart__summary-discounts">
+          <ul
+            class="discounts list-unstyled"
+            role="list"
+            aria-label="{{ 'content.discounts' | t }}"
+          >
+            {%- for discount in cart.cart_level_discount_applications -%}
+              <li class="cart__summary-item cart__discount">
+                <span class="cart__discount-label">
+                  {{- 'icon-discount.svg' | inline_asset_content -}}
+                  {{ discount.title | escape }}
+                </span>
+                <span class="cart__discount-value cart-secondary-typography"
+                  >-{{ discount.total_allocated_amount | money -}}
+                </span>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endif -%}
     </div>
-  {% endif %}
+
+    {% if settings.show_cart_note or settings.show_add_discount_code %}
+      <div class="cart-actions">
+        {% if settings.show_cart_note %}
+          {% render 'cart-note' %}
+        {% endif %}
+
+        {% if settings.show_add_discount_code %}
+          {% render 'cart-discount', section_id: section.id %}
+        {% endif %}
+      </div>
+    {% endif %}
 
   {%- liquid
     if settings.currency_code_enabled_cart_total
@@ -128,6 +221,7 @@
       {% render 'tax-info', has_discounts_enabled: settings.show_add_discount_code %}
     </div>
   </div>
+  </div>
 </div>
 
 <div class="cart__ctas">
@@ -153,6 +247,75 @@
 </div>
 
 {% stylesheet %}
+  .cart-shipping-estimator {
+    border: 1px solid var(--color-border);
+    border-radius: var(--style-border-radius-inputs);
+    padding: var(--padding-md);
+    margin-block-end: var(--margin-md);
+  }
+
+  .cart-shipping-estimator__title {
+    margin: 0 0 var(--margin-xs) 0;
+    font-weight: 700;
+  }
+
+  .cart-shipping-estimator__grid {
+    display: grid;
+    gap: var(--gap-xs);
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .cart-shipping-estimator__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-3xs);
+    font-size: var(--cart-font-size--xs);
+  }
+
+  .cart-shipping-estimator__field--full {
+    margin-block-start: var(--margin-xs);
+  }
+
+  .cart-shipping-estimator__field input,
+  .cart-shipping-estimator__field select {
+    min-height: 42px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--style-border-radius-inputs);
+    padding: 0 var(--padding-sm);
+    background: transparent;
+    color: var(--color-foreground);
+  }
+
+  .cart-shipping-estimator__actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-2xs);
+    margin-block-start: var(--margin-sm);
+  }
+
+  .cart-shipping-estimator__checkbox {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-3xs);
+    font-size: var(--cart-font-size--xs);
+  }
+
+  .cart-shipping-estimator__message {
+    display: block;
+    margin-top: var(--margin-2xs);
+    color: rgb(from var(--color-foreground) r g b / var(--opacity-subdued-text, 0.8));
+  }
+
+  .cart__shipping-fee-value[data-estimating='true'] {
+    opacity: 0.8;
+  }
+
+  @media screen and (width < 750px) {
+    .cart-shipping-estimator__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
   .cart-actions {
     display: flex;
     flex-direction: column;
@@ -180,3 +343,191 @@
     color: rgb(from var(--color-foreground) r g b / var(--opacity-subdued-text, 0.7));
   }
 {% endstylesheet %}
+
+<script>
+  (() => {
+    if (window.__apgoCartEstimatorBound) return;
+    window.__apgoCartEstimatorBound = true;
+
+    const formatMoney = (minor, locale, currency) =>
+      new Intl.NumberFormat(locale || 'en', { style: 'currency', currency: currency || 'USD' }).format((minor || 0) / 100);
+
+    const buildCheckoutQuery = (addr) => {
+      const q = new URLSearchParams();
+      q.set('checkout[shipping_address][country]', addr.country || '');
+      q.set('checkout[shipping_address][province]', addr.province || '');
+      q.set('checkout[shipping_address][city]', addr.city || '');
+      q.set('checkout[shipping_address][zip]', addr.zip || '');
+      q.set('checkout[shipping_address][address1]', addr.address1 || '');
+      return q.toString();
+    };
+
+    const saveCartEstimatorAttributes = async (addr, saveDefault) => {
+      try {
+        await fetch('/cart/update.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({
+            attributes: {
+              estimated_shipping_country: addr.country || '',
+              estimated_shipping_province: addr.province || '',
+              estimated_shipping_city: addr.city || '',
+              estimated_shipping_zip: addr.zip || '',
+              estimated_shipping_address1: addr.address1 || '',
+              save_default_address_preference: saveDefault ? 'yes' : 'no',
+            },
+          }),
+        });
+      } catch (e) {
+        // Non-blocking: attributes are optional for checkout estimation flow.
+      }
+    };
+
+    const fetchEstimatedShippingMinor = async (addr) => {
+      const payload = {
+        shipping_address: {
+          country: addr.country,
+          province: addr.province,
+          city: addr.city,
+          zip: addr.zip,
+          address1: addr.address1,
+        },
+      };
+
+      await fetch('/cart/prepare_shipping_rates.json', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const p = new URLSearchParams();
+      p.set('shipping_address[country]', addr.country || '');
+      p.set('shipping_address[province]', addr.province || '');
+      p.set('shipping_address[city]', addr.city || '');
+      p.set('shipping_address[zip]', addr.zip || '');
+      p.set('shipping_address[address1]', addr.address1 || '');
+
+      let rates = [];
+      for (let i = 0; i < 8; i += 1) {
+        const res = await fetch(`/cart/async_shipping_rates.json?${p.toString()}`, {
+          headers: { Accept: 'application/json' },
+        });
+        const json = await res.json();
+        rates = Array.isArray(json?.shipping_rates) ? json.shipping_rates : [];
+        if (rates.length > 0) break;
+        await new Promise((r) => setTimeout(r, 600));
+      }
+
+      if (!rates.length) return null;
+      const toMinor = (price) => Math.round(parseFloat(price || '0') * 100);
+      return rates.map((r) => toMinor(r.price)).sort((a, b) => a - b)[0];
+    };
+
+    const bindEstimator = () => {
+      const root = document.querySelector('[data-cart-estimator]');
+      if (!root) return;
+      if (root.dataset.bound === 'true') return;
+      root.dataset.bound = 'true';
+
+      const locale = root.dataset.locale || 'en';
+      const currencyCode = root.dataset.currencyCode || 'USD';
+      const discountedSubtotalMinor = Number(root.dataset.discountedSubtotalMinor || '0');
+
+      const countryEl = root.querySelector('[data-estimator-country]');
+      const provinceEl = root.querySelector('[data-estimator-province]');
+      const cityEl = root.querySelector('[data-estimator-city]');
+      const zipEl = root.querySelector('[data-estimator-zip]');
+      const address1El = root.querySelector('[data-estimator-address1]');
+      const estimateBtn = root.querySelector('[data-estimate-shipping]');
+      const shippingText = root.querySelector('[data-estimated-shipping-text]');
+      const totalText = root.querySelector('[data-cart-subtotal]');
+      const message = root.querySelector('[data-estimate-message]');
+      const checkoutBtn = document.getElementById('checkout');
+      const useForCheckout = root.querySelector('[data-estimator-use-on-checkout]');
+      const saveDefault = root.querySelector('[data-estimator-save-default]');
+
+      let latestEstimatedShippingMinor = null;
+
+      const getAddress = () => ({
+        country: countryEl?.value?.trim() || '',
+        province: provinceEl?.value?.trim() || '',
+        city: cityEl?.value?.trim() || '',
+        zip: zipEl?.value?.trim() || '',
+        address1: address1El?.value?.trim() || '',
+      });
+
+      const setMessage = (text) => {
+        if (message) message.textContent = text || '';
+      };
+
+      const repaintTotals = () => {
+        const shippingMinor = latestEstimatedShippingMinor || 0;
+        if (shippingText) {
+          if (latestEstimatedShippingMinor == null) {
+            shippingText.textContent = `{{ 'apgo_cart.shipping_not_estimated' | t | escape }}`;
+          } else {
+            shippingText.textContent = formatMoney(shippingMinor, locale, currencyCode);
+          }
+        }
+
+        const estimatedTotalMinor = discountedSubtotalMinor + shippingMinor;
+        if (totalText) {
+          const formatted = formatMoney(estimatedTotalMinor, locale, currencyCode);
+          totalText.textContent = formatted;
+          totalText.setAttribute('value', formatted);
+        }
+      };
+
+      estimateBtn?.addEventListener('click', async () => {
+        const address = getAddress();
+        if (!address.country || !address.zip) {
+          setMessage(`{{ 'apgo_cart.shipping_estimate_error' | t | escape }}`);
+          return;
+        }
+
+        shippingText?.setAttribute('data-estimating', 'true');
+        setMessage(`{{ 'apgo_cart.estimating_shipping' | t | escape }}`);
+
+        try {
+          await saveCartEstimatorAttributes(address, saveDefault?.checked === true);
+          latestEstimatedShippingMinor = await fetchEstimatedShippingMinor(address);
+          if (latestEstimatedShippingMinor == null) {
+            setMessage(`{{ 'apgo_cart.shipping_estimate_error' | t | escape }}`);
+          } else {
+            setMessage('');
+          }
+          repaintTotals();
+        } catch (e) {
+          setMessage(`{{ 'apgo_cart.shipping_estimate_error' | t | escape }}`);
+          latestEstimatedShippingMinor = null;
+          repaintTotals();
+        } finally {
+          shippingText?.removeAttribute('data-estimating');
+        }
+      });
+
+      checkoutBtn?.addEventListener(
+        'click',
+        (e) => {
+          if (!useForCheckout?.checked) return;
+          const address = getAddress();
+          if (!address.country || !address.zip) return;
+          e.preventDefault();
+          const q = buildCheckoutQuery(address);
+          window.location.href = `/checkout?${q}`;
+        },
+        true
+      );
+
+      document.addEventListener('cart:update', () => {
+        const freshRoot = document.querySelector('[data-cart-estimator]');
+        if (freshRoot && freshRoot !== root) bindEstimator();
+      });
+
+      repaintTotals();
+    };
+
+    document.addEventListener('DOMContentLoaded', bindEstimator);
+    bindEstimator();
+  })();
+</script>
