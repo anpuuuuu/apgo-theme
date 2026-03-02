@@ -1,0 +1,18 @@
+---
+description: 新 agent 接手前請先讀專案系統說明
+alwaysApply: true
+---
+
+# 先讀系統說明
+
+接手此專案時，請**先讀取** `.cursor/SYSTEM.md`，再開始改碼或回答問題。
+
+該檔案包含：
+
+- 專案類型（Shopify 2.0 主題、APGO 品牌、雙語）
+- 頁面與首頁區塊結構（index.json、custom-liquid、Shogun）
+- 影片區塊與 ID 規則（S2 Eng 專用 ID、避免 brandVideo 衝突）
+- 已做過的客製與重要檔案路徑
+- 修改 index.json 的注意事項與檢查清單
+
+讀完後再依需求修改對應檔案，並依 auto-push 規則完成 git 流程。
