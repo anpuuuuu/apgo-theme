@@ -213,3 +213,48 @@
     },
   };
 </script>
+
+<script>
+  (() => {
+    if (window.__apgoS2EngDebugBootstrap) return;
+    window.__apgoS2EngDebugBootstrap = true;
+
+    const sendDebugLog = (payload) => {
+      // #region agent log
+      fetch('http://127.0.0.1:7485/ingest/4346c855-23b5-4e71-b2b3-fc37c75b29dd',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'bbfea4'},body:JSON.stringify({sessionId:'bbfea4',runId:'run-initial-2',...payload,timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
+    };
+
+    sendDebugLog({
+      hypothesisId: 'H0',
+      location: 'snippets/scripts.liquid:219',
+      message: 'Debug bootstrap script executed',
+      data: {
+        path: location.pathname,
+        templateName: Theme?.template?.name || '',
+      },
+    });
+
+    const probe = () => {
+      const s2Video = document.getElementById('brandVideoS2Eng');
+      const s2Loading = document.getElementById('loadingRingS2Eng');
+      sendDebugLog({
+        hypothesisId: 'H1',
+        location: 'snippets/scripts.liquid:233',
+        message: 'Probe S2Eng elements from global scripts',
+        data: {
+          hasVideo: !!s2Video,
+          hasLoadingRing: !!s2Loading,
+          videoTagName: s2Video ? s2Video.tagName : '',
+          videoReadyState: s2Video ? s2Video.readyState : null,
+        },
+      });
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', probe, { once: true });
+    } else {
+      probe();
+    }
+  })();
+</script>
