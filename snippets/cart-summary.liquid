@@ -310,6 +310,10 @@
     opacity: 0.8;
   }
 
+  .cart-page__summary .cart-shipping-estimator {
+    display: none;
+  }
+
   @media screen and (width < 750px) {
     .cart-shipping-estimator__grid {
       grid-template-columns: 1fr;
@@ -439,8 +443,8 @@
       const zipEl = root.querySelector('[data-estimator-zip]');
       const address1El = root.querySelector('[data-estimator-address1]');
       const estimateBtn = root.querySelector('[data-estimate-shipping]');
-      const shippingText = root.querySelector('[data-estimated-shipping-text]');
-      const totalText = root.querySelector('[data-cart-subtotal]');
+      const shippingText = document.querySelector('.cart__shipping-fee-value[data-estimated-shipping-text]');
+      const totalText = document.querySelector('.cart-page__summary [data-cart-subtotal]');
       const message = root.querySelector('[data-estimate-message]');
       const checkoutBtn = document.getElementById('checkout');
       const useForCheckout = root.querySelector('[data-estimator-use-on-checkout]');

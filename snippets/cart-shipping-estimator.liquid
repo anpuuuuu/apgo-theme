@@ -1,0 +1,125 @@
+{%- liquid
+  assign promo_threshold_minor = 10000
+  assign promo_discount_minor = 1000
+
+  assign projected_discount_minor = 0
+  if localization.country.iso_code == 'MY' and cart.original_total_price >= promo_threshold_minor
+    assign projected_discount_minor = promo_discount_minor
+  endif
+
+  assign discount_total_minor = cart.total_discount
+  if discount_total_minor < projected_discount_minor
+    assign discount_total_minor = projected_discount_minor
+  endif
+
+  assign discounted_subtotal_minor = cart.original_total_price | minus: discount_total_minor
+  if discounted_subtotal_minor < 0
+    assign discounted_subtotal_minor = 0
+  endif
+
+  assign default_country_code = localization.country.iso_code
+  assign default_province = ''
+  assign default_city = ''
+  assign default_zip = ''
+  assign default_address1 = ''
+
+  if customer and customer.default_address
+    if customer.default_address.country_code != blank
+      assign default_country_code = customer.default_address.country_code
+    endif
+    assign default_province = customer.default_address.province
+    assign default_city = customer.default_address.city
+    assign default_zip = customer.default_address.zip
+    assign default_address1 = customer.default_address.address1
+  endif
+-%}
+
+<div
+  class="cart-shipping-estimator-host"
+  data-cart-estimator
+  data-discounted-subtotal-minor="{{ discounted_subtotal_minor }}"
+  data-currency-code="{{ cart.currency.iso_code | escape }}"
+  data-locale="{{ request.locale.iso_code | escape }}"
+>
+  <div class="cart-shipping-estimator cart-shipping-estimator--enhanced">
+    <p class="cart-shipping-estimator__title">{{ 'apgo_cart.shipping_estimate_title' | t }}</p>
+    <div class="cart-shipping-estimator__grid">
+      <label class="cart-shipping-estimator__field">
+        <span>{{ 'apgo_cart.country' | t }}</span>
+        <select data-estimator-country>
+          {% for country in localization.available_countries %}
+            {% if country.iso_code == 'MY' or country.iso_code == 'SG' %}
+              <option
+                value="{{ country.iso_code }}"
+                {% if country.iso_code == default_country_code %}
+                  selected
+                {% endif %}
+              >
+                {{ country.name }}
+              </option>
+            {% endif %}
+          {% endfor %}
+          {% if default_country_code != 'MY' and default_country_code != 'SG' %}
+            <option value="{{ default_country_code }}" selected>{{ default_country_code }}</option>
+          {% endif %}
+        </select>
+      </label>
+      <label class="cart-shipping-estimator__field">
+        <span>{{ 'apgo_cart.province' | t }}</span>
+        <input
+          type="text"
+          value="{{ default_province | escape }}"
+          data-estimator-province
+          autocomplete="address-level1"
+        >
+      </label>
+      <label class="cart-shipping-estimator__field">
+        <span>{{ 'apgo_cart.city' | t }}</span>
+        <input
+          type="text"
+          value="{{ default_city | escape }}"
+          data-estimator-city
+          autocomplete="address-level2"
+        >
+      </label>
+      <label class="cart-shipping-estimator__field">
+        <span>{{ 'apgo_cart.zip' | t }}</span>
+        <input
+          type="text"
+          value="{{ default_zip | escape }}"
+          data-estimator-zip
+          autocomplete="postal-code"
+        >
+      </label>
+    </div>
+    <label class="cart-shipping-estimator__field cart-shipping-estimator__field--full">
+      <span>{{ 'apgo_cart.address1' | t }}</span>
+      <input
+        type="text"
+        value="{{ default_address1 | escape }}"
+        data-estimator-address1
+        autocomplete="address-line1"
+      >
+    </label>
+
+    <div class="cart-shipping-estimator__actions">
+      <button type="button" class="button button--secondary" data-estimate-shipping>
+        {{ 'apgo_cart.estimate_shipping' | t }}
+      </button>
+      <label class="cart-shipping-estimator__checkbox">
+        <input type="checkbox" data-estimator-use-on-checkout checked>
+        <span>{{ 'apgo_cart.use_for_checkout' | t }}</span>
+      </label>
+      {% if customer %}
+        <label class="cart-shipping-estimator__checkbox">
+          <input type="checkbox" data-estimator-save-default {% if customer.default_address == blank %}checked{% endif %}>
+          <span>{{ 'apgo_cart.save_default_preference' | t }}</span>
+        </label>
+      {% endif %}
+    </div>
+    <small class="cart-shipping-estimator__message" data-estimate-message>
+      {{ 'apgo_cart.shipping_not_estimated' | t }}
+    </small>
+  </div>
+</div>
+
