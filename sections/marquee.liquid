@@ -6,6 +6,14 @@
 ></script>
 
 {% assign gap_between_elements = section.settings.gap_between_elements %}
+{% liquid
+  assign show_market_promo = false
+  if section.settings.show_mysg_discount_promo and template.name == 'index'
+    if localization.country.iso_code == 'MY' or localization.country.iso_code == 'SG'
+      assign show_market_promo = true
+    endif
+  endif
+%}
 
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
 <marquee-component
@@ -27,6 +35,9 @@
       ref="content"
     >
       <div class="marquee__repeated-items">
+        {% if show_market_promo %}
+          <p class="marquee__promo-item">{{ 'apgo_promotions.mysg_discount_banner' | t }}</p>
+        {% endif %}
         {% content_for 'blocks' %}
       </div>
     </div>
@@ -71,6 +82,12 @@
 
   .marquee__repeated-items > * {
     align-content: center;
+  }
+
+  .marquee__promo-item {
+    margin: 0;
+    font-weight: 700;
+    letter-spacing: 0.02em;
   }
 
   @media (prefers-reduced-motion: no-preference) {
@@ -162,6 +179,12 @@
       "step": 1,
       "unit": "px",
       "default": 24
+    },
+    {
+      "type": "checkbox",
+      "id": "show_mysg_discount_promo",
+      "label": "Show MY/SG promotion in marquee",
+      "default": true
     }
   ],
   "presets": [
