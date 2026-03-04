@@ -236,7 +236,6 @@
     },
     "cart_totals_Cya3eE": {
       "type": "cart-totals",
-      "disabled": true,
       "name": "Cart Totals (Standalone)",
       "settings": {
         "show_note_or_code": true,
