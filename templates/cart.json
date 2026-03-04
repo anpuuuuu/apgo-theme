@@ -207,125 +207,11 @@
         "padding-block-end": 0
       }
     },
-    "cart_upsell_recommendations_L4gQhn": {
-      "type": "cart-upsell-recommendations",
-      "name": "Recommended Items",
-      "settings": {
-        "section_title": "Top selling products",
-        "show_popular_button": false,
-        "button_text": "Click to see popular products",
-        "popular_items_url": "",
-        "loading_bg_color": "#1a1a1a",
-        "use_gradient": true,
-        "bg_color_start": "#1a1a1a",
-        "bg_color_end": "#2d2d2d",
-        "border_color": "#333333",
-        "use_accent_gradient": true,
-        "accent_color_start": "#ff6b35",
-        "accent_color_end": "#f7931e",
-        "text_color": "#ffffff",
-        "text_secondary_color": "#cccccc",
-        "product_list": [
-          "2x-apgo-car-wiper-fluid-refill-pack-300ml",
-          "apgo-car-windshield-oil-film-remover-perfect-glass-restorer",
-          "apgo-car-headlight-repair-polish-cream",
-          "apgo-car-paint-polish-cream-white-restorer",
-          "apgo-car-wash-foam-pressure-sprayer-version-2",
-          "apgo-pro-car-wash-towel-l-160cm-x-60cm"
-        ],
-        "max_products": 8,
-        "show_prices": true,
-        "enable_quick_add": true,
-        "image_ratio": "square",
-        "card_width_desktop": 320,
-        "card_width_tablet": 280,
-        "card_width_mobile_large": 300,
-        "card_width_mobile": 260,
-        "button_max_width": 150,
-        "hide_button_text_mobile": false,
-        "mobile_layout": "vertical",
-        "hide_price_mobile": false,
-        "products_visible_mobile": 1.5
-      }
-    },
-    "cart_free_shipping_goal_h8k2M": {
-      "type": "cart-free-shipping-goal",
-      "disabled": true,
-      "name": "MY/SG 免运进度（新）",
-      "settings": {
-        "title": "Free shipping progress"
-      }
-    },
     "apgo_coating_products_VU6az3": {
       "type": "apgo-coating-products",
-      "blocks": {
-        "tier_8iDRND": {
-          "type": "tier",
-          "name": "Tier - 100",
-          "settings": {
-            "amount": 100,
-            "benefit": "Free Cloth",
-            "description": ""
-          }
-        },
-        "tier_nGqyhm": {
-          "type": "tier",
-          "name": "Tier - 200",
-          "settings": {
-            "amount": 200,
-            "benefit": "10% Discount",
-            "description": ""
-          }
-        },
-        "tier_hNg9dR": {
-          "type": "tier",
-          "name": "Tier - 350",
-          "settings": {
-            "amount": 350,
-            "benefit": "Free Shipping",
-            "description": ""
-          }
-        },
-        "tier_UDNMJg": {
-          "type": "tier",
-          "name": "Tier - 500",
-          "settings": {
-            "amount": 500,
-            "benefit": "Free Glaze",
-            "description": ""
-          }
-        }
-      },
-      "block_order": [
-        "tier_8iDRND",
-        "tier_nGqyhm",
-        "tier_hNg9dR",
-        "tier_UDNMJg"
-      ],
-      "disabled": true,
-      "name": "旧版 Spend More, Get More（停用）",
+      "name": "Spend More, Get More",
       "settings": {
-        "progress_title": "ABCDE",
-        "initial_message": "Spend More, Get More",
-        "upsell_title": "Suggested items",
-        "product_list": [
-          "apgo-atomic-glaze-car-nano-coating-refill-pack-new-version",
-          "apgo-car-wash-shampoo-special-formula-refill-pack",
-          "apgo-car-interior-eco-friendly-cleaner",
-          "apgo-car-wiper-fluid-refill-pack",
-          "apgo-car-windshield-oil-film-remover-perfect-glass-restorer",
-          "apgo-pro-car-wash-towel-m-100cm-x-50cm",
-          "apgo-pro-car-microfiber-coral-towels-30cm-x-40cm",
-          "apgo-floor-cleaner-made-in-taiwan"
-        ],
-        "max_products": 8,
-        "show_prices": true,
-        "enable_quick_add": true,
-        "hide_progress": false,
-        "hide_conditional": false,
-        "hide_upsell": false,
-        "loading_bg_color": "#1a1a1a",
-        "use_accent_gradient": true,
+        "progress_title": "Free shipping",
         "accent_color_start": "#ff6b35",
         "accent_color_end": "#f7931e",
         "text_color": "#ffffff",
@@ -537,8 +423,8 @@
     "custom_liquid_dKpxbi",
     "custom_liquid_3bLYJc",
     "cart-section",
-    "cart_upsell_recommendations_L4gQhn",
     "apgo_coating_products_VU6az3",
+    "cart_upsell_recommendations_L4gQhn",
     "cart_totals_Cya3eE",
     "store_pickup_modal_nzDggy",
     "store_pickup_modal_49pDFe",
