@@ -103,6 +103,16 @@
     .cart__container--extend {
       height: 100%;
     }
+
+    .cart-page.cart-page--summary-hidden {
+      grid-template-columns: 1fr;
+    }
+
+    .cart-page.cart-page--summary-hidden .cart-page__title,
+    .cart-page.cart-page--summary-hidden .cart-page__items,
+    .cart-page.cart-page--summary-hidden .cart-page__more-blocks {
+      grid-column: 1 / -1;
+    }
   }
 
   @media screen and (width >= 1400px) {
@@ -111,6 +121,24 @@
     }
   }
 {% endstylesheet %}
+
+{% javascript %}
+  (() => {
+    const cartPage = document.querySelector('.cart-page');
+    const summary = document.querySelector('.cart-page__summary');
+    if (!cartPage || !summary) return;
+
+    const syncSummaryHiddenState = () => {
+      const hidden = summary.hidden || summary.style.display === 'none' || getComputedStyle(summary).display === 'none';
+      cartPage.classList.toggle('cart-page--summary-hidden', hidden);
+    };
+
+    syncSummaryHiddenState();
+    const observer = new MutationObserver(syncSummaryHiddenState);
+    observer.observe(summary, { attributes: true, attributeFilter: ['style', 'class', 'hidden'] });
+    window.addEventListener('resize', syncSummaryHiddenState, { passive: true });
+  })();
+{% endjavascript %}
 
 {% schema %}
 {

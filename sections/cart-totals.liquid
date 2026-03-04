@@ -24,12 +24,14 @@
 
       assign discount_total_minor = cart.total_discount
       assign remaining_for_free_shipping_minor = 0
+      assign free_shipping_remaining_formatted = remaining_for_free_shipping_minor | money
       assign free_shipping_unlocked = false
       if market_threshold_minor > 0
         if cart.original_total_price >= market_threshold_minor
           assign free_shipping_unlocked = true
         else
           assign remaining_for_free_shipping_minor = market_threshold_minor | minus: cart.original_total_price
+          assign free_shipping_remaining_formatted = remaining_for_free_shipping_minor | money
         endif
       endif
       assign final_total_with_shipping_minor = cart.total_price
@@ -69,7 +71,7 @@
           {%- elsif free_shipping_unlocked -%}
             {{- 'apgo_cart.free_shipping_unlocked' | t -}}
           {%- else -%}
-            {{- 'apgo_cart.free_shipping_remaining' | t: amount: remaining_for_free_shipping_minor | money -}}
+            {{- 'apgo_cart.free_shipping_remaining' | t: amount: free_shipping_remaining_formatted -}}
           {%- endif -%}
         </span>
       </div>
@@ -137,8 +139,8 @@
     box-shadow: none !important;
     border: none !important;
     padding: 0 !important;
-    margin: 20px auto !important;
-    max-width: 480px !important;
+    margin: 20px 0 !important;
+    max-width: none !important;
     width: 100% !important;
     position: relative !important;
     z-index: 1 !important;
@@ -245,11 +247,11 @@
   /* 響應式設計 */
   @media (max-width: 768px) {
     .cart-totals--standalone {
-      margin: 12px auto !important;
+      margin: 12px 0 !important;
       border-radius: 0 !important;
       padding: 0 !important;
-      width: calc(100% - 24px) !important;
-      max-width: calc(100% - 24px) !important;
+      width: 100% !important;
+      max-width: none !important;
     }
     
     .cart-totals--standalone .cart__original-total-label {
@@ -272,7 +274,7 @@
   @media (max-width: 480px) {
     .cart-totals--standalone {
       padding: 0 !important;
-      margin: 8px auto !important;
+      margin: 8px 0 !important;
     }
     
     .cart-totals--standalone .cart__original-total-label {

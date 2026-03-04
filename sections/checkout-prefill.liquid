@@ -119,7 +119,7 @@
   }
 
   .apgo-shipping-address__container {
-    max-width: 760px;
+    max-width: none;
     margin: 0 auto;
     position: relative;
   }
@@ -160,7 +160,7 @@
   .apgo-shipping-address__subtitle {
     margin: 0;
     font-size: 0.92rem;
-    color: #d1d5db;
+    color: rgb(255 255 255 / 65%);
   }
 
   .apgo-shipping-address__form {
@@ -177,7 +177,7 @@
 
   .apgo-shipping-address__field label {
     font-size: 0.9rem;
-    color: #f3f4f6;
+    color: rgb(255 255 255 / 68%);
     font-weight: 600;
   }
 
@@ -188,21 +188,25 @@
     border: 1px solid #374151;
     border-radius: 12px;
     background: #0b1220;
-    color: #f9fafb;
+    color: rgb(255 255 255 / 72%);
     padding: 0 12px;
     font-size: 0.92rem;
   }
 
+  .apgo-shipping-address__field input::placeholder {
+    color: rgb(255 255 255 / 45%);
+  }
+
   .apgo-shipping-address__field select option {
     background: #0b1220;
-    color: #f9fafb;
+    color: rgb(255 255 255 / 72%);
   }
 
   .apgo-shipping-address__message {
     margin-top: 12px;
     min-height: 18px;
     font-size: 0.85rem;
-    color: #cbd5e1;
+    color: rgb(255 255 255 / 62%);
   }
 
   .apgo-shipping-address__message.error {
@@ -217,7 +221,7 @@
 
   @media (min-width: 1024px) {
     .apgo-shipping-address__container {
-      max-width: 680px;
+      max-width: none;
     }
 
     .apgo-shipping-address__card {
