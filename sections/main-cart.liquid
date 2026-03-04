@@ -20,12 +20,6 @@
         {%- content_for 'block', id: 'cart-page-items', type: '_cart-products' %}
       </div>
 
-      {%- unless cart.empty? -%}
-        <div class="cart-page__summary">
-          {%- content_for 'block', id: 'cart-page-summary', type: '_cart-summary' -%}
-        </div>
-      {%- endunless -%}
-
       <div class="cart-page__more-blocks">
         {%- content_for 'blocks' -%}
       </div>
@@ -84,42 +78,17 @@
 
   @media screen and (width >= 750px) {
     .cart-page {
-      grid-template-columns: 1fr min(50vw, var(--sidebar-width));
-      grid-template-rows: min-content min-content 1fr;
-    }
-
-    .cart-page__summary {
-      display: grid;
-      height: fit-content;
-      grid-column: 2;
-      grid-row: 1 / -1;
-      align-self: start;
-      grid-template-rows: subgrid;
-      padding-top: 0;
-      position: sticky;
-      top: calc(var(--header-group-height, 0px) + 16px);
+      grid-template-columns: 1fr;
+      grid-template-rows: auto;
     }
 
     .section--page-width .cart-page:has(.cart__container--extend) {
       grid-column: 2 / 4;
-      grid-template-columns: 1fr minmax(
-          var(--sidebar-width),
-          calc((100vw - var(--page-width)) / 2 + var(--sidebar-width))
-        );
+      grid-template-columns: 1fr;
     }
 
     .cart__container--extend {
       height: 100%;
-    }
-
-    .cart-page.cart-page--summary-hidden {
-      grid-template-columns: 1fr;
-    }
-
-    .cart-page.cart-page--summary-hidden .cart-page__title,
-    .cart-page.cart-page--summary-hidden .cart-page__items,
-    .cart-page.cart-page--summary-hidden .cart-page__more-blocks {
-      grid-column: 1 / -1;
     }
   }
 
@@ -129,24 +98,6 @@
     }
   }
 {% endstylesheet %}
-
-{% javascript %}
-  (() => {
-    const cartPage = document.querySelector('.cart-page');
-    const summary = document.querySelector('.cart-page__summary');
-    if (!cartPage || !summary) return;
-
-    const syncSummaryHiddenState = () => {
-      const hidden = summary.hidden || summary.style.display === 'none' || getComputedStyle(summary).display === 'none';
-      cartPage.classList.toggle('cart-page--summary-hidden', hidden);
-    };
-
-    syncSummaryHiddenState();
-    const observer = new MutationObserver(syncSummaryHiddenState);
-    observer.observe(summary, { attributes: true, attributeFilter: ['style', 'class', 'hidden'] });
-    window.addEventListener('resize', syncSummaryHiddenState, { passive: true });
-  })();
-{% endjavascript %}
 
 {% schema %}
 {
