@@ -131,6 +131,7 @@
   
   /* 主容器樣式 - 使用特定類別避免衝突 */
   .cart-totals--standalone { 
+    --apgo-cart-inline-space: clamp(12px, 2.2vw, 28px);
     display: flex; 
     flex-direction: column; 
     gap: var(--gap-md); 
@@ -138,7 +139,7 @@
     border-radius: 0 !important;
     box-shadow: none !important;
     border: none !important;
-    padding: 0 !important;
+    padding: 0 var(--apgo-cart-inline-space) !important;
     margin: 20px 0 !important;
     max-width: none !important;
     width: 100% !important;
@@ -249,7 +250,7 @@
     .cart-totals--standalone {
       margin: 12px 0 !important;
       border-radius: 0 !important;
-      padding: 0 !important;
+      padding: 0 var(--apgo-cart-inline-space) !important;
       width: 100% !important;
       max-width: none !important;
     }
@@ -273,7 +274,7 @@
   
   @media (max-width: 480px) {
     .cart-totals--standalone {
-      padding: 0 !important;
+      padding: 0 var(--apgo-cart-inline-space) !important;
       margin: 8px 0 !important;
     }
     

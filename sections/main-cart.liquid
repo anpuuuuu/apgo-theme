@@ -35,6 +35,7 @@
 
 {% stylesheet %}
   .cart-page {
+    --apgo-cart-inline-space: clamp(12px, 2.2vw, 28px);
     --cart-font-size--2xs: var(--font-size--2xs);
     --cart-font-size--xs: var(--font-size--xs);
     --cart-font-size--sm: var(--font-size--sm);
@@ -72,6 +73,13 @@
 
   .cart-page__summary {
     padding-top: var(--padding-xl);
+  }
+
+  .cart-page__title,
+  .cart-page__items,
+  .cart-page__summary,
+  .cart-page__more-blocks {
+    padding-inline: var(--apgo-cart-inline-space);
   }
 
   @media screen and (width >= 750px) {
