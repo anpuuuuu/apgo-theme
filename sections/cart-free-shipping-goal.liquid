@@ -1,0 +1,165 @@
+{% comment %}
+  Cart free shipping goal section (MY/SG only)
+{% endcomment %}
+
+<section class="cart-free-shipping-goal" data-free-shipping-goal data-country="{{ localization.country.iso_code | escape }}">
+  <div class="cart-free-shipping-goal__inner">
+    <h3 class="cart-free-shipping-goal__title">{{ section.settings.title | default: 'Free shipping progress' }}</h3>
+    <div class="cart-free-shipping-goal__bar-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+      <div class="cart-free-shipping-goal__bar-fill" data-goal-fill></div>
+    </div>
+    <div class="cart-free-shipping-goal__amounts">
+      <span data-goal-current>--</span>
+      <span data-goal-target>--</span>
+    </div>
+    <p class="cart-free-shipping-goal__message" data-goal-message></p>
+  </div>
+</section>
+
+<style>
+  .cart-free-shipping-goal {
+    width: 100%;
+    margin: 18px auto 0;
+    padding: 0 20px;
+  }
+
+  .cart-free-shipping-goal__inner {
+    background: linear-gradient(145deg, #1b1b1b, #121212);
+    border: 1px solid #3a3a3a;
+    border-radius: 20px;
+    padding: 18px 20px;
+  }
+
+  .cart-free-shipping-goal__title {
+    margin: 0 0 12px;
+    color: #f3f4f6;
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+
+  .cart-free-shipping-goal__bar-track {
+    width: 100%;
+    height: 10px;
+    background: #2f2f2f;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .cart-free-shipping-goal__bar-fill {
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #f08418, #ff9a3c);
+    transition: width 0.35s ease;
+  }
+
+  .cart-free-shipping-goal__amounts {
+    margin-top: 8px;
+    display: flex;
+    justify-content: space-between;
+    color: #d1d5db;
+    font-size: 0.92rem;
+  }
+
+  .cart-free-shipping-goal__message {
+    margin: 10px 0 0;
+    color: #f3f4f6;
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+
+  @media screen and (width < 750px) {
+    .cart-free-shipping-goal {
+      padding: 0 12px;
+    }
+
+    .cart-free-shipping-goal__inner {
+      border-radius: 16px;
+      padding: 14px 14px;
+    }
+  }
+</style>
+
+<script>
+  (() => {
+    const root = document.querySelector('[data-free-shipping-goal]');
+    if (!root) return;
+    if (root.dataset.bound === 'true') return;
+    root.dataset.bound = 'true';
+
+    const fill = root.querySelector('[data-goal-fill]');
+    const msg = root.querySelector('[data-goal-message]');
+    const current = root.querySelector('[data-goal-current]');
+    const target = root.querySelector('[data-goal-target]');
+    const bar = root.querySelector('.cart-free-shipping-goal__bar-track');
+    const country = (root.dataset.country || '').toUpperCase();
+
+    const getRule = (iso) => {
+      if (iso === 'MY') return { thresholdMinor: 10000, currency: 'MYR' };
+      if (iso === 'SG') return { thresholdMinor: 7900, currency: 'SGD' };
+      return null;
+    };
+
+    const formatMoney = (minor, currency) =>
+      new Intl.NumberFormat(document.documentElement.lang || 'en', { style: 'currency', currency }).format((minor || 0) / 100);
+
+    const render = (subtotalMinor) => {
+      const rule = getRule(country);
+      if (!rule) {
+        root.style.display = 'none';
+        return;
+      }
+
+      root.style.display = '';
+      const progress = Math.min((subtotalMinor / rule.thresholdMinor) * 100, 100);
+      const remaining = Math.max(rule.thresholdMinor - subtotalMinor, 0);
+
+      fill.style.width = `${progress}%`;
+      bar?.setAttribute('aria-valuenow', String(Math.round(progress)));
+      current.textContent = formatMoney(subtotalMinor, rule.currency);
+      target.textContent = formatMoney(rule.thresholdMinor, rule.currency);
+
+      if (remaining <= 0) {
+        msg.textContent = `{{ 'apgo_cart.free_shipping_unlocked' | t | escape }}`;
+      } else {
+        const amount = formatMoney(remaining, rule.currency);
+        const text = `{{ 'apgo_cart.free_shipping_remaining' | t: amount: '__AMOUNT__' | escape }}`;
+        msg.textContent = text.replace('__AMOUNT__', amount);
+      }
+    };
+
+    const refresh = async () => {
+      try {
+        const res = await fetch('/cart.js', { headers: { Accept: 'application/json' } });
+        const cart = await res.json();
+        const subtotalMinor = Number(cart?.original_total_price || cart?.total_price || 0);
+        render(subtotalMinor);
+      } catch (_) {}
+    };
+
+    ['cart:refresh', 'cart:updated', 'cart:update', 'cart:change', 'product:added', 'ajaxProduct:added'].forEach((eventName) => {
+      document.addEventListener(eventName, refresh, { passive: true });
+    });
+
+    refresh();
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Cart Free Shipping Goal",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Free shipping progress"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Cart Free Shipping Goal"
+    }
+  ]
+}
+{% endschema %}

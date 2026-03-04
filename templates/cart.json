@@ -248,6 +248,13 @@
         "products_visible_mobile": 1.5
       }
     },
+    "cart_free_shipping_goal_h8k2M": {
+      "type": "cart-free-shipping-goal",
+      "name": "Free Shipping Goal",
+      "settings": {
+        "title": "Free shipping progress"
+      }
+    },
     "apgo_coating_products_VU6az3": {
       "type": "apgo-coating-products",
       "blocks": {
@@ -489,7 +496,7 @@
     "custom_liquid_3bLYJc",
     "cart-section",
     "cart_upsell_recommendations_L4gQhn",
-    "apgo_coating_products_VU6az3",
+    "cart_free_shipping_goal_h8k2M",
     "cart_totals_Cya3eE",
     "store_pickup_modal_nzDggy",
     "store_pickup_modal_49pDFe",
