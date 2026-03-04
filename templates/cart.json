@@ -156,6 +156,7 @@
         },
         "cart-page-summary": {
           "type": "_cart-summary",
+          "disabled": true,
           "static": true,
           "settings": {
             "extend_summary": true,
@@ -182,6 +183,11 @@
         "padding-block-start": 0,
         "padding-block-end": 0
       }
+    },
+    "checkout_prefill_mH8EUg": {
+      "type": "checkout-prefill",
+      "name": "Shipping Address",
+      "settings": {}
     },
     "apgo_coating_products_VU6az3": {
       "type": "apgo-coating-products",
@@ -228,11 +234,6 @@
         "padding-block-start": 0,
         "padding-block-end": 0
       }
-    },
-    "checkout_prefill_mH8EUg": {
-      "type": "checkout-prefill",
-      "name": "Shipping Address",
-      "settings": {}
     },
     "cart_totals_Cya3eE": {
       "type": "cart-totals",
