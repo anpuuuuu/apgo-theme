@@ -250,6 +250,7 @@
     },
     "cart_free_shipping_goal_h8k2M": {
       "type": "cart-free-shipping-goal",
+      "disabled": true,
       "name": "MY/SG 免运进度（新）",
       "settings": {
         "title": "Free shipping progress"
@@ -537,7 +538,7 @@
     "custom_liquid_3bLYJc",
     "cart-section",
     "cart_upsell_recommendations_L4gQhn",
-    "cart_free_shipping_goal_h8k2M",
+    "apgo_coating_products_VU6az3",
     "cart_totals_Cya3eE",
     "store_pickup_modal_nzDggy",
     "store_pickup_modal_49pDFe",

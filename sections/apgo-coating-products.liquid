@@ -1,1693 +1,188 @@
 {% comment %}
-  購物車頁-綜合優惠區塊
-  檔案位置: sections/cart-combined-offer.liquid
-  主要功能: 條件式優惠 + 推薦加購商品
+  Reused "Spend More, Get More" section
+  Simplified to one free-shipping goal (MY/SG market-aware)
 {% endcomment %}
 
-<!-- 內聯關鍵樣式防止閃爍 -->
-<style>
-  /* 移除所有可能的容器背景色 */
-  .shopify-section,
-  .shopify-section[class*="cart-combined"],
-  [class*="shopify-section-template"][class*="cart_combined"],
-  .section-cart-combined {
-    background-color: transparent !important;
-    background: transparent !important;
-    background-image: none !important;
-  }
-  
-  /* 確保 wrapper 完全透明 */
-  .combined-offer-wrapper {
-    background-color: transparent !important;
-    background: transparent !important;
-    background-image: none !important;
-  }
-  
-  /* 確保只有內部容器有背景色 */
-  .combined-offer-section {
-    background-color: {{ section.settings.loading_bg_color }} !important;
-    min-height: 120px;
-  }
-</style>
-
-<style>
-  /* ========================================
-     購物車綜合優惠區塊 - 手機版優先設計
-     ======================================== */
-  
-    /* 外部標題 */
-.section-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #ffffff !important;
-  margin: 24px 0 16px 0;
-  position: relative;
-  padding-left: 12px;
-}
-
-.section-title::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 4px;
-  height: 24px;
-  background: {% if section.settings.use_accent_gradient %}
-    linear-gradient(180deg, {{ section.settings.accent_color_start }}, {{ section.settings.accent_color_end }})
-  {% else %}
-    {{ section.settings.accent_color_start }}
-  {% endif %} !important;
-  border-radius: 2px;
-  box-shadow: 0 0 8px rgba(255, 107, 53, 0.4);
-}
-
-/* 外層包裝器 */
-.combined-offer-wrapper {
-  width: 100%;
-  max-width: 1000px;
-  margin: 20px auto 0;
-  padding: 0 16px;
-  position: relative;
-  background: transparent !important;
-}
-  
-  /* 主容器 */
-  .combined-offer-section {
-    background: linear-gradient(145deg, #2d2d2d, #1a1a1a) !important;
-    border: 1px solid #404040 !important;
-    border-radius: 12px;
-    padding: 20px;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  
-  .combined-offer-section:hover {
-    border-color: #ff6b35 !important;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(255, 107, 53, 0.2);
-  }
-  
-  /* 頂部橘色線條 */
-  .combined-offer-section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: {% if section.settings.use_accent_gradient %}
-      linear-gradient(90deg, {{ section.settings.accent_color_start }}, {{ section.settings.accent_color_end }})
-    {% else %}
-      {{ section.settings.accent_color_start }}
-    {% endif %} !important;
-  }
-  
-  /* 條件優惠區域 */
-  .conditional-offer-area {
-    margin-bottom: 24px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid #333333;
-  }
-  
-    /* 優惠階層容器 */
-  .offer-tiers-container {
-    margin-bottom: 20px;
-  }
-  
-  /* 優惠階層標題 */
-  .tiers-title {
-    font-size: 14px;
-    font-weight: 600;
-    color: {{ section.settings.text_color }} !important;
-    margin: 0 0 12px 0;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  
-  .tiers-title::before {
-    content: '🏆';
-    font-size: 16px;
-  }
-  
-  /* 優惠階層滾動容器 */
-  .offer-tiers-scroll {
-    overflow-x: auto;
-    overflow-y: hidden;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: thin;
-    scrollbar-color: #ff6b35 #333333;
-  }
-  
-  .offer-tiers-scroll::-webkit-scrollbar {
-    height: 4px;
-  }
-  
-  .offer-tiers-scroll::-webkit-scrollbar-track {
-    background: #333333 !important;
-    border-radius: 2px;
-  }
-  
-  .offer-tiers-scroll::-webkit-scrollbar-thumb {
-    background: linear-gradient(90deg, #ff6b35, #f7931e) !important;
-    border-radius: 2px;
-  }
-  
-  /* 優惠階層列表 */
-  .offer-tiers {
-    display: flex;
-    flex-direction: row;
-    gap: 12px;
-    padding: 4px 0;
-    min-width: max-content;
-  }
-  
-  /* 單個優惠階層 */
-  .offer-tier {
-    background: linear-gradient(145deg, #2d2d2d, #1a1a1a) !important;
-    border: 1px solid #404040 !important;
-    border-radius: 8px;
-    padding: 12px;
-    position: relative;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    overflow: hidden;
-    flex: 0 0 200px;
-    min-width: 200px;
-  }
-  
-  .offer-tier::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 4px;
-    height: 100%;
-    background: {% if section.settings.use_accent_gradient %}
-      linear-gradient(180deg, {{ section.settings.accent_color_start }}, {{ section.settings.accent_color_end }})
-    {% else %}
-      {{ section.settings.accent_color_start }}
-    {% endif %} !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  
-  /* 階層狀態 */
-  .offer-tier.current {
-    border-color: #ff6b35 !important;
-    transform: translateX(4px);
-  }
-  
-  .offer-tier.current::before {
-    background: {% if section.settings.use_accent_gradient %}
-      linear-gradient(180deg, #ff6b35, #f7931e)
-    {% else %}
-      #ff6b35
-    {% endif %} !important;
-    box-shadow: 0 0 10px rgba(255, 107, 53, 0.5);
-  }
-  
-  .offer-tier.achieved {
-    border-color: #4caf50 !important;
-    background: linear-gradient(145deg, #2d2d2d, #1a1a1a) !important;
-  }
-  
-  .offer-tier.achieved::before {
-    background: linear-gradient(180deg, #4caf50, #45a049) !important;
-    box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
-  }
-  
-  .offer-tier.next {
-    border-color: #ff9800 !important;
-  }
-  
-  .offer-tier.next::before {
-    background: linear-gradient(180deg, #ff9800, #f57c00) !important;
-    box-shadow: 0 0 10px rgba(255, 152, 0, 0.5);
-  }
-  
-  /* 階層內容 */
-  .tier-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-left: 8px;
-  }
-  
-  .tier-info {
-    flex: 1;
-  }
-  
-  .tier-amount {
-    font-size: 13px;
-    font-weight: 600;
-    color: {{ section.settings.text_color }} !important;
-    margin: 0 0 4px 0;
-  }
-  
-  .tier-benefit {
-    font-size: 11px;
-    color: {{ section.settings.text_secondary_color }} !important;
-    margin: 0;
-  }
-  
-  .tier-description {
-    font-size: 10px;
-    color: {{ section.settings.text_secondary_color }} !important;
-    margin: 2px 0 0 0;
-    opacity: 0.8;
-    font-style: italic;
-  }
-  
-  .tier-status {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    font-weight: 500;
-  }
-  
-  .tier-status.achieved {
-    color: #4caf50 !important;
-  }
-  
-  .tier-status.current {
-    color: #ff6b35 !important;
-  }
-  
-  .tier-status.next {
-    color: #ff9800 !important;
-  }
-  
-  .tier-status-icon {
-    font-size: 14px;
-  }
-  
-  .tier-progress {
-    width: 60px;
-    height: 4px;
-    background: #333333 !important;
-    border-radius: 2px;
-    overflow: hidden;
-    position: relative;
-  }
-  
-  .tier-progress-fill {
-    height: 100%;
-    background: {% if section.settings.use_accent_gradient %}
-      linear-gradient(90deg, {{ section.settings.accent_color_start }}, {{ section.settings.accent_color_end }})
-    {% else %}
-      {{ section.settings.accent_color_start }}
-    {% endif %} !important;
-    border-radius: 2px;
-    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  
-  .tier-progress-fill.achieved {
-    background: linear-gradient(90deg, #4caf50, #45a049) !important;
-  }
-  
-  .tier-progress-fill.current {
-    background: linear-gradient(90deg, #ff6b35, #f7931e) !important;
-  }
-  
-  .tier-progress-fill.next {
-    background: linear-gradient(90deg, #ff9800, #f57c00) !important;
-  }
-  
-  /* 進度條容器 */
-  .progress-container {
-    margin-bottom: 16px;
-  }
-  
-  /* 進度條標題 */
-  .progress-title {
-    font-size: 14px;
-    font-weight: 600;
-    color: {{ section.settings.text_color }} !important;
-    margin: 0 0 8px 0;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  
-  .progress-title::before {
-    content: '🎯';
-    font-size: 16px;
-  }
-  
-  /* 進度條背景 */
-  .progress-bar-bg {
-    width: 100%;
-    height: 8px;
-    background: #333333 !important;
-    border-radius: 4px;
-    overflow: hidden;
-    position: relative;
-  }
-  
-  /* 進度條填充 */
-  .progress-bar-fill {
-    height: 100%;
-    background: {% if section.settings.use_accent_gradient %}
-      linear-gradient(90deg, {{ section.settings.accent_color_start }}, {{ section.settings.accent_color_end }})
-    {% else %}
-      {{ section.settings.accent_color_start }}
-    {% endif %} !important;
-    border-radius: 4px;
-    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-  }
-  
-  /* 進度條動畫效果 */
-  .progress-bar-fill::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-    animation: shimmer 2s infinite;
-  }
-  
-  @keyframes shimmer {
-    0% { left: -100%; }
-    100% { left: 100%; }
-  }
-  
-  /* 進度文字 */
-  .progress-text {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 8px;
-    font-size: 12px;
-    color: {{ section.settings.text_secondary_color }} !important;
-  }
-  
-  .current-amount {
-    font-weight: 600;
-    color: {{ section.settings.accent_color_start }} !important;
-  }
-  
-  .target-amount {
-    font-weight: 500;
-  }
-  
-  /* 優惠訊息容器 */
-  .offer-message-container {
-    margin-top: 16px;
-  }
-  
-  /* 優惠訊息 */
-  .offer-message {
-    font-size: 13px;
-    line-height: 1.4;
-    color: {{ section.settings.text_color }} !important;
-    margin: 0;
-    padding: 12px;
-    border-radius: 8px;
-    background: rgba(255, 107, 53, 0.1) !important;
-    border: 1px solid rgba(255, 107, 53, 0.2) !important;
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .offer-message::before {
-    content: '💡';
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 16px;
-  }
-  
-  .offer-message .message-text {
-    margin-left: 32px;
-  }
-  
-  /* 已達成優惠樣式 */
-  .offer-message.achieved {
-    background: rgba(76, 175, 80, 0.1) !important;
-    border-color: rgba(76, 175, 80, 0.3) !important;
-  }
-  
-  .offer-message.achieved::before {
-    content: '🎉';
-    font-size: 16px;
-  }
-  
-  /* 優惠金額強調 */
-  .offer-amount {
-    font-weight: 700;
-    color: {{ section.settings.accent_color_start }} !important;
-    text-shadow: 0 0 8px rgba(255, 107, 53, 0.3);
-  }
-  
-  /* 推薦商品區域 */
-  .upsell-area {
-    margin-top: 20px;
-  }
-  
-  /* 推薦標題 */
-  .upsell-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: {{ section.settings.text_color }} !important;
-    margin: 0 0 12px 0;
-    position: relative;
-    padding-left: 12px;
-  }
-  
-  .upsell-title::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 3px;
-    height: 18px;
-    background: {% if section.settings.use_accent_gradient %}
-      linear-gradient(135deg, {{ section.settings.accent_color_start }}, {{ section.settings.accent_color_end }})
-    {% else %}
-      {{ section.settings.accent_color_start }}
-    {% endif %} !important;
-    border-radius: 2px;
-  }
-  
-  /* 商品滑動容器 */
-  .upsell-slider-container {
-    position: relative;
-    overflow: hidden;
-    margin: 0 -8px;
-    padding: 0 8px;
-  }
-  
-  .upsell-slider {
-    display: flex;
-    gap: 10px;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    padding: 8px 0;
-    scrollbar-width: thin;
-    scrollbar-color: #ff6b35 #333333;
-    -webkit-overflow-scrolling: touch;
-  }
-  
-  .upsell-slider::-webkit-scrollbar {
-    height: 4px;
-  }
-  
-  .upsell-slider::-webkit-scrollbar-track {
-    background: #333333 !important;
-    border-radius: 2px;
-  }
-  
-  .upsell-slider::-webkit-scrollbar-thumb {
-    background: linear-gradient(90deg, #ff6b35, #f7931e) !important;
-    border-radius: 2px;
-  }
-  
-  /* 商品卡片 */
-  .upsell-product-card {
-    flex: 0 0 var(--card-width-desktop, 280px);
-    background: linear-gradient(145deg, #2d2d2d, #1a1a1a) !important;
-    border: 1px solid #404040 !important;
-    border-radius: 8px;
-    padding: 12px 8px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  
-  .upsell-product-card:hover {
-    border-color: #ff6b35 !important;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(255, 107, 53, 0.2);
-  }
-  
-  /* 商品圖片 */
-  .upsell-product-image {
-    width: 50px;
-    height: 60px;
-    border-radius: 6px;
-    overflow: hidden;
-    position: relative;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .upsell-product-image img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  
-  /* Placeholder SVG 樣式 */
-  .upsell-product-image .placeholder-svg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0.3;
-    filter: invert(1);
-  }
-  
-  /* 產品連結樣式 */
-  .upsell-product-link {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex: 1;
-    text-decoration: none;
-    color: inherit;
-  }
-  
-  .upsell-product-card:hover .upsell-product-title {
-    color: #ff6b35 !important;
-  }
-  
-  /* 商品資訊 */
-  .upsell-product-info {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-  }
-  
-  .upsell-product-title {
-    font-size: 12px;
-    font-weight: 500;
-    color: {{ section.settings.text_color }} !important;
-    margin: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-    line-height: 1.3;
-  }
-  
-  .upsell-product-price {
-    font-size: 13px;
-    font-weight: 700;
-    color: {{ section.settings.accent_color_start }} !important;
-    margin: 0;
-    text-shadow: 0 0 8px rgba(255, 107, 53, 0.3);
-  }
-  
-  /* 加入購物車按鈕 */
-  .upsell-add-to-cart {
-    width: 32px;
-    height: 32px;
-    background: transparent !important;
-    border: 2px solid {{ section.settings.accent_color_start }} !important;
-    border-radius: 6px;
-    color: {{ section.settings.accent_color_start }} !important;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    overflow: hidden;
-    flex-shrink: 0;
-    outline: none !important;
-    -webkit-tap-highlight-color: transparent;
-  }
-  
-  .upsell-add-to-cart:focus {
-    outline: none !important;
-    box-shadow: none !important;
-  }
-  
-  .upsell-add-to-cart:focus-visible {
-    outline: none !important;
-    box-shadow: 0 0 0 2px {{ section.settings.accent_color_start }}40 !important;
-  }
-  
-  .upsell-add-to-cart:active {
-    transform: scale(0.95);
-  }
-  
-  .upsell-add-to-cart * {
-    pointer-events: none;
-  }
-  
-  .upsell-add-to-cart::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: {% if section.settings.use_accent_gradient %}
-      linear-gradient(135deg, {{ section.settings.accent_color_start }}, {{ section.settings.accent_color_end }})
-    {% else %}
-      {{ section.settings.accent_color_start }}
-    {% endif %} !important;
-    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 0;
-  }
-  
-  .upsell-add-to-cart:hover::before {
-    left: 0;
-  }
-  
-  .upsell-add-to-cart span {
-    position: relative;
-    z-index: 1;
-    transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  
-  .upsell-add-to-cart:hover {
-    border-color: #ff6b35 !important;
-    color: #ffffff !important;
-  }
-  
-  .upsell-add-to-cart:hover span {
-    color: #ffffff !important;
-  }
-  
-  .upsell-add-to-cart.loading {
-    pointer-events: none;
-    opacity: 0.7;
-  }
-  
-  .upsell-add-to-cart.added {
-    border-color: {{ section.settings.accent_color_start }} !important;
-    color: {{ section.settings.accent_color_start }} !important;
-  }
-  
-  .upsell-add-to-cart.added span {
-    color: {{ section.settings.accent_color_start }} !important;
-  }
-  
-  /* 載入狀態 */
-  .combined-offer-section.loading {
-    min-height: 150px;
-    position: relative;
-  }
-  
-  .combined-offer-section.loading::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 40px;
-    height: 40px;
-    border: 3px solid #333333 !important;
-    border-top-color: #ff6b35 !important;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-  
-  @keyframes spin {
-    to { transform: translate(-50%, -50%) rotate(360deg); }
-  }
-  
-    /* 響應式設計 */
-@media (max-width: 768px) {
-  .section-title {
-    font-size: 16px;
-    margin: 20px 0 12px 0;
-    padding-left: 10px;
-  }
-  
-  .section-title::before {
-    width: 4px;
-    height: 20px;
-    box-shadow: 0 0 6px rgba(255, 107, 53, 0.4);
-  }
-  
-      .combined-offer-wrapper {
-    padding: 0 12px;
-    margin: 16px auto 0;
-  }
-  
-  .combined-offer-section {
-    padding: 16px;
-    border-radius: 10px;
-  }
-    
-        .conditional-offer-area {
-    margin-bottom: 20px;
-    padding-bottom: 16px;
-  }
-    
-    .tiers-title {
-      font-size: 13px;
-      margin-bottom: 10px;
-    }
-    
-    .offer-tier {
-      padding: 12px;
-      flex: 0 0 220px;
-      min-width: 220px;
-    }
-    
-    .tier-amount {
-      font-size: 13px;
-    }
-    
-    .tier-benefit {
-      font-size: 11px;
-    }
-    
-    .tier-description {
-      font-size: 10px;
-    }
-    
-    .tier-status {
-      font-size: 12px;
-    }
-    
-    .tier-progress {
-      width: 60px;
-      height: 4px;
-    }
-    
-    .progress-title {
-      font-size: 14px;
-    }
-    
-    .offer-message {
-      font-size: 12px;
-      padding: 10px;
-    }
-    
-    .upsell-title {
-      font-size: 14px;
-      margin-bottom: 10px;
-    }
-    
-    .upsell-product-card {
-      flex: 0 0 240px;
-      padding: 10px 6px;
-    }
-    
-    .upsell-product-image {
-      width: 45px;
-      height: 55px;
-    }
-    
-    .upsell-product-title {
-      font-size: 11px;
-    }
-    
-    .upsell-product-price {
-      font-size: 12px;
-    }
-    
-    .upsell-add-to-cart {
-      width: 28px;
-      height: 28px;
-      font-size: 14px;
-    }
-  }
-  
-    @media (max-width: 480px) {
-  .section-title {
-    font-size: 15px;
-    margin: 16px 0 10px 0;
-    padding-left: 10px;
-  }
-  
-  .section-title::before {
-    width: 4px;
-    height: 18px;
-    box-shadow: 0 0 4px rgba(255, 107, 53, 0.4);
-  }
-  
-  .offer-tier {
-    flex: 0 0 280px;
-    min-width: 280px;
-    padding: 10px;
-  }
-    
-    .tier-amount {
-      font-size: 12px;
-    }
-    
-    .tier-benefit {
-      font-size: 10px;
-    }
-    
-    .tier-description {
-      font-size: 9px;
-    }
-    
-    .tier-status {
-      font-size: 11px;
-    }
-    
-    .tier-progress {
-      width: 50px;
-      height: 3px;
-    }
-    
-    .upsell-product-card {
-      flex: 0 0 200px;
-    }
-    
-    .upsell-product-image {
-      width: 40px;
-      height: 50px;
-    }
-    
-    .upsell-product-title {
-      font-size: 10px;
-    }
-    
-    .upsell-product-price {
-      font-size: 11px;
-    }
-    
-    .upsell-add-to-cart {
-      width: 26px;
-      height: 26px;
-      font-size: 12px;
-    }
-  }
-  
-  /* 隱藏選項 */
-  .combined-offer-wrapper[data-hide-progress="true"] .progress-container {
-    display: none;
-  }
-  
-  .combined-offer-wrapper[data-hide-conditional="true"] .conditional-offer-area {
-    display: none;
-  }
-  
-  .combined-offer-wrapper[data-hide-upsell="true"] .upsell-area {
-    display: none;
-  }
-</style>
-
-<div class="combined-offer-wrapper"
-     data-hide-progress="{{ section.settings.hide_progress }}"
-     data-hide-conditional="{{ section.settings.hide_conditional }}"
-     data-hide-upsell="{{ section.settings.hide_upsell }}">
-  
-  <!-- 專屬優惠券標題 -->
-  {% unless section.settings.hide_conditional %}
-  <h4 class="section-title">專屬優惠券</h4>
-  {% endunless %}
-  
-  <div class="combined-offer-section" id="combined-offer-{{ section.id }}">
-    
-    <!-- 條件優惠區域 -->
-    {% unless section.settings.hide_conditional %}
-    <div class="conditional-offer-area">
-      <!-- 進度條區域 -->
-      {% unless section.settings.hide_progress %}
-      <div class="progress-container">
-        <h4 class="progress-title" id="progress-title-{{ section.id }}">距離目標還差</h4>
-        <div class="progress-bar-bg">
-          <div class="progress-bar-fill" id="progress-fill-{{ section.id }}" style="width: 0%"></div>
-        </div>
-        <div class="progress-text">
-          <span class="current-amount" id="current-amount-{{ section.id }}">NT$ 0</span>
-          <span class="target-amount" id="target-amount-{{ section.id }}">NT$ 0</span>
-        </div>
-      </div>
-      {% endunless %}
-      
-      <!-- 優惠階層區域 -->
-      <div class="offer-tiers-container">
-        <div class="offer-tiers-scroll" id="offer-tiers-scroll-{{ section.id }}">
-          <div class="offer-tiers" id="offer-tiers-{{ section.id }}">
-            <!-- 優惠階層將由 JavaScript 動態生成 -->
-          </div>
-        </div>
-      </div>
-      
-      <!-- 優惠訊息區域 -->
-      <div class="offer-message-container">
-        <div class="offer-message" id="offer-message-{{ section.id }}">
-          <div class="message-text">
-            <span id="offer-text-{{ section.id }}">{{ section.settings.initial_message }}</span>
-          </div>
-        </div>
-      </div>
+<section class="apgo-combined-goal" data-combined-goal data-country="{{ localization.country.iso_code | escape }}">
+  <div class="apgo-combined-goal__inner">
+    <h4 class="apgo-combined-goal__title">{{ section.settings.progress_title }}</h4>
+    <div class="apgo-combined-goal__track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+      <div class="apgo-combined-goal__fill" data-goal-fill></div>
     </div>
-    {% endunless %}
-    
-    <!-- 推薦商品區域 -->
-    {% unless section.settings.hide_upsell %}
-    <div class="upsell-area">
-      <h4 class="upsell-title">{{ section.settings.upsell_title }}</h4>
-      <div class="upsell-slider-container">
-        <div class="upsell-slider" id="upsell-slider-{{ section.id }}">
-          {% if section.settings.product_list != blank %}
-            {% for product in section.settings.product_list limit: section.settings.max_products %}
-              <div class="upsell-product-card">
-                <a href="{{ product.url }}" class="upsell-product-link">
-                  <div class="upsell-product-image">
-                    {% if product.featured_image %}
-                      <img src="{{ product.featured_image | image_url: width: 200 }}"
-                           alt="{{ product.title | escape }}"
-                           width="200"
-                           height="240"
-                           loading="lazy">
-                    {% else %}
-                      {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
-                    {% endif %}
-                  </div>
-                  <div class="upsell-product-info">
-                    <h5 class="upsell-product-title">{{ product.title }}</h5>
-                    {% if section.settings.show_prices %}
-                      <p class="upsell-product-price">{{ product.price | money }}</p>
-                    {% endif %}
-                  </div>
-                </a>
-                {% if section.settings.enable_quick_add %}
-                  <button type="button" 
-                          class="upsell-add-to-cart"
-                          data-variant-id="{{ product.selected_or_first_available_variant.id }}"
-                          data-product-id="{{ product.id }}"
-                          onclick="event.preventDefault(); event.stopPropagation(); addToCartCombined(this, event);">
-                    <span>+</span>
-                  </button>
-                {% endif %}
-              </div>
-            {% endfor %}
-          {% else %}
-            <!-- 預設商品顯示（編輯器預覽用） -->
-            {% for i in (1..4) %}
-              <div class="upsell-product-card">
-                <div class="upsell-product-image">
-                  {{ 'product-' | append: i | placeholder_svg_tag: 'placeholder-svg' }}
-                </div>
-                <div class="upsell-product-info">
-                  <h5 class="upsell-product-title">範例商品 {{ i }}</h5>
-                  {% if section.settings.show_prices %}
-                    <p class="upsell-product-price">NT$ {{ i | times: 580 }}</p>
-                  {% endif %}
-                </div>
-                {% if section.settings.enable_quick_add %}
-                  <button type="button" class="upsell-add-to-cart" disabled>
-                    <span>+</span>
-                  </button>
-                {% endif %}
-              </div>
-            {% endfor %}
-          {% endif %}
-        </div>
-      </div>
+    <div class="apgo-combined-goal__amounts">
+      <span data-goal-current>--</span>
+      <span data-goal-target>--</span>
     </div>
-    {% endunless %}
-    
+    <p class="apgo-combined-goal__message" data-goal-message></p>
   </div>
-</div>
+</section>
+
+<style>
+  .apgo-combined-goal {
+    width: 100%;
+    max-width: 1000px;
+    margin: 18px auto 0;
+    padding: 0 16px;
+  }
+
+  .apgo-combined-goal__inner {
+    background: linear-gradient(145deg, #2d2d2d, #1a1a1a);
+    border: 1px solid #404040;
+    border-radius: 16px;
+    padding: 18px;
+  }
+
+  .apgo-combined-goal__title {
+    margin: 0 0 12px;
+    font-size: 16px;
+    font-weight: 700;
+    color: {{ section.settings.text_color }};
+  }
+
+  .apgo-combined-goal__track {
+    width: 100%;
+    height: 10px;
+    background: #333333;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .apgo-combined-goal__fill {
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, {{ section.settings.accent_color_start }}, {{ section.settings.accent_color_end }});
+    transition: width 0.35s ease;
+  }
+
+  .apgo-combined-goal__amounts {
+    margin-top: 8px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: {{ section.settings.text_secondary_color }};
+  }
+
+  .apgo-combined-goal__message {
+    margin: 10px 0 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: {{ section.settings.text_color }};
+  }
+
+  @media (max-width: 768px) {
+    .apgo-combined-goal {
+      padding: 0 12px;
+    }
+  }
+</style>
 
 <script>
-  // 綜合優惠功能
-  class CombinedOffer {
-    constructor(sectionId, settings) {
-      this.sectionId = sectionId;
-      this.settings = settings;
-      this.currentAmount = 0;
-      this.targetAmount = 0;
-      this.tiers = this.parseTiers(settings.tiers);
-      this.init();
-    }
-    
-    parseTiers(blocks) {
-      if (!blocks || !Array.isArray(blocks)) return [];
-      
-      return blocks.map(block => ({
-        id: block.id,
-        amount: parseFloat(block.amount) || 0,
-        benefit: block.benefit || '',
-        description: block.description || ''
-      })).sort((a, b) => a.amount - b.amount);
-    }
-    
-    init() {
-      this.updateCartAmount();
-      this.setupEventListeners();
-      this.interceptRequests(); // 攔截 /cart/* 請求
-    }
-    
-    interceptRequests() {
-      if (window.__coFetchPatched) return;
-      window.__coFetchPatched = true;
+  (() => {
+    const root = document.querySelector('[data-combined-goal]');
+    if (!root) return;
+    if (root.dataset.bound === 'true') return;
+    root.dataset.bound = 'true';
 
-      const originalFetch = window.fetch;
-      window.fetch = async (...args) => {
-        const resp = await originalFetch(...args);
-        try {
-          const url = (args[0] && (args[0].url || args[0])) || '';
-          if (typeof url === 'string' && (/\/cart\/(add|change|update|clear)/.test(url))) {
-            setTimeout(() => this.updateCartAmount(), 200);
-          }
-        } catch(_) {}
-        return resp;
-      };
+    const fill = root.querySelector('[data-goal-fill]');
+    const msg = root.querySelector('[data-goal-message]');
+    const current = root.querySelector('[data-goal-current]');
+    const target = root.querySelector('[data-goal-target]');
+    const bar = root.querySelector('.apgo-combined-goal__track');
+    const country = (root.dataset.country || '').toUpperCase();
 
-      // 可選：補 XHR
-      if (!window.__coXhrPatched) {
-        window.__coXhrPatched = true;
-        const origOpen = XMLHttpRequest.prototype.open;
-        XMLHttpRequest.prototype.open = function(method, url, ...rest) {
-          this.addEventListener('loadend', () => {
-            try {
-              if (typeof url === 'string' && (/\/cart\/(add|change|update|clear)/.test(url))) {
-                setTimeout(() => document.dispatchEvent(new Event('cart:update')), 200);
-              }
-            } catch(_) {}
-          });
-          return origOpen.call(this, method, url, ...rest);
-        };
+    const getRule = (iso) => {
+      if (iso === 'MY') return { thresholdMinor: 10000, currency: 'MYR' };
+      if (iso === 'SG') return { thresholdMinor: 7900, currency: 'SGD' };
+      return null;
+    };
+
+    const formatMoney = (minor, currency) =>
+      new Intl.NumberFormat(document.documentElement.lang || 'en', { style: 'currency', currency }).format((minor || 0) / 100);
+
+    const render = (subtotalMinor) => {
+      const rule = getRule(country);
+      if (!rule) {
+        root.style.display = 'none';
+        return;
       }
-    }
-    
-    updateCartAmount() {
-      // 取得購物車總金額
-      fetch(`/cart.js?_=${Date.now()}`, { cache: 'no-store' })
-        .then(response => response.json())
-        .then(cart => {
-          this.currentAmount = cart.total_price / 100; // 轉換為元
-          this.updateDisplay();
-        })
-        .catch(error => {
-          console.error('無法取得購物車資料:', error);
-        });
-    }
-    
-    updateDisplay() {
-      const progressFill = document.getElementById(`progress-fill-${this.sectionId}`);
-      const currentAmountEl = document.getElementById(`current-amount-${this.sectionId}`);
-      const progressTitleEl = document.getElementById(`progress-title-${this.sectionId}`);
-      const offerMessage = document.getElementById(`offer-message-${this.sectionId}`);
-      const offerText = document.getElementById(`offer-text-${this.sectionId}`);
-      
-      // 初始化金額格式化器
-      const fmt = new Intl.NumberFormat('zh-TW', { 
-        style: 'currency', 
-        currency: '{{ cart.currency.iso_code | default: "TWD" }}', 
-        minimumFractionDigits: 0 
-      });
-      
-      // 更新優惠階層
-      this.updateTiers();
-      
-      // 動態更新目標金額和進度條
-      const nextTier = this.getNextTier();
-      if (nextTier) {
-        this.targetAmount = nextTier.amount;
-        
-        // 更新進度條標題
-        if (progressTitleEl) {
-          progressTitleEl.textContent = `距離${nextTier.benefit}還差`;
-        }
-        
-        // 更新進度條
-        if (progressFill) {
-          const progress = Math.min((this.currentAmount / this.targetAmount) * 100, 100);
-          progressFill.style.width = `${progress}%`;
-        }
-        
-        // 更新目標金額顯示
-        const targetAmountEl = document.getElementById(`target-amount-${this.sectionId}`);
-        if (targetAmountEl) {
-          targetAmountEl.textContent = fmt.format(this.targetAmount);
-        }
-      }
-      
-      // 更新金額顯示
-      if (currentAmountEl) {
-        currentAmountEl.textContent = fmt.format(this.currentAmount);
-      }
-      
-      // 更新優惠訊息
-      if (offerMessage && offerText) {
-        const currentTier = this.getCurrentTier();
-        const nextTier = this.getNextTier();
-        
-        if (currentTier && nextTier) {
-          // 有下一個目標
-          offerMessage.classList.remove('achieved');
-          const allBenefits = this.getAllAchievedBenefits();
-          const message = `恭喜！您已享有 ${allBenefits}，加購至 <span class="offer-amount">${fmt.format(nextTier.amount)}</span> 即享有 <span class="offer-amount">${nextTier.benefit}</span>！`;
-          offerText.innerHTML = message;
-        } else if (currentTier && !nextTier) {
-          // 已達到最高階層
-          offerMessage.classList.add('achieved');
-          const allBenefits = this.getAllAchievedBenefits();
-          offerText.innerHTML = `恭喜！您已享有 ${allBenefits}！`;
-        } else {
-          // 還沒有達到任何階層
-          offerMessage.classList.remove('achieved');
-          if (this.tiers.length > 0) {
-            const firstTier = this.tiers[0];
-            const message = `加購至 <span class="offer-amount">${fmt.format(firstTier.amount)}</span> 即享有 <span class="offer-amount">${firstTier.benefit}</span>！`;
-            offerText.innerHTML = message;
-          } else {
-            offerText.innerHTML = this.settings.initial_message;
-          }
-        }
-      }
-      
-      // 自動滾動到下一個目標
-      this.scrollToNextTarget();
-    }
-    
-    getAllAchievedBenefits() {
-      const achievedTiers = this.tiers.filter(tier => this.currentAmount >= tier.amount);
-      if (achievedTiers.length === 0) return '';
-      
-      const benefits = achievedTiers.map(tier => `<span class="offer-amount">${tier.benefit}</span>`);
-      
-      if (benefits.length === 1) {
-        return benefits[0];
-      } else if (benefits.length === 2) {
-        return `${benefits[0]} 和 ${benefits[1]}`;
+
+      root.style.display = '';
+      const progress = Math.min((subtotalMinor / rule.thresholdMinor) * 100, 100);
+      const remaining = Math.max(rule.thresholdMinor - subtotalMinor, 0);
+
+      fill.style.width = `${progress}%`;
+      bar?.setAttribute('aria-valuenow', String(Math.round(progress)));
+      current.textContent = formatMoney(subtotalMinor, rule.currency);
+      target.textContent = formatMoney(rule.thresholdMinor, rule.currency);
+
+      if (remaining <= 0) {
+        msg.textContent = `{{ 'apgo_cart.free_shipping_unlocked' | t | escape }}`;
       } else {
-        const lastBenefit = benefits.pop();
-        return `${benefits.join('、')} 和 ${lastBenefit}`;
+        const amount = formatMoney(remaining, rule.currency);
+        const text = `{{ 'apgo_cart.free_shipping_remaining' | t: amount: '__AMOUNT__' | escape }}`;
+        msg.textContent = text.replace('__AMOUNT__', amount);
       }
-    }
-    
-    scrollToNextTarget() {
-      const scrollContainer = document.getElementById(`offer-tiers-scroll-${this.sectionId}`);
-      const nextTier = this.getNextTier();
-      
-      if (scrollContainer && nextTier) {
-        const nextTierElement = scrollContainer.querySelector(`[data-tier-id="${nextTier.id}"]`);
-        if (nextTierElement) {
-          const containerRect = scrollContainer.getBoundingClientRect();
-          const elementRect = nextTierElement.getBoundingClientRect();
-          const scrollLeft = scrollContainer.scrollLeft;
-          
-          // 計算需要滾動的距離
-          const targetScrollLeft = scrollLeft + elementRect.left - containerRect.left - (containerRect.width / 2) + (elementRect.width / 2);
-          
-          scrollContainer.scrollTo({
-            left: targetScrollLeft,
-            behavior: 'smooth'
-          });
-        }
-      }
-    }
-    
-    getCurrentTier() {
-      // 找到當前已達成的最高階層
-      for (let i = this.tiers.length - 1; i >= 0; i--) {
-        if (this.currentAmount >= this.tiers[i].amount) {
-          return this.tiers[i];
-        }
-      }
-      return null;
-    }
-    
-    getNextTier() {
-      // 找到下一個要達成的階層
-      for (let i = 0; i < this.tiers.length; i++) {
-        if (this.currentAmount < this.tiers[i].amount) {
-          return this.tiers[i];
-        }
-      }
-      return null;
-    }
-    
-    updateTiers() {
-      const tiersContainer = document.getElementById(`offer-tiers-${this.sectionId}`);
-      if (!tiersContainer || this.tiers.length === 0) return;
-      
-      tiersContainer.innerHTML = '';
-      
-      this.tiers.forEach((tier, index) => {
-        const tierElement = this.createTierElement(tier, index);
-        tiersContainer.appendChild(tierElement);
-      });
-    }
-    
-    createTierElement(tier, index) {
-      const tierDiv = document.createElement('div');
-      tierDiv.className = 'offer-tier';
-      tierDiv.setAttribute('data-tier-id', tier.id);
-      
-      const isAchieved = this.currentAmount >= tier.amount;
-      const isCurrent = this.currentAmount < tier.amount && 
-                       (index === 0 || this.currentAmount >= this.tiers[index - 1].amount);
-      const isNext = !isAchieved && !isCurrent;
-      
-      if (isAchieved) {
-        tierDiv.classList.add('achieved');
-      } else if (isCurrent) {
-        tierDiv.classList.add('current');
-      } else if (isNext) {
-        tierDiv.classList.add('next');
-      }
-      
-      const progress = Math.min((this.currentAmount / tier.amount) * 100, 100);
-      
-      // 初始化金額格式化器
-      const fmt = new Intl.NumberFormat('zh-TW', { 
-        style: 'currency', 
-        currency: '{{ cart.currency.iso_code | default: "TWD" }}', 
-        minimumFractionDigits: 0 
-      });
-      
-      tierDiv.innerHTML = `
-        <div class="tier-content">
-          <div class="tier-info">
-            <div class="tier-amount">${fmt.format(tier.amount)}</div>
-            <div class="tier-benefit">${tier.benefit}</div>
-            ${tier.description ? `<div class="tier-description">${tier.description}</div>` : ''}
-          </div>
-          <div class="tier-status ${isAchieved ? 'achieved' : isCurrent ? 'current' : 'next'}">
-            <span class="tier-status-icon">
-              ${isAchieved ? '✅' : isCurrent ? '🎯' : '⏳'}
-            </span>
-            <span>${isAchieved ? '已達成' : isCurrent ? '進行中' : '待達成'}</span>
-            <div class="tier-progress">
-              <div class="tier-progress-fill ${isAchieved ? 'achieved' : isCurrent ? 'current' : 'next'}" 
-                   style="width: ${progress}%"></div>
-            </div>
-          </div>
-        </div>
-      `;
-      
-      return tierDiv;
-    }
-    
-    setupEventListeners() {
-      const debounce = (fn, wait = 250) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn.apply(this, a), wait); }; };
-      const debouncedUpdate = debounce(() => this.updateCartAmount(), 250);
+    };
 
-      const EVENT_NAMES = [
-        'cart:refresh','cart:updated','cart:update','cart:change',
-        'product:added','ajaxProduct:added','cart:request:complete',
-        'theme:cart:update','CartUpdateEvent'
-      ];
-      const targets = [document, document.documentElement, window];
+    const refresh = async () => {
+      try {
+        const res = await fetch('/cart.js', { headers: { Accept: 'application/json' } });
+        const cart = await res.json();
+        const subtotalMinor = Number(cart?.original_total_price || cart?.total_price || 0);
+        render(subtotalMinor);
+      } catch (_) {}
+    };
 
-      // 防重：如果之前有綁，先移除
-      window.__coCombListeners = window.__coCombListeners || {};
-      const key = this.sectionId;
-      if (window.__coCombListeners[key]) {
-        const { targets: oldTargets, names, handler } = window.__coCombListeners[key];
-        oldTargets.forEach(t => {
-          names.forEach(n => t.removeEventListener(n, handler));
-          t.removeEventListener('CartUpdateEvent', handler);
-        });
-      }
-
-      targets.forEach(t => {
-        EVENT_NAMES.forEach(n => t.addEventListener(n, debouncedUpdate, { passive: true }));
-        t.addEventListener('CartUpdateEvent', debouncedUpdate, { passive: true });
-      });
-      window.__coCombListeners[key] = { targets, names: EVENT_NAMES, handler: debouncedUpdate };
-
-      // 分頁切回時也更新
-      document.addEventListener('visibilitychange', () => {
-        if (!document.hidden) this.updateCartAmount();
-      });
-    }
-  }
-  
-  // 加入購物車功能
-  function addToCartCombined(button, event) {
-    event.preventDefault();
-    event.stopPropagation();
-    
-    const variantId = button.dataset.variantId;
-    const productId = button.dataset.productId;
-    
-    if (!variantId) return;
-    
-    // 顯示載入狀態
-    button.classList.add('loading');
-    button.innerHTML = '<span>...</span>';
-    
-    // 使用 Shopify Cart API
-    const root = (window.Shopify && window.Shopify.routes && window.Shopify.routes.root) ? window.Shopify.routes.root : '/';
-    fetch(root + 'cart/add.js', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify({
-        items: [{
-          id: parseInt(variantId),
-          quantity: 1
-        }]
-      })
-    })
-    .then(response => response.json())
-    .then(data => {
-      // 成功加入購物車
-      button.classList.remove('loading');
-      button.classList.add('added');
-      button.innerHTML = '<span>✓</span>';
-      
-      // 更新條件式優惠顯示
-      const sectionId = button.closest('.combined-offer-section').id.replace('combined-offer-', '');
-      const combinedOffer = window.combinedOffers && window.combinedOffers[sectionId];
-      if (combinedOffer) {
-        setTimeout(() => combinedOffer.updateCartAmount(), 100);
-      }
-      
-      // Savor/Horizon AI 主題專用更新方法
-      console.log('🔄 開始更新購物車...');
-      
-      import('@theme/events').then(({ CartUpdateEvent }) => {
-        console.log('✅ 成功載入 @theme/events');
-        const cartDrawer = document.querySelector('cart-drawer-component');
-        
-        // 取得最新購物車資料
-        fetch(`/cart.js?_=${Date.now()}`, { cache: 'no-store' })
-          .then(res => res.json())
-          .then(cart => {
-            console.log('📦 購物車資料:', cart);
-            
-            // 廣播通用事件
-            document.dispatchEvent(new CustomEvent('cart:update', { detail: { cart } }));
-            
-            // 發送 CartUpdateEvent
-            const event = new CartUpdateEvent(cart, 'manual-trigger', {
-              itemCount: cart.item_count,
-              source: 'combined-offer-block',
-              sections: {}
-            });
-            console.log('📤 發送 CartUpdateEvent');
-            document.dispatchEvent(event);
-            
-            // 更新條件式優惠顯示
-            setTimeout(() => {
-              const combinedOffer = window.combinedOffers && window.combinedOffers[sectionId];
-              if (combinedOffer) {
-                combinedOffer.updateCartAmount();
-              }
-            }, 300);
-            
-            // 開啟購物車抽屜
-            if (cartDrawer) {
-              console.log('🔍 找到購物車抽屜:', cartDrawer);
-              if (cartDrawer.hasAttribute('auto-open')) {
-                console.log('🚪 嘗試開啟購物車抽屜 (auto-open)');
-                cartDrawer.open();
-              } else {
-                console.log('🚪 嘗試開啟購物車抽屜 (手動)');
-                if (typeof cartDrawer.open === 'function') {
-                  cartDrawer.open();
-                } else if (typeof cartDrawer.toggle === 'function') {
-                  cartDrawer.toggle(true);
-                }
-              }
-            }
-          });
-      }).catch((error) => {
-        console.error('❌ 無法載入 @theme/events:', error);
-        console.log('🔄 使用備用方法更新購物車...');
-        
-        // 備用方法
-        const cartDrawer = document.querySelector('cart-drawer-component, cart-drawer, .cart-drawer');
-        
-        // 嘗試觸發購物車更新
-        fetch(`/cart.js?_=${Date.now()}`, { cache: 'no-store' })
-          .then(res => res.json())
-          .then(cart => {
-            // 廣播通用事件
-            document.dispatchEvent(new CustomEvent('cart:update', { detail: { cart } }));
-            
-            // 標準 cart:refresh 事件
-            document.documentElement.dispatchEvent(new CustomEvent('cart:refresh', {
-              bubbles: true,
-              detail: { cart: cart }
-            }));
-            
-            // 更新條件式優惠顯示
-            setTimeout(() => {
-              const combinedOffer = window.combinedOffers && window.combinedOffers[sectionId];
-              if (combinedOffer) {
-                combinedOffer.updateCartAmount();
-              }
-            }, 300);
-            
-            // 嘗試開啟購物車
-            if (cartDrawer && typeof cartDrawer.open === 'function') {
-              cartDrawer.open();
-            } else {
-              // 嘗試點擊購物車按鈕
-              const cartButton = document.querySelector('[data-cart-drawer-toggle], [data-cart-toggle], .cart-toggle');
-              if (cartButton) cartButton.click();
-            }
-          });
-      });
-      
-      // 3秒後恢復原狀
-      setTimeout(() => {
-        button.classList.remove('added');
-        button.innerHTML = '<span>+</span>';
-      }, 3000);
-    })
-    .catch(error => {
-      console.error('加入購物車失敗:', error);
-      button.classList.remove('loading');
-      button.innerHTML = '<span>✗</span>';
-      
-      setTimeout(() => {
-        button.innerHTML = '<span>+</span>';
-      }, 2000);
+    ['cart:refresh', 'cart:updated', 'cart:update', 'cart:change', 'product:added', 'ajaxProduct:added'].forEach((eventName) => {
+      document.addEventListener(eventName, refresh, { passive: true });
     });
-  }
-  
-  // 初始化綜合優惠
-  document.addEventListener('DOMContentLoaded', function() {
-    const section = document.getElementById('combined-offer-{{ section.id }}');
-    if (section) {
-      // 初始化全域變數
-      if (!window.combinedOffers) {
-        window.combinedOffers = {};
-      }
-      
-      window.combinedOffers['{{ section.id }}'] = new CombinedOffer('{{ section.id }}', {
-        initial_message: `{{ section.settings.initial_message | escape }}`,
-        tiers: [
-          {% for block in section.blocks %}
-            {% if block.type == 'tier' %}
-              {
-                id: '{{ block.id }}',
-                amount: {{ block.settings.amount | default: 0 }},
-                benefit: '{{ block.settings.benefit | escape }}',
-                description: '{{ block.settings.description | escape }}'
-              }{% unless forloop.last %},{% endunless %}
-            {% endif %}
-          {% endfor %}
-        ]
-      });
-    }
-  });
+
+    refresh();
+  })();
 </script>
 
 {% schema %}
 {
-  "name": "購物車頁-綜合優惠區塊",
+  "name": "Spend More, Get More",
   "class": "section-cart-combined",
   "tag": "section",
   "settings": [
     {
-      "type": "header",
-      "content": "條件優惠設定"
-    },
-
-    {
       "type": "text",
       "id": "progress_title",
-      "label": "進度條標題",
-      "default": "距離免運費還差"
-    },
-    {
-      "type": "textarea",
-      "id": "initial_message",
-      "label": "初始訊息",
-      "default": "開始購物即可享受優惠！",
-      "info": "當沒有優惠階層時顯示的訊息"
-    },
-    {
-      "type": "header",
-      "content": "推薦商品設定"
-    },
-    {
-      "type": "text",
-      "id": "upsell_title",
-      "label": "推薦商品標題",
-      "default": "推薦加購商品"
-    },
-    {
-      "type": "product_list",
-      "id": "product_list",
-      "label": "選擇推薦商品",
-      "limit": 8
-    },
-    {
-      "type": "range",
-      "id": "max_products",
-      "label": "最多顯示商品數",
-      "min": 3,
-      "max": 8,
-      "step": 1,
-      "default": 6
-    },
-    {
-      "type": "checkbox",
-      "id": "show_prices",
-      "label": "顯示價格",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "enable_quick_add",
-      "label": "啟用快速加入購物車",
-      "default": true
-    },
-    {
-      "type": "header",
-      "content": "顯示設定"
-    },
-
-    {
-      "type": "checkbox",
-      "id": "hide_progress",
-      "label": "隱藏進度條",
-      "default": false,
-      "info": "只顯示優惠訊息，不顯示進度條"
-    },
-    {
-      "type": "checkbox",
-      "id": "hide_conditional",
-      "label": "隱藏條件優惠區域",
-      "default": false,
-      "info": "完全隱藏條件式優惠功能"
-    },
-    {
-      "type": "checkbox",
-      "id": "hide_upsell",
-      "label": "隱藏推薦商品區域",
-      "default": false,
-      "info": "完全隱藏推薦商品功能"
-    },
-    {
-      "type": "header",
-      "content": "顏色設定"
-    },
-    {
-      "type": "color",
-      "id": "loading_bg_color",
-      "label": "載入背景色",
-      "default": "#1a1a1a",
-      "info": "防止載入時白色閃爍的預設背景色"
-    },
-    {
-      "type": "checkbox",
-      "id": "use_accent_gradient",
-      "label": "使用強調色漸變",
-      "default": true
+      "label": "Progress title",
+      "default": "Free shipping progress"
     },
     {
       "type": "color",
       "id": "accent_color_start",
-      "label": "強調色（起始）",
+      "label": "Accent color start",
       "default": "#ff6b35"
     },
     {
       "type": "color",
       "id": "accent_color_end",
-      "label": "強調色（結束）",
+      "label": "Accent color end",
       "default": "#f7931e"
     },
     {
       "type": "color",
       "id": "text_color",
-      "label": "主要文字顏色",
+      "label": "Primary text color",
       "default": "#ffffff"
     },
     {
       "type": "color",
       "id": "text_secondary_color",
-      "label": "次要文字顏色",
+      "label": "Secondary text color",
       "default": "#cccccc"
-          }
-    ],
-    "blocks": [
-      {
-        "type": "tier",
-        "name": "優惠階層",
-        "settings": [
-          {
-            "type": "number",
-            "id": "amount",
-            "label": "目標金額",
-            "default": 1000,
-            "info": "達到此金額即可享受優惠"
-          },
-          {
-            "type": "text",
-            "id": "benefit",
-            "label": "優惠內容",
-            "default": "免運費",
-            "info": "例如：免運費、NT$ 100 折扣等"
-          },
-          {
-            "type": "textarea",
-            "id": "description",
-            "label": "詳細說明",
-            "info": "可選的詳細說明文字"
-          }
-        ]
-      }
-    ],
-    "presets": [
-      {
-        "name": "購物車綜合優惠",
-        "category": "銷售功能",
-        "blocks": [
-          {
-            "type": "tier",
-            "settings": {
-              "amount": 1000,
-              "benefit": "免運費"
-            }
-          },
-          {
-            "type": "tier",
-            "settings": {
-              "amount": 1500,
-              "benefit": "NT$ 100 折扣"
-            }
-          },
-          {
-            "type": "tier",
-            "settings": {
-              "amount": 2000,
-              "benefit": "NT$ 200 折扣"
-            }
-          }
-        ]
-      }
-    ]
-  }
-  {% endschema %}
+    }
+  ],
+  "presets": [
+    {
+      "name": "Spend More, Get More"
+    }
+  ]
+}
+{% endschema %}
