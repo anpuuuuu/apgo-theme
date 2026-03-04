@@ -231,18 +231,8 @@
     },
     "checkout_prefill_mH8EUg": {
       "type": "checkout-prefill",
-      "name": "shipping address",
-      "settings": {
-        "title": "填寫收件資料",
-        "subtitle": "選擇運送方式並填寫資料，下一步自動帶入結帳頁",
-        "enable_home": true,
-        "enable_cvs": true,
-        "enable_zip": false,
-        "enable_attr": true,
-        "enable_road_dropdown": true,
-        "enable_detail_address": true,
-        "country": "Taiwan"
-      }
+      "name": "Shipping Address",
+      "settings": {}
     },
     "cart_totals_Cya3eE": {
       "type": "cart-totals",
@@ -307,11 +297,11 @@
   "order": [
     "section_BfdtTq",
     "cart-section",
+    "checkout_prefill_mH8EUg",
     "apgo_coating_products_VU6az3",
     "custom_liquid_hDkzHY",
     "custom_liquid_bhCfqy",
     "custom_liquid_QNhCUK",
-    "checkout_prefill_mH8EUg",
     "cart_totals_Cya3eE",
     "cart_cta_aCdf4g",
     "cart_upsell_recommendations_L4gQhn"
