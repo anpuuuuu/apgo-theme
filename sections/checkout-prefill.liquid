@@ -34,6 +34,54 @@
       </header>
 
       <div class="apgo-shipping-address__form">
+        <div class="apgo-shipping-address__field apgo-shipping-address__field--full">
+          <label for="apgo-ship-address1">{{ 'apgo_cart.address1' | t }}</label>
+          <input
+            id="apgo-ship-address1"
+            type="text"
+            value="{{ default_address1 | escape }}"
+            data-apgo-address1
+            autocomplete="address-line1"
+            placeholder="{{ 'apgo_cart.placeholder_address1' | t }}"
+          >
+        </div>
+
+        <div class="apgo-shipping-address__field">
+          <label for="apgo-ship-zip">{{ 'apgo_cart.zip' | t }}</label>
+          <input
+            id="apgo-ship-zip"
+            type="text"
+            value="{{ default_zip | escape }}"
+            data-apgo-zip
+            autocomplete="postal-code"
+            placeholder="{{ 'apgo_cart.placeholder_zip' | t }}"
+          >
+        </div>
+
+        <div class="apgo-shipping-address__field">
+          <label for="apgo-ship-city">{{ 'apgo_cart.city' | t }}</label>
+          <input
+            id="apgo-ship-city"
+            type="text"
+            value="{{ default_city | escape }}"
+            data-apgo-city
+            autocomplete="address-level2"
+            placeholder="{{ 'apgo_cart.placeholder_city' | t }}"
+          >
+        </div>
+
+        <div class="apgo-shipping-address__field">
+          <label for="apgo-ship-province">{{ 'apgo_cart.province' | t }}</label>
+          <input
+            id="apgo-ship-province"
+            type="text"
+            value="{{ default_province | escape }}"
+            data-apgo-province
+            autocomplete="address-level1"
+            placeholder="{{ 'apgo_cart.placeholder_province' | t }}"
+          >
+        </div>
+
         <div class="apgo-shipping-address__field">
           <label for="apgo-ship-country">{{ 'apgo_cart.country' | t }}</label>
           <select id="apgo-ship-country" data-apgo-country>
@@ -53,54 +101,6 @@
               <option value="{{ default_country_code }}" selected>{{ default_country_code }}</option>
             {% endif %}
           </select>
-        </div>
-
-        <div class="apgo-shipping-address__field">
-          <label for="apgo-ship-province">{{ 'apgo_cart.province' | t }}</label>
-          <input
-            id="apgo-ship-province"
-            type="text"
-            value="{{ default_province | escape }}"
-            data-apgo-province
-            autocomplete="address-level1"
-            placeholder="{{ 'apgo_cart.placeholder_province' | t }}"
-          >
-        </div>
-
-        <div class="apgo-shipping-address__field">
-          <label for="apgo-ship-city">{{ 'apgo_cart.city' | t }}</label>
-          <input
-            id="apgo-ship-city"
-            type="text"
-            value="{{ default_city | escape }}"
-            data-apgo-city
-            autocomplete="address-level2"
-            placeholder="{{ 'apgo_cart.placeholder_city' | t }}"
-          >
-        </div>
-
-        <div class="apgo-shipping-address__field">
-          <label for="apgo-ship-zip">{{ 'apgo_cart.zip' | t }}</label>
-          <input
-            id="apgo-ship-zip"
-            type="text"
-            value="{{ default_zip | escape }}"
-            data-apgo-zip
-            autocomplete="postal-code"
-            placeholder="{{ 'apgo_cart.placeholder_zip' | t }}"
-          >
-        </div>
-
-        <div class="apgo-shipping-address__field apgo-shipping-address__field--full">
-          <label for="apgo-ship-address1">{{ 'apgo_cart.address1' | t }}</label>
-          <input
-            id="apgo-ship-address1"
-            type="text"
-            value="{{ default_address1 | escape }}"
-            data-apgo-address1
-            autocomplete="address-line1"
-            placeholder="{{ 'apgo_cart.placeholder_address1' | t }}"
-          >
         </div>
       </div>
 
