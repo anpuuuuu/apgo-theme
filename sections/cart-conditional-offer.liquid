@@ -279,7 +279,8 @@
 <!-- 重要：加上 ID 以便替換整個區塊 -->
 <div class="conditional-offer-wrapper" 
      id="conditional-offer-wrapper-{{ section.id }}"
-     data-hide-progress="{{ section.settings.hide_progress }}">
+     data-hide-progress="{{ section.settings.hide_progress }}"
+     data-market-country="{{ localization.country.iso_code | escape }}">
   
   <div class="conditional-offer-section" id="conditional-offer-{{ section.id }}">
     
@@ -291,8 +292,8 @@
         <div class="progress-bar-fill" id="progress-fill-{{ section.id }}" style="width: 0%"></div>
       </div>
       <div class="progress-text">
-        <span class="current-amount" id="current-amount-{{ section.id }}">NT$ 0</span>
-        <span class="target-amount" id="target-amount-{{ section.id }}">NT$ {{ section.settings.target_amount }}</span>
+        <span class="current-amount" id="current-amount-{{ section.id }}">--</span>
+        <span class="target-amount" id="target-amount-{{ section.id }}">--</span>
       </div>
     </div>
     {% endunless %}
@@ -310,209 +311,79 @@
 </div>
 
 <script>
-  // 條件式優惠功能 - 強化版
-  class ConditionalOffer {
-    constructor(sectionId, settings) {
-      this.sectionId = sectionId;
-      this.settings = settings;
-      this.currentAmount = 0;
-      this.targetAmount = parseFloat(settings.target_amount);
-      this.wrapperId = `conditional-offer-wrapper-${sectionId}`;
-      this.init();
-    }
-    
-    init() {
-      this.updateCartAmount();
-      this.setupEventListeners();
-    }
-    
-    // 雙重更新策略：先本地快速更新，再伺服器端精確更新
-    refreshAll() {
-      this.updateCartAmount({ noStore: true });
-      // 延遲執行 section render，確保購物車已更新完成
-      clearTimeout(this._srTimer);
-      this._srTimer = setTimeout(() => this.refreshSectionFromServer(), 220);
-    }
-    
-    updateCartAmount(opts = {}) {
-      const fetchOpts = {
-        method: 'GET',
-        headers: { 'Accept': 'application/json' }
-      };
-      if (opts.noStore) fetchOpts.cache = 'no-store';
-      
-      // 加時間戳避免快取
-      const url = `/cart.js?_=${Date.now()}`;
-      fetch(url, fetchOpts)
-        .then(r => r.json())
-        .then(cart => {
-          this.currentAmount = (cart.total_price || 0) / 100;
-          this.updateDisplay();
-        })
-        .catch(err => console.error('無法取得購物車資料:', err));
-    }
-    
-    updateDisplay() {
-      const progressFill = document.getElementById(`progress-fill-${this.sectionId}`);
-      const currentAmountEl = document.getElementById(`current-amount-${this.sectionId}`);
-      const offerMessage = document.getElementById(`offer-message-${this.sectionId}`);
-      const offerText = document.getElementById(`offer-text-${this.sectionId}`);
-      
-      // 防呆處理：避免除以 0
-      const target = Number.isFinite(this.targetAmount) && this.targetAmount > 0 ? this.targetAmount : 1;
-      const progress = Math.min((this.currentAmount / target) * 100, 100);
-      
-      if (progressFill) {
-        progressFill.style.width = `${progress}%`;
+  (() => {
+    const sectionId = '{{ section.id }}';
+    const wrapper = document.getElementById(`conditional-offer-wrapper-${sectionId}`);
+    if (!wrapper) return;
+
+    const progressFill = document.getElementById(`progress-fill-${sectionId}`);
+    const currentAmountEl = document.getElementById(`current-amount-${sectionId}`);
+    const targetAmountEl = document.getElementById(`target-amount-${sectionId}`);
+    const progressTitleEl = wrapper.querySelector('.progress-title');
+    const offerMessage = document.getElementById(`offer-message-${sectionId}`);
+    const offerText = document.getElementById(`offer-text-${sectionId}`);
+
+    const getRule = (countryCode) => {
+      if (countryCode === 'MY') return { thresholdMinor: 10000, currency: 'MYR' };
+      if (countryCode === 'SG') return { thresholdMinor: 7900, currency: 'SGD' };
+      return null;
+    };
+
+    const formatMoney = (minor, currency) =>
+      new Intl.NumberFormat(document.documentElement.lang || 'en', { style: 'currency', currency }).format((minor || 0) / 100);
+
+    const buildRemainingText = (amountText) => {
+      const template = `{{ 'apgo_cart.free_shipping_remaining' | t: amount: '__AMOUNT__' | escape }}`;
+      return template.replace('__AMOUNT__', amountText);
+    };
+
+    const render = (subtotalMinor) => {
+      const marketCountry = (wrapper.dataset.marketCountry || '').toUpperCase();
+      const rule = getRule(marketCountry);
+
+      if (!rule) {
+        wrapper.style.display = 'none';
+        return;
       }
-      
-      if (currentAmountEl) {
-        currentAmountEl.textContent = `NT$ ${this.currentAmount.toLocaleString()}`;
+
+      wrapper.style.display = '';
+      if (progressTitleEl) progressTitleEl.textContent = `{{ 'apgo_cart.free_shipping_goal_label' | t | escape }}`;
+
+      const remainingMinor = Math.max(rule.thresholdMinor - subtotalMinor, 0);
+      const progress = Math.min((subtotalMinor / rule.thresholdMinor) * 100, 100);
+
+      if (progressFill) progressFill.style.width = `${progress}%`;
+      if (currentAmountEl) currentAmountEl.textContent = formatMoney(subtotalMinor, rule.currency);
+      if (targetAmountEl) targetAmountEl.textContent = formatMoney(rule.thresholdMinor, rule.currency);
+
+      if (!offerMessage || !offerText) return;
+      if (remainingMinor === 0) {
+        offerMessage.classList.add('achieved');
+        offerText.textContent = `{{ 'apgo_cart.free_shipping_unlocked' | t | escape }}`;
+        return;
       }
-      
-      if (offerMessage && offerText) {
-        if (this.currentAmount >= this.targetAmount) {
-          // 已達成目標
-          offerMessage.classList.add('achieved');
-          const amt = Number(this.settings.discount_amount || 0);
-          offerText.innerHTML = this.settings.achieved_message.replace(
-            '{amount}',
-            `<span class="offer-amount">NT$ ${amt.toLocaleString()}</span>`
-          );
-        } else {
-          // 未達成目標
-          offerMessage.classList.remove('achieved');
-          const remainingRaw = Math.max(this.targetAmount - this.currentAmount, 0);
-          const msg = this.settings.progress_message.replace(
-            '{remaining}',
-            `<span class="offer-amount">NT$ ${remainingRaw.toLocaleString()}</span>`
-          );
-          offerText.innerHTML = msg;
-        }
-      }
-    }
-    
-    // 使用 Section Rendering API 從伺服器取得最新 HTML
-    refreshSectionFromServer() {
-      const wrapper = document.getElementById(this.wrapperId);
-      if (!wrapper) return;
-      
-      const url = `${window.location.pathname}?sections={{ section.id }}&_=${Date.now()}`;
-      fetch(url, {
-        method: 'GET',
-        headers: { 'X-Requested-With': 'XMLHttpRequest' },
-        cache: 'no-store'
-      })
-        .then(r => r.json())
-        .then(payload => {
-          const html = payload['{{ section.id }}'];
-          if (!html) return;
-          
-          const temp = document.createElement('div');
-          temp.innerHTML = html.trim();
-          
-          // 取得新區塊的 wrapper
-          const newWrapper = temp.querySelector(`#${this.wrapperId}`);
-          if (!newWrapper) return;
-          
-          // 替換整個區塊
-          wrapper.replaceWith(newWrapper);
-          
-          // 重要：替換後重新初始化
-          const sectionEl = document.getElementById(`conditional-offer-{{ section.id }}`);
-          if (sectionEl) {
-            new ConditionalOffer('{{ section.id }}', {
-              target_amount: {{ section.settings.target_amount }},
-              discount_amount: {{ section.settings.discount_amount }},
-              initial_message: `{{ section.settings.initial_message | escape }}`,
-              progress_message: `{{ section.settings.progress_message | escape }}`,
-              achieved_message: `{{ section.settings.achieved_message | escape }}`
-            });
-          }
-        })
-        .catch(err => console.error('Section render 失敗:', err));
-    }
-    
-    setupEventListeners() {
-      // 防抖處理
-      const debounce = (fn, wait = 250) => {
-        let t;
-        return (...args) => {
-          clearTimeout(t);
-          t = setTimeout(() => fn.apply(this, args), wait);
-        };
-      };
-      const debouncedRefresh = debounce(() => this.refreshAll(), 250);
-      
-      // 監聽所有可能的購物車更新事件
-      const EVENT_NAMES = [
-        'cart:refresh',
-        'cart:updated',
-        'cart:update',
-        'cart:change',
-        'product:added',
-        'ajaxProduct:added',
-        'cart:request:complete',
-        'theme:cart:update',
-        'CartUpdateEvent'
-      ];
-      
-      // 三個目標都監聽，確保接收到所有事件
-      const targets = [document, document.documentElement, window];
-      targets.forEach(target => {
-        EVENT_NAMES.forEach(name => {
-          target.addEventListener(name, debouncedRefresh, { passive: true });
-        });
-        // 類別型事件也監聽
-        target.addEventListener('CartUpdateEvent', debouncedRefresh, { passive: true });
-      });
-      
-      // Dawn 等主題的 section 載入事件
-      document.addEventListener('shopify:section:load', (e) => {
-        try {
-          if (e?.detail?.sectionId === '{{ section.id }}') {
-            this.refreshAll();
-          }
-        } catch(_) {}
-      });
-      
-      // MutationObserver 備援：監視購物車 DOM 變化
+
+      offerMessage.classList.remove('achieved');
+      const remainingText = formatMoney(remainingMinor, rule.currency);
+      offerText.textContent = buildRemainingText(remainingText);
+    };
+
+    const refresh = async () => {
       try {
-        const observerTargets = [
-          document.querySelector('.cart-drawer__footer'),
-          document.querySelector('#cart, .cart-items, cart-drawer-component')
-        ].filter(Boolean);
-        
-        if (observerTargets.length) {
-          const mo = new MutationObserver(() => {
-            setTimeout(() => this.refreshAll(), 120);
-          });
-          observerTargets.forEach(t => {
-            mo.observe(t, { childList: true, subtree: true });
-          });
-        }
-      } catch(_) {}
-      
-      // 跨分頁同步
-      window.addEventListener('storage', (e) => {
-        if (e.key === 'cart-updated') debouncedRefresh();
-      });
-    }
-  }
-  
-  // 初始化條件式優惠
-  document.addEventListener('DOMContentLoaded', function() {
-    const section = document.getElementById('conditional-offer-{{ section.id }}');
-    if (section) {
-      new ConditionalOffer('{{ section.id }}', {
-        target_amount: {{ section.settings.target_amount }},
-        discount_amount: {{ section.settings.discount_amount }},
-        initial_message: `{{ section.settings.initial_message | escape }}`,
-        progress_message: `{{ section.settings.progress_message | escape }}`,
-        achieved_message: `{{ section.settings.achieved_message | escape }}`
-      });
-    }
-  });
+        const res = await fetch('/cart.js', { headers: { Accept: 'application/json' } });
+        const cart = await res.json();
+        const subtotalMinor = Number(cart?.original_total_price || cart?.total_price || 0);
+        render(subtotalMinor);
+      } catch (_) {}
+    };
+
+    ['cart:refresh', 'cart:updated', 'cart:update', 'cart:change', 'product:added', 'ajaxProduct:added'].forEach((eventName) => {
+      document.addEventListener(eventName, refresh, { passive: true });
+    });
+
+    document.addEventListener('DOMContentLoaded', refresh);
+    refresh();
+  })();
 </script>
 
 {% schema %}

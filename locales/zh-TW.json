@@ -405,7 +405,8 @@
     "host": "主持人"
   },
   "apgo_promotions": {
-    "mysg_discount_banner": "馬來西亞/新加坡活動：訂單滿100立減10。"
+    "my_free_shipping_banner": "馬來西亞活動：訂單滿 MYR 100 免運費。",
+    "sg_free_shipping_banner": "新加坡活動：訂單滿 SGD 79 免運費。"
   },
   "cart": {
     "exclusive_coupon": "專屬優惠券",
@@ -524,8 +525,12 @@
   "apgo_cart": {
     "cart_products_title": "購物車商品",
     "shipping_fee": "運費",
+    "free_shipping_goal_label": "免運目標",
+    "free_shipping_remaining": "再買 {{ amount }} 即可免運",
+    "free_shipping_unlocked": "已達成免運",
+    "free_shipping_not_applicable": "僅適用於馬來西亞/新加坡",
     "total_after_discount": "預估總計",
-    "shipping_estimate_title": "購物車運費預估",
+    "shipping_estimate_title": "購物車收件地址",
     "country": "國家",
     "province": "州 / 省",
     "city": "城市",
@@ -535,6 +540,8 @@
     "estimating_shipping": "正在估算運費...",
     "shipping_not_estimated": "尚未估算",
     "shipping_estimate_error": "請填寫有效地址後再估算運費。",
+    "address_required_error": "請先完整填寫國家、州/省、城市、郵遞區號與地址，再前往結帳。",
+    "address_ready_for_checkout": "地址已儲存，可前往結帳。",
     "use_for_checkout": "結帳時使用此地址",
     "save_default_preference": "結帳後將此地址設為預設"
   }

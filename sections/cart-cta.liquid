@@ -227,12 +227,6 @@
 
     // 取目前 query（先嘗試把最新輸入寫進網址）
     function getCurrentQuery() {
-      try {
-        // 你的收件欄位 section 內若有此函式，就會把當前輸入同步到 location.search
-        if (typeof window.buildCheckoutParams === 'function') {
-          window.buildCheckoutParams();
-        }
-      } catch(e) { /* ignore */ }
       return window.location.search || '';
     }
 
@@ -259,7 +253,16 @@
       // 若按鈕 disabled（空購物車），就不處理
       if (btn.disabled || btn.getAttribute('aria-disabled') === 'true') return;
 
-      var qs = getCurrentQuery();
+      var validated = { valid: true, query: '' };
+      if (typeof window.apgoValidateCheckoutAddress === 'function') {
+        validated = window.apgoValidateCheckoutAddress() || validated;
+      }
+      if (!validated.valid) {
+        ev.preventDefault();
+        return;
+      }
+
+      var qs = validated.query ? ('?' + validated.query) : getCurrentQuery();
 
       if (REDIRECT_MODE) {
         // 攔截提交，保證帶著 query 直達 /checkout

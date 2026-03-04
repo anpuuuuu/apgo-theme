@@ -15,28 +15,24 @@
         assign is_mysg_market = true
       endif
 
-      assign promo_threshold_minor = 10000
-      assign promo_discount_minor = 1000
-      assign shipping_fee_minor = 0
-      if is_mysg_market
-        assign shipping_fee_minor = 1000
-      endif
-
-      assign projected_discount_minor = 0
-      if is_mysg_market and cart.original_total_price >= promo_threshold_minor
-        assign projected_discount_minor = promo_discount_minor
+      assign market_threshold_minor = 0
+      if localization.country.iso_code == 'MY'
+        assign market_threshold_minor = 10000
+      elsif localization.country.iso_code == 'SG'
+        assign market_threshold_minor = 7900
       endif
 
       assign discount_total_minor = cart.total_discount
-      if discount_total_minor < projected_discount_minor
-        assign discount_total_minor = projected_discount_minor
+      assign remaining_for_free_shipping_minor = 0
+      assign free_shipping_unlocked = false
+      if market_threshold_minor > 0
+        if cart.original_total_price >= market_threshold_minor
+          assign free_shipping_unlocked = true
+        else
+          assign remaining_for_free_shipping_minor = market_threshold_minor | minus: cart.original_total_price
+        endif
       endif
-
-      assign discounted_subtotal_minor = cart.original_total_price | minus: discount_total_minor
-      if discounted_subtotal_minor < 0
-        assign discounted_subtotal_minor = 0
-      endif
-      assign final_total_with_shipping_minor = discounted_subtotal_minor | plus: shipping_fee_minor
+      assign final_total_with_shipping_minor = cart.total_price
 
       if settings.currency_code_enabled_cart_total
         assign total_price_formatted = final_total_with_shipping_minor | money_with_currency
@@ -65,17 +61,25 @@
         <span class="cart__value">{{ cart.original_total_price | money }}</span>
       </div>
 
-      {%- if is_mysg_market -%}
-        <div class="cart__summary-item cart__shipping-fee">
-          <span class="cart__label">{{ 'apgo_cart.shipping_fee' | t }}</span>
-          <span class="cart__value">{{ shipping_fee_minor | money }}</span>
-        </div>
-      {%- endif -%}
-
-      <div class="cart__summary-item cart__discount-total">
-        <span class="cart__label">{{ 'content.discount' | t }}</span>
-        <span class="cart__value">-{{ discount_total_minor | money }}</span>
+      <div class="cart__summary-item cart__shipping-goal">
+        <span class="cart__label">{{ 'apgo_cart.free_shipping_goal_label' | t }}</span>
+        <span class="cart__value">
+          {%- if market_threshold_minor == 0 -%}
+            {{- 'apgo_cart.free_shipping_not_applicable' | t -}}
+          {%- elsif free_shipping_unlocked -%}
+            {{- 'apgo_cart.free_shipping_unlocked' | t -}}
+          {%- else -%}
+            {{- 'apgo_cart.free_shipping_remaining' | t: amount: remaining_for_free_shipping_minor | money -}}
+          {%- endif -%}
+        </span>
       </div>
+
+      {% if discount_total_minor > 0 %}
+        <div class="cart__summary-item cart__discount-total">
+          <span class="cart__label">{{ 'content.discount' | t }}</span>
+          <span class="cart__value">-{{ discount_total_minor | money }}</span>
+        </div>
+      {% endif %}
 
       <!-- 折扣清單 -->
       {%- if cart.cart_level_discount_applications.size > 0 -%}

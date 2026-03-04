@@ -405,7 +405,8 @@
     "host": "Host"
   },
   "apgo_promotions": {
-    "mysg_discount_banner": "MY/SG promotion: Get 10 off on orders over 100."
+    "my_free_shipping_banner": "Malaysia: Free shipping on orders over MYR 100.",
+    "sg_free_shipping_banner": "Singapore: Free shipping on orders over SGD 79."
   },
   "cart": {
     "exclusive_coupon": "Exclusive Coupon",
@@ -524,8 +525,12 @@
   "apgo_cart": {
     "cart_products_title": "Cart items",
     "shipping_fee": "Shipping fee",
+    "free_shipping_goal_label": "Free shipping goal",
+    "free_shipping_remaining": "Spend {{ amount }} more to unlock free shipping",
+    "free_shipping_unlocked": "Free shipping unlocked",
+    "free_shipping_not_applicable": "Available in MY/SG only",
     "total_after_discount": "Estimated Total",
-    "shipping_estimate_title": "Estimate shipping in cart",
+    "shipping_estimate_title": "Shipping address in cart",
     "country": "Country",
     "province": "State / Province",
     "city": "City",
@@ -535,6 +540,8 @@
     "estimating_shipping": "Estimating shipping...",
     "shipping_not_estimated": "Not estimated yet",
     "shipping_estimate_error": "Please enter a valid address to estimate shipping.",
+    "address_required_error": "Please complete country, state/province, city, postal code, and address before checkout.",
+    "address_ready_for_checkout": "Address saved. You can proceed to checkout.",
     "use_for_checkout": "Use this address for checkout",
     "save_default_preference": "Save this as my default address after checkout"
   }

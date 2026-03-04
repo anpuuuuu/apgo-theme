@@ -1,22 +1,4 @@
 {%- liquid
-  assign promo_threshold_minor = 10000
-  assign promo_discount_minor = 1000
-
-  assign projected_discount_minor = 0
-  if localization.country.iso_code == 'MY' and cart.original_total_price >= promo_threshold_minor
-    assign projected_discount_minor = promo_discount_minor
-  endif
-
-  assign discount_total_minor = cart.total_discount
-  if discount_total_minor < projected_discount_minor
-    assign discount_total_minor = projected_discount_minor
-  endif
-
-  assign discounted_subtotal_minor = cart.original_total_price | minus: discount_total_minor
-  if discounted_subtotal_minor < 0
-    assign discounted_subtotal_minor = 0
-  endif
-
   assign default_country_code = localization.country.iso_code
   assign default_province = ''
   assign default_city = ''
@@ -34,13 +16,7 @@
   endif
 -%}
 
-<div
-  class="cart-shipping-estimator-host"
-  data-cart-estimator
-  data-discounted-subtotal-minor="{{ discounted_subtotal_minor }}"
-  data-currency-code="{{ cart.currency.iso_code | escape }}"
-  data-locale="{{ request.locale.iso_code | escape }}"
->
+<div class="cart-shipping-estimator-host" data-cart-address-form>
   <div class="cart-shipping-estimator cart-shipping-estimator--enhanced">
     <p class="cart-shipping-estimator__title">{{ 'apgo_cart.shipping_estimate_title' | t }}</p>
     <div class="cart-shipping-estimator__grid">
@@ -101,25 +77,136 @@
         autocomplete="address-line1"
       >
     </label>
-
-    <div class="cart-shipping-estimator__actions">
-      <button type="button" class="button button--secondary" data-estimate-shipping>
-        {{ 'apgo_cart.estimate_shipping' | t }}
-      </button>
-      <label class="cart-shipping-estimator__checkbox">
-        <input type="checkbox" data-estimator-use-on-checkout checked>
-        <span>{{ 'apgo_cart.use_for_checkout' | t }}</span>
-      </label>
-      {% if customer %}
-        <label class="cart-shipping-estimator__checkbox">
-          <input type="checkbox" data-estimator-save-default {% if customer.default_address == blank %}checked{% endif %}>
-          <span>{{ 'apgo_cart.save_default_preference' | t }}</span>
-        </label>
-      {% endif %}
-    </div>
     <small class="cart-shipping-estimator__message" data-estimate-message>
-      {{ 'apgo_cart.shipping_not_estimated' | t }}
+      {{ 'apgo_cart.address_ready_for_checkout' | t }}
     </small>
   </div>
 </div>
+
+<script>
+  (() => {
+    if (window.__apgoCartAddressBound) return;
+    window.__apgoCartAddressBound = true;
+
+    const root = document.querySelector('[data-cart-address-form]');
+    if (!root) return;
+
+    const countryEl = root.querySelector('[data-estimator-country]');
+    const provinceEl = root.querySelector('[data-estimator-province]');
+    const cityEl = root.querySelector('[data-estimator-city]');
+    const zipEl = root.querySelector('[data-estimator-zip]');
+    const address1El = root.querySelector('[data-estimator-address1]');
+    const messageEl = root.querySelector('[data-estimate-message]');
+
+    const setMessage = (text) => {
+      if (messageEl) messageEl.textContent = text || '';
+    };
+
+    const getAddress = () => ({
+      country: (countryEl?.value || '').trim(),
+      province: (provinceEl?.value || '').trim(),
+      city: (cityEl?.value || '').trim(),
+      zip: (zipEl?.value || '').trim(),
+      address1: (address1El?.value || '').trim(),
+    });
+
+    const validateAddress = (addr) => {
+      const required = ['country', 'province', 'city', 'zip', 'address1'];
+      const firstMissingKey = required.find((key) => !addr[key]);
+      return { valid: !firstMissingKey, firstMissingKey };
+    };
+
+    const focusMissingField = (key) => {
+      const map = {
+        country: countryEl,
+        province: provinceEl,
+        city: cityEl,
+        zip: zipEl,
+        address1: address1El,
+      };
+      map[key]?.focus();
+    };
+
+    const buildCheckoutQuery = (addr) => {
+      const q = new URLSearchParams();
+      q.set('checkout[shipping_address][country]', addr.country);
+      q.set('checkout[shipping_address][province]', addr.province);
+      q.set('checkout[shipping_address][city]', addr.city);
+      q.set('checkout[shipping_address][zip]', addr.zip);
+      q.set('checkout[shipping_address][address1]', addr.address1);
+      return q.toString();
+    };
+
+    const saveAddressToCartAttributes = async (addr) => {
+      try {
+        await fetch('/cart/update.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({
+            attributes: {
+              estimated_shipping_country: addr.country,
+              estimated_shipping_province: addr.province,
+              estimated_shipping_city: addr.city,
+              estimated_shipping_zip: addr.zip,
+              estimated_shipping_address1: addr.address1,
+            },
+          }),
+        });
+      } catch (_) {}
+    };
+
+    window.apgoValidateCheckoutAddress = () => {
+      const address = getAddress();
+      const check = validateAddress(address);
+      if (!check.valid) {
+        setMessage(`{{ 'apgo_cart.address_required_error' | t | escape }}`);
+        focusMissingField(check.firstMissingKey);
+        return { valid: false, query: '' };
+      }
+
+      const query = buildCheckoutQuery(address);
+      const nextUrl = `${window.location.pathname}?${query}${window.location.hash || ''}`;
+      window.history.replaceState({}, '', nextUrl);
+      saveAddressToCartAttributes(address);
+      setMessage(`{{ 'apgo_cart.address_ready_for_checkout' | t | escape }}`);
+      return { valid: true, query };
+    };
+
+    window.buildCheckoutParams = () => {
+      const result = window.apgoValidateCheckoutAddress();
+      return result.valid ? `?${result.query}` : (window.location.search || '');
+    };
+
+    const bindCheckoutGuard = (buttonId) => {
+      const button = document.getElementById(buttonId);
+      if (!button) return;
+
+      button.addEventListener(
+        'click',
+        (event) => {
+          if (button.disabled || button.getAttribute('aria-disabled') === 'true') return;
+          const result = window.apgoValidateCheckoutAddress();
+          if (!result.valid) {
+            event.preventDefault();
+            event.stopPropagation();
+            event.stopImmediatePropagation();
+            return;
+          }
+          event.preventDefault();
+          window.location.assign(`/checkout?${result.query}`);
+        },
+        true
+      );
+    };
+
+    ['input', 'change'].forEach((eventName) => {
+      [countryEl, provinceEl, cityEl, zipEl, address1El].forEach((el) => {
+        el?.addEventListener(eventName, () => setMessage(''), { passive: true });
+      });
+    });
+
+    bindCheckoutGuard('checkout');
+    bindCheckoutGuard('checkout-standalone');
+  })();
+</script>
 
