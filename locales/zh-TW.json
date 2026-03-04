@@ -528,7 +528,7 @@
     "free_shipping_goal_label": "免运目标",
     "free_shipping_remaining": "再买 {{ amount }} 即可免运",
     "free_shipping_unlocked": "已达成免运",
-    "free_shipping_not_applicable": "仅适用于马来西亚/新加坡",
+    "free_shipping_not_applicable": "仅适用于新加坡",
     "total_after_discount": "预估总计",
     "shipping_estimate_title": "购物车收件地址",
     "country": "国家",

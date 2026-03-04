@@ -10,15 +10,10 @@
   <!-- 👉 只替換這個內容區，外層 wrapper 不動 -->
   <div id="CartTotalsContent-{{ section.id }}">
     {%- liquid
-      assign is_mysg_market = false
-      if localization.country.iso_code == 'MY' or localization.country.iso_code == 'SG'
-        assign is_mysg_market = true
-      endif
-
       assign market_threshold_minor = 0
-      if localization.country.iso_code == 'MY'
-        assign market_threshold_minor = 10000
-      elsif localization.country.iso_code == 'SG'
+      assign is_sg_market = false
+      if localization.country.iso_code == 'SG'
+        assign is_sg_market = true
         assign market_threshold_minor = 7900
       endif
 
@@ -63,18 +58,18 @@
         <span class="cart__value">{{ cart.original_total_price | money }}</span>
       </div>
 
-      <div class="cart__summary-item cart__shipping-goal">
-        <span class="cart__label">{{ 'apgo_cart.free_shipping_goal_label' | t }}</span>
-        <span class="cart__value">
-          {%- if market_threshold_minor == 0 -%}
-            {{- 'apgo_cart.free_shipping_not_applicable' | t -}}
-          {%- elsif free_shipping_unlocked -%}
-            {{- 'apgo_cart.free_shipping_unlocked' | t -}}
-          {%- else -%}
-            {{- 'apgo_cart.free_shipping_remaining' | t: amount: free_shipping_remaining_formatted -}}
-          {%- endif -%}
-        </span>
-      </div>
+      {% if is_sg_market %}
+        <div class="cart__summary-item cart__shipping-goal">
+          <span class="cart__label">{{ 'apgo_cart.free_shipping_goal_label' | t }}</span>
+          <span class="cart__value">
+            {%- if free_shipping_unlocked -%}
+              {{- 'apgo_cart.free_shipping_unlocked' | t -}}
+            {%- else -%}
+              {{- 'apgo_cart.free_shipping_remaining' | t: amount: free_shipping_remaining_formatted -}}
+            {%- endif -%}
+          </span>
+        </div>
+      {% endif %}
 
       {% if discount_total_minor > 0 %}
         <div class="cart__summary-item cart__discount-total">

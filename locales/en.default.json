@@ -528,7 +528,7 @@
     "free_shipping_goal_label": "Free shipping goal",
     "free_shipping_remaining": "Spend {{ amount }} more to unlock free shipping",
     "free_shipping_unlocked": "Free shipping unlocked",
-    "free_shipping_not_applicable": "Available in MY/SG only",
+    "free_shipping_not_applicable": "Available in SG only",
     "total_after_discount": "Estimated Total",
     "shipping_estimate_title": "Shipping address in cart",
     "country": "Country",

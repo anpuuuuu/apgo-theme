@@ -5,9 +5,9 @@
 <div class="cart__summary-totals">
   {%- liquid
     assign market_threshold_minor = 0
-    if localization.country.iso_code == 'MY'
-      assign market_threshold_minor = 10000
-    elsif localization.country.iso_code == 'SG'
+    assign is_sg_market = false
+    if localization.country.iso_code == 'SG'
+      assign is_sg_market = true
       assign market_threshold_minor = 7900
     endif
 
@@ -38,18 +38,18 @@
       </span>
     </span>
 
-      <span class="cart__summary-item cart__shipping-goal">
-        <span class="cart__shipping-goal-label">{{ 'apgo_cart.free_shipping_goal_label' | t }}</span>
-        <span class="cart__shipping-goal-value cart-secondary-typography">
-          {%- if market_threshold_minor == 0 -%}
-            {{- 'apgo_cart.free_shipping_not_applicable' | t -}}
-          {%- elsif free_shipping_unlocked -%}
-            {{- 'apgo_cart.free_shipping_unlocked' | t -}}
-          {%- else -%}
-            {{- 'apgo_cart.free_shipping_remaining' | t: amount: free_shipping_remaining_formatted -}}
-          {%- endif -%}
+      {% if is_sg_market %}
+        <span class="cart__summary-item cart__shipping-goal">
+          <span class="cart__shipping-goal-label">{{ 'apgo_cart.free_shipping_goal_label' | t }}</span>
+          <span class="cart__shipping-goal-value cart-secondary-typography">
+            {%- if free_shipping_unlocked -%}
+              {{- 'apgo_cart.free_shipping_unlocked' | t -}}
+            {%- else -%}
+              {{- 'apgo_cart.free_shipping_remaining' | t: amount: free_shipping_remaining_formatted -}}
+            {%- endif -%}
+          </span>
         </span>
-      </span>
+      {% endif %}
 
     {% if discount_total_minor > 0 %}
       <span class="cart__summary-item cart__discount-total">
