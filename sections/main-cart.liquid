@@ -39,6 +39,8 @@
     display: grid;
     grid-template-columns: 1fr;
     gap: 0 var(--padding-5xl);
+    width: 100%;
+    margin: 0 auto;
   }
 
   .cart-page--empty {
@@ -92,9 +94,15 @@
     }
   }
 
+  @media screen and (width >= 1024px) {
+    .cart-page {
+      max-width: min(1200px, 66vw);
+    }
+  }
+
   @media screen and (width >= 1400px) {
     .cart-page {
-      grid-template-columns: 1fr var(--sidebar-width);
+      grid-template-columns: 1fr;
     }
   }
 {% endstylesheet %}
