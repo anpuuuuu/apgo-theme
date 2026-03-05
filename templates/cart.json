@@ -153,21 +153,6 @@
             "padding-inline-end": 0
           },
           "blocks": {}
-        },
-        "cart-page-summary": {
-          "type": "_cart-summary",
-          "disabled": true,
-          "static": true,
-          "settings": {
-            "extend_summary": true,
-            "inherit_color_scheme": true,
-            "color_scheme": "scheme-1",
-            "border": "solid",
-            "border_width": 1,
-            "border_opacity": 0,
-            "border_radius": 0
-          },
-          "blocks": {}
         }
       },
       "block_order": [
@@ -186,6 +171,7 @@
     },
     "checkout_prefill_mH8EUg": {
       "type": "checkout-prefill",
+      "disabled": true,
       "name": "Shipping Address",
       "settings": {}
     },
