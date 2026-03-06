@@ -219,6 +219,18 @@
         "padding-block-end": 0
       }
     },
+    "marquee_cartPromo": {
+      "type": "marquee",
+      "name": "t:names.marquee_section",
+      "settings": {
+        "movement_direction": "normal",
+        "color_scheme": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26",
+        "padding-block-start": 3,
+        "padding-block-end": 3,
+        "gap_between_elements": 10,
+        "show_mysg_discount_promo": true
+      }
+    },
     "cart_totals_Cya3eE": {
       "type": "cart-totals",
       "name": "Cart Totals (Standalone)",
@@ -280,6 +292,7 @@
   },
   "order": [
     "section_BfdtTq",
+    "marquee_cartPromo",
     "cart-section",
     "checkout_prefill_mH8EUg",
     "apgo_coating_products_VU6az3",
