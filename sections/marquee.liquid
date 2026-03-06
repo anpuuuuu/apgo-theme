@@ -9,10 +9,12 @@
 {% liquid
   assign show_market_promo = false
   assign market_promo_key = ''
-  if section.settings.show_mysg_discount_promo and template.name == 'index'
-    if localization.country.iso_code == 'SG'
-      assign show_market_promo = true
-      assign market_promo_key = 'apgo_promotions.sg_free_shipping_banner'
+  if section.settings.show_mysg_discount_promo
+    if template.name == 'index' or template.name == 'collection' or template.name == 'list-collections'
+      if localization.country.iso_code == 'SG'
+        assign show_market_promo = true
+        assign market_promo_key = 'apgo_promotions.sg_free_shipping_banner'
+      endif
     endif
   endif
 %}
