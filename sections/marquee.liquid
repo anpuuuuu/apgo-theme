@@ -9,7 +9,8 @@
 {% liquid
   assign show_market_promo = false
   assign market_promo_key = ''
-  if section.settings.show_mysg_discount_promo
+  assign enable_sg_market_promo = false
+  if section.settings.show_mysg_discount_promo and enable_sg_market_promo
     if template.name == 'index' or template.name == 'collection' or template.name == 'list-collections' or template.name == 'cart'
       if localization.country.iso_code == 'SG'
         assign show_market_promo = true
