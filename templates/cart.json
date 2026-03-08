@@ -88,6 +88,18 @@
         "padding-block-end": 64
       }
     },
+    "marquee_cartPromo": {
+      "type": "marquee",
+      "name": "t:names.marquee_section",
+      "settings": {
+        "movement_direction": "normal",
+        "color_scheme": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26",
+        "padding-block-start": 3,
+        "padding-block-end": 3,
+        "gap_between_elements": 10,
+        "show_mysg_discount_promo": true
+      }
+    },
     "cart-section": {
       "type": "main-cart",
       "blocks": {
@@ -171,6 +183,7 @@
     },
     "checkout_prefill_mH8EUg": {
       "type": "checkout-prefill",
+      "disabled": true,
       "name": "Shipping Address",
       "settings": {}
     },
@@ -217,18 +230,6 @@
         "section_width": "page-width",
         "padding-block-start": 0,
         "padding-block-end": 0
-      }
-    },
-    "marquee_cartPromo": {
-      "type": "marquee",
-      "name": "t:names.marquee_section",
-      "settings": {
-        "movement_direction": "normal",
-        "color_scheme": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26",
-        "padding-block-start": 3,
-        "padding-block-end": 3,
-        "gap_between_elements": 10,
-        "show_mysg_discount_promo": true
       }
     },
     "cart_totals_Cya3eE": {
