@@ -53,6 +53,9 @@
       data-product-transition="{{ settings.transition_to_main_product }}"
       data-template="{{ template }}"
     >
+      {% if request.page_type == 'product' or request.path contains '/products/' %}
+        {% section 'marquee' %}
+      {% endif %}
       {{ content_for_layout }}
     </main>
 
