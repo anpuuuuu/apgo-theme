@@ -47,6 +47,9 @@
     background: #333333;
     border-radius: 999px;
     overflow: hidden;
+    box-shadow:
+      inset 0 0 0 1px rgb(255 255 255 / 6%),
+      0 0 10px rgb(0 0 0 / 30%);
   }
 
   .apgo-combined-goal__fill {
@@ -55,6 +58,9 @@
     border-radius: inherit;
     background: linear-gradient(90deg, {{ section.settings.accent_color_start }}, {{ section.settings.accent_color_end }});
     transition: width 0.35s ease;
+    box-shadow:
+      0 0 10px rgb(255 255 255 / 18%),
+      0 0 18px rgb(255 255 255 / 10%);
   }
 
   .apgo-combined-goal__amounts {
@@ -95,6 +101,9 @@
 
   .apgo-combined-goal.is-unlocked .apgo-combined-goal__fill {
     background: linear-gradient(90deg, #28A745, #28A745) !important;
+    box-shadow:
+      0 0 12px rgb(40 167 69 / 75%),
+      0 0 26px rgb(40 167 69 / 45%);
   }
 
   @media (max-width: 768px) {
