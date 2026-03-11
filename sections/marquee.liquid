@@ -41,7 +41,21 @@
       <div class="marquee__repeated-items">
         {% if show_market_promo %}
           <p class="marquee__promo-item">
-            <span class="marquee__promo-flag" aria-hidden="true">🇸🇬</span>
+            <span class="marquee__promo-flag" aria-hidden="true">
+              <svg viewBox="0 0 64 48" role="img" focusable="false">
+                <rect width="64" height="24" fill="#EF3340"></rect>
+                <rect y="24" width="64" height="24" fill="#FFFFFF"></rect>
+                <circle cx="18" cy="13" r="8" fill="#FFFFFF"></circle>
+                <circle cx="21" cy="13" r="6.5" fill="#EF3340"></circle>
+                <g fill="#FFFFFF" transform="translate(27 7)">
+                  <polygon points="2.5,0 3.2,1.8 5.1,1.8 3.6,2.9 4.2,4.8 2.5,3.6 0.8,4.8 1.4,2.9 0,1.8 1.8,1.8"></polygon>
+                  <polygon points="8.5,2.3 9.2,4.1 11.1,4.1 9.6,5.2 10.2,7.1 8.5,5.9 6.8,7.1 7.4,5.2 6,4.1 7.8,4.1"></polygon>
+                  <polygon points="8.5,8.8 9.2,10.6 11.1,10.6 9.6,11.7 10.2,13.6 8.5,12.4 6.8,13.6 7.4,11.7 6,10.6 7.8,10.6"></polygon>
+                  <polygon points="2.5,11.1 3.2,12.9 5.1,12.9 3.6,14 4.2,15.9 2.5,14.7 0.8,15.9 1.4,14 0,12.9 1.8,12.9"></polygon>
+                  <polygon points="14.5,5.6 15.2,7.4 17.1,7.4 15.6,8.5 16.2,10.4 14.5,9.2 12.8,10.4 13.4,8.5 12,7.4 13.8,7.4"></polygon>
+                </g>
+              </svg>
+            </span>
             {{ market_promo_key | t }}
           </p>
         {% endif %}
