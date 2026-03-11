@@ -235,19 +235,6 @@
         "color_scheme": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26"
       }
     },
-    "checkout_prefill_mH8EUg": {
-      "type": "checkout-prefill",
-      "name": "Shipping Address",
-      "settings": {}
-    },
-    "cart_cta_aCdf4g": {
-      "type": "cart-cta",
-      "name": "Cart CTA (Standalone)",
-      "settings": {
-        "show_accelerated": true,
-        "color_scheme": "scheme-9a9df36f-52ae-4a86-948a-8b59a473eca0"
-      }
-    },
     "cart_upsell_recommendations_L4gQhn": {
       "type": "cart-upsell-recommendations",
       "name": "Recommended Items",
@@ -287,6 +274,20 @@
         "mobile_layout": "vertical",
         "hide_price_mobile": false,
         "products_visible_mobile": 1.5
+      }
+    },
+    "checkout_prefill_mH8EUg": {
+      "type": "checkout-prefill",
+      "disabled": true,
+      "name": "Shipping Address",
+      "settings": {}
+    },
+    "cart_cta_aCdf4g": {
+      "type": "cart-cta",
+      "name": "Cart CTA (Standalone)",
+      "settings": {
+        "show_accelerated": true,
+        "color_scheme": "scheme-9a9df36f-52ae-4a86-948a-8b59a473eca0"
       }
     }
   },
