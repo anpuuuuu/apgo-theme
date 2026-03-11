@@ -23,9 +23,24 @@ class MarqueeComponent extends Component {
     const { content } = this.refs;
     if (content.firstElementChild?.children.length === 0) return;
 
+    // #region agent log
+    const promoItemPre = content.querySelector('.marquee__promo-item');
+    const promoFlagSvgPre = content.querySelector('.marquee__promo-flag svg');
+    fetch('http://127.0.0.1:7569/ingest/af330cb5-58ca-4b18-a766-23106eb80d3d',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b4045b'},body:JSON.stringify({sessionId:'b4045b',runId:'run1',hypothesisId:'H1',location:'assets/marquee.js:connectedCallback.beforeOps',message:'Promo DOM before marquee operations',data:{promoItemExists:!!promoItemPre,promoSvgExists:!!promoFlagSvgPre,promoText:promoItemPre?.textContent?.trim()?.slice(0,120)||'',promoHtmlSnippet:promoItemPre?.innerHTML?.slice(0,200)||''},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
+
     this.#addRepeatedItems();
     this.#duplicateContent();
     this.#setSpeed();
+
+    // #region agent log
+    const promoItemPost = this.refs.content.querySelector('.marquee__promo-item');
+    const promoFlagSvgPost = this.refs.content.querySelector('.marquee__promo-flag svg');
+    const promoFlagElPost = this.refs.content.querySelector('.marquee__promo-flag');
+    const flagRect = promoFlagElPost?.getBoundingClientRect?.();
+    const flagStyle = promoFlagElPost ? window.getComputedStyle(promoFlagElPost) : null;
+    fetch('http://127.0.0.1:7569/ingest/af330cb5-58ca-4b18-a766-23106eb80d3d',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b4045b'},body:JSON.stringify({sessionId:'b4045b',runId:'run1',hypothesisId:'H2',location:'assets/marquee.js:connectedCallback.afterOps',message:'Promo DOM after add/duplicate/speed',data:{promoItemExists:!!promoItemPost,promoSvgExists:!!promoFlagSvgPost,promoFlagsCount:this.refs.content.querySelectorAll('.marquee__promo-flag').length,flagDisplay:flagStyle?.display||'',flagVisibility:flagStyle?.visibility||'',flagWidth:flagStyle?.width||'',flagHeight:flagStyle?.height||'',flagRectWidth:flagRect?.width||0,flagRectHeight:flagRect?.height||0},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
 
     window.addEventListener('resize', this.#handleResize);
     this.addEventListener('pointerenter', this.#slowDown);
@@ -136,6 +151,12 @@ class MarqueeComponent extends Component {
     clone.removeAttribute('ref');
 
     this.refs.wrapper.appendChild(clone);
+
+    // #region agent log
+    const clonePromoSvg = clone.querySelector('.marquee__promo-flag svg');
+    const clonePromoText = clone.querySelector('.marquee__promo-item')?.textContent?.trim()?.slice(0,120) || '';
+    fetch('http://127.0.0.1:7569/ingest/af330cb5-58ca-4b18-a766-23106eb80d3d',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b4045b'},body:JSON.stringify({sessionId:'b4045b',runId:'run1',hypothesisId:'H3',location:'assets/marquee.js:duplicateContent',message:'Cloned content promo snapshot',data:{clonePromoSvgExists:!!clonePromoSvg,clonePromoText},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
   }
 
   #addRepeatedItems(numberOfCopies = this.#calculateNumberOfCopies()) {
