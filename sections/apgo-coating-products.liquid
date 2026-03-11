@@ -43,24 +43,26 @@
 
   .apgo-combined-goal__track {
     width: 100%;
-    height: 10px;
-    background: #333333;
+    height: 12px;
+    background: linear-gradient(180deg, #3a3a3a 0%, #2a2a2a 100%);
     border-radius: 999px;
     overflow: hidden;
     box-shadow:
-      inset 0 0 0 1px rgb(255 255 255 / 6%),
-      0 0 10px rgb(0 0 0 / 30%);
+      inset 0 0 0 1px rgb(255 255 255 / 10%),
+      inset 0 2px 6px rgb(0 0 0 / 38%),
+      0 0 14px rgb(0 0 0 / 42%);
   }
 
   .apgo-combined-goal__fill {
     width: 0;
     height: 100%;
     border-radius: inherit;
-    background: linear-gradient(90deg, {{ section.settings.accent_color_start }}, {{ section.settings.accent_color_end }});
+    background: linear-gradient(90deg, {{ section.settings.accent_color_start }} 0%, {{ section.settings.accent_color_end }} 55%, {{ section.settings.accent_color_start }} 100%);
     transition: width 0.35s ease;
     box-shadow:
-      0 0 10px rgb(255 255 255 / 18%),
-      0 0 18px rgb(255 255 255 / 10%);
+      0 0 12px rgb(255 255 255 / 25%),
+      0 0 24px rgb(255 255 255 / 16%),
+      0 0 36px rgb(255 255 255 / 10%);
   }
 
   .apgo-combined-goal__amounts {
@@ -100,10 +102,11 @@
   }
 
   .apgo-combined-goal.is-unlocked .apgo-combined-goal__fill {
-    background: linear-gradient(90deg, #28A745, #28A745) !important;
+    background: linear-gradient(90deg, #34d399 0%, #22c55e 45%, #16a34a 100%) !important;
     box-shadow:
-      0 0 12px rgb(40 167 69 / 75%),
-      0 0 26px rgb(40 167 69 / 45%);
+      0 0 14px rgb(34 197 94 / 95%),
+      0 0 30px rgb(34 197 94 / 70%),
+      0 0 48px rgb(22 163 74 / 45%);
   }
 
   @media (max-width: 768px) {
