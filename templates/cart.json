@@ -181,11 +181,6 @@
         "padding-block-end": 0
       }
     },
-    "checkout_prefill_mH8EUg": {
-      "type": "checkout-prefill",
-      "name": "Shipping Address",
-      "settings": {}
-    },
     "apgo_coating_products_VU6az3": {
       "type": "apgo-coating-products",
       "name": "Spend More, Get More",
@@ -239,6 +234,11 @@
         "show_installments": true,
         "color_scheme": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26"
       }
+    },
+    "checkout_prefill_mH8EUg": {
+      "type": "checkout-prefill",
+      "name": "Shipping Address",
+      "settings": {}
     },
     "cart_cta_aCdf4g": {
       "type": "cart-cta",
@@ -294,13 +294,13 @@
     "section_BfdtTq",
     "marquee_cartPromo",
     "cart-section",
-    "checkout_prefill_mH8EUg",
     "apgo_coating_products_VU6az3",
     "custom_liquid_hDkzHY",
     "custom_liquid_bhCfqy",
     "custom_liquid_QNhCUK",
     "cart_totals_Cya3eE",
-    "cart_cta_aCdf4g",
-    "cart_upsell_recommendations_L4gQhn"
+    "cart_upsell_recommendations_L4gQhn",
+    "checkout_prefill_mH8EUg",
+    "cart_cta_aCdf4g"
   ]
 }
