@@ -40,7 +40,10 @@
     >
       <div class="marquee__repeated-items">
         {% if show_market_promo %}
-          <p class="marquee__promo-item">{{ market_promo_key | t }}</p>
+          <p class="marquee__promo-item">
+            <span class="marquee__promo-flag" aria-hidden="true">🇸🇬</span>
+            {{ market_promo_key | t }}
+          </p>
         {% endif %}
         {% content_for 'blocks' %}
       </div>
@@ -93,6 +96,15 @@
     font-weight: 700;
     letter-spacing: 0.02em;
     color: #fff;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+  }
+
+  .marquee__promo-flag {
+    font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', sans-serif;
+    font-size: 1.05em;
+    line-height: 1;
   }
 
   @media (prefers-reduced-motion: no-preference) {

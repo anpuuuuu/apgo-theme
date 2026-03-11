@@ -34,6 +34,27 @@
       </header>
 
       <div class="apgo-shipping-address__form">
+        <div class="apgo-shipping-address__field">
+          <label for="apgo-ship-country">{{ 'apgo_cart.country' | t }}</label>
+          <select id="apgo-ship-country" data-apgo-country>
+            {% for country in localization.available_countries %}
+              {% if country.iso_code == 'MY' or country.iso_code == 'SG' %}
+                <option
+                  value="{{ country.iso_code }}"
+                  {% if country.iso_code == default_country_code %}
+                    selected
+                  {% endif %}
+                >
+                  {{ country.name }}
+                </option>
+              {% endif %}
+            {% endfor %}
+            {% if default_country_code != 'MY' and default_country_code != 'SG' %}
+              <option value="{{ default_country_code }}" selected>{{ default_country_code }}</option>
+            {% endif %}
+          </select>
+        </div>
+
         <div class="apgo-shipping-address__field apgo-shipping-address__field--full">
           <label for="apgo-ship-address1">{{ 'apgo_cart.address1' | t }}</label>
           <input
@@ -72,34 +93,22 @@
 
         <div class="apgo-shipping-address__field" data-apgo-province-field>
           <label for="apgo-ship-province">{{ 'apgo_cart.province' | t }}</label>
-          <input
+          <select
             id="apgo-ship-province"
-            type="text"
-            value="{{ default_province | escape }}"
             data-apgo-province
-            autocomplete="address-level1"
-            placeholder="{{ 'apgo_cart.placeholder_province' | t }}"
           >
-        </div>
-
-        <div class="apgo-shipping-address__field">
-          <label for="apgo-ship-country">{{ 'apgo_cart.country' | t }}</label>
-          <select id="apgo-ship-country" data-apgo-country>
-            {% for country in localization.available_countries %}
-              {% if country.iso_code == 'MY' or country.iso_code == 'SG' %}
-                <option
-                  value="{{ country.iso_code }}"
-                  {% if country.iso_code == default_country_code %}
-                    selected
-                  {% endif %}
-                >
-                  {{ country.name }}
-                </option>
-              {% endif %}
+            <option value="">{{ 'apgo_cart.placeholder_province' | t }}</option>
+            {% assign my_states = "Johor,Kedah,Kelantan,Malacca,Negeri Sembilan,Pahang,Penang,Perak,Perlis,Sabah,Sarawak,Selangor,Terengganu,Kuala Lumpur,Labuan,Putrajaya" | split: "," %}
+            {% for state in my_states %}
+              <option
+                value="{{ state }}"
+                {% if default_province == state %}
+                  selected
+                {% endif %}
+              >
+                {{ state }}
+              </option>
             {% endfor %}
-            {% if default_country_code != 'MY' and default_country_code != 'SG' %}
-              <option value="{{ default_country_code }}" selected>{{ default_country_code }}</option>
-            {% endif %}
           </select>
         </div>
       </div>
@@ -248,9 +257,12 @@
     const address1El = root.querySelector('[data-apgo-address1]');
     const messageEl = root.querySelector('[data-apgo-message]');
     const isSGCountry = (countryCode) => (countryCode || '').trim().toUpperCase() === 'SG';
+    const isMYCountry = (countryCode) => (countryCode || '').trim().toUpperCase() === 'MY';
 
     const applyCountryFieldRules = () => {
-      const sgMode = isSGCountry(countryEl?.value);
+      const countryCode = countryEl?.value;
+      const sgMode = isSGCountry(countryCode);
+      const myMode = isMYCountry(countryCode);
 
       if (cityFieldEl) cityFieldEl.style.display = sgMode ? 'none' : '';
       if (provinceFieldEl) provinceFieldEl.style.display = sgMode ? 'none' : '';
@@ -259,6 +271,8 @@
         if (cityEl) cityEl.value = '';
         if (provinceEl) provinceEl.value = '';
         if (zipEl) zipEl.placeholder = 'e.g. 569830';
+      } else if (myMode) {
+        if (zipEl) zipEl.placeholder = 'e.g. 50450';
       } else if (zipEl) {
         zipEl.placeholder = `{{ 'apgo_cart.placeholder_zip' | t | escape }}`;
       }
