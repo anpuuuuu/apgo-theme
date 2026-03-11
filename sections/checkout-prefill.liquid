@@ -58,7 +58,7 @@
           >
         </div>
 
-        <div class="apgo-shipping-address__field">
+        <div class="apgo-shipping-address__field" data-apgo-city-field>
           <label for="apgo-ship-city">{{ 'apgo_cart.city' | t }}</label>
           <input
             id="apgo-ship-city"
@@ -70,7 +70,7 @@
           >
         </div>
 
-        <div class="apgo-shipping-address__field">
+        <div class="apgo-shipping-address__field" data-apgo-province-field>
           <label for="apgo-ship-province">{{ 'apgo_cart.province' | t }}</label>
           <input
             id="apgo-ship-province"
@@ -241,10 +241,29 @@
 
     const countryEl = root.querySelector('[data-apgo-country]');
     const provinceEl = root.querySelector('[data-apgo-province]');
+    const provinceFieldEl = root.querySelector('[data-apgo-province-field]');
     const cityEl = root.querySelector('[data-apgo-city]');
+    const cityFieldEl = root.querySelector('[data-apgo-city-field]');
     const zipEl = root.querySelector('[data-apgo-zip]');
     const address1El = root.querySelector('[data-apgo-address1]');
     const messageEl = root.querySelector('[data-apgo-message]');
+    const isSGCountry = (countryCode) => (countryCode || '').trim().toUpperCase() === 'SG';
+
+    const applyCountryFieldRules = () => {
+      const sgMode = isSGCountry(countryEl?.value);
+
+      if (cityFieldEl) cityFieldEl.style.display = sgMode ? 'none' : '';
+      if (provinceFieldEl) provinceFieldEl.style.display = sgMode ? 'none' : '';
+
+      if (sgMode) {
+        if (cityEl) cityEl.value = '';
+        if (provinceEl) provinceEl.value = '';
+        if (zipEl) zipEl.placeholder = 'e.g. 569830';
+      } else if (zipEl) {
+        zipEl.placeholder = `{{ 'apgo_cart.placeholder_zip' | t | escape }}`;
+      }
+    };
+
 
     const setMessage = (text, kind) => {
       if (!messageEl) return;
@@ -262,9 +281,16 @@
     });
 
     const validateAddress = (addr) => {
-      const required = ['country', 'province', 'city', 'zip', 'address1'];
+      const sgMode = isSGCountry(addr.country);
+      const required = sgMode ? ['country', 'zip', 'address1'] : ['country', 'province', 'city', 'zip', 'address1'];
       const firstMissingKey = required.find((key) => !addr[key]);
-      return { valid: !firstMissingKey, firstMissingKey };
+      if (firstMissingKey) return { valid: false, firstMissingKey, errorText: `{{ 'apgo_cart.address_required_error' | t | escape }}` };
+
+      if (sgMode && !/^\d{6}$/.test(addr.zip)) {
+        return { valid: false, firstMissingKey: 'zip', errorText: `{{ 'apgo_cart.sg_zip_error' | t | escape }}` };
+      }
+
+      return { valid: true, firstMissingKey: '' };
     };
 
     const focusMissingField = (key) => {
@@ -279,16 +305,18 @@
     };
 
     const buildCheckoutQuery = (addr) => {
+      const sgMode = isSGCountry(addr.country);
       const q = new URLSearchParams();
       q.set('checkout[shipping_address][country]', addr.country);
-      q.set('checkout[shipping_address][province]', addr.province);
-      q.set('checkout[shipping_address][city]', addr.city);
+      q.set('checkout[shipping_address][province]', sgMode ? '' : addr.province);
+      q.set('checkout[shipping_address][city]', sgMode ? '' : addr.city);
       q.set('checkout[shipping_address][zip]', addr.zip);
       q.set('checkout[shipping_address][address1]', addr.address1);
       return q.toString();
     };
 
     const saveAddressToCartAttributes = async (addr) => {
+      const sgMode = isSGCountry(addr.country);
       try {
         await fetch('/cart/update.js', {
           method: 'POST',
@@ -296,8 +324,8 @@
           body: JSON.stringify({
             attributes: {
               estimated_shipping_country: addr.country,
-              estimated_shipping_province: addr.province,
-              estimated_shipping_city: addr.city,
+              estimated_shipping_province: sgMode ? '' : addr.province,
+              estimated_shipping_city: sgMode ? '' : addr.city,
               estimated_shipping_zip: addr.zip,
               estimated_shipping_address1: addr.address1,
             },
@@ -310,7 +338,7 @@
       const address = getAddress();
       const check = validateAddress(address);
       if (!check.valid) {
-        setMessage(`{{ 'apgo_cart.address_required_error' | t | escape }}`, 'error');
+        setMessage(check.errorText, 'error');
         focusMissingField(check.firstMissingKey);
         return { valid: false, query: '' };
       }
@@ -354,6 +382,13 @@
         el?.addEventListener(eventName, () => setMessage('', ''), { passive: true });
       });
     });
+
+    countryEl?.addEventListener('change', () => {
+      applyCountryFieldRules();
+      setMessage('', '');
+    });
+
+    applyCountryFieldRules();
 
     bindCheckoutGuard('checkout');
     bindCheckoutGuard('checkout-standalone');

@@ -13,6 +13,7 @@
       <span data-goal-current>--</span>
       <span data-goal-target>--</span>
     </div>
+    <p class="apgo-combined-goal__status" data-goal-status></p>
     <p class="apgo-combined-goal__message" data-goal-message></p>
   </div>
 </section>
@@ -71,6 +72,31 @@
     color: {{ section.settings.text_color }};
   }
 
+  .apgo-combined-goal__status {
+    margin: 10px 0 0;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+  }
+
+  .apgo-combined-goal.is-locked .apgo-combined-goal__status,
+  .apgo-combined-goal.is-locked .apgo-combined-goal__message {
+    color: #ff5a5a;
+  }
+
+  .apgo-combined-goal.is-unlocked .apgo-combined-goal__status,
+  .apgo-combined-goal.is-unlocked .apgo-combined-goal__message {
+    color: #33d6cc;
+  }
+
+  .apgo-combined-goal.is-locked .apgo-combined-goal__fill {
+    background: linear-gradient(90deg, #ff4d4f, #ff7875) !important;
+  }
+
+  .apgo-combined-goal.is-unlocked .apgo-combined-goal__fill {
+    background: linear-gradient(90deg, #2dd4bf, #22d3ee) !important;
+  }
+
   @media (max-width: 768px) {
     .apgo-combined-goal {
       padding: 0 12px;
@@ -94,6 +120,7 @@
 
     const fill = root.querySelector('[data-goal-fill]');
     const msg = root.querySelector('[data-goal-message]');
+    const status = root.querySelector('[data-goal-status]');
     const current = root.querySelector('[data-goal-current]');
     const target = root.querySelector('[data-goal-target]');
     const bar = root.querySelector('.apgo-combined-goal__track');
@@ -124,8 +151,14 @@
       target.textContent = formatMoney(rule.thresholdMinor, rule.currency);
 
       if (remaining <= 0) {
+        root.classList.remove('is-locked');
+        root.classList.add('is-unlocked');
+        if (status) status.textContent = `🔓 {{ 'apgo_cart.free_shipping_unlocked_label' | t | escape }}`;
         msg.textContent = `{{ 'apgo_cart.free_shipping_unlocked' | t | escape }}`;
       } else {
+        root.classList.remove('is-unlocked');
+        root.classList.add('is-locked');
+        if (status) status.textContent = `🔒 {{ 'apgo_cart.free_shipping_locked_label' | t | escape }}`;
         const amount = formatMoney(remaining, rule.currency);
         const text = `{{ 'apgo_cart.free_shipping_remaining' | t: amount: '__AMOUNT__' | escape }}`;
         msg.textContent = text.replace('__AMOUNT__', amount);

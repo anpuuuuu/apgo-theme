@@ -406,7 +406,7 @@
   },
   "apgo_promotions": {
     "my_free_shipping_banner": "Malaysia: Free shipping on orders over MYR 100.",
-    "sg_free_shipping_banner": "Singapore: Free shipping on orders over SGD 79."
+    "sg_free_shipping_banner": "🇸🇬 Free shipping over SGD 79 · Singapore Shipping 2-3 Days"
   },
   "cart": {
     "exclusive_coupon": "Exclusive Coupon",
@@ -528,6 +528,8 @@
     "free_shipping_goal_label": "Free shipping goal",
     "free_shipping_remaining": "Spend {{ amount }} more to unlock free shipping",
     "free_shipping_unlocked": "Free shipping unlocked",
+    "free_shipping_locked_label": "Locked",
+    "free_shipping_unlocked_label": "Unlocked",
     "free_shipping_not_applicable": "Available in SG only",
     "total_after_discount": "Estimated Total",
     "shipping_estimate_title": "Shipping address in cart",
@@ -547,6 +549,7 @@
     "shipping_not_estimated": "Not estimated yet",
     "shipping_estimate_error": "Please enter a valid address to estimate shipping.",
     "address_required_error": "Please complete country, state/province, city, postal code, and address before checkout.",
+    "sg_zip_error": "Please enter a valid Singapore postal code (6 digits).",
     "address_ready_for_checkout": "Address saved. You can proceed to checkout.",
     "use_for_checkout": "Use this address for checkout",
     "save_default_preference": "Save this as my default address after checkout"

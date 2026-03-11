@@ -406,7 +406,7 @@
   },
   "apgo_promotions": {
     "my_free_shipping_banner": "馬來西亞活動：訂單滿 MYR 100 免運費。",
-    "sg_free_shipping_banner": "新加坡活動：訂單滿 SGD 79 免運費。"
+    "sg_free_shipping_banner": "🇸🇬 新加坡滿 SGD 79 免運 · 配送時效 2-3 天"
   },
   "cart": {
     "exclusive_coupon": "專屬優惠券",
@@ -528,6 +528,8 @@
     "free_shipping_goal_label": "免运目标",
     "free_shipping_remaining": "再买 {{ amount }} 即可免运",
     "free_shipping_unlocked": "已达成免运",
+    "free_shipping_locked_label": "未解鎖",
+    "free_shipping_unlocked_label": "已解鎖",
     "free_shipping_not_applicable": "仅适用于新加坡",
     "total_after_discount": "预估总计",
     "shipping_estimate_title": "购物车收件地址",
@@ -547,6 +549,7 @@
     "shipping_not_estimated": "尚未估算",
     "shipping_estimate_error": "請填寫有效地址後再估算運費。",
     "address_required_error": "请先完整填写国家、州/省、城市、邮政编码与地址，再前往结账。",
+    "sg_zip_error": "請輸入有效的新加坡郵遞區號（6位數字）。",
     "address_ready_for_checkout": "地址已保存，可前往结账。",
     "use_for_checkout": "结账时使用此地址",
     "save_default_preference": "结账后将此地址设为默认"
