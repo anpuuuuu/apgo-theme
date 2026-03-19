@@ -239,7 +239,7 @@
       "type": "cart-upsell-recommendations",
       "name": "Recommended Items",
       "settings": {
-        "section_title": "Top selling products",
+        "section_title": "Suggested Products",
         "show_popular_button": false,
         "button_text": "Click to see popular products",
         "popular_items_url": "",
