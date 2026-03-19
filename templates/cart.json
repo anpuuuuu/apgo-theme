@@ -278,7 +278,6 @@
     },
     "checkout_prefill_mH8EUg": {
       "type": "checkout-prefill",
-      "disabled": true,
       "name": "Shipping Address",
       "settings": {}
     },
