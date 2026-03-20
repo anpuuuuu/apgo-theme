@@ -532,6 +532,7 @@
     "free_shipping_unlocked_label": "已解鎖",
     "free_shipping_not_applicable": "仅适用于新加坡",
     "total_after_discount": "预估总计",
+    "estimated_total_checkout_note": "結帳時計算稅額、折扣和運費。",
     "shipping_estimate_title": "购物车收件地址",
     "country": "国家",
     "province": "州 / 省",

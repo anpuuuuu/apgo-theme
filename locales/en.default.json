@@ -532,6 +532,7 @@
     "free_shipping_unlocked_label": "Unlocked",
     "free_shipping_not_applicable": "Available in SG only",
     "total_after_discount": "Estimated Total",
+    "estimated_total_checkout_note": "Taxes, discounts and shipping calculated at checkout.",
     "shipping_estimate_title": "Shipping address in cart",
     "country": "Country",
     "province": "State / Province",
