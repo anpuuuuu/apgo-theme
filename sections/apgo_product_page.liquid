@@ -1694,11 +1694,19 @@
             {% for image in product.images %}
               <div class="apgo-carousel-slide">
                 <img
-                  src="{{ image | image_url: width: 800 }}"
-                  alt="{{ product.title }} - {{ 'product.image_alt' | t: index: forloop.index }}"
-                  class="apgo-product-image-main {% if forloop.first %}is-float{% else %}is-cover{% endif %}"
-                  loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
-                >
+  src="{{ image | image_url: width: 1600 }}"
+  srcset="
+    {{ image | image_url: width: 600 }} 600w,
+    {{ image | image_url: width: 900 }} 900w,
+    {{ image | image_url: width: 1200 }} 1200w,
+    {{ image | image_url: width: 1600 }} 1600w,
+    {{ image | image_url: width: 2000 }} 2000w
+  "
+  sizes="100vw"
+  alt="{{ product.title }} - {{ 'product.image_alt' | t: index: forloop.index }}"
+  class="apgo-product-image-main {% if forloop.first %}is-float{% else %}is-cover{% endif %}"
+  loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+>
               </div>
             {% endfor %}
           </div>
