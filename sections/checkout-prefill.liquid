@@ -97,7 +97,17 @@
             id="apgo-ship-province"
             data-apgo-province
           >
-            <option value="">{{ 'apgo_cart.placeholder_province' | t }}</option>
+            {%- comment -%}
+              select 无原生 placeholder；空 value 的 option 会出现在展开列表中，故用 disabled+hidden。
+            {%- endcomment -%}
+            <option
+              value=""
+              disabled
+              {% if default_province == blank %}selected{% endif %}
+              hidden
+            >
+              {{- 'apgo_cart.select_province' | t -}}
+            </option>
             {% assign my_states = "Johor,Kedah,Kelantan,Malacca,Negeri Sembilan,Pahang,Penang,Perak,Perlis,Sabah,Sarawak,Selangor,Terengganu,Kuala Lumpur,Labuan,Putrajaya" | split: "," %}
             {% for state in my_states %}
               <option

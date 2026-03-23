@@ -542,6 +542,7 @@
     "shipping_address_section_title": "Shipping Address",
     "shipping_address_section_subtitle": "Fill in your delivery details here. It will be auto-filled on checkout.",
     "placeholder_province": "e.g. Selangor",
+    "select_province": "Select state / province",
     "placeholder_city": "e.g. Petaling Jaya",
     "placeholder_zip": "e.g. 47810",
     "placeholder_address1": "e.g. No. 18, Jalan SS 2/24",

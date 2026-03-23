@@ -542,6 +542,7 @@
     "shipping_address_section_title": "收件地址",
     "shipping_address_section_subtitle": "请填写收件资料，下一步会自动带入结账页。",
     "placeholder_province": "例如：Selangor",
+    "select_province": "請選擇州／省",
     "placeholder_city": "例如：Petaling Jaya",
     "placeholder_zip": "例如：47810",
     "placeholder_address1": "例如：No. 18, Jalan SS 2/24",
