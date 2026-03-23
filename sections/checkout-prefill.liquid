@@ -98,11 +98,10 @@
             data-apgo-province
           >
             {%- comment -%}
-              select 无原生 placeholder；空 value 的 option 会出现在展开列表中，故用 disabled+hidden。
+              勿对占位项使用 disabled+selected：浏览器会改选第一个可用州。用空 value + hidden 保持未选州。
             {%- endcomment -%}
             <option
               value=""
-              disabled
               {% if default_province == blank %}selected{% endif %}
               hidden
             >
