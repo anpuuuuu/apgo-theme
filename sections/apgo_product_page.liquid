@@ -1650,6 +1650,17 @@
   touch-action: pan-y;     /* 现代浏览器 */
   -ms-touch-action: pan-y; /* 旧 Edge */
 }
+
+  /* 桌面：放大主視覺輪播（須放在檔末，避免被後面重複的 .apgo-product-showcase padding 蓋掉；手機維持 400px） */
+  @media (min-width: 769px) {
+    .apgo-hero-visual {
+      height: min(56vh, 620px);
+    }
+
+    .apgo-product-showcase {
+      padding: 24px 16px;
+    }
+  }
 </style>
 
 <div class="apgo-product-section">
