@@ -489,77 +489,6 @@
     }
   }
 
-  /* Looping video + description（標題下方） */
-  .apgo-looping-intro {
-    padding: 0 16px 24px;
-    background: var(--dark-bg);
-  }
-
-  .apgo-looping-intro-inner {
-    display: grid;
-    gap: 14px;
-    background: #0f0f0f;
-    border: 1px solid rgba(240, 132, 24, 0.18);
-    border-radius: 14px;
-    padding: 12px;
-  }
-
-  .apgo-looping-intro.has-video .apgo-looping-intro-inner {
-    grid-template-columns: minmax(260px, 38%) 1fr;
-    align-items: stretch;
-  }
-
-  .apgo-looping-intro.no-video .apgo-looping-intro-inner {
-    grid-template-columns: 1fr;
-  }
-
-  .apgo-looping-video-wrap {
-    border-radius: 12px;
-    overflow: hidden;
-    background: #111;
-    min-height: 220px;
-  }
-
-  .apgo-looping-video-wrap video,
-  .apgo-looping-video-wrap iframe {
-    width: 100%;
-    height: 100%;
-    min-height: 220px;
-    object-fit: cover;
-    display: block;
-  }
-
-  .apgo-looping-desc-wrap {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    min-height: 220px;
-    padding: 4px 2px;
-  }
-
-  .apgo-looping-desc-wrap h4 {
-    color: var(--primary-orange);
-    font-size: 1rem;
-    margin-bottom: 8px;
-  }
-
-  .apgo-looping-desc-content {
-    color: var(--text-light-gray);
-    font-size: 0.9rem;
-    line-height: 1.6;
-  }
-
-  .apgo-looping-desc-content p,
-  .apgo-looping-desc-content li {
-    margin: 0 0 8px;
-  }
-
-  .apgo-looping-desc-content ul,
-  .apgo-looping-desc-content ol {
-    padding-left: 18px;
-    margin: 0 0 8px;
-  }
-
   /* 短影音展示區 */
   .apgo-video-showcase {
     padding: 24px 0;
@@ -1608,27 +1537,6 @@
   }
 
   @media (max-width: 768px) {
-    .apgo-looping-intro {
-      padding: 0 12px 20px;
-    }
-
-    .apgo-looping-intro.has-video .apgo-looping-intro-inner {
-      grid-template-columns: 1fr;
-      gap: 10px;
-    }
-
-    .apgo-looping-video-wrap,
-    .apgo-looping-video-wrap video,
-    .apgo-looping-video-wrap iframe,
-    .apgo-looping-desc-wrap {
-      min-height: 180px;
-    }
-
-    .apgo-looping-desc-content {
-      font-size: 0.85rem;
-      line-height: 1.55;
-    }
-
     .apgo-video-modal-content {
       width: 100%;
       height: 100%;
@@ -1880,45 +1788,6 @@
           {% endif %}
         </div>
       {% endif %}
-    </section>
-
-    {% liquid
-      assign looping_video_obj = product.metafields.custom.looping_video.value
-      assign has_looping_video = false
-      if looping_video_obj != blank
-        assign has_looping_video = true
-      endif
-      assign looping_description_value = product.metafields.custom.looping_description
-    %}
-    <section class="apgo-looping-intro {% if has_looping_video %}has-video{% else %}no-video{% endif %}">
-      <div class="apgo-looping-intro-inner">
-        {% if has_looping_video %}
-          <div class="apgo-looping-video-wrap">
-            {{
-              looping_video_obj
-              | video_tag:
-                autoplay: true,
-                loop: true,
-                muted: true,
-                controls: false,
-                playsinline: true
-            }}
-          </div>
-        {% endif %}
-
-        <div class="apgo-looping-desc-wrap">
-          <h4>{{ 'product.description' | t }}</h4>
-          <div class="apgo-looping-desc-content">
-            {% if looping_description_value != blank %}
-              {{ looping_description_value | metafield_tag }}
-            {% elsif product.description != blank %}
-              {{ product.description }}
-            {% else %}
-              <p>{{ section.settings.subtitle_fallback }}</p>
-            {% endif %}
-          </div>
-        </div>
-      </div>
     </section>
 
     <!-- 短影音展示區 -->
