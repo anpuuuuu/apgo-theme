@@ -1884,8 +1884,20 @@
 
     {% liquid
       assign looping_video_obj = product.metafields.custom.looping_video.value
-      assign has_looping_video = false
+      assign looping_video_media = blank
+
       if looping_video_obj != blank
+        if looping_video_obj.media_type == 'video' or looping_video_obj.sources != blank
+          assign looping_video_media = looping_video_obj
+        elsif looping_video_obj.video != blank
+          assign looping_video_media = looping_video_obj.video.value | default: looping_video_obj.video
+        elsif looping_video_obj.video_file != blank
+          assign looping_video_media = looping_video_obj.video_file.value | default: looping_video_obj.video_file
+        endif
+      endif
+
+      assign has_looping_video = false
+      if looping_video_media != blank
         assign has_looping_video = true
       endif
       assign looping_description_value = product.metafields.custom.looping_description
@@ -1895,7 +1907,7 @@
         {% if has_looping_video %}
           <div class="apgo-looping-video-wrap">
             {{
-              looping_video_obj
+              looping_video_media
               | video_tag:
                 autoplay: true,
                 loop: true,
