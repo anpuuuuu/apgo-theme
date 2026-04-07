@@ -310,6 +310,7 @@
   },
   "product": {
     "image_alt": "Image {{ index }}",
+    "description": "Description",
     "performance_metrics": "Performance Metrics",
     "video_showcase": "Product Showcase",
     "video_default_title": "Product Demo",
