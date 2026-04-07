@@ -593,6 +593,52 @@
     word-break: break-word;
   }
 
+  .apgo-customer-review {
+    padding: 0 16px 24px;
+    background: var(--dark-bg);
+  }
+
+  .apgo-customer-review-inner {
+    background: #0f0f0f;
+    border: 1px solid rgba(240, 132, 24, 0.18);
+    border-radius: 14px;
+    padding: 14px 16px 18px;
+    text-align: center;
+  }
+
+  .apgo-customer-review-title {
+    margin: 0 0 12px;
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--text-white);
+  }
+
+  .apgo-customer-review-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    margin: 0 auto 16px;
+  }
+
+  .apgo-customer-review-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 10px 22px;
+    border-radius: 999px;
+    background: #f08418;
+    color: #fff;
+    font-weight: 700;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .apgo-customer-review-btn:hover {
+    opacity: 0.9;
+  }
+
   .apgo-video-header {
     padding: 0 16px;
     margin-bottom: 16px;
@@ -1663,6 +1709,18 @@
       padding: 12px 12px 14px;
     }
 
+    .apgo-customer-review {
+      padding: 0 12px 20px;
+    }
+
+    .apgo-customer-review-inner {
+      padding: 12px 12px 16px;
+    }
+
+    .apgo-customer-review-title {
+      font-size: 1.15rem;
+    }
+
     .apgo-video-modal-content {
       width: 100%;
       height: 100%;
@@ -2047,6 +2105,29 @@
         <div class="apgo-precautions-inner">
           <h3 class="apgo-precautions-title">{{ 'product.precautions' | t }}</h3>
           <div class="apgo-precautions-content">{{ precautions_text | escape | newline_to_br }}</div>
+        </div>
+      </section>
+    {% endif %}
+
+    {% assign customer_review_image = product.metafields.custom.customer_review.value | default: product.metafields.custom.customer_review %}
+    {% if customer_review_image != blank %}
+      <section class="apgo-customer-review">
+        <div class="apgo-customer-review-inner">
+          <h3 class="apgo-customer-review-title">{{ 'product.customer_reviews' | t }}</h3>
+          <img
+            class="apgo-customer-review-image"
+            src="{{ customer_review_image | image_url: width: 2000 }}"
+            alt="{{ 'product.customer_reviews' | t }}"
+            loading="lazy"
+          >
+          <a
+            class="apgo-customer-review-btn"
+            href="https://www.facebook.com/apgo8888/reviews/?id=100087618454701&sk=reviews"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {{ 'product.facebook_review' | t }}
+          </a>
         </div>
       </section>
     {% endif %}
