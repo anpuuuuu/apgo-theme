@@ -567,6 +567,32 @@
     margin-bottom: 24px;
   }
 
+  .apgo-precautions {
+    padding: 0 16px 24px;
+    background: var(--dark-bg);
+  }
+
+  .apgo-precautions-inner {
+    background: #0f0f0f;
+    border: 1px solid rgba(240, 132, 24, 0.18);
+    border-radius: 14px;
+    padding: 14px 16px;
+  }
+
+  .apgo-precautions-title {
+    margin: 0 0 10px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--primary-orange);
+  }
+
+  .apgo-precautions-content {
+    color: var(--text-light-gray);
+    font-size: 0.9rem;
+    line-height: 1.7;
+    word-break: break-word;
+  }
+
   .apgo-video-header {
     padding: 0 16px;
     margin-bottom: 16px;
@@ -1629,6 +1655,14 @@
       line-height: 1.55;
     }
 
+    .apgo-precautions {
+      padding: 0 12px 20px;
+    }
+
+    .apgo-precautions-inner {
+      padding: 12px 12px 14px;
+    }
+
     .apgo-video-modal-content {
       width: 100%;
       height: 100%;
@@ -2006,6 +2040,16 @@
         {% endif %}
       </div>
     </section>
+
+    {% assign precautions_text = product.metafields.custom.precautions.value | default: product.metafields.custom.precautions %}
+    {% if precautions_text != blank %}
+      <section class="apgo-precautions">
+        <div class="apgo-precautions-inner">
+          <h3 class="apgo-precautions-title">{{ 'product.precautions' | t }}</h3>
+          <div class="apgo-precautions-content">{{ precautions_text | escape | newline_to_br }}</div>
+        </div>
+      </section>
+    {% endif %}
 
     <!-- 視頻模態框 -->
     <div class="apgo-video-modal" id="apgoVideoModal" aria-hidden="true">
