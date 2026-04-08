@@ -2122,23 +2122,23 @@
         <h3 class="apgo-customer-review-title-outside">{{ 'product.customer_reviews' | t }}</h3>
       </div>
       <div class="apgo-customer-review-inner">
+        <img
+          class="apgo-customer-review-image apgo-customer-review-image-top"
+          src="{{ 'customer-review-default.png' | asset_url }}"
+          alt="{{ 'product.customer_reviews' | t }}"
+          loading="lazy"
+        >
         {% assign customer_review_image = product.metafields.custom.customer_review.value | default: product.metafields.custom.customer_review %}
         {% if customer_review_image != blank %}
-          <img
-            class="apgo-customer-review-image apgo-customer-review-image-top"
-            src="{{ customer_review_image | image_url: width: 2000 }}"
-            alt="{{ 'product.customer_reviews' | t }}"
-            loading="lazy"
-          >
+          <div class="apgo-customer-review-scroll">
+            <img
+              class="apgo-customer-review-image"
+              src="{{ customer_review_image | image_url: width: 2000 }}"
+              alt="{{ 'product.customer_reviews' | t }}"
+              loading="lazy"
+            >
+          </div>
         {% endif %}
-        <div class="apgo-customer-review-scroll">
-          <img
-            class="apgo-customer-review-image"
-            src="{{ 'customer-review-default.png' | asset_url }}"
-            alt="{{ 'product.customer_reviews' | t }}"
-            loading="lazy"
-          >
-        </div>
       </div>
     </section>
 
