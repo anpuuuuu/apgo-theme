@@ -2223,7 +2223,7 @@
     <!-- 產品預覽 -->
     <div class="apgo-modal-product-preview">
       <img
-  src="{{ product.featured_media | image_url: width: 200 }}"
+  src="{{ product.featured_media | image_url: width: 800 }}"
   alt="{{ product.title }}"
   class="apgo-modal-product-image"
   id="apgoModalImage"
@@ -2231,7 +2231,7 @@
   height="200"
   loading="lazy"
   onclick="apgoOpenCurrentImageLightbox()"
-  data-default-src="{{ product.featured_media | image_url: width: 200 }}"
+  data-default-src="{{ product.featured_media | image_url: width: 800 }}"
   data-default-high-res="{{ product.featured_media | image_url: width: 1200 }}"
   data-current-high-res="{{ product.featured_media | image_url: width: 1200 }}"
 >
@@ -2267,10 +2267,10 @@
               <div
   class="apgo-variant-option {% if variant == first_available_variant %}selected{% endif %} {% unless variant.available %}disabled{% endunless %}"
   {% if variant.available %}
-    onclick="apgoSelectVariant(this, {{ variant.id }}, {{ variant.price | divided_by: 100.0 }}, '{{ variant.featured_media | image_url: width: 200 }}')"
+    onclick="apgoSelectVariant(this, {{ variant.id }}, {{ variant.price | divided_by: 100.0 }}, '{{ variant.featured_media | image_url: width: 800 }}')"
   {% endif %}
   {% if variant.featured_media %}
-    data-variant-image="{{ variant.featured_media | image_url: width: 200 }}"
+    data-variant-image="{{ variant.featured_media | image_url: width: 800 }}"
     data-variant-image-high-res="{{ variant.featured_media | image_url: width: 1200 }}"
   {% endif %}
 >
@@ -2317,10 +2317,10 @@
                 <div
   class="apgo-variant-option {% if variant == first_available_variant %}selected{% endif %} {% unless variant.available %}disabled{% endunless %}"
   {% if variant.available %}
-    onclick="apgoSelectVariant(this, {{ variant.id }}, {{ variant.price | divided_by: 100.0 }}, '{{ variant.featured_media | image_url: width: 200 }}')"
+    onclick="apgoSelectVariant(this, {{ variant.id }}, {{ variant.price | divided_by: 100.0 }}, '{{ variant.featured_media | image_url: width: 800 }}')"
   {% endif %}
   {% if variant.featured_media %}
-    data-variant-image="{{ variant.featured_media | image_url: width: 200 }}"
+    data-variant-image="{{ variant.featured_media | image_url: width: 800 }}"
     data-variant-image-high-res="{{ variant.featured_media | image_url: width: 1200 }}"
   {% endif %}
 >
@@ -2700,9 +2700,9 @@ window.apgoSelectVariant = function(element, variantId, price, imageUrl) {
     if (imageUrl && imageUrl !== 'null' && imageUrl !== '') {
       // 更新缩略图
       modalImage.src = imageUrl;
-      // 更新高清图 URL（将 width: 200 替换为 width: 1200）
-      const highResUrl = imageUrl.replace(/width=200/g, 'width=1200')
-                                  .replace(/width%3D200/g, 'width%3D1200');
+      // 更新高清图 URL（兼容 width=200 / width=800 来源）
+      const highResUrl = imageUrl.replace(/width=(200|800)/g, 'width=1200')
+                                  .replace(/width%3D(200|800)/g, 'width%3D1200');
       modalImage.setAttribute('data-current-high-res', highResUrl);
     } else {
       // 使用默认图片
