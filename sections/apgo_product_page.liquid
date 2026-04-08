@@ -1663,6 +1663,22 @@
       padding: 12px 12px 16px;
     }
 
+    .apgo-customer-review-scroll {
+      width: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+    }
+
+    .apgo-customer-review-scroll .apgo-customer-review-image {
+      width: auto;
+      min-width: 800px;
+      max-width: none !important;
+      height: auto;
+      margin: 0;
+    }
+
     .apgo-customer-review-header {
       margin-bottom: 10px;
     }
@@ -2083,12 +2099,14 @@
           <h3 class="apgo-customer-review-title-outside">{{ 'product.customer_reviews' | t }}</h3>
         </div>
         <div class="apgo-customer-review-inner">
-          <img
-            class="apgo-customer-review-image"
-            src="{{ customer_review_image | image_url: width: 2000 }}"
-            alt="{{ 'product.customer_reviews' | t }}"
-            loading="lazy"
-          >
+          <div class="apgo-customer-review-scroll">
+            <img
+              class="apgo-customer-review-image"
+              src="{{ customer_review_image | image_url: width: 2000 }}"
+              alt="{{ 'product.customer_reviews' | t }}"
+              loading="lazy"
+            >
+          </div>
         </div>
       </section>
     {% endif %}
