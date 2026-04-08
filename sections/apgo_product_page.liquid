@@ -623,25 +623,17 @@
     width: 100%;
     height: auto;
     border-radius: 10px;
-    margin: 0 auto 16px;
+    margin: 0 auto;
   }
 
-  .apgo-customer-review-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 44px;
-    padding: 10px 22px;
-    border-radius: 999px;
-    background: #f08418;
-    color: #fff;
-    font-weight: 700;
-    text-decoration: none;
-    transition: opacity 0.2s ease;
-  }
+  @media (min-width: 769px) {
+    .apgo-customer-review {
+      padding: 0 8px 24px; /* desktop: near full width with small gutters */
+    }
 
-  .apgo-customer-review-btn:hover {
-    opacity: 0.9;
+    .apgo-customer-review-inner {
+      padding: 14px 10px 16px;
+    }
   }
 
   .apgo-video-header {
@@ -1951,14 +1943,6 @@
             alt="{{ 'product.customer_reviews' | t }}"
             loading="lazy"
           >
-          <a
-            class="apgo-customer-review-btn"
-            href="https://www.facebook.com/apgo8888/reviews/?id=100087618454701&sk=reviews"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {{ 'product.facebook_review' | t }}
-          </a>
         </div>
       </section>
     {% endif %}
