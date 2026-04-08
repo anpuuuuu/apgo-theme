@@ -573,6 +573,34 @@
     margin: 0 0 8px;
   }
 
+  .apgo-insidebox {
+    padding: 0 16px 24px;
+    background: var(--dark-bg);
+  }
+
+  .apgo-insidebox-inner {
+    background: #0f0f0f;
+    border: 1px solid rgba(240, 132, 24, 0.18);
+    border-radius: 14px;
+    padding: 16px 16px 18px;
+  }
+
+  .apgo-insidebox-title {
+    margin: 0 0 12px;
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: var(--primary-orange);
+    text-align: center;
+  }
+
+  .apgo-insidebox-image {
+    display: block;
+    width: 100%;
+    max-width: none !important;
+    height: auto;
+    margin: 0 auto;
+  }
+
   /* 短影音展示區 */
   .apgo-video-showcase {
     padding: 24px 0;
@@ -667,6 +695,7 @@
   }
 
   @media (min-width: 769px) {
+    .apgo-insidebox-inner,
     .apgo-video-header,
     .apgo-video-scroll-container,
     .apgo-precautions-header,
@@ -680,6 +709,10 @@
 
     .apgo-customer-review {
       padding: 0 8px 24px; /* desktop: near full width with small gutters */
+    }
+
+    .apgo-insidebox {
+      padding: 0 8px 24px;
     }
 
     .apgo-customer-review-inner {
@@ -1607,6 +1640,18 @@
       padding: 0 0 20px;
     }
 
+    .apgo-insidebox {
+      padding: 0 0 20px;
+    }
+
+    .apgo-insidebox-inner {
+      padding: 12px 12px 14px;
+    }
+
+    .apgo-insidebox-title {
+      font-size: 1.45rem;
+    }
+
     .apgo-customer-review-inner {
       padding: 12px 12px 16px;
     }
@@ -1922,6 +1967,21 @@
         </div>
       </div>
     </section>
+
+    {% assign insidebox_image = product.metafields.custom.insidebox.value | default: product.metafields.custom.insidebox %}
+    {% if insidebox_image != blank %}
+      <section class="apgo-insidebox">
+        <div class="apgo-insidebox-inner">
+          <h3 class="apgo-insidebox-title">{{ 'product.whats_included' | t }}</h3>
+          <img
+            class="apgo-insidebox-image"
+            src="{{ insidebox_image | image_url: width: 2000 }}"
+            alt="{{ 'product.whats_included' | t }}"
+            loading="lazy"
+          >
+        </div>
+      </section>
+    {% endif %}
 
     <!-- 短影音展示區 -->
     <section class="apgo-video-showcase">

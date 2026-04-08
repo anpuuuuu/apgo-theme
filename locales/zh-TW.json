@@ -281,6 +281,7 @@
   "product": {
     "image_alt": "圖片 {{ index }}",
     "description": "產品描述",
+    "whats_included": "内含物",
     "precautions": "注意事项",
     "customer_reviews": "客户评价",
     "performance_metrics": "性能指標",
