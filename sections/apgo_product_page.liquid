@@ -696,10 +696,6 @@
     margin: 0 auto;
   }
 
-  .apgo-customer-review-image-top {
-    margin: 0 auto 12px;
-  }
-
   @media (min-width: 769px) {
     .apgo-insidebox-inner {
       max-width: min(1200px, 66vw);
@@ -1696,22 +1692,6 @@
       background: linear-gradient(90deg, #ff9a3c, #f08418);
     }
 
-    .apgo-customer-review-top-scroll {
-      width: 100%;
-      overflow-x: auto;
-      overflow-y: hidden;
-      -webkit-overflow-scrolling: touch;
-      margin-bottom: 12px;
-    }
-
-    .apgo-customer-review-top-scroll .apgo-customer-review-image-top {
-      width: auto;
-      min-width: 780px;
-      max-width: none !important;
-      height: auto;
-      margin: 0;
-    }
-
     .apgo-customer-review-scroll .apgo-customer-review-image {
       width: auto;
       min-width: 800px;
@@ -2138,14 +2118,6 @@
         <h3 class="apgo-customer-review-title-outside">{{ 'product.customer_reviews' | t }}</h3>
       </div>
       <div class="apgo-customer-review-inner">
-        <div class="apgo-customer-review-top-scroll">
-          <img
-            class="apgo-customer-review-image apgo-customer-review-image-top"
-            src="{{ 'customer-review-default.png' | asset_url }}"
-            alt="{{ 'product.customer_reviews' | t }}"
-            loading="lazy"
-          >
-        </div>
         {% assign customer_review_image = product.metafields.custom.customer_review.value | default: product.metafields.custom.customer_review %}
         {% if customer_review_image != blank %}
           <div class="apgo-customer-review-scroll">
