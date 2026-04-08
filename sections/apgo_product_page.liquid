@@ -261,6 +261,7 @@
   .apgo-thumbnails-container {
     display: flex;
     gap: 12px;
+    justify-content: center;
     overflow-x: auto;
     padding: 12px 0;
     scroll-snap-type: x mandatory;
@@ -653,8 +654,8 @@
   }
 
   .apgo-customer-review-inner {
-    background: #0f0f0f;
-    border: 1px solid rgba(240, 132, 24, 0.18);
+    background: #000000;
+    border: none;
     border-radius: 14px;
     padding: 14px 16px 18px;
     text-align: center;
@@ -1987,6 +1988,18 @@
       </section>
     {% endif %}
 
+    {% assign precautions_text = product.metafields.custom.precautions.value | default: product.metafields.custom.precautions %}
+    {% if precautions_text != blank %}
+      <section class="apgo-precautions">
+        <div class="apgo-precautions-header">
+          <h3 class="apgo-precautions-title-outside">{{ 'product.precautions' | t }}</h3>
+        </div>
+        <div class="apgo-precautions-inner">
+          <div class="apgo-precautions-content">{{ precautions_text | escape | newline_to_br }}</div>
+        </div>
+      </section>
+    {% endif %}
+
     <!-- 短影音展示區 -->
     <section class="apgo-video-showcase">
       <div class="apgo-video-header">
@@ -2060,18 +2073,6 @@
         {% endif %}
       </div>
     </section>
-
-    {% assign precautions_text = product.metafields.custom.precautions.value | default: product.metafields.custom.precautions %}
-    {% if precautions_text != blank %}
-      <section class="apgo-precautions">
-        <div class="apgo-precautions-header">
-          <h3 class="apgo-precautions-title-outside">{{ 'product.precautions' | t }}</h3>
-        </div>
-        <div class="apgo-precautions-inner">
-          <div class="apgo-precautions-content">{{ precautions_text | escape | newline_to_br }}</div>
-        </div>
-      </section>
-    {% endif %}
 
     {% assign customer_review_image = product.metafields.custom.customer_review.value | default: product.metafields.custom.customer_review %}
     {% if customer_review_image != blank %}

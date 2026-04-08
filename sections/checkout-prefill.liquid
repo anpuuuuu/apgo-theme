@@ -51,10 +51,10 @@
             {% endfor %}
             {% if default_country_code != 'MY' and default_country_code != 'SG' %}
               <option value="{{ default_country_code }}" selected>{{ default_country_code }}</option>
-            {% endif %}
+        {% endif %}
           </select>
         </div>
-
+        
         <div class="apgo-shipping-address__field apgo-shipping-address__field--full">
           <label for="apgo-ship-address1">{{ 'apgo_cart.address1' | t }}</label>
           <input
@@ -77,8 +77,8 @@
             autocomplete="postal-code"
             placeholder="{{ 'apgo_cart.placeholder_zip' | t }}"
           >
-        </div>
-
+          </div>
+          
         <div class="apgo-shipping-address__field" data-apgo-city-field>
           <label for="apgo-ship-city">{{ 'apgo_cart.city' | t }}</label>
           <input
@@ -89,8 +89,8 @@
             autocomplete="address-level2"
             placeholder="{{ 'apgo_cart.placeholder_city' | t }}"
           >
-        </div>
-
+          </div>
+          
         <div class="apgo-shipping-address__field" data-apgo-province-field>
           <label for="apgo-ship-province">{{ 'apgo_cart.province' | t }}</label>
           <select
@@ -111,12 +111,12 @@
                 value="{{ state }}"
                 {% if default_province == state %}
                   selected
-                {% endif %}
+        {% endif %}
               >
                 {{ state }}
               </option>
             {% endfor %}
-          </select>
+            </select>
         </div>
       </div>
 
@@ -130,40 +130,40 @@
 <style>
   .apgo-shipping-address-section {
     --apgo-cart-inline-space: clamp(12px, 2.2vw, 28px);
-    width: 100%;
+  width: 100%;
     padding: 20px var(--apgo-cart-inline-space);
     background: #000;
-  }
+}
 
   .apgo-shipping-address__container {
     max-width: none;
-    margin: 0 auto;
-    position: relative;
-  }
+  margin: 0 auto;
+  position: relative;
+}
 
   .apgo-shipping-address__top-accent {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
     width: 84%;
-    height: 4px;
+  height: 4px;
     border-radius: 16px;
     background: linear-gradient(90deg, #f08418, #ff9a3c);
-    z-index: 2;
-  }
+  z-index: 2;
+}
 
   .apgo-shipping-address__card {
-    margin-top: 8px;
+  margin-top: 8px;
     background: linear-gradient(145deg, #1a1a1a, #2d2d2d);
     border: 1px solid #333;
     border-radius: 16px;
     box-shadow: 0 24px 48px rgb(0 0 0 / 45%), inset 0 1px 0 rgb(255 255 255 / 8%);
     padding: 22px 20px;
-  }
+}
 
   .apgo-shipping-address__header {
-    text-align: center;
+  text-align: center;
     margin-bottom: 18px;
   }
 
@@ -175,15 +175,15 @@
   }
 
   .apgo-shipping-address__subtitle {
-    margin: 0;
+  margin: 0;
     font-size: 0.92rem;
     color: rgb(255 255 255 / 65%);
   }
 
   .apgo-shipping-address__form {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 12px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
   }
 
   .apgo-shipping-address__field {
@@ -247,7 +247,7 @@
   }
 </style>
 
-<script>
+  <script>
   (() => {
     if (window.__apgoShippingAddressSectionBound) return;
     window.__apgoShippingAddressSectionBound = true;
@@ -389,8 +389,8 @@
             event.preventDefault();
             event.stopPropagation();
             event.stopImmediatePropagation();
-            return;
-          }
+      return;
+    }
           event.preventDefault();
           window.location.assign(`/checkout?${result.query}`);
         },
@@ -413,7 +413,7 @@
 
     bindCheckoutGuard('checkout');
     bindCheckoutGuard('checkout-standalone');
-  })();
+})();
 </script>
 
 {% schema %}
