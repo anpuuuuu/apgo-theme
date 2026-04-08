@@ -584,11 +584,25 @@
     padding: 14px 16px;
   }
 
-  .apgo-precautions-title {
-    margin: 0 0 10px;
-    font-size: 1rem;
-    font-weight: 700;
+.apgo-precautions-header {
+    margin: 0 0 12px;
+    padding: 0 2px;
+  }
+
+  .apgo-precautions-title-outside {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-white);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .apgo-precautions-title-outside::before {
+    content: '▶';
     color: var(--primary-orange);
+    font-size: 0.9rem;
   }
 
   .apgo-precautions-content {
@@ -645,13 +659,19 @@
   }
 
   @media (min-width: 769px) {
-    .apgo-customer-review {
-      padding: 0 8px 24px; /* desktop: near full width with small gutters */
-    }
-
+    .apgo-video-header,
+    .apgo-video-scroll-container,
+    .apgo-precautions-header,
+    .apgo-precautions-inner,
     .apgo-customer-review-header,
     .apgo-customer-review-inner {
       max-width: min(1200px, 66vw);
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .apgo-customer-review {
+      padding: 0 8px 24px; /* desktop: near full width with small gutters */
     }
 
     .apgo-customer-review-inner {
@@ -1555,6 +1575,14 @@
       padding: 12px 12px 14px;
     }
 
+    .apgo-precautions-header {
+      margin-bottom: 10px;
+    }
+
+    .apgo-precautions-title-outside {
+      font-size: 1.05rem;
+    }
+
     .apgo-customer-review {
       padding: 0 0 20px;
     }
@@ -1952,8 +1980,10 @@
     {% assign precautions_text = product.metafields.custom.precautions.value | default: product.metafields.custom.precautions %}
     {% if precautions_text != blank %}
       <section class="apgo-precautions">
+        <div class="apgo-precautions-header">
+          <h3 class="apgo-precautions-title-outside">{{ 'product.precautions' | t }}</h3>
+        </div>
         <div class="apgo-precautions-inner">
-          <h3 class="apgo-precautions-title">{{ 'product.precautions' | t }}</h3>
           <div class="apgo-precautions-content">{{ precautions_text | escape | newline_to_br }}</div>
         </div>
       </section>
