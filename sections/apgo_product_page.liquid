@@ -2047,24 +2047,42 @@
 
   <!-- 底部購買欄 -->
   {% if section.settings.show_bottom_bar %}
+    {% assign is_my_market = false %}
+    {% if localization.country.iso_code == 'MY' %}
+      {% assign is_my_market = true %}
+    {% endif %}
     <div class="apgo-bottom-bar">
       <div class="apgo-price-section">
         {% if product.compare_at_price > product.price %}
-          <div class="apgo-original-price">{{ product.compare_at_price | money }}</div>
+          {% assign compare_at_display = product.compare_at_price | money %}
+          {% if is_my_market %}
+            {% assign compare_at_display = compare_at_display | replace: ' MYR', '' | replace: 'MYR', '' | strip %}
+          {% endif %}
+          <div class="apgo-original-price">{{ compare_at_display }}</div>
         {% endif %}
         <div>
           {% if product.variants.size > 1 %}
             {% assign min_price = product.variants | map: 'price' | sort | first %}
             {% assign max_price = product.variants | map: 'price' | sort | last %}
+            {% assign min_price_display = min_price | money %}
+            {% assign max_price_display = max_price | money %}
+            {% if is_my_market %}
+              {% assign min_price_display = min_price_display | replace: ' MYR', '' | replace: 'MYR', '' | strip %}
+              {% assign max_price_display = max_price_display | replace: ' MYR', '' | replace: 'MYR', '' | strip %}
+            {% endif %}
             {% if min_price == max_price %}
-              <span class="apgo-price-value" id="apgoCurrentPrice">{{ min_price | money }}</span>
+              <span class="apgo-price-value" id="apgoCurrentPrice">{{ min_price_display }}</span>
             {% else %}
               <span class="apgo-price-value" id="apgoCurrentPrice">
-                {{- min_price | money }} ~ {{ max_price | money -}}
+                {{- min_price_display }} ~ {{ max_price_display -}}
               </span>
             {% endif %}
           {% else %}
-            <span class="apgo-price-value" id="apgoCurrentPrice">{{ product.price | money }}</span>
+            {% assign product_price_display = product.price | money %}
+            {% if is_my_market %}
+              {% assign product_price_display = product_price_display | replace: ' MYR', '' | replace: 'MYR', '' | strip %}
+            {% endif %}
+            <span class="apgo-price-value" id="apgoCurrentPrice">{{ product_price_display }}</span>
           {% endif %}
           {% comment %} <span class="apgo-price-value" id="apgoCurrentPrice">{{ product.price | money }}</span> {% endcomment %}
         </div>
