@@ -1669,6 +1669,27 @@
       overflow-y: hidden;
       -webkit-overflow-scrolling: touch;
       scrollbar-width: thin;
+      scrollbar-color: #f08418 #1f1f1f;
+      padding-bottom: 4px;
+    }
+
+    .apgo-customer-review-scroll::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    .apgo-customer-review-scroll::-webkit-scrollbar-track {
+      background: #1f1f1f;
+      border-radius: 999px;
+    }
+
+    .apgo-customer-review-scroll::-webkit-scrollbar-thumb {
+      background: linear-gradient(90deg, #f08418, #ff9a3c);
+      border-radius: 999px;
+      border: 1px solid #1f1f1f;
+    }
+
+    .apgo-customer-review-scroll::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(90deg, #ff9a3c, #f08418);
     }
 
     .apgo-customer-review-scroll .apgo-customer-review-image {
