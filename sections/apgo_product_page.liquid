@@ -104,7 +104,7 @@
   /* 主內容區 */
   .apgo-main-container {
     min-height: 100vh;
-    padding-bottom: 100px;
+    padding-bottom: 28px;
     -ms-overflow-style: none; /* IE 和 Edge */
     scrollbar-width: none; /* Firefox */
   }
@@ -1614,6 +1614,10 @@
   }
 
   @media (max-width: 768px) {
+    .apgo-main-container {
+      padding-bottom: 84px;
+    }
+
     .apgo-looping-intro {
       padding: 0 12px 20px;
     }
@@ -1652,7 +1656,7 @@
     }
 
     .apgo-customer-review {
-      padding: 0 0 20px;
+      padding: 0;
     }
 
     .apgo-insidebox {
@@ -1668,7 +1672,7 @@
     }
 
     .apgo-customer-review-inner {
-      padding: 12px 12px 16px;
+      padding: 12px 12px 6px;
     }
 
     .apgo-customer-review-scroll {
@@ -1678,7 +1682,7 @@
       -webkit-overflow-scrolling: touch;
       scrollbar-width: thin;
       scrollbar-color: #f08418 #1f1f1f;
-      padding-bottom: 4px;
+      padding-bottom: 0;
     }
 
     .apgo-customer-review-scroll::-webkit-scrollbar {
