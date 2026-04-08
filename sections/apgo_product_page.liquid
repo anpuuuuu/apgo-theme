@@ -504,6 +504,14 @@
     padding: 12px;
   }
 
+  @media (min-width: 769px) {
+    .apgo-looping-intro-inner {
+      max-width: min(1200px, 66vw);
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+
   .apgo-looping-intro.has-video .apgo-looping-intro-inner {
     grid-template-columns: minmax(260px, 38%) 1fr;
     align-items: start; /* Don't let description height stretch the video area */
