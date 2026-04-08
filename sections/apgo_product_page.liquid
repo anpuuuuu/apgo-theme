@@ -768,62 +768,6 @@
     color: white;
   }
 
-  /* 相關產品推薦 */
-  .apgo-related-products {
-    padding: 24px 16px;
-  }
-
-  .apgo-related-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--text-white);
-    margin-bottom: 16px;
-  }
-
-  .apgo-related-scroll {
-    display: flex;
-    gap: 12px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-
-  .apgo-related-product {
-    flex: 0 0 auto;
-    width: 140px;
-    background: var(--card-bg);
-    border-radius: 12px;
-    padding: 12px;
-    text-align: center;
-    border: 1px solid rgba(240, 132, 24, 0.2);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-decoration: none;
-  }
-
-  .apgo-related-img {
-    width: 100px;
-    height: 100px;
-    margin: 0 auto 8px;
-    object-fit: contain;
-    background: rgba(255, 255, 255, 0.02);
-    border-radius: 8px;
-    padding: 10px;
-  }
-
-  .apgo-related-name {
-    height: 40px;
-    font-size: 0.85rem;
-    color: var(--text-white);
-    margin-bottom: 4px;
-  }
-
-  .apgo-related-price {
-    font-size: 0.9rem;
-    color: var(--primary-orange);
-    font-weight: bold;
-  }
-
   /* 底部購買欄 */
   .apgo-bottom-bar {
     position: fixed;
@@ -2035,39 +1979,7 @@
     <!-- 使用步驟時間軸 -->
     <!-- Application Steps removed -->
 
-    <!-- 相關產品推薦 -->
-    <section class="apgo-related-products">
-      <h3 class="apgo-related-title">{{ 'product.recommended_products' | t }}</h3>
-      <div class="apgo-related-scroll">
-        {% if product.metafields.apgo.related_products %}
-          {% for related_product in product.metafields.apgo.related_products.value %}
-            {% if related_product %}
-              <a href="{{ related_product.url }}" class="apgo-related-product">
-                <img
-                  src="{{ related_product.featured_media | image_url: width: 200 }}"
-                  alt="{{ related_product.title }}"
-                  class="apgo-related-img"
-                  loading="lazy"
-                >
-                <div class="apgo-related-name">{{ related_product.title }}</div>
-                {% if related_product.variants.size > 1 %}
-                  {% assign min_price = related_product.variants | map: 'price' | sort | first %}
-                  {% assign max_price = related_product.variants | map: 'price' | sort | last %}
-                  {% if min_price == max_price %}
-                    <p class="apgo-related-price">{{ min_price | money }}</p>
-                  {% else %}
-                    <p class="apgo-related-price">{{ min_price | money }} ~ {{ max_price | money }}</p>
-                  {% endif %}
-                {% else %}
-                  <p class="apgo-related-price">{{ related_product.price | money }}</p>
-                {% endif %}
-                {% comment %} <div class="apgo-related-price">{{ related_product.price | money }}</div> {% endcomment %}
-              </a>
-            {% endif %}
-          {% endfor %}
-        {% endif %}
-      </div>
-    </section>
+    <!-- Recommended products section removed -->
   </main>
 
   <!-- 底部購買欄 -->
