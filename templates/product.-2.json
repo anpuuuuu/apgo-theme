@@ -449,27 +449,6 @@
             "views": "4.2K",
             "duration": "2:15"
           }
-        },
-        "tab_pBDGhY": {
-          "type": "tab",
-          "settings": {
-            "title": "Product Description",
-            "content": "<p><strong>原子釉鍍膜</strong>採用先進的釉面科技，為您的愛車提供卓越的保護。</p><p>獨特的釉面配方能在車漆表面形成一層透明保護膜，不僅提升表面的滑順度，更能有效抵抗環境污染物的侵害。</p><p><strong>產品特色：</strong><br/>• 釉面質感，觸感滑順<br/>• 提升80%疏水性能<br/>• 持久度達120天<br/>• 耐洗20次以上<br/>• 增強車漆光澤度</p>"
-          }
-        },
-        "tab_cYprri": {
-          "type": "tab",
-          "settings": {
-            "title": "Product Specifications",
-            "content": "<p><strong>產品容量：</strong>50ml / 100ml</p><p><strong>適用範圍：</strong>全車系適用</p><p><strong>施工時間：</strong>30-45分鐘</p><p><strong>硬度等級：</strong>7H</p><p><strong>保固期限：</strong>4個月</p><p><strong>產地：</strong>台灣製造</p><p><strong>主要成分：</strong>奈米釉面聚合物</p><p><strong>保存期限：</strong>未開封3年</p>"
-          }
-        },
-        "tab_dnqQze": {
-          "type": "tab",
-          "settings": {
-            "title": "Precautions",
-            "content": "<p>• 避免在高溫或陽光直射下施工</p><p>• 施工後24小時內避免洗車</p><p>• 請放置於兒童無法觸及處</p><p>• 避免接觸眼睛和皮膚</p><p>• 保存於陰涼乾燥處</p>"
-          }
         }
       },
       "block_order": [
@@ -483,10 +462,7 @@
         "video_dp8ep7",
         "video_6TRcwg",
         "video_RUMmT3",
-        "video_gVgJ3m",
-        "tab_pBDGhY",
-        "tab_cYprri",
-        "tab_dnqQze"
+        "video_gVgJ3m"
       ],
       "custom_css": [
         "h2 {font-size: 32px;}",

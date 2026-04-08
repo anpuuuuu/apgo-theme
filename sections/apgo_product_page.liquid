@@ -768,62 +768,6 @@
     color: white;
   }
 
-  /* 產品詳情標籤 */
-  .apgo-details-tabs {
-    background: var(--card-bg);
-    border-radius: 16px;
-    margin: 16px;
-    overflow: hidden;
-  }
-
-  .apgo-tab-headers {
-    display: flex;
-    background: rgba(0, 0, 0, 0.5);
-    border-bottom: 1px solid rgba(240, 132, 24, 0.2);
-  }
-
-  .apgo-tab-header {
-    flex: 1;
-    padding: 16px;
-    text-align: center;
-    font-size: 0.9rem;
-    color: var(--text-gray);
-    cursor: pointer;
-    position: relative;
-    transition: all 0.3s ease;
-  }
-
-  .apgo-tab-header.active {
-    color: var(--text-white);
-    font-weight: 600;
-  }
-
-  .apgo-tab-header.active::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: var(--primary-orange);
-  }
-
-  .apgo-tab-content {
-    padding: 20px;
-    min-height: 200px;
-  }
-
-  .apgo-tab-panel {
-    display: none;
-    font-size: 0.9rem;
-    color: var(--text-light-gray);
-    line-height: 1.6;
-  }
-
-  .apgo-tab-panel.active {
-    display: block;
-  }
-
   /* 相關產品推薦 */
   .apgo-related-products {
     padding: 24px 16px;
@@ -2091,41 +2035,6 @@
     <!-- 使用步驟時間軸 -->
     <!-- Application Steps removed -->
 
-    <!-- 產品詳情標籤 -->
-    {% assign tabs = product.metafields.apgo.product_tabs.value %}
-    <section class="apgo-details-tabs">
-      <div class="apgo-tab-headers">
-        {% for tab in tabs %}
-          <div
-            class="apgo-tab-header {% if forloop.first %}active{% endif %}"
-            data-tab="{{ forloop.index0 }}"
-            onclick="apgoSwitchTab({{ forloop.index0 }})"
-          >
-            {{ tab.title }}
-          </div>
-        {% endfor %}
-      </div>
-
-      <div class="apgo-tab-content">
-        {% for tab in tabs %}
-          <div
-            class="apgo-tab-panel {% if forloop.first %}active{% endif %}"
-            data-tab="{{ forloop.index0 }}"
-          >
-            {% if forloop.first %}
-              {% if product.description != blank %}
-                {{ product.description }}
-              {% else %}
-                {{ tab.content | default: 'product.no_description' | t }}
-              {% endif %}
-            {% else %}
-              {{ tab.content }}
-            {% endif %}
-          </div>
-        {% endfor %}
-      </div>
-    </section>
-
     <!-- 相關產品推薦 -->
     <section class="apgo-related-products">
       <h3 class="apgo-related-title">{{ 'product.recommended_products' | t }}</h3>
@@ -2721,18 +2630,6 @@ window.apgoUpdateQuantity = function(change) {
       navigator.vibrate(20);
     }
   }
-};
-
-// 標籤切換
-window.apgoSwitchTab = function(index) {
-  const headers = document.querySelectorAll('.apgo-tab-header');
-  const panels = document.querySelectorAll('.apgo-tab-panel');
-  headers.forEach((header, i) => {
-    header.classList.toggle('active', i === index);
-  });
-  panels.forEach((panel, i) => {
-    panel.classList.toggle('active', i === index);
-  });
 };
 
 // 開啟圖片燈箱
