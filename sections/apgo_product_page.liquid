@@ -827,6 +827,18 @@
     transform: translateZ(0);
   }
 
+  @media (min-width: 769px) {
+    .apgo-bottom-bar {
+      width: min(1200px, 66vw);
+      left: 50%;
+      right: auto;
+      transform: translateX(-50%) translateZ(0);
+      border: 1px solid rgba(240, 132, 24, 0.2);
+      border-bottom: none;
+      border-radius: 12px 12px 0 0;
+    }
+  }
+
   .apgo-price-section {
     flex: 1;
   }
