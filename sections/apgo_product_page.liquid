@@ -609,13 +609,30 @@
     border-radius: 14px;
     padding: 14px 16px 18px;
     text-align: center;
+    max-width: min(1200px, 66vw);
+    margin: 0 auto;
   }
 
-  .apgo-customer-review-title {
-    margin: 0 0 12px;
-    font-size: 1.35rem;
-    font-weight: 800;
+  .apgo-customer-review-header {
+    max-width: min(1200px, 66vw);
+    margin: 0 auto 12px;
+    padding: 0 2px;
+  }
+
+  .apgo-customer-review-title-outside {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
     color: var(--text-white);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .apgo-customer-review-title-outside::before {
+    content: '▶';
+    color: var(--primary-orange);
+    font-size: 0.9rem;
   }
 
   .apgo-customer-review-image {
@@ -1541,8 +1558,12 @@
       padding: 12px 12px 16px;
     }
 
-    .apgo-customer-review-title {
-      font-size: 1.15rem;
+    .apgo-customer-review-header {
+      margin-bottom: 10px;
+    }
+
+    .apgo-customer-review-title-outside {
+      font-size: 1.05rem;
     }
 
     .apgo-video-modal-content {
@@ -1936,8 +1957,10 @@
     {% assign customer_review_image = product.metafields.custom.customer_review.value | default: product.metafields.custom.customer_review %}
     {% if customer_review_image != blank %}
       <section class="apgo-customer-review">
+        <div class="apgo-customer-review-header">
+          <h3 class="apgo-customer-review-title-outside">{{ 'product.customer_reviews' | t }}</h3>
+        </div>
         <div class="apgo-customer-review-inner">
-          <h3 class="apgo-customer-review-title">{{ 'product.customer_reviews' | t }}</h3>
           <img
             class="apgo-customer-review-image"
             src="{{ customer_review_image | image_url: width: 2000 }}"
