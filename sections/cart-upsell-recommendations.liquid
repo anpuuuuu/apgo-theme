@@ -52,6 +52,15 @@
     background: transparent !important;
     background-color: transparent !important;
   }
+
+  /* Product page only: desktop full width, keep mobile gutters */
+  @media (min-width: 769px) {
+    .cart-upsell-wrapper.cart-upsell-wrapper--product {
+      max-width: none;
+      padding-left: 0;
+      padding-right: 0;
+    }
+  }
   
   /* 頂部標題區域 */
   .upsell-header-outside {
@@ -542,7 +551,7 @@
   }
 </style>
 
-<div class="cart-upsell-wrapper" 
+<div class="cart-upsell-wrapper {% if template.name == 'product' %}cart-upsell-wrapper--product{% endif %}" 
      style="--card-width-desktop: {{ section.settings.card_width_desktop }}px;
             --card-width-tablet: {{ section.settings.card_width_tablet }}px;
             --card-width-mobile-large: {{ section.settings.card_width_mobile_large }}px;
