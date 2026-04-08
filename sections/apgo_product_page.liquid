@@ -768,68 +768,6 @@
     color: white;
   }
 
-  /* 使用步驟時間軸 */
-  .apgo-usage-timeline {
-    background: var(--card-bg);
-    border-radius: 16px;
-    padding: 20px;
-    margin: 0 16px;
-    position: relative;
-  }
-
-  .apgo-timeline-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--text-white);
-    margin-bottom: 20px;
-  }
-
-  .apgo-timeline-steps {
-    position: relative;
-    padding-left: 30px;
-  }
-
-  .apgo-timeline-steps::before {
-    content: '';
-    position: absolute;
-    left: 15px;
-    top: 10px;
-    bottom: 10px;
-    width: 2px;
-    background: linear-gradient(180deg, var(--primary-orange), rgba(240, 132, 24, 0.3));
-  }
-
-  .apgo-timeline-step {
-    position: relative;
-    margin-bottom: 24px;
-    padding-left: 20px;
-  }
-
-  .apgo-step-dot {
-    position: absolute;
-    left: -24px;
-    top: 4px;
-    width: 12px;
-    height: 12px;
-    background: var(--primary-orange);
-    border: 3px solid var(--dark-bg);
-    border-radius: 50%;
-    z-index: 2;
-  }
-
-  .apgo-step-title {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--primary-orange);
-    margin-bottom: 4px;
-  }
-
-  .apgo-step-desc {
-    font-size: 0.85rem;
-    color: var(--text-light-gray);
-    line-height: 1.4;
-  }
-
   /* 產品詳情標籤 */
   .apgo-details-tabs {
     background: var(--card-bg);
@@ -2151,35 +2089,7 @@
     </div>
 
     <!-- 使用步驟時間軸 -->
-    <section class="apgo-usage-timeline">
-      <h3 class="apgo-timeline-title">{{ 'product.construction_steps' | t }}</h3>
-      <div class="apgo-timeline-steps">
-        {% if product.metafields.apgo.construction_steps %}
-          {% assign steps = product.metafields.apgo.construction_steps.value %}
-          {% for step in steps %}
-            <div class="apgo-timeline-step">
-              <div class="apgo-step-dot"></div>
-              <div class="apgo-step-content">
-                <div class="apgo-step-title">{{ step.title }}</div>
-                <div class="apgo-step-desc">{{ step.desc }}</div>
-              </div>
-            </div>
-          {% endfor %}
-        {% else %}
-          {% for block in section.blocks %}
-            {% if block.type == 'step' %}
-              <div class="apgo-timeline-step">
-                <div class="apgo-step-dot"></div>
-                <div class="apgo-step-content">
-                  <div class="apgo-step-title">{{ block.settings.title }}</div>
-                  <div class="apgo-step-desc">{{ block.settings.desc }}</div>
-                </div>
-              </div>
-            {% endif %}
-          {% endfor %}
-        {% endif %}
-      </div>
-    </section>
+    <!-- Application Steps removed -->
 
     <!-- 產品詳情標籤 -->
     {% assign tabs = product.metafields.apgo.product_tabs.value %}
