@@ -609,12 +609,12 @@
     border-radius: 14px;
     padding: 14px 16px 18px;
     text-align: center;
-    max-width: min(1200px, 66vw);
+    max-width: none;
     margin: 0 auto;
   }
 
   .apgo-customer-review-header {
-    max-width: min(1200px, 66vw);
+    max-width: none;
     margin: 0 auto 12px;
     padding: 0 2px;
   }
@@ -647,6 +647,11 @@
   @media (min-width: 769px) {
     .apgo-customer-review {
       padding: 0 8px 24px; /* desktop: near full width with small gutters */
+    }
+
+    .apgo-customer-review-header,
+    .apgo-customer-review-inner {
+      max-width: min(1200px, 66vw);
     }
 
     .apgo-customer-review-inner {
@@ -1551,7 +1556,7 @@
     }
 
     .apgo-customer-review {
-      padding: 0 12px 20px;
+      padding: 0 0 20px;
     }
 
     .apgo-customer-review-inner {
