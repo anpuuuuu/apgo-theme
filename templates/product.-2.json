@@ -475,10 +475,52 @@
         "subtitle_fallback": "Provides a durable protective layer that improves resistance against washing.",
         "show_bottom_bar": true
       }
+    },
+    "product_upsell_recommendations_P8mL2k": {
+      "type": "cart-upsell-recommendations",
+      "name": "Recommended Items",
+      "settings": {
+        "section_title": "Suggested Products",
+        "show_popular_button": false,
+        "button_text": "Click to see popular products",
+        "popular_items_url": "",
+        "loading_bg_color": "#1a1a1a",
+        "use_gradient": true,
+        "bg_color_start": "#1a1a1a",
+        "bg_color_end": "#2d2d2d",
+        "border_color": "#333333",
+        "use_accent_gradient": true,
+        "accent_color_start": "#ff6b35",
+        "accent_color_end": "#f7931e",
+        "text_color": "#ffffff",
+        "text_secondary_color": "#cccccc",
+        "product_list": [
+          "2x-apgo-car-wiper-fluid-refill-pack-300ml",
+          "apgo-car-windshield-oil-film-remover-perfect-glass-restorer",
+          "apgo-car-headlight-repair-polish-cream",
+          "apgo-car-paint-polish-cream-white-restorer",
+          "apgo-car-wash-foam-pressure-sprayer-version-2",
+          "apgo-pro-car-wash-towel-l-160cm-x-60cm"
+        ],
+        "max_products": 8,
+        "show_prices": true,
+        "enable_quick_add": true,
+        "image_ratio": "square",
+        "card_width_desktop": 320,
+        "card_width_tablet": 280,
+        "card_width_mobile_large": 300,
+        "card_width_mobile": 260,
+        "button_max_width": 150,
+        "hide_button_text_mobile": false,
+        "mobile_layout": "vertical",
+        "hide_price_mobile": false,
+        "products_visible_mobile": 1.5
+      }
     }
   },
   "order": [
     "main",
-    "apgo_product_page_Ycjbhm"
+    "apgo_product_page_Ycjbhm",
+    "product_upsell_recommendations_P8mL2k"
   ]
 }
