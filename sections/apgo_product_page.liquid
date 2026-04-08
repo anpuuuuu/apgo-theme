@@ -696,6 +696,10 @@
     margin: 0 auto;
   }
 
+  .apgo-customer-review-image-top {
+    margin: 0 auto 12px;
+  }
+
   @media (min-width: 769px) {
     .apgo-insidebox-inner {
       max-width: min(1200px, 66vw);
@@ -2118,6 +2122,15 @@
         <h3 class="apgo-customer-review-title-outside">{{ 'product.customer_reviews' | t }}</h3>
       </div>
       <div class="apgo-customer-review-inner">
+        {% assign customer_review_image = product.metafields.custom.customer_review.value | default: product.metafields.custom.customer_review %}
+        {% if customer_review_image != blank %}
+          <img
+            class="apgo-customer-review-image apgo-customer-review-image-top"
+            src="{{ customer_review_image | image_url: width: 2000 }}"
+            alt="{{ 'product.customer_reviews' | t }}"
+            loading="lazy"
+          >
+        {% endif %}
         <div class="apgo-customer-review-scroll">
           <img
             class="apgo-customer-review-image"
