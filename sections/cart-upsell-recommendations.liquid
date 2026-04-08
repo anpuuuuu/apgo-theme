@@ -549,6 +549,11 @@
   }
 </style>
 
+{% assign is_my_market = false %}
+{% if localization.country.iso_code == 'MY' %}
+  {% assign is_my_market = true %}
+{% endif %}
+
 <div class="cart-upsell-wrapper {% if template.name == 'product' %}cart-upsell-wrapper--product{% endif %}" 
      style="--card-width-desktop: {{ section.settings.card_width_desktop }}px;
             --card-width-tablet: {{ section.settings.card_width_tablet }}px;
@@ -599,7 +604,11 @@
                 <div class="upsell-product-info">
                   <h4 class="upsell-product-title">{{ product.title }}</h4>
                   {% if section.settings.show_prices %}
-                    <p class="upsell-product-price">{{ product.price | money }}</p>
+                    {% assign upsell_price = product.price | money %}
+                    {% if is_my_market %}
+                      {% assign upsell_price = upsell_price | replace: ' MYR', '' | replace: 'MYR', '' | strip %}
+                    {% endif %}
+                    <p class="upsell-product-price">{{ upsell_price }}</p>
                   {% endif %}
                 </div>
               </a>
