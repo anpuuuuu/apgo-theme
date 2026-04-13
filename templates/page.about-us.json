@@ -14,9 +14,11 @@
       "settings": {}
     },
     "homepage_s8_eng": {
-      "type": "apgo-homepage-s8-eng",
+      "type": "custom-liquid",
       "name": "Homepage S8 Eng",
-      "settings": {}
+      "settings": {
+        "custom_liquid": "{% render 'apgo-homepage-s8-eng-content' %}"
+      }
     }
   },
   "order": [
