@@ -52,8 +52,8 @@
   .apgo-hero-video {
     position: relative;
     width: 100%;
-    min-height: 52vh;
-    max-height: 78vh;
+    aspect-ratio: 1980 / 1020;
+    height: auto;
     overflow: hidden;
     background: #050505;
     border-bottom: 1px solid rgba(240, 132, 24, 0.25);
@@ -62,16 +62,13 @@
   .apgo-about-video {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     display: block;
-    filter: contrast(1.05) saturate(1.05);
+    filter: none;
   }
 
   .apgo-video-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.15));
-    pointer-events: none;
+    display: none;
   }
 
   .apgo-brand-philosophy {
@@ -153,8 +150,8 @@
     }
 
     .apgo-hero-video {
-      min-height: 38vh;
-      max-height: 56vh;
+      aspect-ratio: 1980 / 1020;
+      height: auto;
     }
   }
 </style>
