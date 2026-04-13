@@ -14,11 +14,11 @@ const schema = `
 
 {% schema %}
 {
-  "name": "Homepage S8 Eng (Brand Story)",
+  "name": "Homepage S8 Eng Block",
   "settings": [],
   "presets": [
     {
-      "name": "Homepage S8 Eng (Brand Story)"
+      "name": "Homepage S8 Eng Block"
     }
   ]
 }
