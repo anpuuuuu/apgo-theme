@@ -8,10 +8,13 @@
       loop
       playsinline
       preload="auto"
-      controls
     >
       <source src="https://cdn.shopify.com/videos/c/o/v/9436e1292daf44e0b1b81614e9def543.mp4" type="video/mp4">
     </video>
+    <div class="apgo-video-controls">
+      <button type="button" id="apgoSoundToggle" class="apgo-video-control-btn" aria-label="Toggle sound">🔇</button>
+      <button type="button" id="apgoFullscreenToggle" class="apgo-video-control-btn" aria-label="Fullscreen">⛶</button>
+    </div>
     <div class="apgo-video-overlay"></div>
   </section>
 
@@ -69,6 +72,42 @@
 
   .apgo-video-overlay {
     display: none;
+  }
+
+  .apgo-video-controls {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    display: flex;
+    gap: 8px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    z-index: 2;
+  }
+
+  .apgo-hero-video:hover .apgo-video-controls,
+  .apgo-hero-video:focus-within .apgo-video-controls {
+    opacity: 1;
+  }
+
+  .apgo-video-control-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: rgba(0, 0, 0, 0.45);
+    color: #ffffff;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .apgo-video-control-btn:hover {
+    background: rgba(0, 0, 0, 0.65);
+    border-color: rgba(255, 255, 255, 0.4);
   }
 
   .apgo-brand-philosophy {
@@ -153,31 +192,40 @@
       aspect-ratio: 1980 / 1020;
       height: auto;
     }
+
+    .apgo-video-controls {
+      opacity: 1;
+      right: 10px;
+      bottom: 10px;
+    }
   }
 </style>
 
 <script>
   (function () {
     const video = document.getElementById('apgoAboutVideo');
-    if (!video) return;
+    const section = document.getElementById('apgoHeroVideoSection');
+    const soundToggle = document.getElementById('apgoSoundToggle');
+    const fullscreenToggle = document.getElementById('apgoFullscreenToggle');
+    if (!video || !section || !soundToggle || !fullscreenToggle) return;
 
     video.muted = true;
+    soundToggle.textContent = '🔇';
 
-    video.addEventListener('fullscreenchange', () => {
-      if (document.fullscreenElement === video || document.fullscreenElement === video.parentElement) {
-        video.muted = false;
-      } else {
-        video.muted = true;
-      }
+    soundToggle.addEventListener('click', () => {
+      video.muted = !video.muted;
+      soundToggle.textContent = video.muted ? '🔇' : '🔊';
     });
 
-    video.addEventListener('click', async () => {
-      if (!document.fullscreenElement && video.requestFullscreen) {
+    fullscreenToggle.addEventListener('click', async () => {
+      if (!document.fullscreenElement && section.requestFullscreen) {
         try {
-          await video.requestFullscreen();
+          await section.requestFullscreen();
         } catch (e) {
           // Ignore browser/user-gesture restrictions.
         }
+      } else if (document.exitFullscreen) {
+        await document.exitFullscreen();
       }
     });
   })();
