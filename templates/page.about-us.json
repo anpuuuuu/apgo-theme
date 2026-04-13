@@ -12,9 +12,15 @@
     "about_redesign": {
       "type": "apgo-about-redesign",
       "settings": {}
+    },
+    "homepage_s8_eng": {
+      "type": "apgo-homepage-s8-eng",
+      "name": "Homepage S8 Eng",
+      "settings": {}
     }
   },
   "order": [
-    "about_redesign"
+    "about_redesign",
+    "homepage_s8_eng"
   ]
 }
