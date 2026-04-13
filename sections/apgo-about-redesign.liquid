@@ -25,14 +25,18 @@
 
   <section class="apgo-vm-section">
     <article class="apgo-vm-card">
-      <div class="apgo-vm-icon apgo-vm-icon--orange">&gt;&gt;</div>
-      <h3>VISION</h3>
+      <div class="apgo-vm-heading">
+        <span class="apgo-vm-icon">▶</span>
+        <h3>VISION</h3>
+      </div>
       <p>To redefine modern car care by setting new standards in performance, quality, and user experience worldwide.</p>
     </article>
 
     <article class="apgo-vm-card">
-      <div class="apgo-vm-icon apgo-vm-icon--red">&gt;&gt;</div>
-      <h3>MISSION</h3>
+      <div class="apgo-vm-heading">
+        <span class="apgo-vm-icon">▶</span>
+        <h3>MISSION</h3>
+      </div>
       <p>We aim to engineer premium car care products and make professional detailing results accessible to every car owner.</p>
     </article>
   </section>
@@ -116,23 +120,21 @@
     border-color: rgba(240, 132, 24, 0.7);
   }
 
-  .apgo-vm-icon {
-    font-size: 1.18rem;
-    font-weight: 800;
-    letter-spacing: 0.08em;
-    margin-bottom: 10px;
+  .apgo-vm-heading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
   }
 
-  .apgo-vm-icon--orange {
+  .apgo-vm-icon {
+    font-size: 0.95rem;
+    font-weight: 700;
     color: #f08418;
   }
 
-  .apgo-vm-icon--red {
-    color: #ff4d4f;
-  }
-
   .apgo-vm-card h3 {
-    margin: 0 0 12px;
+    margin: 0;
     font-size: 1.35rem;
     letter-spacing: 0.08em;
   }
