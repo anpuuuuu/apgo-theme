@@ -345,6 +345,16 @@
     position: relative;
   }
 
+  /*
+    Homepage custom-liquid (e.g. coating showcase) uses `.header-section` for inner titles.
+    That rule also matches this theme header and adds padding; the padding area stays
+    transparent so hero text appears above the nav when sticky. Reset the real header only.
+  */
+  #header-group > header.shopify-section.header-section {
+    padding: 0 !important;
+    text-align: initial !important;
+  }
+
   #header-group:has(#header-component[sticky]) {
     display: contents;
   }
