@@ -355,6 +355,8 @@
     /* Use -1 instead of 0 so intersection observer can track sticky state */
     top: -1px;
     z-index: var(--layer-sticky);
+    /* Transparent header uses `position: absolute` on the inner component; keep section height for sticky */
+    min-height: var(--header-height, 60px);
   }
 
   .header[data-sticky-state] {

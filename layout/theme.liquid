@@ -76,6 +76,19 @@
 
     {% sections 'footer-group' %}
 
+    {% comment %}
+      Homepage custom-liquid sections ship global `body, html { overflow-x: hidden }`.
+      That rule is injected after theme CSS and breaks `position: sticky` on the header.
+      `clip` suppresses horizontal overflow without the same sticky regression; `!important`
+      runs after those inline section styles in document order.
+    {% endcomment %}
+    <style id="apgo-sticky-header-overflow-fix">
+      html,
+      body {
+        overflow-x: clip !important;
+      }
+    </style>
+
     {% render 'search-modal' %}
 
     {% # theme-check-disable ParserBlockingScript %}
