@@ -153,13 +153,11 @@
         /* Alternating left-right layout */
         .timeline-item:nth-child(odd) .timeline-content {
             margin-left: auto;
-            transform: translateX(30px);
             opacity: 0;
             animation: slideInRight 0.8s ease forwards;
         }
 
         .timeline-item:nth-child(even) .timeline-content {
-            transform: translateX(-30px);
             opacity: 0;
             animation: slideInLeft 0.8s ease forwards;
         }
@@ -176,20 +174,18 @@
         @keyframes slideInLeft {
             to {
                 opacity: 1;
-                transform: translateX(0);
             }
         }
 
         @keyframes slideInRight {
             to {
                 opacity: 1;
-                transform: translateX(0);
             }
         }
 
         /* Hover effects */
         .timeline-content:hover {
-            transform: translateY(-4px) scale(1.02);
+            transform: translateY(-4px) scale(1.015);
             box-shadow: 0 0 34px rgba(240, 132, 24, 0.32);
             border-color: rgba(240, 132, 24, 0.7);
         }
@@ -317,7 +313,6 @@
             .timeline-content {
                 width: calc(100% - 80px);
                 margin-left: 80px !important;
-                transform: none !important;
                 padding: 25px;
             }
 
