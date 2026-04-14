@@ -1358,67 +1358,25 @@
     }
 
     /*
-      主內容／底欄：關閉側欄時也要有與開啟相同的 transition，兩端都寫明 width / margin-left（避免只寫在 open 規則上無法從 auto 插值）。
+      主內容：transform 左移側欄寬度，不縮小 main 寬度 → 字與卡片不因容器變窄重排；右側由側欄蓋住。
+      底欄：桌機原用 translateX(-50%) 置中，開側欄時改為再左移一個側欄寬，不可覆寫成 translateX(0)。
     */
-    .apgo-product-section > .apgo-main-container,
-    .apgo-product-section > .apgo-bottom-bar {
-      width: 100%;
-      max-width: none;
-      margin-left: 0;
-      margin-right: 0;
+    .apgo-product-section > .apgo-main-container {
       box-sizing: border-box;
-      transition: width 0.4s ease-in-out, margin-left 0.4s ease-in-out;
+      transform: translateX(0);
+      transition: transform 0.4s ease-in-out;
     }
 
-    /*
-      整段商品區（主內容 + 底部購買欄）寬 = 100vw - 側欄寬，與右欄合併佔滿視窗。
-      margin-left: calc(50% - 50vw) 從置中欄拉齊視窗左緣（full-bleed）。
-      內層原 max-width: min(1200px,66vw) 一併放寬，避免只有外框變寬、內容仍窄。
-    */
-    body.apgo-pdp-variant-sidebar-open .apgo-product-section > .apgo-main-container,
+    body.apgo-pdp-variant-sidebar-open .apgo-product-section > .apgo-main-container {
+      transform: translateX(calc(-1 * var(--apgo-pdp-sidebar-width, 33.33vw)));
+    }
+
+    .apgo-product-section > .apgo-bottom-bar {
+      transition: transform 0.4s ease-in-out;
+    }
+
     body.apgo-pdp-variant-sidebar-open .apgo-product-section > .apgo-bottom-bar {
-      width: calc(100vw - var(--apgo-pdp-sidebar-width, 33.33vw));
-      margin-left: calc(50% - 50vw);
-    }
-
-    body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-looping-intro-inner,
-    body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-insidebox-inner,
-    body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-video-header,
-    body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-video-scroll-container,
-    body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-precautions-header,
-    body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-precautions-inner,
-    body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-customer-review-header,
-    body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-customer-review-inner {
-      max-width: none !important;
-      width: 100%;
-      margin-left: 0;
-      margin-right: 0;
-    }
-
-    /* 模板 custom_css 對區塊內 img 的 max-width；側欄開啟時改為跟隨欄寬（小圖仍受父層限制） */
-    body.apgo-pdp-variant-sidebar-open .apgo-product-section > .apgo-main-container img,
-    body.apgo-pdp-variant-sidebar-open .apgo-product-section > .apgo-bottom-bar img {
-      max-width: 100% !important;
-    }
-
-    body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-product-showcase {
-      justify-content: flex-start;
-      padding-left: max(12px, env(safe-area-inset-left, 0px));
-      padding-right: max(12px, env(safe-area-inset-right, 0px));
-    }
-
-    body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-carousel-slide {
-      justify-content: flex-start;
-    }
-
-    body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-hero-visual img.apgo-product-image-main {
-      width: 100%;
-      margin-left: 0 !important;
-      margin-right: 0 !important;
-    }
-
-    body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-thumbnails-container {
-      justify-content: flex-start;
+      transform: translateX(calc(-50% - var(--apgo-pdp-sidebar-width, 33.33vw))) translateZ(0);
     }
 
     /*
