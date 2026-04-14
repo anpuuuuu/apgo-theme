@@ -49,13 +49,44 @@
       50% { transform: translate(-30px, 30px) scale(1.1); }
     }
 
-    .social-find-us-heading {
-      text-align: center;
+    .social-heading-wrap {
+      display: flex;
+      justify-content: center;
       margin: 0 0 28px;
+    }
+
+    .social-find-us-heading {
+      margin: 0;
+      display: inline-block;
+      text-align: center;
       font-size: clamp(1.35rem, 3.5vw, 1.85rem);
       font-weight: 700;
-      color: #ffffff;
-      letter-spacing: 0.04em;
+      color: #f08418;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      cursor: default;
+      transition: transform 0.35s ease, text-shadow 0.35s ease, filter 0.35s ease;
+      transform-origin: center center;
+      will-change: transform, filter;
+    }
+
+    .social-find-us-heading:hover {
+      transform: scale(1.08);
+      text-shadow:
+        0 0 10px rgba(240, 132, 24, 0.95),
+        0 0 24px rgba(240, 132, 24, 0.65),
+        0 0 42px rgba(240, 132, 24, 0.45);
+      filter: drop-shadow(0 0 14px rgba(240, 132, 24, 0.55));
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .social-find-us-heading {
+        transition: none;
+      }
+
+      .social-find-us-heading:hover {
+        transform: none;
+      }
     }
 
     .platform-group {
@@ -220,7 +251,9 @@
   </style>
 
   <div class="social-container">
-    <h1 class="social-find-us-heading">{{ section.settings.heading | default: 'Find Us On...' }}</h1>
+    <div class="social-heading-wrap">
+      <h1 class="social-find-us-heading">{{ section.settings.heading | default: 'JOIN OUR COMMUNITY' }}</h1>
+    </div>
 
     <div class="social-region-panel">
       {% assign singapore_blocks = section.blocks | where: 'type', 'singapore_social' %}
@@ -288,7 +321,7 @@
       "type": "text",
       "id": "heading",
       "label": "頁面標題",
-      "default": "Find Us On..."
+      "default": "JOIN OUR COMMUNITY"
     }
   ],
   "blocks": [
@@ -350,7 +383,7 @@
     {
       "name": "社群媒體頁面",
       "settings": {
-        "heading": "Find Us On..."
+        "heading": "JOIN OUR COMMUNITY"
       },
       "blocks": [
         {
