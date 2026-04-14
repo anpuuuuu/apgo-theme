@@ -28,9 +28,11 @@
       assign link_title_normalized = link.title | downcase | strip
       assign link_url = link.url
       assign link_label = link.title
+      assign link_is_active = link.active
       if link_title_normalized == 'contact'
         assign link_url = '/pages/about-us'
         assign link_label = 'About Us'
+        assign link_is_active = request.path contains '/pages/about-us'
       endif
     %}
     <li
@@ -43,12 +45,15 @@
     >
       <a
         href="{{ link_url }}"
-        class="menu-list__link{% if link.active %} menu-list__link--active{% endif %}"
+        class="menu-list__link{% if link_is_active %} menu-list__link--active{% endif %}"
         {%- if link.links != blank -%}
           aria-controls="submenu-{{ forloop.index }}"
           aria-haspopup="true"
           aria-expanded="false"
         {%- endif -%}
+        {% if link_is_active %}
+          aria-current="page"
+        {% endif %}
         ref="menuitem"
       >
         <span class="menu-list__link-title">{{- link_label -}}</span>
