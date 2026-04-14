@@ -1137,6 +1137,30 @@
     line-height: 1.4;
   }
 
+  /* 手機／窄螢幕：預覽改為圖在上、文案在下 */
+  @media (max-width: 1023px) {
+    .apgo-pdp-variant-shell .apgo-modal-product-preview {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 12px;
+    }
+
+    .apgo-pdp-variant-shell .apgo-modal-product-image {
+      width: 100%;
+      max-width: min(280px, 78vw);
+      height: auto;
+      aspect-ratio: 1;
+      object-fit: contain;
+    }
+
+    .apgo-pdp-variant-shell .apgo-modal-product-info {
+      flex: none;
+      width: 100%;
+      align-self: stretch;
+    }
+  }
+
   /* 變體選擇區 */
   .apgo-variant-section {
     margin-bottom: 24px;
@@ -1268,31 +1292,23 @@
     text-align: center;
   }
 
-  /* 價格摘要 */
-  .apgo-price-summary {
-    background: linear-gradient(135deg, rgba(240, 132, 24, 0.1), rgba(240, 132, 24, 0.05));
-    border: 1px solid rgba(240, 132, 24, 0.3);
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 20px;
-  }
-
-  .apgo-price-row {
+  /* 變體彈窗：單行合計（取代原 Subtotal/Total 卡片） */
+  .apgo-modal-total-line {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 8px;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding: 0 2px;
+    font-size: 0.95rem;
+    color: var(--text-light-gray);
   }
 
-  .apgo-price-row:last-child {
-    margin-bottom: 0;
-    padding-top: 8px;
-    border-top: 1px solid rgba(240, 132, 24, 0.2);
-  }
-
-  .apgo-price-total-amount {
-    font-size: 1.3rem;
-    font-weight: bold;
+  .apgo-modal-total-line .apgo-modal-total-amount {
+    font-size: 1.25rem;
+    font-weight: 700;
     color: var(--primary-orange);
+    white-space: nowrap;
   }
 
   /* 模態框按鈕（底部區由 .apgo-variant-modal-footer 承載） */
@@ -2071,7 +2087,7 @@
   }
 </style>
 
-<div class="apgo-product-section">
+<div class="apgo-product-section" data-apgo-currency="{{ cart.currency.iso_code }}">
   <!-- 頂部導航 -->
 
   <!-- 主內容區 -->
@@ -2649,17 +2665,10 @@
       </div>
     </div>
 
-    <!-- 價格摘要 -->
-    <div class="apgo-price-summary">
-      <div class="apgo-price-row">
-        <span>{{ 'product.subtotal' | t }}</span>
-        <span id="apgoSubtotal">{{ product.price | money }}</span>
-      </div>
-      <div class="apgo-price-row">
-        <span>{{ 'product.total' | t }}</span>
-        <span class="apgo-price-total-amount" id="apgoTotalPrice">{{ product.price | money }}</span>
-      </div>
-    </div>
+    <p class="apgo-modal-total-line">
+      <span>{{ 'product.total' | t }}</span>
+      <span class="apgo-modal-total-amount" id="apgoTotalPrice">{{ product.price | money }}</span>
+    </p>
         </div>
         <div class="apgo-variant-modal-footer">
     <div class="apgo-modal-buttons">
@@ -3114,7 +3123,14 @@ window.apgoSelectVariant = function(element, variantId, price, imageUrl) {
   // 更新當前變體ID和價格
   currentVariantId = variantId;
   currentPrice = price;
-  
+
+  // 切換規格時數量重置為 1
+  currentQuantity = 1;
+  const qtyValueEl = document.getElementById('apgoQuantityValue');
+  if (qtyValueEl) {
+    qtyValueEl.textContent = '1';
+  }
+
   // 更新模態框中的圖片
   const modalImage = document.getElementById('apgoModalImage');
   if (modalImage) {
@@ -3292,14 +3308,23 @@ function updateModalButtonState() {
 
 // 更新價格顯示
 function updatePriceDisplay() {
-  const subtotal = currentPrice * currentQuantity;
-  const formatter = new Intl.NumberFormat('zh-TW', {
-    style: 'currency',
-    currency: 'TWD',
-    minimumFractionDigits: 0
-  });
-  document.getElementById('apgoSubtotal').textContent = formatter.format(subtotal);
-  document.getElementById('apgoTotalPrice').textContent = formatter.format(subtotal);
+  const lineTotal = currentPrice * currentQuantity;
+  const sectionEl = document.querySelector('.apgo-product-section');
+  const currency =
+    sectionEl && sectionEl.dataset.apgoCurrency ? sectionEl.dataset.apgoCurrency : 'TWD';
+  let formatted;
+  try {
+    formatted = new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency: currency
+    }).format(lineTotal);
+  } catch (e) {
+    formatted = String(lineTotal);
+  }
+  const totalEl = document.getElementById('apgoTotalPrice');
+  if (totalEl) {
+    totalEl.textContent = formatted;
+  }
 }
 
 // 更新所有購物車數量
