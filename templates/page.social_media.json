@@ -1,1 +1,221 @@
-{"sections":{"shogun-helper":{"type":"shogun-helper","disabled":true,"settings":{}},"main":{"type":"main-page","blocks":{"heading":{"type":"text","name":"Title","disabled":true,"settings":{"text":"<h1>{{ closest.page.title }}<\/h1>","width":"100%","max_width":"normal","alignment":"left","type_preset":"h2","font":"var(--font-body--family)","font_size":"1rem","line_height":"normal","letter_spacing":"normal","case":"none","wrap":"pretty","color":"var(--color-foreground)","background":false,"background_color":"#00000026","corner_radius":0,"padding-block-start":0,"padding-block-end":0,"padding-inline-start":0,"padding-inline-end":0},"blocks":{}},"page-content":{"type":"page-content","disabled":true,"settings":{},"blocks":{}}},"block_order":["heading","page-content"],"disabled":true,"settings":{"content_direction":"column","gap":32,"color_scheme":"","padding-block-start":40,"padding-block-end":80}},"shogun-optimizer":{"type":"shogun-optimizer","disabled":true,"settings":{}},"social_media_GBjLwC":{"type":"social-media","blocks":{"reel_kyAJxU":{"type":"reel","settings":{"video":"https:\/\/cdn.shopify.com\/videos\/c\/o\/v\/c57b8a5ca0b54578b5bbb009d452c76c.mp4","video_file":"https:\/\/cdn.shopify.com\/videos\/c\/o\/v\/c57b8a5ca0b54578b5bbb009d452c76c.mp4","poster":"shopify:\/\/shop_images\/1224__20.jpg","badge":"產品優勢-疏水感","platform":"TikTok","region":"taiwan"}},"reel_PH6MPN":{"type":"reel","settings":{"video":"","video_file":"https:\/\/cdn.shopify.com\/videos\/c\/o\/v\/ec3db50f67e84a5889722020b1a2a13d.mp4","poster":"shopify:\/\/shop_images\/1128.jpg","badge":"產品優勢-光亮感","platform":"Instagram","region":"taiwan"}},"reel_xMetiH":{"type":"reel","settings":{"video":"https:\/\/cdn.shopify.com\/videos\/c\/o\/v\/4ec4609d74754a2380a041c71aff8bbc.mp4","video_file":"","poster":"shopify:\/\/shop_images\/1206.jpg","badge":"產品優勢-光滑感","platform":"Facebook","region":"taiwan"}},"reel_ECxpRf":{"type":"reel","settings":{"video":"https:\/\/cdn.shopify.com\/videos\/c\/o\/v\/eb98a830ccb34def8fbde5c95718381d.mp4","video_file":"","poster":"shopify:\/\/shop_images\/0527.jpg","badge":"產品優勢-耐洗持久","platform":"TikTok","region":"taiwan"}},"reel_YnmGtk":{"type":"reel","settings":{"video":"https:\/\/cdn.shopify.com\/videos\/c\/o\/v\/ebb945271eb74c57b6f7ee5a65e10043.mp4","video_file":"","poster":"shopify:\/\/shop_images\/1205.jpg","badge":"鍍膜教學-三步驟","platform":"TikTok","region":"taiwan"}},"reel_bwDiWc":{"type":"reel","settings":{"video":"","video_file":"https:\/\/cdn.shopify.com\/videos\/c\/o\/v\/67243d15ac4f46c4bddb883a5236ed2b.mp4","poster":"shopify:\/\/shop_images\/1206___v2.jpg","badge":"鍍膜教學-全車外觀都可用","platform":"TikTok","region":"taiwan"}},"youtube_Eikqqw":{"type":"youtube","settings":{"youtube_id":"oFlGlJqWrMM","title":"APGO 極光鍍膜教學 (乾濕兩用)"}},"youtube_ar8wHD":{"type":"youtube","settings":{"youtube_id":"xY1vOMrDDMY","title":"APGO 鈦晶鍍膜教學 (乾上最強)"}},"taiwan_social_66P8aH":{"type":"taiwan_social","settings":{"platform":"facebook","platform_title":"Facebook","name":"APGO台灣物聯網","description":"官方直播平台","followers_count":"170K+","followers_label":"粉絲","url":"https:\/\/www.facebook.com\/APGO1080"}},"taiwan_social_x9pn7B":{"type":"taiwan_social","settings":{"platform":"facebook","platform_title":"Facebook","name":"Apgo鍍膜工廠","description":"官方直播平台","followers_count":"30K+","followers_label":"粉絲","url":"https:\/\/www.facebook.com\/apgo9999"}},"taiwan_social_mLPEJg":{"type":"taiwan_social","settings":{"platform":"facebook","platform_title":"Facebook","name":"紅又祥","description":"男主播-搞笑實力兼具","followers_count":"61K+","followers_label":"粉絲","url":"https:\/\/www.facebook.com\/profile.php?id=61565241752043"}},"taiwan_social_EgE7DU":{"type":"taiwan_social","settings":{"platform":"facebook","platform_title":"Facebook","name":"節省郭","description":"男主播-誠懇勤奮代表","followers_count":"7K+","followers_label":"粉絲","url":""}},"taiwan_social_cAFr4r":{"type":"taiwan_social","settings":{"platform":"instagram","platform_title":"Instagram","name":"apgotw.tw","description":"官方IG","followers_count":"50K+","followers_label":"粉絲","url":""}},"taiwan_social_extRRL":{"type":"taiwan_social","settings":{"platform":"instagram","platform_title":"Instagram","name":"掌聲祥起","description":"男主播-搞笑實力兼具","followers_count":"17K+","followers_label":"粉絲","url":"https:\/\/www.instagram.com\/hongyouxiang0\/"}},"taiwan_social_TfAWW6":{"type":"taiwan_social","settings":{"platform":"instagram","platform_title":"Instagram","name":"節省郭","description":"男主播-誠懇勤奮代表","followers_count":"7K+","followers_label":"粉絲","url":"https:\/\/www.instagram.com\/jasonkuo_888\/"}},"taiwan_social_XHjjwh":{"type":"taiwan_social","settings":{"platform":"tiktok","platform_title":"TikTok","name":"𝐀𝐏𝐆𝐎 汽車美容商城-台灣","description":"官方IG","followers_count":"24.1K+","followers_label":"粉絲","url":""}},"taiwan_social_g7n7yH":{"type":"taiwan_social","settings":{"platform":"tiktok","platform_title":"TikTok","name":"紅又祥","description":"男主播-搞笑帥氣的男人","followers_count":"23.4K+","followers_label":"粉絲","url":"https:\/\/www.tiktok.com\/@hongyouxiang66?is_from_webapp=1&sender_device=pc"}},"taiwan_social_FcnfQT":{"type":"taiwan_social","settings":{"platform":"tiktok","platform_title":"TikTok","name":"掌聲祥起","description":"男主播-鍍膜一哥","followers_count":"22.6K+","followers_label":"粉絲","url":"https:\/\/www.tiktok.com\/@hongyouxiang0?is_from_webapp=1&sender_device=pc"}},"taiwan_social_tkGKdW":{"type":"taiwan_social","settings":{"platform":"tiktok","platform_title":"TikTok","name":"節省郭","description":"男主播-鍍膜霸主","followers_count":"12.6K+","followers_label":"粉絲","url":"https:\/\/www.tiktok.com\/@jasonkuo_888?is_from_webapp=1&sender_device=pc"}},"taiwan_social_nMnMCx":{"type":"taiwan_social","settings":{"platform":"youtube","platform_title":"YouTube","name":"APGO 汽車美容商城","description":"官方全產品教學影片","followers_count":"5K+","followers_label":"粉絲","url":"https:\/\/www.youtube.com\/@apgo"}},"taiwan_social_6g9qDx":{"type":"taiwan_social","settings":{"platform":"youtube","platform_title":"YouTube","name":"掌聲祥起","description":"男主播-搞笑實力兼具","followers_count":"31K+","followers_label":"粉絲","url":"https:\/\/www.youtube.com\/@hongyouxiang0"}},"taiwan_social_r9GM7R":{"type":"taiwan_social","settings":{"platform":"youtube","platform_title":"YouTube","name":"節省郭","description":"男主播-誠懇勤奮代表","followers_count":"7K+","followers_label":"粉絲","url":"https:\/\/www.youtube.com\/@jasonkuo_888"}},"taiwan_social_TRW6k6":{"type":"taiwan_social","settings":{"platform":"threads","platform_title":"Threads","name":"","description":"","followers_count":"50K+","followers_label":"粉絲","url":""}},"singapore_social_4fnyCn":{"type":"singapore_social","settings":{"platform":"facebook","platform_title":"Facebook","name":"Apgo专业洗车镀膜 - 新马 ","description":"官方臉書平台","followers_count":"3K+","followers_label":"粉絲","url":"https:\/\/www.facebook.com\/apgomy888"}},"singapore_social_L4KzAm":{"type":"singapore_social","settings":{"platform":"instagram","platform_title":"Instagram","name":"apgomy.official","description":"官方IG平台","followers_count":"1K+","followers_label":"粉絲","url":"https:\/\/www.instagram.com\/apgomy.official\/"}},"singapore_social_tV79w7":{"type":"singapore_social","settings":{"platform":"tiktok","platform_title":"TikTOk","name":"apgomy","description":"執行長-JC","followers_count":"4.8K+","followers_label":"粉絲","url":"https:\/\/www.tiktok.com\/@apgomy?is_from_webapp=1&sender_device=pc"}},"singapore_social_a6fh8j":{"type":"singapore_social","settings":{"platform":"tiktok","platform_title":"TikTOk","name":"apgo XM","description":"男主播-XM","followers_count":"4.8K+","followers_label":"粉絲","url":"https:\/\/www.tiktok.com\/@apgo.malaysia?is_from_webapp=1&sender_device=pc"}},"singapore_social_bAC6K6":{"type":"singapore_social","settings":{"platform":"tiktok","platform_title":"TikTOk","name":"apgo COCO","description":"女主播-COCO","followers_count":"1.8K+","followers_label":"粉絲","url":"https:\/\/www.tiktok.com\/@apgo.02?is_from_webapp=1&sender_device=pc"}},"singapore_social_WaGbbf":{"type":"singapore_social","settings":{"platform":"tiktok","platform_title":"TikTOk","name":"apgo Alston","description":"男主播-Alston","followers_count":"1.3K+","followers_label":"粉絲","url":"https:\/\/www.tiktok.com\/@apgo.01?is_from_webapp=1&sender_device=pc"}},"singapore_social_KRUJQe":{"type":"singapore_social","settings":{"platform":"tiktok","platform_title":"TikTOk","name":"apgo chili","description":"女主播-chili","followers_count":"0.5K+","followers_label":"粉絲","url":"https:\/\/www.tiktok.com\/@apgochili?is_from_webapp=1&sender_device=pc"}},"singapore_social_PhzUga":{"type":"singapore_social","settings":{"platform":"youtube","platform_title":"YouTube","name":"apgo MY","description":"官方YT平台","followers_count":"0.1K+","followers_label":"粉絲","url":""}}},"block_order":["reel_kyAJxU","reel_PH6MPN","reel_xMetiH","reel_ECxpRf","reel_YnmGtk","reel_bwDiWc","youtube_Eikqqw","youtube_ar8wHD","taiwan_social_66P8aH","taiwan_social_x9pn7B","taiwan_social_mLPEJg","taiwan_social_EgE7DU","taiwan_social_cAFr4r","taiwan_social_extRRL","taiwan_social_TfAWW6","taiwan_social_XHjjwh","taiwan_social_g7n7yH","taiwan_social_FcnfQT","taiwan_social_tkGKdW","taiwan_social_nMnMCx","taiwan_social_6g9qDx","taiwan_social_r9GM7R","taiwan_social_TRW6k6","singapore_social_4fnyCn","singapore_social_L4KzAm","singapore_social_tV79w7","singapore_social_a6fh8j","singapore_social_bAC6K6","singapore_social_WaGbbf","singapore_social_KRUJQe","singapore_social_PhzUga"],"name":"社群媒體頁面","settings":{"show_hero":true,"hero_title":"連結全球，共創卓越","hero_subtitle":"追蹤APGO的社群平台，掌握最新動態與專業知識","hero_button_text":"觀看短影片","hero_video_mp4":"","hero_video_webm":"","show_reels":true,"reels_title":"精選短影片","reels_subtitle":"來自各大社群平台的精彩內容","reels_pagination_enabled":true,"reels_items_per_page":8,"reels_mix_regions_when_pagination_off":true,"show_youtube":true,"youtube_title":"精選長影片","show_stats":true,"stats_title":"社群影響力","stat_1_number":"300K+","stat_1_label":"總粉絲數","stat_2_number":"1億+","stat_2_label":"月觸及人數","stat_3_number":"500+","stat_3_label":"每月發布內容","stat_4_number":"25","stat_4_label":"社群平台數","show_cta":true,"cta_text":"追蹤APGO Facebook 粉絲專頁 ，掌握最新動態","cta_button_text":"立即關注","cta_button_url":"https:\/\/www.facebook.com\/apgo9999"}}},"order":["shogun-helper","main","shogun-optimizer","social_media_GBjLwC"]}
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "shogun-helper": {
+      "type": "shogun-helper",
+      "disabled": true,
+      "settings": {}
+    },
+    "main": {
+      "type": "main-page",
+      "blocks": {
+        "heading": {
+          "type": "text",
+          "name": "Title",
+          "disabled": true,
+          "settings": {
+            "text": "<h1>{{ closest.page.title }}</h1>",
+            "width": "100%",
+            "max_width": "normal",
+            "alignment": "left",
+            "type_preset": "h2",
+            "font": "var(--font-body--family)",
+            "font_size": "1rem",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "color": "var(--color-foreground)",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "page-content": {
+          "type": "page-content",
+          "disabled": true,
+          "settings": {},
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "heading",
+        "page-content"
+      ],
+      "disabled": true,
+      "settings": {
+        "content_direction": "column",
+        "gap": 32,
+        "color_scheme": "",
+        "padding-block-start": 40,
+        "padding-block-end": 80
+      }
+    },
+    "shogun-optimizer": {
+      "type": "shogun-optimizer",
+      "disabled": true,
+      "settings": {}
+    },
+    "social_media_GBjLwC": {
+      "type": "social-media",
+      "blocks": {
+        "singapore_social_4fnyCn": {
+          "type": "singapore_social",
+          "settings": {
+            "platform": "facebook",
+            "platform_title": "Facebook",
+            "name": "Apgo专业洗车镀膜 - 新马 ",
+            "description": "官方臉書平台",
+            "followers_count": "3K+",
+            "followers_label": "粉絲",
+            "url": "https://www.facebook.com/apgomy888"
+          }
+        },
+        "singapore_social_L4KzAm": {
+          "type": "singapore_social",
+          "settings": {
+            "platform": "instagram",
+            "platform_title": "Instagram",
+            "name": "apgomy.official",
+            "description": "官方IG平台",
+            "followers_count": "1K+",
+            "followers_label": "粉絲",
+            "url": "https://www.instagram.com/apgomy.official/"
+          }
+        },
+        "singapore_social_tV79w7": {
+          "type": "singapore_social",
+          "settings": {
+            "platform": "tiktok",
+            "platform_title": "TikTOk",
+            "name": "apgomy",
+            "description": "執行長-JC",
+            "followers_count": "4.8K+",
+            "followers_label": "粉絲",
+            "url": "https://www.tiktok.com/@apgomy?is_from_webapp=1&sender_device=pc"
+          }
+        },
+        "singapore_social_a6fh8j": {
+          "type": "singapore_social",
+          "settings": {
+            "platform": "tiktok",
+            "platform_title": "TikTOk",
+            "name": "apgo XM",
+            "description": "男主播-XM",
+            "followers_count": "4.8K+",
+            "followers_label": "粉絲",
+            "url": "https://www.tiktok.com/@apgo.malaysia?is_from_webapp=1&sender_device=pc"
+          }
+        },
+        "singapore_social_bAC6K6": {
+          "type": "singapore_social",
+          "settings": {
+            "platform": "tiktok",
+            "platform_title": "TikTOk",
+            "name": "apgo COCO",
+            "description": "女主播-COCO",
+            "followers_count": "1.8K+",
+            "followers_label": "粉絲",
+            "url": "https://www.tiktok.com/@apgo.02?is_from_webapp=1&sender_device=pc"
+          }
+        },
+        "singapore_social_WaGbbf": {
+          "type": "singapore_social",
+          "settings": {
+            "platform": "tiktok",
+            "platform_title": "TikTOk",
+            "name": "apgo Alston",
+            "description": "男主播-Alston",
+            "followers_count": "1.3K+",
+            "followers_label": "粉絲",
+            "url": "https://www.tiktok.com/@apgo.01?is_from_webapp=1&sender_device=pc"
+          }
+        },
+        "singapore_social_KRUJQe": {
+          "type": "singapore_social",
+          "settings": {
+            "platform": "tiktok",
+            "platform_title": "TikTOk",
+            "name": "apgo chili",
+            "description": "女主播-chili",
+            "followers_count": "0.5K+",
+            "followers_label": "粉絲",
+            "url": "https://www.tiktok.com/@apgochili?is_from_webapp=1&sender_device=pc"
+          }
+        },
+        "singapore_social_PhzUga": {
+          "type": "singapore_social",
+          "settings": {
+            "platform": "youtube",
+            "platform_title": "YouTube",
+            "name": "apgo MY",
+            "description": "官方YT平台",
+            "followers_count": "0.1K+",
+            "followers_label": "粉絲",
+            "url": ""
+          }
+        }
+      },
+      "block_order": [
+        "singapore_social_4fnyCn",
+        "singapore_social_L4KzAm",
+        "singapore_social_tV79w7",
+        "singapore_social_a6fh8j",
+        "singapore_social_bAC6K6",
+        "singapore_social_WaGbbf",
+        "singapore_social_KRUJQe",
+        "singapore_social_PhzUga"
+      ],
+      "name": "社群媒體頁面",
+      "settings": {
+        "show_hero": true,
+        "hero_title": "連結全球，共創卓越",
+        "hero_subtitle": "追蹤APGO的社群平台，掌握最新動態與專業知識",
+        "hero_button_text": "觀看短影片",
+        "hero_video_mp4": "",
+        "hero_video_webm": "",
+        "show_reels": true,
+        "reels_title": "精選短影片",
+        "reels_subtitle": "來自各大社群平台的精彩內容",
+        "reels_pagination_enabled": true,
+        "reels_items_per_page": 8,
+        "reels_mix_regions_when_pagination_off": true,
+        "show_youtube": true,
+        "youtube_title": "精選長影片",
+        "show_stats": true,
+        "stats_title": "社群影響力",
+        "stat_1_number": "300K+",
+        "stat_1_label": "總粉絲數",
+        "stat_2_number": "1億+",
+        "stat_2_label": "月觸及人數",
+        "stat_3_number": "500+",
+        "stat_3_label": "每月發布內容",
+        "stat_4_number": "25",
+        "stat_4_label": "社群平台數",
+        "show_cta": true,
+        "cta_text": "追蹤APGO Facebook 粉絲專頁 ，掌握最新動態",
+        "cta_button_text": "立即關注",
+        "cta_button_url": "https://www.facebook.com/apgo9999"
+      }
+    }
+  },
+  "order": [
+    "shogun-helper",
+    "main",
+    "shogun-optimizer",
+    "social_media_GBjLwC"
+  ]
+}
