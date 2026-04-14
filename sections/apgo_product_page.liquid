@@ -1351,14 +1351,13 @@
     visibility: visible;
   }
 
-  /* 桌面：變體右側欄；主區不位移，內層以 max-width 過渡配合剩餘視窗 */
+  /* 桌面：變體右側欄；主區與主圖區不縮 max-width（避免置中時視覺左偏），其餘內層仍過渡 max-width */
   @media (min-width: 1024px) {
     :root {
       --apgo-pdp-motion-duration: 0.4s;
       --apgo-pdp-motion-easing: cubic-bezier(0.37, 0, 0.63, 1);
     }
 
-    .apgo-product-section .apgo-hero-visual,
     .apgo-product-section .apgo-product-thumbnails,
     .apgo-product-section .apgo-product-info,
     .apgo-product-section .apgo-looping-intro-inner,
@@ -1381,7 +1380,6 @@
         visibility var(--apgo-pdp-motion-duration) var(--apgo-pdp-motion-easing);
     }
 
-    body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-hero-visual,
     body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-product-thumbnails,
     body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-product-info,
     body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-looping-intro-inner,
@@ -1474,7 +1472,6 @@
       transition: none;
     }
 
-    .apgo-product-section .apgo-hero-visual,
     .apgo-product-section .apgo-product-thumbnails,
     .apgo-product-section .apgo-product-info,
     .apgo-product-section .apgo-looping-intro-inner,
