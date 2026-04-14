@@ -553,12 +553,9 @@
     padding: 4px 2px;
   }
 
-  .apgo-looping-desc-wrap h4 {
-    color: var(--primary-orange);
-    font-size: 1rem;
-    font-weight: 500;
-    letter-spacing: 0.02em;
-    margin-bottom: 16px;
+  /* Column lead-in title: same look as How to use / Variation block titles */
+  .apgo-looping-desc-block-title--leadin {
+    margin: 0 0 16px;
   }
 
   .apgo-looping-desc-content {
@@ -593,10 +590,19 @@
     margin: 0 0 10px;
   }
 
-  .apgo-looping-desc-block-title--variation {
-    color: #ffffff;
-    text-transform: none;
-    font-size: 1rem;
+  /* Match in-RTE section headers (e.g. DESCRIPTION) to block titles */
+  .apgo-looping-desc-block--description > h1:first-child,
+  .apgo-looping-desc-block--description > h2:first-child,
+  .apgo-looping-desc-block--description > h3:first-child,
+  .apgo-looping-desc-block--description > h4:first-child,
+  .apgo-looping-desc-block--description > h5:first-child,
+  .apgo-looping-desc-block--description > h6:first-child {
+    color: var(--primary-orange);
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin: 0 0 10px;
   }
 
   .apgo-looping-desc-block-body {
@@ -2064,7 +2070,7 @@
         {% endif %}
 
         <div class="apgo-looping-desc-wrap">
-          <h4>{{ 'product.description' | t }}</h4>
+          <h4 class="apgo-looping-desc-block-title apgo-looping-desc-block-title--leadin">{{ 'product.description' | t }}</h4>
           <div class="apgo-looping-desc-content">
             {% if new_metafields_both_empty and loop_desc_has %}
               {{ looping_description_value | metafield_tag }}
@@ -2098,10 +2104,7 @@
                   class="apgo-looping-desc-block apgo-looping-desc-block--variation"
                   aria-labelledby="apgo-loop-var-{{ section.id }}"
                 >
-                  <h5
-                    class="apgo-looping-desc-block-title apgo-looping-desc-block-title--variation"
-                    id="apgo-loop-var-{{ section.id }}"
-                  >
+                  <h5 class="apgo-looping-desc-block-title" id="apgo-loop-var-{{ section.id }}">
                     {{ 'product.variation' | t }}
                   </h5>
                   <div class="apgo-looping-desc-block-body">{{ variation_raw | escape | newline_to_br }}</div>
