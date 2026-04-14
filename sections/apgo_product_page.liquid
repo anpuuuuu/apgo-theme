@@ -1351,30 +1351,11 @@
     visibility: visible;
   }
 
-  /* 桌面：變體右側欄；主區用 main 的 transform 做 0.4s 左移感，內層只過渡 max-width（margin:auto 無法插值） */
+  /* 桌面：變體右側欄；主區不位移，內層以 max-width 過渡配合剩餘視窗 */
   @media (min-width: 1024px) {
     :root {
       --apgo-pdp-motion-duration: 0.4s;
       --apgo-pdp-motion-easing: cubic-bezier(0.37, 0, 0.63, 1);
-    }
-
-    /*
-      整塊 main 左移：約為「置中欄左緣 → 左留白 16px」的位移，clamp 限制勿超過 -18vw 以免左緣被裁切。
-      內層不再改 margin（避免無動畫 + 與 main 位移疊加）；僅縮 max-width 配合剩餘視窗。
-    */
-    .apgo-product-section > .apgo-main-container {
-      transform: translateX(0);
-      transition: transform var(--apgo-pdp-motion-duration) var(--apgo-pdp-motion-easing);
-    }
-
-    body.apgo-pdp-variant-sidebar-open .apgo-product-section > .apgo-main-container {
-      transform: translateX(
-        clamp(
-          -18vw,
-          calc(16px + min(1200px, 66vw) / 2 - 50vw),
-          0px
-        )
-      );
     }
 
     .apgo-product-section .apgo-hero-visual,
@@ -1504,8 +1485,7 @@
     .apgo-product-section .apgo-precautions-inner,
     .apgo-product-section .apgo-customer-review-header,
     .apgo-product-section .apgo-customer-review-inner,
-    .apgo-product-section > .apgo-bottom-bar,
-    .apgo-product-section > .apgo-main-container {
+    .apgo-product-section > .apgo-bottom-bar {
       transition: none;
     }
   }
