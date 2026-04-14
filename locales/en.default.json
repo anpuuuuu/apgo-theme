@@ -311,6 +311,8 @@
   "product": {
     "image_alt": "Image {{ index }}",
     "description": "Description",
+    "how_to_use": "How to use",
+    "variation": "Variation",
     "whats_included": "What's Included",
     "precautions": "Precautions",
     "customer_reviews": "Customer Reviews",

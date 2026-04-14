@@ -578,6 +578,31 @@
     margin: 0 0 8px;
   }
 
+  hr.apgo-looping-desc-divider {
+    border: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    margin: 1rem 0;
+  }
+
+  .apgo-looping-desc-block-title {
+    color: var(--primary-orange);
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin: 0 0 10px;
+  }
+
+  .apgo-looping-desc-block-title--variation {
+    color: #ffffff;
+    text-transform: none;
+    font-size: 1rem;
+  }
+
+  .apgo-looping-desc-block-body {
+    margin: 0;
+  }
+
   .apgo-insidebox {
     padding: 0 16px 24px;
     background: var(--dark-bg);
@@ -1994,6 +2019,33 @@
         assign has_looping_video = true
       endif
       assign looping_description_value = product.metafields.custom.looping_description
+      assign how_to_use_raw = product.metafields.custom.how_to_use.value | default: '' | strip
+      assign variation_raw = product.metafields.custom.variation.value | default: '' | strip
+
+      assign desc_has = false
+      if product.description != blank
+        assign desc_has = true
+      endif
+
+      assign how_has = false
+      if how_to_use_raw != blank
+        assign how_has = true
+      endif
+
+      assign var_has = false
+      if variation_raw != blank
+        assign var_has = true
+      endif
+
+      assign new_metafields_both_empty = true
+      if how_has or var_has
+        assign new_metafields_both_empty = false
+      endif
+
+      assign loop_desc_has = false
+      if looping_description_value != blank
+        assign loop_desc_has = true
+      endif
     %}
     <section class="apgo-looping-intro {% if has_looping_video %}has-video{% else %}no-video{% endif %}">
       <div class="apgo-looping-intro-inner">
@@ -2014,12 +2066,55 @@
         <div class="apgo-looping-desc-wrap">
           <h4>{{ 'product.description' | t }}</h4>
           <div class="apgo-looping-desc-content">
-            {% if looping_description_value != blank %}
+            {% if new_metafields_both_empty and loop_desc_has %}
               {{ looping_description_value | metafield_tag }}
-            {% elsif product.description != blank %}
-              {{ product.description }}
             {% else %}
-              <p>{{ section.settings.subtitle_fallback }}</p>
+              {% if desc_has %}
+                <div class="apgo-looping-desc-block apgo-looping-desc-block--description">
+                  {{ product.description }}
+                </div>
+              {% endif %}
+
+              {% if how_has %}
+                {% if desc_has %}
+                  <hr class="apgo-looping-desc-divider" aria-hidden="true">
+                {% endif %}
+                <section
+                  class="apgo-looping-desc-block apgo-looping-desc-block--how"
+                  aria-labelledby="apgo-loop-how-{{ section.id }}"
+                >
+                  <h5 class="apgo-looping-desc-block-title" id="apgo-loop-how-{{ section.id }}">
+                    {{ 'product.how_to_use' | t }}
+                  </h5>
+                  <div class="apgo-looping-desc-block-body">{{ how_to_use_raw | escape | newline_to_br }}</div>
+                </section>
+              {% endif %}
+
+              {% if var_has %}
+                {% if desc_has or how_has %}
+                  <hr class="apgo-looping-desc-divider" aria-hidden="true">
+                {% endif %}
+                <section
+                  class="apgo-looping-desc-block apgo-looping-desc-block--variation"
+                  aria-labelledby="apgo-loop-var-{{ section.id }}"
+                >
+                  <h5
+                    class="apgo-looping-desc-block-title apgo-looping-desc-block-title--variation"
+                    id="apgo-loop-var-{{ section.id }}"
+                  >
+                    {{ 'product.variation' | t }}
+                  </h5>
+                  <div class="apgo-looping-desc-block-body">{{ variation_raw | escape | newline_to_br }}</div>
+                </section>
+              {% endif %}
+
+              {% unless desc_has or how_has or var_has %}
+                {% if loop_desc_has %}
+                  {{ looping_description_value | metafield_tag }}
+                {% else %}
+                  <p>{{ section.settings.subtitle_fallback }}</p>
+                {% endif %}
+              {% endunless %}
             {% endif %}
           </div>
         </div>

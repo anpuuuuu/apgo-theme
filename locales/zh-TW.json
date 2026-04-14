@@ -281,6 +281,8 @@
   "product": {
     "image_alt": "圖片 {{ index }}",
     "description": "產品描述",
+    "how_to_use": "使用方式",
+    "variation": "規格／組合",
     "whats_included": "内含物",
     "precautions": "注意事项",
     "customer_reviews": "客户评价",
