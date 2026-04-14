@@ -753,6 +753,16 @@
     .apgo-coating-products .details-body {
       padding: {{ section.settings.modal_padding }}px;
     }
+
+    .apgo-coating-products .product-description-section h4 {
+      font-weight: 700;
+      margin-bottom: 24px !important;
+    }
+
+    .apgo-coating-products .product-description-section > div > p:first-child {
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
     
     /* 圖片輪播 */
     .apgo-coating-products .product-images-carousel {
@@ -1656,7 +1666,7 @@
                     
                     <!-- 產品說明區塊 -->
                     <div class="product-description-section" style="margin-top: {{ section.settings.modal_section_gap }}px;">
-                      <h4 style="color: var(--primary-orange); margin-bottom: 15px; font-size: 1.2rem;">產品說明</h4>
+                      <h4 style="color: var(--primary-orange); margin-bottom: 24px; font-size: 1.2rem; font-weight: 700;">產品說明</h4>
                       {% if shopify_product.description != blank %}
                         <div style="color: var(--text-gray); line-height: 1.8;">
                           {{ shopify_product.description }}
