@@ -985,6 +985,18 @@
     overflow: hidden;
   }
 
+  /* 變體選擇：外層殼（桌面側欄用） */
+  .apgo-pdp-variant-shell {
+    position: fixed;
+    inset: 0;
+    z-index: 1998;
+    pointer-events: none;
+  }
+
+  .apgo-pdp-variant-shell.active {
+    pointer-events: auto;
+  }
+
   /* 變體選擇模態框 */
   .apgo-variant-modal {
     position: fixed;
@@ -993,22 +1005,55 @@
     right: 0;
     background: var(--card-bg);
     border-radius: 24px 24px 0 0;
-    padding: 0px 16px 0px 16px;
+    padding: 0;
     transform: translateY(100%);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 2000;
     max-height: 85vh;
-    overflow-y: auto;
-    -ms-overflow-style: none; /* IE 和 Edge */
-    scrollbar-width: none; /* Firefox */
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
     box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
-    /* iOS Safari 滚动修复 */
     -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
   }
 
   .apgo-variant-modal.active {
     transform: translateY(0);
+  }
+
+  .apgo-variant-modal-inner {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    max-height: 85vh;
+  }
+
+  .apgo-variant-modal-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0 16px;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+  }
+
+  .apgo-variant-modal-footer {
+    flex-shrink: 0;
+    background: var(--card-bg);
+    border-top: 1px solid rgba(240, 132, 24, 0.2);
+    padding: 0 16px 16px;
+  }
+
+  .apgo-variant-modal-footer .apgo-modal-buttons {
+    position: static;
+    padding-top: 12px;
+    padding-bottom: 0;
+    margin: 0;
   }
 
   .apgo-modal-header {
@@ -1250,15 +1295,11 @@
     color: var(--primary-orange);
   }
 
-  /* 模態框按鈕 */
+  /* 模態框按鈕（底部區由 .apgo-variant-modal-footer 承載） */
   .apgo-modal-buttons {
-    position: sticky;
-    bottom: 0;
     display: flex;
     gap: 12px;
     background: var(--card-bg);
-    padding-bottom: 16px;
-    padding-top: 16px;
   }
 
   .apgo-modal-btn {
@@ -1308,6 +1349,84 @@
   .apgo-modal-overlay.active {
     opacity: 1;
     visibility: visible;
+  }
+
+  /* 桌面：變體選擇改為右側欄 + 推擠 #MainContent / #header-group */
+  @media (min-width: 1024px) {
+    body.apgo-pdp-variant-sidebar-open {
+      overflow-x: hidden;
+    }
+
+    body.apgo-pdp-variant-sidebar-open #MainContent,
+    body.apgo-pdp-variant-sidebar-open #header-group {
+      transform: translateX(calc(-1 * var(--apgo-pdp-sidebar-width, 33.33vw)));
+      transition: transform 0.4s ease-in-out;
+      will-change: transform;
+    }
+
+    .apgo-pdp-variant-shell.active .apgo-modal-overlay {
+      position: absolute;
+      inset: 0;
+      right: var(--apgo-pdp-sidebar-width, 33.33vw);
+      width: auto;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .apgo-pdp-variant-shell.active .apgo-modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .apgo-pdp-variant-shell.active .apgo-variant-modal {
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: auto;
+      width: var(--apgo-pdp-sidebar-width, 33.33vw);
+      max-height: none;
+      height: 100vh;
+      height: 100dvh;
+      border-radius: 0;
+      transform: translateX(105%);
+      transition: transform 0.4s ease-in-out, opacity 0.3s ease;
+      box-shadow: -12px 0 40px rgba(0, 0, 0, 0.45);
+    }
+
+    .apgo-pdp-variant-shell.active .apgo-variant-modal.active {
+      transform: translateX(0);
+    }
+
+    .apgo-pdp-variant-shell.active .apgo-variant-modal-inner {
+      max-height: none;
+      height: 100%;
+    }
+
+    .apgo-pdp-variant-shell.active .apgo-modal-product-preview {
+      flex-direction: column;
+      align-items: stretch;
+      text-align: left;
+    }
+
+    .apgo-pdp-variant-shell.active .apgo-modal-product-image {
+      width: 100%;
+      max-width: 200px;
+      height: auto;
+      margin: 0 auto;
+    }
+
+    .apgo-pdp-variant-shell.active .apgo-variant-options {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (min-width: 1024px) and (prefers-reduced-motion: reduce) {
+    body.apgo-pdp-variant-sidebar-open #MainContent,
+    body.apgo-pdp-variant-sidebar-open #header-group,
+    .apgo-pdp-variant-shell.active .apgo-variant-modal {
+      transition: none;
+    }
   }
 
   /* 圖片預覽燈箱 */
@@ -2312,9 +2431,12 @@
     </div>
   {% endif %}
 
-  <!-- 變體選擇模態框 -->
-  <div class="apgo-modal-overlay" id="apgoModalOverlay" onclick="apgoCloseVariantModal()"></div>
-  <div class="apgo-variant-modal" id="apgoVariantModal">
+  <!-- 變體選擇模態框（桌面：右側欄；手機：底部抽屜） -->
+  <div class="apgo-pdp-variant-shell" id="apgoPdpVariantShell">
+    <div class="apgo-modal-overlay" id="apgoModalOverlay" onclick="apgoCloseVariantModal()"></div>
+    <div class="apgo-variant-modal" id="apgoVariantModal">
+      <div class="apgo-variant-modal-inner">
+        <div class="apgo-variant-modal-scroll">
     <div class="apgo-modal-header">
       <h3 class="apgo-modal-title">{{ 'product.select_variant' | t }}</h3>
       <button class="apgo-close-modal" onclick="apgoCloseVariantModal()">✕</button>
@@ -2465,12 +2587,16 @@
         <span class="apgo-price-total-amount" id="apgoTotalPrice">{{ product.price | money }}</span>
       </div>
     </div>
-    <!-- 操作按鈕 -->
+        </div>
+        <div class="apgo-variant-modal-footer">
     <div class="apgo-modal-buttons">
       <button class="apgo-modal-btn apgo-modal-btn-secondary" onclick="apgoAddToCart(event)">
         {{ 'product.add_to_cart' | t }}
       </button>
       <button class="apgo-modal-btn apgo-modal-btn-primary" onclick="apgoBuyNow()">{{ 'product.buy_now' | t }}</button>
+    </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -2706,31 +2832,66 @@ window.apgoGoToSlide = function(index) {
   }
 };
 
+// 桌面側欄：同步 body 推擠與 overflow（勿在關閉時強制清空 overflow，避免與影片燈箱衝突）
+window.apgoPdpSyncVariantSidebar = function () {
+  var desktop = window.matchMedia('(min-width: 1024px)').matches;
+  var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  var body = document.body;
+  var shell = document.getElementById('apgoPdpVariantShell');
+  var open = shell && shell.classList.contains('active');
+  document.documentElement.style.setProperty('--apgo-pdp-sidebar-width', '33.33vw');
+  if (!open) {
+    body.classList.remove('apgo-pdp-variant-sidebar-open');
+    return;
+  }
+  if (desktop) {
+    body.classList.add('apgo-pdp-variant-sidebar-open');
+    body.style.overflow = '';
+    if (isIOS && body.classList.contains('modal-open')) {
+      var scrollY = body.dataset.scrollY || 0;
+      body.classList.remove('modal-open');
+      body.style.top = '';
+      delete body.dataset.scrollY;
+      requestAnimationFrame(function () {
+        window.scrollTo(0, parseInt(scrollY, 10));
+      });
+    }
+  } else {
+    body.classList.remove('apgo-pdp-variant-sidebar-open');
+    if (!isIOS) {
+      body.style.overflow = 'hidden';
+    }
+  }
+};
+
 // 顯示變體選擇模態框
 window.apgoShowVariantModal = function() {
   const modal = document.getElementById('apgoVariantModal');
   const overlay = document.getElementById('apgoModalOverlay');
+  const shell = document.getElementById('apgoPdpVariantShell');
   const body = document.body;
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const desktop = window.matchMedia('(min-width: 1024px)').matches;
 
+  if (shell) shell.classList.add('active');
   modal.classList.add('active');
   overlay.classList.add('active');
 
-  if (isIOS) {
-    // iOS 使用 position: fixed 並保持視覺位置
+  if (desktop) {
+    if (!isIOS) body.style.overflow = '';
+  } else if (isIOS) {
     body.dataset.scrollY = window.scrollY;
     body.classList.add('modal-open');
     body.style.top = `-${body.dataset.scrollY}px`;
   } else {
-    // 非 iOS 設備只用 overflow: hidden
     body.style.overflow = 'hidden';
   }
 
-  // 防止 iOS Safari 彈窗滾動穿透
+  const scrollEl = modal.querySelector('.apgo-variant-modal-scroll') || modal;
   modal.touchMoveHandler = function(e) {
-    const modalContent = modal;
+    const modalContent = scrollEl;
     const isAtTop = modalContent.scrollTop === 0;
-    const isAtBottom = modalContent.scrollHeight - modalContent.scrollTop <= modalContent.clientHeight;
+    const isAtBottom = modalContent.scrollHeight - modalContent.scrollTop <= modalContent.clientHeight + 1;
 
     if (isAtTop && e.touches[0].clientY > e.touches[0].clientY) {
       e.preventDefault();
@@ -2740,6 +2901,7 @@ window.apgoShowVariantModal = function() {
     }
   };
   modal.addEventListener('touchmove', modal.touchMoveHandler, { passive: false });
+  window.apgoPdpSyncVariantSidebar();
   updateModalButtonState();
 };
 
@@ -2747,11 +2909,14 @@ window.apgoShowVariantModal = function() {
 window.apgoCloseVariantModal = function() {
   const modal = document.getElementById('apgoVariantModal');
   const overlay = document.getElementById('apgoModalOverlay');
+  const shell = document.getElementById('apgoPdpVariantShell');
   const body = document.body;
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 
+  if (shell) shell.classList.remove('active');
   modal.classList.remove('active');
   overlay.classList.remove('active');
+  window.apgoPdpSyncVariantSidebar();
 
   if (isIOS) {
     // iOS 移除樣式並瞬間恢復滾動位置
@@ -3309,6 +3474,15 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   }
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    var shell = document.getElementById('apgoPdpVariantShell');
+    var modal = document.getElementById('apgoVariantModal');
+    if (!shell || !modal || !shell.classList.contains('active') || !modal.classList.contains('active')) return;
+    if (typeof window.apgoCloseVariantModal === 'function') window.apgoCloseVariantModal();
+    e.stopPropagation();
+  }, true);
 });
 
 (function () {
@@ -3327,6 +3501,39 @@ document.addEventListener('DOMContentLoaded', function() {
   visualViewport.addEventListener('scroll', update);
   window.addEventListener('orientationchange', () => setTimeout(update, 250));
 })();
+</script>
+<script>
+  (function () {
+    function apgoPdpMoveVariantShellToBody() {
+      var shell = document.getElementById('apgoPdpVariantShell');
+      if (!shell || shell.dataset.apgoMovedToBody) return;
+      shell.dataset.apgoMovedToBody = '1';
+      document.body.appendChild(shell);
+    }
+    function apgoPdpObserveVariantShell() {
+      var shell = document.getElementById('apgoPdpVariantShell');
+      if (!shell || shell.dataset.apgoSidebarObserver) return;
+      shell.dataset.apgoSidebarObserver = '1';
+      var mo = new MutationObserver(function () {
+        if (typeof window.apgoPdpSyncVariantSidebar === 'function') window.apgoPdpSyncVariantSidebar();
+      });
+      mo.observe(shell, { attributes: true, attributeFilter: ['class'] });
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+      {% unless request.design_mode %}
+      apgoPdpMoveVariantShellToBody();
+      {% endunless %}
+      apgoPdpObserveVariantShell();
+      if (typeof window.apgoPdpSyncVariantSidebar === 'function') window.apgoPdpSyncVariantSidebar();
+    });
+    var apgoPdpVariantResizeT;
+    window.addEventListener('resize', function () {
+      clearTimeout(apgoPdpVariantResizeT);
+      apgoPdpVariantResizeT = setTimeout(function () {
+        if (typeof window.apgoPdpSyncVariantSidebar === 'function') window.apgoPdpSyncVariantSidebar();
+      }, 120);
+    });
+  })();
 </script>
 {% schema %}
 {
