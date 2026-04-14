@@ -1357,18 +1357,15 @@
       overflow-x: hidden;
     }
 
-    body.apgo-pdp-variant-sidebar-open #MainContent,
-    body.apgo-pdp-variant-sidebar-open #header-group {
-      transform: translateX(calc(-1 * var(--apgo-pdp-sidebar-width, 33.33vw)));
-      transition: transform 0.4s ease-in-out;
-      will-change: transform;
-    }
-
+    /* 桌面：不左推整頁（避免置中版型出現主視覺與側欄間的黑縫）；側欄覆蓋在右側即可 */
     .apgo-pdp-variant-shell.active .apgo-modal-overlay {
       position: absolute;
       inset: 0;
       right: var(--apgo-pdp-sidebar-width, 33.33vw);
       width: auto;
+      background: rgba(0, 0, 0, 0.22);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
       opacity: 0;
       visibility: hidden;
       transition: opacity 0.3s ease, visibility 0.3s ease;
@@ -1422,8 +1419,6 @@
   }
 
   @media (min-width: 1024px) and (prefers-reduced-motion: reduce) {
-    body.apgo-pdp-variant-sidebar-open #MainContent,
-    body.apgo-pdp-variant-sidebar-open #header-group,
     .apgo-pdp-variant-shell.active .apgo-variant-modal {
       transition: none;
     }
