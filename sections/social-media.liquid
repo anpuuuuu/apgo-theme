@@ -1,6 +1,6 @@
 {% comment %}
-  Find Us / 社群頁：僅「新加坡/馬來西亞社群連結」區塊 + 自訂標題。
-  檔案: sections/social-media.liquid
+  Find Us: Singapore/Malaysia social link blocks + editable heading.
+  File: sections/social-media.liquid
 {% endcomment %}
 
 <section class="social-media-section">
@@ -313,75 +313,75 @@
 
 {% schema %}
 {
-  "name": "社群媒體頁面",
+  "name": "Social links (Find Us)",
   "tag": "section",
   "class": "social-media-section",
   "settings": [
     {
       "type": "text",
       "id": "heading",
-      "label": "頁面標題",
+      "label": "Page heading",
       "default": "JOIN OUR COMMUNITY"
     }
   ],
   "blocks": [
     {
       "type": "singapore_social",
-      "name": "新加坡/馬來西亞社群連結",
+      "name": "Singapore / Malaysia social link",
       "settings": [
         {
           "type": "select",
           "id": "platform",
-          "label": "平台",
+          "label": "Platform",
           "options": [
             { "value": "facebook", "label": "Facebook" },
             { "value": "instagram", "label": "Instagram" },
             { "value": "threads", "label": "Threads" },
             { "value": "tiktok", "label": "TikTok" },
             { "value": "youtube", "label": "YouTube" },
-            { "value": "xiaohongshu", "label": "小紅書" }
+            { "value": "xiaohongshu", "label": "Xiaohongshu (RED)" }
           ],
           "default": "facebook"
         },
         {
           "type": "text",
           "id": "platform_title",
-          "label": "平台標題",
+          "label": "Platform heading",
           "default": "Facebook"
         },
         {
           "type": "text",
           "id": "name",
-          "label": "帳號名稱"
+          "label": "Account name"
         },
         {
           "type": "text",
           "id": "description",
-          "label": "描述"
+          "label": "Subtitle / description"
         },
         {
           "type": "text",
           "id": "followers_count",
-          "label": "追蹤數",
+          "label": "Follower count",
           "default": "30K+"
         },
         {
           "type": "text",
           "id": "followers_label",
-          "label": "追蹤數標籤",
-          "default": "粉絲"
+          "label": "Follower count label",
+          "default": "Followers"
         },
         {
           "type": "url",
           "id": "url",
-          "label": "連結網址"
+          "label": "Link URL"
         }
       ]
     }
   ],
   "presets": [
     {
-      "name": "社群媒體頁面",
+      "name": "Social links (Find Us)",
       "settings": {
         "heading": "JOIN OUR COMMUNITY"
       },
@@ -391,10 +391,10 @@
           "settings": {
             "platform": "facebook",
             "platform_title": "Facebook",
-            "name": "APGO 新馬",
-            "description": "官方",
+            "name": "APGO SG/MY",
+            "description": "Official page",
             "followers_count": "30K+",
-            "followers_label": "粉絲"
+            "followers_label": "Followers"
           }
         }
       ]
