@@ -24,6 +24,15 @@
 
 {% capture children %}
   {% for link in block.settings.menu.links %}
+    {% liquid
+      assign link_title_normalized = link.title | downcase | strip
+      assign link_url = link.url
+      assign link_label = link.title
+      if link_title_normalized == 'contact'
+        assign link_url = '/pages/about-us'
+        assign link_label = 'About Us'
+      endif
+    %}
     <li
       role="presentation"
       class="menu-list__list-item"
@@ -33,7 +42,7 @@
       on:pointerleave="/deactivate"
     >
       <a
-        href="{{ link.url }}"
+        href="{{ link_url }}"
         class="menu-list__link{% if link.active %} menu-list__link--active{% endif %}"
         {%- if link.links != blank -%}
           aria-controls="submenu-{{ forloop.index }}"
@@ -42,7 +51,7 @@
         {%- endif -%}
         ref="menuitem"
       >
-        <span class="menu-list__link-title">{{- link.title -}}</span>
+        <span class="menu-list__link-title">{{- link_label -}}</span>
       </a>
       {%- if link.links != blank -%}
         <div class="menu-list__submenu{{ color_scheme_classes }}" ref="submenu[]">
