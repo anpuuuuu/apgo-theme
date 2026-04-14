@@ -1359,7 +1359,8 @@
     }
 
     /*
-      整塊 main 略向左：原式為「置中欄對齊左留白」；乘 0.42 + clamp 上限 -8vw，避免主圖甩太左。
+      整塊 main 左移：約為「置中欄左緣 → 左留白 16px」的位移，clamp 限制勿超過 -18vw 以免左緣被裁切。
+      內層不再改 margin（避免無動畫 + 與 main 位移疊加）；僅縮 max-width 配合剩餘視窗。
     */
     .apgo-product-section > .apgo-main-container {
       transform: translateX(0);
@@ -1369,8 +1370,8 @@
     body.apgo-pdp-variant-sidebar-open .apgo-product-section > .apgo-main-container {
       transform: translateX(
         clamp(
-          -8vw,
-          calc((16px + min(1200px, 66vw) / 2 - 50vw) * 0.42),
+          -18vw,
+          calc(16px + min(1200px, 66vw) / 2 - 50vw),
           0px
         )
       );
@@ -1390,9 +1391,13 @@
       transition: max-width var(--apgo-pdp-motion-duration) var(--apgo-pdp-motion-easing);
     }
 
-    /* 底欄：側欄開啟時淡出隱藏（與側欄選購重複）；僅過渡 opacity */
+    /* 底欄：側欄關閉時只過渡 left/right；開啟側欄時隱藏底欄（側欄內已有購買按鈕） */
     .apgo-product-section > .apgo-bottom-bar {
-      transition: opacity var(--apgo-pdp-motion-duration) var(--apgo-pdp-motion-easing);
+      transition:
+        left var(--apgo-pdp-motion-duration) var(--apgo-pdp-motion-easing),
+        right var(--apgo-pdp-motion-duration) var(--apgo-pdp-motion-easing),
+        opacity var(--apgo-pdp-motion-duration) var(--apgo-pdp-motion-easing),
+        visibility var(--apgo-pdp-motion-duration) var(--apgo-pdp-motion-easing);
     }
 
     body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-hero-visual,
