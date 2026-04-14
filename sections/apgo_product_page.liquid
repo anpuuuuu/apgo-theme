@@ -1351,34 +1351,8 @@
     visibility: visible;
   }
 
-  /* 桌面：變體選擇改為右側欄 + 主視覺與側欄合併佔滿視窗寬 */
+  /* 桌面：變體選擇改為右側欄（主內容不左移，避免 translateX(-33vw) 把內容推出視窗左緣被裁切） */
   @media (min-width: 1024px) {
-    body.apgo-pdp-variant-sidebar-open {
-      overflow-x: hidden;
-    }
-
-    /*
-      主內容：transform 左移側欄寬度，不縮小 main 寬度 → 字與卡片不因容器變窄重排；右側由側欄蓋住。
-      底欄：桌機原用 translateX(-50%) 置中，開側欄時改為再左移一個側欄寬，不可覆寫成 translateX(0)。
-    */
-    .apgo-product-section > .apgo-main-container {
-      box-sizing: border-box;
-      transform: translateX(0);
-      transition: transform 0.4s ease-in-out;
-    }
-
-    body.apgo-pdp-variant-sidebar-open .apgo-product-section > .apgo-main-container {
-      transform: translateX(calc(-1 * var(--apgo-pdp-sidebar-width, 33.33vw)));
-    }
-
-    .apgo-product-section > .apgo-bottom-bar {
-      transition: transform 0.4s ease-in-out;
-    }
-
-    body.apgo-pdp-variant-sidebar-open .apgo-product-section > .apgo-bottom-bar {
-      transform: translateX(calc(-50% - var(--apgo-pdp-sidebar-width, 33.33vw))) translateZ(0);
-    }
-
     /*
       遮罩與側欄：選擇器不依賴 .apgo-pdp-variant-shell.active，關閉動畫結束後 shell 會先失去 active，
       若仍只靠 shell.active，modal 會掉回手機用的 translateY(100%) 造成「收完又閃到下面」。
@@ -1445,11 +1419,6 @@
 
   @media (min-width: 1024px) and (prefers-reduced-motion: reduce) {
     .apgo-pdp-variant-shell .apgo-variant-modal {
-      transition: none;
-    }
-
-    .apgo-product-section > .apgo-main-container,
-    .apgo-product-section > .apgo-bottom-bar {
       transition: none;
     }
   }
@@ -2857,7 +2826,7 @@ window.apgoGoToSlide = function(index) {
   }
 };
 
-// 桌面側欄：以「變體 modal 是否開著」驅動主畫面寬度 class（關閉動畫期間 shell 仍 active，避免樣式掉回 translateY 底部抽屜）
+// 桌面側欄：同步 overflow / iOS；主畫面不再加 body class（已改為側欄覆蓋、主區不平移以免左緣裁切）
 window.apgoPdpSyncVariantSidebar = function () {
   var desktop = window.matchMedia('(min-width: 1024px)').matches;
   var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -2870,7 +2839,6 @@ window.apgoPdpSyncVariantSidebar = function () {
 
   if (desktop) {
     if (modalOpen) {
-      body.classList.add('apgo-pdp-variant-sidebar-open');
       body.style.overflow = '';
       if (isIOS && body.classList.contains('modal-open')) {
         var scrollY = body.dataset.scrollY || 0;
@@ -2881,11 +2849,8 @@ window.apgoPdpSyncVariantSidebar = function () {
           window.scrollTo(0, parseInt(scrollY, 10));
         });
       }
-    } else {
-      body.classList.remove('apgo-pdp-variant-sidebar-open');
     }
   } else {
-    body.classList.remove('apgo-pdp-variant-sidebar-open');
     if (shellOpen && !isIOS) {
       body.style.overflow = 'hidden';
     }
