@@ -12,186 +12,6 @@
     "social_media_GBjLwC": {
       "type": "social-media",
       "blocks": {
-        "taiwan_social_66P8aH": {
-          "type": "taiwan_social",
-          "settings": {
-            "platform": "facebook",
-            "platform_title": "Facebook",
-            "name": "APGO台灣物聯網",
-            "description": "官方直播平台",
-            "followers_count": "170K+",
-            "followers_label": "粉絲",
-            "url": "https://www.facebook.com/APGO1080"
-          }
-        },
-        "taiwan_social_x9pn7B": {
-          "type": "taiwan_social",
-          "settings": {
-            "platform": "facebook",
-            "platform_title": "Facebook",
-            "name": "Apgo鍍膜工廠",
-            "description": "官方直播平台",
-            "followers_count": "30K+",
-            "followers_label": "粉絲",
-            "url": "https://www.facebook.com/apgo9999"
-          }
-        },
-        "taiwan_social_mLPEJg": {
-          "type": "taiwan_social",
-          "settings": {
-            "platform": "facebook",
-            "platform_title": "Facebook",
-            "name": "紅又祥",
-            "description": "男主播-搞笑實力兼具",
-            "followers_count": "61K+",
-            "followers_label": "粉絲",
-            "url": "https://www.facebook.com/profile.php?id=61565241752043"
-          }
-        },
-        "taiwan_social_EgE7DU": {
-          "type": "taiwan_social",
-          "settings": {
-            "platform": "facebook",
-            "platform_title": "Facebook",
-            "name": "節省郭",
-            "description": "男主播-誠懇勤奮代表",
-            "followers_count": "7K+",
-            "followers_label": "粉絲",
-            "url": ""
-          }
-        },
-        "taiwan_social_cAFr4r": {
-          "type": "taiwan_social",
-          "settings": {
-            "platform": "instagram",
-            "platform_title": "Instagram",
-            "name": "apgotw.tw",
-            "description": "官方IG",
-            "followers_count": "50K+",
-            "followers_label": "粉絲",
-            "url": ""
-          }
-        },
-        "taiwan_social_extRRL": {
-          "type": "taiwan_social",
-          "settings": {
-            "platform": "instagram",
-            "platform_title": "Instagram",
-            "name": "掌聲祥起",
-            "description": "男主播-搞笑實力兼具",
-            "followers_count": "17K+",
-            "followers_label": "粉絲",
-            "url": "https://www.instagram.com/hongyouxiang0/"
-          }
-        },
-        "taiwan_social_TfAWW6": {
-          "type": "taiwan_social",
-          "settings": {
-            "platform": "instagram",
-            "platform_title": "Instagram",
-            "name": "節省郭",
-            "description": "男主播-誠懇勤奮代表",
-            "followers_count": "7K+",
-            "followers_label": "粉絲",
-            "url": "https://www.instagram.com/jasonkuo_888/"
-          }
-        },
-        "taiwan_social_XHjjwh": {
-          "type": "taiwan_social",
-          "settings": {
-            "platform": "tiktok",
-            "platform_title": "TikTok",
-            "name": "𝐀𝐏𝐆𝐎 汽車美容商城-台灣",
-            "description": "官方IG",
-            "followers_count": "24.1K+",
-            "followers_label": "粉絲",
-            "url": ""
-          }
-        },
-        "taiwan_social_g7n7yH": {
-          "type": "taiwan_social",
-          "settings": {
-            "platform": "tiktok",
-            "platform_title": "TikTok",
-            "name": "紅又祥",
-            "description": "男主播-搞笑帥氣的男人",
-            "followers_count": "23.4K+",
-            "followers_label": "粉絲",
-            "url": "https://www.tiktok.com/@hongyouxiang66?is_from_webapp=1&sender_device=pc"
-          }
-        },
-        "taiwan_social_FcnfQT": {
-          "type": "taiwan_social",
-          "settings": {
-            "platform": "tiktok",
-            "platform_title": "TikTok",
-            "name": "掌聲祥起",
-            "description": "男主播-鍍膜一哥",
-            "followers_count": "22.6K+",
-            "followers_label": "粉絲",
-            "url": "https://www.tiktok.com/@hongyouxiang0?is_from_webapp=1&sender_device=pc"
-          }
-        },
-        "taiwan_social_tkGKdW": {
-          "type": "taiwan_social",
-          "settings": {
-            "platform": "tiktok",
-            "platform_title": "TikTok",
-            "name": "節省郭",
-            "description": "男主播-鍍膜霸主",
-            "followers_count": "12.6K+",
-            "followers_label": "粉絲",
-            "url": "https://www.tiktok.com/@jasonkuo_888?is_from_webapp=1&sender_device=pc"
-          }
-        },
-        "taiwan_social_nMnMCx": {
-          "type": "taiwan_social",
-          "settings": {
-            "platform": "youtube",
-            "platform_title": "YouTube",
-            "name": "APGO 汽車美容商城",
-            "description": "官方全產品教學影片",
-            "followers_count": "5K+",
-            "followers_label": "粉絲",
-            "url": "https://www.youtube.com/@apgo"
-          }
-        },
-        "taiwan_social_6g9qDx": {
-          "type": "taiwan_social",
-          "settings": {
-            "platform": "youtube",
-            "platform_title": "YouTube",
-            "name": "掌聲祥起",
-            "description": "男主播-搞笑實力兼具",
-            "followers_count": "31K+",
-            "followers_label": "粉絲",
-            "url": "https://www.youtube.com/@hongyouxiang0"
-          }
-        },
-        "taiwan_social_r9GM7R": {
-          "type": "taiwan_social",
-          "settings": {
-            "platform": "youtube",
-            "platform_title": "YouTube",
-            "name": "節省郭",
-            "description": "男主播-誠懇勤奮代表",
-            "followers_count": "7K+",
-            "followers_label": "粉絲",
-            "url": "https://www.youtube.com/@jasonkuo_888"
-          }
-        },
-        "taiwan_social_TRW6k6": {
-          "type": "taiwan_social",
-          "settings": {
-            "platform": "threads",
-            "platform_title": "Threads",
-            "name": "",
-            "description": "",
-            "followers_count": "50K+",
-            "followers_label": "粉絲",
-            "url": ""
-          }
-        },
         "singapore_social_4fnyCn": {
           "type": "singapore_social",
           "settings": {
@@ -290,21 +110,6 @@
         }
       },
       "block_order": [
-        "taiwan_social_66P8aH",
-        "taiwan_social_x9pn7B",
-        "taiwan_social_mLPEJg",
-        "taiwan_social_EgE7DU",
-        "taiwan_social_cAFr4r",
-        "taiwan_social_extRRL",
-        "taiwan_social_TfAWW6",
-        "taiwan_social_XHjjwh",
-        "taiwan_social_g7n7yH",
-        "taiwan_social_FcnfQT",
-        "taiwan_social_tkGKdW",
-        "taiwan_social_nMnMCx",
-        "taiwan_social_6g9qDx",
-        "taiwan_social_r9GM7R",
-        "taiwan_social_TRW6k6",
         "singapore_social_4fnyCn",
         "singapore_social_L4KzAm",
         "singapore_social_tV79w7",
@@ -315,7 +120,9 @@
         "singapore_social_PhzUga"
       ],
       "name": "社群媒體頁面",
-      "settings": {}
+      "settings": {
+        "heading": "Find Us On..."
+      }
     }
   },
   "order": ["social_media_GBjLwC"]
