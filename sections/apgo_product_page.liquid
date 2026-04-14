@@ -997,7 +997,7 @@
     pointer-events: auto;
   }
 
-  /* 變體選擇模態框 */
+  /* 變體選擇模態框（手機：全寬底抽屜；高度上限約 85% 視窗，內層 flex:1 會撐滿該上限故常感覺「快滿版」） */
   .apgo-variant-modal {
     position: fixed;
     bottom: 0;
@@ -1010,6 +1010,7 @@
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 2000;
     max-height: 85vh;
+    max-height: min(85vh, 90dvh);
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -1030,6 +1031,7 @@
     flex: 1;
     min-height: 0;
     max-height: 85vh;
+    max-height: min(85vh, 90dvh);
   }
 
   .apgo-variant-modal-scroll {
