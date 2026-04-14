@@ -51,6 +51,19 @@
     "variant_swatch_radius": 0,
     "variant_button_radius": 0,
     "variant_button_width": "equal-width-buttons",
+    "sections": {
+      "marquee": {
+        "type": "marquee",
+        "settings": {
+          "movement_direction": "normal",
+          "color_scheme": "",
+          "padding-block-start": 24,
+          "padding-block-end": 24,
+          "gap_between_elements": 24,
+          "show_mysg_discount_promo": true
+        }
+      }
+    },
     "content_for_index": [],
     "blocks": {
       "15683396631634586217": {
