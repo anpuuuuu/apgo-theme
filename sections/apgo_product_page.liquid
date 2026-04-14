@@ -1358,6 +1358,19 @@
     }
 
     /*
+      主內容／底欄：關閉側欄時也要有與開啟相同的 transition，兩端都寫明 width / margin-left（避免只寫在 open 規則上無法從 auto 插值）。
+    */
+    .apgo-product-section > .apgo-main-container,
+    .apgo-product-section > .apgo-bottom-bar {
+      width: 100%;
+      max-width: none;
+      margin-left: 0;
+      margin-right: 0;
+      box-sizing: border-box;
+      transition: width 0.4s ease-in-out, margin-left 0.4s ease-in-out;
+    }
+
+    /*
       整段商品區（主內容 + 底部購買欄）寬 = 100vw - 側欄寬，與右欄合併佔滿視窗。
       margin-left: calc(50% - 50vw) 從置中欄拉齊視窗左緣（full-bleed）。
       內層原 max-width: min(1200px,66vw) 一併放寬，避免只有外框變寬、內容仍窄。
@@ -1365,11 +1378,7 @@
     body.apgo-pdp-variant-sidebar-open .apgo-product-section > .apgo-main-container,
     body.apgo-pdp-variant-sidebar-open .apgo-product-section > .apgo-bottom-bar {
       width: calc(100vw - var(--apgo-pdp-sidebar-width, 33.33vw));
-      max-width: none;
       margin-left: calc(50% - 50vw);
-      margin-right: 0;
-      box-sizing: border-box;
-      transition: width 0.4s ease-in-out, margin-left 0.4s ease-in-out;
     }
 
     body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-looping-intro-inner,
@@ -1412,8 +1421,11 @@
       justify-content: flex-start;
     }
 
-    /* 桌面：不左推整頁；側欄固定右側，主視覺區獨立拉寬對齊左緣 */
-    .apgo-pdp-variant-shell.active .apgo-modal-overlay {
+    /*
+      遮罩與側欄：選擇器不依賴 .apgo-pdp-variant-shell.active，關閉動畫結束後 shell 會先失去 active，
+      若仍只靠 shell.active，modal 會掉回手機用的 translateY(100%) 造成「收完又閃到下面」。
+    */
+    .apgo-pdp-variant-shell .apgo-modal-overlay {
       position: absolute;
       inset: 0;
       right: var(--apgo-pdp-sidebar-width, 33.33vw);
@@ -1423,15 +1435,15 @@
       -webkit-backdrop-filter: none;
       opacity: 0;
       visibility: hidden;
-      transition: opacity 0.3s ease, visibility 0.3s ease;
+      transition: opacity 0.4s ease-in-out, visibility 0.4s ease-in-out;
     }
 
-    .apgo-pdp-variant-shell.active .apgo-modal-overlay.active {
+    .apgo-pdp-variant-shell .apgo-modal-overlay.active {
       opacity: 1;
       visibility: visible;
     }
 
-    .apgo-pdp-variant-shell.active .apgo-variant-modal {
+    .apgo-pdp-variant-shell .apgo-variant-modal {
       top: 0;
       right: 0;
       bottom: 0;
@@ -1441,45 +1453,45 @@
       height: 100vh;
       height: 100dvh;
       border-radius: 0;
+      box-shadow: -12px 0 40px rgba(0, 0, 0, 0.45);
       transform: translateX(105%);
       transition: transform 0.4s ease-in-out, opacity 0.3s ease;
-      box-shadow: -12px 0 40px rgba(0, 0, 0, 0.45);
     }
 
-    .apgo-pdp-variant-shell.active .apgo-variant-modal.active {
+    .apgo-pdp-variant-shell .apgo-variant-modal.active {
       transform: translateX(0);
     }
 
-    .apgo-pdp-variant-shell.active .apgo-variant-modal-inner {
+    .apgo-pdp-variant-shell .apgo-variant-modal-inner {
       max-height: none;
       height: 100%;
     }
 
-    .apgo-pdp-variant-shell.active .apgo-modal-product-preview {
+    .apgo-pdp-variant-shell .apgo-modal-product-preview {
       flex-direction: column;
       align-items: stretch;
       text-align: left;
     }
 
-    .apgo-pdp-variant-shell.active .apgo-modal-product-image {
+    .apgo-pdp-variant-shell .apgo-modal-product-image {
       width: 100%;
       max-width: 200px;
       height: auto;
       margin: 0 auto;
     }
 
-    .apgo-pdp-variant-shell.active .apgo-variant-options {
+    .apgo-pdp-variant-shell .apgo-variant-options {
       grid-template-columns: 1fr;
     }
   }
 
   @media (min-width: 1024px) and (prefers-reduced-motion: reduce) {
-    .apgo-pdp-variant-shell.active .apgo-variant-modal {
+    .apgo-pdp-variant-shell .apgo-variant-modal {
       transition: none;
     }
 
-    body.apgo-pdp-variant-sidebar-open .apgo-product-section > .apgo-main-container,
-    body.apgo-pdp-variant-sidebar-open .apgo-product-section > .apgo-bottom-bar {
+    .apgo-product-section > .apgo-main-container,
+    .apgo-product-section > .apgo-bottom-bar {
       transition: none;
     }
   }
@@ -2947,35 +2959,48 @@ window.apgoShowVariantModal = function() {
   apgoCancelVariantCloseAnimation(modal);
 
   if (shell) shell.classList.add('active');
-  modal.classList.add('active');
-  overlay.classList.add('active');
+
+  function bindTouchScrollLockAndSync() {
+    const scrollEl = modal.querySelector('.apgo-variant-modal-scroll') || modal;
+    if (modal.touchMoveHandler) {
+      modal.removeEventListener('touchmove', modal.touchMoveHandler);
+    }
+    modal.touchMoveHandler = function(e) {
+      const modalContent = scrollEl;
+      const isAtTop = modalContent.scrollTop === 0;
+      const isAtBottom = modalContent.scrollHeight - modalContent.scrollTop <= modalContent.clientHeight + 1;
+
+      if (isAtTop && e.touches[0].clientY > e.touches[0].clientY) {
+        e.preventDefault();
+      }
+      if (isAtBottom && e.touches[0].clientY < e.touches[0].clientY) {
+        e.preventDefault();
+      }
+    };
+    modal.addEventListener('touchmove', modal.touchMoveHandler, { passive: false });
+    window.apgoPdpSyncVariantSidebar();
+    updateModalButtonState();
+  }
 
   if (desktop) {
     if (!isIOS) body.style.overflow = '';
-  } else if (isIOS) {
-    body.dataset.scrollY = window.scrollY;
-    body.classList.add('modal-open');
-    body.style.top = `-${body.dataset.scrollY}px`;
+    requestAnimationFrame(function () {
+      modal.classList.add('active');
+      overlay.classList.add('active');
+      bindTouchScrollLockAndSync();
+    });
   } else {
-    body.style.overflow = 'hidden';
+    modal.classList.add('active');
+    overlay.classList.add('active');
+    if (isIOS) {
+      body.dataset.scrollY = window.scrollY;
+      body.classList.add('modal-open');
+      body.style.top = `-${body.dataset.scrollY}px`;
+    } else {
+      body.style.overflow = 'hidden';
+    }
+    bindTouchScrollLockAndSync();
   }
-
-  const scrollEl = modal.querySelector('.apgo-variant-modal-scroll') || modal;
-  modal.touchMoveHandler = function(e) {
-    const modalContent = scrollEl;
-    const isAtTop = modalContent.scrollTop === 0;
-    const isAtBottom = modalContent.scrollHeight - modalContent.scrollTop <= modalContent.clientHeight + 1;
-
-    if (isAtTop && e.touches[0].clientY > e.touches[0].clientY) {
-      e.preventDefault();
-    }
-    if (isAtBottom && e.touches[0].clientY < e.touches[0].clientY) {
-      e.preventDefault();
-    }
-  };
-  modal.addEventListener('touchmove', modal.touchMoveHandler, { passive: false });
-  window.apgoPdpSyncVariantSidebar();
-  updateModalButtonState();
 };
 
 // 關閉變體選擇模態框（先關 modal/overlay 觸發 CSS 過渡；延遲再移 shell，避免桌面規則失效而掉成 translateY）
