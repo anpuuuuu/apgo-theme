@@ -1379,8 +1379,15 @@
       側欄關閉：與 margin:auto + max-width:var(--apgo-pdp-pane-max) 等效的左右留白，
       開啟時改為 margin-left:0（或主圖 16px）+ margin-right:auto，才能與 max-width 同步過渡。
     */
+    /* 縮圖／基本資訊：關閉側欄維持全寬，僅過渡 max-width（開啟時變窄靠左） */
     .apgo-product-section .apgo-product-thumbnails,
-    .apgo-product-section .apgo-product-info,
+    .apgo-product-section .apgo-product-info {
+      max-width: 100%;
+      margin-left: 0;
+      margin-right: 0;
+      transition: max-width var(--apgo-pdp-motion-duration) var(--apgo-pdp-motion-easing);
+    }
+
     .apgo-product-section .apgo-looping-intro-inner,
     .apgo-product-section .apgo-insidebox-inner,
     .apgo-product-section .apgo-video-header,
