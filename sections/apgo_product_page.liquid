@@ -2887,37 +2887,53 @@ window.apgoGoToSlide = function(index) {
   }
 };
 
-// 桌面側欄：同步 body 推擠與 overflow（勿在關閉時強制清空 overflow，避免與影片燈箱衝突）
+// 桌面側欄：以「變體 modal 是否開著」驅動主畫面寬度 class（關閉動畫期間 shell 仍 active，避免樣式掉回 translateY 底部抽屜）
 window.apgoPdpSyncVariantSidebar = function () {
   var desktop = window.matchMedia('(min-width: 1024px)').matches;
   var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
   var body = document.body;
   var shell = document.getElementById('apgoPdpVariantShell');
-  var open = shell && shell.classList.contains('active');
+  var modal = document.getElementById('apgoVariantModal');
+  var modalOpen = modal && modal.classList.contains('active');
+  var shellOpen = shell && shell.classList.contains('active');
   document.documentElement.style.setProperty('--apgo-pdp-sidebar-width', '33.33vw');
-  if (!open) {
-    body.classList.remove('apgo-pdp-variant-sidebar-open');
-    return;
-  }
+
   if (desktop) {
-    body.classList.add('apgo-pdp-variant-sidebar-open');
-    body.style.overflow = '';
-    if (isIOS && body.classList.contains('modal-open')) {
-      var scrollY = body.dataset.scrollY || 0;
-      body.classList.remove('modal-open');
-      body.style.top = '';
-      delete body.dataset.scrollY;
-      requestAnimationFrame(function () {
-        window.scrollTo(0, parseInt(scrollY, 10));
-      });
+    if (modalOpen) {
+      body.classList.add('apgo-pdp-variant-sidebar-open');
+      body.style.overflow = '';
+      if (isIOS && body.classList.contains('modal-open')) {
+        var scrollY = body.dataset.scrollY || 0;
+        body.classList.remove('modal-open');
+        body.style.top = '';
+        delete body.dataset.scrollY;
+        requestAnimationFrame(function () {
+          window.scrollTo(0, parseInt(scrollY, 10));
+        });
+      }
+    } else {
+      body.classList.remove('apgo-pdp-variant-sidebar-open');
     }
   } else {
     body.classList.remove('apgo-pdp-variant-sidebar-open');
-    if (!isIOS) {
+    if (shellOpen && !isIOS) {
       body.style.overflow = 'hidden';
     }
   }
 };
+
+function apgoCancelVariantCloseAnimation(modal) {
+  if (!modal) return;
+  if (modal._apgoCloseFallbackTimer) {
+    clearTimeout(modal._apgoCloseFallbackTimer);
+    modal._apgoCloseFallbackTimer = null;
+  }
+  if (modal._apgoCloseTransitionEnd) {
+    modal.removeEventListener('transitionend', modal._apgoCloseTransitionEnd);
+    modal._apgoCloseTransitionEnd = null;
+  }
+  delete modal.dataset.apgoVariantClosing;
+}
 
 // 顯示變體選擇模態框
 window.apgoShowVariantModal = function() {
@@ -2927,6 +2943,8 @@ window.apgoShowVariantModal = function() {
   const body = document.body;
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
   const desktop = window.matchMedia('(min-width: 1024px)').matches;
+
+  apgoCancelVariantCloseAnimation(modal);
 
   if (shell) shell.classList.add('active');
   modal.classList.add('active');
@@ -2960,40 +2978,92 @@ window.apgoShowVariantModal = function() {
   updateModalButtonState();
 };
 
-// 關閉變體選擇模態框
+// 關閉變體選擇模態框（先關 modal/overlay 觸發 CSS 過渡；延遲再移 shell，避免桌面規則失效而掉成 translateY）
 window.apgoCloseVariantModal = function() {
   const modal = document.getElementById('apgoVariantModal');
   const overlay = document.getElementById('apgoModalOverlay');
   const shell = document.getElementById('apgoPdpVariantShell');
   const body = document.body;
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const desktop = window.matchMedia('(min-width: 1024px)').matches;
 
-  if (shell) shell.classList.remove('active');
+  if (!modal || modal.dataset.apgoVariantClosing === '1') return;
+  if (!modal.classList.contains('active')) return;
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    modal.classList.remove('active');
+    overlay.classList.remove('active');
+    window.apgoPdpSyncVariantSidebar();
+    if (shell) shell.classList.remove('active');
+    window.apgoPdpSyncVariantSidebar();
+    if (isIOS) {
+      const scrollY = body.dataset.scrollY || 0;
+      body.classList.remove('modal-open');
+      body.style.top = '';
+      requestAnimationFrame(function () {
+        window.scrollTo(0, parseInt(scrollY, 10));
+      });
+      delete body.dataset.scrollY;
+    } else {
+      body.style.overflow = '';
+    }
+    if (modal.touchMoveHandler) {
+      modal.removeEventListener('touchmove', modal.touchMoveHandler);
+      modal.touchMoveHandler = null;
+    }
+    return;
+  }
+
+  apgoCancelVariantCloseAnimation(modal);
+  modal.dataset.apgoVariantClosing = '1';
+
   modal.classList.remove('active');
   overlay.classList.remove('active');
   window.apgoPdpSyncVariantSidebar();
 
-  if (isIOS) {
-    // iOS 移除樣式並瞬間恢復滾動位置
-    const scrollY = body.dataset.scrollY || 0;
-    body.classList.remove('modal-open');
-    body.style.top = '';
+  var finished = false;
+  function finishClose() {
+    if (finished) return;
+    finished = true;
+    if (modal._apgoCloseFallbackTimer) {
+      clearTimeout(modal._apgoCloseFallbackTimer);
+      modal._apgoCloseFallbackTimer = null;
+    }
+    if (modal._apgoCloseTransitionEnd) {
+      modal.removeEventListener('transitionend', modal._apgoCloseTransitionEnd);
+      modal._apgoCloseTransitionEnd = null;
+    }
+    delete modal.dataset.apgoVariantClosing;
+    if (shell) shell.classList.remove('active');
+    window.apgoPdpSyncVariantSidebar();
 
-    // 使用 requestAnimationFrame 確保樣式更新後再滾動
-    requestAnimationFrame(() => {
-      window.scrollTo(0, parseInt(scrollY));
-    });
+    if (isIOS) {
+      const scrollY = body.dataset.scrollY || 0;
+      body.classList.remove('modal-open');
+      body.style.top = '';
+      requestAnimationFrame(function () {
+        window.scrollTo(0, parseInt(scrollY, 10));
+      });
+      delete body.dataset.scrollY;
+    } else {
+      body.style.overflow = '';
+    }
 
-    delete body.dataset.scrollY;
-  } else {
-    // 非 iOS 設備恢復 overflow
-    body.style.overflow = '';
+    if (modal.touchMoveHandler) {
+      modal.removeEventListener('touchmove', modal.touchMoveHandler);
+      modal.touchMoveHandler = null;
+    }
   }
 
-  // 移除事件監聽器
-  if (modal.touchMoveHandler) {
-    modal.removeEventListener('touchmove', modal.touchMoveHandler);
-    modal.touchMoveHandler = null;
+  if (desktop) {
+    modal._apgoCloseTransitionEnd = function (e) {
+      if (e.target !== modal || e.propertyName !== 'transform') return;
+      finishClose();
+    };
+    modal.addEventListener('transitionend', modal._apgoCloseTransitionEnd);
+    modal._apgoCloseFallbackTimer = setTimeout(finishClose, 450);
+  } else {
+    modal._apgoCloseFallbackTimer = setTimeout(finishClose, 350);
   }
 };
 
@@ -3534,7 +3604,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (e.key !== 'Escape') return;
     var shell = document.getElementById('apgoPdpVariantShell');
     var modal = document.getElementById('apgoVariantModal');
-    if (!shell || !modal || !shell.classList.contains('active') || !modal.classList.contains('active')) return;
+    if (!shell || !modal || !shell.classList.contains('active')) return;
+    if (!modal.classList.contains('active') || modal.dataset.apgoVariantClosing === '1') return;
     if (typeof window.apgoCloseVariantModal === 'function') window.apgoCloseVariantModal();
     e.stopPropagation();
   }, true);
