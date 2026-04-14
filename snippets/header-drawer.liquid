@@ -93,7 +93,11 @@
                 if link_title_normalized == 'contact'
                   assign link_url = '/pages/about-us'
                   assign link_label = 'About Us'
-                  assign link_is_active = request.path contains '/pages/about-us'
+                  if request.path contains '/pages/about-us'
+                    assign link_is_active = true
+                  else
+                    assign link_is_active = false
+                  endif
                 endif
               %}
               {% assign animation_index = animation_index | plus: 1 %}
@@ -247,7 +251,11 @@
                 if link_title_normalized == 'contact'
                   assign link_url = '/pages/about-us'
                   assign link_label = 'About Us'
-                  assign link_is_active = request.path contains '/pages/about-us'
+                  if request.path contains '/pages/about-us'
+                    assign link_is_active = true
+                  else
+                    assign link_is_active = false
+                  endif
                 endif
               %}
               {% assign animation_index = animation_index | plus: 1 %}
