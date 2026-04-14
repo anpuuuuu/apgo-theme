@@ -17,10 +17,10 @@
           "settings": {
             "platform": "facebook",
             "platform_title": "Facebook",
-            "name": "APGO Professional Coating — SG/MY",
-            "description": "Official Facebook page",
+            "name": "Apgo专业洗车镀膜 - 新马 ",
+            "description": "官方臉書平台",
             "followers_count": "3K+",
-            "followers_label": "Followers",
+            "followers_label": "粉絲",
             "url": "https://www.facebook.com/apgomy888"
           }
         },
@@ -30,9 +30,9 @@
             "platform": "instagram",
             "platform_title": "Instagram",
             "name": "apgomy.official",
-            "description": "Official Instagram",
+            "description": "官方IG平台",
             "followers_count": "1K+",
-            "followers_label": "Followers",
+            "followers_label": "粉絲",
             "url": "https://www.instagram.com/apgomy.official/"
           }
         },
@@ -40,11 +40,11 @@
           "type": "singapore_social",
           "settings": {
             "platform": "tiktok",
-            "platform_title": "TikTok",
+            "platform_title": "TikTOk",
             "name": "apgomy",
-            "description": "CEO — JC",
+            "description": "執行長-JC",
             "followers_count": "4.8K+",
-            "followers_label": "Followers",
+            "followers_label": "粉絲",
             "url": "https://www.tiktok.com/@apgomy?is_from_webapp=1&sender_device=pc"
           }
         },
@@ -52,11 +52,11 @@
           "type": "singapore_social",
           "settings": {
             "platform": "tiktok",
-            "platform_title": "TikTok",
+            "platform_title": "TikTOk",
             "name": "apgo XM",
-            "description": "Host — XM",
+            "description": "男主播-XM",
             "followers_count": "4.8K+",
-            "followers_label": "Followers",
+            "followers_label": "粉絲",
             "url": "https://www.tiktok.com/@apgo.malaysia?is_from_webapp=1&sender_device=pc"
           }
         },
@@ -64,11 +64,11 @@
           "type": "singapore_social",
           "settings": {
             "platform": "tiktok",
-            "platform_title": "TikTok",
+            "platform_title": "TikTOk",
             "name": "apgo COCO",
-            "description": "Host — COCO",
+            "description": "女主播-COCO",
             "followers_count": "1.8K+",
-            "followers_label": "Followers",
+            "followers_label": "粉絲",
             "url": "https://www.tiktok.com/@apgo.02?is_from_webapp=1&sender_device=pc"
           }
         },
@@ -76,11 +76,11 @@
           "type": "singapore_social",
           "settings": {
             "platform": "tiktok",
-            "platform_title": "TikTok",
+            "platform_title": "TikTOk",
             "name": "apgo Alston",
-            "description": "Host — Alston",
+            "description": "男主播-Alston",
             "followers_count": "1.3K+",
-            "followers_label": "Followers",
+            "followers_label": "粉絲",
             "url": "https://www.tiktok.com/@apgo.01?is_from_webapp=1&sender_device=pc"
           }
         },
@@ -88,11 +88,11 @@
           "type": "singapore_social",
           "settings": {
             "platform": "tiktok",
-            "platform_title": "TikTok",
+            "platform_title": "TikTOk",
             "name": "apgo chili",
-            "description": "Host — chili",
+            "description": "女主播-chili",
             "followers_count": "0.5K+",
-            "followers_label": "Followers",
+            "followers_label": "粉絲",
             "url": "https://www.tiktok.com/@apgochili?is_from_webapp=1&sender_device=pc"
           }
         },
@@ -102,9 +102,9 @@
             "platform": "youtube",
             "platform_title": "YouTube",
             "name": "apgo MY",
-            "description": "Official YouTube",
+            "description": "官方YT平台",
             "followers_count": "0.1K+",
-            "followers_label": "Followers",
+            "followers_label": "粉絲",
             "url": ""
           }
         }
@@ -119,7 +119,7 @@
         "singapore_social_KRUJQe",
         "singapore_social_PhzUga"
       ],
-      "name": "Social links (Find Us)",
+      "name": "社群媒體頁面",
       "settings": {
         "heading": "JOIN OUR COMMUNITY"
       }
