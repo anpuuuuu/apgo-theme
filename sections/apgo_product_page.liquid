@@ -1358,17 +1358,38 @@
     }
 
     /*
-      主視覺 + 縮圖列寬度 = 100vw - 側欄寬，與固定右欄拼成整個視窗寬。
-      margin-left: calc(50% - 50vw) 從置中主欄「拉齊視窗左緣」（常見 full-bleed 算法）。
-      覆寫模板 custom_css 對 img 的 max-width:1080px + margin:auto，讓輪播圖吃滿剩餘寬。
+      整段商品區（主內容 + 底部購買欄）寬 = 100vw - 側欄寬，與右欄合併佔滿視窗。
+      margin-left: calc(50% - 50vw) 從置中欄拉齊視窗左緣（full-bleed）。
+      內層原 max-width: min(1200px,66vw) 一併放寬，避免只有外框變寬、內容仍窄。
     */
-    body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-hero-visual,
-    body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-product-thumbnails {
+    body.apgo-pdp-variant-sidebar-open .apgo-product-section > .apgo-main-container,
+    body.apgo-pdp-variant-sidebar-open .apgo-product-section > .apgo-bottom-bar {
       width: calc(100vw - var(--apgo-pdp-sidebar-width, 33.33vw));
       max-width: none;
       margin-left: calc(50% - 50vw);
       margin-right: 0;
+      box-sizing: border-box;
       transition: width 0.4s ease-in-out, margin-left 0.4s ease-in-out;
+    }
+
+    body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-looping-intro-inner,
+    body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-insidebox-inner,
+    body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-video-header,
+    body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-video-scroll-container,
+    body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-precautions-header,
+    body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-precautions-inner,
+    body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-customer-review-header,
+    body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-customer-review-inner {
+      max-width: none !important;
+      width: 100%;
+      margin-left: 0;
+      margin-right: 0;
+    }
+
+    /* 模板 custom_css 對區塊內 img 的 max-width；側欄開啟時改為跟隨欄寬（小圖仍受父層限制） */
+    body.apgo-pdp-variant-sidebar-open .apgo-product-section > .apgo-main-container img,
+    body.apgo-pdp-variant-sidebar-open .apgo-product-section > .apgo-bottom-bar img {
+      max-width: 100% !important;
     }
 
     body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-product-showcase {
@@ -1382,7 +1403,6 @@
     }
 
     body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-hero-visual img.apgo-product-image-main {
-      max-width: 100% !important;
       width: 100%;
       margin-left: 0 !important;
       margin-right: 0 !important;
@@ -1458,8 +1478,8 @@
       transition: none;
     }
 
-    body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-hero-visual,
-    body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-product-thumbnails {
+    body.apgo-pdp-variant-sidebar-open .apgo-product-section > .apgo-main-container,
+    body.apgo-pdp-variant-sidebar-open .apgo-product-section > .apgo-bottom-bar {
       transition: none;
     }
   }
