@@ -1367,14 +1367,18 @@
     visibility: visible;
   }
 
-  /* 桌面：變體右側欄；開啟時主欄左對齊、用滿側欄左側寬度（避免置中留白），並過渡 max-width */
+  /* 桌面：變體右側欄；開啟時主欄左對齊；用數值 margin + transition 做 0.4s 置中→靠左（margin:auto 無法插值） */
   @media (min-width: 1024px) {
     :root {
       --apgo-pdp-motion-duration: 0.4s;
       --apgo-pdp-motion-easing: cubic-bezier(0.37, 0, 0.63, 1);
+      --apgo-pdp-pane-max: min(1200px, 66vw);
     }
 
-    .apgo-product-section .apgo-hero-visual,
+    /*
+      側欄關閉：與 margin:auto + max-width:var(--apgo-pdp-pane-max) 等效的左右留白，
+      開啟時改為 margin-left:0（或主圖 16px）+ margin-right:auto，才能與 max-width 同步過渡。
+    */
     .apgo-product-section .apgo-product-thumbnails,
     .apgo-product-section .apgo-product-info,
     .apgo-product-section .apgo-looping-intro-inner,
@@ -1385,7 +1389,24 @@
     .apgo-product-section .apgo-precautions-inner,
     .apgo-product-section .apgo-customer-review-header,
     .apgo-product-section .apgo-customer-review-inner {
-      transition: max-width var(--apgo-pdp-motion-duration) var(--apgo-pdp-motion-easing);
+      max-width: var(--apgo-pdp-pane-max);
+      margin-left: max(0px, calc((100% - min(100%, var(--apgo-pdp-pane-max))) / 2));
+      margin-right: max(0px, calc((100% - min(100%, var(--apgo-pdp-pane-max))) / 2));
+      transition:
+        max-width var(--apgo-pdp-motion-duration) var(--apgo-pdp-motion-easing),
+        margin-left var(--apgo-pdp-motion-duration) var(--apgo-pdp-motion-easing),
+        margin-right var(--apgo-pdp-motion-duration) var(--apgo-pdp-motion-easing);
+    }
+
+    /* 主圖：關閉側欄維持全寬；開啟時 max-width 與 margin 可與 0.4s 同步（100% → 計算寬、0 → 16px） */
+    .apgo-product-section .apgo-hero-visual {
+      max-width: 100%;
+      margin-left: 0;
+      margin-right: 0;
+      transition:
+        max-width var(--apgo-pdp-motion-duration) var(--apgo-pdp-motion-easing),
+        margin-left var(--apgo-pdp-motion-duration) var(--apgo-pdp-motion-easing),
+        margin-right var(--apgo-pdp-motion-duration) var(--apgo-pdp-motion-easing);
     }
 
     /* 底欄：側欄關閉時只過渡 left/right；開啟側欄時隱藏底欄（側欄內已有購買按鈕） */
