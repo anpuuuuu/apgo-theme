@@ -553,7 +553,7 @@
     padding: 4px 2px;
   }
 
-  .apgo-looping-desc-wrap > h4 {
+  .apgo-looping-desc-wrap h4 {
     color: var(--primary-orange);
     font-size: 1rem;
     font-weight: 500;
@@ -2098,12 +2098,12 @@
                   class="apgo-looping-desc-block apgo-looping-desc-block--variation"
                   aria-labelledby="apgo-loop-var-{{ section.id }}"
                 >
-                  <h4
+                  <h5
                     class="apgo-looping-desc-block-title apgo-looping-desc-block-title--variation"
                     id="apgo-loop-var-{{ section.id }}"
                   >
                     {{ 'product.variation' | t }}
-                  </h4>
+                  </h5>
                   <div class="apgo-looping-desc-block-body">{{ variation_raw | escape | newline_to_br }}</div>
                 </section>
               {% endif %}
