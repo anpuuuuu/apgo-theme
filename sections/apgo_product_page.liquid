@@ -1351,13 +1351,48 @@
     visibility: visible;
   }
 
-  /* 桌面：變體選擇改為右側欄 + 推擠 #MainContent / #header-group */
+  /* 桌面：變體選擇改為右側欄 + 主視覺與側欄合併佔滿視窗寬 */
   @media (min-width: 1024px) {
     body.apgo-pdp-variant-sidebar-open {
       overflow-x: hidden;
     }
 
-    /* 桌面：不左推整頁（避免置中版型出現主視覺與側欄間的黑縫）；側欄覆蓋在右側即可 */
+    /*
+      主視覺 + 縮圖列寬度 = 100vw - 側欄寬，與固定右欄拼成整個視窗寬。
+      margin-left: calc(50% - 50vw) 從置中主欄「拉齊視窗左緣」（常見 full-bleed 算法）。
+      覆寫模板 custom_css 對 img 的 max-width:1080px + margin:auto，讓輪播圖吃滿剩餘寬。
+    */
+    body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-hero-visual,
+    body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-product-thumbnails {
+      width: calc(100vw - var(--apgo-pdp-sidebar-width, 33.33vw));
+      max-width: none;
+      margin-left: calc(50% - 50vw);
+      margin-right: 0;
+      transition: width 0.4s ease-in-out, margin-left 0.4s ease-in-out;
+    }
+
+    body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-product-showcase {
+      justify-content: flex-start;
+      padding-left: max(12px, env(safe-area-inset-left, 0px));
+      padding-right: max(12px, env(safe-area-inset-right, 0px));
+    }
+
+    body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-carousel-slide {
+      justify-content: flex-start;
+    }
+
+    body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-hero-visual img.apgo-product-image-main {
+      max-width: 100% !important;
+      width: 100%;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+    }
+
+    body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-thumbnails-container {
+      justify-content: flex-start;
+    }
+
+    /* 桌面：不左推整頁；側欄固定右側，主視覺區獨立拉寬對齊左緣 */
     .apgo-pdp-variant-shell.active .apgo-modal-overlay {
       position: absolute;
       inset: 0;
@@ -1420,6 +1455,11 @@
 
   @media (min-width: 1024px) and (prefers-reduced-motion: reduce) {
     .apgo-pdp-variant-shell.active .apgo-variant-modal {
+      transition: none;
+    }
+
+    body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-hero-visual,
+    body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-product-thumbnails {
       transition: none;
     }
   }
