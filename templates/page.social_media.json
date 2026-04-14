@@ -180,36 +180,7 @@
         "singapore_social_PhzUga"
       ],
       "name": "社群媒體頁面",
-      "settings": {
-        "show_hero": true,
-        "hero_title": "連結全球，共創卓越",
-        "hero_subtitle": "追蹤APGO的社群平台，掌握最新動態與專業知識",
-        "hero_button_text": "觀看短影片",
-        "hero_video_mp4": "",
-        "hero_video_webm": "",
-        "show_reels": true,
-        "reels_title": "精選短影片",
-        "reels_subtitle": "來自各大社群平台的精彩內容",
-        "reels_pagination_enabled": true,
-        "reels_items_per_page": 8,
-        "reels_mix_regions_when_pagination_off": true,
-        "show_youtube": true,
-        "youtube_title": "精選長影片",
-        "show_stats": true,
-        "stats_title": "社群影響力",
-        "stat_1_number": "300K+",
-        "stat_1_label": "總粉絲數",
-        "stat_2_number": "1億+",
-        "stat_2_label": "月觸及人數",
-        "stat_3_number": "500+",
-        "stat_3_label": "每月發布內容",
-        "stat_4_number": "25",
-        "stat_4_label": "社群平台數",
-        "show_cta": true,
-        "cta_text": "追蹤APGO Facebook 粉絲專頁 ，掌握最新動態",
-        "cta_button_text": "立即關注",
-        "cta_button_url": "https://www.facebook.com/apgo9999"
-      }
+      "settings": {}
     }
   },
   "order": [

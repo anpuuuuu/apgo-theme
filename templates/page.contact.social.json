@@ -9,119 +9,9 @@
  */
 {
   "sections": {
-    "section": {
-      "type": "section",
-      "settings": {
-        "content_direction": "column",
-        "vertical_on_mobile": true,
-        "horizontal_alignment": "flex-start",
-        "vertical_alignment": "center",
-        "align_baseline": false,
-        "horizontal_alignment_flex_direction_column": "flex-start",
-        "vertical_alignment_flex_direction_column": "center",
-        "gap": 30,
-        "section_width": "page-width",
-        "section_height": "",
-        "section_height_custom": 50,
-        "color_scheme": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26",
-        "background_media": "none",
-        "video_position": "cover",
-        "background_image_position": "cover",
-        "border": "none",
-        "border_width": 1,
-        "border_opacity": 100,
-        "border_radius": 0,
-        "toggle_overlay": false,
-        "overlay_color": "#00000026",
-        "overlay_style": "solid",
-        "gradient_direction": "to top",
-        "padding-block-start": 40,
-        "padding-block-end": 70
-      }
-    },
     "social_media_GBjLwC": {
       "type": "social-media",
       "blocks": {
-        "reel_kyAJxU": {
-          "type": "reel",
-          "settings": {
-            "video": "https://cdn.shopify.com/videos/c/o/v/c57b8a5ca0b54578b5bbb009d452c76c.mp4",
-            "video_file": "https://cdn.shopify.com/videos/c/o/v/c57b8a5ca0b54578b5bbb009d452c76c.mp4",
-            "poster": "shopify://shop_images/1224__20.jpg",
-            "badge": "產品優勢-疏水感",
-            "platform": "TikTok",
-            "region": "taiwan"
-          }
-        },
-        "reel_PH6MPN": {
-          "type": "reel",
-          "settings": {
-            "video": "",
-            "video_file": "https://cdn.shopify.com/videos/c/o/v/ec3db50f67e84a5889722020b1a2a13d.mp4",
-            "poster": "shopify://shop_images/1128.jpg",
-            "badge": "產品優勢-光亮感",
-            "platform": "Instagram",
-            "region": "taiwan"
-          }
-        },
-        "reel_xMetiH": {
-          "type": "reel",
-          "settings": {
-            "video": "https://cdn.shopify.com/videos/c/o/v/4ec4609d74754a2380a041c71aff8bbc.mp4",
-            "video_file": "",
-            "poster": "shopify://shop_images/1206.jpg",
-            "badge": "產品優勢-光滑感",
-            "platform": "Facebook",
-            "region": "taiwan"
-          }
-        },
-        "reel_ECxpRf": {
-          "type": "reel",
-          "settings": {
-            "video": "https://cdn.shopify.com/videos/c/o/v/eb98a830ccb34def8fbde5c95718381d.mp4",
-            "video_file": "",
-            "poster": "shopify://shop_images/0527.jpg",
-            "badge": "產品優勢-耐洗持久",
-            "platform": "TikTok",
-            "region": "taiwan"
-          }
-        },
-        "reel_YnmGtk": {
-          "type": "reel",
-          "settings": {
-            "video": "https://cdn.shopify.com/videos/c/o/v/ebb945271eb74c57b6f7ee5a65e10043.mp4",
-            "video_file": "",
-            "poster": "shopify://shop_images/1205.jpg",
-            "badge": "鍍膜教學-三步驟",
-            "platform": "TikTok",
-            "region": "taiwan"
-          }
-        },
-        "reel_bwDiWc": {
-          "type": "reel",
-          "settings": {
-            "video": "",
-            "video_file": "https://cdn.shopify.com/videos/c/o/v/67243d15ac4f46c4bddb883a5236ed2b.mp4",
-            "poster": "shopify://shop_images/1206___v2.jpg",
-            "badge": "鍍膜教學-全車外觀都可用",
-            "platform": "TikTok",
-            "region": "taiwan"
-          }
-        },
-        "youtube_Eikqqw": {
-          "type": "youtube",
-          "settings": {
-            "youtube_id": "oFlGlJqWrMM",
-            "title": "APGO 極光鍍膜教學 (乾濕兩用)"
-          }
-        },
-        "youtube_ar8wHD": {
-          "type": "youtube",
-          "settings": {
-            "youtube_id": "xY1vOMrDDMY",
-            "title": "APGO 鈦晶鍍膜教學 (乾上最強)"
-          }
-        },
         "taiwan_social_66P8aH": {
           "type": "taiwan_social",
           "settings": {
@@ -400,14 +290,6 @@
         }
       },
       "block_order": [
-        "reel_kyAJxU",
-        "reel_PH6MPN",
-        "reel_xMetiH",
-        "reel_ECxpRf",
-        "reel_YnmGtk",
-        "reel_bwDiWc",
-        "youtube_Eikqqw",
-        "youtube_ar8wHD",
         "taiwan_social_66P8aH",
         "taiwan_social_x9pn7B",
         "taiwan_social_mLPEJg",
@@ -433,40 +315,8 @@
         "singapore_social_PhzUga"
       ],
       "name": "社群媒體頁面",
-      "settings": {
-        "show_hero": false,
-        "hero_title": "連結全球，共創卓越",
-        "hero_subtitle": "追蹤APGO的社群平台，掌握最新動態與專業知識",
-        "hero_button_text": "觀看短影片",
-        "hero_video_mp4": "",
-        "hero_video_webm": "",
-        "show_reels": false,
-        "reels_title": "精選短影片",
-        "reels_subtitle": "來自各大社群平台的精彩內容",
-        "reels_pagination_enabled": true,
-        "reels_items_per_page": 8,
-        "reels_mix_regions_when_pagination_off": true,
-        "show_youtube": false,
-        "youtube_title": "精選長影片",
-        "show_stats": true,
-        "stats_title": "社群影響力",
-        "stat_1_number": "300K+",
-        "stat_1_label": "總粉絲數",
-        "stat_2_number": "1億+",
-        "stat_2_label": "月觸及人數",
-        "stat_3_number": "500+",
-        "stat_3_label": "每月發布內容",
-        "stat_4_number": "25",
-        "stat_4_label": "社群平台數",
-        "show_cta": true,
-        "cta_text": "追蹤APGO Facebook 粉絲專頁 ，掌握最新動態",
-        "cta_button_text": "立即關注",
-        "cta_button_url": "https://www.facebook.com/apgo9999"
-      }
+      "settings": {}
     }
   },
-  "order": [
-    "section",
-    "social_media_GBjLwC"
-  ]
+  "order": ["social_media_GBjLwC"]
 }
