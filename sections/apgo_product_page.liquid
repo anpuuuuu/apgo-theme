@@ -1416,6 +1416,33 @@
         margin-right var(--apgo-pdp-motion-duration) var(--apgo-pdp-motion-easing);
     }
 
+    /*
+      Suggested products（cart-upsell）與 APGO footer：與主欄同一套置中／靠左 + 0.4s。
+      僅在頁面含 .apgo-product-section 時作用（:has），避免影響其他頁。
+    */
+    body:has(.apgo-product-section) .cart-upsell-wrapper.cart-upsell-wrapper--product,
+    body:has(.apgo-product-section) footer.apgo-footer .apgo-footer-container {
+      transition:
+        max-width var(--apgo-pdp-motion-duration) var(--apgo-pdp-motion-easing),
+        margin-left var(--apgo-pdp-motion-duration) var(--apgo-pdp-motion-easing),
+        margin-right var(--apgo-pdp-motion-duration) var(--apgo-pdp-motion-easing);
+    }
+
+    body:not(.apgo-pdp-variant-sidebar-open):has(.apgo-product-section)
+      .cart-upsell-wrapper.cart-upsell-wrapper--product {
+      max-width: var(--apgo-pdp-pane-max);
+      margin-top: 20px;
+      margin-bottom: 0;
+      margin-left: max(0px, calc((100% - min(100%, var(--apgo-pdp-pane-max))) / 2));
+      margin-right: max(0px, calc((100% - min(100%, var(--apgo-pdp-pane-max))) / 2));
+    }
+
+    body:not(.apgo-pdp-variant-sidebar-open):has(.apgo-product-section) footer.apgo-footer .apgo-footer-container {
+      max-width: var(--apgo-pdp-pane-max);
+      margin-left: max(0px, calc((100% - min(100%, var(--apgo-pdp-pane-max))) / 2));
+      margin-right: max(0px, calc((100% - min(100%, var(--apgo-pdp-pane-max))) / 2));
+    }
+
     /* 底欄：側欄關閉時只過渡 left/right；開啟側欄時隱藏底欄（側欄內已有購買按鈕） */
     .apgo-product-section > .apgo-bottom-bar {
       transition:
@@ -1442,6 +1469,19 @@
     body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-precautions-inner,
     body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-customer-review-header,
     body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-customer-review-inner {
+      max-width: min(1200px, calc(100vw - var(--apgo-pdp-sidebar-width, 33.33vw) - 32px));
+      margin-left: 0;
+      margin-right: auto;
+    }
+
+    body.apgo-pdp-variant-sidebar-open .cart-upsell-wrapper.cart-upsell-wrapper--product {
+      max-width: min(1200px, calc(100vw - var(--apgo-pdp-sidebar-width, 33.33vw) - 32px));
+      margin-top: 20px;
+      margin-left: 0;
+      margin-right: auto;
+    }
+
+    body.apgo-pdp-variant-sidebar-open footer.apgo-footer .apgo-footer-container {
       max-width: min(1200px, calc(100vw - var(--apgo-pdp-sidebar-width, 33.33vw) - 32px));
       margin-left: 0;
       margin-right: auto;
@@ -1541,6 +1581,8 @@
     .apgo-product-section .apgo-precautions-inner,
     .apgo-product-section .apgo-customer-review-header,
     .apgo-product-section .apgo-customer-review-inner,
+    body:has(.apgo-product-section) .cart-upsell-wrapper.cart-upsell-wrapper--product,
+    body:has(.apgo-product-section) footer.apgo-footer .apgo-footer-container,
     .apgo-product-section > .apgo-bottom-bar {
       transition: none;
     }
