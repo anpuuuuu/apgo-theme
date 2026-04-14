@@ -343,10 +343,10 @@
           }
         },
         "service_link_FeatVL": {
-          "type": "service_link",
-          "name": "Contact Customer Service",
+          "type": "about_link",
+          "name": "Find Us",
           "settings": {
-            "link_text": "Contact Customer Service",
+            "link_text": "Find Us",
             "link_url": "shopify://pages/contact"
           }
         },
@@ -371,8 +371,8 @@
         "product_link_MXKHFB",
         "product_link_qHagph",
         "service_link_D6NX8w",
-        "service_link_FeatVL",
-        "about_link_KXzidM"
+        "about_link_KXzidM",
+        "service_link_FeatVL"
       ],
       "name": "Homepage F2 Eng",
       "settings": {
