@@ -630,8 +630,9 @@
       max-width: 800px;
       width: 90%;
       max-height: 85vh;
-      overflow-y: auto;
-      overflow-x: hidden;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
     }
     
     .apgo-coating-products .apgo-modal-header {
@@ -741,6 +742,7 @@
       top: 0;
       background: #1a1a1a;
       z-index: 10;
+      flex-shrink: 0;
     }
     
     .apgo-coating-products .details-header-info h3 {
@@ -752,6 +754,35 @@
     
     .apgo-coating-products .details-body {
       padding: {{ section.settings.modal_padding }}px;
+    }
+
+    .apgo-coating-products .details-body--stacked {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .apgo-coating-products .details-body-scroll {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .apgo-coating-products .details-body-footer {
+      flex-shrink: 0;
+      background: #1a1a1a;
+      border-top: 1px solid rgba(240, 132, 24, 0.2);
+      padding-top: 4px;
+      z-index: 6;
+    }
+
+    .apgo-coating-products .details-body-footer .product-purchase-section {
+      margin-top: 0 !important;
+      margin-bottom: 0 !important;
     }
 
     .apgo-coating-products .product-description-section h4 {
@@ -1224,6 +1255,9 @@
         max-width: none;
         max-height: 80vh;
         margin: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
       }
       
       .apgo-coating-products .apgo-modal-header {
@@ -1373,6 +1407,88 @@
       background: #2a2a2a !important;
       color: var(--primary-orange) !important;
       border: 1px solid rgba(240,132,24,.3) !important;
+    }
+
+    /* 詳細彈窗：桌面右側欄 + 推擠主版面（不依賴 .apgo-coating-products 前綴） */
+    @media (min-width: 1024px) {
+      body.apgo-details-sidebar-open {
+        overflow-x: hidden;
+      }
+
+      body.apgo-details-sidebar-open #MainContent,
+      body.apgo-details-sidebar-open #header-group {
+        transform: translateX(calc(-1 * var(--apgo-details-sidebar-width, 33.33vw)));
+        transition: transform 0.4s ease-in-out;
+        will-change: transform;
+      }
+
+      .apgo-coating-products .apgo-details-modal {
+        pointer-events: none;
+      }
+
+      .apgo-coating-products .apgo-details-modal.show {
+        pointer-events: auto;
+      }
+
+      .apgo-coating-products .apgo-details-modal .apgo-modal-overlay {
+        position: absolute;
+        inset: 0;
+        right: var(--apgo-details-sidebar-width, 33.33vw);
+        width: auto;
+        background: rgba(0, 0, 0, 0.45);
+      }
+
+      .apgo-coating-products .apgo-details-modal .apgo-details-content {
+        position: fixed;
+        top: 0;
+        right: 0;
+        left: auto;
+        bottom: 0;
+        width: var(--apgo-details-sidebar-width, 33.33vw);
+        max-width: none;
+        height: 100vh;
+        height: 100dvh;
+        max-height: none;
+        margin: 0;
+        border-radius: 0;
+        transform: translateX(105%);
+        transition: transform 0.4s ease-in-out, opacity 0.3s ease;
+        box-shadow: -12px 0 40px rgba(0, 0, 0, 0.45);
+      }
+
+      .apgo-coating-products .apgo-details-modal.show .apgo-details-content {
+        transform: translateX(0);
+      }
+
+      .apgo-coating-products .apgo-details-modal.show .apgo-modal-overlay {
+        opacity: 1;
+      }
+
+      .apgo-coating-products .apgo-details-modal .details-image-section {
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .apgo-coating-products .apgo-details-modal .product-images-carousel {
+        max-height: 220px;
+      }
+
+      .apgo-coating-products .apgo-details-modal .product-detail-image {
+        max-height: 220px;
+      }
+
+      .apgo-coating-products .apgo-details-modal .product-description-section {
+        width: 100%;
+        margin-top: 12px !important;
+      }
+    }
+
+    @media (min-width: 1024px) and (prefers-reduced-motion: reduce) {
+      body.apgo-details-sidebar-open #MainContent,
+      body.apgo-details-sidebar-open #header-group,
+      .apgo-coating-products .apgo-details-modal .apgo-details-content {
+        transition: none;
+      }
     }
     </style>
     
@@ -1602,9 +1718,10 @@
                   <button class="apgo-modal-close" onclick="this.closest('.apgo-details-modal').classList.remove('show'); document.body.style.overflow = 'auto';">&times;</button>
                 </div>
                 
-                <div class="details-body">
+                <div class="details-body details-body--stacked">
                   {% if product.settings.shopify_product != blank %}
                     {% assign shopify_product = product.settings.shopify_product %}
+                    <div class="details-body-scroll">
                     
                     {% comment %} 收集指定的變體 ID {% endcomment %}
                     {% assign allowed_ids = "" %}
@@ -1725,8 +1842,63 @@
                       </div>
                     </div>
                     {% endif %}
-                    
+
+                    {% if request.design_mode %}
+                    <div style="margin-top:16px;padding:12px;border:1px dashed rgba(240,132,24,.4);border-radius:8px;background:rgba(240,132,24,.05)">
+                      <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+                        <strong style="color:var(--primary-orange)">變體管理工具（僅編輯器可見）</strong>
+                        <input id="variant-search-{{ product.id }}" placeholder="輸入關鍵字過濾變體"
+                               style="flex:1;padding:8px;border-radius:6px;border:1px solid rgba(240,132,24,.3);background:#2a2a2a;color:#fff">
+                      </div>
+                      {% if allowed_ids.size > 0 %}
+                        <p style="color:var(--primary-orange);font-size:0.85rem;margin-bottom:8px">
+                          ✓ 已設定 {{ allowed_ids.size }} 個指定變體，僅顯示以下變體：
+                        </p>
+                      {% else %}
+                        <p style="color:#999;font-size:0.85rem;margin-bottom:8px">
+                          ℹ️ 未設定指定變體，顯示所有變體：
+                        </p>
+                      {% endif %}
+                      <div id="variant-list-{{ product.id }}" style="max-height:220px;overflow:auto;font-size:.9rem;line-height:1.6">
+                        {% for v in shopify_product.variants %}
+                          {% assign is_selected = false %}
+                          {% assign v_id_str = v.id | append: "" %}
+                          {% if allowed_ids == blank or allowed_ids contains v_id_str %}
+                            {% assign is_selected = true %}
+                          {% endif %}
+                          <div data-title="{{ v.title | downcase }}"
+                               style="display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06);{% unless is_selected %}opacity:0.5;{% endunless %}">
+                            <span>
+                              {% if is_selected %}✓{% else %}○{% endif %}
+                              {{ v.title }}（ID：<code>{{ v.id }}</code>）
+                              {% unless v.available %}<em style="color:#999">｜售完</em>{% endunless %}
+                            </span>
+                            <button type="button" onclick="navigator.clipboard.writeText('{{ v.id }}')"
+                                    style="padding:4px 8px;border-radius:6px;border:1px solid rgba(240,132,24,.3);background:#2a2a2a;color:var(--primary-orange);cursor:pointer">
+                              複製 ID
+                            </button>
+                          </div>
+                        {% endfor %}
+                      </div>
+                      <script>
+                      (function(){
+                        const ip = document.getElementById('variant-search-{{ product.id }}');
+                        const list = document.getElementById('variant-list-{{ product.id }}');
+                        if (!ip || !list) return;
+                        ip.addEventListener('input', function(){
+                          const q = ip.value.trim().toLowerCase();
+                          list.querySelectorAll('[data-title]').forEach(function(row){
+                            row.style.display = q==='' || row.dataset.title.includes(q) ? 'flex' : 'none';
+                          });
+                        });
+                      })();
+                      </script>
+                    </div>
+                    {% endif %}
+                    </div>
+
                     <!-- 購買區域 - 簡化版 -->
+                    <div class="details-body-footer">
                     <div class="product-purchase-section" style="margin-top: {{ section.settings.modal_section_gap }}px;">
                       <div class="price-section">
                         {% if selected_variant.compare_at_price > selected_variant.price %}
@@ -1806,62 +1978,10 @@
                         加入購物車
                       </button>
                     </div>
-                    
-                    <!-- Theme Editor 專用變體查找工具 -->
-                    {% if request.design_mode %}
-                    <div style="margin-top:16px;padding:12px;border:1px dashed rgba(240,132,24,.4);border-radius:8px;background:rgba(240,132,24,.05)">
-                      <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
-                        <strong style="color:var(--primary-orange)">變體管理工具（僅編輯器可見）</strong>
-                        <input id="variant-search-{{ product.id }}" placeholder="輸入關鍵字過濾變體"
-                               style="flex:1;padding:8px;border-radius:6px;border:1px solid rgba(240,132,24,.3);background:#2a2a2a;color:#fff">
-                      </div>
-                      {% if allowed_ids.size > 0 %}
-                        <p style="color:var(--primary-orange);font-size:0.85rem;margin-bottom:8px">
-                          ✓ 已設定 {{ allowed_ids.size }} 個指定變體，僅顯示以下變體：
-                        </p>
-                      {% else %}
-                        <p style="color:#999;font-size:0.85rem;margin-bottom:8px">
-                          ℹ️ 未設定指定變體，顯示所有變體：
-                        </p>
-                      {% endif %}
-                      <div id="variant-list-{{ product.id }}" style="max-height:220px;overflow:auto;font-size:.9rem;line-height:1.6">
-                        {% for v in shopify_product.variants %}
-                          {% assign is_selected = false %}
-                          {% assign v_id_str = v.id | append: "" %}
-                          {% if allowed_ids == blank or allowed_ids contains v_id_str %}
-                            {% assign is_selected = true %}
-                          {% endif %}
-                          <div data-title="{{ v.title | downcase }}" 
-                               style="display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06);{% unless is_selected %}opacity:0.5;{% endunless %}">
-                            <span>
-                              {% if is_selected %}✓{% else %}○{% endif %} 
-                              {{ v.title }}（ID：<code>{{ v.id }}</code>）
-                              {% unless v.available %}<em style="color:#999">｜售完</em>{% endunless %}
-                            </span>
-                            <button type="button" onclick="navigator.clipboard.writeText('{{ v.id }}')"
-                                    style="padding:4px 8px;border-radius:6px;border:1px solid rgba(240,132,24,.3);background:#2a2a2a;color:var(--primary-orange);cursor:pointer">
-                              複製 ID
-                            </button>
-                          </div>
-                        {% endfor %}
-                      </div>
-                      <script>
-                      (function(){
-                        const ip = document.getElementById('variant-search-{{ product.id }}');
-                        const list = document.getElementById('variant-list-{{ product.id }}');
-                        if (!ip || !list) return;
-                        ip.addEventListener('input', function(){
-                          const q = ip.value.trim().toLowerCase();
-                          list.querySelectorAll('[data-title]').forEach(function(row){
-                            row.style.display = q==='' || row.dataset.title.includes(q) ? 'flex' : 'none';
-                          });
-                        });
-                      })();
-                      </script>
                     </div>
-                    {% endif %}
-                    
+
                   {% else %}
+                    <div class="details-body-scroll">
                     <!-- 如果沒有選擇 Shopify 產品，使用手動設定的內容 -->
                     {% if product.settings.image != blank %}
                     <div class="details-image-section">
@@ -1898,6 +2018,7 @@
                       <p>{{ product.settings.detailed_description }}</p>
                     </div>
                     {% endif %}
+                    </div>
                   {% endif %}
                   
                   <!-- 每個產品專用的 JavaScript 函數 -->
@@ -2020,8 +2141,10 @@
                                 APGOSection{{ section.id }}.addToCart(variantId, quantity, productName).then(function(result) {
                                   if (result && result.success) {
                                     // 成功後關閉彈窗
-                                    modal{{ product.id }}.classList.remove('show');
+                                    var dModal = document.getElementById('details-{{ product.id }}');
+                                    if (dModal) dModal.classList.remove('show');
                                     document.body.style.overflow = 'auto';
+                                    if (typeof window.apgoSyncDetailsSidebarLayout === 'function') window.apgoSyncDetailsSidebarLayout();
                                   }
                                 }).finally(function() {
                                   // 恢復按鈕狀態
@@ -2119,6 +2242,7 @@
                 modal.classList.remove('show');
               });
               document.body.style.overflow = 'auto';
+              if (typeof window.apgoSyncDetailsSidebarLayout === 'function') window.apgoSyncDetailsSidebarLayout();
               
               // 觸發事件
               document.dispatchEvent(new CustomEvent('cart:item-added', {
@@ -2202,6 +2326,7 @@
           if (modal) {
             modal.classList.add('show');
             document.body.style.overflow = 'hidden';
+            if (typeof window.apgoSyncDetailsSidebarLayout === 'function') window.apgoSyncDetailsSidebarLayout();
           }
         },
         
@@ -2210,6 +2335,7 @@
           if (modal) {
             modal.classList.remove('show');
             document.body.style.overflow = 'auto';
+            if (typeof window.apgoSyncDetailsSidebarLayout === 'function') window.apgoSyncDetailsSidebarLayout();
           }
         },
         
@@ -2263,6 +2389,7 @@
 
             modal.classList.add('show');
             document.body.style.overflow = 'hidden';
+            if (typeof window.apgoSyncDetailsSidebarLayout === 'function') window.apgoSyncDetailsSidebarLayout();
           }, true); // ← 用捕獲階段，避免被其它 listener 取消
 
           // 2) 有 wrapper 才啟用水平捲動/拖曳，並避免干擾互動元件
@@ -2328,8 +2455,9 @@
           document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
               document.querySelectorAll('.apgo-section-' + sectionId + ' .apgo-variant-modal.show').forEach(m => m.classList.remove('show'));
-              document.querySelectorAll('.apgo-section-' + sectionId + ' .apgo-details-modal.show').forEach(m => m.classList.remove('show'));
+              document.querySelectorAll('.apgo-details-modal.show').forEach(m => m.classList.remove('show'));
               document.body.style.overflow = 'auto';
+              if (typeof window.apgoSyncDetailsSidebarLayout === 'function') window.apgoSyncDetailsSidebarLayout();
               dbg('ESC close all modals');
             }
           });
@@ -2381,6 +2509,65 @@
         APGOSection{{ section.id }}.init();
       }
     });
+    </script>
+
+    <script>
+      (function () {
+        function apgoSyncDetailsSidebarLayout() {
+          var desktop = window.matchMedia('(min-width: 1024px)').matches;
+          var anyOpen = !!document.querySelector('.apgo-details-modal.show');
+          document.documentElement.style.setProperty('--apgo-details-sidebar-width', '33.33vw');
+          if (!anyOpen) {
+            document.body.classList.remove('apgo-details-sidebar-open');
+            document.body.style.overflow = '';
+            return;
+          }
+          if (desktop) {
+            document.body.classList.add('apgo-details-sidebar-open');
+            document.body.style.overflow = '';
+          } else {
+            document.body.classList.remove('apgo-details-sidebar-open');
+            document.body.style.overflow = 'hidden';
+          }
+        }
+        window.apgoSyncDetailsSidebarLayout = apgoSyncDetailsSidebarLayout;
+
+        function apgoObserveDetailsModals() {
+          document.querySelectorAll('.apgo-details-modal').forEach(function (modal) {
+            if (modal.dataset.apgoSidebarObserver) return;
+            modal.dataset.apgoSidebarObserver = '1';
+            var mo = new MutationObserver(function () {
+              apgoSyncDetailsSidebarLayout();
+            });
+            mo.observe(modal, { attributes: true, attributeFilter: ['class'] });
+          });
+        }
+
+        function apgoMoveDetailsModalsToBody() {
+          var sel = '.apgo-coating-products.apgo-section-{{ section.id | replace: '--', '-' | replace: '__', '-' }}';
+          var root = document.querySelector(sel);
+          if (!root) return;
+          root.querySelectorAll('.apgo-details-modal').forEach(function (m) {
+            if (m.dataset.apgoMovedToBody) return;
+            m.dataset.apgoMovedToBody = '1';
+            document.body.appendChild(m);
+          });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+          {% unless request.design_mode %}
+          apgoMoveDetailsModalsToBody();
+          {% endunless %}
+          apgoObserveDetailsModals();
+          apgoSyncDetailsSidebarLayout();
+        });
+
+        var apgoResizeT;
+        window.addEventListener('resize', function () {
+          clearTimeout(apgoResizeT);
+          apgoResizeT = setTimeout(apgoSyncDetailsSidebarLayout, 120);
+        });
+      })();
     </script>
     
     {% schema %}
