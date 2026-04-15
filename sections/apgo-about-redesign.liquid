@@ -51,7 +51,8 @@
     color: #fff;
     font-family: Arial, 'Helvetica Neue', sans-serif;
     position: relative;
-    overflow: hidden;
+    /* 勿用 overflow:hidden：::before 若用 transform 位移會被裁掉，粒子會消失 */
+    overflow-x: clip;
     isolation: isolate;
   }
 
@@ -60,7 +61,7 @@
     z-index: 1;
   }
 
-  /* 輕量橘色微粒：由下往上漂，全 section 背景層 */
+  /* 輕量橘色微粒：由下往上漂；用 background-position 動畫避免被 overflow 裁切 */
   .apgo-about-page::before {
     content: '';
     position: absolute;
@@ -68,39 +69,49 @@
     z-index: 0;
     pointer-events: none;
     background-image:
-      radial-gradient(circle, rgba(240, 132, 24, 0.5) 1px, transparent 1.8px),
-      radial-gradient(circle, rgba(255, 170, 90, 0.38) 1px, transparent 2px),
-      radial-gradient(circle, rgba(240, 132, 24, 0.32) 1.2px, transparent 2.2px),
-      radial-gradient(circle, rgba(255, 154, 60, 0.42) 0.8px, transparent 1.6px),
-      radial-gradient(circle, rgba(240, 132, 24, 0.28) 1px, transparent 2px);
+      radial-gradient(circle, rgba(240, 132, 24, 0.75) 1.4px, transparent 2.6px),
+      radial-gradient(circle, rgba(255, 170, 90, 0.55) 1.2px, transparent 2.4px),
+      radial-gradient(circle, rgba(240, 132, 24, 0.5) 1.6px, transparent 3px),
+      radial-gradient(circle, rgba(255, 154, 60, 0.6) 1px, transparent 2.2px),
+      radial-gradient(circle, rgba(240, 132, 24, 0.45) 1.2px, transparent 2.5px);
     background-size:
-      140px 220px,
-      180px 260px,
-      110px 190px,
+      120px 200px,
       160px 240px,
-      200px 280px;
+      100px 180px,
+      140px 220px,
+      180px 260px;
     background-position:
-      10% 100%,
-      35% 100%,
-      58% 100%,
-      78% 100%,
-      92% 100%;
+      8% 120%,
+      32% 130%,
+      55% 125%,
+      74% 135%,
+      90% 128%;
     background-repeat: repeat;
-    opacity: 0.82;
-    animation: apgo-about-particles-rise 22s linear infinite;
+    opacity: 0.95;
+    animation: apgo-about-particles-rise 20s linear infinite;
   }
 
   @keyframes apgo-about-particles-rise {
     0% {
-      transform: translateY(14%);
-      opacity: 0.62;
+      background-position:
+        8% 120%,
+        32% 130%,
+        55% 125%,
+        74% 135%,
+        90% 128%;
+      opacity: 0.75;
     }
     50% {
-      opacity: 0.92;
+      opacity: 1;
     }
     100% {
-      transform: translateY(-18%);
-      opacity: 0.68;
+      background-position:
+        8% -35%,
+        32% -40%,
+        55% -38%,
+        74% -42%,
+        90% -36%;
+      opacity: 0.8;
     }
   }
 
@@ -167,6 +178,7 @@
     margin: 0 auto;
     padding: 72px 24px 56px;
     text-align: center;
+    background: transparent;
   }
 
   .apgo-brand-philosophy h2 {
