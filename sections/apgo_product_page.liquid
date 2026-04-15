@@ -932,6 +932,15 @@
     }
   }
 
+  /*
+    固定底欄會蓋住捲到底時的 footer（付款方式等）。
+    桌面側欄開啟時底欄隱藏（見 .apgo-pdp-variant-sidebar-open），不需預留。
+    數值 ≈ 底欄上下 padding + 按鈕列高度；另加 safe-area 與 iOS 鍵盤時 --vvb 上移後仍留足夠可捲區。
+  */
+  body:has(.apgo-product-section):not(.apgo-pdp-variant-sidebar-open) footer.apgo-footer {
+    padding-bottom: calc(104px + env(safe-area-inset-bottom, 0px));
+  }
+
   .apgo-price-section {
     flex: 1;
   }
