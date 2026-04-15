@@ -114,6 +114,7 @@
       "disabled": true,
       "name": "Homepage F2",
       "settings": {
+        "export_strip_to_header_drawer": false,
         "font_family": "sans_serif_n4",
         "container_max_width": 1200,
         "container_padding": 20,
@@ -376,6 +377,7 @@
       ],
       "name": "Homepage F2 Eng",
       "settings": {
+        "export_strip_to_header_drawer": true,
         "font_family": "sans_serif_n4",
         "container_max_width": 1200,
         "container_padding": 20,

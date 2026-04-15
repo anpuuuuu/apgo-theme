@@ -73,7 +73,23 @@ class HeaderDrawer extends Component {
     summary.setAttribute('aria-expanded', 'true');
     requestAnimationFrame(() => details.classList.add('menu-open'));
 
+    this.#injectApgoFooterStripOnce();
+
     trapFocus(details);
+  }
+
+  /**
+   * 將 APGO-footer 輸出的 template（品牌＋付款條）克隆到手機選單底部（Liquid 無法跨 section 讀設定）。
+   */
+  #injectApgoFooterStripOnce() {
+    const root = this.querySelector('[data-apgo-drawer-footer-mount]');
+    if (!root || root.dataset.apgoInjected === '1') return;
+
+    const tpl = document.querySelector('template[id^="apgo-footer-drawer-strip--"]');
+    if (!tpl?.content?.firstElementChild) return;
+
+    root.appendChild(tpl.content.cloneNode(true));
+    root.dataset.apgoInjected = '1';
   }
 
   /**

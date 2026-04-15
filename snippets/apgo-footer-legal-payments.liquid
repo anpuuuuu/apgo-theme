@@ -1,0 +1,123 @@
+{% doc %}
+  APGO Footer：版權、法律連結、付款圖示（與 sections/APGO-footer.liquid 同源）。
+  @param {object} s - APGO-footer 的 section
+  @param {boolean} [compact] - 手機抽屜用較緊排版
+{% enddoc %}
+{% liquid
+  assign compact = compact | default: false
+%}
+{% if s.settings.show_copyright or s.settings.show_legal_links or s.settings.show_payment_methods %}
+  <div class="apgo-footer-bottom{% if compact %} apgo-footer-snippet--drawer{% endif %}">
+    <div class="apgo-footer-container">
+      <div class="apgo-footer-bottom-content">
+        {% if s.settings.show_copyright %}
+          <div class="apgo-copyright">
+            © {{ 'now' | date: '%Y' }} {{ s.settings.copyright_text }}
+          </div>
+        {% endif %}
+
+        {% if s.settings.show_legal_links %}
+          <div class="apgo-footer-legal-links">
+            {% if s.settings.privacy_policy_url != blank %}
+              <a href="{{ s.settings.privacy_policy_url }}">{{ s.settings.privacy_policy_text }}</a>
+            {% endif %}
+
+            {% if s.settings.terms_url != blank %}
+              {% if s.settings.privacy_policy_url != blank %}
+                <span>|</span>
+              {% endif %}
+              <a href="{{ s.settings.terms_url }}">{{ s.settings.terms_text }}</a>
+            {% endif %}
+
+            {% if s.settings.return_policy_url != blank %}
+              {% if s.settings.privacy_policy_url != blank or s.settings.terms_url != blank %}
+                <span>|</span>
+              {% endif %}
+              <a href="{{ s.settings.return_policy_url }}">{{ s.settings.return_policy_text }}</a>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        {% if s.settings.show_payment_methods %}
+          <div class="apgo-payment-methods">
+            {% if s.settings.show_visa %}
+              <div class="apgo-payment-icon">
+                <img
+                  src="{{ s.settings.visa_image | image_url: width: s.settings.payment_img_width, height: s.settings.payment_img_height }}"
+                  alt="Visa"
+                  width="{{ s.settings.payment_img_width }}"
+                  height="{{ s.settings.payment_img_height }}"
+                  loading="lazy"
+                >
+              </div>
+            {% endif %}
+
+            {% if s.settings.show_mastercard %}
+              <div class="apgo-payment-icon">
+                <img
+                  src="{{ s.settings.mastercard_image | image_url: width: s.settings.payment_img_width, height: s.settings.payment_img_height }}"
+                  alt="Mastercard"
+                  width="{{ s.settings.payment_img_width }}"
+                  height="{{ s.settings.payment_img_height }}"
+                  loading="lazy"
+                >
+              </div>
+            {% endif %}
+
+            {% if s.settings.show_jcb %}
+              <div class="apgo-payment-icon">
+                <img
+                  src="{{ s.settings.jcb_image | image_url: width: s.settings.payment_img_width, height: s.settings.payment_img_height }}"
+                  alt="JCB"
+                  width="{{ s.settings.payment_img_width }}"
+                  height="{{ s.settings.payment_img_height }}"
+                  loading="lazy"
+                >
+              </div>
+            {% endif %}
+
+            {% if s.settings.show_amex %}
+              <div class="apgo-payment-icon">
+                <img
+                  src="{{ s.settings.amex_image | image_url: width: s.settings.payment_img_width, height: s.settings.payment_img_height }}"
+                  alt="American Express"
+                  width="{{ s.settings.payment_img_width }}"
+                  height="{{ s.settings.payment_img_height }}"
+                  loading="lazy"
+                >
+              </div>
+            {% endif %}
+
+            {% if s.settings.show_unionpay %}
+              <div class="apgo-payment-icon">
+                <img
+                  src="{{ s.settings.unionpay_image | image_url: width: s.settings.payment_img_width, height: s.settings.payment_img_height }}"
+                  alt="UnionPay"
+                  width="{{ s.settings.payment_img_width }}"
+                  height="{{ s.settings.payment_img_height }}"
+                  loading="lazy"
+                >
+              </div>
+            {% endif %}
+
+            {% if s.settings.show_linepay %}
+              <div class="apgo-payment-icon">
+                <img
+                  src="{{ s.settings.linepay_image | image_url: width: s.settings.payment_img_width, height: s.settings.payment_img_height }}"
+                  alt="LINE Pay"
+                  width="{{ s.settings.payment_img_width }}"
+                  height="{{ s.settings.payment_img_height }}"
+                  loading="lazy"
+                >
+              </div>
+            {% endif %}
+
+            {% if s.settings.show_cod %}
+              <div class="apgo-payment-cod">{{ s.settings.cod_text }}</div>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endif %}
