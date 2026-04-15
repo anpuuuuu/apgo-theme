@@ -32,90 +32,6 @@
             overflow: hidden;
         }
 
-        /* 輕量橘色粒子：底層由下往上漂（純 CSS，box-shadow 模擬） */
-        .brand-story-particles {
-            position: absolute;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-            overflow: hidden;
-        }
-
-        .brand-story-particles::before,
-        .brand-story-particles::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            bottom: -15%;
-            width: 3px;
-            height: 3px;
-            border-radius: 50%;
-            background: rgba(240, 132, 24, 0.55);
-            will-change: transform;
-        }
-
-        .brand-story-particles::before {
-            opacity: 0.65;
-            box-shadow:
-                6vw 12vh 0 0 rgba(240, 132, 24, 0.45),
-                14vw 4vh 0 0 rgba(255, 154, 60, 0.35),
-                22vw 18vh 0 0 rgba(240, 132, 24, 0.3),
-                31vw 8vh 0 0 rgba(255, 180, 90, 0.28),
-                38vw 22vh 0 0 rgba(240, 132, 24, 0.38),
-                48vw 3vh 0 0 rgba(240, 132, 24, 0.32),
-                55vw 16vh 0 0 rgba(255, 154, 60, 0.34),
-                63vw 28vh 0 0 rgba(240, 132, 24, 0.28),
-                72vw 10vh 0 0 rgba(240, 132, 24, 0.42),
-                80vw 24vh 0 0 rgba(255, 154, 60, 0.26),
-                88vw 6vh 0 0 rgba(240, 132, 24, 0.36),
-                94vw 20vh 0 0 rgba(255, 180, 90, 0.22),
-                11vw 32vh 0 0 rgba(240, 132, 24, 0.33),
-                27vw 36vh 0 0 rgba(240, 132, 24, 0.27),
-                44vw 34vh 0 0 rgba(255, 154, 60, 0.3),
-                59vw 38vh 0 0 rgba(240, 132, 24, 0.31),
-                76vw 32vh 0 0 rgba(240, 132, 24, 0.25),
-                91vw 35vh 0 0 rgba(255, 180, 90, 0.24);
-            animation: brandStoryParticlesRise 26s linear infinite;
-        }
-
-        .brand-story-particles::after {
-            opacity: 0.5;
-            box-shadow:
-                4vw 20vh 0 0 rgba(255, 154, 60, 0.32),
-                18vw 14vh 0 0 rgba(240, 132, 24, 0.28),
-                29vw 26vh 0 0 rgba(240, 132, 24, 0.36),
-                42vw 11vh 0 0 rgba(255, 180, 90, 0.26),
-                52vw 30vh 0 0 rgba(240, 132, 24, 0.3),
-                66vw 5vh 0 0 rgba(240, 132, 24, 0.34),
-                78vw 19vh 0 0 rgba(255, 154, 60, 0.28),
-                86vw 28vh 0 0 rgba(240, 132, 24, 0.26),
-                96vw 15vh 0 0 rgba(240, 132, 24, 0.32),
-                9vw 40vh 0 0 rgba(240, 132, 24, 0.22),
-                35vw 42vh 0 0 rgba(255, 154, 60, 0.24),
-                61vw 44vh 0 0 rgba(240, 132, 24, 0.27),
-                84vw 40vh 0 0 rgba(255, 180, 90, 0.2);
-            animation: brandStoryParticlesRise 36s linear infinite;
-            animation-delay: -12s;
-        }
-
-        @keyframes brandStoryParticlesRise {
-            from {
-                transform: translate3d(0, 0, 0);
-            }
-            to {
-                transform: translate3d(0, -120vh, 0);
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            .brand-story-particles::before,
-            .brand-story-particles::after {
-                animation: none;
-                opacity: 0.12;
-                transform: translate3d(0, -20vh, 0);
-            }
-        }
-
         /* Background decorative effects */
         .brand-story-section::before {
             content: '';
@@ -125,7 +41,6 @@
             transform: translate(-50%, -50%);
             width: 800px;
             height: 800px;
-            z-index: 1;
             background: radial-gradient(circle, rgba(240, 132, 24, 0.05) 0%, transparent 70%);
             animation: pulse 4s ease-in-out infinite;
         }
@@ -140,7 +55,7 @@
             margin: 0 auto;
             padding: 0 20px;
             position: relative;
-            z-index: 2;
+            z-index: 1;
         }
 
         /* Title area */
@@ -452,7 +367,6 @@
 </head>
 <body>
     <section class="brand-story-section">
-        <div class="brand-story-particles" aria-hidden="true"></div>
         <div class="container">
             <!-- Title Area -->
             <div class="story-header">
