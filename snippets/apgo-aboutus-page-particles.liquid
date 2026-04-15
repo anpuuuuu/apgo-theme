@@ -1,12 +1,14 @@
 {% comment %}
-  About Us 全頁（#MainContent 內兩個 section）共用一層橘色微粒背景，密度為原設計約一半（3 層 + 較大 tile）。
-  微粒在 ::before 且 z-index:0；各 section 為 z-index:1。若內層再用不透明白/黑底蓋滿，粒子會被擋住，故強制兩段主內容外層透明，由 #MainContent 提供黑底。
+  About Us、Find Us（page.social_media）全頁共用一層橘色微粒背景，密度為原設計約一半（3 層 + 較大 tile）。
+  微粒在 ::before 且 z-index:0；各 section 為 z-index:1。若內層再用不透明白/黑底蓋滿，粒子會被擋住，故強制主內容外層透明，由 #MainContent 提供黑底。
 {% endcomment %}
 {% liquid
   assign apgo_aboutus_particles = false
   if request.page_type == 'page' and page.handle == 'about-us'
     assign apgo_aboutus_particles = true
   elsif template.name == 'page' and template.suffix == 'about-us'
+    assign apgo_aboutus_particles = true
+  elsif template.name == 'page' and template.suffix == 'social_media'
     assign apgo_aboutus_particles = true
   endif
 %}
@@ -47,7 +49,8 @@
 
     /* 外層改透明，粒子才看得到；卡片／影片區自有背景 */
     #MainContent.apgo-aboutus-main-particles .apgo-about-page,
-    #MainContent.apgo-aboutus-main-particles .brand-story-section {
+    #MainContent.apgo-aboutus-main-particles .brand-story-section,
+    #MainContent.apgo-aboutus-main-particles .social-media-section {
       background: transparent !important;
     }
 
