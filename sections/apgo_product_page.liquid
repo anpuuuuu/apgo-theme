@@ -621,11 +621,20 @@
   }
 
   .apgo-insidebox-title {
-    margin: 0 0 12px;
+    margin: 0 0 6px;
     font-size: 2.9rem;
     font-weight: 400;
     color: var(--primary-orange);
     text-align: center;
+  }
+
+  .apgo-insidebox-subline {
+    margin: 0 0 12px;
+    text-align: center;
+    font-size: 0.82rem;
+    line-height: 1.4;
+    color: #ffffff;
+    font-weight: 400;
   }
 
   .apgo-insidebox-image {
@@ -634,14 +643,6 @@
     max-width: none !important;
     height: auto;
     margin: 0 auto;
-  }
-
-  .apgo-insidebox-note {
-    margin: 10px 2px 0;
-    text-align: right;
-    font-size: 0.82rem;
-    line-height: 1.4;
-    color: #6f6f6f;
   }
 
   /* 短影音展示區 */
@@ -2413,13 +2414,13 @@
       <section class="apgo-insidebox">
         <div class="apgo-insidebox-inner">
           <h3 class="apgo-insidebox-title">{{ 'product.whats_included' | t }}</h3>
+          <p class="apgo-insidebox-subline">{{ 'product.whats_included_subline' | t }}</p>
           <img
             class="apgo-insidebox-image"
             src="{{ insidebox_image | image_url: width: 2000 }}"
             alt="{{ 'product.whats_included' | t }}"
             loading="lazy"
           >
-          <p class="apgo-insidebox-note">*Items shown are for single bottle option. Bundle sets may differ.</p>
         </div>
       </section>
     {% endif %}
