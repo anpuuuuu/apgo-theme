@@ -235,12 +235,14 @@
             display: block;
             width: 100%;
             height: 100%;
+            overflow: visible;
         }
 
+        /* 須留足寬度，否則 path 在 viewBox 外會被裁成近似垂直的細線 */
         .timeline-curve-bridge--right {
             right: 0;
             top: 50%;
-            width: clamp(72px, 11vw, 128px);
+            width: clamp(100px, 14vw, 168px);
             height: var(--curve-h, clamp(5rem, 18vmin, 12rem));
             transform: translateY(0);
         }
@@ -248,9 +250,16 @@
         .timeline-curve-bridge--left {
             left: 0;
             top: 50%;
-            width: clamp(72px, 11vw, 128px);
+            width: clamp(100px, 14vw, 168px);
             height: var(--curve-h, clamp(5rem, 18vmin, 12rem));
             transform: translateY(0);
+        }
+
+        @media (min-width: 769px) {
+            .timeline-row--ltr:first-of-type > .timeline-item:nth-child(3),
+            .timeline-row--rtl > .timeline-item:nth-child(3) {
+                overflow: visible;
+            }
         }
 
         .timeline-curve-bridge__stroke {
@@ -586,7 +595,7 @@
                             </p>
                         </div>
                         <div class="timeline-curve-bridge timeline-curve-bridge--right" aria-hidden="true">
-                            <svg viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" focusable="false">
+                            <svg viewBox="68 0 66 100" preserveAspectRatio="none" overflow="visible" xmlns="http://www.w3.org/2000/svg" focusable="false">
                                 <path class="timeline-curve-bridge__stroke" d="M 86 0 Q 118 50 86 100" />
                                 <path class="timeline-curve-bridge__glow" d="M 86 0 Q 118 50 86 100" />
                             </svg>
@@ -628,7 +637,7 @@
                             </p>
                         </div>
                         <div class="timeline-curve-bridge timeline-curve-bridge--left" aria-hidden="true">
-                            <svg viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" focusable="false">
+                            <svg viewBox="-36 0 64 100" preserveAspectRatio="none" overflow="visible" xmlns="http://www.w3.org/2000/svg" focusable="false">
                                 <path class="timeline-curve-bridge__stroke" d="M 14 0 Q -18 50 14 100" />
                                 <path class="timeline-curve-bridge__glow" d="M 14 0 Q -18 50 14 100" />
                             </svg>
