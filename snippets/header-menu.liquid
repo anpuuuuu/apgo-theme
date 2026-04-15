@@ -20,6 +20,23 @@
   elsif block.settings.menu_style == 'featured_products'
     assign ratio = block.settings.featured_products_aspect_ratio
   endif
+
+  assign apgo_find_us_href = blank
+  assign apgo_find_us_handle = blank
+  if pages['find-us'] != blank
+    assign apgo_find_us_href = pages['find-us'].url
+    assign apgo_find_us_handle = pages['find-us'].handle
+  elsif pages['social-media'] != blank
+    assign apgo_find_us_href = pages['social-media'].url
+    assign apgo_find_us_handle = pages['social-media'].handle
+  elsif pages['join-our-community'] != blank
+    assign apgo_find_us_href = pages['join-our-community'].url
+    assign apgo_find_us_handle = pages['join-our-community'].handle
+  endif
+  assign apgo_find_us_active = false
+  if apgo_find_us_handle != blank and request.page_type == 'page' and page.handle == apgo_find_us_handle
+    assign apgo_find_us_active = true
+  endif
 %}
 
 {% capture children %}
@@ -82,6 +99,27 @@
       {%- endif -%}
     </li>
   {% endfor %}
+  {% if apgo_find_us_href != blank %}
+    <li
+      role="presentation"
+      class="menu-list__list-item"
+      on:focus="/activate"
+      on:blur="/deactivate"
+      on:pointerenter="/activate"
+      on:pointerleave="/deactivate"
+    >
+      <a
+        href="{{ apgo_find_us_href }}"
+        class="menu-list__link{% if apgo_find_us_active %} menu-list__link--active{% endif %}"
+        {% if apgo_find_us_active %}
+          aria-current="page"
+        {% endif %}
+        ref="menuitem"
+      >
+        <span class="menu-list__link-title">{{ 'apgo_header.find_us' | t }}</span>
+      </a>
+    </li>
+  {% endif %}
   <li
     class="menu-list__list-item"
     role="presentation"

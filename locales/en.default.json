@@ -561,5 +561,8 @@
     "address_ready_for_checkout": "Address saved. You can proceed to checkout.",
     "use_for_checkout": "Use this address for checkout",
     "save_default_preference": "Save this as my default address after checkout"
+  },
+  "apgo_header": {
+    "find_us": "Find Us"
   }
 }

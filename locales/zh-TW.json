@@ -561,5 +561,8 @@
     "address_ready_for_checkout": "地址已保存，可前往结账。",
     "use_for_checkout": "结账时使用此地址",
     "save_default_preference": "结账后将此地址设为默认"
+  },
+  "apgo_header": {
+    "find_us": "尋找我們"
   }
 }
