@@ -250,8 +250,8 @@
         "bg_color_end": "#2d2d2d",
         "border_color": "#333333",
         "use_accent_gradient": true,
-        "accent_color_start": "#ff6b35",
-        "accent_color_end": "#f7931e",
+        "accent_color_start": "#f08418",
+        "accent_color_end": "#f08418",
         "text_color": "#ffffff",
         "text_secondary_color": "#cccccc",
         "product_list": [

@@ -146,7 +146,7 @@
     {% endif %} !important;
     color: #ffffff !important;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+    box-shadow: 0 4px 12px rgba(240, 132, 24, 0.3);
   }
 
   /* 商品滑動容器 */
@@ -164,7 +164,7 @@
     scroll-behavior: smooth;
     padding: 12px 0;
     scrollbar-width: thin;
-    scrollbar-color: #ff6b35 #333333;
+    scrollbar-color: #f08418 #333333;
     -webkit-overflow-scrolling: touch;
   }
 
@@ -178,7 +178,7 @@
   }
 
   .upsell-slider::-webkit-scrollbar-thumb {
-    background: linear-gradient(90deg, #ff6b35, #f7931e) !important;
+    background: #f08418 !important;
     border-radius: 3px;
   }
 
@@ -199,10 +199,10 @@
   }
 
   .upsell-product-card:hover {
-    border-color: #ff6b35 !important;
+    border-color: #f08418 !important;
     transform: translateY(-4px);
     box-shadow: 
-      0 12px 35px rgba(255, 107, 53, 0.3),
+      0 12px 35px rgba(240, 132, 24, 0.3),
       inset 0 1px 0 rgba(255, 255, 255, 0.1);
   }
 
@@ -261,7 +261,7 @@
   }
 
   .upsell-product-card:hover .upsell-product-title {
-    color: #ff6b35 !important;
+    color: #f08418 !important;
   }
 
   /* 載入狀態樣式 */
@@ -279,7 +279,7 @@
     width: 40px;
     height: 40px;
     border: 3px solid #333333 !important;
-    border-top-color: #ff6b35 !important;
+    border-top-color: #f08418 !important;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
@@ -315,7 +315,7 @@
     font-weight: 700;
     color: {{ section.settings.accent_color_start }} !important;
     margin: 0;
-    text-shadow: 0 0 10px rgba(255, 107, 53, 0.3);
+    text-shadow: 0 0 10px rgba(240, 132, 24, 0.3);
   }
 
   /* 加入購物車按鈕 */
@@ -385,7 +385,7 @@
   }
 
   .upsell-add-to-cart:hover {
-    border-color: #ff6b35 !important;
+    border-color: #f08418 !important;
     color: #ffffff !important;
   }
 
@@ -886,13 +886,13 @@
       "type": "color",
       "id": "accent_color_start",
       "label": "強調色（起始）",
-      "default": "#ff6b35"
+      "default": "#f08418"
     },
     {
       "type": "color",
       "id": "accent_color_end",
       "label": "強調色（結束）",
-      "default": "#f7931e",
+      "default": "#f08418",
       "info": "用於頂部線條、按鈕、價格等"
     },
     {
