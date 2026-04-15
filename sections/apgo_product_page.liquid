@@ -1019,6 +1019,7 @@
     box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
     -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
+    overscroll-behavior-y: contain;
   }
 
   .apgo-variant-modal.active {
@@ -1032,6 +1033,7 @@
     min-height: 0;
     max-height: 85vh;
     max-height: min(85vh, 90dvh);
+    overscroll-behavior-y: contain;
   }
 
   .apgo-variant-modal-scroll {
@@ -1042,6 +1044,7 @@
     padding: 0 16px;
     -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
+    overscroll-behavior-y: contain;
   }
 
   .apgo-variant-modal-footer {
@@ -1049,6 +1052,7 @@
     background: var(--card-bg);
     border-top: 1px solid rgba(240, 132, 24, 0.2);
     padding: 0 16px 16px;
+    overscroll-behavior-y: contain;
   }
 
   .apgo-variant-modal-footer .apgo-modal-buttons {
@@ -3021,6 +3025,46 @@ window.apgoPdpSyncVariantSidebar = function () {
   }
 };
 
+// 桌面側欄：僅 .apgo-variant-modal-scroll 為捲動區；footer 與內容未溢出時的空白不捲動，wheel 會 scroll chain 到底下 PDP（body 刻意不鎖捲動）。
+function apgoPdpVariantModalWheelTrap(e) {
+  var modal = e.currentTarget;
+  if (!modal || !modal.classList.contains('active')) return;
+  var scrollEl = modal.querySelector('.apgo-variant-modal-scroll');
+  if (!scrollEl) return;
+
+  var deltaY = e.deltaY;
+  var st = scrollEl.scrollTop;
+  var sh = scrollEl.scrollHeight;
+  var ch = scrollEl.clientHeight;
+  var canScroll = sh > ch + 1;
+
+  if (!scrollEl.contains(e.target)) {
+    if (canScroll) {
+      scrollEl.scrollTop = Math.max(0, Math.min(sh - ch, st + deltaY));
+    }
+    e.preventDefault();
+    return;
+  }
+
+  if (!canScroll) {
+    e.preventDefault();
+    return;
+  }
+
+  var atTop = st <= 0;
+  var atBottom = st + ch >= sh - 1;
+  if ((atTop && deltaY < 0) || (atBottom && deltaY > 0)) {
+    e.preventDefault();
+  }
+}
+
+function apgoPdpUnbindVariantModalWheelTrap(modal) {
+  if (modal && modal._apgoWheelTrapHandler) {
+    modal.removeEventListener('wheel', modal._apgoWheelTrapHandler, { capture: true });
+    modal._apgoWheelTrapHandler = null;
+  }
+}
+
 function apgoCancelVariantCloseAnimation(modal) {
   if (!modal) return;
   if (modal._apgoCloseFallbackTimer) {
@@ -3065,6 +3109,11 @@ window.apgoShowVariantModal = function() {
       }
     };
     modal.addEventListener('touchmove', modal.touchMoveHandler, { passive: false });
+    apgoPdpUnbindVariantModalWheelTrap(modal);
+    if (desktop) {
+      modal._apgoWheelTrapHandler = apgoPdpVariantModalWheelTrap;
+      modal.addEventListener('wheel', modal._apgoWheelTrapHandler, { passive: false, capture: true });
+    }
     window.apgoPdpSyncVariantSidebar();
     updateModalButtonState();
   }
@@ -3123,6 +3172,7 @@ window.apgoCloseVariantModal = function() {
       modal.removeEventListener('touchmove', modal.touchMoveHandler);
       modal.touchMoveHandler = null;
     }
+    apgoPdpUnbindVariantModalWheelTrap(modal);
     return;
   }
 
@@ -3165,6 +3215,7 @@ window.apgoCloseVariantModal = function() {
       modal.removeEventListener('touchmove', modal.touchMoveHandler);
       modal.touchMoveHandler = null;
     }
+    apgoPdpUnbindVariantModalWheelTrap(modal);
   }
 
   if (desktop) {
