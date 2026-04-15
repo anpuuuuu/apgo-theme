@@ -112,12 +112,21 @@
             display: flex;
             align-items: stretch;
             gap: 0;
-            padding: 56px 0;
+            padding: clamp(1.75rem, 4.5vmin, 3.25rem) 0;
             z-index: 0;
+        }
+
+        .timeline-row--ltr:first-of-type {
+            margin-bottom: clamp(0.5rem, 2vmin, 1.25rem);
         }
 
         .timeline-row--rtl {
             flex-direction: row-reverse;
+            margin-bottom: clamp(0.5rem, 2vmin, 1.25rem);
+        }
+
+        .timeline-row--ltr.timeline-row--short {
+            margin-bottom: 0;
         }
 
         .timeline-row--short .timeline-item {
@@ -213,40 +222,64 @@
             clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 50%, calc(100% - 16px) 100%, 0 100%);
         }
 
-        /* U-turn connectors */
-        .timeline-turn {
-            position: relative;
-            height: 64px;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .timeline-turn__arc {
+        /* U-turn: anchored to source card (desktop); height set by --curve-h via JS */
+        .timeline-curve-bridge {
+            display: none;
             position: absolute;
-            width: 104px;
-            height: 64px;
-            border: 14px solid #0a0a0a;
-            box-sizing: border-box;
-            box-shadow:
-                inset 0 2px 0 rgba(240, 132, 24, 0.55),
-                inset 0 -2px 0 rgba(255, 154, 60, 0.35),
-                0 0 14px rgba(240, 132, 24, 0.2);
+            z-index: 0;
+            pointer-events: none;
+            overflow: visible;
         }
 
-        .timeline-turn--right .timeline-turn__arc {
-            right: 8.5%;
-            top: 0;
-            border-left: 0;
-            border-top: 0;
-            border-radius: 0 0 120px 0;
+        .timeline-curve-bridge svg {
+            display: block;
+            width: 100%;
+            height: 100%;
         }
 
-        .timeline-turn--left .timeline-turn__arc {
-            left: 8.5%;
-            top: 0;
-            border-right: 0;
-            border-top: 0;
-            border-radius: 0 0 0 120px;
+        .timeline-curve-bridge--right {
+            right: 0;
+            top: 50%;
+            width: clamp(72px, 11vw, 128px);
+            height: var(--curve-h, clamp(5rem, 18vmin, 12rem));
+            transform: translateY(0);
+        }
+
+        .timeline-curve-bridge--left {
+            left: 0;
+            top: 50%;
+            width: clamp(72px, 11vw, 128px);
+            height: var(--curve-h, clamp(5rem, 18vmin, 12rem));
+            transform: translateY(0);
+        }
+
+        .timeline-curve-bridge__stroke {
+            fill: none;
+            stroke: #0a0a0a;
+            stroke-width: 14;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            vector-effect: non-scaling-stroke;
+        }
+
+        .timeline-curve-bridge__glow {
+            fill: none;
+            stroke: rgba(240, 132, 24, 0.5);
+            stroke-width: 5;
+            stroke-linecap: round;
+            vector-effect: non-scaling-stroke;
+        }
+
+        /*
+         * 節點 3→4：第一列第三欄 → 第二列第一欄（DOM；row-reverse 後 2017 在視覺右側，軌道起點在右）。
+         * 節點 6→7：第二列第三欄 → 第三列第一欄。
+         * .timeline-item 分屬不同 .timeline-row，無法用單一父層的 nth-child(3)+(4) 一次選到，故以「列 + 欄」組合。
+         */
+        @media (min-width: 769px) {
+            .timeline-row--ltr:first-of-type > .timeline-item:nth-child(3) .timeline-curve-bridge,
+            .timeline-row--rtl > .timeline-item:nth-child(3) .timeline-curve-bridge {
+                display: block;
+            }
         }
 
         /* Checkered + orange endcaps (desktop) */
@@ -445,10 +478,6 @@
                 max-width: none;
             }
 
-            .timeline-turn {
-                display: none;
-            }
-
             .timeline-endcap {
                 display: none;
             }
@@ -556,12 +585,14 @@
                                 From a car enthusiast's perspective, the founder began developing car wash coating products. Hoping to enable everyone to care for their beloved cars themselves, experience the joy of DIY, and stop wasting money unnecessarily.
                             </p>
                         </div>
+                        <div class="timeline-curve-bridge timeline-curve-bridge--right" aria-hidden="true">
+                            <svg viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" focusable="false">
+                                <path class="timeline-curve-bridge__stroke" d="M 86 0 Q 118 50 86 100" />
+                                <path class="timeline-curve-bridge__glow" d="M 86 0 Q 118 50 86 100" />
+                            </svg>
+                        </div>
                         <div class="timeline-dot"></div>
                     </div>
-                </div>
-
-                <div class="timeline-turn timeline-turn--right" aria-hidden="true">
-                    <span class="timeline-turn__arc"></span>
                 </div>
 
                 <div class="timeline-row timeline-row--rtl">
@@ -596,12 +627,14 @@
                                 Second generation atomic coating series fully upgraded, adding preparation work and interior care series. Same year established Singapore company and received strong recommendations from famous KOLs Cool and Joeman.
                             </p>
                         </div>
+                        <div class="timeline-curve-bridge timeline-curve-bridge--left" aria-hidden="true">
+                            <svg viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" focusable="false">
+                                <path class="timeline-curve-bridge__stroke" d="M 14 0 Q -18 50 14 100" />
+                                <path class="timeline-curve-bridge__glow" d="M 14 0 Q -18 50 14 100" />
+                            </svg>
+                        </div>
                         <div class="timeline-dot"></div>
                     </div>
-                </div>
-
-                <div class="timeline-turn timeline-turn--left" aria-hidden="true">
-                    <span class="timeline-turn__arc"></span>
                 </div>
 
                 <div class="timeline-row timeline-row--ltr timeline-row--short">
@@ -637,7 +670,44 @@
     </section>
 
     <script>
-        // Scroll-triggered animations
+        function debounce(fn, wait) {
+            let t;
+            return function () {
+                clearTimeout(t);
+                t = setTimeout(fn, wait);
+            };
+        }
+
+        function layoutTimelineCurveBridges() {
+            var mq = window.matchMedia('(min-width: 769px)');
+            var pairs = [
+                [
+                    '.timeline-row--ltr:first-of-type > .timeline-item:nth-child(3)',
+                    '.timeline-row--rtl > .timeline-item:nth-child(1)'
+                ],
+                [
+                    '.timeline-row--rtl > .timeline-item:nth-child(3)',
+                    '.timeline-row--ltr.timeline-row--short > .timeline-item:nth-child(1)'
+                ]
+            ];
+            document.querySelectorAll('.timeline-curve-bridge').forEach(function (b) {
+                b.style.removeProperty('--curve-h');
+            });
+            if (!mq.matches) return;
+            pairs.forEach(function (pair) {
+                var src = document.querySelector(pair[0]);
+                var tgt = document.querySelector(pair[1]);
+                var bridge = src ? src.querySelector('.timeline-curve-bridge') : null;
+                if (!src || !tgt || !bridge) return;
+                var rs = src.getBoundingClientRect();
+                var rt = tgt.getBoundingClientRect();
+                var midYs = rs.top + rs.height / 2;
+                var midYt = rt.top + rt.height / 2;
+                var h = Math.max(48, midYt - midYs);
+                bridge.style.setProperty('--curve-h', h + 'px');
+            });
+        }
+
         const observerOptions = {
             threshold: 0.2,
             rootMargin: '0px'
@@ -648,6 +718,7 @@
                 if (entry.isIntersecting) {
                     entry.target.classList.add('is-visible');
                     observer.unobserve(entry.target);
+                    requestAnimationFrame(layoutTimelineCurveBridges);
                 }
             });
         }, observerOptions);
@@ -656,6 +727,16 @@
             document.querySelectorAll('.timeline-item, .story-header').forEach(el => {
                 observer.observe(el);
             });
+            var onResize = debounce(layoutTimelineCurveBridges, 100);
+            window.addEventListener('resize', onResize);
+            requestAnimationFrame(layoutTimelineCurveBridges);
+            setTimeout(layoutTimelineCurveBridges, 400);
+            var tl = document.querySelector('.timeline--snake');
+            if (tl && typeof ResizeObserver !== 'undefined') {
+                new ResizeObserver(function () {
+                    requestAnimationFrame(layoutTimelineCurveBridges);
+                }).observe(tl);
+            }
         });
 
         // Parallax scrolling effect
