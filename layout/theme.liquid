@@ -56,6 +56,15 @@
   </style>
   </head>
 
+  {% liquid
+    assign apgo_aboutus_main_class = ''
+    if request.page_type == 'page' and page.handle == 'about-us'
+      assign apgo_aboutus_main_class = ' apgo-aboutus-main-particles'
+    elsif template.name == 'page' and template.suffix == 'about-us'
+      assign apgo_aboutus_main_class = ' apgo-aboutus-main-particles'
+    endif
+  %}
+
   <body class="page-width-{{ settings.page_width }} card-hover-effect-{{ settings.card_hover_effect }}">
     {% render 'skip-to-content-link', href: '#MainContent', text: 'accessibility.skip_to_text' %}
     <div id="header-group">
@@ -64,7 +73,7 @@
 
     <main
       id="MainContent"
-      class="content-for-layout{% if request.page_type == 'page' and page.handle == 'about-us' %} apgo-aboutus-main-particles{% endif %}"
+      class="content-for-layout{{ apgo_aboutus_main_class }}"
       role="main"
       data-page-transition-enabled="{{ settings.page_transition_enabled }}"
       data-product-transition="{{ settings.transition_to_main_product }}"
