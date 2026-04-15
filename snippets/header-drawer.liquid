@@ -776,6 +776,15 @@
 
   .menu-drawer__apgo-footer-mount .apgo-footer-snippet--drawer.apgo-footer-brand .apgo-footer-logo img {
     margin-inline: auto;
+    max-height: 34px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+  }
+
+  /* 僅抽屜：隱藏社群區標題（頁尾仍顯示，因選擇器限於 .menu-drawer__apgo-footer-mount 內） */
+  .menu-drawer__apgo-footer-mount .apgo-footer-snippet--drawer.apgo-footer-brand .apgo-social-title {
+    display: none !important;
   }
 
   .menu-drawer__apgo-footer-mount .apgo-footer-snippet--drawer.apgo-footer-brand .apgo-brand-tagline {
@@ -784,7 +793,7 @@
   }
 
   .menu-drawer__apgo-footer-mount .apgo-footer-snippet--drawer.apgo-footer-brand .apgo-social-section {
-    margin-top: 12px;
+    margin-top: 6px;
   }
 
   .menu-drawer__apgo-footer-mount .apgo-footer-snippet--drawer.apgo-footer-brand .apgo-social-links {
