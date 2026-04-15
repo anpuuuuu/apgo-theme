@@ -1,0 +1,66 @@
+{% comment %}
+  About Us 全頁（#MainContent 內兩個 section）共用一層橘色微粒背景，密度為原設計約一半（3 層 + 較大 tile）。
+{% endcomment %}
+{% if request.page_type == 'page' and page.handle == 'about-us' %}
+  <style id="apgo-aboutus-page-particles">
+    #MainContent.apgo-aboutus-main-particles {
+      position: relative;
+      isolation: isolate;
+    }
+
+    #MainContent.apgo-aboutus-main-particles::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image:
+        radial-gradient(circle, rgba(240, 132, 24, 0.68) 1.4px, transparent 2.6px),
+        radial-gradient(circle, rgba(255, 170, 90, 0.5) 1.2px, transparent 2.4px),
+        radial-gradient(circle, rgba(255, 154, 60, 0.55) 1px, transparent 2.2px);
+      background-size:
+        220px 340px,
+        280px 400px,
+        240px 360px;
+      background-position:
+        12% 118%,
+        48% 128%,
+        82% 122%;
+      background-repeat: repeat;
+      opacity: 0.88;
+      animation: apgo-aboutus-particles-rise 22s linear infinite;
+    }
+
+    #MainContent.apgo-aboutus-main-particles > .shopify-section {
+      position: relative;
+      z-index: 1;
+    }
+
+    @keyframes apgo-aboutus-particles-rise {
+      0% {
+        background-position:
+          12% 118%,
+          48% 128%,
+          82% 122%;
+        opacity: 0.72;
+      }
+      50% {
+        opacity: 0.95;
+      }
+      100% {
+        background-position:
+          12% -32%,
+          48% -38%,
+          82% -34%;
+        opacity: 0.78;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #MainContent.apgo-aboutus-main-particles::before {
+        animation: none;
+        opacity: 0.28;
+      }
+    }
+  </style>
+{% endif %}

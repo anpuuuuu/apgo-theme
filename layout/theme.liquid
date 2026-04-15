@@ -34,6 +34,8 @@
     {% endif %}
 
     {{ content_for_header }}
+
+    {% render 'apgo-aboutus-page-particles' %}
   
   {% render 'shogun-head' %}
   {% render 'abpilot-ui-sdk' %}
@@ -62,7 +64,7 @@
 
     <main
       id="MainContent"
-      class="content-for-layout"
+      class="content-for-layout{% if request.page_type == 'page' and page.handle == 'about-us' %} apgo-aboutus-main-particles{% endif %}"
       role="main"
       data-page-transition-enabled="{{ settings.page_transition_enabled }}"
       data-product-transition="{{ settings.transition_to_main_product }}"
