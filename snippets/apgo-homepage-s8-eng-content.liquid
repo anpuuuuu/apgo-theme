@@ -90,7 +90,7 @@
             line-height: 1.6;
         }
 
-        /* Timeline — snake / zig-zag track (desktop) */
+        /* Timeline — 3 / 3 / 2 卡片；桌面賽道為獨立半透明底層 SVG */
         .timeline {
             position: relative;
             max-width: 1120px;
@@ -102,9 +102,39 @@
             max-width: 1120px;
         }
 
-        /* Desktop: no central spine (mobile restores ::before below) */
         .timeline--snake::before {
             display: none;
+        }
+
+        .timeline-track-layer {
+            display: none;
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .timeline-track-svg {
+            display: block;
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+
+        .timeline-track-svg .track-main {
+            fill: none;
+            stroke: rgba(14, 14, 18, 0.48);
+            stroke-width: 28;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .timeline-track-svg .track-edge {
+            fill: none;
+            stroke: rgba(240, 132, 24, 0.38);
+            stroke-width: 7;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
 
         .timeline-row {
@@ -113,7 +143,7 @@
             align-items: stretch;
             gap: 0;
             padding: clamp(1.75rem, 4.5vmin, 3.25rem) 0;
-            z-index: 0;
+            z-index: 1;
         }
 
         .timeline-row--ltr:first-of-type {
@@ -162,6 +192,14 @@
                 opacity: 1;
                 transform: translate3d(0, 0, 0);
             }
+
+            .timeline-track-layer {
+                display: block;
+            }
+
+            .timeline-item::before {
+                display: none !important;
+            }
         }
 
         @media (max-width: 768px) {
@@ -172,158 +210,6 @@
             .timeline-item.is-visible {
                 opacity: 1;
                 transform: translate3d(0, 0, 0);
-            }
-        }
-
-        /* Per-segment track strip + chevron joints */
-        .timeline-item::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            right: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            height: 92px;
-            background: #0a0a0a;
-            z-index: 0;
-            pointer-events: none;
-            box-shadow:
-                inset 0 2px 0 rgba(240, 132, 24, 0.65),
-                inset 0 -2px 0 rgba(255, 154, 60, 0.4),
-                0 0 22px rgba(240, 132, 24, 0.12);
-        }
-
-        .timeline-row--ltr .timeline-item:only-child::before,
-        .timeline-row--ltr .timeline-item:first-child:last-child::before {
-            clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 50%, calc(100% - 16px) 100%, 0 100%);
-        }
-
-        .timeline-row--ltr .timeline-item:first-child:not(:only-child)::before {
-            clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 50%, calc(100% - 16px) 100%, 0 100%);
-        }
-
-        .timeline-row--ltr .timeline-item:not(:first-child):not(:last-child)::before {
-            clip-path: polygon(16px 0, calc(100% - 16px) 0, 100% 50%, calc(100% - 16px) 100%, 16px 100%, 0 50%);
-        }
-
-        .timeline-row--ltr .timeline-item:last-child:not(:only-child)::before {
-            clip-path: polygon(16px 0, 100% 0, 100% 100%, 16px 100%, 0 50%);
-        }
-
-        .timeline-row--rtl .timeline-item:first-child:not(:only-child)::before {
-            clip-path: polygon(16px 0, 100% 0, 100% 100%, 16px 100%, 0 50%);
-        }
-
-        .timeline-row--rtl .timeline-item:not(:first-child):not(:last-child)::before {
-            clip-path: polygon(0 50%, 16px 0, calc(100% - 16px) 0, 100% 50%, calc(100% - 16px) 100%, 16px 100%);
-        }
-
-        .timeline-row--rtl .timeline-item:last-child:not(:only-child)::before {
-            clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 50%, calc(100% - 16px) 100%, 0 100%);
-        }
-
-        /* U-turn: anchored to source card (desktop); height set by --curve-h via JS */
-        .timeline-curve-bridge {
-            display: none;
-            position: absolute;
-            z-index: 0;
-            pointer-events: none;
-            overflow: visible;
-        }
-
-        .timeline-curve-bridge svg {
-            display: block;
-            width: 100%;
-            height: 100%;
-            overflow: visible;
-        }
-
-        /* 須留足寬度，否則 path 在 viewBox 外會被裁成近似垂直的細線 */
-        .timeline-curve-bridge--right {
-            right: 0;
-            top: 50%;
-            width: clamp(100px, 14vw, 168px);
-            height: var(--curve-h, clamp(5rem, 18vmin, 12rem));
-            transform: translateY(0);
-        }
-
-        .timeline-curve-bridge--left {
-            left: 0;
-            top: 50%;
-            width: clamp(100px, 14vw, 168px);
-            height: var(--curve-h, clamp(5rem, 18vmin, 12rem));
-            transform: translateY(0);
-        }
-
-        @media (min-width: 769px) {
-            .timeline-row--ltr:first-of-type > .timeline-item:nth-child(3),
-            .timeline-row--rtl > .timeline-item:nth-child(3) {
-                overflow: visible;
-            }
-
-            /*
-             * 第三格橫軌與彎道一體化：右（或 RTL 左）側斜收向尖端，
-             * 前段加緩坡讓整條橫軌帶「轉出」感，尖端與 SVG M 100,0 / M 0,0 對齊。
-             */
-            .timeline-row--ltr:first-of-type > .timeline-item:nth-child(3)::before {
-                clip-path: polygon(
-                    0 50%,
-                    16px 0,
-                    44% 0,
-                    68% 1.5%,
-                    86% 10%,
-                    100% 50%,
-                    86% 90%,
-                    68% 98.5%,
-                    44% 100%,
-                    16px 100%,
-                    0 50%
-                );
-            }
-
-            .timeline-row--rtl > .timeline-item:nth-child(3)::before {
-                clip-path: polygon(
-                    0 50%,
-                    14% 10%,
-                    32% 1.5%,
-                    56% 0,
-                    calc(100% - 16px) 0,
-                    100% 50%,
-                    calc(100% - 16px) 100%,
-                    56% 100%,
-                    32% 98.5%,
-                    14% 90%,
-                    0 50%
-                );
-            }
-        }
-
-        .timeline-curve-bridge__stroke {
-            fill: none;
-            stroke: #0a0a0a;
-            stroke-width: 14;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            vector-effect: non-scaling-stroke;
-        }
-
-        .timeline-curve-bridge__glow {
-            fill: none;
-            stroke: rgba(240, 132, 24, 0.5);
-            stroke-width: 5;
-            stroke-linecap: round;
-            vector-effect: non-scaling-stroke;
-        }
-
-        /*
-         * 節點 3→4：第一列第三欄 → 第二列第一欄（DOM；row-reverse 後 2017 在視覺右側，軌道起點在右）。
-         * 節點 6→7：第二列第三欄 → 第三列第一欄。
-         * .timeline-item 分屬不同 .timeline-row，無法用單一父層的 nth-child(3)+(4) 一次選到，故以「列 + 欄」組合。
-         */
-        @media (min-width: 769px) {
-            .timeline-row--ltr:first-of-type > .timeline-item:nth-child(3) .timeline-curve-bridge,
-            .timeline-row--rtl > .timeline-item:nth-child(3) .timeline-curve-bridge {
-                display: block;
             }
         }
 
@@ -370,19 +256,21 @@
             right: -8px;
         }
 
-        /* Content cards */
+        /* Content cards — 略透明 + 模糊，讓底層賽道透出 */
         .timeline-content {
             position: relative;
             width: 100%;
             max-width: 100%;
             margin: 0 auto;
             padding: 26px 22px;
-            background: radial-gradient(circle at top right, rgba(240, 132, 24, 0.1), rgba(0, 0, 0, 0.9) 56%);
+            background: radial-gradient(circle at top right, rgba(240, 132, 24, 0.14), rgba(0, 0, 0, 0.72) 58%);
             border-radius: 18px;
             border: 1px solid rgba(240, 132, 24, 0.34);
             box-shadow: 0 0 24px rgba(240, 132, 24, 0.18);
             transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
             z-index: 2;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
 
         /* Hover effects */
@@ -595,8 +483,14 @@
                 <p class="story-subtitle">From electronics manufacturing leader to coating brand pioneer - 17 years of innovation</p>
             </div>
 
-            <!-- Timeline: snake track (desktop) → vertical list (mobile) -->
+            <!-- Timeline: 3+3+2 卡片；桌面賽道為底層半透明 SVG，與卡片分層 -->
             <div class="timeline timeline--snake">
+                <div class="timeline-track-layer" aria-hidden="true">
+                    <svg class="timeline-track-svg" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                        <path id="timelineTrackEdge" class="track-edge" d=""></path>
+                        <path id="timelineTrackMain" class="track-main" d=""></path>
+                    </svg>
+                </div>
                 <div class="timeline-row timeline-row--ltr">
                     <div class="timeline-item timeline-item--slide-right">
                         <span class="timeline-endcap timeline-endcap--start" aria-hidden="true"></span>
@@ -629,12 +523,6 @@
                             <p class="timeline-text">
                                 From a car enthusiast's perspective, the founder began developing car wash coating products. Hoping to enable everyone to care for their beloved cars themselves, experience the joy of DIY, and stop wasting money unnecessarily.
                             </p>
-                        </div>
-                        <div class="timeline-curve-bridge timeline-curve-bridge--right" aria-hidden="true">
-                            <svg viewBox="-4 -4 108 108" preserveAspectRatio="none" overflow="visible" xmlns="http://www.w3.org/2000/svg" focusable="false">
-                                <path class="timeline-curve-bridge__stroke" d="M 100 0 C 68 32, 68 68, 100 100" />
-                                <path class="timeline-curve-bridge__glow" d="M 100 0 C 68 32, 68 68, 100 100" />
-                            </svg>
                         </div>
                         <div class="timeline-dot"></div>
                     </div>
@@ -671,12 +559,6 @@
                             <p class="timeline-text">
                                 Second generation atomic coating series fully upgraded, adding preparation work and interior care series. Same year established Singapore company and received strong recommendations from famous KOLs Cool and Joeman.
                             </p>
-                        </div>
-                        <div class="timeline-curve-bridge timeline-curve-bridge--left" aria-hidden="true">
-                            <svg viewBox="-4 -4 108 108" preserveAspectRatio="none" overflow="visible" xmlns="http://www.w3.org/2000/svg" focusable="false">
-                                <path class="timeline-curve-bridge__stroke" d="M 0 0 C 32 32, 32 68, 0 100" />
-                                <path class="timeline-curve-bridge__glow" d="M 0 0 C 32 32, 32 68, 0 100" />
-                            </svg>
                         </div>
                         <div class="timeline-dot"></div>
                     </div>
@@ -723,34 +605,87 @@
             };
         }
 
-        function layoutTimelineCurveBridges() {
-            var mq = window.matchMedia('(min-width: 769px)');
-            var pairs = [
-                [
-                    '.timeline-row--ltr:first-of-type > .timeline-item:nth-child(3)',
-                    '.timeline-row--rtl > .timeline-item:nth-child(1)'
-                ],
-                [
-                    '.timeline-row--rtl > .timeline-item:nth-child(3)',
-                    '.timeline-row--ltr.timeline-row--short > .timeline-item:nth-child(1)'
-                ]
-            ];
-            document.querySelectorAll('.timeline-curve-bridge').forEach(function (b) {
-                b.style.removeProperty('--curve-h');
-            });
-            if (!mq.matches) return;
-            pairs.forEach(function (pair) {
-                var src = document.querySelector(pair[0]);
-                var tgt = document.querySelector(pair[1]);
-                var bridge = src ? src.querySelector('.timeline-curve-bridge') : null;
-                if (!src || !tgt || !bridge) return;
-                var rs = src.getBoundingClientRect();
-                var rt = tgt.getBoundingClientRect();
-                var midYs = rs.top + rs.height / 2;
-                var midYt = rt.top + rt.height / 2;
-                var h = Math.max(48, midYt - midYs);
-                bridge.style.setProperty('--curve-h', h + 'px');
-            });
+        function layoutTimelineTrackPath() {
+            var root = document.querySelector('.timeline--snake');
+            var pathMain = document.getElementById('timelineTrackMain');
+            var pathEdge = document.getElementById('timelineTrackEdge');
+            var svg = root ? root.querySelector('.timeline-track-svg') : null;
+            if (!root || !pathMain || !pathEdge || !svg) return;
+            if (window.innerWidth < 769) {
+                pathMain.setAttribute('d', '');
+                pathEdge.setAttribute('d', '');
+                svg.removeAttribute('viewBox');
+                return;
+            }
+            var r0 = root.getBoundingClientRect();
+            function box(el) {
+                if (!el) return null;
+                var r = el.getBoundingClientRect();
+                return {
+                    left: r.left - r0.left,
+                    right: r.right - r0.left,
+                    top: r.top - r0.top,
+                    bottom: r.bottom - r0.top,
+                    width: r.width,
+                    height: r.height,
+                    cx: r.left - r0.left + r.width / 2,
+                    cy: r.top - r0.top + r.height / 2
+                };
+            }
+            var row1 = root.querySelector('.timeline-row--ltr:first-of-type');
+            var row2 = root.querySelector('.timeline-row--rtl');
+            var row3 = root.querySelector('.timeline-row--short');
+            if (!row1 || !row2 || !row3 || row1.children.length < 3 || row2.children.length < 3 || row3.children.length < 2) {
+                return;
+            }
+            var rr1 = row1.getBoundingClientRect();
+            var rr2 = row2.getBoundingClientRect();
+            var rr3 = row3.getBoundingClientRect();
+            var w = Math.max(1, root.offsetWidth);
+            var h = Math.max(1, root.offsetHeight);
+            svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+            svg.setAttribute('width', '100%');
+            svg.setAttribute('height', String(h));
+
+            var y1 = rr1.top - r0.top + rr1.height * 0.4;
+            var y2 = rr2.top - r0.top + rr2.height * 0.4;
+            var y3 = rr3.top - r0.top + rr3.height * 0.4;
+
+            var A1 = box(row1.children[0]);
+            var A3 = box(row1.children[2]);
+            var B1 = box(row2.children[0]);
+            var B2 = box(row2.children[1]);
+            var B3 = box(row2.children[2]);
+            var C1 = box(row3.children[0]);
+            var C2 = box(row3.children[1]);
+            if (!A1 || !A3 || !B1 || !B2 || !B3 || !C1 || !C2) return;
+
+            var xStart = A1.left + 14;
+            var bend1x = A3.left + A3.width * 0.56;
+            var dropX = A3.right + 6;
+            var dropY = A3.bottom + Math.max(16, (rr2.top - rr1.bottom) * 0.35);
+            var entryY4 = B1.top + B1.height * 0.11;
+            var joinX = B1.cx;
+
+            var bend2x = B3.left + B3.width * 0.48;
+            var drop2X = B3.left - 8;
+            var drop2Y = B3.bottom + Math.max(16, (rr3.top - rr2.bottom) * 0.35);
+            var entryY7 = C1.top + C1.height * 0.11;
+
+            var d = 'M ' + xStart + ' ' + y1;
+            d += ' L ' + bend1x + ' ' + y1;
+            d += ' C ' + (bend1x + (dropX - bend1x) * 0.55) + ' ' + (y1 + (dropY - y1) * 0.28) + ' ' + (dropX - 2) + ' ' + (y1 + (dropY - y1) * 0.68) + ' ' + dropX + ' ' + dropY;
+            d += ' C ' + (dropX + 36) + ' ' + ((dropY + entryY4) * 0.52) + ' ' + (joinX + 52) + ' ' + (entryY4 - 4) + ' ' + joinX + ' ' + entryY4;
+            d += ' L ' + joinX + ' ' + y2;
+            d += ' L ' + B2.cx + ' ' + y2;
+            d += ' L ' + bend2x + ' ' + y2;
+            d += ' C ' + (bend2x - (bend2x - drop2X) * 0.5) + ' ' + (y2 + (drop2Y - y2) * 0.28) + ' ' + (drop2X + 4) + ' ' + (y2 + (drop2Y - y2) * 0.68) + ' ' + drop2X + ' ' + drop2Y;
+            d += ' C ' + (drop2X - 40) + ' ' + ((drop2Y + entryY7) * 0.52) + ' ' + (C1.cx - 48) + ' ' + (entryY7 - 4) + ' ' + C1.cx + ' ' + entryY7;
+            d += ' L ' + C1.cx + ' ' + y3;
+            d += ' L ' + (C2.right - 12) + ' ' + y3;
+
+            pathMain.setAttribute('d', d);
+            pathEdge.setAttribute('d', d);
         }
 
         const observerOptions = {
@@ -763,7 +698,7 @@
                 if (entry.isIntersecting) {
                     entry.target.classList.add('is-visible');
                     observer.unobserve(entry.target);
-                    requestAnimationFrame(layoutTimelineCurveBridges);
+                    requestAnimationFrame(layoutTimelineTrackPath);
                 }
             });
         }, observerOptions);
@@ -772,14 +707,14 @@
             document.querySelectorAll('.timeline-item, .story-header').forEach(el => {
                 observer.observe(el);
             });
-            var onResize = debounce(layoutTimelineCurveBridges, 100);
+            var onResize = debounce(layoutTimelineTrackPath, 100);
             window.addEventListener('resize', onResize);
-            requestAnimationFrame(layoutTimelineCurveBridges);
-            setTimeout(layoutTimelineCurveBridges, 400);
+            requestAnimationFrame(layoutTimelineTrackPath);
+            setTimeout(layoutTimelineTrackPath, 400);
             var tl = document.querySelector('.timeline--snake');
             if (tl && typeof ResizeObserver !== 'undefined') {
                 new ResizeObserver(function () {
-                    requestAnimationFrame(layoutTimelineCurveBridges);
+                    requestAnimationFrame(layoutTimelineTrackPath);
                 }).observe(tl);
             }
         });
