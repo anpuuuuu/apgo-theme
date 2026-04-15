@@ -769,11 +769,17 @@
     padding-bottom: 0;
   }
 
+  /*
+    蓋過 APGO-footer 響應式 .apgo-footer-brand { padding-bottom:30px; margin-bottom:20px; border-bottom… }
+    手機抽屜寬度會命中該 media，否則兩個 snippet 之間會出現一大段空。
+  */
   .menu-drawer__apgo-footer-mount .apgo-footer-snippet--drawer.apgo-footer-brand {
     text-align: center;
-    padding: 10px 12px 6px;
+    padding: 10px 12px 2px !important;
+    margin-bottom: 0 !important;
+    border-bottom: none !important;
     border-top: 1px solid rgba(255, 255, 255, 0.12);
-    padding-right: 0;
+    padding-right: 0 !important;
   }
 
   /* 蓋過 APGO-footer 全域 .apgo-footer-logo { margin-bottom: 20px }，消除 logo 下方大空白 */
@@ -823,9 +829,10 @@
     justify-content: center;
   }
 
-  /* 蓋過 APGO-footer 全域 .apgo-footer-bottom { padding: theme N px 0 } */
+  /* 蓋過 APGO-footer 全域 .apgo-footer-bottom { padding: theme N px 0 }；緊貼上一段 snippet */
   .menu-drawer__apgo-footer-mount .apgo-footer-snippet--drawer.apgo-footer-bottom {
-    padding: 8px 10px 6px !important;
+    margin-top: 0 !important;
+    padding: 4px 10px 6px !important;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
   }
 
