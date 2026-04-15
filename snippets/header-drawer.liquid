@@ -758,28 +758,41 @@
     margin-top: auto;
     flex-shrink: 0;
     width: 100%;
-    padding-bottom: env(safe-area-inset-bottom, 0);
+    /* 僅保留安全區，避免 footer 全域 padding 在抽屜底部堆出大塊空白 */
+    padding-bottom: max(6px, env(safe-area-inset-bottom, 0px));
   }
 
   .menu-drawer__apgo-footer-mount .apgo-drawer-footer-strip-inner {
     display: flex;
     flex-direction: column;
     gap: 0;
+    padding-bottom: 0;
   }
 
   .menu-drawer__apgo-footer-mount .apgo-footer-snippet--drawer.apgo-footer-brand {
     text-align: center;
-    padding: 16px 14px 10px;
+    padding: 10px 12px 6px;
     border-top: 1px solid rgba(255, 255, 255, 0.12);
     padding-right: 0;
+  }
+
+  /* 蓋過 APGO-footer 全域 .apgo-footer-logo { margin-bottom: 20px }，消除 logo 下方大空白 */
+  .menu-drawer__apgo-footer-mount .apgo-footer-snippet--drawer.apgo-footer-brand .apgo-footer-logo {
+    margin-bottom: 4px !important;
   }
 
   .menu-drawer__apgo-footer-mount .apgo-footer-snippet--drawer.apgo-footer-brand .apgo-footer-logo img {
     margin-inline: auto;
     max-height: 34px;
     width: auto;
-    height: auto;
+    height: auto !important;
     object-fit: contain;
+  }
+
+  /* 公司資訊段落（snippet 內聯 margin-top:10px）在抽屜略縮 */
+  .menu-drawer__apgo-footer-mount .apgo-footer-snippet--drawer.apgo-footer-brand > p:not(.apgo-brand-tagline) {
+    margin-top: 2px !important;
+    margin-bottom: 0 !important;
   }
 
   /* 僅抽屜：隱藏社群區標題（頁尾仍顯示，因選擇器限於 .menu-drawer__apgo-footer-mount 內） */
@@ -793,27 +806,44 @@
   }
 
   .menu-drawer__apgo-footer-mount .apgo-footer-snippet--drawer.apgo-footer-brand .apgo-social-section {
-    margin-top: 6px;
+    margin-top: 8px !important;
+  }
+
+  .menu-drawer__apgo-footer-mount .apgo-footer-snippet--drawer.apgo-footer-brand .apgo-social-link {
+    width: 34px !important;
+    height: 34px !important;
+  }
+
+  .menu-drawer__apgo-footer-mount .apgo-footer-snippet--drawer.apgo-footer-brand .apgo-social-link svg {
+    width: 17px !important;
+    height: 17px !important;
   }
 
   .menu-drawer__apgo-footer-mount .apgo-footer-snippet--drawer.apgo-footer-brand .apgo-social-links {
     justify-content: center;
   }
 
+  /* 蓋過 APGO-footer 全域 .apgo-footer-bottom { padding: theme N px 0 } */
   .menu-drawer__apgo-footer-mount .apgo-footer-snippet--drawer.apgo-footer-bottom {
-    padding: 12px 12px 16px;
+    padding: 8px 10px 6px !important;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   .menu-drawer__apgo-footer-mount .apgo-footer-snippet--drawer.apgo-footer-bottom .apgo-footer-container {
-    padding-inline: 10px;
+    padding-inline: 8px;
+    padding-block: 0 !important;
   }
 
   .menu-drawer__apgo-footer-mount .apgo-footer-snippet--drawer.apgo-footer-bottom .apgo-footer-bottom-content {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    gap: 12px;
+    gap: 6px !important;
+  }
+
+  .menu-drawer__apgo-footer-mount .apgo-footer-snippet--drawer.apgo-footer-bottom .apgo-copyright {
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   /* 僅抽屜：隱藏法律連結列（頁尾不受影響） */
