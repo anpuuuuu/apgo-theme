@@ -1,0 +1,57 @@
+{% comment %}
+  Find Us：緊接在 About Us（Contact 改名或 about-us 頁連結）之後，供 header-menu / header-drawer 共用。
+  @param layout {String} 'menu' | 'drawer'
+  @param drawer_animation_index {Number} 選填，drawer 用 CSS 動畫序
+{% endcomment %}
+{% liquid
+  assign find_us_url = '/pages/find-us'
+  if pages['find-us'] != blank
+    assign find_us_url = pages['find-us'].url
+  elsif pages['social-media'] != blank
+    assign find_us_url = pages['social-media'].url
+  elsif pages['contact'] != blank
+    assign find_us_url = pages['contact'].url
+  endif
+  assign find_us_active = false
+  if request.path == find_us_url
+    assign find_us_active = true
+  endif
+  assign drawer_idx = drawer_animation_index | default: 99
+%}
+{% if layout == 'menu' %}
+  <li
+    role="presentation"
+    class="menu-list__list-item"
+    on:focus="/activate"
+    on:blur="/deactivate"
+    on:pointerenter="/activate"
+    on:pointerleave="/deactivate"
+  >
+    <a
+      href="{{ find_us_url }}"
+      class="menu-list__link{% if find_us_active %} menu-list__link--active{% endif %}"
+      {% if find_us_active %}
+        aria-current="page"
+      {% endif %}
+      ref="menuitem"
+    >
+      <span class="menu-list__link-title">{{ 'general.find_us' | t }}</span>
+    </a>
+  </li>
+{% else %}
+  <li
+    class="menu-drawer__list-item"
+    style="--menu-drawer-animation-index: {{ drawer_idx }};"
+  >
+    <a
+      id="HeaderDrawer-apgo-find-us"
+      href="{{ find_us_url }}"
+      class="menu-drawer__menu-item menu-drawer__menu-item--mainlist menu-drawer__animated-element focus-inset{% if find_us_active %} menu-drawer__menu-item--active{% endif %}"
+      {% if find_us_active %}
+        aria-current="page"
+      {% endif %}
+    >
+      <span class="menu-drawer__menu-item-text">{{ 'general.find_us' | t }}</span>
+    </a>
+  </li>
+{% endif %}
