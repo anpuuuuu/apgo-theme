@@ -787,9 +787,9 @@
     display: none !important;
   }
 
+  /* 僅抽屜：隱藏品牌 slogan（頁尾 .apgo-footer 內不受影響） */
   .menu-drawer__apgo-footer-mount .apgo-footer-snippet--drawer.apgo-footer-brand .apgo-brand-tagline {
-    font-size: 0.85rem;
-    margin-bottom: 12px;
+    display: none !important;
   }
 
   .menu-drawer__apgo-footer-mount .apgo-footer-snippet--drawer.apgo-footer-brand .apgo-social-section {
@@ -816,24 +816,30 @@
     gap: 12px;
   }
 
+  /* 僅抽屜：隱藏法律連結列（頁尾不受影響） */
   .menu-drawer__apgo-footer-mount .apgo-footer-snippet--drawer.apgo-footer-bottom .apgo-footer-legal-links {
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 8px 12px;
+    display: none !important;
   }
 
   .menu-drawer__apgo-footer-mount .apgo-footer-snippet--drawer.apgo-footer-bottom .apgo-payment-methods {
     justify-content: center;
+    gap: 8px;
   }
 
   .menu-drawer__apgo-footer-mount .apgo-footer-snippet--drawer.apgo-footer-bottom .apgo-payment-icon {
-    height: 30px;
-    padding: 3px 8px;
+    height: 24px;
+    padding: 2px 6px;
   }
 
   .menu-drawer__apgo-footer-mount .apgo-footer-snippet--drawer.apgo-footer-bottom .apgo-payment-icon img {
-    max-height: 20px;
+    max-height: 15px;
     width: auto;
+  }
+
+  .menu-drawer__apgo-footer-mount .apgo-footer-snippet--drawer.apgo-footer-bottom .apgo-payment-cod {
+    height: 24px;
+    padding: 0 10px;
+    font-size: 0.68rem;
   }
 
   .menu-drawer:has(details[open]) {
