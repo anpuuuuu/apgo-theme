@@ -1,6 +1,7 @@
 {% comment %}
   About Us、Find Us（page.social_media）全頁共用一層橘色微粒背景，密度為原設計約一半（3 層 + 較大 tile）。
   微粒在 ::before 且 z-index:0；各 section 為 z-index:1。若內層再用不透明白/黑底蓋滿，粒子會被擋住，故強制主內容外層透明，由 #MainContent 提供黑底。
+  垂直位移用 px 而非 %：% 會隨 #MainContent 高度解析，About Us 多 section 極高、Find Us 僅一區，同秒數下像素移速差很多，兩頁看起來不一致。
 {% endcomment %}
 {% liquid
   assign apgo_aboutus_particles = false
@@ -34,9 +35,9 @@
         280px 400px,
         240px 360px;
       background-position:
-        12% 118%,
-        48% 128%,
-        82% 122%;
+        12% 2600px,
+        48% 2800px,
+        82% 2700px;
       background-repeat: repeat;
       opacity: 0.88;
       animation: apgo-aboutus-particles-rise 150s linear infinite;
@@ -63,9 +64,9 @@
     @keyframes apgo-aboutus-particles-rise {
       0% {
         background-position:
-          12% 118%,
-          48% 128%,
-          82% 122%;
+          12% 2600px,
+          48% 2800px,
+          82% 2700px;
         opacity: 0.72;
       }
       50% {
@@ -73,9 +74,9 @@
       }
       100% {
         background-position:
-          12% -32%,
-          48% -38%,
-          82% -34%;
+          12% -2600px,
+          48% -2800px,
+          82% -2700px;
         opacity: 0.78;
       }
     }
