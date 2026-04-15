@@ -29,7 +29,7 @@
             background: #000000;
             padding: 100px 0;
             position: relative;
-            overflow: hidden;
+            overflow: visible;
         }
 
         /* Background decorative effects */
@@ -58,20 +58,18 @@
             z-index: 1;
         }
 
-        /* Title area */
+        /* Title area — revealed via IntersectionObserver */
         .story-header {
             text-align: center;
             margin-bottom: 80px;
             opacity: 0;
-            transform: translateY(30px);
-            animation: fadeInUp 0.8s ease forwards;
+            transform: translateY(28px);
+            transition: opacity 0.85s ease, transform 0.85s ease;
         }
 
-        @keyframes fadeInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .story-header.is-visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .story-title {
@@ -92,95 +90,221 @@
             line-height: 1.6;
         }
 
-        /* Timeline design */
+        /* Timeline — snake / zig-zag track (desktop) */
         .timeline {
             position: relative;
-            max-width: 900px;
+            max-width: 1120px;
             margin: 0 auto;
-            padding: 20px 0;
+            padding: 20px 0 40px;
         }
 
-        /* Central vertical line */
-        .timeline::before {
+        .timeline--snake {
+            max-width: 1120px;
+        }
+
+        /* Desktop: no central spine (mobile restores ::before below) */
+        .timeline--snake::before {
+            display: none;
+        }
+
+        .timeline-row {
+            position: relative;
+            display: flex;
+            align-items: stretch;
+            gap: 0;
+            padding: 56px 0;
+            z-index: 0;
+        }
+
+        .timeline-row--rtl {
+            flex-direction: row-reverse;
+        }
+
+        .timeline-row--short .timeline-item {
+            flex: 1 1 0;
+            max-width: 50%;
+        }
+
+        .timeline-item {
+            position: relative;
+            flex: 1 1 0;
+            min-width: 0;
+            padding: 0 4px;
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .timeline-item--slide-right {
+            --slide-x: -40px;
+        }
+
+        .timeline-item--slide-left {
+            --slide-x: 40px;
+        }
+
+        @media (min-width: 769px) {
+            .timeline-item:not(.is-visible) {
+                transform: translate3d(var(--slide-x, -40px), 0, 0);
+            }
+
+            .timeline-item.is-visible {
+                opacity: 1;
+                transform: translate3d(0, 0, 0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .timeline-item:not(.is-visible) {
+                transform: translate3d(0, 22px, 0);
+            }
+
+            .timeline-item.is-visible {
+                opacity: 1;
+                transform: translate3d(0, 0, 0);
+            }
+        }
+
+        /* Per-segment track strip + chevron joints */
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 92px;
+            background: #0a0a0a;
+            z-index: 0;
+            pointer-events: none;
+            box-shadow:
+                inset 0 2px 0 rgba(240, 132, 24, 0.65),
+                inset 0 -2px 0 rgba(255, 154, 60, 0.4),
+                0 0 22px rgba(240, 132, 24, 0.12);
+        }
+
+        .timeline-row--ltr .timeline-item:only-child::before,
+        .timeline-row--ltr .timeline-item:first-child:last-child::before {
+            clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 50%, calc(100% - 16px) 100%, 0 100%);
+        }
+
+        .timeline-row--ltr .timeline-item:first-child:not(:only-child)::before {
+            clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 50%, calc(100% - 16px) 100%, 0 100%);
+        }
+
+        .timeline-row--ltr .timeline-item:not(:first-child):not(:last-child)::before {
+            clip-path: polygon(16px 0, calc(100% - 16px) 0, 100% 50%, calc(100% - 16px) 100%, 16px 100%, 0 50%);
+        }
+
+        .timeline-row--ltr .timeline-item:last-child:not(:only-child)::before {
+            clip-path: polygon(16px 0, 100% 0, 100% 100%, 16px 100%, 0 50%);
+        }
+
+        .timeline-row--rtl .timeline-item:first-child:not(:only-child)::before {
+            clip-path: polygon(16px 0, 100% 0, 100% 100%, 16px 100%, 0 50%);
+        }
+
+        .timeline-row--rtl .timeline-item:not(:first-child):not(:last-child)::before {
+            clip-path: polygon(0 50%, 16px 0, calc(100% - 16px) 0, 100% 50%, calc(100% - 16px) 100%, 16px 100%);
+        }
+
+        .timeline-row--rtl .timeline-item:last-child:not(:only-child)::before {
+            clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 50%, calc(100% - 16px) 100%, 0 100%);
+        }
+
+        /* U-turn connectors */
+        .timeline-turn {
+            position: relative;
+            height: 64px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .timeline-turn__arc {
+            position: absolute;
+            width: 104px;
+            height: 64px;
+            border: 14px solid #0a0a0a;
+            box-sizing: border-box;
+            box-shadow:
+                inset 0 2px 0 rgba(240, 132, 24, 0.55),
+                inset 0 -2px 0 rgba(255, 154, 60, 0.35),
+                0 0 14px rgba(240, 132, 24, 0.2);
+        }
+
+        .timeline-turn--right .timeline-turn__arc {
+            right: 8.5%;
+            top: 0;
+            border-left: 0;
+            border-top: 0;
+            border-radius: 0 0 120px 0;
+        }
+
+        .timeline-turn--left .timeline-turn__arc {
+            left: 8.5%;
+            top: 0;
+            border-right: 0;
+            border-top: 0;
+            border-radius: 0 0 0 120px;
+        }
+
+        /* Checkered + orange endcaps (desktop) */
+        .timeline-endcap {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 22px;
+            height: 92px;
+            z-index: 4;
+            pointer-events: none;
+            border-radius: 2px;
+            background: repeating-conic-gradient(#1a1a1a 0% 25%, #eaeaea 0% 50%) 50% / 10px 10px;
+            box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35);
+        }
+
+        .timeline-endcap--start {
+            left: -6px;
+            margin-left: -22px;
+        }
+
+        .timeline-endcap--finish {
+            right: -6px;
+            margin-right: -22px;
+        }
+
+        .timeline-endcap--start::before,
+        .timeline-endcap--finish::after {
             content: '';
             position: absolute;
             top: 0;
-            left: 50%;
-            transform: translateX(-50%);
+            bottom: 0;
             width: 3px;
-            height: 100%;
-            background: linear-gradient(to bottom, 
-                transparent 0%, 
-                var(--primary-orange) 20%, 
-                #ff9a3c 80%, 
-                transparent 100%
-            );
+            border-radius: 2px;
+            background: linear-gradient(180deg, #ff9a3c, var(--primary-orange), #c45f0a);
         }
 
-        /* Timeline items */
-        .timeline-item {
-            position: relative;
-            padding: 40px 0;
-            opacity: 0;
-            animation: fadeIn 0.8s ease forwards;
+        .timeline-endcap--start::before {
+            left: -8px;
         }
 
-        .timeline-item:nth-child(1) { animation-delay: 0.2s; }
-        .timeline-item:nth-child(2) { animation-delay: 0.3s; }
-        .timeline-item:nth-child(3) { animation-delay: 0.4s; }
-        .timeline-item:nth-child(4) { animation-delay: 0.5s; }
-        .timeline-item:nth-child(5) { animation-delay: 0.6s; }
-        .timeline-item:nth-child(6) { animation-delay: 0.7s; }
-        .timeline-item:nth-child(7) { animation-delay: 0.8s; }
-        .timeline-item:nth-child(8) { animation-delay: 0.9s; }
-
-        @keyframes fadeIn {
-            to { opacity: 1; }
+        .timeline-endcap--finish::after {
+            right: -8px;
         }
 
         /* Content cards */
         .timeline-content {
             position: relative;
-            width: 45%;
-            padding: 30px;
+            width: 100%;
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 26px 22px;
             background: radial-gradient(circle at top right, rgba(240, 132, 24, 0.1), rgba(0, 0, 0, 0.9) 56%);
-            border-radius: 20px;
+            border-radius: 18px;
             border: 1px solid rgba(240, 132, 24, 0.34);
             box-shadow: 0 0 24px rgba(240, 132, 24, 0.18);
             transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
-        }
-
-        /* Alternating left-right layout */
-        .timeline-item:nth-child(odd) .timeline-content {
-            margin-left: auto;
-            opacity: 0;
-            animation: slideInRight 0.8s ease forwards;
-        }
-
-        .timeline-item:nth-child(even) .timeline-content {
-            opacity: 0;
-            animation: slideInLeft 0.8s ease forwards;
-        }
-
-        .timeline-item:nth-child(1) .timeline-content { animation-delay: 0.2s; }
-        .timeline-item:nth-child(2) .timeline-content { animation-delay: 0.3s; }
-        .timeline-item:nth-child(3) .timeline-content { animation-delay: 0.4s; }
-        .timeline-item:nth-child(4) .timeline-content { animation-delay: 0.5s; }
-        .timeline-item:nth-child(5) .timeline-content { animation-delay: 0.6s; }
-        .timeline-item:nth-child(6) .timeline-content { animation-delay: 0.7s; }
-        .timeline-item:nth-child(7) .timeline-content { animation-delay: 0.8s; }
-        .timeline-item:nth-child(8) .timeline-content { animation-delay: 0.9s; }
-
-        @keyframes slideInLeft {
-            to {
-                opacity: 1;
-            }
-        }
-
-        @keyframes slideInRight {
-            to {
-                opacity: 1;
-            }
+            z-index: 2;
         }
 
         /* Hover effects */
@@ -190,10 +314,10 @@
             border-color: rgba(240, 132, 24, 0.7);
         }
 
-        /* Timeline dot circles */
+        /* Timeline dot — mobile only */
         .timeline-dot {
             position: absolute;
-            top: 50px;
+            top: 36px;
             left: 50%;
             transform: translateX(-50%);
             width: 24px;
@@ -204,31 +328,12 @@
             box-shadow: 0 0 30px rgba(240, 132, 24, 0.6);
             z-index: 2;
             animation: glow 2s ease-in-out infinite;
+            display: none;
         }
 
         @keyframes glow {
             0%, 100% { box-shadow: 0 0 30px rgba(240, 132, 24, 0.6); }
             50% { box-shadow: 0 0 50px rgba(240, 132, 24, 0.9); }
-        }
-
-        /* Connecting lines */
-        .timeline-item::after {
-            content: '';
-            position: absolute;
-            top: 62px;
-            width: 50%;
-            height: 2px;
-            background: rgba(240, 132, 24, 0.3);
-        }
-
-        .timeline-item:nth-child(odd)::after {
-            left: 0;
-            right: 50%;
-        }
-
-        .timeline-item:nth-child(even)::after {
-            left: 50%;
-            right: 0;
         }
 
         /* Year titles */
@@ -277,6 +382,10 @@
             opacity: 0.3;
         }
 
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
         /* Bottom decorative line */
         .decorative-line {
             width: 100px;
@@ -285,6 +394,13 @@
             margin: 80px auto 0;
             opacity: 0;
             animation: fadeIn 1s ease 1.2s forwards;
+        }
+
+        @media (min-width: 769px) {
+            .timeline--snake {
+                padding-left: 28px;
+                padding-right: 28px;
+            }
         }
 
         /* Responsive design */
@@ -302,26 +418,62 @@
                 padding: 0 20px;
             }
 
-            .timeline::before {
+            .timeline--snake::before {
+                display: block;
+                content: '';
+                position: absolute;
+                top: 0;
                 left: 40px;
+                transform: none;
+                width: 3px;
+                height: 100%;
+                background: linear-gradient(to bottom,
+                    transparent 0%,
+                    var(--primary-orange) 18%,
+                    #ff9a3c 82%,
+                    transparent 100%
+                );
+            }
+
+            .timeline-row,
+            .timeline-row--rtl {
+                flex-direction: column;
+                padding: 0;
+            }
+
+            .timeline-row--short .timeline-item {
+                max-width: none;
+            }
+
+            .timeline-turn {
+                display: none;
+            }
+
+            .timeline-endcap {
+                display: none;
+            }
+
+            .timeline-item::before {
+                display: none !important;
             }
 
             .timeline-item {
-                padding: 30px 0;
+                flex: none;
+                width: 100%;
+                padding: 28px 0 0;
             }
 
             .timeline-content {
                 width: calc(100% - 80px);
                 margin-left: 80px !important;
+                margin-right: 0 !important;
                 padding: 25px;
             }
 
             .timeline-dot {
+                display: block;
                 left: 40px;
-            }
-
-            .timeline-item::after {
-                display: none;
+                top: 42px;
             }
 
             .timeline-year {
@@ -342,7 +494,7 @@
         }
 
         @media (max-width: 480px) {
-            .timeline::before {
+            .timeline--snake::before {
                 left: 30px;
             }
 
@@ -369,110 +521,113 @@
                 <p class="story-subtitle">From electronics manufacturing leader to coating brand pioneer - 17 years of innovation</p>
             </div>
 
-            <!-- Timeline -->
-            <div class="timeline">
-                <!-- 2007 -->
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <span class="timeline-icon">💻</span>
-                        <div class="timeline-year">2007</div>
-                        <h3 class="milestone-title">Electronics Development Foundation</h3>
-                        <p class="timeline-text">
-                            Started with electronics development and dashcam OEM manufacturing. The founder accumulated ten years of R&D and manufacturing experience, becoming the driving force behind Taiwan's major well-known brands, establishing the foundation of quality dedication.
-                        </p>
+            <!-- Timeline: snake track (desktop) → vertical list (mobile) -->
+            <div class="timeline timeline--snake">
+                <div class="timeline-row timeline-row--ltr">
+                    <div class="timeline-item timeline-item--slide-right">
+                        <span class="timeline-endcap timeline-endcap--start" aria-hidden="true"></span>
+                        <div class="timeline-content">
+                            <span class="timeline-icon">💻</span>
+                            <div class="timeline-year">2007</div>
+                            <h3 class="milestone-title">Electronics Development Foundation</h3>
+                            <p class="timeline-text">
+                                Started with electronics development and dashcam OEM manufacturing. The founder accumulated ten years of R&amp;D and manufacturing experience, becoming the driving force behind Taiwan's major well-known brands, establishing the foundation of quality dedication.
+                            </p>
+                        </div>
+                        <div class="timeline-dot"></div>
                     </div>
-                    <div class="timeline-dot"></div>
+                    <div class="timeline-item timeline-item--slide-right">
+                        <div class="timeline-content">
+                            <span class="timeline-icon">🏭</span>
+                            <div class="timeline-year">2011</div>
+                            <h3 class="milestone-title">Established Dashcam Factory</h3>
+                            <p class="timeline-text">
+                                Built professional factory with ISO9001 certification, providing one-stop service from design to production. Gained favor from major manufacturers like ADATA, Sampo, Asustek, and Patriot, even undertaking orders from Singapore's Ministry of Defense.
+                            </p>
+                        </div>
+                        <div class="timeline-dot"></div>
+                    </div>
+                    <div class="timeline-item timeline-item--slide-right">
+                        <div class="timeline-content">
+                            <span class="timeline-icon">🚗</span>
+                            <div class="timeline-year">2014</div>
+                            <h3 class="milestone-title">Developed First Generation Car Wash Coating</h3>
+                            <p class="timeline-text">
+                                From a car enthusiast's perspective, the founder began developing car wash coating products. Hoping to enable everyone to care for their beloved cars themselves, experience the joy of DIY, and stop wasting money unnecessarily.
+                            </p>
+                        </div>
+                        <div class="timeline-dot"></div>
+                    </div>
                 </div>
 
-                <!-- 2011 -->
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <span class="timeline-icon">🏭</span>
-                        <div class="timeline-year">2011</div>
-                        <h3 class="milestone-title">Established Dashcam Factory</h3>
-                        <p class="timeline-text">
-                            Built professional factory with ISO9001 certification, providing one-stop service from design to production. Gained favor from major manufacturers like ADATA, Sampo, Asustek, and Patriot, even undertaking orders from Singapore's Ministry of Defense.
-                        </p>
-                    </div>
-                    <div class="timeline-dot"></div>
+                <div class="timeline-turn timeline-turn--right" aria-hidden="true">
+                    <span class="timeline-turn__arc"></span>
                 </div>
 
-                <!-- 2014 -->
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <span class="timeline-icon">🚗</span>
-                        <div class="timeline-year">2014</div>
-                        <h3 class="milestone-title">Developed First Generation Car Wash Coating</h3>
-                        <p class="timeline-text">
-                            From a car enthusiast's perspective, the founder began developing car wash coating products. Hoping to enable everyone to care for their beloved cars themselves, experience the joy of DIY, and stop wasting money unnecessarily.
-                        </p>
+                <div class="timeline-row timeline-row--rtl">
+                    <div class="timeline-item timeline-item--slide-left">
+                        <div class="timeline-content">
+                            <span class="timeline-icon">🚀</span>
+                            <div class="timeline-year">2017</div>
+                            <h3 class="milestone-title">APGO Brand Born</h3>
+                            <p class="timeline-text">
+                                APGO was officially born named after the founder! Adhering to the strict standards of electronics manufacturing, all production materials and processes undergo rigorous quality control, aspiring to become Taiwan's largest coating production factory.
+                            </p>
+                        </div>
+                        <div class="timeline-dot"></div>
                     </div>
-                    <div class="timeline-dot"></div>
+                    <div class="timeline-item timeline-item--slide-left">
+                        <div class="timeline-content">
+                            <span class="timeline-icon">🌏</span>
+                            <div class="timeline-year">2019</div>
+                            <h3 class="milestone-title">Entered International Markets</h3>
+                            <p class="timeline-text">
+                                First generation water coating officially launched, while establishing Malaysian company to expand into Southeast Asian markets. From Taiwan to the world, letting more people experience APGO's quality products.
+                            </p>
+                        </div>
+                        <div class="timeline-dot"></div>
+                    </div>
+                    <div class="timeline-item timeline-item--slide-left">
+                        <div class="timeline-content">
+                            <span class="timeline-icon">⭐</span>
+                            <div class="timeline-year">2021</div>
+                            <h3 class="milestone-title">Complete Product Upgrade</h3>
+                            <p class="timeline-text">
+                                Second generation atomic coating series fully upgraded, adding preparation work and interior care series. Same year established Singapore company and received strong recommendations from famous KOLs Cool and Joeman.
+                            </p>
+                        </div>
+                        <div class="timeline-dot"></div>
+                    </div>
                 </div>
 
-                <!-- 2017 -->
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <span class="timeline-icon">🚀</span>
-                        <div class="timeline-year">2017</div>
-                        <h3 class="milestone-title">APGO Brand Born</h3>
-                        <p class="timeline-text">
-                            APGO was officially born named after the founder! Adhering to the strict standards of electronics manufacturing, all production materials and processes undergo rigorous quality control, aspiring to become Taiwan's largest coating production factory.
-                        </p>
-                    </div>
-                    <div class="timeline-dot"></div>
+                <div class="timeline-turn timeline-turn--left" aria-hidden="true">
+                    <span class="timeline-turn__arc"></span>
                 </div>
 
-                <!-- 2019 -->
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <span class="timeline-icon">🌏</span>
-                        <div class="timeline-year">2019</div>
-                        <h3 class="milestone-title">Entered International Markets</h3>
-                        <p class="timeline-text">
-                            First generation water coating officially launched, while establishing Malaysian company to expand into Southeast Asian markets. From Taiwan to the world, letting more people experience APGO's quality products.
-                        </p>
+                <div class="timeline-row timeline-row--ltr timeline-row--short">
+                    <div class="timeline-item timeline-item--slide-right">
+                        <div class="timeline-content">
+                            <span class="timeline-icon">🏆</span>
+                            <div class="timeline-year">2022</div>
+                            <h3 class="milestone-title">Media Recognition &amp; Endorsement</h3>
+                            <p class="timeline-text">
+                                Famous automotive show host Liao Ying-ting strongly recommended, and famous KOL Liao Lao-da collaborated to launch atomic glaze. Brand influence continues to expand, becoming a leading brand in the automotive beauty industry.
+                            </p>
+                        </div>
+                        <div class="timeline-dot"></div>
                     </div>
-                    <div class="timeline-dot"></div>
-                </div>
-
-                <!-- 2021 -->
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <span class="timeline-icon">⭐</span>
-                        <div class="timeline-year">2021</div>
-                        <h3 class="milestone-title">Complete Product Upgrade</h3>
-                        <p class="timeline-text">
-                            Second generation atomic coating series fully upgraded, adding preparation work and interior care series. Same year established Singapore company and received strong recommendations from famous KOLs Cool and Joeman.
-                        </p>
+                    <div class="timeline-item timeline-item--slide-right">
+                        <div class="timeline-content">
+                            <span class="timeline-icon">🚀</span>
+                            <div class="timeline-year">2024</div>
+                            <h3 class="milestone-title">Sales Milestone</h3>
+                            <p class="timeline-text">
+                                Annual sales exceeded 50,000 sets, becoming a well-known coating brand in Southeast Asia. From novice housewives to professional coating enthusiasts, everyone can easily get started, bringing automotive beauty into every household.
+                            </p>
+                        </div>
+                        <span class="timeline-endcap timeline-endcap--finish" aria-hidden="true"></span>
+                        <div class="timeline-dot"></div>
                     </div>
-                    <div class="timeline-dot"></div>
-                </div>
-
-                <!-- 2022 -->
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <span class="timeline-icon">🏆</span>
-                        <div class="timeline-year">2022</div>
-                        <h3 class="milestone-title">Media Recognition & Endorsement</h3>
-                        <p class="timeline-text">
-                            Famous automotive show host Liao Ying-ting strongly recommended, and famous KOL Liao Lao-da collaborated to launch atomic glaze. Brand influence continues to expand, becoming a leading brand in the automotive beauty industry.
-                        </p>
-                    </div>
-                    <div class="timeline-dot"></div>
-                </div>
-
-                <!-- 2024 -->
-                <div class="timeline-item">
-                    <div class="timeline-content">
-                        <span class="timeline-icon">🚀</span>
-                        <div class="timeline-year">2024</div>
-                        <h3 class="milestone-title">Sales Milestone</h3>
-                        <p class="timeline-text">
-                            Annual sales exceeded 50,000 sets, becoming a well-known coating brand in Southeast Asia. From novice housewives to professional coating enthusiasts, everyone can easily get started, bringing automotive beauty into every household.
-                        </p>
-                    </div>
-                    <div class="timeline-dot"></div>
                 </div>
             </div>
 
@@ -491,16 +646,14 @@
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target);
                 }
             });
         }, observerOptions);
 
-        // Observe all elements that need animation
         document.addEventListener('DOMContentLoaded', () => {
-            const animatedElements = document.querySelectorAll('.timeline-item, .story-header');
-            animatedElements.forEach(el => {
+            document.querySelectorAll('.timeline-item, .story-header').forEach(el => {
                 observer.observe(el);
             });
         });
