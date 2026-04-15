@@ -114,7 +114,7 @@
       "disabled": true,
       "name": "Homepage F2",
       "settings": {
-        "export_strip_to_header_drawer": false,
+        "export_strip_to_header_drawer": true,
         "font_family": "sans_serif_n4",
         "container_max_width": 1200,
         "container_padding": 20,
@@ -343,20 +343,20 @@
             "link_url": "shopify://pages/short-videos"
           }
         },
-        "service_link_FeatVL": {
-          "type": "about_link",
-          "name": "Find Us",
-          "settings": {
-            "link_text": "Find Us",
-            "link_url": "shopify://pages/contact"
-          }
-        },
         "about_link_KXzidM": {
           "type": "about_link",
           "name": "About Us",
           "settings": {
             "link_text": "About Us",
             "link_url": "shopify://pages/about-us"
+          }
+        },
+        "service_link_FeatVL": {
+          "type": "about_link",
+          "name": "Find Us",
+          "settings": {
+            "link_text": "Find Us",
+            "link_url": "shopify://pages/contact"
           }
         }
       },
@@ -389,7 +389,7 @@
         "footer_text_color": "#ffffff",
         "main_bg_color": "#0a0a0a",
         "accent_color": "#f08418",
-        "accent_hover_color": "#ff9a3c",
+        "accent_hover_color": "#f08418",
         "show_top_decoration": true,
         "decoration_height": 2,
         "animation_speed": 3,
@@ -430,7 +430,7 @@
         "youtube_url": "https://www.youtube.com/@APGOMY/videos",
         "show_tiktok": true,
         "tiktok_url": "https://www.tiktok.com/@apgomy",
-        "show_line": true,
+        "show_line": false,
         "line_url": "",
         "show_products_section": true,
         "products_title": "Product Series",
