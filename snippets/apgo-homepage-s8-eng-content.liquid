@@ -260,6 +260,42 @@
             .timeline-row--rtl > .timeline-item:nth-child(3) {
                 overflow: visible;
             }
+
+            /*
+             * 第三格橫軌與彎道一體化：右（或 RTL 左）側斜收向尖端，
+             * 前段加緩坡讓整條橫軌帶「轉出」感，尖端與 SVG M 100,0 / M 0,0 對齊。
+             */
+            .timeline-row--ltr:first-of-type > .timeline-item:nth-child(3)::before {
+                clip-path: polygon(
+                    0 50%,
+                    16px 0,
+                    44% 0,
+                    68% 1.5%,
+                    86% 10%,
+                    100% 50%,
+                    86% 90%,
+                    68% 98.5%,
+                    44% 100%,
+                    16px 100%,
+                    0 50%
+                );
+            }
+
+            .timeline-row--rtl > .timeline-item:nth-child(3)::before {
+                clip-path: polygon(
+                    0 50%,
+                    14% 10%,
+                    32% 1.5%,
+                    56% 0,
+                    calc(100% - 16px) 0,
+                    100% 50%,
+                    calc(100% - 16px) 100%,
+                    56% 100%,
+                    32% 98.5%,
+                    14% 90%,
+                    0 50%
+                );
+            }
         }
 
         .timeline-curve-bridge__stroke {
@@ -595,9 +631,9 @@
                             </p>
                         </div>
                         <div class="timeline-curve-bridge timeline-curve-bridge--right" aria-hidden="true">
-                            <svg viewBox="68 0 66 100" preserveAspectRatio="none" overflow="visible" xmlns="http://www.w3.org/2000/svg" focusable="false">
-                                <path class="timeline-curve-bridge__stroke" d="M 86 0 Q 118 50 86 100" />
-                                <path class="timeline-curve-bridge__glow" d="M 86 0 Q 118 50 86 100" />
+                            <svg viewBox="-4 -4 108 108" preserveAspectRatio="none" overflow="visible" xmlns="http://www.w3.org/2000/svg" focusable="false">
+                                <path class="timeline-curve-bridge__stroke" d="M 100 0 C 68 32, 68 68, 100 100" />
+                                <path class="timeline-curve-bridge__glow" d="M 100 0 C 68 32, 68 68, 100 100" />
                             </svg>
                         </div>
                         <div class="timeline-dot"></div>
@@ -637,9 +673,9 @@
                             </p>
                         </div>
                         <div class="timeline-curve-bridge timeline-curve-bridge--left" aria-hidden="true">
-                            <svg viewBox="-36 0 64 100" preserveAspectRatio="none" overflow="visible" xmlns="http://www.w3.org/2000/svg" focusable="false">
-                                <path class="timeline-curve-bridge__stroke" d="M 14 0 Q -18 50 14 100" />
-                                <path class="timeline-curve-bridge__glow" d="M 14 0 Q -18 50 14 100" />
+                            <svg viewBox="-4 -4 108 108" preserveAspectRatio="none" overflow="visible" xmlns="http://www.w3.org/2000/svg" focusable="false">
+                                <path class="timeline-curve-bridge__stroke" d="M 0 0 C 32 32, 32 68, 0 100" />
+                                <path class="timeline-curve-bridge__glow" d="M 0 0 C 32 32, 32 68, 0 100" />
                             </svg>
                         </div>
                         <div class="timeline-dot"></div>
