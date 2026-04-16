@@ -136,7 +136,8 @@
         "color_scheme": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26",
         "padding-block-start": 14,
         "padding-block-end": 14,
-        "unified_catalog_hub_collection": "all"
+        "unified_catalog_hub_collection": "all",
+        "sticky_subnav_below_header": true
       }
     },
     "main": {

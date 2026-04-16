@@ -35,6 +35,7 @@
   class="
     section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }} spacing-style
     {% if hub_coll != blank %}collection-links--catalog-hub{% endif %}
+    {% if section.settings.sticky_subnav_below_header %}collection-links--sticky-below-header{% endif %}
     {% if section.settings.collection_list == blank and request.design_mode == false %}
       in-onboarding-state
     {% endif %}
@@ -204,11 +205,16 @@
     }
   }
 
-  /* 統一目錄：sticky 次選單 + 橫向滑動（KFC menu 式） */
-  .section.collection-links--catalog-hub {
+  /*
+    次級選單貼在主 header 下方（與 header 一起留在視口頂）：
+    --header-group-height = #header-group 內除主 header 外的區塊（如公告列）；
+    --header-height = 主 header（body 上由 header.js 更新）。
+  */
+  .section.collection-links--catalog-hub,
+  .section.collection-links--sticky-below-header {
     position: sticky;
-    top: var(--sticky-header-offset, var(--header-height, 72px));
-    z-index: 20;
+    top: calc(var(--header-group-height, 0px) + var(--header-height, 72px));
+    z-index: calc(var(--layer-sticky, 8) - 1);
     background: var(--color-background);
     box-shadow: 0 1px 0 rgba(from var(--color-foreground) r g b / 0.1);
   }
@@ -261,6 +267,13 @@
       "id": "unified_catalog_hub_collection",
       "label": "統一目錄頁（All 錨點）",
       "info": "選「全部商品」集合後，連結改為此頁 + #collection-{handle}；區塊會 sticky 並與滾動聯動（需主題已啟用 All 分段）。"
+    },
+    {
+      "type": "checkbox",
+      "id": "sticky_subnav_below_header",
+      "label": "次級選單貼齊主 header 下方（sticky）",
+      "default": false,
+      "info": "與主 header 同步留在畫面上方；頂距使用 --header-group-height + --header-height。可不依賴「統一目錄」單獨開啟。"
     },
     {
       "type": "header",
