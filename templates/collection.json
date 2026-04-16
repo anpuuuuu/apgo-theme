@@ -130,6 +130,7 @@
           "2025-new-launch"
         ],
         "unified_hub_collection": "all",
+        "stack_links_vertical": true,
         "layout": "text",
         "section_width": "full-width",
         "alignment": "center",
