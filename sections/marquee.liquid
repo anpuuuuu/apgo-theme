@@ -1,7 +1,9 @@
 
 
-<script src="{{ 'marquee.js' | asset_url }}" type="module"></script>
-<script src="{{ 'apgo-sticky-stack.js' | asset_url }}" defer></script>
+<script
+  src="{{ 'marquee.js' | asset_url }}"
+  type="module"
+></script>
 
 {% assign gap_between_elements = section.settings.gap_between_elements %}
 {% liquid
@@ -17,6 +19,8 @@
   endif
 %}
 
+{% comment %} 與 critical.js／header 變數對齊：黏在 #header-group 佔位下方 {% endcomment %}
+<div class="marquee__sticky-wrap">
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
 <marquee-component
   class="section spacing-style gap-style color-{{ section.settings.color_scheme }}"
@@ -62,22 +66,25 @@
     </div>
   </div>
 </marquee-component>
+</div>
 
 {% stylesheet %}
-  /*
-    Sticky：對 .shopify-section 外層做 sticky，與 header 同機制。
-    top 疊在次選單下方（--apgo-subnav-h 由 apgo-sticky-stack.js 量 collection-links 高度寫入）；
-    若頁面無次選單，變數預設 0px，跑馬燈直接黏在 header 下方。
-    z-index 與 header 同層（--layer-sticky），低於次選單一級。
-  */
-  .shopify-section:has(marquee-component) {
+  /* theme.liquid 的 overflow-x:clip 可能影響 sticky 參考層 */
+  html:has(.marquee__sticky-wrap),
+  html:has(.marquee__sticky-wrap) body {
+    overflow-x: visible !important;
+  }
+
+  .marquee__sticky-wrap {
     position: -webkit-sticky;
     position: sticky;
     top: calc(
       var(--header-height, 60px) + var(--header-group-height, 0px) + env(safe-area-inset-top, 0px)
-      + var(--apgo-subnav-h, 0px)
     );
-    z-index: var(--layer-sticky, 8);
+    z-index: calc(var(--layer-sticky, 8) - 1);
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
     background: var(--color-background);
     box-shadow: 0 1px 0 rgba(from var(--color-foreground) r g b / 0.08);
   }
