@@ -245,17 +245,135 @@
   }
 
   /*
-    手機集合頁：深灰卡殼 + 標準兩欄（依 DOM 左→右、上→下，無錯位 translate）；
-    collection 價格用 money（無 MYR 尾碼）見 snippets/price.liquid。
+    Collection Z-grid：深灰卡殼（手機／桌機共用）、圖片貼齊卡殼頂與兩側、上緣圓角與卡殼一致。
+    collection 價格見 snippets/price.liquid。
   */
-  @media screen and (width < 750px) {
-    .main-collection-zgrid {
-      --mc-z-card-bg: #2e2e2e;
-      --mc-card-radius: 10px;
-      /* 圖片與卡殼內緣 */
-      --mc-card-image-inset: clamp(10px, 3.2vw, 14px);
-    }
+  .main-collection-zgrid {
+    --mc-z-card-bg: #2e2e2e;
+    --mc-card-radius: 10px;
+    --mc-card-image-inset: 0;
+  }
 
+  .main-collection-zgrid ul.product-grid[product-grid-view='default'] {
+    align-items: stretch;
+    box-sizing: border-box;
+  }
+
+  .main-collection-zgrid ul.product-grid[product-grid-view='default'] .product-grid__item:not(.product-grid__item--z-spacer) {
+    box-sizing: border-box;
+    height: 100%;
+    background: var(--mc-z-card-bg);
+    border: none;
+    border-radius: var(--mc-card-radius);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .main-collection-zgrid
+    ul.product-grid[product-grid-view='default']
+    > .product-grid__item:not(.product-grid__item--z-spacer):nth-child(odd),
+  .main-collection-zgrid
+    ul.product-grid[product-grid-view='default']
+    > .product-grid__item:not(.product-grid__item--z-spacer):nth-child(even) {
+    grid-column: auto;
+    transform: none;
+  }
+
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card {
+    gap: 10px;
+    padding-block: 0;
+    padding-inline: 0;
+    background: var(--mc-z-card-bg);
+    border-radius: var(--mc-card-radius);
+    color: rgba(245, 240, 230, 0.94);
+  }
+
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-badges {
+    z-index: 6;
+  }
+
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card > .group-block {
+    position: relative;
+    z-index: 2;
+    margin-top: 0;
+    padding: 4px 12px 14px;
+    background: var(--mc-z-card-bg);
+    box-shadow: none;
+    border-radius: 0 0 var(--mc-card-radius) var(--mc-card-radius);
+  }
+
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .h4,
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .text-block:is(.h4, .h5) {
+    color: rgba(245, 240, 230, 0.96);
+    line-height: 1.26;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .h6 {
+    color: rgba(245, 240, 230, 0.96);
+  }
+
+  /* 價格：左對齊（覆蓋主題卡片的 text-block--align-right / margin auto） */
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price,
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price.text-block--align-right,
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price.text-block--align-right > * {
+    margin-inline-start: 0 !important;
+    margin-inline-end: 0 !important;
+    text-align: left;
+    width: 100%;
+    align-self: stretch;
+  }
+
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price > div {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    gap: 0.15em;
+  }
+
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price {
+    color: rgba(245, 240, 230, 0.96);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+  }
+
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price .compare-at-price {
+    color: rgba(200, 200, 200, 0.85);
+  }
+
+  /*
+    可點區域貼齊實際卡片：外層 li 裁切圓角，連結與卡片同圓角。
+  */
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-card,
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-card__link {
+    border-radius: var(--mc-card-radius);
+  }
+
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-card__link {
+    clip-path: inset(0 round var(--mc-card-radius));
+  }
+
+  /* 圖貼齊卡殼頂／左右，上緣圓角與外殼一致 */
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .card-gallery {
+    box-sizing: border-box;
+    width: calc(100% - 2 * var(--mc-card-image-inset));
+    max-width: calc(100% - 2 * var(--mc-card-image-inset));
+    margin: var(--mc-card-image-inset) var(--mc-card-image-inset) 0;
+    align-self: stretch;
+    flex-shrink: 0;
+    border-radius: var(--mc-card-radius) var(--mc-card-radius) 0 0;
+    overflow: hidden;
+  }
+
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .card-gallery img,
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .card-gallery .product-media-container,
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .card-gallery slideshow-slide {
+    border-radius: inherit;
+  }
+
+  @media screen and (width < 750px) {
     /*
       主題 section 的 padding-block-start 會疊在 collection-links 下方；
       手機上收斂頂部留白（仍保留極小間距）。
@@ -265,148 +383,41 @@
       padding-block-start: 4px !important;
     }
 
-    /*
-      同列兩欄高度不同時，若用 align-items: start，列高仍取較高者，較矮那欄下方會留空。
-      用 stretch（與 grid 預設一致）讓兩張卡等高撐滿該列；row-gap 讓上下列卡片有小間距。
-    */
     .main-collection-zgrid ul.product-grid[product-grid-view='default'] {
       --product-grid-gap: 10px 10px;
       gap: 10px 10px;
-      align-items: stretch;
       padding-inline: 4px;
-      box-sizing: border-box;
-    }
-
-    .main-collection-zgrid ul.product-grid[product-grid-view='default'] .product-grid__item:not(.product-grid__item--z-spacer) {
-      box-sizing: border-box;
-      height: 100%;
-      background: var(--mc-z-card-bg);
-      border: none;
-      border-radius: var(--mc-card-radius);
-      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
-      overflow: hidden;
-      isolation: isolate;
-    }
-
-    /* 取消錯位：不強制欄序、不 translate，與主題兩欄流一致 */
-    .main-collection-zgrid
-      ul.product-grid[product-grid-view='default']
-      > .product-grid__item:not(.product-grid__item--z-spacer):nth-child(odd),
-    .main-collection-zgrid
-      ul.product-grid[product-grid-view='default']
-      > .product-grid__item:not(.product-grid__item--z-spacer):nth-child(even) {
-      grid-column: auto;
-      transform: none;
-    }
-
-    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card {
-      gap: 10px;
-      padding-block: 0;
-      padding-inline: 0;
-      background: var(--mc-z-card-bg);
-      border-radius: var(--mc-card-radius);
-      color: rgba(245, 240, 230, 0.94);
-    }
-
-    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-badges {
-      z-index: 6;
-    }
-
-    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card > .group-block {
-      position: relative;
-      z-index: 2;
-      margin-top: 0;
-      padding: 4px 12px 14px;
-      background: var(--mc-z-card-bg);
-      box-shadow: none;
-      border-radius: 0 0 var(--mc-card-radius) var(--mc-card-radius);
     }
 
     .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .h4,
     .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .text-block:is(.h4, .h5) {
-      color: rgba(245, 240, 230, 0.96);
       font-size: clamp(0.58rem, 2.35vw, 0.68rem);
-      line-height: 1.26;
-      font-weight: 600;
-      letter-spacing: 0.02em;
     }
 
     .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .h6 {
-      color: rgba(245, 240, 230, 0.96);
       font-size: clamp(0.62rem, 2.5vw, 0.72rem);
-    }
-
-    /* 價格：左對齊（覆蓋主題卡片的 text-block--align-right / margin auto） */
-    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price,
-    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price.text-block--align-right,
-    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price.text-block--align-right > * {
-      margin-inline-start: 0 !important;
-      margin-inline-end: 0 !important;
-      text-align: left;
-      width: 100%;
-      align-self: stretch;
-    }
-
-    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price > div {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      text-align: left;
-      gap: 0.15em;
-    }
-
-    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price {
-      color: rgba(245, 240, 230, 0.96);
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
-    }
-
-    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price .compare-at-price {
-      color: rgba(200, 200, 200, 0.85);
-    }
-
-    /*
-      可點區域貼齊實際卡片：外層 li 裁切圓角，連結與卡片同圓角，避免點到網格外透明區或溢出視覺。
-    */
-    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-card,
-    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-card__link {
-      border-radius: var(--mc-card-radius);
-    }
-
-    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-card__link {
-      clip-path: inset(0 round var(--mc-card-radius));
-    }
-
-    /* 圖與卡殼內緣：用變數控制，視覺上像卡殼包住圖片 */
-    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .card-gallery {
-      box-sizing: border-box;
-      width: calc(100% - 2 * var(--mc-card-image-inset));
-      max-width: calc(100% - 2 * var(--mc-card-image-inset));
-      margin: var(--mc-card-image-inset) var(--mc-card-image-inset) 0;
-      align-self: center;
-      flex-shrink: 0;
-      border-radius: min(8px, var(--mc-card-radius)) min(8px, var(--mc-card-radius)) 0 0;
-      overflow: hidden;
     }
   }
 
   @media screen and (width >= 750px) {
-    .main-collection-zgrid
-      ul.product-grid[product-grid-view='default']
-      > .product-grid__item:nth-child(odd),
-    .main-collection-zgrid
-      ul.product-grid[product-grid-view='default']
-      > .product-grid__item:nth-child(even) {
-      grid-column: auto;
-      transform: none;
-    }
-
     results-list.main-collection-zgrid.product-grid-container,
     .apgo-all-catalog-root.main-collection-zgrid.product-grid-container {
       padding-block-start: var(--padding-block-start) !important;
     }
 
     .main-collection-zgrid ul.product-grid[product-grid-view='default'] {
+      --product-grid-gap: 18px 18px;
+      gap: 18px 18px;
       padding-inline: 0;
+    }
+
+    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .h4,
+    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .text-block:is(.h4, .h5) {
+      font-size: clamp(0.8rem, 0.5vw + 0.65rem, 0.95rem);
+    }
+
+    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .h6 {
+      font-size: clamp(0.8rem, 0.45vw + 0.62rem, 0.9rem);
     }
   }
 
