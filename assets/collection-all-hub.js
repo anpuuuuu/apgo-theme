@@ -14,33 +14,68 @@
   const headings = [...document.querySelectorAll('h2.apgo-catalog-heading[id^="collection-"]')];
   if (!links.length || !headings.length) return;
 
-  /** @param {string | null} headingId */
-  function setActiveHeading(headingId) {
-    for (const a of links) {
-      const href = a.getAttribute('href') || '';
-      const hash = href.includes('#') ? href.slice(href.indexOf('#') + 1) : '';
-      const match = hash === headingId;
-      a.classList.toggle('collection-links__link--scroll-active', match);
-      if (match) {
-        a.setAttribute('aria-current', 'true');
-      } else {
-        a.removeAttribute('aria-current');
-      }
+  let lastActiveHeadingId = null;
+
+  /** 次選單 sticky 區 + header，供 IntersectionObserver rootMargin */
+  function anchorZoneTopPx() {
+    const header = document.querySelector('#header-group');
+    const navEl = navSection.closest('.section') || navSection;
+    const headerH = header ? Math.ceil(header.getBoundingClientRect().height) : 60;
+    const navH = Math.ceil(navEl.getBoundingClientRect().height) || 48;
+    return Math.min(headerH + navH + 16, 280);
+  }
+
+  /** 將目前高亮項捲進橫向選單可視區（手機／桌機） */
+  function scrollActiveLinkIntoMenu(/** @type {HTMLAnchorElement | null} */ activeLink) {
+    if (!activeLink) return;
+    const scroller = activeLink.closest('.collection-links__container');
+    if (!scroller) {
+      activeLink.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
+      return;
+    }
+    const pad = 8;
+    const aL = activeLink.offsetLeft;
+    const aR = aL + activeLink.offsetWidth;
+    const vL = scroller.scrollLeft;
+    const vR = vL + scroller.clientWidth;
+    if (aL < vL + pad) {
+      scroller.scrollTo({ left: Math.max(0, aL - pad), behavior: 'smooth' });
+    } else if (aR > vR - pad) {
+      scroller.scrollTo({ left: aR - scroller.clientWidth + pad, behavior: 'smooth' });
     }
   }
 
-  /** Sticky bar height for rootMargin */
-  function stickyInsetPx() {
-    const navEl = navSection.closest('.section') || navSection;
-    const h = Math.ceil(navEl.getBoundingClientRect().height);
-    return Math.min(Math.max(h + 24, 96), 220);
+  /** @param {string | null} headingId */
+  function setActiveHeading(headingId) {
+    /* null 仍須清除高亮，不可與 last null 一律略過 */
+    if (headingId != null && headingId === lastActiveHeadingId) return;
+    lastActiveHeadingId = headingId;
+
+    /** @type {HTMLAnchorElement | null} */
+    let activeLink = null;
+    for (const a of links) {
+      const el = /** @type {HTMLAnchorElement} */ (a);
+      const href = el.getAttribute('href') || '';
+      const hash = href.includes('#') ? href.slice(href.indexOf('#') + 1) : '';
+      const match = hash === headingId;
+      el.classList.toggle('collection-links__link--scroll-active', match);
+      if (match) {
+        el.setAttribute('aria-current', 'true');
+        activeLink = el;
+      } else {
+        el.removeAttribute('aria-current');
+      }
+    }
+    if (activeLink) {
+      requestAnimationFrame(() => scrollActiveLinkIntoMenu(activeLink));
+    }
   }
 
   let observer;
 
   function bindObserver() {
     if (observer) observer.disconnect();
-    const inset = stickyInsetPx();
+    const inset = anchorZoneTopPx();
     observer = new IntersectionObserver(
       (entries) => {
         const visible = entries.filter((e) => e.isIntersecting);

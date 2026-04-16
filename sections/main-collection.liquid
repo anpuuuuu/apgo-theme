@@ -489,13 +489,17 @@
     width: 100%;
     box-sizing: border-box;
     overflow-wrap: break-word;
-    scroll-margin-top: calc(var(--sticky-header-offset, var(--header-height, 72px)) + 72px);
+    scroll-margin-top: calc(
+      var(--sticky-header-offset, var(--header-height, 72px)) + var(--header-group-height, 0px) + 4.25rem
+    );
   }
 
   @media screen and (width >= 750px) {
     .apgo-catalog-hub-section .apgo-catalog-heading {
       padding-inline: 0;
-      scroll-margin-top: calc(var(--sticky-header-offset, var(--header-height, 80px)) + 80px);
+      scroll-margin-top: calc(
+        var(--sticky-header-offset, var(--header-height, 80px)) + var(--header-group-height, 0px) + 4.25rem
+      );
     }
   }
 
