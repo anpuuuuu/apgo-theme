@@ -303,6 +303,7 @@
     border-radius: 0 0 var(--mc-card-radius) var(--mc-card-radius);
   }
 
+  /* 字級不覆寫：沿用 base.css 的 .text-block.h5 > *（--font-h5--size）與編輯器／collection.json 區塊設定 */
   .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .h4,
   .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .text-block:is(.h4, .h5) {
     color: rgba(245, 240, 230, 0.96);
@@ -410,15 +411,6 @@
       gap: 10px 10px;
       padding-inline: 4px;
     }
-
-    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .h4,
-    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .text-block:is(.h4, .h5) {
-      font-size: clamp(0.58rem, 2.35vw, 0.68rem);
-    }
-
-    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .h6 {
-      font-size: clamp(0.62rem, 2.5vw, 0.72rem);
-    }
   }
 
   @media screen and (width >= 750px) {
@@ -431,15 +423,6 @@
       --product-grid-gap: 18px 18px;
       gap: 18px 18px;
       padding-inline: 0;
-    }
-
-    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .h4,
-    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .text-block:is(.h4, .h5) {
-      font-size: clamp(0.8rem, 0.5vw + 0.65rem, 0.95rem);
-    }
-
-    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .h6 {
-      font-size: clamp(0.8rem, 0.45vw + 0.62rem, 0.9rem);
     }
   }
 
