@@ -351,6 +351,13 @@
       transform: none;
     }
 
+    /* Hub：左欄第一張卡（標題後第 3 個 li）上移半格，貼近區塊標題、與右欄錯列更一致 */
+    .apgo-catalog-hub-section .main-collection-zgrid
+      ul.product-grid[product-grid-view='default']
+      > .product-grid__item:not(.product-grid__item--z-spacer):not(.product-grid__item--hub-heading):nth-child(3) {
+      transform: translate3d(0, calc(var(--mc-half-card-shift) * -0.5), 0);
+    }
+
     /* 手機單欄大卡模式：還原預設流，勿強制第二欄 */
     results-list.main-collection-zgrid
       ul.product-grid[product-grid-view='default'].product-grid-mobile--large
@@ -464,7 +471,10 @@
       > .product-grid__item:not(.product-grid__item--z-spacer):not(.product-grid__item--hub-heading):nth-child(odd),
     .apgo-catalog-hub-section .main-collection-zgrid
       ul.product-grid[product-grid-view='default']
-      > .product-grid__item:not(.product-grid__item--z-spacer):not(.product-grid__item--hub-heading):nth-child(even) {
+      > .product-grid__item:not(.product-grid__item--z-spacer):not(.product-grid__item--hub-heading):nth-child(even),
+    .apgo-catalog-hub-section .main-collection-zgrid
+      ul.product-grid[product-grid-view='default']
+      > .product-grid__item:not(.product-grid__item--z-spacer):not(.product-grid__item--hub-heading):nth-child(3) {
       transform: none;
     }
   }
