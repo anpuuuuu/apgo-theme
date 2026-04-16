@@ -313,7 +313,7 @@
     border-radius: 0 0 var(--mc-card-radius) var(--mc-card-radius);
   }
 
-  /* 字級：桌機沿用主題 h4/h5；手機見下方 @media（僅縮小 z-grid 卡片標題實際文字 > *） */
+  /* 字級：品名見下方 @media（對齊 paragraph 價錢字級，寫在 > *） */
   .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .h4,
   .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .text-block:is(.h4, .h5) {
     color: rgba(245, 240, 230, 0.96);
@@ -422,9 +422,13 @@
       padding-inline: 4px;
     }
 
-    /* 手機：商品名略小（對準 .text-block.h5 > *） */
+    /* 手機：品名與價格（paragraph）同階字級，略大 5% */
     .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .text-block:is(.h4, .h5) > * {
-      font-size: clamp(0.6875rem, 2.4vw, 0.75rem);
+      font-size: clamp(
+        0.75rem,
+        2.5vw,
+        calc(var(--font-paragraph--size, var(--font-size--paragraph, 0.875rem)) * 1.05)
+      );
     }
   }
 
@@ -445,9 +449,9 @@
       --product-grid-columns-desktop: repeat(5, minmax(0, 1fr));
     }
 
-    /* 桌機：商品名縮小（五欄時卡窄，標題需小於主題 h5） */
+    /* 桌機：品名與價格（paragraph / --font-paragraph--size）同階，略大 5% */
     .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .text-block:is(.h4, .h5) > * {
-      font-size: clamp(0.6875rem, 0.12vw + 0.58rem, 0.75rem);
+      font-size: calc(var(--font-paragraph--size, var(--font-size--paragraph, 0.875rem)) * 1.05);
     }
   }
 
