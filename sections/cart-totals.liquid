@@ -92,19 +92,24 @@
         </div>
       {%- endif -%}
 
-      {%- comment -%} 第二張圖風格：黑底、左上標題＋說明、右下大號金額（含幣別由主題設定與 cart 幣別決定） {%- endcomment -%}
+      {%- comment -%} 第二張圖風格：黑底、標題＋金額同列；稅務說明緊接在 Estimated total 列下方 {%- endcomment -%}
       <div class="cart-totals__estimated-card" role="status">
-        <div class="cart-totals__estimated-card-left">
-          <p class="cart-totals__estimated-title">{{ 'content.cart_estimated_total' | t }}</p>
+        <div class="cart-totals__estimated-card-row">
+          <div class="cart-totals__estimated-card-left">
+            <p class="cart-totals__estimated-title">{{ 'content.cart_estimated_total' | t }}</p>
+          </div>
+          <text-component
+            ref="cartTotalStandalone"
+            value="{{ total_price_formatted | strip_html }}"
+            class="cart-totals__estimated-price"
+            data-cart-subtotal
+          >
+            {{ total_price_formatted }}
+          </text-component>
         </div>
-        <text-component
-          ref="cartTotalStandalone"
-          value="{{ total_price_formatted | strip_html }}"
-          class="cart-totals__estimated-price"
-          data-cart-subtotal
-        >
-          {{ total_price_formatted }}
-        </text-component>
+        <div class="cart-totals__estimated-tax">
+          {% render 'tax-info', has_discounts_enabled: settings.show_add_discount_code %}
+        </div>
       </div>
 
       {%- if section.settings.show_installments and settings.show_installments -%}
@@ -112,10 +117,6 @@
           {% form 'cart', cart %}{{ form | payment_terms }}{% endform %}
         </div>
       {%- endif -%}
-
-      <div class="cart__summary-item cart__tax">
-        {% render 'tax-info', has_discounts_enabled: settings.show_add_discount_code %}
-      </div>
     </div>
   </div>
 </div>
@@ -222,19 +223,44 @@
   /* 第二張圖：黑底預估總計卡 */
   .cart-totals--standalone .cart-totals__estimated-card {
     display: flex !important;
-    flex-wrap: wrap !important;
-    justify-content: space-between !important;
-    align-items: baseline !important;
-    gap: 16px 20px !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
     background: #000000 !important;
     border-radius: 10px !important;
     padding: clamp(16px, 3vw, 22px) !important;
-    min-height: 88px !important;
+  }
+
+  .cart-totals--standalone .cart-totals__estimated-card-row {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: space-between !important;
+    align-items: baseline !important;
+    gap: 12px 20px !important;
+    width: 100% !important;
   }
 
   .cart-totals--standalone .cart-totals__estimated-card-left {
     flex: 1 1 200px !important;
     min-width: 0 !important;
+  }
+
+  .cart-totals--standalone .cart-totals__estimated-tax {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    font-size: 12px !important;
+    line-height: 1.45 !important;
+    color: #b0b0b0 !important;
+  }
+
+  .cart-totals--standalone .cart-totals__estimated-tax small {
+    color: inherit !important;
+  }
+
+  .cart-totals--standalone .cart-totals__estimated-tax a {
+    color: #d0d0d0 !important;
+    text-decoration: underline !important;
   }
 
   .cart-totals--standalone .cart-totals__estimated-title {
@@ -256,9 +282,8 @@
     -webkit-text-fill-color: #f7931e !important;
   }
 
-  /* 分期付款、稅務資訊 */
-  .cart-totals--standalone .cart__installments,
-  .cart-totals--standalone .cart__tax {
+  /* 分期付款（稅務說明已併入 estimated 卡內） */
+  .cart-totals--standalone .cart__installments {
     font-size: 12px !important;
     color: #aaa !important;
     padding-top: 10px !important;
