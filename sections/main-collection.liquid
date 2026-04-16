@@ -422,9 +422,9 @@
       padding-inline: 4px;
     }
 
-    /* 手機：商品名略小（對準 base.css 的 .text-block.h5 > *，避免只設外層無效） */
+    /* 手機：商品名略小（對準 .text-block.h5 > *） */
     .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .text-block:is(.h4, .h5) > * {
-      font-size: clamp(0.8125rem, 2.9vw, 0.875rem);
+      font-size: clamp(0.6875rem, 2.4vw, 0.75rem);
     }
   }
 
@@ -443,6 +443,11 @@
     /* 桌機：集合 z-grid 網格固定 5 欄（略過 auto-fill + 大卡最小寬，避免只剩約 3 欄） */
     .main-collection-zgrid ul.product-grid.product-grid--grid[product-grid-view='default'] {
       --product-grid-columns-desktop: repeat(5, minmax(0, 1fr));
+    }
+
+    /* 桌機：商品名縮小（五欄時卡窄，標題需小於主題 h5） */
+    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .text-block:is(.h4, .h5) > * {
+      font-size: clamp(0.6875rem, 0.12vw + 0.58rem, 0.75rem);
     }
   }
 
