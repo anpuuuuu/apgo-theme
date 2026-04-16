@@ -3,6 +3,10 @@
 {% liquid
   assign collection_list = section.settings.collection_list
   assign hub_coll = section.settings.unified_catalog_hub_collection
+  # 後台未選統一目錄時，/collections/all 仍以當前 collection 當 hub（sticky、錨點）
+  if hub_coll == blank and collection.handle == 'all'
+    assign hub_coll = collection
+  endif
 
   if collection_list == blank
     assign limit = 4
@@ -205,20 +209,20 @@
   }
 
   /*
-    統一目錄：次選單 sticky 在整組 header 下方（不隨內容捲走）、橫向單列可左右滑；
-    手機／桌機皆同一套橫列邏輯。
+    統一目錄：sticky 放在 section 內第一層自訂元件上（網格子項），避免整段 .section（display:grid）
+    當 sticky 容器在部分瀏覽器不黏；top = 主 header + 公告列等 + 安全區。
   */
-  .section.collection-links--catalog-hub {
+  .section.collection-links--catalog-hub > collection-links-component[layout='text'] {
     position: sticky;
-    /* 貼在 #header-group 高度下方，避免與主 header 重疊；含安全區 */
-    /* 主 header + 公告列等（--header-group-height 為 critical.js 寫入的「主列以外」高度） */
     top: calc(
       var(--header-height, 60px) + var(--header-group-height, 0px) + env(safe-area-inset-top, 0px)
     );
-    z-index: 30;
+    z-index: calc(var(--layer-sticky, 8) + 1);
     width: 100%;
     max-width: 100%;
+    min-width: 0;
     align-self: start;
+    justify-self: stretch;
     background: var(--color-background);
     box-shadow: 0 1px 0 rgba(from var(--color-foreground) r g b / 0.12);
   }

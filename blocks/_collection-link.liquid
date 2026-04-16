@@ -10,6 +10,9 @@
 
 {% liquid
   assign hub_coll = section.settings.unified_catalog_hub_collection
+  if hub_coll == blank and collection.handle == 'all'
+    assign hub_coll = collection
+  endif
   assign collection_link_href = closest.collection.url
   if hub_coll != blank
     assign collection_link_href = hub_coll.url | append: '#collection-' | append: closest.collection.handle
