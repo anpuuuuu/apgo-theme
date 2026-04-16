@@ -162,7 +162,7 @@
   }
 
   /*
-    手機集合頁：工業黑金 + Z 字錯位（僅 .main-collection-zgrid）
+    手機集合頁：淺灰卡殼 + Z 字錯位（僅 .main-collection-zgrid）
     DOM 仍為 1、2、3… 順序，但用 grid-column 做成「右、左、右、左」填滿兩欄；
     視覺右欄貼頂，左欄下移約半張卡高。圖文分區不重疊。
   */
@@ -170,11 +170,9 @@
     .main-collection-zgrid {
       /* 約半張手機商品卡高度：僅用於右欄與左欄的垂直錯位（不再插入頂部占位列，避免選單下大塊空白） */
       --mc-half-card-shift: clamp(5.25rem, 36vw, 9.5rem);
-      --mc-z-gold-line: rgba(201, 162, 39, 0.58);
-      --mc-z-gold-border: 1px;
-      --mc-z-card-bg: #0f0f0f;
+      --mc-z-card-bg: #cccccc;
       --mc-card-radius: 10px;
-      /* 圖片與卡殼內緣：略大於 4px，讓深色邊框包住圖像 */
+      /* 圖片與卡殼內緣 */
       --mc-card-image-inset: clamp(10px, 3.2vw, 14px);
     }
 
@@ -202,10 +200,9 @@
       box-sizing: border-box;
       height: 100%;
       background: var(--mc-z-card-bg);
-      /* 金邊用 border 貼齊卡殼外緣，避免 inset shadow 與內容之間像有一圈縫 */
-      border: var(--mc-z-gold-border) solid var(--mc-z-gold-line);
+      border: none;
       border-radius: var(--mc-card-radius);
-      box-shadow: 0 20px 36px rgba(0, 0, 0, 0.55);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
       overflow: hidden;
       isolation: isolate;
     }
@@ -242,6 +239,7 @@
       padding-inline: 0;
       background: var(--mc-z-card-bg);
       border-radius: var(--mc-card-radius);
+      color: rgba(22, 22, 22, 0.92);
     }
 
     .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-badges {
@@ -260,7 +258,7 @@
 
     .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .h4,
     .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .text-block:is(.h4, .h5) {
-      color: rgba(245, 240, 230, 0.96);
+      color: rgba(22, 22, 22, 0.95);
       font-size: clamp(0.68rem, 2.85vw, 0.8rem);
       line-height: 1.28;
       font-weight: 600;
@@ -268,12 +266,12 @@
     }
 
     .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .h6 {
-      color: rgba(245, 240, 230, 0.96);
+      color: rgba(22, 22, 22, 0.95);
       font-size: clamp(0.72rem, 3vw, 0.85rem);
     }
 
     .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price {
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+      text-shadow: none;
     }
 
     /*
