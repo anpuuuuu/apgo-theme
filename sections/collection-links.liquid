@@ -3,7 +3,7 @@
 {% liquid
   assign collection_list = section.settings.collection_list
   assign hub_coll = section.settings.unified_catalog_hub_collection
-  # 後台未選統一目錄時，/collections/all 仍以當前 collection 當 hub（sticky、錨點）
+  # 後台未選統一目錄時，/collections/all 仍以當前 collection 當 hub（錨點）
   if hub_coll == blank and collection.handle == 'all'
     assign hub_coll = collection
   endif
@@ -33,13 +33,7 @@
   src="{{ 'collection-links.js' | asset_url }}"
   type="module"
 ></script>
-<script src="{{ 'apgo-sticky-stack.js' | asset_url }}" defer></script>
 
-{% comment %}
-  整段（背景 + .section）包在 .collection-links__sticky-wrap，一律 position:sticky（hub 與否皆同）。
-  hub 僅影響 .collection-links--catalog-hub 的錨點／橫向滑等行為。
-{% endcomment %}
-<div class="collection-links__sticky-wrap">
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
 <div
   class="
@@ -119,7 +113,6 @@
         %}
     {% endcase %}
   </collection-links-component>
-</div>
 </div>
 
 {% # theme-check-disable ValidBlockTarget %}
@@ -220,36 +213,6 @@
     font-size: 14px !important;
   }
 
-  /*
-    次選單外層一律 sticky；top = 主 header + 公告列等 + 安全區。
-    theme.liquid 的 html/body overflow-x:clip 會干擾 sticky 時，本區塊存在頁面時還原橫向 visible。
-  */
-  html:has(.collection-links__sticky-wrap),
-  html:has(.marquee__sticky-wrap),
-  html:has(.collection-links__sticky-wrap) body,
-  html:has(.marquee__sticky-wrap) body {
-    overflow-x: visible !important;
-  }
-
-  /*
-    對齊 header：.header-section 使用 position:sticky + z-index:--layer-sticky（見 sections/header.liquid）。
-    次選單在 main 內，top 須留在 #header-group 之下，故用 calc，不可沿用 header 的 top:-1px。
-    z-index 略高於跑馬燈（同層 layer-sticky），避免捲動時重疊被蓋。
-  */
-  .collection-links__sticky-wrap {
-    position: -webkit-sticky;
-    position: sticky;
-    top: calc(
-      var(--header-height, 60px) + var(--header-group-height, 0px) + env(safe-area-inset-top, 0px)
-    );
-    z-index: calc(var(--layer-sticky, 8) + 1);
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-    background: var(--color-background);
-    box-shadow: 0 1px 0 rgba(from var(--color-foreground) r g b / 0.12);
-  }
-
   .collection-links--catalog-hub collection-links-component[layout='text'] .collection-links__container {
     flex-direction: row !important;
     flex-wrap: nowrap !important;
@@ -301,7 +264,7 @@
       "type": "collection",
       "id": "unified_catalog_hub_collection",
       "label": "統一目錄頁（All 錨點）",
-      "info": "選「全部商品」集合後，連結改為此頁 + #collection-{handle}，並啟用橫向目錄／捲動聯動（需 All 分段）。次選單 sticky 不論是否選此項皆會套用。"
+      "info": "選「全部商品」集合後，連結改為此頁 + #collection-{handle}，並啟用橫向目錄／捲動聯動（需 All 分段）。"
     },
     {
       "type": "header",

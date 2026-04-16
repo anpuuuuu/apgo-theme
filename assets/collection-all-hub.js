@@ -16,7 +16,7 @@
 
   let lastActiveHeadingId = null;
 
-  /** 次選單 sticky 區 + header，供 IntersectionObserver rootMargin */
+  /** 次選單區 + header 高度，供 IntersectionObserver rootMargin */
   function anchorZoneTopPx() {
     const header = document.querySelector('#header-group');
     const navEl = navSection.closest('.section') || navSection;
