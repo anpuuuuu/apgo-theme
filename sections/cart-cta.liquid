@@ -215,9 +215,10 @@
   <script>
   document.addEventListener('DOMContentLoaded', function(){
     // === 設定 ===
-    // true: 以 GET 直接導到 /checkout?…（最保險，百分百帶參數）
-    // false: 保留主題原本的 POST，僅把 form.action 改為 /checkout?…
+    // true: GET 導到 routes.cart_url + /checkout?…（與 cart permalink 行為一致，email/phone 才較會帶入）
+    // false: 保留主題原本的 POST，僅把 form.action 改為同一路徑 + query
     var REDIRECT_MODE = true;
+    var CART_CHECKOUT_URL = {{ routes.cart_url | append: '/checkout' | json }};
 
     var btn  = document.getElementById('checkout-standalone');
     if (!btn) return;
@@ -236,10 +237,10 @@
 
       // 改本表單 action（POST 模式用）
       if (!REDIRECT_MODE && form) {
-        form.action = '/checkout' + qs;
+        form.action = CART_CHECKOUT_URL + qs;
       }
 
-      // 如果主題上還有其它 /checkout 連結，也幫它們接上 query
+      // 如果主題上還有其它 /checkout 連結，也幫它們接上 query（加速結帳等仍用官方 /checkout）
       document.querySelectorAll('a[href^="/checkout"]').forEach(function(a){
         a.setAttribute('href', '/checkout' + qs);
       });
@@ -265,12 +266,12 @@
       var qs = validated.query ? ('?' + validated.query) : getCurrentQuery();
 
       if (REDIRECT_MODE) {
-        // 攔截提交，保證帶著 query 直達 /checkout
+        // 攔截提交，經 cart/checkout 帶 query（email/phone 與 prefill 一致）
         ev.preventDefault();
-        window.location.assign('/checkout' + qs);
+        window.location.assign(CART_CHECKOUT_URL + qs);
       } else {
-        // 保留原本 POST：只把 action 改成 /checkout?…
-        if (form) form.action = '/checkout' + qs;
+        // 保留原本 POST：只把 action 改成 cart/checkout + query
+        if (form) form.action = CART_CHECKOUT_URL + qs;
         // 不 preventDefault，照常提交
       }
     }, true);

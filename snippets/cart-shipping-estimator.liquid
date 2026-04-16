@@ -193,7 +193,8 @@
             return;
           }
           event.preventDefault();
-          window.location.assign(`/checkout?${result.query}`);
+          const cartBase = (window.Shopify?.routes?.cart_url || '/cart').replace(/\/$/, '');
+          window.location.assign(`${cartBase}/checkout?${result.query}`);
         },
         true
       );

@@ -1,10 +1,11 @@
 {% comment %}
   Checkout prefill (cart): contact + shipping address
   - Validates before checkout
-  - Prefills checkout via URL params (checkout[email], shipping_address, …)
+  - Prefill query should use routes.cart_url + /checkout (cart checkout entry), not bare /checkout, or email/phone are often ignored.
 {% endcomment %}
 
 {%- liquid
+  assign apgo_cart_checkout_url = routes.cart_url | append: '/checkout'
   assign default_country_code = localization.country.iso_code
   assign default_province = ''
   assign default_city = ''
@@ -41,7 +42,11 @@
   endif
 -%}
 
-<section class="apgo-shipping-address-section" data-apgo-shipping-address>
+<section
+  class="apgo-shipping-address-section"
+  data-apgo-shipping-address
+  data-apgo-cart-checkout-url="{{ apgo_cart_checkout_url | escape }}"
+>
   <div class="apgo-shipping-address__container">
     <div class="apgo-shipping-address__top-accent"></div>
     <div class="apgo-shipping-address__card">
@@ -353,6 +358,8 @@
     const root = document.querySelector('[data-apgo-shipping-address]');
     if (!root) return;
 
+    const cartCheckoutUrl = (root.getAttribute('data-apgo-cart-checkout-url') || '/cart/checkout').replace(/\/$/, '');
+
     const fullnameEl = root.querySelector('[data-apgo-fullname]');
     const emailEl = root.querySelector('[data-apgo-email]');
     const phoneEl = root.querySelector('[data-apgo-phone]');
@@ -376,6 +383,15 @@
     };
 
     const digitsOnly = (s) => String(s || '').replace(/\D/g, '');
+
+    /** Compact phone for URL prefill (+ kept if present; spaces stripped). */
+    const formatPhoneForCheckout = (raw) => {
+      let t = String(raw || '').trim().replace(/\s/g, '');
+      if (!t) return '';
+      const d = digitsOnly(t);
+      if (t.startsWith('+')) return d ? `+${d}` : '';
+      return d || t;
+    };
 
     const applyCountryFieldRules = () => {
       const countryCode = countryEl?.value;
@@ -457,16 +473,19 @@
     const buildCheckoutQuery = (contact, addr) => {
       const sgMode = isSGCountry(addr.country);
       const { first, last } = splitFullName(contact.fullName);
+      const phoneCheckout = formatPhoneForCheckout(contact.phone);
       const q = new URLSearchParams();
-      q.set('checkout[email]', contact.email);
+      q.set('checkout[email]', contact.email.trim());
       q.set('checkout[shipping_address][first_name]', first);
       q.set('checkout[shipping_address][last_name]', last);
-      q.set('checkout[shipping_address][phone]', contact.phone);
+      q.set('checkout[shipping_address][phone]', phoneCheckout);
       q.set('checkout[shipping_address][country]', addr.country);
       q.set('checkout[shipping_address][province]', sgMode ? '' : addr.province);
       q.set('checkout[shipping_address][city]', sgMode ? '' : addr.city);
       q.set('checkout[shipping_address][zip]', addr.zip);
       q.set('checkout[shipping_address][address1]', addr.address1);
+      q.set('checkout[billing_address][phone]', phoneCheckout);
+      q.set('checkout[billing_address][country]', addr.country);
       return q.toString();
     };
 
@@ -537,7 +556,7 @@
             return;
           }
           event.preventDefault();
-          window.location.assign(`/checkout?${result.query}`);
+          window.location.assign(`${cartCheckoutUrl}?${result.query}`);
         },
         true
       );
