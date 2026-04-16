@@ -77,14 +77,10 @@
           data-apgo-catalog-handle="{{ ch }}"
           style="--padding-block-end: {{ section.settings.columns_gap_vertical }}px;"
         >
+          <h2 class="apgo-catalog-heading h3" id="collection-{{ ch }}">{{ cat_coll.title }}</h2>
+
           {% assign catalog_chunk_is_first = forloop.first %}
-          {% capture heading_li %}
-            <li class="product-grid__item product-grid__item--hub-heading">
-              <h2 class="apgo-catalog-heading h3" id="collection-{{ ch }}">{{ cat_coll.title }}</h2>
-            </li>
-          {% endcapture %}
           {% capture children %}
-            {{ heading_li }}
             {% for product in cat_coll.products limit: apgo_hub_section_limit %}
               <li
                 id="{{ section.id }}-{{ product.id }}-{{ ch }}"
@@ -282,7 +278,7 @@
       box-sizing: border-box;
     }
 
-    .main-collection-zgrid ul.product-grid[product-grid-view='default'] .product-grid__item:not(.product-grid__item--z-spacer):not(.product-grid__item--hub-heading) {
+    .main-collection-zgrid ul.product-grid[product-grid-view='default'] .product-grid__item:not(.product-grid__item--z-spacer) {
       box-sizing: border-box;
       height: 100%;
       background: var(--mc-z-card-bg);
@@ -293,82 +289,32 @@
       isolation: isolate;
     }
 
-    /*
-      一般 collection（results-list）：第 1、3、5… → 右欄下移；第 2、4、6… → 左欄。
-      All 分段目錄（.apgo-catalog-hub-section）：首格為標題 li，之後偶數 index → 右欄、奇數 index → 左欄（每段重新開始）。
-    */
-    results-list.main-collection-zgrid
+    /* 第 1、3、5… 個 → 右欄（下移半卡，左欄相對較高）；第 2、4、6… 個 → 左欄 */
+    .main-collection-zgrid
       ul.product-grid[product-grid-view='default']
-      > .product-grid__item:not(.product-grid__item--z-spacer):not(.product-grid__item--hub-heading):nth-child(odd) {
+      > .product-grid__item:not(.product-grid__item--z-spacer):nth-child(odd) {
       grid-column: 2;
       transform: translate3d(0, var(--mc-half-card-shift), 0);
     }
 
-    results-list.main-collection-zgrid
+    .main-collection-zgrid
       ul.product-grid[product-grid-view='default']
-      > .product-grid__item:not(.product-grid__item--z-spacer):not(.product-grid__item--hub-heading):nth-child(even) {
+      > .product-grid__item:not(.product-grid__item--z-spacer):nth-child(even) {
       grid-column: 1;
-    }
-
-    .apgo-catalog-hub-section .main-collection-zgrid ul.product-grid[product-grid-view='default'] > .product-grid__item--hub-heading {
-      grid-column: 1;
-      grid-row: 1;
-      align-self: start;
-      height: auto;
-      min-height: 0;
-      padding: 0 2px 4px;
-      margin: 0;
-      background: transparent;
-      border: none;
-      box-shadow: none;
-      overflow: visible;
-      isolation: auto;
-    }
-
-    .apgo-catalog-hub-section .main-collection-zgrid ul.product-grid[product-grid-view='default'] > .product-grid__item--hub-heading .apgo-catalog-heading {
-      margin: 0;
-      padding-inline: 2px;
-      font-size: clamp(0.65rem, 2.8vw, 0.78rem);
-      line-height: 1.25;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: rgba(245, 240, 230, 0.92);
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
-    }
-
-    .apgo-catalog-hub-section .main-collection-zgrid
-      ul.product-grid[product-grid-view='default']
-      > .product-grid__item:not(.product-grid__item--z-spacer):not(.product-grid__item--hub-heading):nth-child(even) {
-      grid-column: 2;
-      transform: translate3d(0, var(--mc-half-card-shift), 0);
-    }
-
-    .apgo-catalog-hub-section .main-collection-zgrid
-      ul.product-grid[product-grid-view='default']
-      > .product-grid__item:not(.product-grid__item--z-spacer):not(.product-grid__item--hub-heading):nth-child(odd) {
-      grid-column: 1;
-      transform: none;
     }
 
     /* 手機單欄大卡模式：還原預設流，勿強制第二欄 */
-    results-list.main-collection-zgrid
+    .main-collection-zgrid
       ul.product-grid[product-grid-view='default'].product-grid-mobile--large
       > .product-grid__item:nth-child(odd),
-    results-list.main-collection-zgrid
-      ul.product-grid[product-grid-view='default'].product-grid-mobile--large
-      > .product-grid__item:nth-child(even),
-    .apgo-catalog-hub-section .main-collection-zgrid
-      ul.product-grid[product-grid-view='default'].product-grid-mobile--large
-      > .product-grid__item:nth-child(odd),
-    .apgo-catalog-hub-section .main-collection-zgrid
+    .main-collection-zgrid
       ul.product-grid[product-grid-view='default'].product-grid-mobile--large
       > .product-grid__item:nth-child(even) {
       grid-column: auto;
       transform: none;
     }
 
-    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer):not(.product-grid__item--hub-heading) .product-grid__card {
+    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card {
       gap: 10px;
       padding-block: 0;
       padding-inline: 0;
@@ -377,11 +323,11 @@
       color: rgba(245, 240, 230, 0.94);
     }
 
-    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer):not(.product-grid__item--hub-heading) .product-badges {
+    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-badges {
       z-index: 6;
     }
 
-    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer):not(.product-grid__item--hub-heading) .product-grid__card > .group-block {
+    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card > .group-block {
       position: relative;
       z-index: 2;
       margin-top: 0;
@@ -391,8 +337,8 @@
       border-radius: 0 0 var(--mc-card-radius) var(--mc-card-radius);
     }
 
-    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer):not(.product-grid__item--hub-heading) .product-grid__card .h4,
-    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer):not(.product-grid__item--hub-heading) .product-grid__card .text-block:is(.h4, .h5) {
+    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .h4,
+    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .text-block:is(.h4, .h5) {
       color: rgba(245, 240, 230, 0.96);
       font-size: clamp(0.58rem, 2.35vw, 0.68rem);
       line-height: 1.26;
@@ -400,15 +346,15 @@
       letter-spacing: 0.02em;
     }
 
-    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer):not(.product-grid__item--hub-heading) .product-grid__card .h6 {
+    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .h6 {
       color: rgba(245, 240, 230, 0.96);
       font-size: clamp(0.62rem, 2.5vw, 0.72rem);
     }
 
     /* 價格：左對齊（覆蓋主題卡片的 text-block--align-right / margin auto） */
-    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer):not(.product-grid__item--hub-heading) .product-grid__card product-price,
-    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer):not(.product-grid__item--hub-heading) .product-grid__card product-price.text-block--align-right,
-    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer):not(.product-grid__item--hub-heading) .product-grid__card product-price.text-block--align-right > * {
+    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price,
+    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price.text-block--align-right,
+    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price.text-block--align-right > * {
       margin-inline-start: 0 !important;
       margin-inline-end: 0 !important;
       text-align: left;
@@ -416,7 +362,7 @@
       align-self: stretch;
     }
 
-    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer):not(.product-grid__item--hub-heading) .product-grid__card product-price > div {
+    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price > div {
       display: flex;
       flex-direction: column;
       align-items: flex-start;
@@ -424,29 +370,29 @@
       gap: 0.15em;
     }
 
-    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer):not(.product-grid__item--hub-heading) .product-grid__card product-price {
+    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price {
       color: rgba(245, 240, 230, 0.96);
       text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
     }
 
-    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer):not(.product-grid__item--hub-heading) .product-grid__card product-price .compare-at-price {
+    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price .compare-at-price {
       color: rgba(200, 200, 200, 0.85);
     }
 
     /*
       可點區域貼齊實際卡片：外層 li 裁切圓角，連結與卡片同圓角，避免點到網格外透明區或溢出視覺。
     */
-    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer):not(.product-grid__item--hub-heading) .product-card,
-    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer):not(.product-grid__item--hub-heading) .product-card__link {
+    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-card,
+    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-card__link {
       border-radius: var(--mc-card-radius);
     }
 
-    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer):not(.product-grid__item--hub-heading) .product-card__link {
+    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-card__link {
       clip-path: inset(0 round var(--mc-card-radius));
     }
 
     /* 圖與卡殼內緣：用變數控制，視覺上像卡殼包住圖片 */
-    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer):not(.product-grid__item--hub-heading) .card-gallery {
+    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .card-gallery {
       box-sizing: border-box;
       width: calc(100% - 2 * var(--mc-card-image-inset));
       max-width: calc(100% - 2 * var(--mc-card-image-inset));
@@ -459,12 +405,9 @@
   }
 
   @media screen and (width < 750px) and (prefers-reduced-motion: reduce) {
-    results-list.main-collection-zgrid
+    .main-collection-zgrid
       ul.product-grid[product-grid-view='default']
-      > .product-grid__item:not(.product-grid__item--z-spacer):not(.product-grid__item--hub-heading):nth-child(odd),
-    .apgo-catalog-hub-section .main-collection-zgrid
-      ul.product-grid[product-grid-view='default']
-      > .product-grid__item:not(.product-grid__item--z-spacer):not(.product-grid__item--hub-heading):nth-child(even) {
+      > .product-grid__item:not(.product-grid__item--z-spacer):nth-child(odd) {
       transform: none;
     }
   }
@@ -478,17 +421,6 @@
       > .product-grid__item:nth-child(even) {
       grid-column: auto;
       transform: none;
-    }
-
-    .apgo-catalog-hub-section .main-collection-zgrid ul.product-grid[product-grid-view='default'] > .product-grid__item--hub-heading {
-      grid-column: 1 / -1;
-      width: 100%;
-      margin: 0 0 var(--padding-sm);
-      padding: 0;
-      background: transparent;
-      border: none;
-      box-shadow: none;
-      overflow: visible;
     }
 
     results-list.main-collection-zgrid.product-grid-container,
