@@ -187,17 +187,21 @@
       padding-block-start: 4px !important;
     }
 
+    /*
+      同列兩欄高度不同時，若用 align-items: start，列高仍取較高者，較矮那欄下方會留空。
+      用 stretch（與 grid 預設一致）讓兩張卡等高撐滿該列；row-gap 讓上下列卡片有小間距。
+    */
     .main-collection-zgrid ul.product-grid[product-grid-view='default'] {
-      --product-grid-gap: 0 10px;
-      gap: 0 10px;
-      row-gap: 0;
-      align-items: start;
+      --product-grid-gap: 10px 10px;
+      gap: 10px 10px;
+      align-items: stretch;
       padding-inline: 4px;
       box-sizing: border-box;
     }
 
     .main-collection-zgrid ul.product-grid[product-grid-view='default'] .product-grid__item:not(.product-grid__item--z-spacer) {
       box-sizing: border-box;
+      height: 100%;
       background: var(--mc-z-card-bg);
       /* 金邊用 border 貼齊卡殼外緣，避免 inset shadow 與內容之間像有一圈縫 */
       border: var(--mc-z-gold-border) solid var(--mc-z-gold-line);
