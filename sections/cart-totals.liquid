@@ -30,12 +30,8 @@
         endif
       endif
       assign final_total_with_shipping_minor = cart.total_price
-
-      if settings.currency_code_enabled_cart_total
-        assign total_price_formatted = final_total_with_shipping_minor | money_with_currency
-      else
-        assign total_price_formatted = final_total_with_shipping_minor | money
-      endif
+      # Standalone estimated row: symbol only (e.g. RM…), not money_with_currency (… MYR)
+      assign total_price_formatted = final_total_with_shipping_minor | money
     -%}
 
     {%- if section.settings.show_note_or_code -%}
@@ -228,7 +224,7 @@
     display: flex !important;
     flex-wrap: wrap !important;
     justify-content: space-between !important;
-    align-items: flex-end !important;
+    align-items: baseline !important;
     gap: 16px 20px !important;
     background: #000000 !important;
     border-radius: 10px !important;
@@ -238,15 +234,14 @@
 
   .cart-totals--standalone .cart-totals__estimated-card-left {
     flex: 1 1 200px !important;
-    align-self: flex-start !important;
     min-width: 0 !important;
   }
 
   .cart-totals--standalone .cart-totals__estimated-title {
     margin: 0 !important;
-    font-size: clamp(15px, 2.8vw, 17px) !important;
+    font-size: clamp(1.35rem, 4.2vw, 1.85rem) !important;
     font-weight: 700 !important;
-    line-height: 1.3 !important;
+    line-height: 1.15 !important;
     color: #f7931e !important;
   }
 
@@ -428,11 +423,16 @@
       '.cart-page__summary [data-cart-subtotal], .cart-page__summary .cart__total .cart__total-value'
     );
     if (nativeTotal) {
+      const stripTrailingIso = (s) =>
+        String(s || '')
+          .trim()
+          .replace(/\s+MYR\s*$/i, '')
+          .trim();
       const sync = () => {
         const mine = document.querySelector('#' + contentId + ' [data-cart-subtotal]');
         if (!mine) return;
-        const t = (nativeTotal.textContent||'').trim();
-        if (t && t !== (mine.textContent||'').trim()) {
+        const t = stripTrailingIso(nativeTotal.textContent || '');
+        if (t && t !== (mine.textContent || '').trim()) {
           mine.textContent = t;
           mine.setAttribute('value', t);
         }
