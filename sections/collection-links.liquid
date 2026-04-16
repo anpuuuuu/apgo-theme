@@ -45,6 +45,9 @@
   "
   style="{% render 'spacing-style', settings: section.settings %}"
 >
+  {% if hub_coll != blank %}
+    <div class="collection-links__sticky-shell">
+  {% endif %}
   <collection-links-component
     layout="{{ section.settings.layout }}"
     alignment="{{ section.settings.alignment }}"
@@ -113,6 +116,9 @@
         %}
     {% endcase %}
   </collection-links-component>
+  {% if hub_coll != blank %}
+    </div>
+  {% endif %}
 </div>
 
 {% # theme-check-disable ValidBlockTarget %}
@@ -208,11 +214,18 @@
     }
   }
 
+  /* 次選單字級（與後台 custom_css 一致，寫在區塊內較好維護） */
+  .collection-links__container .collection-links__link {
+    font-size: 14px !important;
+  }
+
   /*
-    統一目錄：sticky 放在 section 內第一層自訂元件上（網格子項），避免整段 .section（display:grid）
-    當 sticky 容器在部分瀏覽器不黏；top = 主 header + 公告列等 + 安全區。
+    統一目錄：sticky 做在原生 div（.collection-links__sticky-shell）上，並加 -webkit-sticky；
+    top = 主 header（#header-component 高度變數）+ 公告列等 + 安全區。
+    與跑馬燈無父子關係；跑馬燈只在 DOM 順序上相鄰，不會裁切 sticky。
   */
-  .section.collection-links--catalog-hub > collection-links-component[layout='text'] {
+  .section.collection-links--catalog-hub > .collection-links__sticky-shell {
+    position: -webkit-sticky;
     position: sticky;
     top: calc(
       var(--header-height, 60px) + var(--header-group-height, 0px) + env(safe-area-inset-top, 0px)
@@ -249,15 +262,6 @@
     flex: 0 0 auto;
     white-space: nowrap;
     scroll-snap-align: start;
-  }
-
-  /* 手機：橫列字級收斂，避免過大擠爆單行 */
-  @media screen and (width < 750px) {
-    .collection-links--catalog-hub .collection-links__link {
-      font-size: clamp(0.7rem, 2.9vw, 0.88rem) !important;
-      --min-font-size: 0.7rem;
-      --max-font-size: 0.88rem;
-    }
   }
 
   /* ScrollSpy 與 aria-current 同步高亮（APGO 橙） */

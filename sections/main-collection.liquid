@@ -506,6 +506,16 @@
   html.apgo-catalog-hub-smooth-scroll {
     scroll-behavior: smooth;
   }
+
+  /*
+    layout/theme.liquid 對 html/body 使用 overflow-x: clip 以修首頁橫向捲動；
+    在部分引擎會連帶讓直向 overflow 的計算不利於 position:sticky（捲動參考層異常）。
+    僅在 All 整合目錄頁（含 .apgo-all-catalog-root）還原橫向 visible，讓 collection-links 次選單能黏在視窗頂緣下方。
+  */
+  html:has(.apgo-all-catalog-root),
+  html:has(.apgo-all-catalog-root) body {
+    overflow-x: visible !important;
+  }
 {% endstylesheet %}
 
 {% schema %}
