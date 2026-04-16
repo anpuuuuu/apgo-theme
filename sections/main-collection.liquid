@@ -198,6 +198,16 @@
     }
   }
 
+  /* 桌機：集合頁 z-grid 商品區（.collection-wrapper）為內容欄寬的 2/3 並置中；不縮外層 .section 以免背景／全站網格跑版 */
+  @media screen and (width >= 750px) {
+    .main-collection-zgrid .collection-wrapper {
+      box-sizing: border-box;
+      width: 100%;
+      max-width: calc(100% * 2 / 3);
+      margin-inline: auto;
+    }
+  }
+
   .collection-wrapper:has(.facets-block-wrapper--full-width),
   .collection-wrapper:has(.collection-wrapper--full-width) {
     @media screen and (width >= 750px) {
