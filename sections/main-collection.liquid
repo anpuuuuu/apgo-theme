@@ -439,6 +439,11 @@
       gap: 18px 18px;
       padding-inline: 0;
     }
+
+    /* 桌機：集合 z-grid 網格固定 5 欄（略過 auto-fill + 大卡最小寬，避免只剩約 3 欄） */
+    .main-collection-zgrid ul.product-grid.product-grid--grid[product-grid-view='default'] {
+      --product-grid-columns-desktop: repeat(5, minmax(0, 1fr));
+    }
   }
 
   /*
