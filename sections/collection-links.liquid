@@ -33,6 +33,7 @@
   src="{{ 'collection-links.js' | asset_url }}"
   type="module"
 ></script>
+<script src="{{ 'apgo-sticky-stack.js' | asset_url }}" defer></script>
 
 {% comment %}
   整段（背景 + .section）包在 .collection-links__sticky-wrap，一律 position:sticky（hub 與否皆同）。
@@ -224,10 +225,17 @@
     theme.liquid 的 html/body overflow-x:clip 會干擾 sticky 時，本區塊存在頁面時還原橫向 visible。
   */
   html:has(.collection-links__sticky-wrap),
-  html:has(.collection-links__sticky-wrap) body {
+  html:has(.marquee__sticky-wrap),
+  html:has(.collection-links__sticky-wrap) body,
+  html:has(.marquee__sticky-wrap) body {
     overflow-x: visible !important;
   }
 
+  /*
+    對齊 header：.header-section 使用 position:sticky + z-index:--layer-sticky（見 sections/header.liquid）。
+    次選單在 main 內，top 須留在 #header-group 之下，故用 calc，不可沿用 header 的 top:-1px。
+    z-index 略高於跑馬燈（同層 layer-sticky），避免捲動時重疊被蓋。
+  */
   .collection-links__sticky-wrap {
     position: -webkit-sticky;
     position: sticky;

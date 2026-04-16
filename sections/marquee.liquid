@@ -4,6 +4,7 @@
   src="{{ 'marquee.js' | asset_url }}"
   type="module"
 ></script>
+<script src="{{ 'apgo-sticky-stack.js' | asset_url }}" defer></script>
 
 {% assign gap_between_elements = section.settings.gap_between_elements %}
 {% liquid
@@ -19,6 +20,10 @@
   endif
 %}
 
+{% comment %}
+  與 header 區塊相同機制：外層 position:sticky + z-index:--layer-sticky；top 疊在 header 與（若有）次選單之下。
+{% endcomment %}
+<div class="marquee__sticky-wrap">
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
 <marquee-component
   class="section spacing-style gap-style color-{{ section.settings.color_scheme }}"
@@ -64,8 +69,33 @@
     </div>
   </div>
 </marquee-component>
+</div>
 
 {% stylesheet %}
+  /*
+    與 .header-section:has(> #header-component[sticky]) 相同：sticky + layer-sticky。
+    top 使用 header 高度變數 + 次選單占位（--apgo-sticky-stack-subnav，由 apgo-sticky-stack.js 寫入）。
+  */
+  html:has(.marquee__sticky-wrap),
+  html:has(.marquee__sticky-wrap) body {
+    overflow-x: visible !important;
+  }
+
+  .marquee__sticky-wrap {
+    position: -webkit-sticky;
+    position: sticky;
+    top: calc(
+      var(--header-height, 60px) + var(--header-group-height, 0px) + env(safe-area-inset-top, 0px) +
+        var(--apgo-sticky-stack-subnav, 0px)
+    );
+    z-index: var(--layer-sticky, 8);
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    background: var(--color-background);
+    box-shadow: 0 1px 0 rgba(from var(--color-foreground) r g b / 0.08);
+  }
+
   marquee-component {
     display: block;
     width: 100%;
