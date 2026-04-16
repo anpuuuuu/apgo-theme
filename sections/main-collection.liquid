@@ -61,7 +61,7 @@
   >
     {% render 'skip-to-content-link', href: '#ResultsList', text: 'accessibility.skip_to_results_list' %}
 
-    <div class="collection-wrapper grid gap-style collection-wrapper--all-catalog-hub">
+    <div class="collection-wrapper gap-style collection-wrapper--all-catalog-hub">
       {% for handle_token in apgo_catalog_handles %}
         {% assign ch = handle_token | strip %}
         {% if ch == blank %}
@@ -433,13 +433,62 @@
     }
   }
 
+  /*
+    All 整合目錄：避免 (1) product-grid-container 在桌機變 grid 把 skip 連結與內容並排
+    (2) collection-wrapper.grid 把每個 section 塞進多欄模板的單格 → 極窄欄、標題疊在一起。
+  */
+  @media screen and (width >= 750px) {
+    .apgo-all-catalog-root.product-grid-container {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+    }
+  }
+
   .collection-wrapper--all-catalog-hub {
-    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-2xl, 2rem);
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  @media screen and (width >= 750px) {
+    .collection-wrapper--all-catalog-hub {
+      max-width: min(100%, var(--page-width, 120rem));
+      margin-inline: auto;
+      padding-inline: var(--page-margin);
+    }
+  }
+
+  .apgo-catalog-hub-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-sm);
+    width: 100%;
+    min-width: 0;
+  }
+
+  .apgo-all-catalog-root .main-collection-grid {
+    grid-column: unset;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .apgo-all-catalog-root .main-collection-grid > div {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
   }
 
   .apgo-catalog-hub-section .apgo-catalog-heading {
     margin: 0 0 var(--padding-sm);
     padding-inline: max(var(--padding-xs), var(--page-margin, 1rem));
+    width: 100%;
+    box-sizing: border-box;
+    overflow-wrap: break-word;
     scroll-margin-top: calc(var(--sticky-header-offset, var(--header-height, 72px)) + 72px);
   }
 
