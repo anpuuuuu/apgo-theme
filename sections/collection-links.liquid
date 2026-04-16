@@ -34,7 +34,6 @@
 <div
   class="
     section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }} spacing-style
-    {% if section.settings.stack_links_vertical %}collection-links--stack-vertical{% endif %}
     {% if section.settings.collection_list == blank and request.design_mode == false %}
       in-onboarding-state
     {% endif %}
@@ -187,23 +186,6 @@
     }
   }
 
-  /* 分類連結直向（手機／桌機）：由 section 設定 stack_links_vertical 啟用 */
-  .collection-links--stack-vertical collection-links-component[layout='text'] .collection-links__container {
-    flex-direction: column !important;
-    flex-wrap: nowrap !important;
-    align-items: flex-start !important;
-    gap: var(--gap-sm);
-    width: 100%;
-    max-width: 100%;
-  }
-
-  .collection-links--stack-vertical .collection-links__link {
-    --min-font-size: var(--font-size--md);
-    --max-font-size: var(--font-size--lg);
-    width: 100%;
-    justify-content: flex-start;
-  }
-
   .collection-links__container {
     display: flex;
     gap: var(--gap-md);
@@ -239,13 +221,6 @@
       "id": "unified_hub_collection",
       "label": "統一目錄頁（錨點捲動）",
       "info": "選「全部商品 / All」對應的集合後，橫向分類連結會改為此頁 + #catalog-各集合-handle，方便單頁瀏覽。"
-    },
-    {
-      "type": "checkbox",
-      "id": "stack_links_vertical",
-      "label": "分類連結直向排列",
-      "default": false,
-      "info": "手機與電腦皆以直欄顯示分類名稱（適合統一目錄頁）。"
     },
     {
       "type": "header",

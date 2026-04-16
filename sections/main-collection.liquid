@@ -41,7 +41,7 @@
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
 {% if use_unified_all_catalog %}
   <div
-    class="section product-grid-container color-{{ section.settings.color_scheme }} main-collection-zgrid apgo-collection-list-root apgo-catalog-vertical"
+    class="section product-grid-container color-{{ section.settings.color_scheme }} main-collection-zgrid apgo-collection-list-root"
     style="--padding-block-start: {{ section.settings.padding-block-start }}px; --padding-block-end: {{ section.settings.padding-block-end }}px;"
   >
     {% render 'skip-to-content-link', href: '#ResultsList', text: 'accessibility.skip_to_results_list' %}
@@ -412,32 +412,6 @@
 
   .collection-wrapper--all-catalog {
     grid-column: 1 / -1;
-  }
-
-  /*
-    合併 All 目錄（.apgo-catalog-vertical）：商品網格固定單欄直向，手機與桌機一致；
-    覆蓋 Z 字兩欄與 product-grid 內嵌桌機多欄設定。
-  */
-  .apgo-catalog-vertical.main-collection-zgrid ul.product-grid[product-grid-view='default'],
-  .apgo-catalog-vertical.main-collection-zgrid ul.product-grid {
-    grid-template-columns: 1fr !important;
-    --product-grid-columns-desktop: 1fr !important;
-  }
-
-  .apgo-catalog-vertical.main-collection-zgrid
-    ul.product-grid[product-grid-view='default']
-    > .product-grid__item:not(.product-grid__item--z-spacer):nth-child(odd),
-  .apgo-catalog-vertical.main-collection-zgrid
-    ul.product-grid[product-grid-view='default']
-    > .product-grid__item:not(.product-grid__item--z-spacer):nth-child(even) {
-    grid-column: auto !important;
-    transform: none !important;
-  }
-
-  @media screen and (width >= 750px) {
-    .apgo-catalog-vertical.main-collection-zgrid ul.product-grid:is(.product-grid--grid, .product-grid--organic) {
-      grid-template-columns: 1fr !important;
-    }
   }
 
   .apgo-catalog-group__title {
