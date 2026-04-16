@@ -280,6 +280,22 @@
     isolation: isolate;
   }
 
+  /* 卡片撐滿格線高度，讓下方灰區可分配剩餘空間 */
+  .main-collection-zgrid ul.product-grid[product-grid-view='default'] .product-grid__item:not(.product-grid__item--z-spacer) product-card-link {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+  }
+
+  .main-collection-zgrid ul.product-grid[product-grid-view='default'] .product-grid__item:not(.product-grid__item--z-spacer) .product-card {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    height: 100%;
+  }
+
   .main-collection-zgrid
     ul.product-grid[product-grid-view='default']
     > .product-grid__item:not(.product-grid__item--z-spacer):nth-child(odd),
@@ -291,12 +307,18 @@
   }
 
   .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card {
+    flex: 1 1 auto;
+    min-height: 0;
     gap: 10px;
     padding-block: 0;
     padding-inline: 0;
     background: var(--mc-z-card-bg);
     border-radius: var(--mc-card-radius);
     color: rgba(245, 240, 230, 0.94);
+  }
+
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card > .card-gallery {
+    flex: 0 0 auto;
   }
 
   .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-badges {
@@ -306,11 +328,44 @@
   .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card > .group-block {
     position: relative;
     z-index: 2;
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
     margin-top: 0;
     padding: 4px 12px 14px;
     background: var(--mc-z-card-bg);
     box-shadow: none;
     border-radius: 0 0 var(--mc-card-radius) var(--mc-card-radius);
+  }
+
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card > .group-block > .group-block-content {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    justify-content: flex-start;
+  }
+
+  /* collection 卡片常為外層 group 包內層 group（標題＋價錢）：內層撐滿剩餘高度，價錢才能沉底 */
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card > .group-block .group-block:has(product-price) {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    align-self: stretch;
+    width: 100%;
+  }
+
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card > .group-block .group-block:has(product-price) > .group-block-content {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card > .group-block > .group-block-content > .group-block:not(:has(product-price)) {
+    flex: 0 0 auto;
   }
 
   /* 字級：品名見下方 @media（對齊 paragraph 價錢字級，寫在 > *） */
@@ -326,15 +381,21 @@
     color: rgba(245, 240, 230, 0.96);
   }
 
-  /* 價格：左對齊（覆蓋主題卡片的 text-block--align-right / margin auto） */
+  /* 價格：左對齊；沉到灰區底部（價錢元件本身 margin-top:auto，勿套到內層 *） */
   .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price,
-  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price.text-block--align-right,
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price.text-block--align-right {
+    margin-inline-start: 0 !important;
+    margin-inline-end: 0 !important;
+    margin-top: auto;
+    text-align: left;
+    width: 100%;
+    align-self: stretch;
+  }
+
   .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price.text-block--align-right > * {
     margin-inline-start: 0 !important;
     margin-inline-end: 0 !important;
     text-align: left;
-    width: 100%;
-    align-self: stretch;
   }
 
   /* 同一列：折扣價（橘）在左、劃線原價在右；order 覆蓋 show_sale_price_first 的 DOM 順序 */
