@@ -2,10 +2,12 @@
   This snippet is used to render the product grid on collection and search pages.
 
   @param {object} section - The section object
-  @param {object} paginate - Pagination object
+  @param {object} [paginate] - Pagination object (omit for static grids; last-page defaults to 1)
   @param {object} products - Array of product objects
   @param {string} [title] - Header of the collection or search results
   @param {string} children - List or grid of product cards
+  @param {string|false} [grid_wrapper_id] - Wrapper id (default ResultsList); pass false to omit id
+  @param {boolean} [skip_session_script] - Skip sessionStorage grid script for secondary grids
 {%- enddoc -%}
 
 {% capture product_card_size %}
@@ -72,7 +74,12 @@
 {% endstyle %}
 
 <div
-  id="ResultsList"
+  {% if grid_wrapper_id == false %}
+  {% elsif grid_wrapper_id != blank %}
+    id="{{ grid_wrapper_id }}"
+  {% else %}
+    id="ResultsList"
+  {% endif %}
   class="
     grid main-collection-grid
     {%- if section.settings.inherit_color_scheme == false %} color-{{ section.settings.color_scheme }}{% endif %}
@@ -117,7 +124,7 @@
         class="product-grid product-grid--{{ section.id }} product-grid--{{ section.settings.layout_type }} {% if section.settings.mobile_product_card_size == 'large' %} product-grid-mobile--large{% endif %}"
         product-grid-view="default"
         ref="grid"
-        last-page="{{ paginate.pages }}"
+        last-page="{% if paginate %}{{ paginate.pages }}{% else %}1{% endif %}"
         role="list"
         data-product-card-size="{{ section.settings.product_card_size }}"
       >
@@ -131,7 +138,7 @@
 {% comment %}
   This script is used to set the grid view on the product grid stored in sessionStorage. Keeping it here helps us prevent seeing the default state.
 {% endcomment %}
-{% unless request.design_mode %}
+{% unless request.design_mode or skip_session_script %}
   <script>
     (() => {
       const grid = document.querySelector('.product-grid');

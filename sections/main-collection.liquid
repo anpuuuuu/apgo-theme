@@ -9,6 +9,24 @@
     endfor
     assign products = products | split: ','
   endif
+
+  # All 整合目錄：僅在 handle 為 all 且開關開啟時，改用手動 handle 清單 + collections[handle] 分段
+  assign use_all_catalog_hub = false
+  if collection.handle == 'all' and section.settings.enable_all_catalog_hub_layout
+    assign use_all_catalog_hub = true
+  endif
+
+  assign apgo_hub_handles_raw = section.settings.all_catalog_hub_handles | strip
+  if apgo_hub_handles_raw == blank
+    assign apgo_hub_handles_raw = 'collections-limited-time-deals,featured,atomic-coating-series,car-interior,cleaning-supplies,pre-wash-car-wash,restoration,others,household,2025-new-launch'
+  endif
+  assign apgo_hub_handles_raw = apgo_hub_handles_raw | newline_to_br | replace: '<br />', ',' | replace: '<br/>', ','
+  assign apgo_catalog_handles = apgo_hub_handles_raw | replace: ' ,', ',' | replace: ', ', ',' | split: ','
+
+  assign apgo_hub_section_limit = section.settings.all_catalog_hub_per_section_limit | default: 48
+  if apgo_hub_section_limit > 50
+    assign apgo_hub_section_limit = 50
+  endif
 %}
 
 <script
@@ -17,84 +35,149 @@
 ></script>
 
 {% javascript %}
-  const url = new URL(window.location.href);
-  if (url.hash) {
-    document.addEventListener(
-      'DOMContentLoaded',
-      () => {
-        const card = document.getElementById(url.hash.slice(1));
-        if (card) {
-          card.scrollIntoView({ behavior: 'instant' });
-        }
-      },
-      { once: true }
-    );
-  }
+  {% unless use_all_catalog_hub %}
+    const url = new URL(window.location.href);
+    if (url.hash) {
+      document.addEventListener(
+        'DOMContentLoaded',
+        () => {
+          const card = document.getElementById(url.hash.slice(1));
+          if (card) {
+            card.scrollIntoView({ behavior: 'instant' });
+          }
+        },
+        { once: true }
+      );
+    }
+  {% endunless %}
 {% endjavascript %}
 
 {% comment %} We always render this full-width, as the child blocks have width: page/full settings {% endcomment %}
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
-<results-list
-  class="section product-grid-container color-{{ section.settings.color_scheme }} main-collection-zgrid"
-  style="--padding-block-start: {{ section.settings.padding-block-start }}px; --padding-block-end: {{ section.settings.padding-block-end }}px;"
-  section-id="{{ section.id }}"
->
-  {% render 'skip-to-content-link', href: '#ResultsList', text: 'accessibility.skip_to_results_list' %}
-
+{% if use_all_catalog_hub %}
   <div
-    class="collection-wrapper grid gap-style"
+    class="section product-grid-container color-{{ section.settings.color_scheme }} main-collection-zgrid apgo-all-catalog-root"
+    style="--padding-block-start: {{ section.settings.padding-block-start }}px; --padding-block-end: {{ section.settings.padding-block-end }}px;"
   >
-    {% content_for 'block',
-      type: 'filters',
-      id: 'filters',
-      results: collection,
-      results_size: collection.products_count
-    %}
+    {% render 'skip-to-content-link', href: '#ResultsList', text: 'accessibility.skip_to_results_list' %}
 
-    {% if request.design_mode and shop.products_count == 0 %}
-      {% paginate products by 24 %}
-        {% capture children %}
-          {% for product in products %}
-            <li
-              class="product-grid__item product-grid__item--{{ forloop.index0 }}"
-              data-page="{{ paginate.current_page }}"
-              data-product-id="{{ product.id }}"
-              data-view-transition-id="{{ product.id }}"
-              ref="cards[]"
-            >
-              {% content_for 'block', type: 'product-card', id: 'product-card', closest.product: product %}
-            </li>
-          {% endfor %}
-        {% endcapture %}
-        {% render 'product-grid', section: section, children: children, products: products, paginate: paginate %}
-      {% endpaginate %}
-    {% else %}
-      {% paginate collection.products by 24 %}
-        {% capture children %}
-          {% for product in collection.products %}
-            <li
-              id="{{ section.id }}-{{ product.id }}"
-              class="product-grid__item product-grid__item--{{ forloop.index0 }}"
-              data-page="{{ paginate.current_page }}"
-              data-product-id="{{ product.id }}"
-              ref="cards[]"
-            >
-              {% # theme-check-disable %}
-              {% content_for 'block', type: 'product-card', id: 'product-card', closest.product: product %}
-              {% # theme-check-enable %}
-            </li>
-          {% endfor %}
-        {% endcapture %}
-        {% render 'product-grid',
-          section: section,
-          children: children,
-          products: collection.products,
-          paginate: paginate
-        %}
-      {% endpaginate %}
-    {% endif %}
+    <div class="collection-wrapper grid gap-style collection-wrapper--all-catalog-hub">
+      {% for handle_token in apgo_catalog_handles %}
+        {% assign ch = handle_token | strip %}
+        {% if ch == blank %}
+          {% continue %}
+        {% endif %}
+        {% assign cat_coll = collections[ch] %}
+        {% if cat_coll == blank or cat_coll.products_count == 0 %}
+          {% continue %}
+        {% endif %}
+
+        <section
+          class="apgo-catalog-hub-section spacing-style"
+          data-apgo-catalog-handle="{{ ch }}"
+          style="--padding-block-end: {{ section.settings.columns_gap_vertical }}px;"
+        >
+          <h2 class="apgo-catalog-heading h3" id="collection-{{ ch }}">{{ cat_coll.title }}</h2>
+
+          {% assign catalog_chunk_is_first = forloop.first %}
+          {% capture children %}
+            {% for product in cat_coll.products limit: apgo_hub_section_limit %}
+              <li
+                id="{{ section.id }}-{{ product.id }}-{{ ch }}"
+                class="product-grid__item product-grid__item--{{ forloop.index0 }}"
+                data-page="1"
+                data-product-id="{{ product.id }}"
+                ref="cards[]"
+              >
+                {% content_for 'block', type: 'product-card', id: 'product-card', closest.product: product %}
+              </li>
+            {% endfor %}
+          {% endcapture %}
+
+          {% if catalog_chunk_is_first %}
+            {% render 'product-grid',
+              section: section,
+              children: children,
+              products: cat_coll.products
+            %}
+          {% else %}
+            {% render 'product-grid',
+              section: section,
+              children: children,
+              products: cat_coll.products,
+              grid_wrapper_id: false,
+              skip_session_script: true
+            %}
+          {% endif %}
+        </section>
+      {% endfor %}
+    </div>
   </div>
-</results-list>
+
+  <script src="{{ 'collection-all-hub.js' | asset_url }}" type="module" defer></script>
+{% else %}
+  <results-list
+    class="section product-grid-container color-{{ section.settings.color_scheme }} main-collection-zgrid"
+    style="--padding-block-start: {{ section.settings.padding-block-start }}px; --padding-block-end: {{ section.settings.padding-block-end }}px;"
+    section-id="{{ section.id }}"
+  >
+    {% render 'skip-to-content-link', href: '#ResultsList', text: 'accessibility.skip_to_results_list' %}
+
+    <div
+      class="collection-wrapper grid gap-style"
+    >
+      {% content_for 'block',
+        type: 'filters',
+        id: 'filters',
+        results: collection,
+        results_size: collection.products_count
+      %}
+
+      {% if request.design_mode and shop.products_count == 0 %}
+        {% paginate products by 24 %}
+          {% capture children %}
+            {% for product in products %}
+              <li
+                class="product-grid__item product-grid__item--{{ forloop.index0 }}"
+                data-page="{{ paginate.current_page }}"
+                data-product-id="{{ product.id }}"
+                data-view-transition-id="{{ product.id }}"
+                ref="cards[]"
+              >
+                {% content_for 'block', type: 'product-card', id: 'product-card', closest.product: product %}
+              </li>
+            {% endfor %}
+          {% endcapture %}
+          {% render 'product-grid', section: section, children: children, products: products, paginate: paginate %}
+        {% endpaginate %}
+      {% else %}
+        {% paginate collection.products by 24 %}
+          {% capture children %}
+            {% for product in collection.products %}
+              <li
+                id="{{ section.id }}-{{ product.id }}"
+                class="product-grid__item product-grid__item--{{ forloop.index0 }}"
+                data-page="{{ paginate.current_page }}"
+                data-product-id="{{ product.id }}"
+                ref="cards[]"
+              >
+                {% # theme-check-disable %}
+                {% content_for 'block', type: 'product-card', id: 'product-card', closest.product: product %}
+                {% # theme-check-enable %}
+              </li>
+            {% endfor %}
+          {% endcapture %}
+          {% render 'product-grid',
+            section: section,
+            children: children,
+            products: collection.products,
+            paginate: paginate
+          %}
+        {% endpaginate %}
+      {% endif %}
+    </div>
+  </results-list>
+{% endif %}
 
 {% stylesheet %}
   .main-collection-grid {
@@ -178,7 +261,8 @@
       主題 section 的 padding-block-start 會疊在 collection-links 下方；
       手機上收斂頂部留白（仍保留極小間距）。
     */
-    results-list.main-collection-zgrid.product-grid-container {
+    results-list.main-collection-zgrid.product-grid-container,
+    .apgo-all-catalog-root.main-collection-zgrid.product-grid-container {
       padding-block-start: 4px !important;
     }
 
@@ -339,13 +423,35 @@
       transform: none;
     }
 
-    results-list.main-collection-zgrid.product-grid-container {
+    results-list.main-collection-zgrid.product-grid-container,
+    .apgo-all-catalog-root.main-collection-zgrid.product-grid-container {
       padding-block-start: var(--padding-block-start) !important;
     }
 
     .main-collection-zgrid ul.product-grid[product-grid-view='default'] {
       padding-inline: 0;
     }
+  }
+
+  .collection-wrapper--all-catalog-hub {
+    grid-column: 1 / -1;
+  }
+
+  .apgo-catalog-hub-section .apgo-catalog-heading {
+    margin: 0 0 var(--padding-sm);
+    padding-inline: max(var(--padding-xs), var(--page-margin, 1rem));
+    scroll-margin-top: calc(var(--sticky-header-offset, var(--header-height, 72px)) + 72px);
+  }
+
+  @media screen and (width >= 750px) {
+    .apgo-catalog-hub-section .apgo-catalog-heading {
+      padding-inline: 0;
+      scroll-margin-top: calc(var(--sticky-header-offset, var(--header-height, 80px)) + 80px);
+    }
+  }
+
+  html.apgo-catalog-hub-smooth-scroll {
+    scroll-behavior: smooth;
   }
 {% endstylesheet %}
 
@@ -509,6 +615,33 @@
       "step": 1,
       "unit": "px",
       "default": 8
+    },
+    {
+      "type": "header",
+      "content": "All 整合目錄（KFC 式錨點）"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_all_catalog_hub_layout",
+      "label": "在「全部商品 / all」頁分段顯示子集合",
+      "default": true,
+      "info": "需搭配 Collection links 區塊的「統一目錄頁」設定；子選單連結改為錨點，並由 assets/collection-all-hub.js 做滾動聯動。"
+    },
+    {
+      "type": "textarea",
+      "id": "all_catalog_hub_handles",
+      "label": "子集合 handles（逗號或換行分隔）",
+      "placeholder": "featured, car-coatings",
+      "info": "順序＝頁面區塊順序；須與 Shopify 集合 handle 一致。留空則使用內建預設清單。"
+    },
+    {
+      "type": "range",
+      "id": "all_catalog_hub_per_section_limit",
+      "label": "每段最多商品數",
+      "min": 4,
+      "max": 50,
+      "step": 1,
+      "default": 48
     }
   ],
   "presets": []

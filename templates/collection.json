@@ -135,7 +135,8 @@
         "image_position": "right",
         "color_scheme": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26",
         "padding-block-start": 14,
-        "padding-block-end": 14
+        "padding-block-end": 14,
+        "unified_catalog_hub_collection": "all"
       }
     },
     "main": {
@@ -429,7 +430,10 @@
         "padding-inline-end": 0,
         "color_scheme": "scheme-5",
         "padding-block-start": 20,
-        "padding-block-end": 20
+        "padding-block-end": 20,
+        "enable_all_catalog_hub_layout": true,
+        "all_catalog_hub_handles": "collections-limited-time-deals,\nfeatured,\natomic-coating-series,\ncar-interior,\ncleaning-supplies,\npre-wash-car-wash,\nrestoration,\nothers,\nhousehold,\n2025-new-launch",
+        "all_catalog_hub_per_section_limit": 48
       }
     },
     "marquee_f8WxXx": {

@@ -2,6 +2,7 @@
 
 {% liquid
   assign collection_list = section.settings.collection_list
+  assign hub_coll = section.settings.unified_catalog_hub_collection
 
   if collection_list == blank
     assign limit = 4
@@ -13,7 +14,15 @@
     assign collection_list = collection_list | split: ','
   endif
 
-  assign active_collection = collection_list | find: 'id', collection.id | default: collection_list.first
+  assign active_collection = collection_list | find: 'id', collection.id
+  if active_collection == blank
+    assign active_collection = collection_list.first
+  endif
+
+  assign suppress_collection_nav_active = false
+  if hub_coll != blank and collection.id == hub_coll.id
+    assign suppress_collection_nav_active = true
+  endif
 %}
 
 <script
@@ -25,6 +34,7 @@
 <div
   class="
     section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }} spacing-style
+    {% if hub_coll != blank %}collection-links--catalog-hub{% endif %}
     {% if section.settings.collection_list == blank and request.design_mode == false %}
       in-onboarding-state
     {% endif %}
@@ -45,10 +55,11 @@
       {% for collection in collection_list limit: limit %}
         {% liquid
           assign selected = false
-
-          if collection.id == active_collection.id
-            assign selected = true
-          endif
+          unless suppress_collection_nav_active
+            if collection.id == active_collection.id
+              assign selected = true
+            endif
+          endunless
         %}
         {% content_for 'block',
           type: '_collection-link',
@@ -66,10 +77,11 @@
           {% for collection in collection_list limit: limit %}
           {% liquid
             assign selected = false
-
-            if collection.id == active_collection.id
-              assign selected = true
-            endif
+            unless suppress_collection_nav_active
+              if collection.id == active_collection.id
+                assign selected = true
+              endif
+            endunless
           %}
 
           {% capture slide %}
@@ -191,6 +203,45 @@
       }
     }
   }
+
+  /* 統一目錄：sticky 次選單 + 橫向滑動（KFC menu 式） */
+  .section.collection-links--catalog-hub {
+    position: sticky;
+    top: var(--sticky-header-offset, var(--header-height, 72px));
+    z-index: 20;
+    background: var(--color-background);
+    box-shadow: 0 1px 0 rgba(from var(--color-foreground) r g b / 0.1);
+  }
+
+  .collection-links--catalog-hub collection-links-component[layout='text'] .collection-links__container {
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    justify-content: flex-start !important;
+    align-items: center;
+    gap: var(--gap-md);
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    padding-block: 2px;
+  }
+
+  .collection-links--catalog-hub .collection-links__link {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    scroll-snap-align: start;
+  }
+
+  /* ScrollSpy 與 aria-current 同步高亮（APGO 橙） */
+  .collection-links__link.collection-links__link--scroll-active {
+    color: #f08418 !important;
+    opacity: 1 !important;
+  }
+
+  .collection-links__link.collection-links__link--scroll-active::before {
+    width: 100%;
+  }
 {% endstylesheet %}
 
 {% schema %}
@@ -204,6 +255,12 @@
       "type": "collection_list",
       "id": "collection_list",
       "label": "t:settings.collection_list"
+    },
+    {
+      "type": "collection",
+      "id": "unified_catalog_hub_collection",
+      "label": "統一目錄頁（All 錨點）",
+      "info": "選「全部商品」集合後，連結改為此頁 + #collection-{handle}；區塊會 sticky 並與滾動聯動（需主題已啟用 All 分段）。"
     },
     {
       "type": "header",
