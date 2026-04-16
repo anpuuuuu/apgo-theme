@@ -100,7 +100,6 @@
       <div class="cart-totals__estimated-card" role="status">
         <div class="cart-totals__estimated-card-left">
           <p class="cart-totals__estimated-title">{{ 'content.cart_estimated_total' | t }}</p>
-          <p class="cart-totals__estimated-note">{{ 'apgo_cart.estimated_total_checkout_note' | t }}</p>
         </div>
         <text-component
           ref="cartTotalStandalone"
@@ -244,19 +243,11 @@
   }
 
   .cart-totals--standalone .cart-totals__estimated-title {
-    margin: 0 0 6px 0 !important;
+    margin: 0 !important;
     font-size: clamp(15px, 2.8vw, 17px) !important;
     font-weight: 700 !important;
     line-height: 1.3 !important;
     color: #f7931e !important;
-  }
-
-  .cart-totals--standalone .cart-totals__estimated-note {
-    margin: 0 !important;
-    font-size: 12px !important;
-    line-height: 1.45 !important;
-    color: #b0b0b0 !important;
-    max-width: 22em !important;
   }
 
   .cart-totals--standalone .cart-totals__estimated-price {
