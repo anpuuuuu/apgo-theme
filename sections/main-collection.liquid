@@ -262,6 +262,19 @@
     --mc-z-card-bg: #2e2e2e;
     --mc-card-radius: 15px;
     --mc-card-image-inset: 0;
+    /* 立體卡：上緣內高光 + 內凹陰影 + 多層外陰影 */
+    --mc-z-card-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.11),
+      inset 0 -3px 6px rgba(0, 0, 0, 0.32),
+      0 2px 4px rgba(0, 0, 0, 0.38),
+      0 10px 24px rgba(0, 0, 0, 0.45),
+      0 22px 44px rgba(0, 0, 0, 0.4);
+    --mc-z-card-shadow-hover:
+      inset 0 1px 0 rgba(255, 255, 255, 0.15),
+      inset 0 -3px 6px rgba(0, 0, 0, 0.28),
+      0 5px 10px rgba(0, 0, 0, 0.45),
+      0 14px 32px rgba(0, 0, 0, 0.52),
+      0 32px 56px rgba(0, 0, 0, 0.46);
   }
 
   .main-collection-zgrid ul.product-grid[product-grid-view='default'] {
@@ -275,9 +288,30 @@
     background: var(--mc-z-card-bg);
     border: none;
     border-radius: var(--mc-card-radius);
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+    box-shadow: var(--mc-z-card-shadow);
     overflow: hidden;
     isolation: isolate;
+    position: relative;
+    transition: box-shadow 0.35s ease, transform 0.35s ease;
+  }
+
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .main-collection-zgrid
+      ul.product-grid[product-grid-view='default']
+      .product-grid__item:not(.product-grid__item--z-spacer):hover {
+      z-index: 2;
+      box-shadow: var(--mc-z-card-shadow-hover);
+      transform: translateY(-4px);
+    }
+  }
+
+  @media (hover: hover) and (prefers-reduced-motion: reduce) {
+    .main-collection-zgrid
+      ul.product-grid[product-grid-view='default']
+      .product-grid__item:not(.product-grid__item--z-spacer):hover {
+      z-index: 2;
+      box-shadow: var(--mc-z-card-shadow-hover);
+    }
   }
 
   /* 卡片撐滿格線高度，讓下方灰區可分配剩餘空間 */
