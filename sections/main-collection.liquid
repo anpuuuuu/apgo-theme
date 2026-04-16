@@ -171,7 +171,7 @@
     .main-collection-zgrid {
       /* 約半張手機商品卡高度：僅用於右欄與左欄的垂直錯位（不再插入頂部占位列，避免選單下大塊空白） */
       --mc-half-card-shift: clamp(5.25rem, 36vw, 9.5rem);
-      --mc-z-gold-line: rgba(201, 162, 39, 0.22);
+      --mc-z-gold-line: rgba(201, 162, 39, 0.42);
       --mc-z-card-bg: #0f0f0f;
       --mc-card-radius: 10px;
       /* 圖片與卡殼內緣：略大於 4px，讓深色邊框包住圖像 */
@@ -201,7 +201,7 @@
       border-radius: var(--mc-card-radius);
       box-shadow:
         0 20px 36px rgba(0, 0, 0, 0.55),
-        inset 0 0 0 1px var(--mc-z-gold-line);
+        inset 0 0 0 2px var(--mc-z-gold-line);
       overflow: hidden;
       isolation: isolate;
     }
