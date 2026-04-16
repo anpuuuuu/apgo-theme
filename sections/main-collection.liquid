@@ -303,7 +303,7 @@
     border-radius: 0 0 var(--mc-card-radius) var(--mc-card-radius);
   }
 
-  /* 字級不覆寫：沿用 base.css 的 .text-block.h5 > *（--font-h5--size）與編輯器／collection.json 區塊設定 */
+  /* 字級：桌機沿用主題 h4/h5；手機見下方 @media（僅縮小 z-grid 卡片標題實際文字 > *） */
   .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .h4,
   .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .text-block:is(.h4, .h5) {
     color: rgba(245, 240, 230, 0.96);
@@ -410,6 +410,11 @@
       --product-grid-gap: 10px 10px;
       gap: 10px 10px;
       padding-inline: 4px;
+    }
+
+    /* 手機：商品名略小（對準 base.css 的 .text-block.h5 > *，避免只設外層無效） */
+    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .text-block:is(.h4, .h5) > * {
+      font-size: clamp(0.8125rem, 2.9vw, 0.875rem);
     }
   }
 
