@@ -75,11 +75,12 @@
     padding-inline: var(--badge-rectangle-padding-inline);
   }
 
-  /* 促銷角標：不用主題「特賣」配色（常為紅底），改深色底＋品牌橙 */
+  /* 促銷角標：完全無底，僅圖示 */
   .product-badges__badge--sale {
     color: #f08418;
-    background: rgba(15, 15, 15, 0.92);
-    border: 1px solid rgba(240, 132, 24, 0.45);
+    background: transparent;
+    border: none;
+    box-shadow: none;
     text-transform: none;
   }
 
@@ -87,5 +88,7 @@
     display: inline-block;
     font-size: 1.15em;
     line-height: 1;
+    /* 淺色商品圖上仍可辨識，非實心底色 */
+    filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.85)) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45));
   }
 {% endstylesheet %}
