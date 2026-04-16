@@ -25,7 +25,8 @@
       {%- if product.available == false -%}
         {{ 'content.product_badge_sold_out' | t }}
       {%- elsif product.compare_at_price > product.price -%}
-        {{ 'content.product_badge_sale' | t }}
+        <span class="visually-hidden">{{ 'content.product_badge_sale' | t }}</span>
+        <span class="product-badges__sale-icon" aria-hidden="true">&#x1F525;</span>
       {%- endif -%}
     </div>
   {%- endif -%}
@@ -72,5 +73,11 @@
   .product-badges__badge--rectangle {
     padding-block: var(--badge-rectangle-padding-block);
     padding-inline: var(--badge-rectangle-padding-inline);
+  }
+
+  .product-badges__sale-icon {
+    display: inline-block;
+    font-size: 1.15em;
+    line-height: 1;
   }
 {% endstylesheet %}
