@@ -356,7 +356,7 @@
   }
 
   /*
-    圖貼齊卡殼頂／左右；slideshow 與媒體層級皆設「明確」上圓角（border-radius: inherit 在 web component 上常不生效）。
+    圖貼齊卡殼頂／左右；slideshow 與媒體層級設明確圓角（四角，與 --mc-card-radius 一致；不用 inherit 以免 web component 不生效）。
   */
   .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .card-gallery {
     box-sizing: border-box;
@@ -365,7 +365,7 @@
     margin: var(--mc-card-image-inset) var(--mc-card-image-inset) 0;
     align-self: stretch;
     flex-shrink: 0;
-    border-radius: var(--mc-card-radius) var(--mc-card-radius) 0 0;
+    border-radius: var(--mc-card-radius);
     overflow: hidden;
     isolation: isolate;
   }
@@ -378,7 +378,7 @@
   .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .card-gallery .product-media,
   .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .card-gallery deferred-media,
   .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .card-gallery placeholder-image {
-    border-radius: var(--mc-card-radius) var(--mc-card-radius) 0 0;
+    border-radius: var(--mc-card-radius);
   }
 
   .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .card-gallery slideshow-slide,
@@ -392,7 +392,7 @@
   .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .card-gallery img,
   .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .card-gallery video,
   .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .card-gallery iframe {
-    border-radius: var(--mc-card-radius) var(--mc-card-radius) 0 0;
+    border-radius: var(--mc-card-radius);
   }
 
   @media screen and (width < 750px) {
