@@ -55,13 +55,6 @@
       {% paginate products by 24 %}
         {% capture children %}
           {% for product in products %}
-            {% if forloop.first and paginate.current_page == 1 %}
-              <li
-                class="product-grid__item product-grid__item--z-spacer"
-                role="presentation"
-                aria-hidden="true"
-              ></li>
-            {% endif %}
             {% assign z_mod = forloop.index0 | modulo: 2 %}
             <li
               class="product-grid__item product-grid__item--{{ forloop.index0 }} {% if z_mod == 0 %}product-grid__item--z-left{% else %}product-grid__item--z-right{% endif %}"
@@ -80,13 +73,6 @@
       {% paginate collection.products by 24 %}
         {% capture children %}
           {% for product in collection.products %}
-            {% if forloop.first and paginate.current_page == 1 %}
-              <li
-                class="product-grid__item product-grid__item--z-spacer"
-                role="presentation"
-                aria-hidden="true"
-              ></li>
-            {% endif %}
             {% assign z_mod = forloop.index0 | modulo: 2 %}
             <li
               id="{{ section.id }}-{{ product.id }}"
@@ -183,12 +169,19 @@
   */
   @media screen and (width < 750px) {
     .main-collection-zgrid {
-      /* 約半張手機商品卡高度，用於右欄 translateY 與頂部占位 */
+      /* 約半張手機商品卡高度：僅用於右欄與左欄的垂直錯位（不再插入頂部占位列，避免選單下大塊空白） */
       --mc-half-card-shift: clamp(5.25rem, 36vw, 9.5rem);
-      --mc-z-spacer-h: var(--mc-half-card-shift);
       --mc-z-gold-line: rgba(201, 162, 39, 0.22);
       --mc-z-card-bg: #0f0f0f;
       --mc-card-radius: 10px;
+    }
+
+    /*
+      主題 section 的 padding-block-start 會疊在 collection-links 下方；
+      手機上收斂頂部留白（仍保留極小間距）。
+    */
+    results-list.main-collection-zgrid.product-grid-container {
+      padding-block-start: 8px !important;
     }
 
     .main-collection-zgrid ul.product-grid[product-grid-view='default'] {
@@ -196,18 +189,8 @@
       gap: 0 10px;
       row-gap: 0;
       align-items: start;
-    }
-
-    .main-collection-zgrid ul.product-grid[product-grid-view='default'] .product-grid__item--z-spacer {
-      grid-column: 1 / -1;
-      height: var(--mc-z-spacer-h);
-      min-height: var(--mc-z-spacer-h);
-      padding: 0;
-      margin: 0;
-      border: none;
-      background: transparent;
-      pointer-events: none;
-      transition: none !important;
+      padding-inline: 4px;
+      box-sizing: border-box;
     }
 
     .main-collection-zgrid ul.product-grid[product-grid-view='default'] .product-grid__item:not(.product-grid__item--z-spacer) {
@@ -297,13 +280,17 @@
   }
 
   @media screen and (width >= 750px) {
-    .main-collection-zgrid .product-grid__item--z-spacer {
-      display: none;
-    }
-
     .main-collection-zgrid .product-grid__item--z-left,
     .main-collection-zgrid .product-grid__item--z-right {
       transform: none;
+    }
+
+    results-list.main-collection-zgrid.product-grid-container {
+      padding-block-start: var(--padding-block-start) !important;
+    }
+
+    .main-collection-zgrid ul.product-grid[product-grid-view='default'] {
+      padding-inline: 0;
     }
   }
 {% endstylesheet %}
