@@ -337,17 +337,33 @@
     align-self: stretch;
   }
 
+  /* 同一列：折扣價（橘）在左、劃線原價在右；order 覆蓋 show_sale_price_first 的 DOM 順序 */
   .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price > div {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: flex-start;
+    gap: 0.25em 0.5em;
+    width: 100%;
     text-align: left;
-    gap: 0.05em;
   }
 
   .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price > div > [role='group'] {
     line-height: 1.12;
     margin: 0;
+  }
+
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price > div > [role='group']:has(.price) {
+    order: 1;
+    flex: 0 1 auto;
+  }
+
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price > div > [role='group']:has(.compare-at-price) {
+    order: 2;
+    margin-inline-start: auto;
+    flex: 0 0 auto;
+    text-align: right;
   }
 
   .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price > div .price,
@@ -364,11 +380,6 @@
   .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price > div .price {
     color: #f08418;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
-  }
-
-  /* 暫時隱藏劃線原價（compare-at）整行；要恢復時刪除此規則 */
-  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price > div > [role='group']:has(.compare-at-price) {
-    display: none !important;
   }
 
   .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price .compare-at-price {
