@@ -360,6 +360,17 @@
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
   }
 
+  /* 現價：品牌橘 */
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price > div .price {
+    color: #f08418;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  }
+
+  /* 暫時隱藏劃線原價（compare-at）整行；要恢復時刪除此規則 */
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price > div > [role='group']:has(.compare-at-price) {
+    display: none !important;
+  }
+
   .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price .compare-at-price {
     color: rgba(200, 200, 200, 0.85);
   }
