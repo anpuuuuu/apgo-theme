@@ -162,15 +162,12 @@
   }
 
   /*
-    手機集合頁：淺灰卡殼 + Z 字錯位（僅 .main-collection-zgrid）
-    DOM 仍為 1、2、3… 順序，但用 grid-column 做成「右、左、右、左」填滿兩欄；
-    視覺右欄貼頂，左欄下移約半張卡高。圖文分區不重疊。
+    手機集合頁：淺灰卡殼 + 兩欄「右、左、右、左」（僅 .main-collection-zgrid）
+    DOM 仍為 1、2、3… 順序，用 grid-column 指定欄位；不再對左欄做 translateY，避免第一列左側大塊空白。
   */
   @media screen and (width < 750px) {
     .main-collection-zgrid {
-      /* 約半張手機商品卡高度：僅用於右欄與左欄的垂直錯位（不再插入頂部占位列，避免選單下大塊空白） */
-      --mc-half-card-shift: clamp(5.25rem, 36vw, 9.5rem);
-      --mc-z-card-bg: #0f0f0f;
+      --mc-z-card-bg: #cccccc;
       --mc-card-radius: 10px;
       /* 圖片與卡殼內緣 */
       --mc-card-image-inset: clamp(10px, 3.2vw, 14px);
@@ -207,19 +204,17 @@
       isolation: isolate;
     }
 
-    /* 第 1、3、5… 個 → 右欄（較高）；第 2、4、6… 個 → 左欄（下移） */
+    /* 第 1、3、5… 個 → 右欄；第 2、4、6… 個 → 左欄（同列頂對齊，不做垂直錯位） */
     .main-collection-zgrid
       ul.product-grid[product-grid-view='default']
       > .product-grid__item:not(.product-grid__item--z-spacer):nth-child(odd) {
       grid-column: 2;
-      transform: translate3d(0, 0, 0);
     }
 
     .main-collection-zgrid
       ul.product-grid[product-grid-view='default']
       > .product-grid__item:not(.product-grid__item--z-spacer):nth-child(even) {
       grid-column: 1;
-      transform: translate3d(0, var(--mc-half-card-shift), 0);
     }
 
     /* 手機單欄大卡模式：還原預設流，勿強制第二欄 */
@@ -296,17 +291,6 @@
       flex-shrink: 0;
       border-radius: min(8px, var(--mc-card-radius)) min(8px, var(--mc-card-radius)) 0 0;
       overflow: hidden;
-    }
-  }
-
-  @media screen and (width < 750px) and (prefers-reduced-motion: reduce) {
-    .main-collection-zgrid
-      ul.product-grid[product-grid-view='default']
-      > .product-grid__item:not(.product-grid__item--z-spacer):nth-child(odd),
-    .main-collection-zgrid
-      ul.product-grid[product-grid-view='default']
-      > .product-grid__item:not(.product-grid__item--z-spacer):nth-child(even) {
-      transform: none;
     }
   }
 
