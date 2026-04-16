@@ -516,12 +516,13 @@
   }
 
   .apgo-looping-intro.has-video .apgo-looping-intro-inner {
-    grid-template-columns: minmax(260px, 38%) 1fr;
+    /* minmax(0,1fr) 讓第二欄可縮小，否則長段落 min-content 會撐破版面不換行 */
+    grid-template-columns: minmax(260px, 38%) minmax(0, 1fr);
     align-items: start; /* Don't let description height stretch the video area */
   }
 
   .apgo-looping-intro.no-video .apgo-looping-intro-inner {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .apgo-looping-video-wrap {
@@ -549,6 +550,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    min-width: 0; /* flex/grid 子項預設 min-width:auto 會阻止換行 */
     min-height: 220px;
     padding: 4px 2px;
   }
@@ -562,11 +564,17 @@
     color: var(--text-light-gray);
     font-size: 0.9rem;
     line-height: 1.6;
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: break-word;
+    word-wrap: break-word; /* 舊 WebKit */
   }
 
   .apgo-looping-desc-content p,
   .apgo-looping-desc-content li {
     margin: 0 0 8px;
+    max-width: 100%;
+    overflow-wrap: break-word;
   }
 
   .apgo-looping-desc-content ul,
@@ -607,6 +615,14 @@
 
   .apgo-looping-desc-block-body {
     margin: 0;
+    min-width: 0;
+    overflow-wrap: break-word;
+  }
+
+  .apgo-looping-desc-block--description {
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: break-word;
   }
 
   .apgo-insidebox {
