@@ -19,6 +19,8 @@
   endif
 %}
 
+{% comment %} 與 critical.js／header 變數對齊：黏在 #header-group 佔位下方 {% endcomment %}
+<div class="marquee__sticky-wrap">
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
 <marquee-component
   class="section spacing-style gap-style color-{{ section.settings.color_scheme }}"
@@ -64,8 +66,29 @@
     </div>
   </div>
 </marquee-component>
+</div>
 
 {% stylesheet %}
+  /* theme.liquid 的 overflow-x:clip 可能影響 sticky 參考層 */
+  html:has(.marquee__sticky-wrap),
+  html:has(.marquee__sticky-wrap) body {
+    overflow-x: visible !important;
+  }
+
+  .marquee__sticky-wrap {
+    position: -webkit-sticky;
+    position: sticky;
+    top: calc(
+      var(--header-height, 60px) + var(--header-group-height, 0px) + env(safe-area-inset-top, 0px)
+    );
+    z-index: calc(var(--layer-sticky, 8) - 1);
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    background: var(--color-background);
+    box-shadow: 0 1px 0 rgba(from var(--color-foreground) r g b / 0.08);
+  }
+
   marquee-component {
     display: block;
     width: 100%;
