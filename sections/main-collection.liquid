@@ -178,15 +178,17 @@
   }
 
   /*
-    手機集合頁：工業黑金 + Z 字錯位 + 圖文重疊（僅 .main-collection-zgrid）
+    手機集合頁：工業黑金 + Z 字錯位（僅 .main-collection-zgrid）
+    右欄整體下移約「半張卡」高度，與左欄形成長方形卡片的磚形錯位；圖文分區不重疊。
   */
   @media screen and (width < 750px) {
     .main-collection-zgrid {
-      --mc-z-stagger-left: 28px;
-      --mc-z-stagger-right: -10px;
-      --mc-z-spacer-h: clamp(64px, 22vw, 120px);
+      /* 約半張手機商品卡高度，用於右欄 translateY 與頂部占位 */
+      --mc-half-card-shift: clamp(5.25rem, 36vw, 9.5rem);
+      --mc-z-spacer-h: var(--mc-half-card-shift);
       --mc-z-gold-line: rgba(201, 162, 39, 0.22);
       --mc-z-card-bg: #0f0f0f;
+      --mc-card-radius: 10px;
     }
 
     .main-collection-zgrid ul.product-grid[product-grid-view='default'] {
@@ -211,7 +213,7 @@
     .main-collection-zgrid ul.product-grid[product-grid-view='default'] .product-grid__item:not(.product-grid__item--z-spacer) {
       background: var(--mc-z-card-bg);
       border: none;
-      border-radius: 14px;
+      border-radius: var(--mc-card-radius);
       box-shadow:
         0 20px 36px rgba(0, 0, 0, 0.55),
         inset 0 0 0 1px var(--mc-z-gold-line);
@@ -219,20 +221,21 @@
       isolation: isolate;
     }
 
+    /* 左欄為基準列；右欄（奇數 index）整體下移約半張卡高 */
     .main-collection-zgrid .product-grid__item--z-left:not(.product-grid__item--z-spacer) {
-      transform: translate3d(0, var(--mc-z-stagger-left), 0);
+      transform: translate3d(0, 0, 0);
     }
 
     .main-collection-zgrid .product-grid__item--z-right:not(.product-grid__item--z-spacer) {
-      transform: translate3d(0, var(--mc-z-stagger-right), 0);
+      transform: translate3d(0, var(--mc-half-card-shift), 0);
     }
 
     .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card {
-      gap: 0;
+      gap: 10px;
       padding-block: 0;
       padding-inline: 0;
       background: var(--mc-z-card-bg);
-      border-radius: 14px;
+      border-radius: var(--mc-card-radius);
     }
 
     .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-badges {
@@ -241,22 +244,26 @@
 
     .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card > .group-block {
       position: relative;
-      z-index: 3;
-      margin-top: -2.1rem;
-      padding: 14px 12px 16px;
-      background: linear-gradient(
-        180deg,
-        rgba(15, 15, 15, 0) 0%,
-        rgba(15, 15, 15, 0.88) 28%,
-        var(--mc-z-card-bg) 55%
-      );
-      box-shadow: 0 -14px 28px rgba(0, 0, 0, 0.5);
-      border-radius: 0 0 12px 12px;
+      z-index: 2;
+      margin-top: 0;
+      padding: 4px 12px 14px;
+      background: var(--mc-z-card-bg);
+      box-shadow: none;
+      border-radius: 0 0 var(--mc-card-radius) var(--mc-card-radius);
     }
 
     .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .h4,
+    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .text-block:is(.h4, .h5) {
+      color: rgba(245, 240, 230, 0.96);
+      font-size: clamp(0.68rem, 2.85vw, 0.8rem);
+      line-height: 1.28;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
     .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .h6 {
       color: rgba(245, 240, 230, 0.96);
+      font-size: clamp(0.72rem, 3vw, 0.85rem);
     }
 
     .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price {
@@ -268,11 +275,17 @@
     */
     .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-card,
     .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-card__link {
-      border-radius: 14px;
+      border-radius: var(--mc-card-radius);
     }
 
     .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-card__link {
-      clip-path: inset(0 round 14px);
+      clip-path: inset(0 round var(--mc-card-radius));
+    }
+
+    /* 圖片區略收圓角，整卡視覺偏直立長方形 */
+    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .card-gallery {
+      border-radius: calc(var(--mc-card-radius) - 2px) calc(var(--mc-card-radius) - 2px) 0 0;
+      overflow: hidden;
     }
   }
 
