@@ -174,6 +174,8 @@
       --mc-z-gold-line: rgba(201, 162, 39, 0.22);
       --mc-z-card-bg: #0f0f0f;
       --mc-card-radius: 10px;
+      /* 圖片與卡殼內緣：略大於 4px，讓深色邊框包住圖像 */
+      --mc-card-image-inset: clamp(10px, 3.2vw, 14px);
     }
 
     /*
@@ -265,15 +267,15 @@
       clip-path: inset(0 round var(--mc-card-radius));
     }
 
-    /* 圖與卡殼內緣留 4px，圖片略縮；上圓角與裁切 */
+    /* 圖與卡殼內緣：用變數控制，視覺上像卡殼包住圖片 */
     .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .card-gallery {
       box-sizing: border-box;
-      width: calc(100% - 8px);
-      max-width: calc(100% - 8px);
-      margin: 4px 4px 0;
+      width: calc(100% - 2 * var(--mc-card-image-inset));
+      max-width: calc(100% - 2 * var(--mc-card-image-inset));
+      margin: var(--mc-card-image-inset) var(--mc-card-image-inset) 0;
       align-self: center;
       flex-shrink: 0;
-      border-radius: calc(var(--mc-card-radius) - 2px) calc(var(--mc-card-radius) - 2px) 0 0;
+      border-radius: min(8px, var(--mc-card-radius)) min(8px, var(--mc-card-radius)) 0 0;
       overflow: hidden;
     }
   }
