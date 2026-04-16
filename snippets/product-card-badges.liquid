@@ -19,7 +19,7 @@
     <div
       class="
         product-badges__badge product-badges__badge--rectangle
-        {% if product.available == false %} color-{{ settings.badge_sold_out_color_scheme }}{% elsif product.compare_at_price > product.price %} color-{{ settings.badge_sale_color_scheme }}{% endif %}
+        {% if product.available == false %} color-{{ settings.badge_sold_out_color_scheme }}{% elsif product.compare_at_price > product.price %} product-badges__badge--sale{% endif %}
       "
     >
       {%- if product.available == false -%}
@@ -73,6 +73,14 @@
   .product-badges__badge--rectangle {
     padding-block: var(--badge-rectangle-padding-block);
     padding-inline: var(--badge-rectangle-padding-inline);
+  }
+
+  /* 促銷角標：不用主題「特賣」配色（常為紅底），改深色底＋品牌橙 */
+  .product-badges__badge--sale {
+    color: #f08418;
+    background: rgba(15, 15, 15, 0.92);
+    border: 1px solid rgba(240, 132, 24, 0.45);
+    text-transform: none;
   }
 
   .product-badges__sale-icon {
