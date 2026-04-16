@@ -29,10 +29,8 @@
   endif
 %}
 
-<script
-  src="{{ 'collection-links.js' | asset_url }}"
-  type="module"
-></script>
+<script src="{{ 'collection-links.js' | asset_url }}" type="module"></script>
+<script src="{{ 'apgo-sticky-stack.js' | asset_url }}" defer></script>
 
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
 <div
@@ -211,6 +209,23 @@
   /* 次選單字級（與後台 custom_css 一致，寫在區塊內較好維護） */
   .collection-links__container .collection-links__link {
     font-size: 14px !important;
+  }
+
+  /*
+    Sticky：對 Shopify 自動生成的 .shopify-section 外層做 sticky，
+    與 header 的 .header-section 完全同層級、同機制。
+    top = header 高度 + 安全區（次選單在最頂，不需要加其他項目的高度）。
+    z-index 比跑馬燈高一級，確保不被蓋住。
+  */
+  .shopify-section:has(collection-links-component) {
+    position: -webkit-sticky;
+    position: sticky;
+    top: calc(
+      var(--header-height, 60px) + var(--header-group-height, 0px) + env(safe-area-inset-top, 0px)
+    );
+    z-index: calc(var(--layer-sticky, 8) + 1);
+    background: var(--color-background);
+    box-shadow: 0 1px 0 rgba(from var(--color-foreground) r g b / 0.12);
   }
 
   .collection-links--catalog-hub collection-links-component[layout='text'] .collection-links__container {
