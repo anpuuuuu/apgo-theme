@@ -9,11 +9,6 @@
     endfor
     assign products = products | split: ','
   endif
-
-  assign use_unified_all_catalog = false
-  if collection.handle == 'all' and section.settings.enable_unified_all_catalog and section.settings.all_catalog_collections != blank
-    assign use_unified_all_catalog = true
-  endif
 %}
 
 <script
@@ -39,124 +34,67 @@
 
 {% comment %} We always render this full-width, as the child blocks have width: page/full settings {% endcomment %}
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
-{% if use_unified_all_catalog %}
+<results-list
+  class="section product-grid-container color-{{ section.settings.color_scheme }} main-collection-zgrid"
+  style="--padding-block-start: {{ section.settings.padding-block-start }}px; --padding-block-end: {{ section.settings.padding-block-end }}px;"
+  section-id="{{ section.id }}"
+>
+  {% render 'skip-to-content-link', href: '#ResultsList', text: 'accessibility.skip_to_results_list' %}
+
   <div
-    class="section product-grid-container color-{{ section.settings.color_scheme }} main-collection-zgrid apgo-collection-list-root"
-    style="--padding-block-start: {{ section.settings.padding-block-start }}px; --padding-block-end: {{ section.settings.padding-block-end }}px;"
+    class="collection-wrapper grid gap-style"
   >
-    {% render 'skip-to-content-link', href: '#ResultsList', text: 'accessibility.skip_to_results_list' %}
+    {% content_for 'block',
+      type: 'filters',
+      id: 'filters',
+      results: collection,
+      results_size: collection.products_count
+    %}
 
-    <div class="collection-wrapper grid gap-style collection-wrapper--all-catalog">
-      {% assign cat_limit = section.settings.all_catalog_products_limit | default: 48 %}
-      {% if cat_limit > 50 %}
-        {% assign cat_limit = 50 %}
-      {% endif %}
-      {% for cat_collection in section.settings.all_catalog_collections %}
-        {% if cat_collection == blank %}
-          {% continue %}
-        {% endif %}
-        <section
-          class="apgo-catalog-group spacing-style"
-          id="catalog-{{ cat_collection.handle }}"
-          style="--padding-block-end: {{ section.settings.columns_gap_vertical }}px;"
-        >
-          <h2 class="apgo-catalog-group__title h4">{{ cat_collection.title }}</h2>
-          {% assign catalog_chunk_is_first = forloop.first %}
-          {% capture children %}
-            {% for product in cat_collection.products limit: cat_limit %}
-              <li
-                id="{{ section.id }}-{{ product.id }}-{{ cat_collection.handle }}"
-                class="product-grid__item product-grid__item--{{ forloop.index0 }}"
-                data-page="1"
-                data-product-id="{{ product.id }}"
-                ref="cards[]"
-              >
-                {% content_for 'block', type: 'product-card', id: 'product-card', closest.product: product %}
-              </li>
-            {% endfor %}
-          {% endcapture %}
-          {% if catalog_chunk_is_first %}
-            {% render 'product-grid',
-              section: section,
-              children: children,
-              products: cat_collection.products
-            %}
-          {% else %}
-            {% render 'product-grid',
-              section: section,
-              children: children,
-              products: cat_collection.products,
-              grid_wrapper_id: false,
-              skip_session_script: true
-            %}
-          {% endif %}
-        </section>
-      {% endfor %}
-    </div>
+    {% if request.design_mode and shop.products_count == 0 %}
+      {% paginate products by 24 %}
+        {% capture children %}
+          {% for product in products %}
+            <li
+              class="product-grid__item product-grid__item--{{ forloop.index0 }}"
+              data-page="{{ paginate.current_page }}"
+              data-product-id="{{ product.id }}"
+              data-view-transition-id="{{ product.id }}"
+              ref="cards[]"
+            >
+              {% content_for 'block', type: 'product-card', id: 'product-card', closest.product: product %}
+            </li>
+          {% endfor %}
+        {% endcapture %}
+        {% render 'product-grid', section: section, children: children, products: products, paginate: paginate %}
+      {% endpaginate %}
+    {% else %}
+      {% paginate collection.products by 24 %}
+        {% capture children %}
+          {% for product in collection.products %}
+            <li
+              id="{{ section.id }}-{{ product.id }}"
+              class="product-grid__item product-grid__item--{{ forloop.index0 }}"
+              data-page="{{ paginate.current_page }}"
+              data-product-id="{{ product.id }}"
+              ref="cards[]"
+            >
+              {% # theme-check-disable %}
+              {% content_for 'block', type: 'product-card', id: 'product-card', closest.product: product %}
+              {% # theme-check-enable %}
+            </li>
+          {% endfor %}
+        {% endcapture %}
+        {% render 'product-grid',
+          section: section,
+          children: children,
+          products: collection.products,
+          paginate: paginate
+        %}
+      {% endpaginate %}
+    {% endif %}
   </div>
-{% else %}
-  <results-list
-    class="section product-grid-container color-{{ section.settings.color_scheme }} main-collection-zgrid apgo-collection-list-root"
-    style="--padding-block-start: {{ section.settings.padding-block-start }}px; --padding-block-end: {{ section.settings.padding-block-end }}px;"
-    section-id="{{ section.id }}"
-  >
-    {% render 'skip-to-content-link', href: '#ResultsList', text: 'accessibility.skip_to_results_list' %}
-
-    <div
-      class="collection-wrapper grid gap-style"
-    >
-      {% content_for 'block',
-        type: 'filters',
-        id: 'filters',
-        results: collection,
-        results_size: collection.products_count
-      %}
-
-      {% if request.design_mode and shop.products_count == 0 %}
-        {% paginate products by 24 %}
-          {% capture children %}
-            {% for product in products %}
-              <li
-                class="product-grid__item product-grid__item--{{ forloop.index0 }}"
-                data-page="{{ paginate.current_page }}"
-                data-product-id="{{ product.id }}"
-                data-view-transition-id="{{ product.id }}"
-                ref="cards[]"
-              >
-                {% content_for 'block', type: 'product-card', id: 'product-card', closest.product: product %}
-              </li>
-            {% endfor %}
-          {% endcapture %}
-          {% render 'product-grid', section: section, children: children, products: products, paginate: paginate %}
-        {% endpaginate %}
-      {% else %}
-        {% paginate collection.products by 24 %}
-          {% capture children %}
-            {% for product in collection.products %}
-              <li
-                id="{{ section.id }}-{{ product.id }}"
-                class="product-grid__item product-grid__item--{{ forloop.index0 }}"
-                data-page="{{ paginate.current_page }}"
-                data-product-id="{{ product.id }}"
-                ref="cards[]"
-              >
-                {% # theme-check-disable %}
-                {% content_for 'block', type: 'product-card', id: 'product-card', closest.product: product %}
-                {% # theme-check-enable %}
-              </li>
-            {% endfor %}
-          {% endcapture %}
-          {% render 'product-grid',
-            section: section,
-            children: children,
-            products: collection.products,
-            paginate: paginate
-          %}
-        {% endpaginate %}
-      {% endif %}
-    </div>
-  </results-list>
-{% endif %}
+</results-list>
 
 {% stylesheet %}
   .main-collection-grid {
@@ -240,7 +178,7 @@
       主題 section 的 padding-block-start 會疊在 collection-links 下方；
       手機上收斂頂部留白（仍保留極小間距）。
     */
-    .apgo-collection-list-root.main-collection-zgrid.product-grid-container {
+    results-list.main-collection-zgrid.product-grid-container {
       padding-block-start: 4px !important;
     }
 
@@ -401,27 +339,11 @@
       transform: none;
     }
 
-    .apgo-collection-list-root.main-collection-zgrid.product-grid-container {
+    results-list.main-collection-zgrid.product-grid-container {
       padding-block-start: var(--padding-block-start) !important;
     }
 
     .main-collection-zgrid ul.product-grid[product-grid-view='default'] {
-      padding-inline: 0;
-    }
-  }
-
-  .collection-wrapper--all-catalog {
-    grid-column: 1 / -1;
-  }
-
-  .apgo-catalog-group__title {
-    margin: 0 0 var(--padding-sm);
-    padding-inline: max(var(--padding-xs), var(--page-margin, 1rem));
-    scroll-margin-top: calc(var(--header-height, 72px) + 12px);
-  }
-
-  @media screen and (width >= 750px) {
-    .apgo-catalog-group__title {
       padding-inline: 0;
     }
   }
@@ -587,32 +509,6 @@
       "step": 1,
       "unit": "px",
       "default": 8
-    },
-    {
-      "type": "header",
-      "content": "All products 合併目錄"
-    },
-    {
-      "type": "checkbox",
-      "id": "enable_unified_all_catalog",
-      "label": "在 All 集合頁依子集合分段顯示",
-      "default": true,
-      "info": "僅當目前集合為 Shopify「全部商品」(handle 為 all) 且已選擇下方子集合清單時生效；橫向分類請在「Collection links」設定統一目錄頁以使用錨點連結。"
-    },
-    {
-      "type": "collection_list",
-      "id": "all_catalog_collections",
-      "label": "分段子集合（順序＝頁面小標題順序）"
-    },
-    {
-      "type": "range",
-      "id": "all_catalog_products_limit",
-      "label": "每段最多商品數",
-      "min": 4,
-      "max": 50,
-      "step": 1,
-      "default": 48,
-      "info": "單段未接分頁元件，建議 ≤50（Liquid 單次迴圈上限）。"
     }
   ],
   "presets": []
