@@ -342,7 +342,17 @@
     flex-direction: column;
     align-items: flex-start;
     text-align: left;
-    gap: 0.15em;
+    gap: 0.05em;
+  }
+
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price > div > [role='group'] {
+    line-height: 1.12;
+    margin: 0;
+  }
+
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price > div .price,
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price > div .compare-at-price {
+    line-height: 1.12;
   }
 
   .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price {
