@@ -50,6 +50,10 @@
     assign price = price | money
     assign compare_at_price = compare_at_price | money
   endif
+
+  # Malaysia storefront: money_with_currency appends " MYR"; strip for display (hub / search / cards).
+  assign price = price | replace: ' MYR', '' | replace: 'MYR', '' | strip
+  assign compare_at_price = compare_at_price | replace: ' MYR', '' | replace: 'MYR', '' | strip
 -%}
 
 <div ref="priceContainer">
@@ -86,6 +90,7 @@
       else
         assign unit_price = selected_variant.unit_price | money
       endif
+      assign unit_price = unit_price | replace: ' MYR', '' | replace: 'MYR', '' | strip
     -%}
     {% render 'unit-price', price: unit_price, measurement: selected_variant.unit_price_measurement %}
   {%- endif -%}
