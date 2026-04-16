@@ -162,12 +162,13 @@
   }
 
   /*
-    手機集合頁：淺灰卡殼 + 兩欄「右、左、右、左」（僅 .main-collection-zgrid）
-    DOM 仍為 1、2、3… 順序，用 grid-column 指定欄位；不再對左欄做 translateY，避免第一列左側大塊空白。
+    手機集合頁：深灰卡殼 + 兩欄「右、左、右、左」（僅 .main-collection-zgrid）
+    右欄（第 1、3…）下移約半張卡，左欄（第 2、4…）相對較高；collection 價格用 money（無 MYR 尾碼）見 snippets/price.liquid。
   */
   @media screen and (width < 750px) {
     .main-collection-zgrid {
-      --mc-z-card-bg: #cccccc;
+      --mc-half-card-shift: clamp(5.25rem, 36vw, 9.5rem);
+      --mc-z-card-bg: #2e2e2e;
       --mc-card-radius: 10px;
       /* 圖片與卡殼內緣 */
       --mc-card-image-inset: clamp(10px, 3.2vw, 14px);
@@ -199,16 +200,17 @@
       background: var(--mc-z-card-bg);
       border: none;
       border-radius: var(--mc-card-radius);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
       overflow: hidden;
       isolation: isolate;
     }
 
-    /* 第 1、3、5… 個 → 右欄；第 2、4、6… 個 → 左欄（同列頂對齊，不做垂直錯位） */
+    /* 第 1、3、5… 個 → 右欄（下移半卡，左欄相對較高）；第 2、4、6… 個 → 左欄 */
     .main-collection-zgrid
       ul.product-grid[product-grid-view='default']
       > .product-grid__item:not(.product-grid__item--z-spacer):nth-child(odd) {
       grid-column: 2;
+      transform: translate3d(0, var(--mc-half-card-shift), 0);
     }
 
     .main-collection-zgrid
@@ -234,7 +236,7 @@
       padding-inline: 0;
       background: var(--mc-z-card-bg);
       border-radius: var(--mc-card-radius);
-      color: rgba(22, 22, 22, 0.92);
+      color: rgba(245, 240, 230, 0.94);
     }
 
     .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-badges {
@@ -253,20 +255,44 @@
 
     .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .h4,
     .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .text-block:is(.h4, .h5) {
-      color: rgba(22, 22, 22, 0.95);
-      font-size: clamp(0.68rem, 2.85vw, 0.8rem);
-      line-height: 1.28;
+      color: rgba(245, 240, 230, 0.96);
+      font-size: clamp(0.58rem, 2.35vw, 0.68rem);
+      line-height: 1.26;
       font-weight: 600;
       letter-spacing: 0.02em;
     }
 
     .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .h6 {
-      color: rgba(22, 22, 22, 0.95);
-      font-size: clamp(0.72rem, 3vw, 0.85rem);
+      color: rgba(245, 240, 230, 0.96);
+      font-size: clamp(0.62rem, 2.5vw, 0.72rem);
+    }
+
+    /* 價格：左對齊（覆蓋主題卡片的 text-block--align-right / margin auto） */
+    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price,
+    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price.text-block--align-right,
+    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price.text-block--align-right > * {
+      margin-inline-start: 0 !important;
+      margin-inline-end: 0 !important;
+      text-align: left;
+      width: 100%;
+      align-self: stretch;
+    }
+
+    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price > div {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      text-align: left;
+      gap: 0.15em;
     }
 
     .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price {
-      text-shadow: none;
+      color: rgba(245, 240, 230, 0.96);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+    }
+
+    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price .compare-at-price {
+      color: rgba(200, 200, 200, 0.85);
     }
 
     /*
@@ -291,6 +317,14 @@
       flex-shrink: 0;
       border-radius: min(8px, var(--mc-card-radius)) min(8px, var(--mc-card-radius)) 0 0;
       overflow: hidden;
+    }
+  }
+
+  @media screen and (width < 750px) and (prefers-reduced-motion: reduce) {
+    .main-collection-zgrid
+      ul.product-grid[product-grid-view='default']
+      > .product-grid__item:not(.product-grid__item--z-spacer):nth-child(odd) {
+      transform: none;
     }
   }
 

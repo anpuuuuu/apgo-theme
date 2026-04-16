@@ -5,11 +5,13 @@
   @param {product} product_resource - The product to render
   @param {boolean} [show_unit_price] - Whether to show the unit price
   @param {boolean} [show_sale_price_first] - Whether to show the sale price first
+  @param {boolean} [force_money_without_currency] - If true, always use `money` (no ISO suffix like MYR)
 {%- enddoc -%}
 
 {%- liquid
   assign show_unit_price = show_unit_price | default: false
   assign show_sale_price_first = show_sale_price_first | default: false
+  assign force_money_without_currency = force_money_without_currency | default: false
   assign selected_variant = product_resource.selected_or_first_available_variant
   assign price = selected_variant.price
   assign compare_at_price = selected_variant.compare_at_price
@@ -23,9 +25,18 @@
     assign price = 1999
   endif
 
+  # Collection listing: show RM… style without trailing currency code (e.g. MYR)
+  if force_money_without_currency == false and template.name == 'collection'
+    assign force_money_without_currency = true
+  endif
+
+  if force_money_without_currency
+    assign price = price | money
+    assign compare_at_price = compare_at_price | money
+
   # Checks if product handle matches the closest product's handle (i.e. product page)
   # and if the currency code is enabled for product pages
-  if product.handle == closest.product.handle and settings.currency_code_enabled_product_pages
+  elsif product.handle == closest.product.handle and settings.currency_code_enabled_product_pages
     assign price = price | money_with_currency
     assign compare_at_price = compare_at_price | money_with_currency
 
@@ -66,7 +77,9 @@
   {% endif %}
   {%- if selected_variant.unit_price and show_unit_price %}
     {%- liquid
-      if product.handle == closest.product.handle and settings.currency_code_enabled_product_pages
+      if force_money_without_currency
+        assign unit_price = selected_variant.unit_price | money
+      elsif product.handle == closest.product.handle and settings.currency_code_enabled_product_pages
         assign unit_price = selected_variant.unit_price | money_with_currency
       elsif product.handle != closest.product.handle and settings.currency_code_enabled_product_cards
         assign unit_price = selected_variant.unit_price | money_with_currency
