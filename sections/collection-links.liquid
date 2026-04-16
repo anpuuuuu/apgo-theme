@@ -2,6 +2,7 @@
 
 {% liquid
   assign collection_list = section.settings.collection_list
+  assign unified_hub_collection = section.settings.unified_hub_collection
 
   if collection_list == blank
     assign limit = 4
@@ -13,7 +14,15 @@
     assign collection_list = collection_list | split: ','
   endif
 
-  assign active_collection = collection_list | find: 'id', collection.id | default: collection_list.first
+  assign active_collection = collection_list | find: 'id', collection.id
+  if active_collection == blank
+    assign active_collection = collection_list.first
+  endif
+
+  assign catalog_hub_no_tab = false
+  if unified_hub_collection != blank and collection.id == unified_hub_collection.id
+    assign catalog_hub_no_tab = true
+  endif
 %}
 
 <script
@@ -45,10 +54,11 @@
       {% for collection in collection_list limit: limit %}
         {% liquid
           assign selected = false
-
-          if collection.id == active_collection.id
-            assign selected = true
-          endif
+          unless catalog_hub_no_tab
+            if collection.id == active_collection.id
+              assign selected = true
+            endif
+          endunless
         %}
         {% content_for 'block',
           type: '_collection-link',
@@ -66,10 +76,11 @@
           {% for collection in collection_list limit: limit %}
           {% liquid
             assign selected = false
-
-            if collection.id == active_collection.id
-              assign selected = true
-            endif
+            unless catalog_hub_no_tab
+              if collection.id == active_collection.id
+                assign selected = true
+              endif
+            endunless
           %}
 
           {% capture slide %}
@@ -204,6 +215,12 @@
       "type": "collection_list",
       "id": "collection_list",
       "label": "t:settings.collection_list"
+    },
+    {
+      "type": "collection",
+      "id": "unified_hub_collection",
+      "label": "統一目錄頁（錨點捲動）",
+      "info": "選「全部商品 / All」對應的集合後，橫向分類連結會改為此頁 + #catalog-各集合-handle，方便單頁瀏覽。"
     },
     {
       "type": "header",

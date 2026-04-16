@@ -8,6 +8,14 @@
   @param {boolean} [image_only]
 {%- enddoc -%}
 
+{% liquid
+  assign hub_collection = section.settings.unified_hub_collection
+  assign collection_link_href = closest.collection.url
+  if hub_collection != blank
+    assign collection_link_href = hub_collection.url | append: '#catalog-' | append: closest.collection.handle
+  endif
+%}
+
 {% unless selected %}
   {% assign loading = 'lazy' %}
 {% endunless %}
@@ -35,7 +43,7 @@
 
 {% if image_only %}
   <a
-    href="{{ closest.collection.url }}"
+    href="{{ collection_link_href }}"
     class="collection-links__image"
     size="{{ section.settings.image_height }}"
   >
@@ -43,7 +51,7 @@
   </a>
 {% else %}
   <a
-    href="{{ closest.collection.url }}"
+    href="{{ collection_link_href }}"
     class="collection-links__link"
     ref="links[]"
     on:pointerenter="/select/{{ index }}"
