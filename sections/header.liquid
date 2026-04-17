@@ -389,13 +389,29 @@
     min-height: 2.75rem;
     box-sizing: border-box;
     overflow: visible;
-    /* 與次選單列同色：sticky 外殼本身不透明，避免捲動內容從字後／列後透出 */
+  }
+
+  /*
+    全部分類頁（collections/all）才有橫向次選單：僅在此頁為 sticky 外殼加實黑底與 ::before 填縫，
+    避免其他頁面出現多餘黑帶。
+  */
+  body.apgo-all-products-collection
+    #header-group:has(#header-component[sticky='always'])
+    > .shopify-section.header-section
+    + .shopify-section,
+  body.apgo-all-products-collection
+    #header-group:has(#header-component[sticky='scroll-up'][data-sticky-state='active'])
+    > .shopify-section.header-section
+    + .shopify-section {
     background-color: #000000;
   }
 
-  /* 向上／左右略加實心黑帶，補主列與次選單之間及左側的次像素縫 */
-  #header-group:has(#header-component[sticky='always']) > .shopify-section.header-section + .shopify-section::before,
-  #header-group:has(#header-component[sticky='scroll-up'][data-sticky-state='active'])
+  body.apgo-all-products-collection
+    #header-group:has(#header-component[sticky='always'])
+    > .shopify-section.header-section
+    + .shopify-section::before,
+  body.apgo-all-products-collection
+    #header-group:has(#header-component[sticky='scroll-up'][data-sticky-state='active'])
     > .shopify-section.header-section
     + .shopify-section::before {
     content: '';
