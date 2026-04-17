@@ -54,7 +54,14 @@
     "sections": {
       "free-shipping-popup": {
         "type": "free-shipping-popup",
-        "settings": {}
+        "settings": {
+          "movement_direction": "normal",
+          "color_scheme": "",
+          "padding-block-start": 24,
+          "padding-block-end": 24,
+          "gap_between_elements": 24,
+          "show_mysg_discount_promo": false
+        }
       }
     },
     "content_for_index": [],
