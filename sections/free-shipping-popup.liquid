@@ -126,9 +126,13 @@
   #shopify-section-free-shipping-popup {
     position: -webkit-sticky;
     position: sticky;
-    top: calc(
-      var(--header-height, 60px) + var(--header-group-height, 0px) + env(safe-area-inset-top, 0px)
-    );
+    /*
+      critical.js 的 calculateHeaderGroupHeight() 會加總 #header-group 底下所有 shopify-section
+      的高度（主 header shell + 次選單 shell；次選單非 /collections/all 時 display:none → offsetHeight=0），
+      因此單獨用 --header-group-height 就能讓跑馬燈精準吸在「整個 header-group 之下」。
+      之前同時加 --header-height 等於重複計算主 header，導致偏移錯誤。
+    */
+    top: calc(var(--header-group-height, 100px) + env(safe-area-inset-top, 0px));
     z-index: calc(var(--layer-sticky, 8) - 1);
     width: 100%;
     background: var(--color-background);
