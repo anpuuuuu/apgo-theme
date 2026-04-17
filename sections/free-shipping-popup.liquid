@@ -131,8 +131,13 @@
       的高度（主 header shell + 次選單 shell；次選單非 /collections/all 時 display:none → offsetHeight=0），
       因此單獨用 --header-group-height 就能讓跑馬燈精準吸在「整個 header-group 之下」。
       之前同時加 --header-height 等於重複計算主 header，導致偏移錯誤。
+
+      再減 1px：主 header sticky 時使用 top:-1px（header.liquid 為了讓 IntersectionObserver 追蹤 sticky 狀態），
+      可視底部實際落在 viewport y = 主 header 高度 - 1。/collections/all 有 ::before 30px 填縫遮住這 1px，
+      其他頁沒有次選單也就沒這塊填縫，會露出 1px 縫。扣掉這 1px 正好貼齊；在 all 頁則是跑馬燈與次選單黑底
+      重疊 1px，肉眼看不見。
     */
-    top: calc(var(--header-group-height, 100px) + env(safe-area-inset-top, 0px));
+    top: calc(var(--header-group-height, 100px) - 1px + env(safe-area-inset-top, 0px));
     z-index: calc(var(--layer-sticky, 8) - 1);
     width: 100%;
     background: var(--color-background);
