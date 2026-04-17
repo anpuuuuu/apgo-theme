@@ -7,7 +7,7 @@
 {% style %}
   .ai-secondary-menu-{{ ai_gen_id }} {
     position: sticky;
-    top: 0;
+    top: var(--sticky-header-offset, var(--header-height, 0px));
     z-index: 100;
     background-color: {{ block.settings.background_color }};
     border-bottom: {{ block.settings.border_width }}px solid {{ block.settings.border_color }};
@@ -61,6 +61,11 @@
     background-color: {{ block.settings.hover_background_color }};
   }
 
+  /* 與 collection-all-hub scrollspy 同步（同 #collection- 錨點） */
+  .ai-secondary-menu__link-{{ ai_gen_id }}.apgo-catalog-hub-link--active {
+    color: #f08418 !important;
+  }
+
   @media screen and (max-width: 749px) {
     .ai-secondary-menu__list-{{ ai_gen_id }} {
       justify-content: flex-start;
@@ -68,8 +73,8 @@
   }
 {% endstyle %}
 
-<secondary-menu-{{ ai_gen_id }} class="ai-secondary-menu-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
-  <div class="ai-secondary-menu__container-{{ ai_gen_id }}">
+<secondary-menu-{{ ai_gen_id }} class="ai-secondary-menu-{{ ai_gen_id }}" data-apgo-hub-nav {{ block.shopify_attributes }}>
+  <div class="ai-secondary-menu__container-{{ ai_gen_id }}" data-apgo-hub-nav-scroll>
     <ul class="ai-secondary-menu__list-{{ ai_gen_id }}">
       {% for i in (1..10) %}
         {% liquid
@@ -81,9 +86,9 @@
         
         {% if link_label != blank %}
           <li class="ai-secondary-menu__item-{{ ai_gen_id }}">
-            <a 
-              href="{% if link_url != blank %}{{ link_url }}{% else %}#{% endif %}" 
-              class="ai-secondary-menu__link-{{ ai_gen_id }}"
+            <a
+              href="{% if link_url != blank %}{{ link_url }}{% else %}#{% endif %}"
+              class="ai-secondary-menu__link-{{ ai_gen_id }}{% if link_url contains '#collection-' %} apgo-catalog-hub-link{% endif %}"
             >
               {{ link_label }}
             </a>

@@ -253,13 +253,13 @@
     scroll-snap-align: start;
   }
 
-  /* ScrollSpy 與 aria-current 同步高亮（APGO 橙） */
-  .collection-links__link.collection-links__link--scroll-active {
+  /* ScrollSpy 與 aria-current 同步高亮（APGO 橙）；class 由 collection-all-hub.js 設定 */
+  .collection-links__link.apgo-catalog-hub-link--active {
     color: #f08418 !important;
     opacity: 1 !important;
   }
 
-  .collection-links__link.collection-links__link--scroll-active::before {
+  .collection-links__link.apgo-catalog-hub-link--active::before {
     width: 100%;
   }
 {% endstylesheet %}
