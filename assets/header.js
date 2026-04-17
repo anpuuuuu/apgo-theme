@@ -2,6 +2,17 @@ import { Component } from '@theme/component';
 import { onDocumentReady, changeMetaThemeColor } from '@theme/utilities';
 
 /**
+ * 次選單兄弟 section 的 sticky `top`：用主 header **外殼**（.header-section）實際邊框盒高度，
+ * 對齊視覺底邊，避免僅用內層 `--header-height` 與外殼不一致在手機露出縫隙。
+ */
+function updateApgoStickySecondaryTop() {
+  const headerShell = document.querySelector('#header-group > .shopify-section.header-section');
+  if (!(headerShell instanceof HTMLElement)) return;
+  const h = Math.ceil(headerShell.getBoundingClientRect().height);
+  document.body.style.setProperty('--apgo-sticky-secondary-top', `${h}px`);
+}
+
+/**
  * @typedef {Object} HeaderComponentRefs
  * @property {HTMLDivElement} headerDrawerContainer - The header drawer container element
  * @property {HTMLElement} headerMenu - The header menu element
@@ -66,6 +77,7 @@ class HeaderComponent extends Component {
 
     const { height } = entry.target.getBoundingClientRect();
     document.body.style.setProperty('--header-height', `${height}px`);
+    updateApgoStickySecondaryTop();
 
     // Check if the menu drawer should be hidden in favor of the header menu
     if (this.#menuDrawerHiddenWidth && window.innerWidth > this.#menuDrawerHiddenWidth) {
@@ -212,6 +224,14 @@ if (!customElements.get('header-component')) {
 onDocumentReady(() => {
   const header = document.querySelector('#header-component');
   const headerGroup = document.querySelector('#header-group');
+
+  updateApgoStickySecondaryTop();
+  requestAnimationFrame(() => updateApgoStickySecondaryTop());
+  const headerShell = document.querySelector('#header-group > .shopify-section.header-section');
+  if (headerShell instanceof HTMLElement) {
+    const shellRo = new ResizeObserver(() => updateApgoStickySecondaryTop());
+    shellRo.observe(headerShell);
+  }
 
   // Update header group height on resize of any child
   if (headerGroup) {

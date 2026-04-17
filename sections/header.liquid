@@ -255,10 +255,13 @@
   body {
     --header-height: 0px;
     --header-group-height: var(--header-height);
+    --apgo-sticky-secondary-top: 0px;
   }
 
   body:has(> #header-group > header) {
     --header-height: 60px;
+    /* JS 載入前與主列同步的保守回退 */
+    --apgo-sticky-secondary-top: var(--header-height);
   }
 
   body:has(> #header-group:empty) {
@@ -371,17 +374,21 @@
 
   /*
     Header-group 內、緊接在主 header section 後的區塊（例如 _blocks 次選單）：
-    與主 header 同一套 sticky 啟用條件；top 用 --header-height（critical.js / header.js 維護）貼在主列下方。
+    與主 header 同一套 sticky 啟用條件。
+    top：優先 --apgo-sticky-secondary-top（critical.js / header.js 以 .header-section 實測高度寫入），
+    回退 --header-height，縮小主列外殼與內層高度不一致時的縫隙。
   */
   #header-group:has(#header-component[sticky='always']) > .shopify-section.header-section + .shopify-section,
   #header-group:has(#header-component[sticky='scroll-up'][data-sticky-state='active'])
     > .shopify-section.header-section
     + .shopify-section {
     position: sticky;
-    top: max(0px, calc(var(--header-height, 60px) - 1px));
+    top: max(0px, var(--apgo-sticky-secondary-top, var(--header-height, 60px)));
     z-index: calc(var(--layer-sticky, 8) - 1);
     width: 100%;
-    /* 與次選單列同色：sticky 外殼本身不透明，避免捲動內容從字後／列後透出（不改 sticky 數值） */
+    min-height: 2.75rem;
+    box-sizing: border-box;
+    /* 與次選單列同色：sticky 外殼本身不透明，避免捲動內容從字後／列後透出 */
     background-color: #000000;
   }
 

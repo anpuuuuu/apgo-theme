@@ -441,4 +441,10 @@ function calculateHeaderGroupHeight(
 
   document.body.style.setProperty('--header-height', `${headerHeight}px`);
   document.body.style.setProperty('--header-group-height', `${headerGroupHeight}px`);
+
+  const headerShell = document.querySelector('#header-group > .shopify-section.header-section');
+  if (headerShell instanceof HTMLElement) {
+    const secondaryTop = Math.ceil(headerShell.getBoundingClientRect().height);
+    document.body.style.setProperty('--apgo-sticky-secondary-top', `${secondaryTop}px`);
+  }
 })();
