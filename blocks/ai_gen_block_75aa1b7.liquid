@@ -5,10 +5,10 @@
 {% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
 
 {% style %}
+  /* 吸頂由 header.liquid 對 header-group 內「主 header 下一個 section」統一處理，避免雙層 sticky */
   .ai-secondary-menu-{{ ai_gen_id }} {
-    position: sticky;
-    top: var(--sticky-header-offset, var(--header-height, 0px));
-    z-index: 100;
+    position: relative;
+    z-index: 1;
     background-color: {{ block.settings.background_color }};
     border-bottom: {{ block.settings.border_width }}px solid {{ block.settings.border_color }};
     width: 100%;

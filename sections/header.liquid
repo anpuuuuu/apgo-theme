@@ -369,6 +369,20 @@
     min-height: var(--header-height, 60px);
   }
 
+  /*
+    Header-group 內、緊接在主 header section 後的區塊（例如 _blocks 次選單）：
+    與主 header 同一套 sticky 啟用條件；top 用 --header-height（critical.js / header.js 維護）貼在主列下方。
+  */
+  #header-group:has(#header-component[sticky='always']) > .shopify-section.header-section + .shopify-section,
+  #header-group:has(#header-component[sticky='scroll-up'][data-sticky-state='active'])
+    > .shopify-section.header-section
+    + .shopify-section {
+    position: sticky;
+    top: max(0px, calc(var(--header-height, 60px) - 1px));
+    z-index: calc(var(--layer-sticky, 8) - 1);
+    width: 100%;
+  }
+
   .header[data-sticky-state] {
     transition: opacity var(--animation-speed) var(--animation-easing);
     opacity: 1;
