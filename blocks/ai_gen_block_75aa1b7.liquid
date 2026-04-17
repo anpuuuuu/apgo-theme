@@ -14,14 +14,20 @@
 
 {% if show_apgo_secondary_nav %}
 {% style %}
-  /* 吸頂由 header.liquid 對 header-group 內「主 header 下一個 section」統一處理，避免雙層 sticky */
+  /*
+    次選單本體 sticky：與主 header 同一套 --header-height，黑底畫在吸頂層上，避免外層透明 section 先 sticky 造成透缝／只像字在動。
+  */
   .ai-secondary-menu-{{ ai_gen_id }} {
-    position: relative;
-    z-index: 1;
+    position: sticky;
+    top: max(0px, calc(var(--header-height, 60px) - 1px));
+    z-index: calc(var(--layer-sticky, 8) - 1);
+    width: 100%;
+    max-width: none;
+    display: block;
+    box-sizing: border-box;
     background-color: {{ block.settings.background_color }};
     border-bottom: {{ block.settings.border_width }}px solid {{ block.settings.border_color }};
-    width: 100%;
-    display: block;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
   }
 
   .ai-secondary-menu__container-{{ ai_gen_id }} {
