@@ -579,9 +579,22 @@
       --product-grid-columns-desktop: repeat(5, minmax(0, 1fr));
     }
 
-    /* 桌機：品名與價格（paragraph / --font-paragraph--size）同階，略大 5% */
+    /* 桌機五欄：品名略小於 paragraph，易在窄卡內換行 */
     .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .text-block:is(.h4, .h5) > * {
-      font-size: calc(var(--font-paragraph--size, var(--font-size--paragraph, 0.875rem)) * 1.05);
+      font-size: clamp(
+        0.6875rem,
+        0.52rem + 0.32vw,
+        calc(var(--font-paragraph--size, var(--font-size--paragraph, 0.875rem)) * 0.86)
+      );
+      line-height: 1.2;
+    }
+
+    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price > div .price {
+      font-size: clamp(0.7rem, 0.58rem + 0.28vw, 0.8125rem);
+    }
+
+    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price > div .compare-at-price {
+      font-size: clamp(0.625rem, 0.52rem + 0.22vw, 0.75rem);
     }
   }
 
