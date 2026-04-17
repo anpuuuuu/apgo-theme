@@ -73,6 +73,9 @@
       {% sections 'header-group' %}
     </div>
 
+    {% comment %} 跑馬燈緊接 header，sticky 時貼在 header 下方（勿放在 #MainContent 內，避免主內容 overflow 影響 sticky） {% endcomment %}
+    {% section 'free-shipping-popup' %}
+
     <main
       id="MainContent"
       class="content-for-layout{{ apgo_aboutus_main_class }}"
@@ -81,7 +84,6 @@
       data-product-transition="{{ settings.transition_to_main_product }}"
       data-template="{{ template }}"
     >
-      {% section 'free-shipping-popup' %}
       {{ content_for_layout }}
     </main>
 
