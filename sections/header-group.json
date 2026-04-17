@@ -129,7 +129,7 @@
             "text_hover_color": "#f08418",
             "hover_background_color": "#ffffff1a",
             "border_color": "#333333",
-            "border_width": 1
+            "border_width": 0
           },
           "blocks": {}
         }
