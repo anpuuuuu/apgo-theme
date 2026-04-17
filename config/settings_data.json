@@ -52,6 +52,45 @@
     "variant_button_radius": 0,
     "variant_button_width": "equal-width-buttons",
     "sections": {
+      "free-shipping-popup": {
+        "type": "free-shipping-popup",
+        "settings": {
+          "movement_direction": "normal",
+          "color_scheme": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26",
+          "padding-block-start": 0,
+          "padding-block-end": 0,
+          "gap_between_elements": 24,
+          "show_mysg_discount_promo": true
+        },
+        "blocks": {
+          "text_marquee_main": {
+            "type": "text",
+            "settings": {
+              "text": "<p>APGO 專業汽車鍍膜 · Professional coating</p>",
+              "width": "fit-content",
+              "max_width": "normal",
+              "alignment": "left",
+              "type_preset": "rte",
+              "font": "var(--font-body--family)",
+              "font_size": "1rem",
+              "line_height": "normal",
+              "letter_spacing": "normal",
+              "case": "none",
+              "wrap": "pretty",
+              "color": "var(--color-foreground)",
+              "background": false,
+              "background_color": "#00000026",
+              "corner_radius": 0,
+              "padding-block-start": 0,
+              "padding-block-end": 0,
+              "padding-inline-start": 0,
+              "padding-inline-end": 0
+            },
+            "blocks": {}
+          }
+        },
+        "block_order": ["text_marquee_main"]
+      }
     },
     "content_for_index": [],
     "blocks": {

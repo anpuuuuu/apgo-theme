@@ -1,8 +1,7 @@
 {%- comment -%}
-  Global sticky marquee. Configured in sections/header-group.json (inside #header-group).
-  Schema uses enabled_on "header" so Shopify accepts it in the header group (required).
-  In theme editor: customize theme → click the header → this section appears as t:names.marquee / Marquee (檔名 free-shipping-popup.liquid).
-  Omits DOM when no SG promo and no visible blocks (storefront only; design mode still shows for editing).
+  Global sticky marquee. Loaded from layout/theme.liquid via {% section 'free-shipping-popup' %}（設定在 config/settings_data.json → current.sections）。
+  編輯：自訂主題 →「佈景設定 / Theme settings」→ 找到 Marquee／跑馬燈（schema name t:names.marquee）。
+  Omits DOM when no SG promo and no blocks (storefront); design mode still shows for editing.
 {%- endcomment -%}
 
 {% liquid
@@ -15,7 +14,11 @@
     endif
   endif
 
+  # 顯示：SG 促銷、或有掛 blocks、或編輯器
   assign marquee_has_content = show_market_promo
+  if section.blocks.size > 0
+    assign marquee_has_content = true
+  endif
   unless marquee_has_content
     for block in section.blocks
       if block.disabled
@@ -56,7 +59,7 @@
 
 {% assign gap_between_elements = section.settings.gap_between_elements %}
 
-{% comment %} sticky top 對齊 #header-component 高度（跑馬燈在 header-group 內，勿再加 header-group-height） {% endcomment %}
+{% comment %} sticky：緊貼在 #header-group 整體下方（與 critical.js 變數一致） {% endcomment %}
 <div class="marquee__sticky-wrap">
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
 <marquee-component
@@ -115,7 +118,9 @@
   .marquee__sticky-wrap {
     position: -webkit-sticky;
     position: sticky;
-    top: calc(var(--header-height, 60px) + env(safe-area-inset-top, 0px));
+    top: calc(
+      var(--header-height, 60px) + var(--header-group-height, 0px) + env(safe-area-inset-top, 0px)
+    );
     z-index: calc(var(--layer-sticky, 8) - 1);
     width: 100%;
     max-width: 100%;
@@ -208,8 +213,8 @@
 {% schema %}
 {
   "name": "t:names.marquee",
-  "enabled_on": {
-    "groups": ["header"]
+  "disabled_on": {
+    "groups": ["header", "footer"]
   },
   "blocks": [
     {

@@ -73,6 +73,9 @@
       {% sections 'header-group' %}
     </div>
 
+    {% comment %} 全站跑馬燈：靜態 section + settings_data，避免僅存在 header-group 檔時線上商店未同步而不渲染 {% endcomment %}
+    {% section 'free-shipping-popup' %}
+
     <main
       id="MainContent"
       class="content-for-layout{{ apgo_aboutus_main_class }}"
