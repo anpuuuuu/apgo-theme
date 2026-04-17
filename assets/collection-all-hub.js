@@ -27,7 +27,10 @@
     return Math.min(headerH + navH + 16, 280);
   }
 
-  /** 將目前高亮項捲進橫向選單可視區（手機／桌機） */
+  /**
+   * 將目前高亮項捲進橫向選單可視區（手機／桌機）。
+   * 用 getBoundingClientRect 相對於捲動容器換算 scrollLeft，避免 <a> 的 offsetLeft 相對錯誤父層導致手機不捲動。
+   */
   function scrollActiveLinkIntoMenu(/** @type {HTMLAnchorElement | null} */ activeLink) {
     if (!activeLink) return;
     const scroller =
@@ -37,14 +40,16 @@
       return;
     }
     const pad = 8;
-    const aL = activeLink.offsetLeft;
-    const aR = aL + activeLink.offsetWidth;
+    const linkRect = activeLink.getBoundingClientRect();
+    const scrRect = scroller.getBoundingClientRect();
+    const linkLeft = linkRect.left - scrRect.left + scroller.scrollLeft;
+    const linkRight = linkLeft + linkRect.width;
     const vL = scroller.scrollLeft;
     const vR = vL + scroller.clientWidth;
-    if (aL < vL + pad) {
-      scroller.scrollTo({ left: Math.max(0, aL - pad), behavior: 'smooth' });
-    } else if (aR > vR - pad) {
-      scroller.scrollTo({ left: aR - scroller.clientWidth + pad, behavior: 'smooth' });
+    if (linkLeft < vL + pad) {
+      scroller.scrollTo({ left: Math.max(0, linkLeft - pad), behavior: 'smooth' });
+    } else if (linkRight > vR - pad) {
+      scroller.scrollTo({ left: linkRight - scroller.clientWidth + pad, behavior: 'smooth' });
     }
   }
 

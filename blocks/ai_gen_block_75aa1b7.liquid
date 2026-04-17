@@ -102,8 +102,15 @@
   }
 
   @media screen and (max-width: 749px) {
+    .ai-secondary-menu__container-{{ ai_gen_id }} {
+      justify-content: flex-start;
+    }
+
     .ai-secondary-menu__list-{{ ai_gen_id }} {
-      justify-content: safe center;
+      justify-content: flex-start;
+      margin-inline: 0;
+      margin-left: 0;
+      margin-right: 0;
     }
   }
 {% endstyle %}
