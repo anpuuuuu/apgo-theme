@@ -28,7 +28,9 @@
   }
 
   /**
-   * 將目前高亮項捲進橫向選單可視區（手機／桌機）。
+   * 將目前高亮項捲進橫向選單可視區。
+   * 手機 (<=749px)：將當前項固定貼齊左緣，讓使用者一眼看到正在瀏覽的分類名稱（類似區塊標題）。
+   * 桌機：維持「僅當超出可視區才捲動」。
    * 用 getBoundingClientRect 相對於捲動容器換算 scrollLeft，避免 <a> 的 offsetLeft 相對錯誤父層導致手機不捲動。
    */
   function scrollActiveLinkIntoMenu(/** @type {HTMLAnchorElement | null} */ activeLink) {
@@ -46,6 +48,15 @@
     const linkRight = linkLeft + linkRect.width;
     const vL = scroller.scrollLeft;
     const vR = vL + scroller.clientWidth;
+    const isMobile = window.matchMedia('(max-width: 749px)').matches;
+    if (isMobile) {
+      const maxScroll = Math.max(0, scroller.scrollWidth - scroller.clientWidth);
+      const target = Math.min(Math.max(0, linkLeft - pad), maxScroll);
+      if (Math.abs(scroller.scrollLeft - target) > 1) {
+        scroller.scrollTo({ left: target, behavior: 'smooth' });
+      }
+      return;
+    }
     if (linkLeft < vL + pad) {
       scroller.scrollTo({ left: Math.max(0, linkLeft - pad), behavior: 'smooth' });
     } else if (linkRight > vR - pad) {

@@ -374,12 +374,16 @@
 
   /*
     Header-group 內、緊接在主 header section 後的區塊（例如 _blocks 次選單）：
-    與主 header 同一套 sticky 啟用條件。
+    僅在 /collections/all 套用 sticky 外殼與最小高度，避免其他頁面出現多餘空白區塊。
     top：優先 --apgo-sticky-secondary-top（critical.js / header.js 以 .header-section 實測高度寫入），
     回退 --header-height，縮小主列外殼與內層高度不一致時的縫隙。
   */
-  #header-group:has(#header-component[sticky='always']) > .shopify-section.header-section + .shopify-section,
-  #header-group:has(#header-component[sticky='scroll-up'][data-sticky-state='active'])
+  body.apgo-all-products-collection
+    #header-group:has(#header-component[sticky='always'])
+    > .shopify-section.header-section
+    + .shopify-section,
+  body.apgo-all-products-collection
+    #header-group:has(#header-component[sticky='scroll-up'][data-sticky-state='active'])
     > .shopify-section.header-section
     + .shopify-section {
     position: sticky;
