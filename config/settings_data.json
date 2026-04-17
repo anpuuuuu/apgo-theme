@@ -58,7 +58,7 @@
           "text_marquee_main": {
             "type": "text",
             "settings": {
-              "text": "",
+              "text": "<p>         </p>",
               "width": "fit-content",
               "max_width": "normal",
               "alignment": "left",
