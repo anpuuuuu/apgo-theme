@@ -30,8 +30,9 @@
   /**
    * 將目前高亮項捲進橫向選單可視區。
    * 手機 (<=749px)：將當前項固定貼齊左緣，讓使用者一眼看到正在瀏覽的分類名稱（類似區塊標題）。
-   * 桌機：維持「僅當超出可視區才捲動」。
-   * 用 getBoundingClientRect 相對於捲動容器換算 scrollLeft，避免 <a> 的 offsetLeft 相對錯誤父層導致手機不捲動。
+   * 桌機：維持「僅當超出可視區才捲動」（smooth 動畫友善）。
+   * 手機端用直接賦值 scrollLeft（即時捲動）而非 smooth scrollTo，避免用戶持續滾動頁面時
+   * IntersectionObserver 頻繁觸發、smooth 動畫被互相打斷導致菜單看似「沒反應」的問題。
    */
   function scrollActiveLinkIntoMenu(/** @type {HTMLAnchorElement | null} */ activeLink) {
     if (!activeLink) return;
@@ -53,7 +54,8 @@
       const maxScroll = Math.max(0, scroller.scrollWidth - scroller.clientWidth);
       const target = Math.min(Math.max(0, linkLeft - pad), maxScroll);
       if (Math.abs(scroller.scrollLeft - target) > 1) {
-        scroller.scrollTo({ left: target, behavior: 'smooth' });
+        /* 直接賦值 → 即時定位，避免多個 smooth 動畫疊加互相取消 */
+        scroller.scrollLeft = target;
       }
       return;
     }
