@@ -1,7 +1,7 @@
 {% comment %}
-  預設：僅在「全部商品」/collections/all 顯示（程式保證該頁一定會顯示）。
-  若要在首頁等其它頁也顯示，請在區塊設定勾選「在其他頁面也顯示次選單」。
-  若從 Header 群組整段移除此 Section，Liquid 無法再渲染，任何頁都不會出現。
+  預設：僅在「全部商品」/collections/all 顯示選單內容；編輯器可保持本區塊啟用。
+  未勾「其他頁面也顯示」時，_blocks.liquid 會在非 all 頁隱藏整個 Section 外殼（不占位）。
+  若要在首頁等顯示，請勾選該項。若從 Header 移除含此區塊的 Section，任何頁都不會再出現。
 {% endcomment %}
 {% liquid
   assign on_all_products_collection = false
@@ -220,7 +220,7 @@
       "id": "show_on_other_pages",
       "label": "在其他頁面也顯示次選單",
       "default": false,
-      "info": "關閉時僅在「全部商品」集合 (/collections/all) 顯示，其餘頁面隱藏。無法用程式在已刪除的 Section 上顯示選單；要全站關閉請維持本項關閉，勿從 Header 移除含此區塊的 Section，否則 /collections/all 也不會出現。"
+      "info": "關閉（預設）：僅在「全部商品」/collections/all 顯示；其他頁面會隱藏整個含次選單的 Header Section 外殼。編輯時請用預覽網址開啟 /collections/all。勾選後才會在首頁等頁出現。勿從 Header 移除此 Section，否則 all 頁也不會出現。"
     },
     {
       "type": "header",

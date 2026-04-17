@@ -1,4 +1,33 @@
+{% liquid
+  # 僅含次選單 AI 區塊且未勾「其他頁」時：非 collections/all 隱藏整個 shopify-section 外殼
+  assign apgo_non_ai_block_count = 0
+  assign apgo_secondary_ai_blocks = 0
+  assign apgo_secondary_ai_wants_other_pages = false
 
+  for sec_block in section.blocks
+    if sec_block.type == 'ai_gen_block_75aa1b7'
+      assign apgo_secondary_ai_blocks = apgo_secondary_ai_blocks | plus: 1
+      if sec_block.settings.show_on_other_pages
+        assign apgo_secondary_ai_wants_other_pages = true
+      endif
+    else
+      assign apgo_non_ai_block_count = apgo_non_ai_block_count | plus: 1
+    endif
+  endfor
+
+  assign apgo_hide_blocks_section_outside_hub = false
+  if apgo_non_ai_block_count == 0 and apgo_secondary_ai_blocks > 0 and apgo_secondary_ai_wants_other_pages == false
+    assign apgo_hide_blocks_section_outside_hub = true
+  endif
+%}
+
+{% if apgo_hide_blocks_section_outside_hub %}
+  {% stylesheet %}
+    body:not(.apgo-all-products-collection) #shopify-section-{{ section.id }} {
+      display: none !important;
+    }
+  {% endstylesheet %}
+{% endif %}
 
 {% capture children %}
   {% content_for 'blocks' %}
