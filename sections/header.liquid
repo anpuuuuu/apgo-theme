@@ -383,39 +383,6 @@
     width: 100%;
   }
 
-  /*
-    含 APGO 次選單（[data-apgo-hub-nav]）時：外層 shopify-section 勿 sticky。
-    否則透明外殼吸頂、內層黑底與字分離，手機易見主內容「透缝」；改由區塊內 secondary-menu 本體 sticky 並帶背景。
-  */
-  #header-group:has(#header-component[sticky='always'])
-    > .shopify-section.header-section
-    + .shopify-section:has([data-apgo-hub-nav]),
-  #header-group:has(#header-component[sticky='scroll-up'][data-sticky-state='active'])
-    > .shopify-section.header-section
-    + .shopify-section:has([data-apgo-hub-nav]) {
-    position: relative;
-    top: auto;
-    z-index: auto;
-    background: transparent;
-  }
-
-  /* 次選單外層 section 內去掉頂部多餘留白，避免吸頂時與主 header 之間透明 */
-  #header-group
-    > .shopify-section.header-section
-    + .shopify-section:has([data-apgo-hub-nav])
-    .section-content-wrapper {
-    padding-block-start: 0 !important;
-  }
-
-  /* 次選單列全寬（不受 page-width 內層 max-width 擠成窄條） */
-  #header-group
-    > .shopify-section.header-section
-    + .shopify-section:has([data-apgo-hub-nav])
-    .section.section--page-width {
-    width: 100%;
-    max-width: none;
-  }
-
   .header[data-sticky-state] {
     transition: opacity var(--animation-speed) var(--animation-easing);
     opacity: 1;
