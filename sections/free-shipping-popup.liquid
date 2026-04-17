@@ -1,9 +1,8 @@
 {%- comment -%}
   Global sticky marquee (formerly sections/marquee.liquid). Rendered once from layout/theme.liquid.
-  Omits markup/CSS/JS when there is nothing to show (no SG strip + no usable blocks), so no blank bar.
+  Omits DOM, script, and styles when there is no SG promo and no visible blocks (no blank strip on storefront).
 {%- endcomment -%}
 
-{% assign gap_between_elements = section.settings.gap_between_elements %}
 {% liquid
   assign show_market_promo = false
   assign market_promo_key = ''
@@ -14,36 +13,46 @@
     endif
   endif
 
-  assign has_marquee_blocks = false
-  for block in section.blocks
-    if block.disabled
-      continue
-    elsif block.type == 'text'
-      assign marquee_txt = block.settings.text | strip_html | strip
-      if marquee_txt != blank
-        assign has_marquee_blocks = true
+  assign marquee_has_content = show_market_promo
+  unless marquee_has_content
+    for block in section.blocks
+      if block.disabled
+        continue
+      endif
+      case block.type
+        when 'text'
+          assign marquee_text_stripped = block.settings.text | strip_html | strip
+          if marquee_text_stripped != blank
+            assign marquee_has_content = true
+          endif
+        when 'icon'
+          if block.settings.image_upload != blank or block.settings.icon != 'none'
+            assign marquee_has_content = true
+          endif
+        when 'logo'
+          assign marquee_has_content = true
+        when '_divider'
+          assign marquee_has_content = true
+      endcase
+      if marquee_has_content
         break
       endif
-    else
-      assign has_marquee_blocks = true
-      break
-    endif
-  endfor
+    endfor
+  endunless
 
-  assign render_marquee = false
-  if show_market_promo or has_marquee_blocks
-    assign render_marquee = true
-  endif
-  if request.design_mode
-    assign render_marquee = true
+  assign marquee_should_render = false
+  if marquee_has_content or request.design_mode
+    assign marquee_should_render = true
   endif
 %}
 
-{% if render_marquee %}
+{% if marquee_should_render %}
 <script
   src="{{ 'marquee.js' | asset_url }}"
   type="module"
 ></script>
+
+{% assign gap_between_elements = section.settings.gap_between_elements %}
 
 {% comment %} 與 critical.js／header 變數對齊：黏在 #header-group 佔位下方 {% endcomment %}
 <div class="marquee__sticky-wrap">
