@@ -388,8 +388,25 @@
     width: 100%;
     min-height: 2.75rem;
     box-sizing: border-box;
+    overflow: visible;
     /* 與次選單列同色：sticky 外殼本身不透明，避免捲動內容從字後／列後透出 */
     background-color: #000000;
+  }
+
+  /* 向上／左右略加實心黑帶，補主列與次選單之間及左側的次像素縫 */
+  #header-group:has(#header-component[sticky='always']) > .shopify-section.header-section + .shopify-section::before,
+  #header-group:has(#header-component[sticky='scroll-up'][data-sticky-state='active'])
+    > .shopify-section.header-section
+    + .shopify-section::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100vw;
+    top: -22px;
+    height: 22px;
+    background-color: #000000;
+    pointer-events: none;
   }
 
   .header[data-sticky-state] {
