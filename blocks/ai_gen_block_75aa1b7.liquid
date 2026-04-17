@@ -1,12 +1,11 @@
-{% doc %}
-  @prompt
-    帮我做一个次级菜单，需要sticky再跑马灯下面，另外帮我填上每一个选项（limitedtimedeals...）
-{% enddoc %}
+
+{% comment %}
+  僅在 collections/all 顯示，避免黑色橫條出現在全站或編輯器其他版型。
+  編輯此區塊時請在自訂主題中開啟「全部商品」集合預覽。
+{% endcomment %}
 {% liquid
   assign show_apgo_secondary_nav = false
-  if request.design_mode or request.visual_preview_mode
-    assign show_apgo_secondary_nav = true
-  elsif request.page_type == 'collection' and collection != blank and collection.handle == 'all'
+  if request.page_type == 'collection' and collection != blank and collection.handle == 'all'
     assign show_apgo_secondary_nav = true
   endif
 %}
