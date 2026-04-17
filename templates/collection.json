@@ -41,6 +41,7 @@
       "block_order": [
         "text_tqQTNE"
       ],
+      "disabled": true,
       "name": "Collection header",
       "settings": {
         "content_direction": "row",
