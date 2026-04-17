@@ -1,6 +1,460 @@
+{% doc %}
+  @prompt
+    帮我做一个次级菜单，需要sticky再跑马灯下面，另外帮我填上每一个选项（limitedtimedeals...）
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-secondary-menu-{{ ai_gen_id }} {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: {{ block.settings.background_color }};
+    border-bottom: {{ block.settings.border_width }}px solid {{ block.settings.border_color }};
+    width: 100%;
+    display: block;
+  }
+
+  .ai-secondary-menu__container-{{ ai_gen_id }} {
+    max-width: 100%;
+    margin: 0 auto;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .ai-secondary-menu__container-{{ ai_gen_id }}::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ai-secondary-menu__list-{{ ai_gen_id }} {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: {{ block.settings.item_spacing }}px;
+    justify-content: {{ block.settings.alignment }};
+    min-width: max-content;
+    padding: {{ block.settings.vertical_padding }}px {{ block.settings.horizontal_padding }}px;
+  }
+
+  .ai-secondary-menu__item-{{ ai_gen_id }} {
+    flex-shrink: 0;
+  }
+
+  .ai-secondary-menu__link-{{ ai_gen_id }} {
+    display: inline-block;
+    padding: {{ block.settings.link_padding_vertical }}px {{ block.settings.link_padding_horizontal }}px;
+    color: {{ block.settings.text_color }};
+    text-decoration: none;
+    font-size: {{ block.settings.font_size }}px;
+    font-weight: {{ block.settings.font_weight }};
+    text-transform: {{ block.settings.text_transform }};
+    white-space: nowrap;
+    transition: all 0.3s ease;
+    border-radius: {{ block.settings.link_border_radius }}px;
+  }
+
+  .ai-secondary-menu__link-{{ ai_gen_id }}:hover {
+    color: {{ block.settings.text_hover_color }};
+    background-color: {{ block.settings.hover_background_color }};
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-secondary-menu__list-{{ ai_gen_id }} {
+      justify-content: flex-start;
+    }
+  }
+{% endstyle %}
+
+<secondary-menu-{{ ai_gen_id }} class="ai-secondary-menu-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-secondary-menu__container-{{ ai_gen_id }}">
+    <ul class="ai-secondary-menu__list-{{ ai_gen_id }}">
+      {% for i in (1..10) %}
+        {% liquid
+          assign link_key = 'link_' | append: i
+          assign label_key = 'label_' | append: i
+          assign link_url = block.settings[link_key]
+          assign link_label = block.settings[label_key]
+        %}
+        
+        {% if link_label != blank %}
+          <li class="ai-secondary-menu__item-{{ ai_gen_id }}">
+            <a 
+              href="{% if link_url != blank %}{{ link_url }}{% else %}#{% endif %}" 
+              class="ai-secondary-menu__link-{{ ai_gen_id }}"
+            >
+              {{ link_label }}
+            </a>
+          </li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </div>
+</secondary-menu-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class SecondaryMenu{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.container = this.querySelector('.ai-secondary-menu__container-{{ ai_gen_id }}');
+        this.setupScrollBehavior();
+      }
+
+      setupScrollBehavior() {
+        if (!this.container) return;
+
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+
+        this.container.addEventListener('mousedown', (e) => {
+          isDown = true;
+          this.container.style.cursor = 'grabbing';
+          startX = e.pageX - this.container.offsetLeft;
+          scrollLeft = this.container.scrollLeft;
+        });
+
+        this.container.addEventListener('mouseleave', () => {
+          isDown = false;
+          this.container.style.cursor = 'grab';
+        });
+
+        this.container.addEventListener('mouseup', () => {
+          isDown = false;
+          this.container.style.cursor = 'grab';
+        });
+
+        this.container.addEventListener('mousemove', (e) => {
+          if (!isDown) return;
+          e.preventDefault();
+          const x = e.pageX - this.container.offsetLeft;
+          const walk = (x - startX) * 2;
+          this.container.scrollLeft = scrollLeft - walk;
+        });
+      }
+    }
+
+    customElements.define('secondary-menu-{{ ai_gen_id }}', SecondaryMenu{{ ai_gen_id }});
+  })();
+</script>
+
 {% schema %}
- {
-   "name": "AI_Block",
-   "tag": "shopify-ai-generated-block"
- }
+{
+  "name": "Secondary menu",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Menu items"
+    },
+    {
+      "type": "text",
+      "id": "label_1",
+      "label": "Item 1 label",
+      "default": "Limited Time Deals"
+    },
+    {
+      "type": "url",
+      "id": "link_1",
+      "label": "Item 1 link"
+    },
+    {
+      "type": "text",
+      "id": "label_2",
+      "label": "Item 2 label",
+      "default": "New Arrivals"
+    },
+    {
+      "type": "url",
+      "id": "link_2",
+      "label": "Item 2 link"
+    },
+    {
+      "type": "text",
+      "id": "label_3",
+      "label": "Item 3 label",
+      "default": "Best Sellers"
+    },
+    {
+      "type": "url",
+      "id": "link_3",
+      "label": "Item 3 link"
+    },
+    {
+      "type": "text",
+      "id": "label_4",
+      "label": "Item 4 label",
+      "default": "Categories"
+    },
+    {
+      "type": "url",
+      "id": "link_4",
+      "label": "Item 4 link"
+    },
+    {
+      "type": "text",
+      "id": "label_5",
+      "label": "Item 5 label",
+      "default": "Sale"
+    },
+    {
+      "type": "url",
+      "id": "link_5",
+      "label": "Item 5 link"
+    },
+    {
+      "type": "text",
+      "id": "label_6",
+      "label": "Item 6 label",
+      "default": "Clearance"
+    },
+    {
+      "type": "url",
+      "id": "link_6",
+      "label": "Item 6 link"
+    },
+    {
+      "type": "text",
+      "id": "label_7",
+      "label": "Item 7 label",
+      "default": "Bundles"
+    },
+    {
+      "type": "url",
+      "id": "link_7",
+      "label": "Item 7 link"
+    },
+    {
+      "type": "text",
+      "id": "label_8",
+      "label": "Item 8 label",
+      "default": "Gift Cards"
+    },
+    {
+      "type": "url",
+      "id": "link_8",
+      "label": "Item 8 link"
+    },
+    {
+      "type": "text",
+      "id": "label_9",
+      "label": "Item 9 label"
+    },
+    {
+      "type": "url",
+      "id": "link_9",
+      "label": "Item 9 link"
+    },
+    {
+      "type": "text",
+      "id": "label_10",
+      "label": "Item 10 label"
+    },
+    {
+      "type": "url",
+      "id": "link_10",
+      "label": "Item 10 link"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "flex-end",
+          "label": "Right"
+        },
+        {
+          "value": "space-between",
+          "label": "Space between"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "item_spacing",
+      "label": "Item spacing",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "vertical_padding",
+      "label": "Vertical padding",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "horizontal_padding",
+      "label": "Horizontal padding",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Link style"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "label": "Font size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "select",
+      "id": "font_weight",
+      "label": "Font weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semibold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "select",
+      "id": "text_transform",
+      "label": "Text transform",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "uppercase",
+          "label": "Uppercase"
+        },
+        {
+          "value": "capitalize",
+          "label": "Capitalize"
+        }
+      ],
+      "default": "uppercase"
+    },
+    {
+      "type": "range",
+      "id": "link_padding_vertical",
+      "label": "Link vertical padding",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "link_padding_horizontal",
+      "label": "Link horizontal padding",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "link_border_radius",
+      "label": "Link border radius",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_hover_color",
+      "label": "Text hover",
+      "default": "#f08418"
+    },
+    {
+      "type": "color",
+      "id": "hover_background_color",
+      "label": "Hover background",
+      "default": "rgba(255, 255, 255, 0.1)"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border",
+      "default": "#333333"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "label": "Border width",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    }
+  ],
+  "presets": [
+    {
+      "name": "Secondary menu"
+    }
+  ]
+}
 {% endschema %}
