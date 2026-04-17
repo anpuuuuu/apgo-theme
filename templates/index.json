@@ -9,18 +9,6 @@
  */
 {
   "sections": {
-    "marquee_p8YTpL": {
-      "type": "marquee",
-      "name": "t:names.marquee_section",
-      "settings": {
-        "movement_direction": "normal",
-        "color_scheme": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26",
-        "padding-block-start": 3,
-        "padding-block-end": 3,
-        "gap_between_elements": 10,
-        "show_mysg_discount_promo": true
-      }
-    },
     "section_NcGDMK": {
       "type": "section",
       "blocks": {
@@ -236,7 +224,6 @@
     }
   },
   "order": [
-    "marquee_p8YTpL",
     "section_NcGDMK",
     "custom_liquid_jMHpAt",
     "custom_liquid_afAH4y",

@@ -155,22 +155,9 @@
         "padding-block-start": 48,
         "padding-block-end": 48
       }
-    },
-    "marquee_hwkH4Y": {
-      "type": "marquee",
-      "name": "t:names.marquee_section",
-      "settings": {
-        "movement_direction": "normal",
-        "color_scheme": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26",
-        "padding-block-start": 3,
-        "padding-block-end": 3,
-        "gap_between_elements": 10,
-        "show_mysg_discount_promo": true
-      }
     }
   },
   "order": [
-    "marquee_hwkH4Y",
     "collection_list_Y66Rtq"
   ]
 }

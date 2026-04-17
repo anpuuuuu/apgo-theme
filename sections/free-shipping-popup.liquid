@@ -1,269 +1,274 @@
 {%- comment -%}
-  Tiered free shipping & promotion bar with customizable CTA
+  Global sticky marquee (formerly sections/marquee.liquid). Rendered once from layout/theme.liquid.
 {%- endcomment -%}
 
-<style>
-.shipping-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background-color: {{ section.settings.bg_color }};
-  color: {{ section.settings.text_color }};
-  padding: 14px 20px;
-  box-shadow: 0 -4px 16px rgba(0,0,0,0.4);
-  z-index: 10000;
-  display: none;
-}
-.shipping-bar.show {
-  display: block;
-}
-.shipping-bar.success {
-  background-color: {{ section.settings.success_bg_color }};
-}
-.shipping-bar-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-}
-.shipping-bar-message {
-  font-size: 14px;
-  line-height: 1.5;
-}
-.shipping-bar-cta {
-  font-size: 14px;
-  color: {{ section.settings.cta_color }};
-  text-decoration: underline;
-  margin-left: 12px;
-  white-space: nowrap;
-}
-.shipping-bar .progress-bar {
-  width: 100%;
-  height: 6px;
-  background: rgba(255,255,255,0.15);
-  border-radius: 8px;
-  overflow: hidden;
-  margin-top: 6px;
-}
-.shipping-bar .progress-fill {
-  height: 100%;
-  width: 0%;
-  background: {{ section.settings.progress_color }};
-  transition: width .6s cubic-bezier(0.4, 0, 0.2, 1);
-}
-</style>
+<script
+  src="{{ 'marquee.js' | asset_url }}"
+  type="module"
+></script>
 
-<div id="shippingBar" class="shipping-bar" aria-live="polite">
-  <div class="shipping-bar-row">
-    <div class="shipping-bar-message" id="shippingBarMessage"></div>
-    {%- if section.settings.cta_text != blank and section.settings.cta_url != blank -%}
-      <a href="{{ section.settings.cta_url }}" class="shipping-bar-cta">{{ section.settings.cta_text }}</a>
-    {%- endif -%}
+{% assign gap_between_elements = section.settings.gap_between_elements %}
+{% liquid
+  assign show_market_promo = false
+  assign market_promo_key = ''
+  if section.settings.show_mysg_discount_promo
+    if localization.country.iso_code == 'SG'
+      assign show_market_promo = true
+      assign market_promo_key = 'apgo_promotions.sg_free_shipping_banner'
+    endif
+  endif
+%}
+
+{% comment %} 與 critical.js／header 變數對齊：黏在 #header-group 佔位下方 {% endcomment %}
+<div class="marquee__sticky-wrap">
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+<marquee-component
+  class="section spacing-style gap-style color-{{ section.settings.color_scheme }}"
+  style="
+    {%- render 'spacing-style', settings: section.settings %};
+    {% render 'gap-style', value: gap_between_elements, name: 'marquee-gap' %}
+    --marquee-direction: {{ section.settings.movement_direction }};
+  "
+  data-speed-factor="20"
+  data-movement-direction="{{ section.settings.movement_direction }}"
+>
+  <div
+    class="marquee__wrapper"
+    ref="wrapper"
+  >
+    <div
+      class="marquee__content"
+      ref="content"
+    >
+      <div class="marquee__repeated-items">
+        {% if show_market_promo %}
+          <p class="marquee__promo-item">
+            <span class="marquee__promo-flag" aria-hidden="true">
+              <svg viewBox="0 0 64 48" role="img" focusable="false">
+                <rect width="64" height="24" fill="#EF3340"></rect>
+                <rect y="24" width="64" height="24" fill="#FFFFFF"></rect>
+                <circle cx="18" cy="13" r="8" fill="#FFFFFF"></circle>
+                <circle cx="21" cy="13" r="6.5" fill="#EF3340"></circle>
+                <g fill="#FFFFFF" transform="translate(27 7)">
+                  <polygon points="2.5,0 3.2,1.8 5.1,1.8 3.6,2.9 4.2,4.8 2.5,3.6 0.8,4.8 1.4,2.9 0,1.8 1.8,1.8"></polygon>
+                  <polygon points="8.5,2.3 9.2,4.1 11.1,4.1 9.6,5.2 10.2,7.1 8.5,5.9 6.8,7.1 7.4,5.2 6,4.1 7.8,4.1"></polygon>
+                  <polygon points="8.5,8.8 9.2,10.6 11.1,10.6 9.6,11.7 10.2,13.6 8.5,12.4 6.8,13.6 7.4,11.7 6,10.6 7.8,10.6"></polygon>
+                  <polygon points="2.5,11.1 3.2,12.9 5.1,12.9 3.6,14 4.2,15.9 2.5,14.7 0.8,15.9 1.4,14 0,12.9 1.8,12.9"></polygon>
+                  <polygon points="14.5,5.6 15.2,7.4 17.1,7.4 15.6,8.5 16.2,10.4 14.5,9.2 12.8,10.4 13.4,8.5 12,7.4 13.8,7.4"></polygon>
+                </g>
+              </svg>
+            </span>
+            {{ market_promo_key | t }}
+          </p>
+        {% endif %}
+        {% content_for 'blocks' %}
+      </div>
+    </div>
   </div>
-  <div class="progress-bar">
-    <div class="progress-fill" id="shippingBarProgress"></div>
-  </div>
+</marquee-component>
 </div>
 
-<script>
-class TieredShippingBar {
-  constructor(config, tiers) {
-    this.currency = config.currency || 'TWD';
-    this.bar   = document.getElementById('shippingBar');
-    this.msgEl = document.getElementById('shippingBarMessage');
-    this.progressEl = document.getElementById('shippingBarProgress');
-    this.tiers = (tiers || []).sort((a,b) => a.tier_threshold - b.tier_threshold);
-    this.showOnLoad = config.showOnLoad;
-    this.autoHideDelay = config.autoHideDelay || 0;
-
-    if (this.showOnLoad) this.update();
-
-    document.addEventListener('cart:change', () => this.update());
-    document.addEventListener('product:added', () => this.update());
-    document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) this.update();
-    });
-    this.interceptFetch();
+{% stylesheet %}
+  /* theme.liquid 的 overflow-x:clip 可能影響 sticky 參考層 */
+  html:has(.marquee__sticky-wrap),
+  html:has(.marquee__sticky-wrap) body {
+    overflow-x: visible !important;
   }
 
-  async fetchCart() {
-    try {
-      const res = await fetch('/cart.js');
-      return await res.json();
-    } catch (err) {
-      console.error('取得購物車資料失敗', err);
-      return null;
+  .marquee__sticky-wrap {
+    position: -webkit-sticky;
+    position: sticky;
+    top: calc(
+      var(--header-height, 60px) + var(--header-group-height, 0px) + env(safe-area-inset-top, 0px)
+    );
+    z-index: calc(var(--layer-sticky, 8) - 1);
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    background: var(--color-background);
+    box-shadow: 0 1px 0 rgba(from var(--color-foreground) r g b / 0.08);
+  }
+
+  marquee-component {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .marquee__wrapper {
+    display: flex;
+    gap: var(--marquee-gap);
+    width: fit-content;
+    white-space: nowrap;
+  }
+
+  .marquee__content {
+    min-width: max-content;
+    display: flex;
+    gap: var(--marquee-gap);
+  }
+
+  .marquee__content :is(p, h1, h2, h3, h4, h5, h6) {
+    white-space: nowrap;
+  }
+
+  .marquee__content .marquee__repeated-items * {
+    max-width: none;
+  }
+
+  .marquee__repeated-items {
+    min-width: max-content;
+    display: flex;
+    gap: var(--marquee-gap);
+    align-items: center;
+    justify-content: center;
+  }
+
+  .marquee__repeated-items > * {
+    align-content: center;
+  }
+
+  .marquee__promo-item {
+    margin: 0;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+  }
+
+  .marquee__promo-flag {
+    width: 1.25em;
+    height: 0.95em;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .marquee__promo-flag svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    marquee-component:not([data-disabled]) .marquee__wrapper {
+      animation: marquee-motion var(--marquee-speed) linear infinite var(--marquee-direction);
     }
   }
 
-  async update() {
-    const cart = await this.fetchCart();
-    if (!cart || cart.item_count === 0) {
-      this.bar.classList.remove('show','success');
-      return;
-    }
-    const total = cart.total_price;
-    let currentIndex = -1;
-    for (let i = 0; i < this.tiers.length; i++) {
-      if (total >= this.tiers[i].tier_threshold * 100) currentIndex = i;
-    }
-    const nextIndex = currentIndex + 1;
-    let message = '';
-    let progress = 0;
-    let isSuccess = false;
-
-    if (nextIndex < this.tiers.length) {
-      const nextTier = this.tiers[nextIndex];
-      const remaining = nextTier.tier_threshold * 100 - total;
-      const remainingFormatted = (remaining / 100).toLocaleString('zh-TW', { style:'currency', currency: this.currency, minimumFractionDigits:0 });
-      if (currentIndex >= 0) {
-        const currentTier = this.tiers[currentIndex];
-        message = `🎉 ${currentTier.tier_success_message} 再購買 ${remainingFormatted} 可享 ${nextTier.tier_message}`;
-      } else {
-        message = `再購買 ${remainingFormatted} 即可享 ${nextTier.tier_message}`;
-      }
-      progress = Math.min((total / (nextTier.tier_threshold * 100)) * 100, 100);
-    } else {
-      const lastTier = this.tiers[this.tiers.length - 1];
-      message = `🎉 ${lastTier.tier_success_message}`;
-      progress = 100;
-      isSuccess = true;
-    }
-
-    this.msgEl.textContent = message;
-    this.progressEl.style.width = progress + '%';
-    this.bar.classList.add('show');
-    if (isSuccess) {
-      this.bar.classList.add('success');
-    } else {
-      this.bar.classList.remove('success');
-    }
-
-    if (this.autoHideDelay > 0) {
-      clearTimeout(this.hideTimer);
-      this.hideTimer = setTimeout(() => {
-        this.bar.classList.remove('show');
-      }, this.autoHideDelay);
+  @keyframes marquee-motion {
+    to {
+      transform: translate3d(calc(-50% - (var(--marquee-gap) / 2)), 0, 0);
     }
   }
-
-  interceptFetch() {
-    const originalFetch = window.fetch;
-    window.fetch = async (...args) => {
-      const response = await originalFetch(...args);
-      try {
-        const url = args[0].url || args[0];
-        if (typeof url === 'string' && (url.includes('/cart/add') || url.includes('/cart/change') || url.includes('/cart/update') || url.includes('/cart/clear'))) {
-          setTimeout(() => this.update(), 200);
-        }
-      } catch (e) {}
-      return response;
-    };
-  }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  const tiersData = {{ section.blocks | map: 'settings' | json }};
-  window.shippingBar = new TieredShippingBar({
-    currency: '{{ cart.currency.iso_code | default: "TWD" }}',
-    showOnLoad: {{ section.settings.show_on_page_load | default: true }},
-    autoHideDelay: {{ section.settings.auto_hide_delay | default: 0 }}
-  }, tiersData);
-});
-</script>
+{% endstylesheet %}
 
 {% schema %}
 {
-  "name": "Free shipping bar",
-  "settings": [
-    {
-      "type": "checkbox",
-      "id": "show_on_page_load",
-      "label": "頁面載入時顯示",
-      "default": true
-    },
-    {
-      "type": "number",
-      "id": "auto_hide_delay",
-      "label": "自動隱藏延遲（毫秒，0 代表不隱藏）",
-      "default": 0
-    },
-    {
-      "type": "text",
-      "id": "cta_text",
-      "label": "右側 CTA 文字",
-      "default": "看看其他實用配件？",
-      "info": "放在進度條右側的連結文字，可留空不顯示"
-    },
-    {
-      "type": "url",
-      "id": "cta_url",
-      "label": "右側 CTA 連結",
-      "default": "/",
-      "info": "CTA 文字的連結網址，可在主題設定中自訂；若 CTA 文字留空則不顯示"
-    },
-    {
-      "type": "color",
-      "id": "bg_color",
-      "label": "背景顏色",
-      "default": "#111111"
-    },
-    {
-      "type": "color",
-      "id": "success_bg_color",
-      "label": "達標背景顏色",
-      "default": "#1a3a20"
-    },
-    {
-      "type": "color",
-      "id": "progress_color",
-      "label": "進度條顏色",
-      "default": "#f58220"
-    },
-    {
-      "type": "color",
-      "id": "cta_color",
-      "label": "CTA 文字顏色",
-      "default": "#f58220"
-    },
-    {
-      "type": "color",
-      "id": "text_color",
-      "label": "文字顏色",
-      "default": "#ffffff"
-    }
-  ],
+  "name": "t:names.marquee",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
   "blocks": [
     {
-      "type": "tier",
-      "name": "優惠階層",
-      "settings": [
+      "type": "text"
+    },
+    {
+      "type": "icon"
+    },
+    {
+      "type": "logo"
+    },
+    {
+      "type": "_divider"
+    }
+  ],
+  "settings": [
+    {
+      "type": "select",
+      "id": "movement_direction",
+      "label": "t:settings.motion_direction",
+      "options": [
         {
-          "type": "number",
-          "id": "tier_threshold",
-          "label": "門檻金額（元）",
-          "default": 1500
+          "value": "reverse",
+          "label": "t:options.forward"
         },
         {
-          "type": "text",
-          "id": "tier_message",
-          "label": "未達門檻提示",
-          "default": "免運"
-        },
-        {
-          "type": "text",
-          "id": "tier_success_message",
-          "label": "達標訊息",
-          "default": "您已享有免運優惠！"
+          "value": "normal",
+          "label": "t:options.reverse"
         }
-      ]
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "gap_between_elements",
+      "label": "t:settings.gap",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "checkbox",
+      "id": "show_mysg_discount_promo",
+      "label": "Show MY/SG promotion in marquee",
+      "default": true
     }
   ],
   "presets": [
     {
-      "name": "Free shipping bar",
-      "category": "Custom"
+      "name": "t:names.marquee_section",
+      "category": "t:categories.banners",
+      "blocks": {
+        "text": {
+          "type": "text",
+          "settings": {
+            "text": "<p>We make things that work better and last longer.</p>",
+            "type_preset": "custom",
+            "font": "var(--font-body--family)",
+            "font_size": "var(--font-size--h2)",
+            "line_height": "tight",
+            "letter_spacing": "tight",
+            "case": "none",
+            "wrap": "nowrap",
+            "width": "fit-content"
+          }
+        }
+      },
+      "block_order": ["text"]
     }
   ]
 }
