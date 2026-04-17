@@ -89,6 +89,13 @@
             {%- for link in linklist.links -%}
               {% liquid
                 assign link_title_normalized = link.title | downcase | strip
+                assign link_handle_normalized = link.handle | downcase | strip
+                if link_title_normalized == 'category' or link_title_normalized == 'categories' or link_title_normalized == '分類'
+                  continue
+                endif
+                if link_handle_normalized == 'category' or link_handle_normalized == 'categories'
+                  continue
+                endif
                 assign link_url = link.url
                 assign link_label = link.title
                 assign link_is_active = link.current
@@ -262,6 +269,13 @@
             {%- for link in linklist.links -%}
               {% liquid
                 assign link_title_normalized = link.title | downcase | strip
+                assign link_handle_normalized = link.handle | downcase | strip
+                if link_title_normalized == 'category' or link_title_normalized == 'categories' or link_title_normalized == '分類'
+                  continue
+                endif
+                if link_handle_normalized == 'category' or link_handle_normalized == 'categories'
+                  continue
+                endif
                 assign link_url = link.url
                 assign link_label = link.title
                 assign link_is_active = link.current

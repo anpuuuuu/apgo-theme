@@ -45,6 +45,16 @@
             role="list"
           >
             {% for link in block.settings.menu.links %}
+              {% liquid
+                assign apgo_nt = link.title | downcase | strip
+                assign apgo_nh = link.handle | downcase | strip
+                if apgo_nt == 'category' or apgo_nt == 'categories' or apgo_nt == '分類'
+                  continue
+                endif
+                if apgo_nh == 'category' or apgo_nh == 'categories'
+                  continue
+                endif
+              %}
               <li>
                 <a
                   href="{{ link.url }}"
