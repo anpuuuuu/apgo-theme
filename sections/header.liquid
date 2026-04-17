@@ -381,6 +381,8 @@
     top: max(0px, calc(var(--header-height, 60px) - 1px));
     z-index: calc(var(--layer-sticky, 8) - 1);
     width: 100%;
+    /* 與次選單列同色：sticky 外殼本身不透明，避免捲動內容從字後／列後透出（不改 sticky 數值） */
+    background-color: #000000;
   }
 
   .header[data-sticky-state] {
