@@ -21,6 +21,8 @@
     endfor
 
     assign collection_list = collection_list | split: ','
+  else
+    assign limit = collection_list.size
   endif
 
   assign active_collection = nil
@@ -37,7 +39,6 @@
   endif
 %}
 
-{% if template.name == 'collection' or request.design_mode %}
 <script
   src="{{ 'collection-links.js' | asset_url }}"
   type="module"
@@ -123,7 +124,6 @@
     {% endcase %}
   </collection-links-component>
 </div>
-{% endif %}
 
 {% # theme-check-disable ValidBlockTarget %}
 {% stylesheet %}
@@ -267,9 +267,6 @@
 {% schema %}
 {
   "name": "t:names.collection_links",
-  "enabled_on": {
-    "groups": ["header"]
-  },
   "disabled_on": {
     "groups": ["footer"]
   },
