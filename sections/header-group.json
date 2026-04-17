@@ -86,9 +86,76 @@
         "enable_transparent_header_collection": false,
         "collection_color_scheme": "inverse"
       }
+    },
+    "collection_links_header": {
+      "type": "collection-links",
+      "name": "t:names.collection_links_text",
+      "blocks": {
+        "link": {
+          "type": "_collection-link",
+          "static": true,
+          "settings": {
+            "collection": "{{ closest.collection }}",
+            "show_count": false
+          },
+          "blocks": {
+            "title": {
+              "type": "_inline-collection-title",
+              "name": "t:names.title",
+              "static": true,
+              "settings": {
+                "collection": "{{ closest.collection }}",
+                "font": "var(--font-body--family)",
+                "weight": "500",
+                "line_height": "normal",
+                "letter_spacing": "normal",
+                "case": "none"
+              },
+              "blocks": {}
+            },
+            "image": {
+              "type": "_image",
+              "disabled": true,
+              "static": true,
+              "settings": {
+                "image": "{{ closest.collection.image }}",
+                "height": "medium",
+                "ratio": "portrait",
+                "border_radius": 0
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": []
+        }
+      },
+      "custom_css": [],
+      "settings": {
+        "collection_list": [
+          "collections-limited-time-deals",
+          "featured",
+          "atomic-coating-series",
+          "car-interior",
+          "cleaning-supplies",
+          "pre-wash-car-wash",
+          "restoration",
+          "others",
+          "household",
+          "2025-new-launch"
+        ],
+        "unified_catalog_hub_collection": "all",
+        "layout": "text",
+        "section_width": "page-width",
+        "alignment": "center",
+        "image_position": "right",
+        "color_scheme": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26",
+        "padding-block-start": 19,
+        "padding-block-end": 14
+      }
     }
   },
   "order": [
-    "header_section"
+    "header_section",
+    "collection_links_header"
   ]
 }

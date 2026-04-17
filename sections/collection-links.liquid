@@ -1,11 +1,16 @@
 
 
 {% liquid
+  assign page_collection = nil
+  if template.name == 'collection'
+    assign page_collection = collection
+  endif
+
   assign collection_list = section.settings.collection_list
   assign hub_coll = section.settings.unified_catalog_hub_collection
   # 後台未選統一目錄時，/collections/all 仍以當前 collection 當 hub（錨點）
-  if hub_coll == blank and collection.handle == 'all'
-    assign hub_coll = collection
+  if hub_coll == blank and page_collection != blank and page_collection.handle == 'all'
+    assign hub_coll = page_collection
   endif
 
   if collection_list == blank
@@ -18,17 +23,21 @@
     assign collection_list = collection_list | split: ','
   endif
 
-  assign active_collection = collection_list | find: 'id', collection.id
+  assign active_collection = nil
+  if page_collection != blank
+    assign active_collection = collection_list | find: 'id', page_collection.id
+  endif
   if active_collection == blank
     assign active_collection = collection_list.first
   endif
 
   assign suppress_collection_nav_active = false
-  if hub_coll != blank and collection.id == hub_coll.id
+  if hub_coll != blank and page_collection != blank and page_collection.id == hub_coll.id
     assign suppress_collection_nav_active = true
   endif
 %}
 
+{% if template.name == 'collection' or request.design_mode %}
 <script
   src="{{ 'collection-links.js' | asset_url }}"
   type="module"
@@ -114,6 +123,7 @@
     {% endcase %}
   </collection-links-component>
 </div>
+{% endif %}
 
 {% # theme-check-disable ValidBlockTarget %}
 {% stylesheet %}
@@ -257,8 +267,11 @@
 {% schema %}
 {
   "name": "t:names.collection_links",
+  "enabled_on": {
+    "groups": ["header"]
+  },
   "disabled_on": {
-    "groups": ["header", "footer"]
+    "groups": ["footer"]
   },
   "settings": [
     {
