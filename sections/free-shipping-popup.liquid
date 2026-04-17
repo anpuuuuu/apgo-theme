@@ -115,6 +115,16 @@
     overflow-x: visible !important;
   }
 
+  /*
+    Shopify 自動為每個 section 包一層 <div id="shopify-section-..."> 外殼。
+    該外殼的高度與 .marquee__sticky-wrap 相同，使 sticky 沒有任何可停留的可捲動範圍。
+    用 display:contents 讓外殼對 layout 透明，.marquee__sticky-wrap 的包含塊
+    改由 <body> 擔任，頁面滾動時才真正吸頂（同 #header-group 作法）。
+  */
+  #shopify-section-free-shipping-popup {
+    display: contents;
+  }
+
   .marquee__sticky-wrap {
     position: -webkit-sticky;
     position: sticky;
