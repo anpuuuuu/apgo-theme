@@ -1,6 +1,8 @@
 {%- comment -%}
-  Global sticky marquee. Lives in sections/header-group.json (below main header section, inside #header-group).
-  Omits DOM, script, and styles when there is no SG promo and no visible blocks (no blank strip on storefront).
+  Global sticky marquee. Configured in sections/header-group.json (inside #header-group).
+  Schema uses enabled_on "header" so Shopify accepts it in the header group (required).
+  In theme editor: customize theme → click the header → this section appears as t:names.marquee / Marquee (檔名 free-shipping-popup.liquid).
+  Omits DOM when no SG promo and no visible blocks (storefront only; design mode still shows for editing).
 {%- endcomment -%}
 
 {% liquid
@@ -206,8 +208,8 @@
 {% schema %}
 {
   "name": "t:names.marquee",
-  "disabled_on": {
-    "groups": ["footer"]
+  "enabled_on": {
+    "groups": ["header"]
   },
   "blocks": [
     {
