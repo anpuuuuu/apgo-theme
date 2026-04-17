@@ -2,7 +2,7 @@
 
 {% liquid
   assign page_collection = nil
-  if template.name == 'collection'
+  if request.page_type == 'collection' or template.name == 'collection'
     assign page_collection = collection
   endif
 
@@ -267,6 +267,11 @@
 {% schema %}
 {
   "name": "t:names.collection_links",
+  "blocks": [
+    {
+      "type": "_collection-link"
+    }
+  ],
   "disabled_on": {
     "groups": ["footer"]
   },

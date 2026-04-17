@@ -9,13 +9,18 @@
 {%- enddoc -%}
 
 {% liquid
+  assign link_coll = closest.collection
   assign hub_coll = section.settings.unified_catalog_hub_collection
-  if hub_coll == blank and collection.handle == 'all'
-    assign hub_coll = collection
+  if hub_coll == blank and link_coll != blank and link_coll.handle == 'all'
+    assign hub_coll = link_coll
   endif
-  assign collection_link_href = closest.collection.url
-  if hub_coll != blank
-    assign collection_link_href = hub_coll.url | append: '#collection-' | append: closest.collection.handle
+  assign collection_link_href = '#'
+  if link_coll != blank
+    if hub_coll != blank
+      assign collection_link_href = hub_coll.url | append: '#collection-' | append: link_coll.handle
+    else
+      assign collection_link_href = link_coll.url
+    endif
   endif
 %}
 
@@ -24,10 +29,19 @@
 {% endunless %}
 
 {% if block.settings.show_count %}
-  {% assign count = block.settings.collection.all_products_count %}
-  {%- capture count -%}
-    &nbsp;<sup class="collection-links__count">{{ count }}</sup>
-  {%- endcapture -%}
+  {% liquid
+    if block.settings.collection != blank
+      assign count_coll = block.settings.collection
+    else
+      assign count_coll = link_coll
+    endif
+  %}
+  {% if count_coll != blank %}
+    {% assign count = count_coll.all_products_count %}
+    {%- capture count -%}
+      &nbsp;<sup class="collection-links__count">{{ count }}</sup>
+    {%- endcapture -%}
+  {% endif %}
 
   {% if block.settings.collection == empty %}
     {%- capture count -%}
@@ -56,7 +70,7 @@
   <a
     href="{{ collection_link_href }}"
     class="collection-links__link"
-    data-apgo-catalog-anchor="{{ closest.collection.handle }}"
+    {% if link_coll != blank %}data-apgo-catalog-anchor="{{ link_coll.handle }}"{% endif %}
     ref="links[]"
     on:pointerenter="/select/{{ index }}"
     on:focus="/select/{{ index }}"
