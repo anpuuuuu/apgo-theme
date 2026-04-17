@@ -568,9 +568,15 @@
     }
 
     .main-collection-zgrid ul.product-grid[product-grid-view='default'] {
-      --product-grid-gap: 18px 18px;
-      gap: 18px 18px;
+      /* 略縮橫向間距，五欄時單卡可寬一點點 */
+      --product-grid-gap: 16px 14px;
+      gap: 16px 14px;
       padding-inline: 0;
+    }
+
+    /* 桌機：固定 5 欄均分，讓同一版心寬度約為「先前 auto-fill 約 3 大卡」時可並排 5 張 */
+    .main-collection-zgrid ul.product-grid.product-grid--grid[product-grid-view='default'] {
+      --product-grid-columns-desktop: repeat(5, minmax(0, 1fr));
     }
 
     /* 桌機：品名與價格（paragraph / --font-paragraph--size）同階，略大 5% */
