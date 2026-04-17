@@ -573,11 +573,6 @@
       padding-inline: 0;
     }
 
-    /* 桌機：集合 z-grid 網格固定 5 欄（略過 auto-fill + 大卡最小寬，避免只剩約 3 欄） */
-    .main-collection-zgrid ul.product-grid.product-grid--grid[product-grid-view='default'] {
-      --product-grid-columns-desktop: repeat(5, minmax(0, 1fr));
-    }
-
     /* 桌機：品名與價格（paragraph / --font-paragraph--size）同階，略大 5% */
     .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .text-block:is(.h4, .h5) > * {
       font-size: calc(var(--font-paragraph--size, var(--font-size--paragraph, 0.875rem)) * 1.05);
