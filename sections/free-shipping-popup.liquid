@@ -110,22 +110,19 @@
 
 {% stylesheet %}
   /* theme.liquid 的 overflow-x:clip 可能影響 sticky 參考層 */
-  html:has(.marquee__sticky-wrap),
-  html:has(.marquee__sticky-wrap) body {
+  html:has(#shopify-section-free-shipping-popup),
+  html:has(#shopify-section-free-shipping-popup) body {
     overflow-x: visible !important;
   }
 
   /*
-    Shopify 自動為每個 section 包一層 <div id="shopify-section-..."> 外殼。
-    該外殼的高度與 .marquee__sticky-wrap 相同，使 sticky 沒有任何可停留的可捲動範圍。
-    用 display:contents 讓外殼對 layout 透明，.marquee__sticky-wrap 的包含塊
-    改由 <body> 擔任，頁面滾動時才真正吸頂（同 #header-group 作法）。
+    直接讓 Shopify 自動產生的 section 外殼 (#shopify-section-free-shipping-popup) 本身吸頂。
+    原本 sticky 放在內層 .marquee__sticky-wrap，但它的包含塊正是外殼，而外殼高度等於
+    .marquee__sticky-wrap 本身 → sticky 沒有任何可停留的捲動範圍，視覺上就不吸頂。
+    把 sticky 上移到外殼，其包含塊就是 <body>，整頁都能吸頂。ID 選擇器 (0,1,0,0)
+    勝過 base.css 的 .shopify-section:not(...):has(...) (0,0,4,0)，不必擔心 position:relative 衝突。
   */
   #shopify-section-free-shipping-popup {
-    display: contents;
-  }
-
-  .marquee__sticky-wrap {
     position: -webkit-sticky;
     position: sticky;
     top: calc(
@@ -133,10 +130,16 @@
     );
     z-index: calc(var(--layer-sticky, 8) - 1);
     width: 100%;
-    max-width: 100%;
-    min-width: 0;
     background: var(--color-background);
     box-shadow: 0 1px 0 rgba(from var(--color-foreground) r g b / 0.08);
+  }
+
+  .marquee__sticky-wrap {
+    /* 內層保留為純版面容器；外殼已經吸頂，這裡不再重複 sticky 以免產生巢狀 sticky 問題 */
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
   }
 
   /* 段落預設 margin 會讓跑馬燈條看起來上下留白 */

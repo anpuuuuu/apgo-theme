@@ -119,6 +119,13 @@
   @media screen and (max-width: 749px) {
     .ai-secondary-menu__container-{{ ai_gen_id }} {
       justify-content: flex-start;
+      /* 確保在手機端啟用原生橫向觸控捲動 */
+      overflow-x: auto;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-x;
+      overscroll-behavior-x: contain;
+      flex-wrap: nowrap;
     }
 
     .ai-secondary-menu__list-{{ ai_gen_id }} {
@@ -126,6 +133,14 @@
       margin-inline: 0;
       margin-left: 0;
       margin-right: 0;
+      flex-wrap: nowrap;
+      /* 手機端強制 list 寬度跟著內容長度延伸，觸發容器的橫向滾動 */
+      min-width: max-content;
+      width: max-content;
+    }
+
+    .ai-secondary-menu__item-{{ ai_gen_id }} {
+      flex: 0 0 auto;
     }
   }
 {% endstyle %}
