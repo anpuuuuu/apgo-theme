@@ -1,5 +1,5 @@
 {%- comment -%}
-  Global sticky marquee. Rendered from layout/theme.liquid immediately after #header-group (below header in DOM).
+  Global sticky marquee. Lives in sections/header-group.json (below main header section, inside #header-group).
   Omits DOM, script, and styles when there is no SG promo and no visible blocks (no blank strip on storefront).
 {%- endcomment -%}
 
@@ -54,7 +54,7 @@
 
 {% assign gap_between_elements = section.settings.gap_between_elements %}
 
-{% comment %} 與 critical.js／header 變數對齊：黏在 #header-group 佔位下方 {% endcomment %}
+{% comment %} sticky top 對齊 #header-component 高度（跑馬燈在 header-group 內，勿再加 header-group-height） {% endcomment %}
 <div class="marquee__sticky-wrap">
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
 <marquee-component
@@ -113,9 +113,7 @@
   .marquee__sticky-wrap {
     position: -webkit-sticky;
     position: sticky;
-    top: calc(
-      var(--header-height, 60px) + var(--header-group-height, 0px) + env(safe-area-inset-top, 0px)
-    );
+    top: calc(var(--header-height, 60px) + env(safe-area-inset-top, 0px));
     z-index: calc(var(--layer-sticky, 8) - 1);
     width: 100%;
     max-width: 100%;
@@ -209,7 +207,7 @@
 {
   "name": "t:names.marquee",
   "disabled_on": {
-    "groups": ["header", "footer"]
+    "groups": ["footer"]
   },
   "blocks": [
     {

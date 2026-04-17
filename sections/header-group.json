@@ -86,9 +86,21 @@
         "enable_transparent_header_collection": false,
         "collection_color_scheme": "inverse"
       }
+    },
+    "marquee_global": {
+      "type": "free-shipping-popup",
+      "settings": {
+        "movement_direction": "normal",
+        "color_scheme": "",
+        "padding-block-start": 0,
+        "padding-block-end": 0,
+        "gap_between_elements": 24,
+        "show_mysg_discount_promo": true
+      }
     }
   },
   "order": [
-    "header_section"
+    "header_section",
+    "marquee_global"
   ]
 }
