@@ -3,8 +3,11 @@
 {% capture children %}
   {% content_for 'blocks' %}
 {% endcapture %}
+{% assign children_stripped = children | strip %}
 
-{% render 'section', section: section, children: children %}
+{% if children_stripped != blank %}
+  {% render 'section', section: section, children: children %}
+{% endif %}
 
 {% schema %}
 {

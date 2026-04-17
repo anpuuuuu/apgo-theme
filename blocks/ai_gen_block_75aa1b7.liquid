@@ -2,8 +2,17 @@
   @prompt
     帮我做一个次级菜单，需要sticky再跑马灯下面，另外帮我填上每一个选项（limitedtimedeals...）
 {% enddoc %}
+{% liquid
+  assign show_apgo_secondary_nav = false
+  if request.design_mode or request.visual_preview_mode
+    assign show_apgo_secondary_nav = true
+  elsif request.page_type == 'collection' and collection != blank and collection.handle == 'all'
+    assign show_apgo_secondary_nav = true
+  endif
+%}
 {% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
 
+{% if show_apgo_secondary_nav %}
 {% style %}
   /* 吸頂由 header.liquid 對 header-group 內「主 header 下一個 section」統一處理，避免雙層 sticky */
   .ai-secondary-menu-{{ ai_gen_id }} {
@@ -190,6 +199,7 @@
     customElements.define('secondary-menu-{{ ai_gen_id }}', SecondaryMenu{{ ai_gen_id }});
   })();
 </script>
+{% endif %}
 
 {% schema %}
 {
