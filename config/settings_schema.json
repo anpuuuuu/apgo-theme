@@ -1416,7 +1416,7 @@
             "label": "t:options.top_right"
           }
         ],
-        "default": "top-left",
+        "default": "top-right",
         "label": "t:settings.badge_position"
       },
       {
