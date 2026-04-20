@@ -1,0 +1,76 @@
+{%- doc -%}
+  Collection card: one + opens APGO variant drawer (same UI as apgo_product_page), not quick-add.
+
+  @param {object} product - Product object
+  @param {object} selected_variant - Variant to pre-select (e.g. listing bundle pick)
+{%- enddoc -%}
+
+{% capture apgo_coll_drawer_json %}
+{
+  "product_id": {{ product.id }},
+  "handle": {{ product.handle | json }},
+  "title": {{ product.title | json }},
+  "subtitle": {{ product.metafields.apgo.subtitle.value | default: '' | json }},
+  "currency": {{ cart.currency.iso_code | json }},
+  "featured_image": {% if product.featured_media %}{{ product.featured_media | image_url: width: 800 | json }}{% else %}null{% endif %},
+  "featured_image_high": {% if product.featured_media %}{{ product.featured_media | image_url: width: 1200 | json }}{% else %}null{% endif %},
+  "variants": [
+    {% for v in product.variants %}
+      {
+        "id": {{ v.id }},
+        "title": {{ v.title | json }},
+        "price_cents": {{ v.price }},
+        "available": {{ v.available }},
+        "inventory_quantity": {{ v.inventory_quantity | default: 0 }},
+        "show_inventory": {% if v.metafields.custom.show_inventory.value %}true{% else %}false{% endif %},
+        "featured_image": {% if v.featured_media %}{{ v.featured_media | image_url: width: 800 | json }}{% else %}null{% endif %},
+        "featured_image_high": {% if v.featured_media %}{{ v.featured_media | image_url: width: 1200 | json }}{% else %}null{% endif %},
+        "is_bundle": {% if v.metafields.apgo.is_bundle.value %}true{% else %}false{% endif %}
+      }{% unless forloop.last %},{% endunless %}
+    {% endfor %}
+  ]
+}
+{% endcapture %}
+
+<div class="apgo-coll-drawer-pack">
+  <script type="application/json" class="apgo-coll-drawer-json">{{ apgo_coll_drawer_json | strip }}</script>
+  <button
+    type="button"
+    class="apgo-coll-drawer-open"
+    data-apgo-collection-drawer-open
+    data-initial-variant-id="{{ selected_variant.id }}"
+    aria-label="{{ 'product.select_variant' | t }}"
+  >
+    <span class="svg-wrapper apgo-coll-drawer-open__icon" aria-hidden="true">
+      {{- 'icon-plus.svg' | inline_asset_content -}}
+    </span>
+  </button>
+</div>
+
+{% stylesheet %}
+  .apgo-coll-drawer-pack {
+    flex: 0 0 auto;
+    align-self: flex-end;
+  }
+
+  .apgo-coll-drawer-open {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0.28rem;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    box-shadow: var(--shadow-popover);
+  }
+
+  .apgo-coll-drawer-open__icon,
+  .apgo-coll-drawer-open__icon svg {
+    width: 1.1em;
+    height: 1.1em;
+    display: block;
+  }
+{% endstylesheet %}

@@ -109,6 +109,9 @@
 
     {% render 'search-modal' %}
     {% render 'apgo-cart-toast' %}
+    {% if template.name == 'collection' %}
+      {% render 'apgo-collection-variant-drawer' %}
+    {% endif %}
 
     {% # theme-check-disable ParserBlockingScript %}
     <script src="{{ 'critical.js' | asset_url }}"></script>

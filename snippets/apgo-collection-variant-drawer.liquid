@@ -1,0 +1,31 @@
+{% comment %} APGO collection listing: variant picker shell (same layout/CSS model as apgo_product_page). {% endcomment %}
+{{ 'apgo-collection-variant-drawer.css' | asset_url | stylesheet_tag }}
+
+<div
+  id="apgoCollectionVariantShell"
+  class="apgo-pdp-variant-shell apgo-collection-variant-shell"
+  role="dialog"
+  aria-modal="true"
+  aria-hidden="true"
+  data-i18n-single="{{ 'product.single_purchase' | t | escape }}"
+  data-i18n-bundle="{{ 'product.bundle_deals' | t | escape }}"
+  data-i18n-qty="{{ 'product.quantity' | t | escape }}"
+  data-i18n-total="{{ 'product.total' | t | escape }}"
+  data-i18n-add="{{ 'product.add_to_cart' | t | escape }}"
+  data-i18n-buy="{{ 'product.buy_now' | t | escape }}"
+  data-i18n-sold-out="{{ 'products.product.sold_out' | t | escape }}"
+  data-i18n-inv="{{ 'products.product.inventory_label' | t | escape }}"
+  data-i18n-adding="{{ 'product.adding_to_cart' | t | escape }}"
+  data-i18n-processing="{{ 'product.processing' | t | escape }}"
+  data-i18n-atc-err="{{ 'products.product.add_to_cart_error' | t | escape }}"
+  data-i18n-added="{{ 'product.added_to_cart' | t | escape }}"
+  data-i18n-view-cart="{{ 'product.view_cart' | t | escape }}"
+  data-i18n-select="{{ 'product.select_variant' | t | escape }}"
+>
+  <div class="apgo-modal-overlay" id="apgoCollectionModalOverlay" data-apgo-collection-drawer-close></div>
+  <div class="apgo-variant-modal" id="apgoCollectionVariantModal">
+    <div class="apgo-variant-modal-inner" id="apgoCollectionVariantModalInner"></div>
+  </div>
+</div>
+
+<script src="{{ 'apgo-collection-variant-drawer.js' | asset_url }}" type="module"></script>

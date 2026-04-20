@@ -117,7 +117,7 @@
 </product-price>
 {% if apgo_price_row_quick_add %}
     </div>
-    {% render 'quick-add', product: product_resource, section_id: section.id, block: block, layout: 'price-row' %}
+    {% render 'apgo-collection-variant-trigger', product: product_resource, selected_variant: selected_variant %}
   </div>
 {% endif %}
 

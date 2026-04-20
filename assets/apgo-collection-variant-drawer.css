@@ -1,0 +1,518 @@
+/**
+ * Collection variant drawer — same visual system as apgo_product_page variant shell,
+ * scoped to #apgoCollectionVariantShell so collection pages don't need PDP section CSS.
+ */
+#apgoCollectionVariantShell {
+  --primary-orange: #f08418;
+  --secondary-orange: #ff9a3c;
+  --card-bg: #141414;
+  --text-white: #fff;
+  --text-gray: #a8a8a8;
+  --text-light-gray: #c8c8c8;
+  --apgo-pdp-motion-duration: 0.4s;
+  --apgo-pdp-motion-easing: cubic-bezier(0.37, 0, 0.63, 1);
+  --apgo-pdp-sidebar-width: min(420px, 36vw);
+}
+
+#apgoCollectionVariantShell {
+  position: fixed;
+  inset: 0;
+  z-index: 1998;
+  pointer-events: none;
+}
+
+#apgoCollectionVariantShell.active {
+  pointer-events: auto;
+}
+
+#apgoCollectionVariantShell .apgo-variant-modal {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--card-bg);
+  border-radius: 24px 24px 0 0;
+  padding: 0;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 2000;
+  max-height: min(85vh, 90dvh);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  overscroll-behavior-y: contain;
+}
+
+#apgoCollectionVariantShell .apgo-variant-modal.active {
+  transform: translateY(0);
+}
+
+#apgoCollectionVariantShell .apgo-variant-modal-inner {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  max-height: min(85vh, 90dvh);
+  overscroll-behavior-y: contain;
+}
+
+#apgoCollectionVariantShell .apgo-variant-modal-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 16px;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  overscroll-behavior-y: contain;
+}
+
+#apgoCollectionVariantShell .apgo-variant-modal-footer {
+  flex-shrink: 0;
+  background: var(--card-bg);
+  border-top: 1px solid rgba(240, 132, 24, 0.2);
+  padding: 0 16px 16px;
+}
+
+#apgoCollectionVariantShell .apgo-modal-header {
+  position: sticky;
+  top: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--card-bg);
+  margin-bottom: 16px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(240, 132, 24, 0.2);
+  z-index: 1;
+}
+
+#apgoCollectionVariantShell .apgo-modal-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  background: linear-gradient(45deg, var(--primary-orange), var(--secondary-orange));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+#apgoCollectionVariantShell .apgo-close-modal {
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  color: var(--text-gray);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.3rem;
+}
+
+#apgoCollectionVariantShell .apgo-modal-product-preview {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 12px;
+}
+
+#apgoCollectionVariantShell .apgo-modal-product-image {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 8px;
+  padding: 8px;
+}
+
+#apgoCollectionVariantShell .apgo-modal-product-info {
+  flex: 1;
+}
+
+#apgoCollectionVariantShell .apgo-modal-product-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-white);
+  margin-bottom: 4px;
+}
+
+#apgoCollectionVariantShell .apgo-modal-product-desc {
+  font-size: 0.85rem;
+  color: var(--text-gray);
+  line-height: 1.4;
+}
+
+#apgoCollectionVariantShell .apgo-variant-section {
+  margin-bottom: 24px;
+}
+
+#apgoCollectionVariantShell .apgo-variant-label {
+  font-size: 0.9rem;
+  color: var(--text-gray);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+#apgoCollectionVariantShell .apgo-variant-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+#apgoCollectionVariantShell .apgo-variant-option {
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 22px 22px 40px 22px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+#apgoCollectionVariantShell .apgo-variant-option.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+#apgoCollectionVariantShell .apgo-variant-quantity {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  font-size: 0.8rem;
+  color: var(--text-gray);
+  background: rgba(0, 0, 0, 0.3);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+#apgoCollectionVariantShell .apgo-variant-option.selected {
+  border-color: var(--primary-orange);
+  background: rgba(240, 132, 24, 0.1);
+}
+
+#apgoCollectionVariantShell .apgo-variant-option.selected::after {
+  content: '✓';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 20px;
+  height: 20px;
+  background: var(--primary-orange);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+#apgoCollectionVariantShell .apgo-variant-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-white);
+  margin-bottom: 4px;
+}
+
+#apgoCollectionVariantShell .apgo-variant-price {
+  font-size: 1.1rem;
+  color: var(--primary-orange);
+  font-weight: bold;
+  position: absolute;
+  bottom: 8px;
+  left: 22px;
+}
+
+#apgoCollectionVariantShell .apgo-quantity-selector {
+  margin-bottom: 24px;
+}
+
+#apgoCollectionVariantShell .apgo-quantity-label {
+  font-size: 0.9rem;
+  color: var(--text-gray);
+  margin-bottom: 12px;
+}
+
+#apgoCollectionVariantShell .apgo-quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 8px;
+  width: fit-content;
+}
+
+#apgoCollectionVariantShell .apgo-quantity-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: rgba(240, 132, 24, 0.2);
+  color: var(--primary-orange);
+  border-radius: 8px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#apgoCollectionVariantShell .apgo-quantity-value {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-white);
+  min-width: 40px;
+  text-align: center;
+}
+
+#apgoCollectionVariantShell .apgo-modal-total-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 0 2px;
+  font-size: 0.95rem;
+  color: var(--text-light-gray);
+}
+
+#apgoCollectionVariantShell .apgo-modal-total-amount {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary-orange);
+  white-space: nowrap;
+}
+
+#apgoCollectionVariantShell .apgo-modal-buttons {
+  display: flex;
+  gap: 12px;
+  background: var(--card-bg);
+  padding-top: 12px;
+}
+
+#apgoCollectionVariantShell .apgo-modal-btn {
+  flex: 1;
+  padding: 16px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+#apgoCollectionVariantShell .apgo-modal-btn-secondary {
+  background: rgba(240, 132, 24, 0.1);
+  border: 2px solid var(--primary-orange);
+  color: var(--primary-orange);
+}
+
+#apgoCollectionVariantShell .apgo-modal-btn-primary {
+  background: linear-gradient(45deg, var(--primary-orange), var(--secondary-orange));
+  color: white;
+}
+
+#apgoCollectionVariantShell .apgo-modal-btn:disabled {
+  background: #333 !important;
+  color: #888 !important;
+  border-color: #333 !important;
+  cursor: not-allowed !important;
+  background-image: none !important;
+}
+
+#apgoCollectionVariantShell .apgo-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 1999;
+}
+
+#apgoCollectionVariantShell .apgo-modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+#apgoCollectionVariantShell .apgo-loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: apgoCollSpin 1s linear infinite;
+  vertical-align: middle;
+}
+
+@keyframes apgoCollSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.add-on-notification {
+  position: fixed;
+  left: 50%;
+  top: auto;
+  bottom: 24px;
+  transform: translate(-50%, 12px) scale(0.98);
+  opacity: 0;
+  width: min(92vw, 460px);
+  max-width: 92vw;
+  padding: 18px 20px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+  border: 1px solid rgba(240, 132, 24, 0.35);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+  z-index: 99999;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  transition:
+    transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.add-on-notification.show {
+  transform: translate(-50%, 0) scale(1);
+  opacity: 1;
+}
+
+.add-on-notification-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.add-on-notification-message {
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.add-on-notification-link {
+  color: #f08418;
+  text-align: center;
+  font-weight: 600;
+}
+
+.add-on-notification-close {
+  background: transparent;
+  border: none;
+  color: #aaa;
+  font-size: 1.25rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+@media (max-width: 1023px) {
+  #apgoCollectionVariantShell .apgo-modal-product-preview {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+  }
+
+  #apgoCollectionVariantShell .apgo-modal-product-image {
+    width: 100%;
+    max-width: min(280px, 78vw);
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: contain;
+  }
+
+  #apgoCollectionVariantShell .apgo-modal-product-info {
+    flex: none;
+    width: 100%;
+    align-self: stretch;
+  }
+}
+
+@media (min-width: 1024px) {
+  #apgoCollectionVariantShell .apgo-modal-overlay {
+    position: absolute;
+    inset: 0;
+    right: var(--apgo-pdp-sidebar-width, 33.33vw);
+    width: auto;
+    background: rgba(0, 0, 0, 0.22);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity var(--apgo-pdp-motion-duration) var(--apgo-pdp-motion-easing),
+      visibility var(--apgo-pdp-motion-duration) var(--apgo-pdp-motion-easing);
+  }
+
+  #apgoCollectionVariantShell .apgo-modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  #apgoCollectionVariantShell .apgo-variant-modal {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: auto;
+    width: var(--apgo-pdp-sidebar-width, 33.33vw);
+    max-height: none;
+    height: 100dvh;
+    border-radius: 0;
+    box-shadow: -12px 0 40px rgba(0, 0, 0, 0.45);
+    transform: translateX(105%);
+    transition:
+      transform var(--apgo-pdp-motion-duration) var(--apgo-pdp-motion-easing),
+      opacity 0.3s ease;
+  }
+
+  #apgoCollectionVariantShell .apgo-variant-modal.active {
+    transform: translateX(0);
+  }
+
+  #apgoCollectionVariantShell .apgo-variant-modal-inner {
+    max-height: none;
+    height: 100%;
+  }
+
+  #apgoCollectionVariantShell .apgo-modal-product-preview {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: left;
+  }
+
+  #apgoCollectionVariantShell .apgo-modal-product-image {
+    width: 100%;
+    max-width: 200px;
+    height: auto;
+    margin: 0 auto;
+  }
+
+  #apgoCollectionVariantShell .apgo-variant-options {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 1024px) and (prefers-reduced-motion: reduce) {
+  #apgoCollectionVariantShell .apgo-variant-modal {
+    transition: none;
+  }
+}
+
+body.apgo-collection-variant-open {
+  overflow: hidden;
+}

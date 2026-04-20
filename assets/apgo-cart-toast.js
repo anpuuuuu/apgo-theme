@@ -23,12 +23,14 @@ function ensureToastEl() {
 document.addEventListener(ThemeEvents.cartUpdate, (/** @type {CustomEvent} */ event) => {
   const data = event.detail?.data;
   if (!data || data.didError) return;
-  if (data.source !== 'product-form-component') return;
+  if (data.source !== 'product-form-component' && data.source !== 'apgo-collection-variant-drawer') return;
 
   const origin = event.target;
   if (
     !(origin instanceof HTMLElement) ||
-    (!origin.closest('quick-add-component') && !origin.closest('quick-add-dialog'))
+    (!origin.closest('quick-add-component') &&
+      !origin.closest('quick-add-dialog') &&
+      !origin.closest('#apgoCollectionVariantShell'))
   ) {
     return;
   }
