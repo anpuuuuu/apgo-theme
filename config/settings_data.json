@@ -35,6 +35,7 @@
     "card_hover_effect": "subtle-zoom",
     "badge_position": "top-right",
     "badge_hot_icon_mode": "tag_only",
+    "badge_hot_icon_tag": "hot",
     "button_border_radius_primary": 0,
     "type_font_button_primary": "accent",
     "button_font_weight_primary": "700",
