@@ -9,9 +9,22 @@ export class QuickAddComponent extends Component {
   #abortController = null;
   /** @type {Document | null} */
   #cachedProductHtml = null;
+  /** @type {string | null} */
+  #cachedFetchUrl = null;
 
   get cachedProductHtml() {
     return this.#cachedProductHtml;
+  }
+
+  /** @returns {string | undefined} */
+  get #fetchProductPageUrl() {
+    const baseUrl = this.productPageUrl;
+    if (!baseUrl) return undefined;
+    const url = new URL(baseUrl, window.location.href);
+    const variantInput = this.querySelector('input[name="id"]');
+    const variantId = variantInput?.value;
+    if (variantId) url.searchParams.set('variant', variantId);
+    return url.toString();
   }
 
   get productPageUrl() {
@@ -38,8 +51,11 @@ export class QuickAddComponent extends Component {
   handleClick = async (event) => {
     event.preventDefault();
 
-    if (!this.#cachedProductHtml) {
-      await this.fetchProductPage(this.productPageUrl);
+    const fetchUrl = this.#fetchProductPageUrl;
+    if (!fetchUrl) return;
+
+    if (!this.#cachedProductHtml || this.#cachedFetchUrl !== fetchUrl) {
+      await this.fetchProductPage(fetchUrl);
     }
 
     if (this.#cachedProductHtml) {
@@ -107,6 +123,7 @@ export class QuickAddComponent extends Component {
 
       // Store the HTML for later use
       this.#cachedProductHtml = html;
+      this.#cachedFetchUrl = productPageUrl;
     } catch (error) {
       if (error.name === 'AbortError') {
         return;

@@ -5,12 +5,18 @@
   @param {string} add_to_cart_text - The text to display on the button.
   @param {object} product - The product object to be added to the cart.
   @param {boolean} [icon_only_on_mobile] - If `true`, only the icon is shown on mobile devices.
+  @param {boolean} [icon_only_compact] - If `true`, only the icon is shown at all breakpoints (label is visually hidden).
+  @param {string} [button_icon] - `cart` (default) or `plus` for the leading icon asset.
   @param {string} [class] - Additional CSS classes to apply to the button.
   @param {string} [id] - The ID attribute for the button.
 {%- enddoc -%}
 
 {%- liquid
   assign default_add_to_cart_text = 'actions.add_to_cart' | t
+  assign apgo_atc_icon_file = 'icon-add-to-cart.svg'
+  if button_icon == 'plus'
+    assign apgo_atc_icon_file = 'icon-plus.svg'
+  endif
   assign product_variant_media = product.selected_or_first_available_variant.featured_media.preview_image | image_url: width: 100
   if product.selected_or_first_available_variant.featured_media.preview_image == blank
     assign product_variant_media = product.featured_media.preview_image | image_url: width: 100
@@ -37,10 +43,10 @@
     >
       {% if can_add_to_cart %}
         <span class="svg-wrapper add-to-cart-icon">
-          {{- 'icon-add-to-cart.svg' | inline_asset_content -}}
+          {{- apgo_atc_icon_file | inline_asset_content -}}
         </span>
       {% endif %}
-      <span class="add-to-cart-text__content{% if icon_only_on_mobile %} is-visually-hidden-mobile{% endif %}">
+      <span class="add-to-cart-text__content{% if icon_only_compact %} visually-hidden{% elsif icon_only_on_mobile %} is-visually-hidden-mobile{% endif %}">
         {{- add_to_cart_text | default: default_add_to_cart_text -}}
       </span>
     </span>
@@ -51,7 +57,7 @@
       <span class="svg-wrapper add-to-cart-icon--added">
         {{- 'icon-checkmark.svg' | inline_asset_content -}}
       </span>
-      <span class="{% if icon_only_on_mobile %}is-visually-hidden-mobile{% endif %}">
+      <span class="{% if icon_only_compact %}visually-hidden{% elsif icon_only_on_mobile %}is-visually-hidden-mobile{% endif %}">
         {{- 'actions.added' | t -}}
       </span>
     </span>

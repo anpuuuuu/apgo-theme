@@ -1,6 +1,6 @@
 <quick-add-dialog id="quick-add-dialog">
   <dialog
-    class="quick-add-modal dialog-modal color-{{ settings.popover_color_scheme }}"
+    class="quick-add-modal quick-add-modal--apgo dialog-modal color-{{ settings.popover_color_scheme }}"
     ref="dialog"
     scroll-lock
   >
@@ -20,27 +20,98 @@
 </quick-add-dialog>
 
 {% stylesheet %}
-  .quick-add-modal {
+  .quick-add-modal.quick-add-modal--apgo {
     padding: 0;
     border: var(--style-border-popover);
-    height: fit-content;
     overflow: hidden;
-    min-height: 500px;
     box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
+    width: min(520px, calc(100vw - var(--padding-lg)));
+    height: 100dvh;
+    max-height: 100dvh;
+    max-width: none;
+    margin: 0 0 0 auto;
+    border-radius: 0;
+    min-height: 0;
 
-    @media screen and (max-width: 750px) {
-      position: fixed;
-      display: block;
-      margin: auto 0 0 0;
-      min-height: unset;
+    @media screen and (max-width: 749px) {
+      width: 100%;
       max-width: 100%;
-      border-radius: 0;
+      height: auto;
+      max-height: min(88dvh, 720px);
+      margin: auto 0 0 0;
+      border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
     }
   }
 
-  .quick-add-modal[open] {
-    @media screen and (width >= 750px) {
-      display: flex;
+  .quick-add-modal.quick-add-modal--apgo[open] {
+    display: flex;
+    animation: apgoQuickAddDrawerIn var(--animation-speed) var(--animation-easing) forwards;
+
+    @media screen and (max-width: 749px) {
+      animation-name: apgoQuickAddSheetIn;
+    }
+  }
+
+  .quick-add-modal.quick-add-modal--apgo.dialog-closing {
+    animation: apgoQuickAddDrawerOut var(--animation-speed) var(--animation-easing) forwards;
+
+    @media screen and (max-width: 749px) {
+      animation-name: apgoQuickAddSheetOut;
+    }
+  }
+
+  @keyframes apgoQuickAddDrawerIn {
+    from {
+      transform: translateX(100%);
+      opacity: 0.98;
+    }
+
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes apgoQuickAddDrawerOut {
+    from {
+      transform: translateX(0);
+      opacity: 1;
+    }
+
+    to {
+      transform: translateX(100%);
+      opacity: 0.98;
+    }
+  }
+
+  @keyframes apgoQuickAddSheetIn {
+    from {
+      transform: translateY(100%);
+      opacity: 0.98;
+    }
+
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes apgoQuickAddSheetOut {
+    from {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    to {
+      transform: translateY(100%);
+      opacity: 0.98;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .quick-add-modal.quick-add-modal--apgo[open],
+    .quick-add-modal.quick-add-modal--apgo.dialog-closing {
+      animation: none;
     }
   }
 
@@ -48,14 +119,6 @@
     @media screen and (max-width: 750px) {
       display: none;
     }
-  }
-
-  .quick-add-modal[open] {
-    animation: modalSlideInTop var(--animation-speed) var(--animation-easing) forwards;
-  }
-
-  .quick-add-modal.dialog-closing {
-    animation: modalSlideOutTop var(--animation-speed) var(--animation-easing) forwards;
   }
 
   .quick-add-modal__close {
@@ -81,6 +144,13 @@
   .quick-add-modal__close svg {
     width: var(--icon-size-xs);
     height: var(--icon-size-xs);
+  }
+
+  .quick-add-modal.quick-add-modal--apgo .quick-add-modal__content {
+    flex: 1 1 auto;
+    width: 100%;
+    min-height: 0;
+    max-height: 100%;
   }
 
   .quick-add-modal__content {

@@ -4,10 +4,15 @@
   @param {object} product - The product object
   @param {string} section_id - The section ID
   @param {object} [block] - The block object
+  @param {string} [layout] - Pass `price-row` when quick-add sits beside the price on collection cards.
 {%- enddoc -%}
 
 {% liquid
-  assign product_form_id = 'QuickAdd-ProductForm-' | append: product.id | append: '-' | append: block.id
+  assign apgo_quick_add_suffix = section_id
+  if block != blank
+    assign apgo_quick_add_suffix = block.id
+  endif
+  assign product_form_id = 'QuickAdd-ProductForm-' | append: product.id | append: '-' | append: apgo_quick_add_suffix
   assign add_to_cart_text = 'actions.add' | t
 
   assign apgo_listing_variant = product.selected_or_first_available_variant
@@ -32,7 +37,7 @@
 %}
 
 <quick-add-component
-  class="quick-add color-{{ settings.quick_add_color_scheme }} "
+  class="quick-add color-{{ settings.quick_add_color_scheme }}{% if layout == 'price-row' %} quick-add--price-row{% endif %}"
   ref="quickAdd"
   data-product-title="{{ product.title }}"
 >
@@ -70,17 +75,27 @@
       >
       {% comment %} If there is one variant option but it's swatches or if it's a single variant product, then use add to cart button {% endcomment %}
       {%- if product.variants.size == 1 or product.options.size == 1 -%}
+        {% liquid
+          assign apgo_atc_class = 'button quick-add__button quick-add__button--add'
+          assign apgo_atc_button_icon = 'cart'
+          if layout == 'price-row'
+            assign apgo_atc_class = apgo_atc_class | append: ' quick-add__button--price-row'
+            assign apgo_atc_button_icon = 'plus'
+          endif
+        %}
         {% render 'add-to-cart-button',
           add_to_cart_text: add_to_cart_text,
-          class: 'button quick-add__button quick-add__button--add',
+          class: apgo_atc_class,
           can_add_to_cart: can_add_to_cart,
           icon_only_on_mobile: true,
+          icon_only_compact: layout == 'price-row',
+          button_icon: apgo_atc_button_icon,
           product: product
         %}
       {%- endif -%}
       {%- if product.variants.size > 1 -%}
         <button
-          class="button quick-add__button quick-add__button--choose"
+          class="button quick-add__button quick-add__button--choose{% if layout == 'price-row' %} quick-add__button--price-row{% endif %}"
           {% comment %} type="submit" is the default, so we explicitly set it to "button" to prevent the ProductFormComponent.handleSubmit from being triggered {% endcomment %}
           type="button"
           name="add"
@@ -92,9 +107,13 @@
             <span
               class="svg-wrapper add-to-cart-icon"
             >
-              {{- 'icon-add-to-cart.svg' | inline_asset_content -}}
+              {%- if layout == 'price-row' -%}
+                {{- 'icon-plus.svg' | inline_asset_content -}}
+              {%- else -%}
+                {{- 'icon-add-to-cart.svg' | inline_asset_content -}}
+              {%- endif -%}
             </span>
-            <span class="add-to-cart-text__content is-visually-hidden-mobile">
+            <span class="add-to-cart-text__content{% if layout == 'price-row' %} visually-hidden{% else %} is-visually-hidden-mobile{% endif %}">
               {{ add_to_cart_text }}
             </span>
           </span>
@@ -293,5 +312,51 @@
       transform: translateX(-1em);
       position: absolute;
     }
+  }
+
+  /* Collection card: compact + beside price (not over media) */
+  .quick-add.quick-add--price-row {
+    --quick-add-mobile-display: flex;
+    --quick-add-display: flex;
+
+    position: relative;
+    inset: auto;
+    width: auto;
+    height: auto;
+    pointer-events: auto;
+    z-index: 1;
+    flex: 0 0 auto;
+    align-self: flex-end;
+  }
+
+  .quick-add.quick-add--price-row .quick-add__product-form-component,
+  .quick-add.quick-add--price-row .quick-add__product-form-component .shopify-product-form {
+    height: auto;
+  }
+
+  .quick-add.quick-add--price-row .quick-add__product-form-component .shopify-product-form {
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  .quick-add.quick-add--price-row .quick-add__button {
+    display: grid !important;
+    padding: 0.28rem;
+    min-width: 2.25rem;
+    min-height: 2.25rem;
+    place-items: center;
+    border-radius: 999px;
+  }
+
+  .quick-add.quick-add--price-row .quick-add__button .add-to-cart-text {
+    margin-inline: 0;
+    padding-inline: 0;
+    gap: 0;
+  }
+
+  .quick-add.quick-add--price-row .quick-add__button .add-to-cart-icon,
+  .quick-add.quick-add--price-row .quick-add__button .add-to-cart-icon svg {
+    width: 1.1em;
+    height: 1.1em;
   }
 {% endstylesheet %}

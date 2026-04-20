@@ -22,9 +22,12 @@
 {% capture children %}
   {% unless block.settings.product == blank %}
     {% render 'product-card-badges', product: block.settings.product %}
-    {%  if settings.quick_add or settings.mobile_quick_add %}
-      {% render 'quick-add', product: block.settings.product, section_id: section.id %}
-    {% endif %}
+    {% comment %} Collection listing: quick-add sits on the price row (see `blocks/price.liquid`). {% endcomment %}
+    {% unless template.name == 'collection' %}
+      {% if settings.quick_add or settings.mobile_quick_add %}
+        {% render 'quick-add', product: block.settings.product, section_id: section.id %}
+      {% endif %}
+    {% endunless %}
   {% endunless %}
 {% endcapture %}
 
