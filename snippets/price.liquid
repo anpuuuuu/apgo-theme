@@ -4,6 +4,7 @@
 
   @param {product} product_resource - The product to render
   @param {variant} [listing_variant] - When set, price/unit for this variant (e.g. bundle on promo collection)
+  @param {boolean} [listing_card_discount] - Collection cards only: hide strikethrough compare-at, show -X% badge by sale price
   @param {boolean} [show_unit_price] - Whether to show the unit price
   @param {boolean} [show_sale_price_first] - Whether to show the sale price first
   @param {boolean} [force_money_without_currency] - If true, always use `money` (no ISO suffix like MYR)
@@ -13,16 +14,24 @@
   assign show_unit_price = show_unit_price | default: false
   assign show_sale_price_first = show_sale_price_first | default: false
   assign force_money_without_currency = force_money_without_currency | default: false
+  assign listing_card_discount = listing_card_discount | default: false
   if listing_variant != blank
     assign selected_variant = listing_variant
   else
     assign selected_variant = product_resource.selected_or_first_available_variant
   endif
-  assign price = selected_variant.price
-  assign compare_at_price = selected_variant.compare_at_price
+  assign raw_price_cents = selected_variant.price
+  assign raw_compare_cents = selected_variant.compare_at_price
+  assign discount_pct = 0
+  if raw_compare_cents > raw_price_cents and raw_compare_cents > 0
+    assign discount_pct = raw_compare_cents | minus: raw_price_cents | times: 100 | divided_by: raw_compare_cents
+  endif
+
+  assign price = raw_price_cents
+  assign compare_at_price = raw_compare_cents
 
   assign show_compare_price = false
-  if compare_at_price > price
+  if raw_compare_cents > raw_price_cents
     assign show_compare_price = true
   endif
 
@@ -61,28 +70,42 @@
   assign compare_at_price = compare_at_price | replace: ' MYR', '' | replace: 'MYR', '' | strip
 -%}
 
-<div ref="priceContainer">
-  {% if show_sale_price_first == false and show_compare_price %}
-    <span role="group">
-      <span class="visually-hidden">{{ 'content.price_regular' | t }}&nbsp;</span>
-      <span class="compare-at-price">{{- compare_at_price -}}</span>
-    </span>
-  {% endif %}
-
-  {% if show_compare_price %}
-    <span role="group">
+<div
+  ref="priceContainer"
+  class="{% if listing_card_discount and show_compare_price %}price--listing-discount{% endif %}"
+>
+  {% if listing_card_discount and show_compare_price %}
+    <span role="group" class="price-sale-row">
+      <span class="visually-hidden">{{ 'content.price_regular' | t }}&nbsp;{{- compare_at_price -}}</span>
       <span class="visually-hidden">{{ 'content.price_sale' | t }}&nbsp;</span>
       <span class="price">{{ price | default: '&nbsp;' }}</span>
+      {% if discount_pct > 0 %}
+        <span class="price-discount-pct" aria-hidden="true">-{{ discount_pct }}%</span>
+      {% endif %}
     </span>
   {% else %}
-    <span class="price">{{ price | default: '&nbsp;' }}</span>
-  {% endif %}
+    {% if show_sale_price_first == false and show_compare_price %}
+      <span role="group">
+        <span class="visually-hidden">{{ 'content.price_regular' | t }}&nbsp;</span>
+        <span class="compare-at-price">{{- compare_at_price -}}</span>
+      </span>
+    {% endif %}
 
-  {% if show_sale_price_first == true and show_compare_price %}
-    <span role="group">
-      <span class="visually-hidden">{{ 'content.price_regular' | t }}&nbsp;</span>
-      <span class="compare-at-price">{{- compare_at_price -}}</span>
-    </span>
+    {% if show_compare_price %}
+      <span role="group">
+        <span class="visually-hidden">{{ 'content.price_sale' | t }}&nbsp;</span>
+        <span class="price">{{ price | default: '&nbsp;' }}</span>
+      </span>
+    {% else %}
+      <span class="price">{{ price | default: '&nbsp;' }}</span>
+    {% endif %}
+
+    {% if show_sale_price_first == true and show_compare_price %}
+      <span role="group">
+        <span class="visually-hidden">{{ 'content.price_regular' | t }}&nbsp;</span>
+        <span class="compare-at-price">{{- compare_at_price -}}</span>
+      </span>
+    {% endif %}
   {% endif %}
   {%- if selected_variant.unit_price and show_unit_price %}
     {%- liquid
@@ -100,3 +123,22 @@
     {% render 'unit-price', price: unit_price, measurement: selected_variant.unit_price_measurement %}
   {%- endif -%}
 </div>
+
+{% stylesheet %}
+  .price--listing-discount .price-sale-row {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.35em 0.5em;
+  }
+
+  .price--listing-discount .price-discount-pct {
+    font-size: 0.82em;
+    font-weight: 600;
+    color: #f08418;
+    background: rgba(240, 132, 24, 0.24);
+    padding: 0.1em 0.38em;
+    border-radius: 4px;
+    line-height: 1.2;
+  }
+{% endstylesheet %}

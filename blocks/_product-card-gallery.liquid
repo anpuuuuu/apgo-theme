@@ -38,7 +38,18 @@
     <h3 class="h4">{{ block.settings.product.title }}</h3>
     <div class="h6">
       <product-price data-product-id="{{ block.settings.product.id }}">
-        {% render 'price', product_resource: block.settings.product, listing_variant: apgo_price_variant, show_unit_price: false %}
+        {%- liquid
+          assign apgo_listing_price_card_discount = false
+          if template.name == 'collection'
+            assign apgo_listing_price_card_discount = true
+          endif
+        -%}
+        {% render 'price',
+          product_resource: block.settings.product,
+          listing_variant: apgo_price_variant,
+          listing_card_discount: apgo_listing_price_card_discount,
+          show_unit_price: false
+        %}
       </product-price>
     </div>
   {% endif %}

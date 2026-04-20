@@ -60,10 +60,17 @@
   "
   {{ block.shopify_attributes }}
 >
+  {%- liquid
+    assign listing_card_discount_flag = false
+    if template.name == 'collection'
+      assign listing_card_discount_flag = true
+    endif
+  -%}
   {% render 'price',
     show_unit_price: true,
     product_resource: product_resource,
     listing_variant: selected_variant,
+    listing_card_discount: listing_card_discount_flag,
     show_sale_price_first: block.settings.show_sale_price_first
   %}
 
