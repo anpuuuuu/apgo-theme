@@ -34,6 +34,11 @@
   else
     assign can_add_to_cart = false
   endif
+
+  assign apgo_price_row_modal_only = false
+  if layout == 'price-row'
+    assign apgo_price_row_modal_only = true
+  endif
 %}
 
 <quick-add-component
@@ -73,51 +78,59 @@
         name="quantity"
         value="{% if apgo_listing_variant.quantity_rule.min %}{{ apgo_listing_variant.quantity_rule.min }}{% else %}1{% endif %}"
       >
-      {% comment %} If there is one variant option but it's swatches or if it's a single variant product, then use add to cart button {% endcomment %}
-      {%- if product.variants.size == 1 or product.options.size == 1 -%}
-        {% liquid
-          assign apgo_atc_class = 'button quick-add__button quick-add__button--add'
-          assign apgo_atc_button_icon = 'cart'
-          if layout == 'price-row'
-            assign apgo_atc_class = apgo_atc_class | append: ' quick-add__button--price-row'
-            assign apgo_atc_button_icon = 'plus'
-          endif
-        %}
-        {% render 'add-to-cart-button',
-          add_to_cart_text: add_to_cart_text,
-          class: apgo_atc_class,
-          can_add_to_cart: can_add_to_cart,
-          icon_only_on_mobile: true,
-          icon_only_compact: layout == 'price-row',
-          button_icon: apgo_atc_button_icon,
-          product: product
-        %}
-      {%- endif -%}
-      {%- if product.variants.size > 1 -%}
+      {% comment %}
+        Collection price row: one + only — always open the same quick-add dialog as elsewhere (fetched PDP / variant picker).
+      {% endcomment %}
+      {%- if apgo_price_row_modal_only -%}
         <button
-          class="button quick-add__button quick-add__button--choose{% if layout == 'price-row' %} quick-add__button--price-row{% endif %}"
-          {% comment %} type="submit" is the default, so we explicitly set it to "button" to prevent the ProductFormComponent.handleSubmit from being triggered {% endcomment %}
+          class="button quick-add__button quick-add__button--choose quick-add__button--price-row"
           type="button"
           name="add"
           on:click="quick-add-component/handleClick"
+          aria-label="{{ 'product.select_variant' | t }}"
         >
-          <span
-            class="add-to-cart-text"
-          >
-            <span
-              class="svg-wrapper add-to-cart-icon"
-            >
-              {%- if layout == 'price-row' -%}
-                {{- 'icon-plus.svg' | inline_asset_content -}}
-              {%- else -%}
-                {{- 'icon-add-to-cart.svg' | inline_asset_content -}}
-              {%- endif -%}
+          <span class="add-to-cart-text">
+            <span class="svg-wrapper add-to-cart-icon">
+              {{- 'icon-plus.svg' | inline_asset_content -}}
             </span>
-            <span class="add-to-cart-text__content{% if layout == 'price-row' %} visually-hidden{% else %} is-visually-hidden-mobile{% endif %}">
-              {{ add_to_cart_text }}
+            <span class="add-to-cart-text__content visually-hidden">
+              {{ 'product.select_variant' | t }}
             </span>
           </span>
         </button>
+      {%- else -%}
+        {% comment %} If there is one variant option but it's swatches or if it's a single variant product, then use add to cart button {% endcomment %}
+        {%- if product.variants.size == 1 or product.options.size == 1 -%}
+          {% render 'add-to-cart-button',
+            add_to_cart_text: add_to_cart_text,
+            class: 'button quick-add__button quick-add__button--add',
+            can_add_to_cart: can_add_to_cart,
+            icon_only_on_mobile: true,
+            product: product
+          %}
+        {%- endif -%}
+        {%- if product.variants.size > 1 -%}
+          <button
+            class="button quick-add__button quick-add__button--choose"
+            {% comment %} type="submit" is the default, so we explicitly set it to "button" to prevent the ProductFormComponent.handleSubmit from being triggered {% endcomment %}
+            type="button"
+            name="add"
+            on:click="quick-add-component/handleClick"
+          >
+            <span
+              class="add-to-cart-text"
+            >
+              <span
+                class="svg-wrapper add-to-cart-icon"
+              >
+                {{- 'icon-add-to-cart.svg' | inline_asset_content -}}
+              </span>
+              <span class="add-to-cart-text__content is-visually-hidden-mobile">
+                {{ add_to_cart_text }}
+              </span>
+            </span>
+          </button>
+        {%- endif -%}
       {%- endif -%}
     {%- endform -%}
   </product-form-component>
