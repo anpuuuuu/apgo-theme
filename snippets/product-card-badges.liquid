@@ -36,11 +36,20 @@
       when 'tag_only'
         assign show_hot_icon = by_hot_tag
       else
-        assign show_hot_icon = by_compare_price or by_hot_tag
+        if by_compare_price
+          assign show_hot_icon = true
+        elsif by_hot_tag
+          assign show_hot_icon = true
+        endif
     endcase
   endunless
 
-  assign show_badge = sold_out or show_hot_icon
+  assign show_badge = false
+  if sold_out
+    assign show_badge = true
+  elsif show_hot_icon
+    assign show_badge = true
+  endif
 -%}
 
 <div
