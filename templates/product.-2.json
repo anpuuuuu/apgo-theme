@@ -525,11 +525,122 @@
         "hide_price_mobile": false,
         "products_visible_mobile": 1.5
       }
+    },
+    "apgo_live_nKpqmd": {
+      "type": "apgo_live",
+      "blocks": {
+        "taiwan_platform_fFqCgV": {
+          "type": "taiwan_platform",
+          "settings": {
+            "platform_type": "facebook",
+            "platform_name": "台灣物聯網apgo",
+            "url": "https://www.facebook.com/APGO1080",
+            "platform_style": "fb-button",
+            "show_icon": true
+          }
+        },
+        "taiwan_platform_gDcedg": {
+          "type": "taiwan_platform",
+          "settings": {
+            "platform_type": "tiktok",
+            "platform_name": "APGO汽車美容商城",
+            "url": "https://www.tiktok.com/@apgotw/live",
+            "platform_style": "tiktok-button",
+            "show_icon": true
+          }
+        },
+        "sgmy_platform_ex7DUn": {
+          "type": "sgmy_platform",
+          "settings": {
+            "platform_type": "shopee",
+            "platform_name": "APGO MASTER",
+            "url": "https://my.shp.ee/iSSdptz",
+            "platform_style": "shopee-button",
+            "show_icon": true
+          }
+        },
+        "schedule_day_KgqPbx": {
+          "type": "schedule_day",
+          "settings": {
+            "region": "taiwan",
+            "day_name": "週二",
+            "has_streams": true,
+            "no_stream_text": "本日無直播",
+            "slot1_time": "15:00 - 17:00",
+            "slot1_platforms": "蝦皮 & TikTok",
+            "slot2_time": "18:00 - 20:00",
+            "slot2_platforms": "蝦皮 & TikTok",
+            "slot3_time": "20:00 - 22:00",
+            "slot3_platforms": "蝦皮 & TikTok"
+          }
+        },
+        "team_member_VbMCdB": {
+          "type": "team_member",
+          "settings": {
+            "team_region": "taiwan",
+            "member_name": "郭哥",
+            "member_role": "資深主播",
+            "member_description": "風趣幽默，總能用最生活化的方式講解產品。",
+            "member_video": ""
+          }
+        },
+        "team_member_qwQ8d6": {
+          "type": "team_member",
+          "settings": {
+            "team_region": "sgmy",
+            "member_name": "JC",
+            "member_role": "魅力主播",
+            "member_description": "用流利的雙語，征服新馬地區的觀眾。",
+            "member_video": ""
+          }
+        }
+      },
+      "block_order": [
+        "taiwan_platform_fFqCgV",
+        "taiwan_platform_gDcedg",
+        "sgmy_platform_ex7DUn",
+        "schedule_day_KgqPbx",
+        "team_member_VbMCdB",
+        "team_member_qwQ8d6"
+      ],
+      "disabled": true,
+      "name": "APGO 直播時程",
+      "settings": {
+        "show_hero": true,
+        "show_logo": true,
+        "hero_title": "LIVE",
+        "hero_subtitle": "每週與我們的專業鍍膜團隊線上相見，解答您的所有疑惑，並展示第一手實測效果！",
+        "hero_video": "",
+        "hero_button_text": "立即觀看直播",
+        "hero_button_link": "#featured-stream",
+        "show_featured": true,
+        "featured_title": "本週熱門直播",
+        "featured_stream_title": "鍍膜全系列實戰",
+        "featured_host": "APGO 直播團隊",
+        "featured_description": "從基礎保養到專業級鍍膜，本週我們將帶您深入了解 APGO 全系列產品的實際應用效果。準備好您的問題，我們直播間見！",
+        "featured_video": "",
+        "show_taiwan_platforms": true,
+        "taiwan_platform_title": "台灣直播平台",
+        "show_sgmy_platforms": true,
+        "sgmy_platform_title": "新馬直播平台",
+        "show_schedule": true,
+        "schedule_title": "每週直播時程",
+        "enable_schedule_tabs": true,
+        "taiwan_tab_title": "台灣團隊",
+        "sgmy_tab_title": "新馬團隊",
+        "show_team": true,
+        "team_title": "認識我們的直播團隊",
+        "show_taiwan_team": true,
+        "taiwan_team_title": "台灣團隊",
+        "show_sgmy_team": true,
+        "sgmy_team_title": "新馬團隊"
+      }
     }
   },
   "order": [
     "main",
     "apgo_product_page_Ycjbhm",
-    "product_upsell_recommendations_P8mL2k"
+    "product_upsell_recommendations_P8mL2k",
+    "apgo_live_nKpqmd"
   ]
 }
