@@ -1431,6 +1431,38 @@
       },
       {
         "type": "header",
+        "content": "t:settings.badge_hot_icon_header"
+      },
+      {
+        "type": "select",
+        "id": "badge_hot_icon_mode",
+        "label": "t:settings.badge_hot_icon_mode",
+        "options": [
+          {
+            "value": "compare_price_or_tag",
+            "label": "t:settings.badge_hot_icon_mode_sale_or_tag"
+          },
+          {
+            "value": "compare_price_only",
+            "label": "t:settings.badge_hot_icon_mode_sale_only"
+          },
+          {
+            "value": "tag_only",
+            "label": "t:settings.badge_hot_icon_mode_tag_only"
+          }
+        ],
+        "default": "compare_price_or_tag",
+        "info": "t:settings.badge_hot_icon_mode_info"
+      },
+      {
+        "type": "text",
+        "id": "badge_hot_icon_tag",
+        "label": "t:settings.badge_hot_icon_tag",
+        "default": "apgo-hot",
+        "info": "t:settings.badge_hot_icon_tag_info"
+      },
+      {
+        "type": "header",
         "content": "t:settings.colors"
       },
       {
