@@ -364,7 +364,7 @@
         "padding-block-start": 20,
         "padding-block-end": 20,
         "enable_all_catalog_hub_layout": true,
-        "all_catalog_hub_handles": "collections-limited-time-deals,\nfeatured,\natomic-coating-series,\ncar-interior,\ncleaning-supplies,\npre-wash-car-wash,\nrestoration,\nothers,\nhousehold,\n2025-new-launch",
+        "all_catalog_hub_handles": "featured,\natomic-coating-series,\ncar-interior,\ncleaning-supplies,\npre-wash-car-wash,\nrestoration,\nothers,\nhousehold,\n2025-new-launch",
         "all_catalog_hub_per_section_limit": 48
       }
     }

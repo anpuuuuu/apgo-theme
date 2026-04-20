@@ -18,7 +18,7 @@
 
   assign apgo_hub_handles_raw = section.settings.all_catalog_hub_handles | strip
   if apgo_hub_handles_raw == blank
-    assign apgo_hub_handles_raw = 'collections-limited-time-deals,featured,atomic-coating-series,car-interior,cleaning-supplies,pre-wash-car-wash,restoration,others,household,2025-new-launch'
+    assign apgo_hub_handles_raw = 'featured,atomic-coating-series,car-interior,cleaning-supplies,pre-wash-car-wash,restoration,others,household,2025-new-launch'
   endif
   assign apgo_hub_handles_raw = apgo_hub_handles_raw | newline_to_br | replace: '<br />', ',' | replace: '<br/>', ','
   assign apgo_catalog_handles = apgo_hub_handles_raw | replace: ' ,', ',' | replace: ', ', ',' | split: ','
