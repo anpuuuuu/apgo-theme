@@ -55,11 +55,7 @@
 
   .apgo-coll-drawer-open {
     --apgo-atc-orange: #f08418;
-    --apgo-atc-orange-soft: rgba(240, 132, 24, 0.36);
-    --apgo-atc-glow: rgba(240, 132, 24, 0.34);
 
-    position: relative;
-    isolation: isolate;
     display: grid;
     place-items: center;
     width: 2.25rem;
@@ -72,80 +68,22 @@
     color: var(--color-foreground);
     box-shadow: var(--shadow-popover);
     opacity: 0.72;
-    transition:
-      opacity 0.28s ease,
-      background-color 0.28s ease,
-      border-color 0.28s ease,
-      color 0.28s ease,
-      box-shadow 0.32s ease,
-      transform 0.22s ease;
-  }
-
-  .apgo-coll-drawer-open::before {
-    content: '';
-    position: absolute;
-    inset: -12px;
-    border-radius: 50%;
-    z-index: 0;
-    pointer-events: none;
-    /* Ring glow only — avoid bright center over the + */
-    background: radial-gradient(
-      circle at 50% 50%,
-      transparent 52%,
-      var(--apgo-atc-glow) 58%,
-      rgba(240, 132, 24, 0.12) 70%,
-      transparent 78%
-    );
-    opacity: 0;
-    transition: opacity 0.35s ease;
-  }
-
-  .apgo-coll-drawer-open__icon {
-    position: relative;
-    z-index: 1;
   }
 
   .apgo-coll-drawer-open:hover,
   .apgo-coll-drawer-open:focus-visible {
     opacity: 1;
-    background-color: var(--apgo-atc-orange-soft);
-    border-color: rgba(240, 132, 24, 0.2);
+    background-color: var(--apgo-atc-orange);
+    border-color: var(--apgo-atc-orange);
     color: #fff;
-    box-shadow: var(--shadow-popover);
-    transform: scale(1.06);
     outline: none;
-  }
-
-  .apgo-coll-drawer-open:hover .apgo-coll-drawer-open__icon,
-  .apgo-coll-drawer-open:focus-visible .apgo-coll-drawer-open__icon {
-    filter: drop-shadow(0 0 0.35px rgba(0, 0, 0, 0.55)) drop-shadow(0 0.5px 0 rgba(0, 0, 0, 0.25));
-  }
-
-  .apgo-coll-drawer-open:hover::before,
-  .apgo-coll-drawer-open:focus-visible::before {
-    opacity: 1;
-  }
-
-  .apgo-coll-drawer-open:active {
-    transform: scale(0.98);
   }
 
   .apgo-coll-drawer-open__icon,
   .apgo-coll-drawer-open__icon svg {
-    width: 1.1em;
-    height: 1.1em;
+    width: 0.85em;
+    height: 0.85em;
     display: block;
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .apgo-coll-drawer-open,
-    .apgo-coll-drawer-open::before {
-      transition-duration: 0.01ms;
-    }
-
-    .apgo-coll-drawer-open:hover,
-    .apgo-coll-drawer-open:focus-visible {
-      transform: none;
-    }
-  }
 {% endstylesheet %}
