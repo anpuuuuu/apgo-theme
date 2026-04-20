@@ -41,27 +41,39 @@ function formatMoney(cents, currency) {
   }
 }
 
-function showSuccessNotification(shell, message, viewCartLabel) {
-  const existing = document.querySelector('.add-on-notification');
-  if (existing) existing.remove();
+/**
+ * @param {string} productTitle
+ * @param {string} successLine
+ * @param {string} viewCartLabel
+ */
+function showSuccessNotification(productTitle, successLine, viewCartLabel) {
+  document.querySelectorAll('.apgo-cart-success-toast').forEach((el) => el.remove());
 
   const notification = document.createElement('div');
-  notification.className = 'add-on-notification';
+  notification.className = 'apgo-cart-success-toast';
+  notification.setAttribute('role', 'status');
+  notification.setAttribute('aria-live', 'polite');
   notification.innerHTML = `
-    <div class="add-on-notification-content">
-      <div class="add-on-notification-message">${escapeHtml(message)}</div>
-      <a href="/cart" class="add-on-notification-link">${escapeHtml(viewCartLabel)}</a>
+    <span class="apgo-cart-success-toast__check" aria-hidden="true">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.25 4.75L6.5 12.25L2.75 8.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </span>
+    <div class="apgo-cart-success-toast__body">
+      <span class="apgo-cart-success-toast__title">${escapeHtml(productTitle)}</span>
+      <span class="apgo-cart-success-toast__sub">${escapeHtml(successLine)}</span>
     </div>
-    <button type="button" class="add-on-notification-close" aria-label="Close">&times;</button>
+    <a href="/cart" class="apgo-cart-success-toast__cta">${escapeHtml(viewCartLabel)}</a>
+    <button type="button" class="apgo-cart-success-toast__close" aria-label="Close">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L11 11M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </button>
   `;
-  notification.querySelector('.add-on-notification-close')?.addEventListener('click', () => notification.remove());
+  notification.querySelector('.apgo-cart-success-toast__close')?.addEventListener('click', () => notification.remove());
 
   document.body.appendChild(notification);
-  requestAnimationFrame(() => notification.classList.add('show'));
+  requestAnimationFrame(() => notification.classList.add('apgo-cart-success-toast--visible'));
   window.setTimeout(() => {
-    notification.classList.remove('show');
-    window.setTimeout(() => notification.remove(), 320);
-  }, 4500);
+    notification.classList.remove('apgo-cart-success-toast--visible');
+    window.setTimeout(() => notification.remove(), 380);
+  }, 4200);
 }
 
 function updateAllCartCounts(count) {
@@ -326,11 +338,7 @@ async function addToCart(shell) {
     );
 
     const name = state.product?.title || '';
-    showSuccessNotification(
-      shell,
-      `${name} ${strFromShell(shell, 'i18nAdded')}`,
-      strFromShell(shell, 'i18nViewCart')
-    );
+    showSuccessNotification(name, strFromShell(shell, 'i18nAdded'), strFromShell(shell, 'i18nViewCart'));
 
     window.setTimeout(() => {
       btn.innerHTML = original;
