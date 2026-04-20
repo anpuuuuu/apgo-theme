@@ -20,7 +20,7 @@ function ensureToastEl() {
   return el;
 }
 
-document.addEventListener(ThemeEvents.cartUpdate, (event) => {
+document.addEventListener(ThemeEvents.cartUpdate, (/** @type {CustomEvent} */ event) => {
   const data = event.detail?.data;
   if (!data || data.didError) return;
   if (data.source !== 'product-form-component') return;
@@ -34,10 +34,11 @@ document.addEventListener(ThemeEvents.cartUpdate, (event) => {
   }
 
   const el = ensureToastEl();
-  el.textContent = toastMessage();
-  el.dataset.visible = 'true';
-  window.clearTimeout(el._apgoCartToastHide);
-  el._apgoCartToastHide = window.setTimeout(() => {
-    delete el.dataset.visible;
+  const toastEl = /** @type {HTMLElement & { _apgoCartToastHide?: ReturnType<typeof setTimeout> }} */ (el);
+  toastEl.textContent = toastMessage();
+  toastEl.dataset.visible = 'true';
+  window.clearTimeout(toastEl._apgoCartToastHide);
+  toastEl._apgoCartToastHide = window.setTimeout(() => {
+    delete toastEl.dataset.visible;
   }, 2800);
 });

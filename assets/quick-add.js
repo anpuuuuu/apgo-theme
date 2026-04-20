@@ -21,7 +21,7 @@ export class QuickAddComponent extends Component {
     const baseUrl = this.productPageUrl;
     if (!baseUrl) return undefined;
     const url = new URL(baseUrl, window.location.href);
-    const variantInput = this.querySelector('input[name="id"]');
+    const variantInput = /** @type {HTMLInputElement | null} */ (this.querySelector('input[name="id"]'));
     const variantId = variantInput?.value;
     if (variantId) url.searchParams.set('variant', variantId);
     return url.toString();
