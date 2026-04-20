@@ -56,27 +56,34 @@
   .apgo-coll-drawer-open {
     --apgo-atc-orange: #f08418;
 
-    display: grid;
+    display: inline-grid;
     place-items: center;
-    width: 2.25rem;
-    height: 2.25rem;
-    padding: 0.28rem;
-    border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    min-width: 2.25rem;
+    min-height: 2.25rem;
+    padding: 0.2rem;
+    margin: 0;
+    border: none;
+    border-radius: 0;
     cursor: pointer;
-    background-color: var(--color-background);
+    background: none;
     color: var(--color-foreground);
-    box-shadow: var(--shadow-popover);
+    box-shadow: none;
     opacity: 0.72;
+    line-height: 0;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
   }
 
   .apgo-coll-drawer-open:hover,
   .apgo-coll-drawer-open:focus-visible {
     opacity: 1;
-    background-color: var(--apgo-atc-orange);
-    border-color: var(--apgo-atc-orange);
-    color: #fff;
-    outline: none;
+    color: var(--apgo-atc-orange);
+  }
+
+  .apgo-coll-drawer-open:focus-visible {
+    outline: 2px solid var(--apgo-atc-orange);
+    outline-offset: 3px;
+    border-radius: 2px;
   }
 
   .apgo-coll-drawer-open__icon,
