@@ -255,26 +255,26 @@
   }
 
   /*
-    Collection Z-grid：深灰卡殼（手機／桌機共用）、圖片貼齊卡殼頂與兩側、上緣圓角與卡殼一致。
+    Collection Z-grid：負空間層次（頁底 #000、卡面 #0f0f0f、極淡描邊），避免厚邊框「表格感」。
     collection 價格見 snippets/price.liquid。
   */
   .main-collection-zgrid {
-    --mc-z-card-bg: #2e2e2e;
+    --mc-z-page-bg: #000000;
+    --mc-z-card-bg: #0f0f0f;
     --mc-card-radius: 15px;
     --mc-card-image-inset: 0;
-    /* 立體卡：上緣內高光 + 內凹陰影 + 多層外陰影 */
+    /* 髮絲描邊 + 極輕浮起（不做粗邊框） */
     --mc-z-card-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.11),
-      inset 0 -3px 6px rgba(0, 0, 0, 0.32),
-      0 2px 4px rgba(0, 0, 0, 0.38),
-      0 10px 24px rgba(0, 0, 0, 0.45),
-      0 22px 44px rgba(0, 0, 0, 0.4);
+      0 0 0 1px rgba(255, 255, 255, 0.05),
+      0 10px 28px rgba(0, 0, 0, 0.35);
     --mc-z-card-shadow-hover:
-      inset 0 1px 0 rgba(255, 255, 255, 0.15),
-      inset 0 -3px 6px rgba(0, 0, 0, 0.28),
-      0 5px 10px rgba(0, 0, 0, 0.45),
-      0 14px 32px rgba(0, 0, 0, 0.52),
-      0 32px 56px rgba(0, 0, 0, 0.46);
+      0 0 0 1px rgba(255, 255, 255, 0.09),
+      0 14px 36px rgba(0, 0, 0, 0.42);
+  }
+
+  results-list.main-collection-zgrid.product-grid-container,
+  .apgo-all-catalog-root.main-collection-zgrid.product-grid-container {
+    background-color: var(--mc-z-page-bg);
   }
 
   .main-collection-zgrid ul.product-grid[product-grid-view='default'] {
@@ -292,7 +292,7 @@
     overflow: hidden;
     isolation: isolate;
     position: relative;
-    transition: box-shadow 0.35s ease, transform 0.35s ease;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
   }
 
   @media (hover: hover) and (prefers-reduced-motion: no-preference) {
@@ -301,7 +301,7 @@
       .product-grid__item:not(.product-grid__item--z-spacer):hover {
       z-index: 2;
       box-shadow: var(--mc-z-card-shadow-hover);
-      transform: translateY(-4px);
+      transform: translateY(-2px);
     }
   }
 
