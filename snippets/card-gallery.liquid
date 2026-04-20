@@ -37,8 +37,9 @@
 {% liquid
   assign product = block.settings.product
 
-  assign apgo_listing_variant = product.selected_or_first_available_variant
-  unless product == blank
+  assign apgo_listing_variant = nil
+  if product != blank
+    assign apgo_listing_variant = product.selected_or_first_available_variant
     capture apgo_lv_id_raw
       render 'apgo-collection-listing-variant-id', product: product
     endcapture
@@ -51,7 +52,7 @@
         endif
       endfor
     endif
-  endunless
+  endif
 
   assign lazy_image_sizes = 'auto, ' | append: image_sizes
 
@@ -65,7 +66,7 @@
   elsif image_ratio_setting == 'square'
     assign temp_ratio = '1'
   elsif image_ratio_setting == 'adapt'
-    if product != blank
+    if product != blank and apgo_listing_variant != blank
       assign current_featured_image_for_ratio = apgo_listing_variant.featured_image
       if current_featured_image_for_ratio == blank
         assign current_featured_image_for_ratio = apgo_listing_variant.image
@@ -86,20 +87,24 @@
     assign ratio = 1
   endif
 
-  assign variant_images = product.images | where: 'attached_to_variant?', true | map: 'src'
-  assign selected_variant_image = apgo_listing_variant.image.src
-  if selected_variant_image == blank and apgo_listing_variant.featured_image != blank
-    assign selected_variant_image = apgo_listing_variant.featured_image.src
-  endif
-  if selected_variant_image == blank and product.featured_image != blank
-    assign selected_variant_image = product.featured_image.src
-  endif
+  assign variant_images = ''
+  assign selected_variant_image = ''
   assign selected_variant_image_index = 0
-  for image in product.images
-    if image.src == selected_variant_image
-      assign selected_variant_image_index = forloop.index0
+  if product != blank and apgo_listing_variant != blank
+    assign variant_images = product.images | where: 'attached_to_variant?', true | map: 'src'
+    assign selected_variant_image = apgo_listing_variant.image.src
+    if selected_variant_image == blank and apgo_listing_variant.featured_image != blank
+      assign selected_variant_image = apgo_listing_variant.featured_image.src
     endif
-  endfor
+    if selected_variant_image == blank and product.featured_image != blank
+      assign selected_variant_image = product.featured_image.src
+    endif
+    for image in product.images
+      if image.src == selected_variant_image
+        assign selected_variant_image_index = forloop.index0
+      endif
+    endfor
+  endif
 
   assign hover_behavior = 'carousel'
 
