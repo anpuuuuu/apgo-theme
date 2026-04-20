@@ -54,10 +54,10 @@ export class AddToCartComponent extends Component {
    * Handles the click event for the add to cart button.
    * @param {MouseEvent & {target: HTMLElement}} event - The click event.
    */
-  handleClick(event) {
+  handleClick() {
     this.animateAddToCart();
-
-    if (!event.target.closest('.quick-add-modal')) this.#animateFlyToCart();
+    // Also run inside `.quick-add-modal` so the variant quick-add dialog gets the same fly-to-cart as PDP/cards.
+    this.#animateFlyToCart();
   }
 
   #preloadImage = () => {
