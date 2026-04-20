@@ -55,8 +55,8 @@
 
   .apgo-coll-drawer-open {
     --apgo-atc-orange: #f08418;
-    --apgo-atc-orange-soft: rgba(240, 132, 24, 0.32);
-    --apgo-atc-glow: rgba(240, 132, 24, 0.55);
+    --apgo-atc-orange-soft: rgba(240, 132, 24, 0.36);
+    --apgo-atc-glow: rgba(240, 132, 24, 0.34);
 
     position: relative;
     isolation: isolate;
@@ -66,7 +66,7 @@
     height: 2.25rem;
     padding: 0.28rem;
     border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.05);
     cursor: pointer;
     background-color: var(--color-background);
     color: var(--color-foreground);
@@ -84,11 +84,18 @@
   .apgo-coll-drawer-open::before {
     content: '';
     position: absolute;
-    inset: -11px;
+    inset: -12px;
     border-radius: 50%;
     z-index: 0;
     pointer-events: none;
-    background: radial-gradient(circle closest-side, var(--apgo-atc-glow) 0%, rgba(240, 132, 24, 0.18) 38%, transparent 72%);
+    /* Ring glow only — avoid bright center over the + */
+    background: radial-gradient(
+      circle at 50% 50%,
+      transparent 52%,
+      var(--apgo-atc-glow) 58%,
+      rgba(240, 132, 24, 0.12) 70%,
+      transparent 78%
+    );
     opacity: 0;
     transition: opacity 0.35s ease;
   }
@@ -102,14 +109,16 @@
   .apgo-coll-drawer-open:focus-visible {
     opacity: 1;
     background-color: var(--apgo-atc-orange-soft);
-    border-color: rgba(240, 132, 24, 0.45);
+    border-color: rgba(240, 132, 24, 0.2);
     color: #fff;
-    box-shadow:
-      0 0 0 1px rgba(240, 132, 24, 0.2),
-      0 6px 22px rgba(240, 132, 24, 0.32),
-      var(--shadow-popover);
+    box-shadow: var(--shadow-popover);
     transform: scale(1.06);
     outline: none;
+  }
+
+  .apgo-coll-drawer-open:hover .apgo-coll-drawer-open__icon,
+  .apgo-coll-drawer-open:focus-visible .apgo-coll-drawer-open__icon {
+    filter: drop-shadow(0 0 0.35px rgba(0, 0, 0, 0.55)) drop-shadow(0 0.5px 0 rgba(0, 0, 0, 0.25));
   }
 
   .apgo-coll-drawer-open:hover::before,
