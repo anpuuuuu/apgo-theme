@@ -37,6 +37,22 @@
 {% liquid
   assign product = block.settings.product
 
+  assign apgo_listing_variant = product.selected_or_first_available_variant
+  unless product == blank
+    capture apgo_lv_id_raw
+      render 'apgo-collection-listing-variant-id', product: product
+    endcapture
+    assign apgo_lv_id = apgo_lv_id_raw | strip | plus: 0
+    if apgo_lv_id != 0
+      for v in product.variants
+        if v.id == apgo_lv_id
+          assign apgo_listing_variant = v
+          break
+        endif
+      endfor
+    endif
+  endunless
+
   assign lazy_image_sizes = 'auto, ' | append: image_sizes
 
   assign image_ratio_setting = block.settings.image_ratio
@@ -50,7 +66,10 @@
     assign temp_ratio = '1'
   elsif image_ratio_setting == 'adapt'
     if product != blank
-      assign current_featured_image_for_ratio = product.featured_image
+      assign current_featured_image_for_ratio = apgo_listing_variant.featured_image
+      if current_featured_image_for_ratio == blank
+        assign current_featured_image_for_ratio = apgo_listing_variant.image
+      endif
       if current_featured_image_for_ratio == blank and product.featured_media.preview_image != blank
         assign current_featured_image_for_ratio = product.featured_media.preview_image
       endif
@@ -68,7 +87,13 @@
   endif
 
   assign variant_images = product.images | where: 'attached_to_variant?', true | map: 'src'
-  assign selected_variant_image = product.selected_or_first_available_variant.image.src
+  assign selected_variant_image = apgo_listing_variant.image.src
+  if selected_variant_image == blank and apgo_listing_variant.featured_image != blank
+    assign selected_variant_image = apgo_listing_variant.featured_image.src
+  endif
+  if selected_variant_image == blank and product.featured_image != blank
+    assign selected_variant_image = product.featured_image.src
+  endif
   assign selected_variant_image_index = 0
   for image in product.images
     if image.src == selected_variant_image

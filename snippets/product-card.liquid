@@ -32,8 +32,27 @@
   assign product_card_id = 'product-card-link-' | append: block.id | append: '-' | append: product.id
   assign product_card_gap_value = product_card_gap | default: block.settings.product_card_gap
 
+  assign apgo_listing_variant = product.selected_or_first_available_variant
+  if product.id != empty
+    capture apgo_lv_id_raw
+      render 'apgo-collection-listing-variant-id', product: product
+    endcapture
+    assign apgo_lv_id = apgo_lv_id_raw | strip | plus: 0
+    if apgo_lv_id != 0
+      for v in product.variants
+        if v.id == apgo_lv_id
+          assign apgo_listing_variant = v
+          break
+        endif
+      endfor
+    endif
+  endif
+
   if settings.transition_to_main_product
-    assign featured_image = product.selected_or_first_available_variant.featured_image
+    assign featured_image = apgo_listing_variant.featured_image
+    if featured_image == blank
+      assign featured_image = apgo_listing_variant.image
+    endif
     if featured_image == blank
       assign featured_image = product.featured_media.preview_image
     endif
@@ -67,7 +86,7 @@
   <a
     id="{{ product_card_id | md5 }}"
     {% unless onboarding %}
-      href="{{ product.selected_or_first_available_variant.url }}"
+      href="{{ apgo_listing_variant.url }}"
       on:click="/navigateToProduct"
     {% endunless %}
     class="product-card__link"

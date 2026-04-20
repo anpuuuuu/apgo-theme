@@ -1,5 +1,24 @@
 
 
+{%- liquid
+  assign apgo_gallery_product = block.settings.product
+  assign apgo_price_variant = apgo_gallery_product.selected_or_first_available_variant
+  unless apgo_gallery_product == blank
+    capture apgo_lv_id_raw
+      render 'apgo-collection-listing-variant-id', product: apgo_gallery_product
+    endcapture
+    assign apgo_lv_id = apgo_lv_id_raw | strip | plus: 0
+    if apgo_lv_id != 0
+      for v in apgo_gallery_product.variants
+        if v.id == apgo_lv_id
+          assign apgo_price_variant = v
+          break
+        endif
+      endfor
+    endif
+  endunless
+-%}
+
 {% capture children %}
   {% unless block.settings.product == blank %}
     {% render 'product-card-badges', product: block.settings.product %}
@@ -19,7 +38,7 @@
     <h3 class="h4">{{ block.settings.product.title }}</h3>
     <div class="h6">
       <product-price data-product-id="{{ block.settings.product.id }}">
-        {% render 'price', product_resource: block.settings.product, show_unit_price: false %}
+        {% render 'price', product_resource: block.settings.product, listing_variant: apgo_price_variant, show_unit_price: false %}
       </product-price>
     </div>
   {% endif %}

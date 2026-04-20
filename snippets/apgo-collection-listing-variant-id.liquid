@@ -1,0 +1,27 @@
+{%- doc -%}
+  Returns the variant id to feature on product cards for the current page.
+  On collection `collections-limited-time-deals`, prefers a variant whose
+  option1/2/3 or title contains "bundle" (case-insensitive). Otherwise
+  `selected_or_first_available_variant`.
+{%- enddoc -%}
+{%- if product == blank -%}
+  0
+{%- else -%}
+  {%- liquid
+    assign apgo_pick = product.selected_or_first_available_variant
+    if collection != blank and collection.handle == 'collections-limited-time-deals'
+      for cand in product.variants
+        assign o1 = cand.option1 | default: '' | downcase
+        assign o2 = cand.option2 | default: '' | downcase
+        assign o3 = cand.option3 | default: '' | downcase
+        assign vt = cand.title | default: '' | downcase
+        assign blob = o1 | append: ' ' | append: o2 | append: ' ' | append: o3 | append: ' ' | append: vt
+        if blob contains 'bundle'
+          assign apgo_pick = cand
+          break
+        endif
+      endfor
+    endif
+  -%}
+  {{- apgo_pick.id -}}
+{%- endif -%}

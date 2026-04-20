@@ -10,7 +10,21 @@
   assign product_form_id = 'QuickAdd-ProductForm-' | append: product.id | append: '-' | append: block.id
   assign add_to_cart_text = 'actions.add' | t
 
-  if block.settings.product.selected_or_first_available_variant.available
+  assign apgo_listing_variant = product.selected_or_first_available_variant
+  capture apgo_lv_id_raw
+    render 'apgo-collection-listing-variant-id', product: product
+  endcapture
+  assign apgo_lv_id = apgo_lv_id_raw | strip | plus: 0
+  if apgo_lv_id != 0
+    for v in product.variants
+      if v.id == apgo_lv_id
+        assign apgo_listing_variant = v
+        break
+      endif
+    endfor
+  endif
+
+  if apgo_listing_variant.available
     assign can_add_to_cart = true
   else
     assign can_add_to_cart = false
@@ -44,15 +58,15 @@
         type="hidden"
         name="id"
         ref="variantId"
-        value="{{ product.selected_or_first_available_variant.id }}"
-        {% if product.selected_or_first_available_variant.available == false %}
+        value="{{ apgo_listing_variant.id }}"
+        {% if apgo_listing_variant.available == false %}
           disabled
         {% endif %}
       >
       <input
         type="hidden"
         name="quantity"
-        value="{% if product.selected_or_first_available_variant.quantity_rule.min %}{{ product.selected_or_first_available_variant.quantity_rule.min }}{% else %}1{% endif %}"
+        value="{% if apgo_listing_variant.quantity_rule.min %}{{ apgo_listing_variant.quantity_rule.min }}{% else %}1{% endif %}"
       >
       {% comment %} If there is one variant option but it's swatches or if it's a single variant product, then use add to cart button {% endcomment %}
       {%- if product.variants.size == 1 or product.options.size == 1 -%}

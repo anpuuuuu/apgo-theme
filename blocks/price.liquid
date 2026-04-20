@@ -3,6 +3,20 @@
 {%- liquid
   assign product_resource = block.settings.product
   assign selected_variant = product_resource.selected_or_first_available_variant
+  unless product_resource == blank
+    capture apgo_lv_id_raw
+      render 'apgo-collection-listing-variant-id', product: product_resource
+    endcapture
+    assign apgo_lv_id = apgo_lv_id_raw | strip | plus: 0
+    if apgo_lv_id != 0
+      for v in product_resource.variants
+        if v.id == apgo_lv_id
+          assign selected_variant = v
+          break
+        endif
+      endfor
+    endif
+  endunless
 -%}
 
 {% liquid
@@ -49,6 +63,7 @@
   {% render 'price',
     show_unit_price: true,
     product_resource: product_resource,
+    listing_variant: selected_variant,
     show_sale_price_first: block.settings.show_sale_price_first
   %}
 
