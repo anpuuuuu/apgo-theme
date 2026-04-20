@@ -338,7 +338,7 @@ async function addToCart(shell) {
     );
 
     const name = state.product?.title || '';
-    showSuccessNotification(name, strFromShell(shell, 'i18nAdded'), strFromShell(shell, 'i18nViewCart'));
+    showSuccessNotification(name, strFromShell(shell, 'i18nAddedToast'), strFromShell(shell, 'i18nViewCart'));
 
     window.setTimeout(() => {
       btn.innerHTML = original;

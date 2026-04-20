@@ -339,7 +339,8 @@
     "view_cart": "View Cart",
     "video_load_failed": "Video failed to load",
     "video_not_found": "Video resource not found",
-    "added_to_cart": "Successfully added to the shopping cart"
+    "added_to_cart": "Successfully added to the shopping cart",
+    "added_to_cart_toast": "successfully added to cart"
   },
   "anti": {
     "realUrl": "Correct URL",

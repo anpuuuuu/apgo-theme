@@ -309,7 +309,8 @@
     "view_cart": "查看購物車",
     "video_load_failed": "視頻載入失敗",
     "video_not_found": "找不到視頻資源",
-    "added_to_cart": "已成功加入購物車"
+    "added_to_cart": "已成功加入購物車",
+    "added_to_cart_toast": "已加入購物車"
   },
   "anti": {
     "realUrl": "正確網址",
