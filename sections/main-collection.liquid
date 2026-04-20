@@ -559,6 +559,10 @@
         calc(var(--font-paragraph--size, var(--font-size--paragraph, 0.875rem)) * 1.05)
       );
     }
+
+    .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price > div .price {
+      font-size: clamp(0.84rem, 3vw, 1.0625rem);
+    }
   }
 
   @media screen and (width >= 750px) {
@@ -590,11 +594,11 @@
     }
 
     .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price > div .price {
-      font-size: clamp(0.7rem, 0.58rem + 0.28vw, 0.8125rem);
+      font-size: clamp(0.8125rem, 0.62rem + 0.34vw, 0.9375rem);
     }
 
     .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card product-price > div .compare-at-price {
-      font-size: clamp(0.625rem, 0.52rem + 0.22vw, 0.75rem);
+      font-size: clamp(0.6875rem, 0.55rem + 0.24vw, 0.8125rem);
     }
   }
 
