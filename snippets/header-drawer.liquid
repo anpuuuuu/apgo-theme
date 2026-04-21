@@ -763,12 +763,6 @@
     }
   }
 
-  .menu-drawer .menu-drawer__list-item:has(> .menu-drawer__menu-item[href*='/pages/faq']),
-  .menu-drawer .menu-drawer__list-item:has(> .menu-drawer__menu-item[href*='/pages/faq/']),
-  .menu-drawer .menu-drawer__list-item:has(> .menu-drawer__menu-item[href='#faq']),
-  .menu-drawer .menu-drawer__list-item:has(> .menu-drawer__menu-item[data-faq-menu-link]) {
-    margin-top: 8px;
-  }
 
   /* APGO：頁尾品牌／付款條克隆至抽屜底部（見 sections/APGO-footer.liquid template + header-drawer.js） */
   .menu-drawer__apgo-footer-mount {
@@ -1014,14 +1008,6 @@
 
   .menu-drawer__list-item--divider {
     border-block-end: 1px solid var(--color-border);
-  }
-
-  /* Ensure FAQ row keeps visible breathing room from previous item */
-  .menu-drawer__menu .menu-drawer__list-item .menu-drawer__menu-item[href*='/pages/faq'],
-  .menu-drawer__menu .menu-drawer__list-item .menu-drawer__menu-item[href*='/pages/faq/'],
-  .menu-drawer__menu .menu-drawer__list-item .menu-drawer__menu-item[data-faq-menu-link],
-  .menu-drawer__menu .menu-drawer__list-item .menu-drawer__menu-item[href='#faq'] {
-    margin-top: 6px;
   }
 
   .menu-drawer__list-item--deep:not(.menu-drawer__list-item--divider) .menu-drawer__menu {
