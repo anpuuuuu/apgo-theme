@@ -3,7 +3,7 @@
   assign qas = section.blocks | where: 'type', 'qa'
 %}
 
-<section class="apgo-faq color-{{ section.settings.color_scheme }}" id="apgo-faq-{{ section.id }}">
+<section class="apgo-faq" id="apgo-faq-{{ section.id }}">
   <div class="apgo-faq__container">
     {% if section.settings.heading != blank %}
       <h2 class="apgo-faq__heading">{{ section.settings.heading }}</h2>
@@ -64,11 +64,16 @@
 {% stylesheet %}
   .apgo-faq {
     padding: 48px 0;
+    background: #000000;
+    color: #ffffff;
   }
 
   .apgo-faq__container {
     width: min(66.6667vw, 1200px);
     margin: 0 auto;
+    background: #0f0f0f;
+    border-radius: 16px;
+    padding: 28px;
   }
 
   .apgo-faq__heading {
@@ -76,6 +81,7 @@
     text-align: center;
     font-size: clamp(1.75rem, 2.2vw, 2.25rem);
     line-height: 1.2;
+    color: #f08418;
   }
 
   .apgo-faq__layout {
@@ -95,7 +101,7 @@
     padding: 0;
     list-style: none;
     border-radius: 16px;
-    background: rgb(var(--color-foreground) / 0.04);
+    background: #0f0f0f;
     padding: 12px;
   }
 
@@ -103,14 +109,14 @@
     display: block;
     padding: 12px 14px;
     border-radius: 12px;
-    color: rgb(var(--color-foreground));
+    color: #ffffff;
     text-decoration: none;
     font-weight: 600;
     transition: background-color 0.2s ease;
   }
 
   .apgo-faq__category-link:hover {
-    background: rgb(var(--color-foreground) / 0.08);
+    background: #1a1a1a;
   }
 
   .apgo-faq__content {
@@ -123,6 +129,7 @@
     margin: 0 0 16px;
     font-size: 1.5rem;
     line-height: 1.25;
+    color: #f08418;
   }
 
   .apgo-faq__qa-list {
@@ -132,7 +139,7 @@
   }
 
   .apgo-faq__qa-item {
-    border-bottom: 1px solid rgb(var(--color-foreground) / 0.12);
+    border-bottom: 1px solid #2a2a2a;
     padding-bottom: 16px;
   }
 
@@ -140,16 +147,17 @@
     margin: 0 0 10px;
     font-size: 1.15rem;
     line-height: 1.35;
+    color: #ffffff;
   }
 
   .apgo-faq__answer {
     margin: 0;
-    color: rgb(var(--color-foreground) / 0.82);
+    color: #cccccc;
   }
 
   .apgo-faq__empty {
     margin: 0;
-    color: rgb(var(--color-foreground) / 0.7);
+    color: #cccccc;
   }
 
   @media screen and (max-width: 990px) {
