@@ -488,14 +488,7 @@
         }
       }
 
-      document.addEventListener('click', function (event) {
-        var faqMenuLink = event.target.closest(
-          '.menu-drawer a[href*="/pages/faq"], .menu-drawer a[href*="/pages/faq/"], .menu-drawer a[href="#faq"], .menu-drawer a[data-faq-menu-link]'
-        );
-        if (!faqMenuLink) return;
-        if (!section.closest('main, body')) return;
-
-        event.preventDefault();
+      window.addEventListener('apgo:open-faq-drawer', function () {
         closeMainMenuDrawerIfOpen();
         setDrawerOpen(true);
       });
