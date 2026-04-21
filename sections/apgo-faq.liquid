@@ -462,6 +462,29 @@
         return window.matchMedia('(max-width: 768px)').matches;
       }
 
+      var bodyScrollLocked = false;
+      var previousBodyOverflow = '';
+      var previousBodyPaddingRight = '';
+
+      function lockBodyScrollWithGap() {
+        if (bodyScrollLocked) return;
+        var scrollbarGap = window.innerWidth - document.documentElement.clientWidth;
+        previousBodyOverflow = document.body.style.overflow || '';
+        previousBodyPaddingRight = document.body.style.paddingRight || '';
+        document.body.style.overflow = 'hidden';
+        if (scrollbarGap > 0) {
+          document.body.style.paddingRight = scrollbarGap + 'px';
+        }
+        bodyScrollLocked = true;
+      }
+
+      function unlockBodyScrollWithGap() {
+        if (!bodyScrollLocked) return;
+        document.body.style.overflow = previousBodyOverflow;
+        document.body.style.paddingRight = previousBodyPaddingRight;
+        bodyScrollLocked = false;
+      }
+
       function setDrawerOpen(isOpen) {
         if (!drawer || !drawerBackdrop || !drawerTrigger) return;
         drawer.classList.toggle('is-open', isOpen);
@@ -469,7 +492,11 @@
         drawerBackdrop.hidden = !isOpen;
         drawerBackdrop.classList.toggle('is-open', isOpen);
         drawerTrigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-        document.body.style.overflow = isOpen ? 'hidden' : '';
+        if (isOpen) {
+          lockBodyScrollWithGap();
+        } else {
+          unlockBodyScrollWithGap();
+        }
       }
 
       function closeMainMenuDrawerIfOpen() {
@@ -477,7 +504,7 @@
         if (!headerDrawerDetails || !headerDrawerDetails.hasAttribute('open')) return;
         headerDrawerDetails.removeAttribute('open');
         document.documentElement.classList.remove('menu-opening', 'menu-open');
-        document.body.style.overflow = '';
+        unlockBodyScrollWithGap();
       }
 
       if (drawerTrigger && drawer && drawerBackdrop) {
