@@ -33,6 +33,13 @@
             "key": "payment"
           }
         },
+        "category_xAqCqN": {
+          "type": "category",
+          "settings": {
+            "title": "Live Stream",
+            "key": "livestream"
+          }
+        },
         "qa_general_1": {
           "type": "qa",
           "settings": {
@@ -49,11 +56,27 @@
             "answer": ""
           }
         },
+        "qa_QxJfYT": {
+          "type": "qa",
+          "settings": {
+            "category_key": "general",
+            "question": "How can I contact APGO for product or order questions?",
+            "answer": ""
+          }
+        },
         "qa_egJp66": {
           "type": "qa",
           "settings": {
             "category_key": "general",
             "question": "Can beginners apply APGO coating by themselves?",
+            "answer": ""
+          }
+        },
+        "qa_996qVE": {
+          "type": "qa",
+          "settings": {
+            "category_key": "general",
+            "question": "Will coating help in hot, rainy tropical weather?",
             "answer": ""
           }
         },
@@ -102,9 +125,12 @@
         "category_connected_watch",
         "category_service_maintenance",
         "category_idfxe4",
+        "category_xAqCqN",
         "qa_general_1",
         "qa_general_2",
+        "qa_QxJfYT",
         "qa_egJp66",
+        "qa_996qVE",
         "qa_CyUHV9",
         "qa_general_3",
         "qa_register_1",
