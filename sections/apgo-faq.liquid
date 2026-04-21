@@ -1,0 +1,282 @@
+{% liquid
+  assign categories = section.blocks | where: 'type', 'category'
+  assign qas = section.blocks | where: 'type', 'qa'
+%}
+
+<section class="apgo-faq color-{{ section.settings.color_scheme }}" id="apgo-faq-{{ section.id }}">
+  <div class="apgo-faq__container">
+    {% if section.settings.heading != blank %}
+      <h2 class="apgo-faq__heading">{{ section.settings.heading }}</h2>
+    {% endif %}
+
+    <div class="apgo-faq__layout">
+      <aside class="apgo-faq__sidebar" aria-label="FAQ categories">
+        <ul class="apgo-faq__category-list" role="list">
+          {% for category in categories %}
+            {% assign category_key = category.settings.key | strip %}
+            {% if category_key == blank %}
+              {% assign category_key = category.id %}
+            {% endif %}
+            <li class="apgo-faq__category-item">
+              <a class="apgo-faq__category-link" href="#faq-category-{{ section.id }}-{{ category_key | handleize }}">
+                {{ category.settings.title }}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </aside>
+
+      <div class="apgo-faq__content">
+        {% for category in categories %}
+          {% assign category_key = category.settings.key | strip %}
+          {% if category_key == blank %}
+            {% assign category_key = category.id %}
+          {% endif %}
+          {% assign category_anchor = category_key | handleize %}
+
+          <section class="apgo-faq__group" id="faq-category-{{ section.id }}-{{ category_anchor }}">
+            <h3 class="apgo-faq__group-title">{{ category.settings.title }}</h3>
+
+            <div class="apgo-faq__qa-list">
+              {% assign has_qa = false %}
+              {% for qa in qas %}
+                {% assign qa_category_key = qa.settings.category_key | strip %}
+                {% if qa_category_key == category_key %}
+                  {% assign has_qa = true %}
+                  <article class="apgo-faq__qa-item">
+                    <h4 class="apgo-faq__question">{{ qa.settings.question }}</h4>
+                    <div class="apgo-faq__answer rte">{{ qa.settings.answer }}</div>
+                  </article>
+                {% endif %}
+              {% endfor %}
+
+              {% unless has_qa %}
+                <p class="apgo-faq__empty">No questions in this category yet.</p>
+              {% endunless %}
+            </div>
+          </section>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .apgo-faq {
+    padding: 48px 0;
+  }
+
+  .apgo-faq__container {
+    width: min(66.6667vw, 1200px);
+    margin: 0 auto;
+  }
+
+  .apgo-faq__heading {
+    margin: 0 0 28px;
+    text-align: center;
+    font-size: clamp(1.75rem, 2.2vw, 2.25rem);
+    line-height: 1.2;
+  }
+
+  .apgo-faq__layout {
+    display: grid;
+    grid-template-columns: 30% 70%;
+    gap: 32px;
+    align-items: start;
+  }
+
+  .apgo-faq__sidebar {
+    position: sticky;
+    top: 20px;
+  }
+
+  .apgo-faq__category-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-radius: 16px;
+    background: rgb(var(--color-foreground) / 0.04);
+    padding: 12px;
+  }
+
+  .apgo-faq__category-link {
+    display: block;
+    padding: 12px 14px;
+    border-radius: 12px;
+    color: rgb(var(--color-foreground));
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+  }
+
+  .apgo-faq__category-link:hover {
+    background: rgb(var(--color-foreground) / 0.08);
+  }
+
+  .apgo-faq__content {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .apgo-faq__group-title {
+    margin: 0 0 16px;
+    font-size: 1.5rem;
+    line-height: 1.25;
+  }
+
+  .apgo-faq__qa-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .apgo-faq__qa-item {
+    border-bottom: 1px solid rgb(var(--color-foreground) / 0.12);
+    padding-bottom: 16px;
+  }
+
+  .apgo-faq__question {
+    margin: 0 0 10px;
+    font-size: 1.15rem;
+    line-height: 1.35;
+  }
+
+  .apgo-faq__answer {
+    margin: 0;
+    color: rgb(var(--color-foreground) / 0.82);
+  }
+
+  .apgo-faq__empty {
+    margin: 0;
+    color: rgb(var(--color-foreground) / 0.7);
+  }
+
+  @media screen and (max-width: 990px) {
+    .apgo-faq__container {
+      width: min(92vw, 1200px);
+    }
+
+    .apgo-faq__layout {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    .apgo-faq__sidebar {
+      position: static;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "APGO FAQ",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section heading",
+      "default": "F.A.Q."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Category",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Category title",
+          "default": "General"
+        },
+        {
+          "type": "text",
+          "id": "key",
+          "label": "Category key (unique)",
+          "info": "Use the same key in related Q&A blocks, e.g. general",
+          "default": "general"
+        }
+      ]
+    },
+    {
+      "type": "qa",
+      "name": "Q&A",
+      "settings": [
+        {
+          "type": "text",
+          "id": "category_key",
+          "label": "Category key",
+          "info": "Must match a Category key exactly, e.g. general",
+          "default": "general"
+        },
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question",
+          "default": "Why create an account?"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Answer",
+          "default": "<p>Use this area to provide a clear answer for your customers.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "APGO FAQ",
+      "blocks": [
+        {
+          "type": "category",
+          "settings": {
+            "title": "General",
+            "key": "general"
+          }
+        },
+        {
+          "type": "category",
+          "settings": {
+            "title": "Register my watch",
+            "key": "register-watch"
+          }
+        },
+        {
+          "type": "qa",
+          "settings": {
+            "category_key": "general",
+            "question": "Why create an account at www.tissotwatches.com?",
+            "answer": "<p>By creating an account, you can register your watch and access your warranty information.</p>"
+          }
+        },
+        {
+          "type": "qa",
+          "settings": {
+            "category_key": "general",
+            "question": "What measures has Tissot taken against counterfeiting?",
+            "answer": "<p>The group protects technical assets with patents, trademarks, and active legal enforcement.</p>"
+          }
+        },
+        {
+          "type": "qa",
+          "settings": {
+            "category_key": "register-watch",
+            "question": "Do Tissot watches come with a warranty?",
+            "answer": "<p>Most watches include international warranty coverage. Register your watch to view details.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
