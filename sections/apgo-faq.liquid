@@ -3,7 +3,7 @@
   assign qas = section.blocks | where: 'type', 'qa'
 %}
 
-<section class="apgo-faq" id="apgo-faq-{{ section.id }}">
+<section class="apgo-faq" id="apgo-faq-{{ section.id }}" data-faq-section>
   <div class="apgo-faq__container">
     {% if section.settings.heading != blank %}
       <h2 class="apgo-faq__heading">{{ section.settings.heading }}</h2>
@@ -18,7 +18,11 @@
               {% assign category_key = category.id %}
             {% endif %}
             <li class="apgo-faq__category-item">
-              <a class="apgo-faq__category-link" href="#faq-category-{{ section.id }}-{{ category_key | handleize }}">
+              <a
+                class="apgo-faq__category-link"
+                href="#faq-category-{{ section.id }}-{{ category_key | handleize }}"
+                data-faq-nav-link
+              >
                 {{ category.settings.title }}
               </a>
             </li>
@@ -34,7 +38,7 @@
           {% endif %}
           {% assign category_anchor = category_key | handleize %}
 
-          <section class="apgo-faq__group" id="faq-category-{{ section.id }}-{{ category_anchor }}">
+          <section class="apgo-faq__group" id="faq-category-{{ section.id }}-{{ category_anchor }}" data-faq-group>
             <h3 class="apgo-faq__group-title">{{ category.settings.title }}</h3>
 
             <div class="apgo-faq__qa-list">
@@ -44,8 +48,11 @@
                 {% if qa_category_key == category_key %}
                   {% assign has_qa = true %}
                   <article class="apgo-faq__qa-item">
-                    <h4 class="apgo-faq__question">{{ qa.settings.question }}</h4>
-                    <div class="apgo-faq__answer rte">{{ qa.settings.answer }}</div>
+                    <button class="apgo-faq__question" type="button" aria-expanded="false" data-faq-question>
+                      <span class="apgo-faq__question-text">{{ qa.settings.question }}</span>
+                      <span class="apgo-faq__icon" aria-hidden="true"></span>
+                    </button>
+                    <div class="apgo-faq__answer rte" data-faq-answer hidden>{{ qa.settings.answer }}</div>
                   </article>
                 {% endif %}
               {% endfor %}
@@ -93,7 +100,7 @@
 
   .apgo-faq__sidebar {
     position: sticky;
-    top: 20px;
+    top: 96px;
   }
 
   .apgo-faq__category-list {
@@ -112,11 +119,16 @@
     color: #ffffff;
     text-decoration: none;
     font-weight: 600;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
 
   .apgo-faq__category-link:hover {
     background: #1a1a1a;
+  }
+
+  .apgo-faq__category-link.is-active {
+    background: #1a1a1a;
+    color: #f08418;
   }
 
   .apgo-faq__content {
@@ -140,19 +152,53 @@
 
   .apgo-faq__qa-item {
     border-bottom: 1px solid #2a2a2a;
-    padding-bottom: 16px;
+    padding: 4px 0 16px;
   }
 
   .apgo-faq__question {
-    margin: 0 0 10px;
+    width: 100%;
+    margin: 0;
+    padding: 10px 0;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    cursor: pointer;
     font-size: 1.15rem;
+    font-family: inherit;
+    font-weight: 700;
     line-height: 1.35;
     color: #ffffff;
+  }
+
+  .apgo-faq__icon {
+    width: 10px;
+    height: 10px;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+    transform: rotate(45deg);
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
+  }
+
+  .apgo-faq__question[aria-expanded='true'] .apgo-faq__icon {
+    transform: rotate(-135deg);
   }
 
   .apgo-faq__answer {
     margin: 0;
     color: #cccccc;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.28s ease, opacity 0.22s ease;
+  }
+
+  .apgo-faq__answer.is-open {
+    opacity: 1;
   }
 
   .apgo-faq__empty {
@@ -175,6 +221,92 @@
     }
   }
 {% endstylesheet %}
+
+<script>
+  (function () {
+    var sections = document.querySelectorAll('[data-faq-section]');
+    if (!sections.length) return;
+
+    sections.forEach(function (section) {
+      var questionButtons = section.querySelectorAll('[data-faq-question]');
+      var navLinks = section.querySelectorAll('[data-faq-nav-link]');
+      var groups = section.querySelectorAll('[data-faq-group]');
+
+      function closeAnswer(button, answer) {
+        if (!button || !answer) return;
+        button.setAttribute('aria-expanded', 'false');
+        answer.classList.remove('is-open');
+        answer.style.maxHeight = '0px';
+        setTimeout(function () {
+          if (!answer.classList.contains('is-open')) answer.hidden = true;
+        }, 280);
+      }
+
+      function openAnswer(button, answer) {
+        if (!button || !answer) return;
+        answer.hidden = false;
+        answer.classList.add('is-open');
+        button.setAttribute('aria-expanded', 'true');
+        answer.style.maxHeight = answer.scrollHeight + 'px';
+      }
+
+      questionButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+          var answer = button.parentElement.querySelector('[data-faq-answer]');
+          var isExpanded = button.getAttribute('aria-expanded') === 'true';
+          if (isExpanded) {
+            closeAnswer(button, answer);
+          } else {
+            openAnswer(button, answer);
+          }
+        });
+      });
+
+      navLinks.forEach(function (link) {
+        link.addEventListener('click', function (event) {
+          var targetId = link.getAttribute('href');
+          if (!targetId || targetId.charAt(0) !== '#') return;
+          var target = section.querySelector(targetId);
+          if (!target) return;
+          event.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          history.replaceState(null, '', targetId);
+        });
+      });
+
+      if ('IntersectionObserver' in window && groups.length && navLinks.length) {
+        var linkMap = {};
+        navLinks.forEach(function (link) {
+          linkMap[link.getAttribute('href')] = link;
+        });
+
+        var observer = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (!entry.isIntersecting) return;
+              var id = '#' + entry.target.id;
+              navLinks.forEach(function (link) {
+                link.classList.toggle('is-active', link.getAttribute('href') === id);
+              });
+            });
+          },
+          {
+            root: null,
+            rootMargin: '-30% 0px -55% 0px',
+            threshold: 0
+          }
+        );
+
+        groups.forEach(function (group) {
+          observer.observe(group);
+        });
+
+        var firstLink = navLinks[0];
+        if (firstLink) firstLink.classList.add('is-active');
+      }
+    });
+  })();
+</script>
 
 {% schema %}
 {
