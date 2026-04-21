@@ -90,7 +90,6 @@
               {% liquid
                 assign link_title_normalized = link.title | downcase | strip
                 assign link_handle_normalized = link.handle | downcase | strip
-                assign link_is_faq = false
                 if link_title_normalized == 'category' or link_title_normalized == 'categories' or link_title_normalized == '分類'
                   continue
                 endif
@@ -100,10 +99,6 @@
                 assign link_url = link.url
                 assign link_label = link.title
                 assign link_is_active = link.current
-                if link_title_normalized == 'faq' or link_url contains '/pages/faq'
-                  assign link_is_faq = true
-                  assign link_is_active = false
-                endif
                 if link_title_normalized == 'contact'
                   assign link_url = '/pages/about-us'
                   assign link_label = 'About Us'
@@ -189,27 +184,16 @@
                   {%- comment -%}
                     Flat menus for links with children, in menus with fewer than 3 levels of links
                   {%- endcomment -%}
-                  {% if link_is_faq %}
-                    <button
-                      id="HeaderDrawer-{{ link.handle }}"
-                      type="button"
-                      class="menu-drawer__menu-item menu-drawer__menu-item--mainlist menu-drawer__animated-element focus-inset"
-                      data-open-faq-drawer
-                    >
-                      <span class="menu-drawer__menu-item-text">{{ link_label | escape }}</span>
-                    </button>
-                  {% else %}
-                    <a
-                      id="HeaderDrawer-{{ link.handle }}"
-                      href="{{ link_url }}"
-                      class="menu-drawer__menu-item menu-drawer__menu-item--mainlist menu-drawer__animated-element focus-inset{% if link_is_active %} menu-drawer__menu-item--active{% endif %}"
-                      {% if link_is_active %}
-                        aria-current="page"
-                      {% endif %}
-                    >
-                      <span class="menu-drawer__menu-item-text">{{ link_label | escape }}</span>
-                    </a>
-                  {% endif %}
+                  <a
+                    id="HeaderDrawer-{{ link.handle }}"
+                    href="{{ link_url }}"
+                    class="menu-drawer__menu-item menu-drawer__menu-item--mainlist menu-drawer__animated-element focus-inset{% if link_is_active %} menu-drawer__menu-item--active{% endif %}"
+                    {% if link_is_active %}
+                      aria-current="page"
+                    {% endif %}
+                  >
+                    <span class="menu-drawer__menu-item-text">{{ link_label | escape }}</span>
+                  </a>
                   {% liquid
                     assign render_link_image = false
                     if block.settings.menu_style == 'collection_images'
@@ -249,27 +233,16 @@
                   {%- comment -%}
                     Simple links for links with no children (regardless of accordion setting), in menus with fewer than 3 levels of links
                   {%- endcomment -%}
-                  {% if link_is_faq %}
-                    <button
-                      id="HeaderDrawer-{{ link.handle }}"
-                      type="button"
-                      class="menu-drawer__menu-item menu-drawer__menu-item--mainlist menu-drawer__animated-element focus-inset"
-                      data-open-faq-drawer
-                    >
-                      <span class="menu-drawer__menu-item-text">{{ link_label | escape }}</span>
-                    </button>
-                  {% else %}
-                    <a
-                      id="HeaderDrawer-{{ link.handle }}"
-                      href="{{ link_url }}"
-                      class="menu-drawer__menu-item menu-drawer__menu-item--mainlist menu-drawer__animated-element focus-inset{% if link_is_active %} menu-drawer__menu-item--active{% endif %}"
-                      {% if link_is_active %}
-                        aria-current="page"
-                      {% endif %}
-                    >
-                      <span class="menu-drawer__menu-item-text">{{ link_label | escape }}</span>
-                    </a>
-                  {% endif %}
+                  <a
+                    id="HeaderDrawer-{{ link.handle }}"
+                    href="{{ link_url }}"
+                    class="menu-drawer__menu-item menu-drawer__menu-item--mainlist menu-drawer__animated-element focus-inset{% if link_is_active %} menu-drawer__menu-item--active{% endif %}"
+                    {% if link_is_active %}
+                      aria-current="page"
+                    {% endif %}
+                  >
+                    <span class="menu-drawer__menu-item-text">{{ link_label | escape }}</span>
+                  </a>
                 {% endif %}
               </li>
               {% liquid
@@ -297,7 +270,6 @@
               {% liquid
                 assign link_title_normalized = link.title | downcase | strip
                 assign link_handle_normalized = link.handle | downcase | strip
-                assign link_is_faq = false
                 if link_title_normalized == 'category' or link_title_normalized == 'categories' or link_title_normalized == '分類'
                   continue
                 endif
@@ -307,10 +279,6 @@
                 assign link_url = link.url
                 assign link_label = link.title
                 assign link_is_active = link.current
-                if link_title_normalized == 'faq' or link_url contains '/pages/faq'
-                  assign link_is_faq = true
-                  assign link_is_active = false
-                endif
                 if link_title_normalized == 'contact'
                   assign link_url = '/pages/about-us'
                   assign link_label = 'About Us'
@@ -600,15 +568,6 @@
                       </div>
                     </div>
                   </details>
-                {%- elsif link_is_faq -%}
-                  <button
-                    id="HeaderDrawer-{{ link.handle }}"
-                    type="button"
-                    class="menu-drawer__menu-item menu-drawer__menu-item--mainlist menu-drawer__animated-element focus-inset"
-                    data-open-faq-drawer
-                  >
-                    <span class="menu-drawer__menu-item-text">{{ link_label | escape }}</span>
-                  </button>
                 {%- else -%}
                   {%- comment -%}
                     Simple links for links with no children (regardless of accordion setting), in menus with 3 levels of links
@@ -1183,6 +1142,8 @@
   .menu-drawer__menu-item--active,
   .menu-drawer__menu-item[aria-current='page'] {
     color: #f08418 !important;
+    background: #1a1a1a;
+    border-radius: 10px;
   }
 
   .menu-drawer__menu--childlist summary.menu-drawer__menu-item {
@@ -1381,22 +1342,3 @@
     }
   }
 {% endstylesheet %}
-
-<script>
-  document.addEventListener('click', function (event) {
-    var trigger = event.target.closest('[data-open-faq-drawer]');
-    if (!trigger) return;
-
-    event.preventDefault();
-
-    var details = trigger.closest('details.menu-drawer-container');
-    if (details) {
-      details.removeAttribute('open');
-    }
-
-    document.documentElement.classList.remove('menu-opening', 'menu-open');
-    document.body.style.overflow = '';
-
-    window.dispatchEvent(new CustomEvent('apgo:open-faq-drawer'));
-  });
-</script>
