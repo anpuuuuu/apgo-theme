@@ -78,7 +78,7 @@
   .apgo-faq__container {
     width: min(66.6667vw, 1200px);
     margin: 0 auto;
-    background: #0f0f0f;
+    background: transparent;
     border-radius: 16px;
     padding: 28px;
   }
@@ -262,6 +262,15 @@
         });
       });
 
+      var stickyTop = 96;
+      var scrollOffset = stickyTop + 12;
+
+      function setActiveLinkById(activeId) {
+        navLinks.forEach(function (link) {
+          link.classList.toggle('is-active', link.getAttribute('href') === activeId);
+        });
+      }
+
       navLinks.forEach(function (link) {
         link.addEventListener('click', function (event) {
           var targetId = link.getAttribute('href');
@@ -269,40 +278,43 @@
           var target = section.querySelector(targetId);
           if (!target) return;
           event.preventDefault();
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          var targetTop = target.getBoundingClientRect().top + window.scrollY - scrollOffset;
+          window.scrollTo({
+            top: Math.max(targetTop, 0),
+            behavior: 'smooth'
+          });
+          setActiveLinkById(targetId);
           history.replaceState(null, '', targetId);
         });
       });
 
-      if ('IntersectionObserver' in window && groups.length && navLinks.length) {
-        var linkMap = {};
-        navLinks.forEach(function (link) {
-          linkMap[link.getAttribute('href')] = link;
-        });
+      if (groups.length && navLinks.length) {
+        function updateActiveNavOnScroll() {
+          var currentY = window.scrollY + scrollOffset + 2;
+          var activeGroupId = '#' + groups[0].id;
 
-        var observer = new IntersectionObserver(
-          function (entries) {
-            entries.forEach(function (entry) {
-              if (!entry.isIntersecting) return;
-              var id = '#' + entry.target.id;
-              navLinks.forEach(function (link) {
-                link.classList.toggle('is-active', link.getAttribute('href') === id);
-              });
-            });
-          },
-          {
-            root: null,
-            rootMargin: '-30% 0px -55% 0px',
-            threshold: 0
-          }
-        );
+          groups.forEach(function (group) {
+            if (group.offsetTop <= currentY) {
+              activeGroupId = '#' + group.id;
+            }
+          });
 
-        groups.forEach(function (group) {
-          observer.observe(group);
-        });
+          setActiveLinkById(activeGroupId);
+        }
 
-        var firstLink = navLinks[0];
-        if (firstLink) firstLink.classList.add('is-active');
+        var ticking = false;
+        function requestScrollspyUpdate() {
+          if (ticking) return;
+          ticking = true;
+          window.requestAnimationFrame(function () {
+            updateActiveNavOnScroll();
+            ticking = false;
+          });
+        }
+
+        window.addEventListener('scroll', requestScrollspyUpdate, { passive: true });
+        window.addEventListener('resize', requestScrollspyUpdate);
+        updateActiveNavOnScroll();
       }
     });
   })();
