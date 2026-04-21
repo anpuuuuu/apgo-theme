@@ -751,10 +751,10 @@
     left: 0;
     top: 0;
     padding: 0;
-    background-color: var(--color-background);
+    background-color: #0f0f0f;
     overflow: auto;
     display: flex;
-    border-right: var(--style-border-drawer);
+    border-right: 1px solid #2a2a2a;
     box-shadow: var(--shadow-drawer);
     flex-direction: column;
 
@@ -1063,11 +1063,13 @@
     font-size: var(--menu-top-level-font-size);
     line-height: var(--menu-top-level-font-line-height);
     text-transform: var(--menu-top-level-font-case);
-    color: var(--menu-top-level-font-color);
+    color: #ffffff;
     justify-content: space-between;
 
     &:hover {
-      color: var(--menu-top-level-font-color);
+      color: #ffffff;
+      background: #1a1a1a;
+      border-radius: 10px;
     }
   }
 
@@ -1078,10 +1080,12 @@
     font-size: var(--menu-parent-font-size);
     line-height: var(--menu-parent-font-line-height);
     text-transform: var(--menu-parent-font-case);
-    color: var(--menu-parent-font-color);
+    color: #ffffff;
 
     &:hover {
-      color: var(--menu-parent-font-color);
+      color: #ffffff;
+      background: #1a1a1a;
+      border-radius: 10px;
     }
   }
 
@@ -1092,11 +1096,20 @@
     font-size: var(--menu-child-font-size);
     line-height: var(--menu-child-font-line-height);
     text-transform: var(--menu-child-font-case);
-    color: var(--menu-child-font-color);
+    color: #ffffff;
 
     &:hover {
-      color: var(--menu-child-font-color);
+      color: #ffffff;
+      background: #1a1a1a;
+      border-radius: 10px;
     }
+  }
+
+  .menu-drawer__menu-item--active,
+  .menu-drawer__menu-item[aria-current='page'] {
+    color: #f08418 !important;
+    background: #1a1a1a;
+    border-radius: 10px;
   }
 
   .menu-drawer__menu--childlist summary.menu-drawer__menu-item {
@@ -1149,7 +1162,7 @@
 
   .menu-drawer__close-button {
     background-color: transparent;
-    color: var(--color-foreground);
+    color: #ffffff;
     padding: var(--padding-xl);
     box-shadow: none;
     will-change: transform;
@@ -1167,7 +1180,7 @@
     padding: var(--padding-md) var(--padding-xl);
     border: none;
     align-items: center;
-    color: var(--color-foreground);
+    color: #ffffff;
     background-color: transparent;
     text-align: left;
     text-decoration: none;
