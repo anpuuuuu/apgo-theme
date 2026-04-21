@@ -846,6 +846,26 @@
     justify-content: center;
   }
 
+
+  .menu-drawer__apgo-footer-mount .apgo-footer-snippet--drawer.apgo-footer-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .menu-drawer__apgo-footer-mount .apgo-footer-snippet--drawer.apgo-footer-brand * {
+    text-align: center !important;
+  }
+
+  .menu-drawer__apgo-footer-mount .apgo-footer-snippet--drawer.apgo-footer-brand .apgo-footer-logo,
+  .menu-drawer__apgo-footer-mount .apgo-footer-snippet--drawer.apgo-footer-brand .apgo-logo,
+  .menu-drawer__apgo-footer-mount .apgo-footer-snippet--drawer.apgo-footer-brand .apgo-logo-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
   /* 蓋過 APGO-footer 全域 .apgo-footer-bottom { padding: theme N px 0 }；緊貼上一段 snippet */
   .menu-drawer__apgo-footer-mount .apgo-footer-snippet--drawer.apgo-footer-bottom {
     margin-top: 0 !important;
@@ -1067,13 +1087,14 @@
   }
 
   .menu-drawer__menu-item--mainlist {
-    min-height: calc(2 * var(--padding-lg) + var(--icon-size-xs));
-    font-family: var(--menu-top-level-font-family);
-    font-style: var(--menu-top-level-font-style);
-    font-weight: var(--menu-top-level-font-weight);
-    font-size: var(--menu-top-level-font-size);
-    line-height: var(--menu-top-level-font-line-height);
-    text-transform: var(--menu-top-level-font-case);
+    min-height: 44px;
+    font-family: inherit;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 0.95rem;
+    line-height: 1.25;
+    letter-spacing: 0.02em;
+    text-transform: none;
     color: #ffffff;
     justify-content: space-between;
 
@@ -1085,12 +1106,13 @@
   }
 
   .menu-drawer__menu-item--parent {
-    font-family: var(--menu-parent-font-family);
-    font-style: var(--menu-parent-font-style);
-    font-weight: var(--menu-parent-font-weight);
-    font-size: var(--menu-parent-font-size);
-    line-height: var(--menu-parent-font-line-height);
-    text-transform: var(--menu-parent-font-case);
+    font-family: inherit;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 0.95rem;
+    line-height: 1.25;
+    letter-spacing: 0.02em;
+    text-transform: none;
     color: #ffffff;
 
     &:hover {
@@ -1101,12 +1123,13 @@
   }
 
   .menu-drawer__menu-item--child {
-    font-family: var(--menu-child-font-family);
-    font-style: var(--menu-child-font-style);
-    font-weight: var(--menu-child-font-weight);
-    font-size: var(--menu-child-font-size);
-    line-height: var(--menu-child-font-line-height);
-    text-transform: var(--menu-child-font-case);
+    font-family: inherit;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 0.95rem;
+    line-height: 1.25;
+    letter-spacing: 0.02em;
+    text-transform: none;
     color: #ffffff;
 
     &:hover {
