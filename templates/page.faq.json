@@ -1,0 +1,110 @@
+{
+  "sections": {
+    "faq_main": {
+      "type": "apgo-faq",
+      "settings": {
+        "heading": "F.A.Q.",
+        "color_scheme": "scheme-1"
+      },
+      "blocks": {
+        "category_general": {
+          "type": "category",
+          "settings": {
+            "title": "General",
+            "key": "general"
+          }
+        },
+        "category_register_watch": {
+          "type": "category",
+          "settings": {
+            "title": "Register my watch",
+            "key": "register-watch"
+          }
+        },
+        "category_connected_watch": {
+          "type": "category",
+          "settings": {
+            "title": "Connected watches",
+            "key": "connected-watches"
+          }
+        },
+        "category_functioning_watch": {
+          "type": "category",
+          "settings": {
+            "title": "Functioning of the watch",
+            "key": "functioning-watch"
+          }
+        },
+        "category_service_maintenance": {
+          "type": "category",
+          "settings": {
+            "title": "Service maintenance",
+            "key": "service-maintenance"
+          }
+        },
+        "category_lightmaster_tech": {
+          "type": "category",
+          "settings": {
+            "title": "Lightmaster technology",
+            "key": "lightmaster-technology"
+          }
+        },
+        "category_online_shop": {
+          "type": "category",
+          "settings": {
+            "title": "Online shop",
+            "key": "online-shop"
+          }
+        },
+        "qa_general_1": {
+          "type": "qa",
+          "settings": {
+            "category_key": "general",
+            "question": "Why create an account at www.tissotwatches.com?",
+            "answer": "<p>By creating an account on our website, you can register your watch and access your warranty and user manual (\"Register my watch\" section). By doing so, you will enable us to provide you with a personalised service.</p>"
+          }
+        },
+        "qa_general_2": {
+          "type": "qa",
+          "settings": {
+            "category_key": "general",
+            "question": "What measures has Tissot taken against counterfeiting?",
+            "answer": "<p>Swatch Group protects the technical and intellectual value of its products through patents, trademarks and enforcement actions in cooperation with relevant authorities.</p>"
+          }
+        },
+        "qa_general_3": {
+          "type": "qa",
+          "settings": {
+            "category_key": "general",
+            "question": "Do Tissot watches come with a warranty?",
+            "answer": "<p>Most watches come with international warranty coverage. You can access warranty details by registering your watch.</p>"
+          }
+        },
+        "qa_register_1": {
+          "type": "qa",
+          "settings": {
+            "category_key": "register-watch",
+            "question": "How do I register my watch?",
+            "answer": "<p>Create or sign in to your account, then follow the registration flow in the register section.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "category_general",
+        "category_register_watch",
+        "category_connected_watch",
+        "category_functioning_watch",
+        "category_service_maintenance",
+        "category_lightmaster_tech",
+        "category_online_shop",
+        "qa_general_1",
+        "qa_general_2",
+        "qa_general_3",
+        "qa_register_1"
+      ]
+    }
+  },
+  "order": [
+    "faq_main"
+  ]
+}
