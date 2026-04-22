@@ -414,7 +414,7 @@
     "host": "Host"
   },
   "apgo_promotions": {
-    "my_free_shipping_banner": "Free shipping over MYR 99 to West Malaysia · Estimated delivery: 2–3 business days",
+    "my_free_shipping_banner": "Free shipping on orders over MYR 99 to West Malaysia only · Estimated delivery: 2–3 business days",
     "sg_free_shipping_banner": "Free shipping over SGD 55 · Estimated Shipping: 2–3 Days"
   },
   "cart": {
