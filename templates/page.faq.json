@@ -183,22 +183,6 @@
             "answer": "<p>Price differences may occur due to platform campaigns, exchange rates, logistics costs, payment processing fees, and regional operating expenses.</p>"
           }
         },
-        "qa_sp_01": {
-          "type": "qa",
-          "settings": {
-            "category_key": "support-policies",
-            "question": "How does APGO handle water mark issues?",
-            "answer": "<p>Water marks vary by severity. Early-stage mineral deposits are usually removable, while etched marks on paint or glass may require polishing. Please share photos for a more accurate recommendation.</p>"
-          }
-        },
-        "qa_sp_02": {
-          "type": "qa",
-          "settings": {
-            "category_key": "support-policies",
-            "question": "Can yellowed headlights be restored?",
-            "answer": "<p>If oxidation is on the outer lens surface, restoration is usually possible with suitable products. If yellowing or haze is inside the headlight housing, external products cannot repair it.</p>"
-          }
-        },
         "qa_sp_03": {
           "type": "qa",
           "settings": {
@@ -247,8 +231,6 @@
         "qa_so_02",
         "qa_so_03",
         "qa_so_04",
-        "qa_sp_01",
-        "qa_sp_02",
         "qa_sp_03",
         "qa_sp_04",
         "qa_sp_05"
