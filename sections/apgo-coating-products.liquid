@@ -139,7 +139,7 @@
     const country = (root.dataset.country || '').toUpperCase();
 
     const getRule = (iso) => {
-      if (iso === 'SG') return { thresholdMinor: 7900, currency: 'SGD' };
+      if (iso === 'SG') return { thresholdMinor: 5500, currency: 'SGD' };
       return null;
     };
 

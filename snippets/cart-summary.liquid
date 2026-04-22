@@ -8,7 +8,7 @@
     assign is_sg_market = false
     if localization.country.iso_code == 'SG'
       assign is_sg_market = true
-      assign market_threshold_minor = 7900
+      assign market_threshold_minor = 5500
     endif
 
     assign discount_total_minor = cart.total_discount
