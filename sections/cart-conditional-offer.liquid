@@ -324,7 +324,7 @@
     const offerText = document.getElementById(`offer-text-${sectionId}`);
 
     const getRule = (countryCode) => {
-      if (countryCode === 'MY') return { thresholdMinor: 10000, currency: 'MYR' };
+      if (countryCode === 'MY') return { thresholdMinor: 9900, currency: 'MYR' };
       if (countryCode === 'SG') return { thresholdMinor: 5500, currency: 'SGD' };
       return null;
     };

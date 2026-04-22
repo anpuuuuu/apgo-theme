@@ -414,7 +414,7 @@
     "host": "主持人"
   },
   "apgo_promotions": {
-    "my_free_shipping_banner": "滿 MYR 99 免運 · 配送時效 2-3 天。",
+    "my_free_shipping_banner": "滿 MYR 99 西馬免運 · 配送約 2–3 個工作天",
     "sg_free_shipping_banner": "滿 SGD 55 免運 · 配送時效 2-3 天"
   },
   "cart": {
@@ -539,7 +539,7 @@
     "free_shipping_unlocked": "已达成免运",
     "free_shipping_locked_label": "未解鎖",
     "free_shipping_unlocked_label": "已解鎖",
-    "free_shipping_not_applicable": "仅适用于新加坡",
+    "free_shipping_not_applicable": "僅適用西馬及新加坡",
     "total_after_discount": "预估总计",
     "estimated_total_checkout_note": "結帳時計算稅額、折扣和運費。",
     "shipping_estimate_title": "购物车收件地址",

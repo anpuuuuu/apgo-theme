@@ -12,9 +12,13 @@
     {%- liquid
       assign market_threshold_minor = 0
       assign is_sg_market = false
+      assign is_my_market = false
       if localization.country.iso_code == 'SG'
         assign is_sg_market = true
         assign market_threshold_minor = 5500
+      elsif localization.country.iso_code == 'MY'
+        assign is_my_market = true
+        assign market_threshold_minor = 9900
       endif
 
       assign discount_total_minor = cart.total_discount
@@ -58,7 +62,7 @@
             <span class="cart__value">{{ cart.original_total_price | money }}</span>
           </div>
 
-          {% if is_sg_market %}
+          {% if is_sg_market or is_my_market %}
             <div class="cart__summary-item cart__shipping-goal">
               <span class="cart__label">{{ 'apgo_cart.free_shipping_goal_label' | t }}</span>
               <span class="cart__value">
