@@ -577,5 +577,104 @@
     "address_ready_for_checkout": "Address saved. You can proceed to checkout.",
     "use_for_checkout": "Use this address for checkout",
     "save_default_preference": "Save this as my default address after checkout"
+  },
+  "apgo_faq": {
+    "categories": {
+      "product-basics": "Product Basics",
+      "application-maintenance": "Application & Maintenance",
+      "product-selection": "Product Selection",
+      "shipping-orders": "Shipping & Orders",
+      "support-policies": "Support & Policies"
+    },
+    "qas": {
+      "qa_pb_01": {
+        "question": "What is the difference between APGO coating and traditional waxing?",
+        "answer": "APGO coating forms a more stable protective layer on the surface, while traditional wax mainly provides short-term gloss. With regular maintenance, APGO coating offers better water repellency, easier cleaning, and stronger resistance to environmental contaminants."
+      },
+      "qa_pb_02": {
+        "question": "Which exterior surfaces can APGO coating be used on?",
+        "answer": "APGO coating is suitable for painted panels, glass, plastic trims, rubber trims, and chrome parts on the exterior. For safety reasons, please avoid applying coating directly on tire tread surfaces."
+      },
+      "qa_pb_03": {
+        "question": "How many times can one bottle be used?",
+        "answer": "As a general guideline, one bottle can be used approximately 8-10 times, depending on vehicle size, application amount, and coverage area."
+      },
+      "qa_pb_04": {
+        "question": "How long does APGO coating typically last?",
+        "answer": "Typical durability ranges from about 2 weeks to 2 months. Actual performance depends on weather exposure, parking conditions, wash frequency, and daily driving environment."
+      },
+      "qa_am_01": {
+        "question": "How often should I apply coating?",
+        "answer": "For new users, we recommend applying once a week in the first month to build the base layer. Afterwards, you may adjust to once every two weeks, then once a month for maintenance."
+      },
+      "qa_am_02": {
+        "question": "Do I need to avoid water after application?",
+        "answer": "Yes. To achieve better bonding and durability, avoid direct water exposure for approximately 12-24 hours after application whenever possible."
+      },
+      "qa_am_03": {
+        "question": "Can I apply coating right after an outside car wash?",
+        "answer": "Yes, but we recommend rinsing once more with clean water before application. This helps remove fine dust picked up during the drive back and reduces the risk of micro-scratches."
+      },
+      "qa_am_04": {
+        "question": "Should coating be applied on a wet or dry surface?",
+        "answer": "It depends on product type. The Atomic series is designed for wet application, while dry-application ranges such as Titanium and Atomic Coloured Glaze are intended for dry surfaces."
+      },
+      "qa_am_05": {
+        "question": "Why do I still see some dust and water droplets after coating?",
+        "answer": "Dust and water cannot be fully eliminated due to static and environmental factors. Coating improves surface behavior so contaminants are less likely to stick firmly and are easier to clean during regular maintenance."
+      },
+      "qa_ps_01": {
+        "question": "Which APGO coating is recommended for first-time DIY users?",
+        "answer": "For beginners, we usually recommend Atomic Crystal Coating or Atomic Sealing Coating because these wet-application formulas are easier to handle and provide reliable performance in daily use."
+      },
+      "qa_ps_02": {
+        "question": "What are the main differences in the Atomic coating series?",
+        "answer": "Atomic (Orange) is the baseline version; Crystal (Dark Green) improves hydrophobicity and dust resistance; Sealing (Brown) enhances durability and wash resistance; Glaze (Light Green) is an all-round upgrade; Aurora (Light Blue) is the strongest option in the Atomic series."
+      },
+      "qa_ps_03": {
+        "question": "What is the difference between dry-application and wet-application coatings?",
+        "answer": "Dry-application coatings generally deliver stronger bonding, longer durability, and deeper gloss. Wet-application coatings are faster and easier to use, making them suitable for DIY and routine upkeep."
+      },
+      "qa_ps_04": {
+        "question": "What is the difference between ceramic coating and spray coating?",
+        "answer": "Ceramic coating creates a thicker and harder long-term layer and usually requires more preparation and skill. Spray coating is easier for DIY maintenance, forms a lighter protective layer, and can be improved through repeated applications."
+      },
+      "qa_so_01": {
+        "question": "Do you ship to Singapore and Malaysia?",
+        "answer": "Yes. We ship within Malaysia and to Singapore. Shipping availability and rates are calculated at checkout based on destination and parcel weight."
+      },
+      "qa_so_02": {
+        "question": "How is shipping fee calculated on Shopify orders?",
+        "answer": "Shipping is weight-based. The exact fee is automatically calculated and shown during checkout before payment is completed."
+      },
+      "qa_so_03": {
+        "question": "Do you provide Cash on Delivery (COD)?",
+        "answer": "At this stage, COD is not available for Shopify orders. Please complete payment through the supported online payment methods at checkout."
+      },
+      "qa_so_04": {
+        "question": "Why are prices different across platforms or regions?",
+        "answer": "Price differences may occur due to platform campaigns, exchange rates, logistics costs, payment processing fees, and regional operating expenses."
+      },
+      "qa_sp_01": {
+        "question": "How does APGO handle water mark issues?",
+        "answer": "Water marks vary by severity. Early-stage mineral deposits are usually removable, while etched marks on paint or glass may require polishing. Please share photos for a more accurate recommendation."
+      },
+      "qa_sp_02": {
+        "question": "Can yellowed headlights be restored?",
+        "answer": "If oxidation is on the outer lens surface, restoration is usually possible with suitable products. If yellowing or haze is inside the headlight housing, external products cannot repair it."
+      },
+      "qa_sp_03": {
+        "question": "What is your refund policy?",
+        "answer": "The 15-day trial refund policy applies only to the 30ml trial bottle and coating cloth. Other opened, used, or damaged items are not eligible. Refund requests must be submitted through the original purchase platform."
+      },
+      "qa_sp_04": {
+        "question": "What if my parcel box is damaged upon arrival?",
+        "answer": "Please inspect the items inside and contact us with photos or videos if there is damage or missing content. Our team will follow up and assist according to the case details."
+      },
+      "qa_sp_05": {
+        "question": "How can I contact APGO support?",
+        "answer": "Please reach us through our official store chat channels and provide your order details. For technical troubleshooting, photos or short videos will help our team provide faster and more accurate support."
+      }
+    }
   }
 }

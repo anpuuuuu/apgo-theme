@@ -41,6 +41,11 @@
           {% if category_key == blank %}
             {% assign category_key = category.id %}
           {% endif %}
+          {% assign category_locale_key = 'apgo_faq.categories.' | append: category_key %}
+          {% assign category_title_translated = category_locale_key | t %}
+          {% if category_title_translated contains 'translation missing' or category_title_translated == category_locale_key %}
+            {% assign category_title_translated = category.settings.title %}
+          {% endif %}
           <li>
             <a
               class="faq-mobile-subdrawer__link"
@@ -48,7 +53,7 @@
               data-faq-nav-link
               data-faq-drawer-link
             >
-              {{ category.settings.title }}
+              {{ category_title_translated }}
             </a>
           </li>
         {% endfor %}
@@ -63,6 +68,11 @@
             {% if category_key == blank %}
               {% assign category_key = category.id %}
             {% endif %}
+            {% assign category_locale_key = 'apgo_faq.categories.' | append: category_key %}
+            {% assign category_title_translated = category_locale_key | t %}
+            {% if category_title_translated contains 'translation missing' or category_title_translated == category_locale_key %}
+              {% assign category_title_translated = category.settings.title %}
+            {% endif %}
             <li class="apgo-faq__category-item">
               <a
                 class="apgo-faq__category-link"
@@ -70,7 +80,7 @@
                 data-faq-nav-link
                 data-faq-desktop-link
               >
-                {{ category.settings.title }}
+                {{ category_title_translated }}
               </a>
             </li>
           {% endfor %}
@@ -84,9 +94,14 @@
             {% assign category_key = category.id %}
           {% endif %}
           {% assign category_anchor = category_key | handleize %}
+          {% assign category_locale_key = 'apgo_faq.categories.' | append: category_key %}
+          {% assign category_title_translated = category_locale_key | t %}
+          {% if category_title_translated contains 'translation missing' or category_title_translated == category_locale_key %}
+            {% assign category_title_translated = category.settings.title %}
+          {% endif %}
 
           <section class="apgo-faq__group" id="faq-category-{{ section.id }}-{{ category_anchor }}" data-faq-group>
-            <h3 class="apgo-faq__group-title">{{ category.settings.title }}</h3>
+            <h3 class="apgo-faq__group-title">{{ category_title_translated }}</h3>
 
             <div class="apgo-faq__qa-list">
               {% assign has_qa = false %}
@@ -94,12 +109,22 @@
                 {% assign qa_category_key = qa.settings.category_key | strip %}
                 {% if qa_category_key == category_key %}
                   {% assign has_qa = true %}
+                  {% assign qa_question_locale_key = 'apgo_faq.qas.' | append: qa.id | append: '.question' %}
+                  {% assign qa_answer_locale_key = 'apgo_faq.qas.' | append: qa.id | append: '.answer' %}
+                  {% assign qa_question_translated = qa_question_locale_key | t %}
+                  {% assign qa_answer_translated = qa_answer_locale_key | t %}
+                  {% if qa_question_translated contains 'translation missing' or qa_question_translated == qa_question_locale_key %}
+                    {% assign qa_question_translated = qa.settings.question %}
+                  {% endif %}
+                  {% if qa_answer_translated contains 'translation missing' or qa_answer_translated == qa_answer_locale_key %}
+                    {% assign qa_answer_translated = qa.settings.answer %}
+                  {% endif %}
                   <article class="apgo-faq__qa-item">
                     <button class="apgo-faq__question" type="button" aria-expanded="false" data-faq-question>
-                      <span class="apgo-faq__question-text">{{ qa.settings.question }}</span>
+                      <span class="apgo-faq__question-text">{{ qa_question_translated }}</span>
                       <span class="apgo-faq__icon" aria-hidden="true"></span>
                     </button>
-                    <div class="apgo-faq__answer rte" data-faq-answer hidden>{{ qa.settings.answer }}</div>
+                    <div class="apgo-faq__answer rte" data-faq-answer hidden>{{ qa_answer_translated }}</div>
                   </article>
                 {% endif %}
               {% endfor %}
