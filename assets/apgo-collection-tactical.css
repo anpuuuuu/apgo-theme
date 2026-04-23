@@ -1,0 +1,304 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700;800&display=swap');
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   APGO COLLECTION — TACTICAL RESKIN
+   Scope: collection page only (.main-collection-zgrid + surrounding)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* ─── TACTICAL PAGE HEADER ─────────────────────────────────── */
+.apgo-tac-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 28px 16px 12px;
+  background: #000;
+}
+
+@media screen and (width >= 750px) {
+  .apgo-tac-page-header {
+    padding: 40px 40px 16px;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: calc(100% * 2 / 3);
+    margin-inline: auto;
+  }
+}
+
+.apgo-tac-title-block {
+  min-width: 0;
+}
+
+.apgo-tac-title {
+  font-size: clamp(1.75rem, 7vw, 3.5rem);
+  font-weight: 900;
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: #ffffff;
+  margin: 0 0 6px;
+}
+
+.apgo-tac-subtitle {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  margin: 0;
+}
+
+/* ─── GRID SWITCHER (mobile / tablet only) ──────────────────── */
+.apgo-tac-grid-switcher {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+  margin-left: 16px;
+}
+
+@media screen and (width >= 1024px) {
+  .apgo-tac-grid-switcher {
+    display: none;
+  }
+}
+
+.apgo-tac-sw-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  color: #444;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.apgo-tac-sw-btns {
+  display: flex;
+  background: #1a1a1a;
+  padding: 3px;
+  border-radius: 7px;
+  border: 1px solid #2a2a2a;
+  gap: 2px;
+}
+
+.apgo-tac-sw-btn {
+  width: 34px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #555;
+  border-radius: 4px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.apgo-tac-sw-btn.active {
+  background: #f08418;
+  color: #000;
+}
+
+.apgo-tac-sw-btn:active {
+  transform: scale(0.9);
+}
+
+/* ─── COLLECTION HERO BANNER ───────────────────────────────── */
+.apgo-tac-hero {
+  position: relative;
+  height: 200px;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 24px 20px;
+  overflow: hidden;
+}
+
+@media screen and (width >= 750px) {
+  .apgo-tac-hero {
+    height: 300px;
+    padding: 40px 48px;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: calc(100% * 2 / 3);
+    margin-inline: auto;
+  }
+}
+
+/* dark gradient overlay from left */
+.apgo-tac-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.88) 0%,
+    rgba(0, 0, 0, 0.45) 55%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
+  pointer-events: none;
+}
+
+/* bottom fade for text legibility */
+.apgo-tac-hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent);
+  pointer-events: none;
+}
+
+.apgo-tac-hero__inner {
+  position: relative;
+  z-index: 1;
+}
+
+.apgo-tac-hero__tag {
+  display: block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 800;
+  color: #f08418;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  margin-bottom: 8px;
+}
+
+.apgo-tac-hero__title {
+  font-size: clamp(1.5rem, 5vw, 2.8rem);
+  font-weight: 900;
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  color: #fff;
+  margin: 0 0 16px;
+}
+
+.apgo-tac-hero__cta {
+  display: inline-block;
+  background: #fff;
+  color: #000;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  padding: 10px 22px;
+  border-radius: 2px;
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s;
+}
+
+.apgo-tac-hero__cta:hover {
+  background: #f08418;
+  color: #000;
+}
+
+/* ─── CARD BORDERS — tactical 2px border + orange hover ────── */
+.main-collection-zgrid
+  ul.product-grid[product-grid-view='default']
+  .product-grid__item:not(.product-grid__item--z-spacer) {
+  border: 2px solid #262626 !important;
+  /* override the 1px box-shadow border from base styles */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.38) !important;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.3s ease,
+    transform 0.3s ease !important;
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .main-collection-zgrid
+    ul.product-grid[product-grid-view='default']
+    .product-grid__item:not(.product-grid__item--z-spacer):hover {
+    border-color: #f08418 !important;
+    box-shadow:
+      0 14px 36px rgba(0, 0, 0, 0.48),
+      0 0 22px rgba(240, 132, 24, 0.14) !important;
+    transform: translateY(-2px) !important;
+  }
+}
+
+@media (hover: none) {
+  .main-collection-zgrid
+    ul.product-grid[product-grid-view='default']
+    .product-grid__item:not(.product-grid__item--z-spacer):active {
+    border-color: #f08418 !important;
+  }
+}
+
+/* ─── MOBILE GRID SWITCHER — col layout overrides ─────────── */
+@media screen and (width < 1024px) {
+  /* 1-col: list view */
+  .main-collection-zgrid
+    ul.product-grid[data-tac-cols='1'][product-grid-view='default'] {
+    grid-template-columns: 1fr !important;
+    gap: 10px 10px !important;
+  }
+
+  /* 4-col: thumbnail view */
+  .main-collection-zgrid
+    ul.product-grid[data-tac-cols='4'][product-grid-view='default'] {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 5px 5px !important;
+  }
+
+  /* 4-col: hide text block, show image only */
+  .main-collection-zgrid
+    ul.product-grid[data-tac-cols='4']
+    .product-grid__item:not(.product-grid__item--z-spacer)
+    .group-block {
+    display: none !important;
+  }
+}
+
+/* ─── COLLECTION-LINKS — tactical pill tabs ─────────────────── */
+
+/* base pill style */
+.collection-links--catalog-hub .collection-links__link {
+  font-family: 'JetBrains Mono', monospace !important;
+  font-weight: 800 !important;
+  font-size: 12px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+  padding: 10px 18px !important;
+  border-radius: 8px !important;
+  border: 2px solid #2e2e2e !important;
+  background: #181818 !important;
+  color: #888 !important;
+  white-space: nowrap;
+  transition: all 0.2s !important;
+  text-decoration: none !important;
+}
+
+/* active pill: orange fill + glow */
+.collection-links--catalog-hub .collection-links__link.apgo-catalog-hub-link--active {
+  color: #000 !important;
+  background: #f08418 !important;
+  border-color: #f08418 !important;
+  box-shadow: 0 0 18px rgba(240, 132, 24, 0.42) !important;
+  opacity: 1 !important;
+}
+
+/* suppress the default underline indicator */
+.collection-links--catalog-hub
+  .collection-links__link.apgo-catalog-hub-link--active::before {
+  display: none !important;
+}
+
+/* tighten pill row gap */
+.collection-links--catalog-hub
+  collection-links-component[layout='text']
+  .collection-links__container {
+  gap: 8px !important;
+  padding-block: 10px 12px !important;
+}

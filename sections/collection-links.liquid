@@ -262,6 +262,44 @@
   .collection-links__link.apgo-catalog-hub-link--active::before {
     width: 100%;
   }
+
+  /* ── Tactical pill tabs (apgo-collection-tactical.css handles heavy lifting;
+        these inline rules load with the section to prevent FOUC) ──────────── */
+  .collection-links--catalog-hub .collection-links__link {
+    font-family: 'JetBrains Mono', monospace !important;
+    font-weight: 800 !important;
+    font-size: 12px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.06em !important;
+    padding: 10px 18px !important;
+    border-radius: 8px !important;
+    border: 2px solid #2e2e2e !important;
+    background: #181818 !important;
+    color: #888 !important;
+    text-decoration: none !important;
+    white-space: nowrap;
+    transition: all 0.2s !important;
+  }
+
+  .collection-links--catalog-hub .collection-links__link.apgo-catalog-hub-link--active {
+    color: #000 !important;
+    background: #f08418 !important;
+    border-color: #f08418 !important;
+    box-shadow: 0 0 18px rgba(240, 132, 24, 0.42) !important;
+    opacity: 1 !important;
+  }
+
+  .collection-links--catalog-hub
+    .collection-links__link.apgo-catalog-hub-link--active::before {
+    display: none !important;
+  }
+
+  .collection-links--catalog-hub
+    collection-links-component[layout='text']
+    .collection-links__container {
+    gap: 8px !important;
+    padding-block: 10px 12px !important;
+  }
 {% endstylesheet %}
 
 {% schema %}
