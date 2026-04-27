@@ -552,6 +552,23 @@
     height: 100dvh;
   }
 
+  /*
+    Scroll 區轉為 flex column，預覽區用 flex-grow 吃掉下方多餘空間 →
+    圖片自動變大；超過上限就停下，避免畸形撐大。
+    其他子元素 flex-shrink:0，避免變體卡片被壓縮。
+  */
+  #apgoCollectionVariantShell .apgo-variant-modal-scroll {
+    display: flex;
+    flex-direction: column;
+  }
+
+  #apgoCollectionVariantShell .apgo-modal-header,
+  #apgoCollectionVariantShell .apgo-variant-section,
+  #apgoCollectionVariantShell .apgo-quantity-selector,
+  #apgoCollectionVariantShell .apgo-modal-total-line {
+    flex-shrink: 0;
+  }
+
   #apgoCollectionVariantShell .apgo-modal-header {
     padding-top: max(8px, env(safe-area-inset-top, 0));
     margin-bottom: 10px;
@@ -561,15 +578,26 @@
     font-size: 1.1rem;
   }
 
-  /* 縮小產品預覽區，把空間還給變體與按鈕 */
+  /* 預覽區：彈性放大、有最大上限，避免空位浪費同時不過頭 */
   #apgoCollectionVariantShell .apgo-modal-product-preview {
+    flex: 1 1 auto;
     gap: 8px;
     padding: 10px;
     margin-bottom: 14px;
+    justify-content: center;
+    /* 最低保留 ≈ 圖 140 + 名稱描述兩行；最高不超過視窗一半 */
+    min-height: 200px;
+    max-height: min(50dvh, 360px);
   }
 
   #apgoCollectionVariantShell .apgo-modal-product-image {
-    max-width: min(140px, 38vw);
+    width: auto;
+    max-width: min(280px, 70vw);
+    height: 100%;
+    max-height: min(280px, 40dvh);
+    aspect-ratio: 1;
+    object-fit: contain;
+    flex: 0 1 auto;
   }
 
   #apgoCollectionVariantShell .apgo-modal-product-name {
