@@ -1212,6 +1212,146 @@
     }
   }
 
+  /*
+    手機端 (≤749px)：把變體選擇模態框拉到滿版，
+    讓使用者進來就能一頁看完所有資訊，不需要捲動，
+    也不在頂部留任何空白。同時縮小圖片、變體卡片字體與 padding。
+  */
+  @media (max-width: 749px) {
+    .apgo-variant-modal {
+      top: 0;
+      bottom: 0;
+      max-height: 100dvh;
+      height: 100dvh;
+      border-radius: 0;
+      transform: translateY(100%);
+    }
+
+    .apgo-variant-modal.active {
+      transform: translateY(0);
+    }
+
+    .apgo-variant-modal-inner {
+      max-height: 100dvh;
+      height: 100dvh;
+    }
+
+    .apgo-modal-header {
+      padding-top: max(8px, env(safe-area-inset-top, 0));
+      margin-bottom: 10px;
+    }
+
+    .apgo-modal-title {
+      font-size: 1.1rem;
+    }
+
+    /* 縮小產品預覽區，把空間還給變體與按鈕 */
+    .apgo-pdp-variant-shell .apgo-modal-product-preview {
+      gap: 8px;
+      padding: 10px;
+      margin-bottom: 14px;
+    }
+
+    .apgo-pdp-variant-shell .apgo-modal-product-image {
+      max-width: min(140px, 38vw);
+    }
+
+    .apgo-modal-product-name {
+      font-size: 0.95rem;
+      margin-bottom: 2px;
+    }
+
+    .apgo-modal-product-desc {
+      font-size: 0.78rem;
+      line-height: 1.35;
+    }
+
+    /* 變體卡片：縮小 padding 與字體 */
+    .apgo-variant-section {
+      margin-bottom: 14px;
+    }
+
+    .apgo-variant-label {
+      font-size: 0.78rem;
+      margin-bottom: 8px;
+    }
+
+    .apgo-variant-options {
+      gap: 8px;
+    }
+
+    .apgo-variant-option {
+      padding: 12px 12px 30px 12px;
+      border-radius: 10px;
+    }
+
+    .apgo-variant-name {
+      font-size: 0.85rem;
+      margin-bottom: 2px;
+      line-height: 1.25;
+    }
+
+    .apgo-variant-price {
+      font-size: 0.92rem;
+      bottom: 6px;
+      left: 12px;
+    }
+
+    .apgo-variant-quantity {
+      font-size: 0.7rem;
+      bottom: 6px;
+      right: 8px;
+    }
+
+    .apgo-variant-option.selected::after {
+      width: 16px;
+      height: 16px;
+      font-size: 0.7rem;
+      top: 6px;
+      right: 6px;
+    }
+
+    /* 數量區更緊湊 */
+    .apgo-quantity-selector {
+      margin-bottom: 14px;
+    }
+
+    .apgo-quantity-label {
+      font-size: 0.8rem;
+      margin-bottom: 8px;
+    }
+
+    .apgo-quantity-controls {
+      gap: 12px;
+      padding: 6px;
+    }
+
+    .apgo-quantity-btn {
+      width: 32px;
+      height: 32px;
+      font-size: 1.05rem;
+    }
+
+    .apgo-quantity-value {
+      font-size: 1.05rem;
+      min-width: 32px;
+    }
+
+    .apgo-modal-total-line {
+      font-size: 0.88rem;
+      margin-bottom: 12px;
+    }
+
+    .apgo-modal-total-line .apgo-modal-total-amount {
+      font-size: 1.1rem;
+    }
+
+    .apgo-modal-btn {
+      padding: 12px;
+      font-size: 0.95rem;
+    }
+  }
+
   /* 變體選擇區 */
   .apgo-variant-section {
     margin-bottom: 24px;
