@@ -268,6 +268,17 @@ function openDrawer(data, initialVariantId) {
   shell.setAttribute('aria-hidden', 'false');
   document.body.classList.add('apgo-collection-variant-open');
 
+  /*
+    鎖住背景捲動。iOS Safari 對 body{overflow:hidden} 不生效，需要 position:fixed
+    並把目前 scrollY 寫入 body.style.top；關閉時還原 scroll 位置。
+  */
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  if (isIOS) {
+    state._lockedScrollY = window.scrollY;
+    document.body.style.top = `-${state._lockedScrollY}px`;
+    document.body.classList.add('apgo-collection-variant-ios-lock');
+  }
+
   requestAnimationFrame(() => {
     overlay.classList.add('active');
     modal.classList.add('active');
@@ -293,6 +304,15 @@ function closeDrawer() {
   shell.classList.remove('active');
   shell.setAttribute('aria-hidden', 'true');
   document.body.classList.remove('apgo-collection-variant-open');
+
+  /* 還原 iOS scroll 鎖（記得在移除 position:fixed 之後 scrollTo 還原 Y） */
+  if (document.body.classList.contains('apgo-collection-variant-ios-lock')) {
+    document.body.classList.remove('apgo-collection-variant-ios-lock');
+    document.body.style.top = '';
+    const restoreY = state._lockedScrollY || 0;
+    state._lockedScrollY = null;
+    requestAnimationFrame(() => window.scrollTo(0, restoreY));
+  }
 
   window.setTimeout(() => {
     const inner = document.getElementById('apgoCollectionVariantModalInner');

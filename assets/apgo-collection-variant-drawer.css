@@ -766,6 +766,22 @@
   }
 }
 
+/*
+  鎖住背景頁面捲動：
+  - 一般環境 overflow:hidden 已足夠
+  - iOS Safari overflow:hidden 對 body 無效，需 position:fixed 把 viewport 釘住
+    (JS 在開啟時記下 scrollY 寫入 body.style.top，關閉時還原)
+*/
 body.apgo-collection-variant-open {
+  overflow: hidden;
+}
+
+body.apgo-collection-variant-open.apgo-collection-variant-ios-lock {
+  position: fixed;
+  width: 100%;
+  inset-inline: 0;
+}
+
+html:has(body.apgo-collection-variant-open) {
   overflow: hidden;
 }
