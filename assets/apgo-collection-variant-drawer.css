@@ -528,6 +528,146 @@
   }
 }
 
+/*
+  手機端 (≤749px)：把變體選擇模態框拉到滿版（與 PDP 同步），
+  讓使用者進來就能一頁看完所有資訊，不需要捲動，也不在頂部留空白。
+  同時縮小圖片、變體卡片字體與 padding。
+*/
+@media (max-width: 749px) {
+  #apgoCollectionVariantShell .apgo-variant-modal {
+    top: 0;
+    bottom: 0;
+    max-height: 100dvh;
+    height: 100dvh;
+    border-radius: 0;
+    transform: translateY(100%);
+  }
+
+  #apgoCollectionVariantShell .apgo-variant-modal.active {
+    transform: translateY(0);
+  }
+
+  #apgoCollectionVariantShell .apgo-variant-modal-inner {
+    max-height: 100dvh;
+    height: 100dvh;
+  }
+
+  #apgoCollectionVariantShell .apgo-modal-header {
+    padding-top: max(8px, env(safe-area-inset-top, 0));
+    margin-bottom: 10px;
+  }
+
+  #apgoCollectionVariantShell .apgo-modal-title {
+    font-size: 1.1rem;
+  }
+
+  /* 縮小產品預覽區，把空間還給變體與按鈕 */
+  #apgoCollectionVariantShell .apgo-modal-product-preview {
+    gap: 8px;
+    padding: 10px;
+    margin-bottom: 14px;
+  }
+
+  #apgoCollectionVariantShell .apgo-modal-product-image {
+    max-width: min(140px, 38vw);
+  }
+
+  #apgoCollectionVariantShell .apgo-modal-product-name {
+    font-size: 0.95rem;
+    margin-bottom: 2px;
+  }
+
+  #apgoCollectionVariantShell .apgo-modal-product-desc {
+    font-size: 0.78rem;
+    line-height: 1.35;
+  }
+
+  /* 變體卡片：縮小 padding 與字體 */
+  #apgoCollectionVariantShell .apgo-variant-section {
+    margin-bottom: 14px;
+  }
+
+  #apgoCollectionVariantShell .apgo-variant-label {
+    font-size: 0.78rem;
+    margin-bottom: 8px;
+  }
+
+  #apgoCollectionVariantShell .apgo-variant-options {
+    gap: 8px;
+  }
+
+  #apgoCollectionVariantShell .apgo-variant-option {
+    padding: 12px 12px 30px 12px;
+    border-radius: 10px;
+  }
+
+  #apgoCollectionVariantShell .apgo-variant-name {
+    font-size: 0.85rem;
+    margin-bottom: 2px;
+    line-height: 1.25;
+  }
+
+  #apgoCollectionVariantShell .apgo-variant-price {
+    font-size: 0.92rem;
+    bottom: 6px;
+    left: 12px;
+  }
+
+  #apgoCollectionVariantShell .apgo-variant-quantity {
+    font-size: 0.7rem;
+    bottom: 6px;
+    right: 8px;
+  }
+
+  #apgoCollectionVariantShell .apgo-variant-option.selected::after {
+    width: 16px;
+    height: 16px;
+    font-size: 0.7rem;
+    top: 6px;
+    right: 6px;
+  }
+
+  /* 數量區更緊湊 */
+  #apgoCollectionVariantShell .apgo-quantity-selector {
+    margin-bottom: 14px;
+  }
+
+  #apgoCollectionVariantShell .apgo-quantity-label {
+    font-size: 0.8rem;
+    margin-bottom: 8px;
+  }
+
+  #apgoCollectionVariantShell .apgo-quantity-controls {
+    gap: 12px;
+    padding: 6px;
+  }
+
+  #apgoCollectionVariantShell .apgo-quantity-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 1.05rem;
+  }
+
+  #apgoCollectionVariantShell .apgo-quantity-value {
+    font-size: 1.05rem;
+    min-width: 32px;
+  }
+
+  #apgoCollectionVariantShell .apgo-modal-total-line {
+    font-size: 0.88rem;
+    margin-bottom: 12px;
+  }
+
+  #apgoCollectionVariantShell .apgo-modal-total-amount {
+    font-size: 1.1rem;
+  }
+
+  #apgoCollectionVariantShell .apgo-modal-btn {
+    padding: 12px;
+    font-size: 0.95rem;
+  }
+}
+
 @media (min-width: 1024px) {
   #apgoCollectionVariantShell .apgo-modal-overlay {
     position: absolute;
