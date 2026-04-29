@@ -113,14 +113,6 @@
             "answer": "<p>For beginners, we usually recommend Atomic Crystal Coating or Atomic Sealing Coating because these wet-application formulas are easier to handle and provide reliable performance in daily use.</p>"
           }
         },
-        "qa_ps_02": {
-          "type": "qa",
-          "settings": {
-            "category_key": "product-selection",
-            "question": "What are the main differences in the Atomic coating series?",
-            "answer": "<p>Atomic Car Nano Coating (Orange): Our basic version<br/><br/>Atomic Crystal Car Nano Coating (Dark Green): Upgraded version, improved dust resistance and hydrophobicity<br/><br/>Atomic Sealing Car Nano Coating (Brown): Upgraded version, improved durability and wash resistance<br/><br/>Atomic Glaze Car Nano Coating (Light Green): Comprehensive upgrade, upgraded in all aspect<br/><br/>Atomic Aurora Coating (Light Blue): Our latest coating in the atomic series coating.  It is the strongest in the atomic coating series and has 6 stars across all functions.</p>"
-          }
-        },
         "qa_8LkRDQ": {
           "type": "qa",
           "settings": {
@@ -222,7 +214,6 @@
         "qa_am_05",
         "category_product_selection",
         "qa_ps_01",
-        "qa_ps_02",
         "qa_8LkRDQ",
         "qa_ps_03",
         "qa_ps_04",
