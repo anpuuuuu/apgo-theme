@@ -1,12 +1,16 @@
 {%- liquid
-  # Hero 影片來源優先順序（URL 優先，避免 type:video 對非 Video 類別檔案返回 blank sources）：
-  # 1) section.settings.hero_video_url（type: text，最直接、最可控）
-  # 2) section.settings.hero_video（type: video，從 Files 挑選；遍歷 sources 取 mp4）
+  # Hero 影片來源優先順序（picker 優先；picker 無有效 sources 時才退回 URL）：
+  # 1) section.settings.hero_video（type: video，從 Files 挑選；遍歷 sources 取 mp4）
+  # 2) section.settings.hero_video_url（type: text，當 picker 無法解出時的備用）
   # 都空 → 不渲染 <video>，避免回到舊片
   assign hero_video_src = ''
-  if section.settings.hero_video_url != blank
-    assign hero_video_src = section.settings.hero_video_url | strip
-  elsif section.settings.hero_video != blank and section.settings.hero_video.sources != blank
+  assign hv_sources_size = 0
+  assign hv_first_url = ''
+  if section.settings.hero_video != blank and section.settings.hero_video.sources != blank
+    assign hv_sources_size = section.settings.hero_video.sources.size
+    if section.settings.hero_video.sources.first
+      assign hv_first_url = section.settings.hero_video.sources.first.url
+    endif
     for source in section.settings.hero_video.sources
       if source.format == 'mp4'
         assign hero_video_src = source.url
@@ -17,8 +21,11 @@
       assign hero_video_src = section.settings.hero_video.sources.first.url
     endif
   endif
+  if hero_video_src == blank and section.settings.hero_video_url != blank
+    assign hero_video_src = section.settings.hero_video_url | strip
+  endif
 -%}
-<!-- apgo-debug: hero_video_src="{{ hero_video_src }}" hv="{{ section.settings.hero_video }}" hvu="{{ section.settings.hero_video_url }}" -->
+<!-- apgo-debug: hero_video_src="{{ hero_video_src }}" hv_present="{% if section.settings.hero_video != blank %}1{% else %}0{% endif %}" hv_sources_size="{{ hv_sources_size }}" hv_first_url="{{ hv_first_url }}" hvu="{{ section.settings.hero_video_url }}" -->
 <section class="apgo-about-page">
   <section class="apgo-hero-video" id="apgoHeroVideoSection">
     {%- if hero_video_src != blank -%}
