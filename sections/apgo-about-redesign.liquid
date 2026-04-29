@@ -1,10 +1,12 @@
 {%- liquid
-  # Hero 影片來源優先順序：
-  # 1) Shopify 檔案庫挑選的 video（section.settings.hero_video，type: video）
-  # 2) 編輯器手貼的 video URL（section.settings.hero_video_url，type: text，可以是任意 .mp4 直連）
-  # 沒有任何來源時保留空字串 → <source src=""> 不渲染影片，避免又回到舊片
+  # Hero 影片來源優先順序（URL 優先，避免 type:video 對非 Video 類別檔案返回 blank sources）：
+  # 1) section.settings.hero_video_url（type: text，最直接、最可控）
+  # 2) section.settings.hero_video（type: video，從 Files 挑選；遍歷 sources 取 mp4）
+  # 都空 → 不渲染 <video>，避免回到舊片
   assign hero_video_src = ''
-  if section.settings.hero_video != blank
+  if section.settings.hero_video_url != blank
+    assign hero_video_src = section.settings.hero_video_url | strip
+  elsif section.settings.hero_video != blank and section.settings.hero_video.sources != blank
     for source in section.settings.hero_video.sources
       if source.format == 'mp4'
         assign hero_video_src = source.url
@@ -15,10 +17,8 @@
       assign hero_video_src = section.settings.hero_video.sources.first.url
     endif
   endif
-  if hero_video_src == blank and section.settings.hero_video_url != blank
-    assign hero_video_src = section.settings.hero_video_url | strip
-  endif
 -%}
+{%- comment -%} apgo-debug: hero_video_src="{{ hero_video_src }}" hv="{{ section.settings.hero_video }}" hvu="{{ section.settings.hero_video_url }}" {%- endcomment -%}
 <section class="apgo-about-page">
   <section class="apgo-hero-video" id="apgoHeroVideoSection">
     {%- if hero_video_src != blank -%}
