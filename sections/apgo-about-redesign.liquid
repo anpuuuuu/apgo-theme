@@ -1,8 +1,8 @@
 {%- liquid
   # Hero 影片來源優先順序：
-  # 1) Shopify 檔案庫挑選的 video（section.settings.hero_video）
-  # 2) 編輯器手貼的 video URL（section.settings.hero_video_url）
-  # 3) 既有寫死的 fallback URL（保留向下相容，避免清空時 hero 區段空白）
+  # 1) Shopify 檔案庫挑選的 video（section.settings.hero_video，type: video）
+  # 2) 編輯器手貼的 video URL（section.settings.hero_video_url，type: text，可以是任意 .mp4 直連）
+  # 沒有任何來源時保留空字串 → <source src=""> 不渲染影片，避免又回到舊片
   assign hero_video_src = ''
   if section.settings.hero_video != blank
     for source in section.settings.hero_video.sources
@@ -11,18 +11,17 @@
         break
       endif
     endfor
-    # 沒有 mp4 就退回第一個 source（webm/mov 等）
     if hero_video_src == blank and section.settings.hero_video.sources.first
       assign hero_video_src = section.settings.hero_video.sources.first.url
     endif
-  elsif section.settings.hero_video_url != blank
-    assign hero_video_src = section.settings.hero_video_url
-  else
-    assign hero_video_src = 'https://cdn.shopify.com/videos/c/o/v/9436e1292daf44e0b1b81614e9def543.mp4'
+  endif
+  if hero_video_src == blank and section.settings.hero_video_url != blank
+    assign hero_video_src = section.settings.hero_video_url | strip
   endif
 -%}
 <section class="apgo-about-page">
   <section class="apgo-hero-video" id="apgoHeroVideoSection">
+    {%- if hero_video_src != blank -%}
     <video
       id="apgoAboutVideo"
       class="apgo-about-video"
@@ -35,6 +34,7 @@
     >
       <source src="{{ hero_video_src }}" type="video/mp4">
     </video>
+    {%- endif -%}
     <div class="apgo-video-controls">
       <button type="button" id="apgoSoundToggle" class="apgo-video-control-btn" aria-label="Toggle sound">🔇</button>
       <button type="button" id="apgoFullscreenToggle" class="apgo-video-control-btn" aria-label="Fullscreen">⛶</button>
@@ -270,10 +270,10 @@
       "info": "優先使用此處選擇的影片。若留空則改用下方 URL；都留空則用內建預設影片。"
     },
     {
-      "type": "url",
+      "type": "text",
       "id": "hero_video_url",
       "label": "Hero video URL (fallback)",
-      "info": "貼上 .mp4 直連 URL（例如 Shopify Files 連結）。僅在上方未選擇影片時生效。"
+      "info": "貼上 .mp4 直連 URL（例如 Shopify Files 的 cdn.shopify.com/... 連結）。僅在上方未選擇影片時生效。改成純文字輸入，避免 type:url 的內部資源轉換造成連結讀不到。"
     },
     {
       "type": "image_picker",
