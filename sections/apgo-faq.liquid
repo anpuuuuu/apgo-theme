@@ -113,10 +113,17 @@
                   {% assign qa_answer_locale_key = 'apgo_faq.qas.' | append: qa.id | append: '.answer' %}
                   {% assign qa_question_translated = qa_question_locale_key | t %}
                   {% assign qa_answer_translated = qa_answer_locale_key | t %}
-                  {% if qa_question_translated contains 'translation missing' or qa_question_translated == qa_question_locale_key %}
+                  {%- comment -%}
+                    Shopify 的 t filter 找不到 key 時會輸出 "Translation missing: ..."（首字大寫），
+                    原本用 contains 'translation missing'（全小寫）比對 → 大小寫不符永遠 false → 回退分支從未觸發。
+                    用 downcase 後比對；同時若是 storefront 偶爾返回 key 本身也視為失敗。
+                  {%- endcomment -%}
+                  {% assign qa_question_translated_lc = qa_question_translated | downcase %}
+                  {% assign qa_answer_translated_lc = qa_answer_translated | downcase %}
+                  {% if qa_question_translated_lc contains 'translation missing' or qa_question_translated == qa_question_locale_key %}
                     {% assign qa_question_translated = qa.settings.question %}
                   {% endif %}
-                  {% if qa_answer_translated contains 'translation missing' or qa_answer_translated == qa_answer_locale_key %}
+                  {% if qa_answer_translated_lc contains 'translation missing' or qa_answer_translated == qa_answer_locale_key %}
                     {% assign qa_answer_translated = qa.settings.answer %}
                   {% endif %}
                   <article class="apgo-faq__qa-item">
