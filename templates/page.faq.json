@@ -132,7 +132,7 @@
           "settings": {
             "category_key": "product-selection",
             "question": "What are the main differences in the Atomic coating series?",
-            "answer": "<p>Atomic (Orange) is the baseline version; Crystal (Dark Green) improves hydrophobicity and dust resistance; Sealing (Brown) enhances durability and wash resistance; Glaze (Light Green) is an all-round upgrade; Aurora (Light Blue) is the strongest option in the Atomic series.</p>"
+            "answer": "<p>Atomic Car Nano Coating (Orange): Our basic version<br/><br/>Atomic Crystal Car Nano Coating (Dark Green): Upgraded version, improved dust resistance and hydrophobicity<br/><br/>Atomic Sealing Car Nano Coating (Brown): Upgraded version, improved durability and wash resistance<br/><br/>Atomic Glaze Car Nano Coating (Light Green): Comprehensive upgrade, upgraded in all aspect<br/><br/>Atomic Aurora Coating (Light Blue): Our latest coating in the atomic series coating.  It is the strongest in the atomic coating series and has 6 stars across all functions.</p>"
           }
         },
         "qa_ps_03": {
@@ -183,14 +183,6 @@
             "answer": "<p>Price differences may occur due to platform campaigns, exchange rates, logistics costs, payment processing fees, and regional operating expenses.</p>"
           }
         },
-        "qa_sp_03": {
-          "type": "qa",
-          "settings": {
-            "category_key": "support-policies",
-            "question": "What is your refund policy?",
-            "answer": "<p>The 15-day trial refund policy applies only to the 30ml trial bottle and coating cloth. Other opened, used, or damaged items are not eligible. Refund requests must be submitted through the original purchase platform.</p>"
-          }
-        },
         "qa_sp_04": {
           "type": "qa",
           "settings": {
@@ -231,7 +223,6 @@
         "qa_so_02",
         "qa_so_03",
         "qa_so_04",
-        "qa_sp_03",
         "qa_sp_04",
         "qa_sp_05"
       ],
