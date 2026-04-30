@@ -1,6 +1,6 @@
 /*
  * ------------------------------------------------------------
- * product.v3 — APGO 商品詳情（metafield 驅動，見 APGO sections/apgo_product_page）
+ * product.v3 — APGO 商品詳情（metafield 驅動，section：apgo_product_page_v3）
  * ------------------------------------------------------------
  */
 {
@@ -362,7 +362,7 @@
       }
     },
     "apgo_product_v3": {
-      "type": "apgo_product_page",
+      "type": "apgo_product_page_v3",
       "blocks": {
         "badge_a": {
           "type": "badge",
