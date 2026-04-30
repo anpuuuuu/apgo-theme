@@ -695,22 +695,16 @@
     object-fit: contain;
   }
 
-  /* Review 分頁：不要內層卡片，圖片貼齊 Tabs 區塊左右內邊界 */
-  .apgo-tab-panel--review {
-    margin-left: -16px;
-    margin-right: -16px;
-    width: calc(100% + 32px);
-    max-width: none;
-    box-sizing: border-box;
-    padding: 0;
-  }
-
-  /* Description 分頁圖組：同 Review，滿寬貼邊、無圓角卡片感 */
+  /*
+    Review / Description 分頁：圖片置中、寬度跟著 .apgo-pdp-tabs-inner（桌面 = min(1200px, 66vw) ≈ 2/3，
+    且該容器本身 margin:auto 置中），不再做 negative margin bleed-out。
+  */
+  .apgo-tab-panel--review,
   .apgo-tab-panel--description {
-    margin-left: -16px;
-    margin-right: -16px;
-    width: calc(100% + 32px);
-    max-width: none;
+    width: 100%;
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
     box-sizing: border-box;
     padding: 0 0 8px;
   }
@@ -718,47 +712,24 @@
   .apgo-tab-panel--description .apgo-tab-desc-gallery {
     gap: 0;
     margin-bottom: 0;
+    align-items: center;
   }
 
   .apgo-tab-panel--description .apgo-tab-desc-gallery img,
   .apgo-tab-panel--description .apgo-tab-desc-gallery video {
     border-radius: 0;
     background: #000;
+    margin-left: auto;
+    margin-right: auto;
   }
 
-  /*
-    桌機：tabs-inner 為 min(1200px, 66vw) 且置中，負 margin 只相對「窄欄」計算；
-    需再扣掉「欄在外層留白」slack，圖才會貼齊 .apgo-pdp-tabs 的 padded 區全寬（避免右／左側一條空）。
-    手機：@media max-width 768 仍以 -12px 覆蓋。
-  */
-  @container apgo-pdp-tabs (min-width: 769px) {
-    .apgo-tab-panel--review,
-    .apgo-tab-panel--description {
-      --apgo-tab-col-w: min(1200px, 66cqw);
-      --apgo-tab-edge-slack: max(0px, calc((100cqw - var(--apgo-tab-col-w)) / 2));
-      --apgo-tab-pad-pull: 16px;
-      margin-left: calc((-1 * var(--apgo-tab-pad-pull)) - var(--apgo-tab-edge-slack));
-      margin-right: calc((-1 * var(--apgo-tab-pad-pull)) - var(--apgo-tab-edge-slack));
-      width: calc(100% + (2 * var(--apgo-tab-pad-pull)) + (2 * var(--apgo-tab-edge-slack)));
-    }
-
-    .apgo-tab-panel--description {
-      padding: 0 0 8px;
-    }
-
-    .apgo-tab-panel--review {
-      padding: 0;
-    }
+  .apgo-tab-panel--review .apgo-pdp-review-media-stack {
+    align-items: center;
   }
 
-  /* 桌面側欄開啟：主欄置中 slack 公式不適用（內層改為左對齊＋不同 max-width），維持僅抵銷 tabs padding */
-  @media (min-width: 1024px) {
-    body.apgo-pdp-variant-sidebar-open .apgo-pdp-tabs .apgo-tab-panel--review,
-    body.apgo-pdp-variant-sidebar-open .apgo-pdp-tabs .apgo-tab-panel--description {
-      margin-left: -16px;
-      margin-right: -16px;
-      width: calc(100% + 32px);
-    }
+  .apgo-tab-panel--review .apgo-pdp-review-media-stack img {
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .apgo-pdp-review-media-stack {
@@ -2703,20 +2674,16 @@
       padding: 0 12px 20px;
     }
 
-    .apgo-tab-panel--review {
-      margin-left: -12px;
-      margin-right: -12px;
-      width: calc(100% + 24px);
-    }
-
+    .apgo-tab-panel--review,
     .apgo-tab-panel--description {
-      margin-left: -12px;
-      margin-right: -12px;
-      width: calc(100% + 24px);
+      width: 100%;
+      max-width: 100%;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .apgo-tab-panel--review .apgo-tab-empty {
-      padding-inline: 12px;
+      padding-inline: 0;
     }
 
     .apgo-tab-desc-layout.has-video {
