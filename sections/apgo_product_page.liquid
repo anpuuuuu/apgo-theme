@@ -2338,25 +2338,24 @@
       color: var(--primary-orange);
     }
   }
-  /* 輪播容器樣式 */
+  /* 輪播容器（須於檔末；預設＝窄螢頂對齊、縮頂留白；≥769px 見下方 media） */
   .apgo-product-showcase {
     position: relative;
     z-index: 2;
     height: 100%;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 40px 20px;
-    overflow: hidden; /* 添加這行 */
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 0 12px 40px;
+    overflow: hidden;
   }
 
-  /* 輪播圖片容器 */
   .apgo-carousel-container {
     position: relative;
     width: 100%;
     height: 100%;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
   }
 
@@ -2365,7 +2364,7 @@
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     will-change: transform;
     height: 100%;
-    align-items: center;
+    align-items: flex-start;
   }
 
   .apgo-carousel-slide {
@@ -2373,7 +2372,7 @@
     width: 100%;
     height: 100%;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     position: relative;
   }
@@ -2391,7 +2390,16 @@
     }
 
     .apgo-product-showcase {
+      align-items: center;
+      justify-content: center;
       padding: 24px 16px;
+    }
+
+    .apgo-carousel-container,
+    .apgo-carousel-track,
+    .apgo-carousel-slide {
+      align-items: center;
+      justify-content: center;
     }
   }
 </style>
