@@ -2,6 +2,33 @@
   APGO v3 PDP（程式內容同步自 git be16ff9 的 apgo_product_page）
   檔案: sections/apgo_product_page_v3.liquid｜模板: templates/product.v3.json
 {% endcomment %}
+{% liquid
+  assign subtitle_mf = product.metafields['custom']['product_subtitle']
+  assign product_metafield_subtitle = ''
+  if subtitle_mf != blank
+    assign t_sub = subtitle_mf | metafield_text | strip
+    if t_sub != blank
+      assign product_metafield_subtitle = t_sub
+    elsif subtitle_mf.value != blank
+      assign product_metafield_subtitle = subtitle_mf.value | strip
+    endif
+  endif
+
+  assign subtitle_display = product_metafield_subtitle
+  if subtitle_display == blank
+    assign apgo_sub_mf = product.metafields.apgo.subtitle
+    if apgo_sub_mf != blank
+      assign t_apgo = apgo_sub_mf | metafield_text | strip
+      if t_apgo != blank
+        assign subtitle_display = t_apgo
+      elsif apgo_sub_mf.value != blank
+        assign subtitle_display = apgo_sub_mf.value | strip
+      else
+        assign subtitle_display = apgo_sub_mf | strip
+      endif
+    endif
+  endif
+%}
 <style>
   * {
     margin: 0;

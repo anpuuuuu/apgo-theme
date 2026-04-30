@@ -3,6 +3,33 @@
   新版 metafield / 分頁請用 sections/apgo_product_page_v3.liquid。
   檔案位置: sections/apgo_product_page.liquid
 {% endcomment %}
+{% liquid
+  assign subtitle_mf = product.metafields['custom']['product_subtitle']
+  assign product_metafield_subtitle = ''
+  if subtitle_mf != blank
+    assign t_sub = subtitle_mf | metafield_text | strip
+    if t_sub != blank
+      assign product_metafield_subtitle = t_sub
+    elsif subtitle_mf.value != blank
+      assign product_metafield_subtitle = subtitle_mf.value | strip
+    endif
+  endif
+
+  assign subtitle_display = product_metafield_subtitle
+  if subtitle_display == blank
+    assign apgo_sub_mf = product.metafields.apgo.subtitle
+    if apgo_sub_mf != blank
+      assign t_apgo = apgo_sub_mf | metafield_text | strip
+      if t_apgo != blank
+        assign subtitle_display = t_apgo
+      elsif apgo_sub_mf.value != blank
+        assign subtitle_display = apgo_sub_mf.value | strip
+      else
+        assign subtitle_display = apgo_sub_mf | strip
+      endif
+    endif
+  endif
+%}
 <style>
   * {
     margin: 0;
@@ -393,6 +420,15 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
     margin-bottom: 8px;
+  }
+
+  .apgo-product-metafield-subtitle {
+    margin: 0 auto 10px;
+    max-width: 36rem;
+    font-size: 0.9375rem;
+    font-weight: 400;
+    line-height: 1.45;
+    color: var(--text-gray);
   }
 
   .apgo-product-tagline {
@@ -2446,9 +2482,9 @@
     <section class="apgo-product-info">
       <div class="apgo-product-header">
         <h1 class="apgo-product-name">{{ product.title }}</h1>
-        <p class="apgo-product-tagline">
-          {{ product.metafields.apgo.subtitle | default: section.settings.subtitle_fallback }}
-        </p>
+        {% if subtitle_display != blank %}
+          <p class="apgo-product-metafield-subtitle">{{ subtitle_display | escape }}</p>
+        {% endif %}
       </div>
 
       {% if product.metafields.apgo.performance_metrics.value %}
@@ -2595,8 +2631,8 @@
               {% unless desc_has or how_has or var_has %}
                 {% if loop_desc_has %}
                   {{ looping_description_value | metafield_tag }}
-                {% else %}
-                  <p>{{ section.settings.subtitle_fallback }}</p>
+                {% elsif subtitle_display != blank %}
+                  <p>{{ subtitle_display | escape }}</p>
                 {% endif %}
               {% endunless %}
             {% endif %}
@@ -2865,7 +2901,9 @@
       <div class="apgo-modal-product-info">
         <div class="apgo-modal-product-name">{{ product.title }}</div>
         <div class="apgo-modal-product-desc">
-          {{ product.metafields.apgo.subtitle | default: section.settings.subtitle_fallback }}
+          {% if subtitle_display != blank %}
+            {{ subtitle_display | escape }}
+          {% endif %}
         </div>
       </div>
     </div>
@@ -4087,8 +4125,9 @@ document.addEventListener('DOMContentLoaded', function() {
     {
       "type": "text",
       "id": "subtitle_fallback",
-      "label": "產品副標（預設）",
-      "default": "釉面質感，提升表面滑順與抗污能力"
+      "label": "產品副標（已不使用）",
+      "info": "標題與說明占位請改為商品 Metafields：custom.product_subtitle；相容可用 apgo.subtitle。此欄位已不再套用到畫面。",
+      "default": ""
     },
     {
       "type": "checkbox",
