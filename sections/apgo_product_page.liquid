@@ -515,27 +515,19 @@
     }
   }
 
+  /*
+    Tab 列勿用 sticky：.apgo-product-section 為 overflow-x: hidden，許多環境會讓 sticky 與視窗對齊失準，
+    且 sticky + 整條不透明底會疊在全站馬燈（free-shipping-popup）之上（見該區 z-index）。
+    改為普通文流區塊，捲進頂區時馬燈層級高於區塊預設層級，馬燈不會再被一整條 Tab 底色蓋掉。
+  */
   .apgo-pdp-tablist-wrap {
-    position: sticky;
-    /*
-      top:0 會黏在視窗最頂端，易與吸在 header 下方的全局跑馬燈垂直重疊；
-     且跑馬燈 z-index 為 calc(layer-sticky - 1)，若 Tab 沿用過大的 z-index 會把跑馬燈字遮住。
-      有 free-shipping 跑馬燈時改見下方 :has(...) 規則，對齊 header-group + 跑馬燈條頂緣，
-      --apgo-global-marquee-sticky-height 定義於 free-shipping-popup section。
-    */
-    top: 0;
-    z-index: calc(var(--layer-sticky, 8) + 2);
-    background: rgba(0, 0, 0, 0.94);
-    backdrop-filter: blur(12px);
+    position: static;
+    top: auto;
+    z-index: auto;
+    background: transparent;
     border-bottom: 1px solid rgba(240, 132, 24, 0.22);
     margin: 0 0 12px;
     padding: 6px 0 0;
-  }
-
-  html:has(#shopify-section-free-shipping-popup) .apgo-product-section .apgo-pdp-tablist-wrap {
-    top: calc(
-      var(--header-group-height, 100px) - 1px + env(safe-area-inset-top, 0px) + var(--apgo-global-marquee-sticky-height, 2.875rem)
-    );
   }
 
   .apgo-pdp-tablist {

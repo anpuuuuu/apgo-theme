@@ -136,14 +136,6 @@
   }
 
   /*
-    PDP 等 sticky secondary bar（如 apgo_product_page tabs）對齊 top 時引用。
-    近似於吸頂跑馬燈區塊可視高度（.marquee__sticky-wrap padding + 一行文案）。
-  */
-  html:has(#shopify-section-free-shipping-popup) {
-    --apgo-global-marquee-sticky-height: clamp(38px, 2.875rem, 54px);
-  }
-
-  /*
     直接讓 Shopify 自動產生的 section 外殼 (#shopify-section-free-shipping-popup) 本身吸頂。
     原本 sticky 放在內層 .marquee__sticky-wrap，但它的包含塊正是外殼，而外殼高度等於
     .marquee__sticky-wrap 本身 → sticky 沒有任何可停留的捲動範圍，視覺上就不吸頂。
