@@ -3361,82 +3361,6 @@
           {% endfor %}
         {% elsif use_file_list %}
           {% for file_ref in demo_raw %}
-            {% if forloop.first %}
-              {%- liquid
-                assign dbg_t_video = file_ref.video | file_url
-                assign dbg_t_video_file = file_ref.video_file | file_url
-                assign dbg_t_file = file_ref.file | file_url
-                assign dbg_t_media = file_ref.media | file_url
-                assign dbg_t_source = file_ref.source | file_url
-                assign dbg_t_mp4 = file_ref.mp4 | file_url
-                assign dbg_t_clip = file_ref.clip | file_url
-                assign dbg_t_asset = file_ref.asset | file_url
-                assign dbg_t_upload = file_ref.upload | file_url
-                assign dbg_t_demo_video = file_ref.demo_video | file_url
-                assign dbg_t_self = file_ref | file_url
-                assign dbg_t_poster = file_ref.poster | image_url: width: 80
-                assign dbg_t_cover = file_ref.cover | image_url: width: 80
-                assign dbg_t_preview = file_ref.preview | image_url: width: 80
-                assign dbg_t_thumb = file_ref.thumbnail | image_url: width: 80
-                assign dbg_t_image = file_ref.image | image_url: width: 80
-                assign dbg_t_cover_image = file_ref.cover_image | image_url: width: 80
-                assign dbg_t_poster_image = file_ref.poster_image | image_url: width: 80
-                assign dbg_t_title = file_ref.title
-                assign dbg_t_duration = file_ref.duration
-                assign dbg_t_views = file_ref.views
-                assign dbg_t_sort = file_ref.sort_order
-                assign dbg_t_type = file_ref.type
-                assign dbg_t_sys_type = file_ref.system.type
-                assign dbg_t_sys_handle = file_ref.system.handle
-              -%}
-              {%- comment -%}#region agent log{%- endcomment -%}
-              <script>
-                (function(){
-                  try{
-                    fetch('http://127.0.0.1:7664/ingest/6d6da4c4-6868-481c-8830-6f610c9dd71e',{
-                      method:'POST',
-                      headers:{'Content-Type':'application/json','X-Debug-Session-Id':'0c453c'},
-                      body:JSON.stringify({
-                        sessionId:'0c453c',
-                        runId:'init',
-                        hypothesisId:'H5-fields',
-                        location:'apgo_product_page_v3.liquid:demo_videos for_loop first',
-                        message:'metaobject in-loop probe',
-                        data:{
-                          sysType:{{ dbg_t_sys_type | json }},
-                          sysHandle:{{ dbg_t_sys_handle | json }},
-                          title:{{ dbg_t_title | json }},
-                          duration:{{ dbg_t_duration | json }},
-                          views:{{ dbg_t_views | json }},
-                          sortOrder:{{ dbg_t_sort | json }},
-                          type:{{ dbg_t_type | json }},
-                          self_url:{{ dbg_t_self | json }},
-                          video_url:{{ dbg_t_video | json }},
-                          video_file_url:{{ dbg_t_video_file | json }},
-                          file_url:{{ dbg_t_file | json }},
-                          media_url:{{ dbg_t_media | json }},
-                          source_url:{{ dbg_t_source | json }},
-                          mp4_url:{{ dbg_t_mp4 | json }},
-                          clip_url:{{ dbg_t_clip | json }},
-                          asset_url:{{ dbg_t_asset | json }},
-                          upload_url:{{ dbg_t_upload | json }},
-                          demo_video_url:{{ dbg_t_demo_video | json }},
-                          poster:{{ dbg_t_poster | json }},
-                          cover:{{ dbg_t_cover | json }},
-                          preview:{{ dbg_t_preview | json }},
-                          thumbnail:{{ dbg_t_thumb | json }},
-                          image:{{ dbg_t_image | json }},
-                          cover_image:{{ dbg_t_cover_image | json }},
-                          poster_image:{{ dbg_t_poster_image | json }}
-                        },
-                        timestamp:Date.now()
-                      })
-                    }).catch(function(){});
-                  }catch(e){}
-                })();
-              </script>
-              {%- comment -%}#endregion{%- endcomment -%}
-            {% endif %}
             {% assign video_url = file_ref | file_url %}
             <div
               class="apgo-video-card"
@@ -3479,37 +3403,6 @@
         {% endif %}
       </div>
     </section>
-    {%- comment -%}#region agent log{%- endcomment -%}
-    <script>
-      (function(){
-        try{
-          fetch('http://127.0.0.1:7664/ingest/6d6da4c4-6868-481c-8830-6f610c9dd71e',{
-            method:'POST',
-            headers:{'Content-Type':'application/json','X-Debug-Session-Id':'0c453c'},
-            body:JSON.stringify({
-              sessionId:'0c453c',
-              runId:'post-fix',
-              hypothesisId:'H6-firstDrop',
-              location:'apgo_product_page_v3.liquid:video-showcase render',
-              message:'demo_videos render flags (post-fix)',
-              data:{
-                pdp:'v3',
-                productHandle:'{{ product.handle }}',
-                hasRaw:{% if demo_raw != blank %}true{% else %}false{% endif %},
-                rawSize:{{ demo_raw.size | default: 0 }},
-                useMetaobject:{{ use_metaobject_list }},
-                useFile:{{ use_file_list }},
-                cards:document.querySelectorAll('.apgo-video-showcase .apgo-video-card').length,
-                firstCardVideoUrl:(function(){var c=document.querySelector('.apgo-video-showcase .apgo-video-card');return c?c.getAttribute('data-video-url'):null;})(),
-                firstCardSource:(function(){var c=document.querySelector('.apgo-video-showcase .apgo-video-card');return c?c.getAttribute('data-source'):null;})()
-              },
-              timestamp:Date.now()
-            })
-          }).catch(function(){});
-        }catch(e){}
-      })();
-    </script>
-    {%- comment -%}#endregion{%- endcomment -%}
 
     <section
       class="apgo-pdp-tabs"
@@ -4022,27 +3915,6 @@ let currentQuantity = 1;
 
 
 // === 輪播功能類 ===
-// #region agent log
-(function (w) {
-  w.apgoDbgCarouselIngest = function (hypothesisId, location, message, data) {
-    try {
-      var sec = document.querySelector('.apgo-product-section[data-apgo-pdp]');
-      fetch('http://127.0.0.1:7664/ingest/6d6da4c4-6868-481c-8830-6f610c9dd71e', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '0c453c' },
-        body: JSON.stringify({
-          sessionId: '0c453c',
-          hypothesisId: hypothesisId,
-          location: location,
-          message: message,
-          data: Object.assign({}, data || {}, { pdp: sec ? sec.getAttribute('data-apgo-pdp') : null }),
-          timestamp: Date.now()
-        })
-      }).catch(function () {});
-    } catch (e) {}
-  };
-})(window);
-// #endregion
 class APGOCarousel {
   constructor() {
     this.track = document.getElementById('apgoCarouselTrack');
@@ -4069,38 +3941,12 @@ class APGOCarousel {
       window.addEventListener('resize', this.handleResizeCarousel);
       var self = this;
       var wrap = this.track.parentElement;
-      // #region agent log
-      try {
-        fetch('http://127.0.0.1:7664/ingest/6d6da4c4-6868-481c-8830-6f610c9dd71e', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '0c453c' },
-          body: JSON.stringify({
-            sessionId: '0c453c',
-            runId: 'init',
-            hypothesisId: 'H-initial',
-            location: 'apgo_product_page_v3.liquid:APGOCarousel.constructor',
-            message: 'ctor_wrap_dims',
-            data: {
-              wrapClientW: wrap ? wrap.clientWidth : 0,
-              showcaseCW: self.showcase ? self.showcase.clientWidth : 0,
-              wrapJustifyComputed: wrap
-                ? typeof getComputedStyle !== 'undefined'
-                  ? getComputedStyle(wrap).justifyContent
-                  : ''
-                : ''
-            },
-            timestamp: Date.now()
-          })
-        }).catch(function () {});
-      } catch (e) {}
-      // #endregion
       function applyLayoutPass(tag) {
         if (!self.track || !self.slides.length) return;
         self.track.style.transition = 'none';
         self.syncSlideMetrics();
         var w = self.slideViewportWidth();
         self.track.style.transform = 'translateX(-' + self.currentIndex * w + 'px)';
-        if (self._apgoDbgSnap) self._apgoDbgSnap(tag, 'H-initial');
       }
       if (wrap && wrap.clientWidth > 0) {
         applyLayoutPass('ctor_sync0');
@@ -4151,7 +3997,6 @@ class APGOCarousel {
     this.track.style.transform = `translateX(-${this.currentIndex * w}px)`;
     requestAnimationFrame(() => {
       if (this.track) this.track.style.transition = '';
-      if (this._apgoDbgSnap) this._apgoDbgSnap('after_resize', 'H-layout');
     });
   }
 
@@ -4308,40 +4153,8 @@ class APGOCarousel {
     if (navigator.vibrate) {
       navigator.vibrate(20);
     }
-
-    if (this._apgoDbgSnap) this._apgoDbgSnap('go_' + index, 'H-percent');
   }
 }
-
-// #region agent log
-APGOCarousel.prototype._apgoDbgSnap = function (reason, hypothesisId) {
-  try {
-    var wrap = this.track && this.track.parentElement;
-    var cw = wrap ? wrap.clientWidth : 0;
-    var pct = this.slides.length ? -(this.currentIndex / this.slides.length) * 100 : 0;
-    var vw =
-      cw > 0 ? cw : this.showcase && this.showcase.clientWidth > 0 ? this.showcase.clientWidth : 1;
-    if (!vw || vw < 1) vw = 1;
-    window.apgoDbgCarouselIngest(hypothesisId || 'H-layout', 'APGOCarousel._apgoDbgSnap', reason, {
-      slideCount: this.slides.length,
-      dotCount: document.querySelectorAll('.apgo-dot').length,
-      thumbCount: document.querySelectorAll('.apgo-thumbnail-item').length,
-      currentIndex: this.currentIndex,
-      containerClientW: cw,
-      slideViewportW: vw,
-      containerOffsetW: wrap ? wrap.offsetWidth : 0,
-      trackOffsetW: this.track ? this.track.offsetWidth : 0,
-      trackScrollW: this.track ? this.track.scrollWidth : 0,
-      showcaseClientW: this.showcase ? this.showcase.clientWidth : 0,
-      transform: this.track ? this.track.style.transform : '',
-      legacyExpectedPctHint: pct,
-      expectedTranslatePx: -this.currentIndex * vw,
-      slideWidthMatch:
-        this.slides.length && this.track ? this.track.scrollWidth / this.slides.length : 0
-    });
-  } catch (e) {}
-};
-// #endregion
 
 // === 全局函數定義（重要：必須在全局作用域） ===
 
@@ -5022,12 +4835,6 @@ class APGOVideoPlayerMO {
     const cards = document.querySelectorAll(
       '.apgo-video-showcase .apgo-video-card[data-source="metaobject"], .apgo-video-showcase .apgo-video-card[data-source="file"]'
     );
-    // #region agent log
-    try {
-      var first = cards[0];
-      fetch('http://127.0.0.1:7664/ingest/6d6da4c4-6868-481c-8830-6f610c9dd71e',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'0c453c'},body:JSON.stringify({sessionId:'0c453c',runId:'init',hypothesisId:'H3-bind',location:'apgo_product_page_v3.liquid:APGOVideoPlayerMO.bindCards',message:'cards found',data:{count:cards.length,firstSource:first?first.getAttribute('data-source'):null,firstUrl:first?first.getAttribute('data-video-url'):null},timestamp:Date.now()})}).catch(function(){});
-    } catch (e) {}
-    // #endregion
     cards.forEach(card => {
       const videoUrl = card.getAttribute('data-video-url');
       if (!videoUrl || videoUrl.trim() === '' || videoUrl === 'VideoDrop') {
@@ -5059,11 +4866,6 @@ class APGOVideoPlayerMO {
   openFromCard(card) {
     card.classList.add('loading');
     const videoUrl = card.getAttribute('data-video-url');
-    // #region agent log
-    try {
-      fetch('http://127.0.0.1:7664/ingest/6d6da4c4-6868-481c-8830-6f610c9dd71e',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'0c453c'},body:JSON.stringify({sessionId:'0c453c',runId:'click',hypothesisId:'H2-url',location:'apgo_product_page_v3.liquid:APGOVideoPlayerMO.openFromCard',message:'click card',data:{videoUrl:videoUrl,source:card.getAttribute('data-source'),index:card.getAttribute('data-video-index')},timestamp:Date.now()})}).catch(function(){});
-    } catch (e) {}
-    // #endregion
 
     if (videoUrl && videoUrl !== '' && videoUrl !== 'VideoDrop') {
       const v = document.createElement('video');
@@ -5075,21 +4877,8 @@ class APGOVideoPlayerMO {
       v.style.width = '100%';
       v.style.height = 'auto';
 
-      v.addEventListener('error', (e) => {
-        // #region agent log
-        try {
-          var err = v.error || {};
-          fetch('http://127.0.0.1:7664/ingest/6d6da4c4-6868-481c-8830-6f610c9dd71e',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'0c453c'},body:JSON.stringify({sessionId:'0c453c',runId:'click',hypothesisId:'H4-load',location:'apgo_product_page_v3.liquid:openFromCard.video.error',message:'video error',data:{src:v.currentSrc||v.src,errorCode:err.code||null,errorMessage:err.message||null,networkState:v.networkState,readyState:v.readyState},timestamp:Date.now()})}).catch(function(){});
-        } catch (e2) {}
-        // #endregion
+      v.addEventListener('error', () => {
         this.showError('視頻載入失敗');
-      });
-      v.addEventListener('loadeddata', () => {
-        // #region agent log
-        try {
-          fetch('http://127.0.0.1:7664/ingest/6d6da4c4-6868-481c-8830-6f610c9dd71e',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'0c453c'},body:JSON.stringify({sessionId:'0c453c',runId:'click',hypothesisId:'H4-load',location:'apgo_product_page_v3.liquid:openFromCard.video.loadeddata',message:'video loadeddata',data:{src:v.currentSrc||v.src,vw:v.videoWidth,vh:v.videoHeight,modalActive:this.modal&&this.modal.classList.contains('active')},timestamp:Date.now()})}).catch(function(){});
-        } catch (e3) {}
-        // #endregion
       });
 
       this.showModal(v);

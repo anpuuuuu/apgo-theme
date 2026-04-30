@@ -3134,27 +3134,6 @@ let currentQuantity = 1;
 
 
 // === 輪播功能類 ===
-// #region agent log
-(function (w) {
-  w.apgoDbgCarouselIngest = function (hypothesisId, location, message, data) {
-    try {
-      var sec = document.querySelector('.apgo-product-section[data-apgo-pdp]');
-      fetch('http://127.0.0.1:7664/ingest/6d6da4c4-6868-481c-8830-6f610c9dd71e', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '0c453c' },
-        body: JSON.stringify({
-          sessionId: '0c453c',
-          hypothesisId: hypothesisId,
-          location: location,
-          message: message,
-          data: Object.assign({}, data || {}, { pdp: sec ? sec.getAttribute('data-apgo-pdp') : null }),
-          timestamp: Date.now()
-        })
-      }).catch(function () {});
-    } catch (e) {}
-  };
-})(window);
-// #endregion
 class APGOCarousel {
   constructor() {
     this.track = document.getElementById('apgoCarouselTrack');
@@ -3181,38 +3160,12 @@ class APGOCarousel {
       window.addEventListener('resize', this.handleResizeCarousel);
       var self = this;
       var wrap = this.track.parentElement;
-      // #region agent log
-      try {
-        fetch('http://127.0.0.1:7664/ingest/6d6da4c4-6868-481c-8830-6f610c9dd71e', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '0c453c' },
-          body: JSON.stringify({
-            sessionId: '0c453c',
-            runId: 'init',
-            hypothesisId: 'H-initial',
-            location: 'apgo_product_page.liquid:APGOCarousel.constructor',
-            message: 'ctor_wrap_dims',
-            data: {
-              wrapClientW: wrap ? wrap.clientWidth : 0,
-              showcaseCW: self.showcase ? self.showcase.clientWidth : 0,
-              wrapJustifyComputed: wrap
-                ? typeof getComputedStyle !== 'undefined'
-                  ? getComputedStyle(wrap).justifyContent
-                  : ''
-                : ''
-            },
-            timestamp: Date.now()
-          })
-        }).catch(function () {});
-      } catch (e) {}
-      // #endregion
       function applyLayoutPass(tag) {
         if (!self.track || !self.slides.length) return;
         self.track.style.transition = 'none';
         self.syncSlideMetrics();
         var w = self.slideViewportWidth();
         self.track.style.transform = 'translateX(-' + self.currentIndex * w + 'px)';
-        if (self._apgoDbgSnap) self._apgoDbgSnap(tag, 'H-initial');
       }
       if (wrap && wrap.clientWidth > 0) {
         applyLayoutPass('ctor_sync0');
@@ -3263,7 +3216,6 @@ class APGOCarousel {
     this.track.style.transform = `translateX(-${this.currentIndex * w}px)`;
     requestAnimationFrame(() => {
       if (this.track) this.track.style.transition = '';
-      if (this._apgoDbgSnap) this._apgoDbgSnap('after_resize', 'H-layout');
     });
   }
 
@@ -3420,40 +3372,8 @@ class APGOCarousel {
     if (navigator.vibrate) {
       navigator.vibrate(20);
     }
-
-    if (this._apgoDbgSnap) this._apgoDbgSnap('go_' + index, 'H-percent');
   }
 }
-
-// #region agent log
-APGOCarousel.prototype._apgoDbgSnap = function (reason, hypothesisId) {
-  try {
-    var wrap = this.track && this.track.parentElement;
-    var cw = wrap ? wrap.clientWidth : 0;
-    var pct = this.slides.length ? -(this.currentIndex / this.slides.length) * 100 : 0;
-    var vw =
-      cw > 0 ? cw : this.showcase && this.showcase.clientWidth > 0 ? this.showcase.clientWidth : 1;
-    if (!vw || vw < 1) vw = 1;
-    window.apgoDbgCarouselIngest(hypothesisId || 'H-layout', 'APGOCarousel._apgoDbgSnap', reason, {
-      slideCount: this.slides.length,
-      dotCount: document.querySelectorAll('.apgo-dot').length,
-      thumbCount: document.querySelectorAll('.apgo-thumbnail-item').length,
-      currentIndex: this.currentIndex,
-      containerClientW: cw,
-      slideViewportW: vw,
-      containerOffsetW: wrap ? wrap.offsetWidth : 0,
-      trackOffsetW: this.track ? this.track.offsetWidth : 0,
-      trackScrollW: this.track ? this.track.scrollWidth : 0,
-      showcaseClientW: this.showcase ? this.showcase.clientWidth : 0,
-      transform: this.track ? this.track.style.transform : '',
-      legacyExpectedPctHint: pct,
-      expectedTranslatePx: -this.currentIndex * vw,
-      slideWidthMatch:
-        this.slides.length && this.track ? this.track.scrollWidth / this.slides.length : 0
-    });
-  } catch (e) {}
-};
-// #endregion
 
 // === 全局函數定義（重要：必須在全局作用域） ===
 
