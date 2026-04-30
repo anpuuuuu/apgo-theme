@@ -241,6 +241,16 @@
     object-fit: contain;
   }
 
+  /* 手機版字級降一階；schema 預設給 h2 在小螢幕上太大 */
+  @media (max-width: 768px) {
+    .marquee__sticky-wrap .marquee__content,
+    .marquee__sticky-wrap .marquee__content :is(p, h1, h2, h3, h4, h5, h6),
+    .marquee__sticky-wrap .marquee__promo-item {
+      font-size: 0.78rem;
+      line-height: 1.2;
+    }
+  }
+
   @media (prefers-reduced-motion: no-preference) {
     marquee-component:not([data-disabled]) .marquee__wrapper {
       animation: marquee-motion var(--marquee-speed) linear infinite var(--marquee-direction);
