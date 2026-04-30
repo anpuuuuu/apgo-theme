@@ -97,7 +97,13 @@ class MarqueeComponent extends Component {
   #calculateSpeed() {
     const speedFactor = Number(this.getAttribute('data-speed-factor'));
     const marqueeWidth = this.offsetWidth;
-    const speed = Math.ceil(marqueeWidth / speedFactor / 2);
+    let speed = Math.ceil(marqueeWidth / speedFactor / 2);
+    if (
+      typeof window !== 'undefined' &&
+      window.matchMedia('(max-width: 768px)').matches
+    ) {
+      speed *= 2;
+    }
     return speed;
   }
 
