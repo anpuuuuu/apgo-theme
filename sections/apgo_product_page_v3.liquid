@@ -3273,10 +3273,19 @@
 
           {% for video_obj in sorted_videos %}
             {% assign video_url = video_obj.video_file | file_url %}
-            {% assign poster_url = '' %}
-            {% if video_obj.poster %}
-              {% assign poster_url = video_obj.poster | image_url: width: 800 %}
-            {% endif %}
+            {%- liquid
+              # 封面優先序：
+              #   1. metaobject 自定欄位「封面圖片」(handle: cover_image / poster)
+              #   2. Shopify 自動為影片檔案產生的 preview_image（fallback；iOS Safari 上 JS 抽幀無法穩定運作）
+              assign poster_url = ''
+              if video_obj.cover_image != blank
+                assign poster_url = video_obj.cover_image | image_url: width: 800
+              elsif video_obj.poster != blank
+                assign poster_url = video_obj.poster | image_url: width: 800
+              elsif video_obj.video_file.preview_image != blank
+                assign poster_url = video_obj.video_file.preview_image | image_url: width: 800
+              endif
+            -%}
 
             <div
               class="apgo-video-card"
@@ -3329,24 +3338,39 @@
         {% elsif use_file_list %}
           {% for file_ref in demo_raw %}
             {% assign video_url = file_ref | file_url %}
+            {%- liquid
+              assign poster_url = ''
+              if file_ref.preview_image != blank
+                assign poster_url = file_ref.preview_image | image_url: width: 800
+              endif
+            -%}
             <div
               class="apgo-video-card"
               data-source="file"
               data-video-url="{{ video_url | escape }}"
               data-video-index="{{ forloop.index }}"
             >
-              <div class="apgo-video-thumbnail apgo-video-placeholder" style="position: relative;">
-                <svg
-                  width="60"
-                  height="60"
-                  viewBox="0 0 24 24"
-                  fill="#f08418"
-                  style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"
+              {% if poster_url != blank %}
+                <img
+                  class="apgo-video-thumbnail"
+                  src="{{ poster_url }}"
+                  alt="{{ product.title }}"
+                  loading="lazy"
                 >
-                  <path d="M8 5v14l11-7z"/>
-                </svg>
-                <div style="background: #333; width: 100%; height: 100%;"></div>
-              </div>
+              {% else %}
+                <div class="apgo-video-thumbnail apgo-video-placeholder" style="position: relative;">
+                  <svg
+                    width="60"
+                    height="60"
+                    viewBox="0 0 24 24"
+                    fill="#f08418"
+                    style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"
+                  >
+                    <path d="M8 5v14l11-7z"/>
+                  </svg>
+                  <div style="background: #333; width: 100%; height: 100%;"></div>
+                </div>
+              {% endif %}
 
               <div class="apgo-video-overlay">
                 <div class="apgo-video-play-btn"></div>
