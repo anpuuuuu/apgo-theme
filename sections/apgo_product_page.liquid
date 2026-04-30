@@ -638,10 +638,6 @@
     margin: 0;
   }
 
-  .apgo-tab-faq-placeholder {
-    min-height: 32px;
-  }
-
   .apgo-tab-pane-empty-slot {
     min-height: 56px;
     box-sizing: border-box;
@@ -2885,7 +2881,7 @@
         assign lead_has_visual = true
       endif
     %}
-    <section class="apgo-pdp-looping-lead" aria-label="Product description — video and details">
+    <section class="apgo-pdp-looping-lead" aria-label="Description — video and details">
       <div class="apgo-pdp-tabs-inner">
         <div class="apgo-tab-desc-layout {% if has_looping_video %}has-video{% endif %}">
           {% if has_looping_video %}
@@ -2903,7 +2899,7 @@
           {% endif %}
 
           <div class="apgo-looping-desc-wrap">
-            <h4 class="apgo-looping-desc-block-title apgo-looping-desc-block-title--leadin">Product description</h4>
+            <h4 class="apgo-looping-desc-block-title apgo-looping-desc-block-title--leadin">Description</h4>
 
             {% if gallery_has %}
               <div class="apgo-tab-desc-gallery">
@@ -3111,7 +3107,7 @@
               aria-selected="true"
               tabindex="0"
             >
-              Product description
+              Description
             </button>
             <button
               type="button"
@@ -3144,18 +3140,7 @@
               aria-selected="false"
               tabindex="-1"
             >
-              Customer reviews
-            </button>
-            <button
-              type="button"
-              class="apgo-pdp-tab"
-              role="tab"
-              id="apgo-tab-faq-{{ section.id }}"
-              aria-controls="apgo-tab-panel-faq-{{ section.id }}"
-              aria-selected="false"
-              tabindex="-1"
-            >
-              FAQ
+              Review
             </button>
           </div>
         </div>
@@ -3226,7 +3211,7 @@
                       <img
                         class="apgo-customer-review-image"
                         src="{{ customer_review_image | image_url: width: 2000 }}"
-                        alt="Customer reviews"
+                        alt="Review"
                         loading="lazy"
                       >
                     </div>
@@ -3239,7 +3224,7 @@
                         <img
                           class="apgo-customer-review-image apgo-customer-review-image--tile"
                           src="{{ mf | image_url: width: 2000 }}"
-                          alt="Customer review {{ forloop.index }}"
+                          alt="Review {{ forloop.index }}"
                           loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
                         >
                       {% endfor %}
@@ -3248,14 +3233,14 @@
                     <img
                       class="apgo-customer-review-image"
                       src="{{ mobile_review_image | image_url: width: 2000 }}"
-                      alt="Customer reviews"
+                      alt="Review"
                       loading="lazy"
                     >
                   {% elsif customer_review_image != blank %}
                     <img
                       class="apgo-customer-review-image"
                       src="{{ customer_review_image | image_url: width: 2000 }}"
-                      alt="Customer reviews"
+                      alt="Review"
                       loading="lazy"
                     >
                   {% endif %}
@@ -3264,16 +3249,6 @@
                 <p class="apgo-tab-empty">No customer review images yet.</p>
               {% endif %}
             </div>
-          </div>
-
-          <div
-            class="apgo-tab-panel"
-            id="apgo-tab-panel-faq-{{ section.id }}"
-            role="tabpanel"
-            aria-labelledby="apgo-tab-faq-{{ section.id }}"
-            hidden
-          >
-            <div class="apgo-tab-faq-placeholder" aria-hidden="true">&nbsp;</div>
           </div>
         </div>
       </div>
@@ -4732,7 +4707,7 @@ document.addEventListener('DOMContentLoaded', function() {
     },
     {
       "type": "paragraph",
-      "content": "**Above tabs:** looping video (**custom.looping_video**), gallery (**custom.tab_description_images**), and body copy (description / **looping_description** / subtitle fallback). **Product description tab** is intentionally empty for now."
+      "content": "**Above tabs:** looping video (**custom.looping_video**), gallery (**custom.tab_description_images**), and body copy (description / **looping_description** / subtitle fallback). **Description tab** is intentionally empty for now."
     }
   ],
   "blocks": [
