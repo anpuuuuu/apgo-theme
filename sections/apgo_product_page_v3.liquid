@@ -3286,23 +3286,18 @@
       </div>
 
       <div class="apgo-video-scroll-container">
+        {%- comment -%}
+          apgo.demo_videos 的 metafield 型別已被確認為「List of metaobject reference」(metaobject type: apgo_demo_video)。
+          先前用 demo_raw.first.video_file 偵測會失敗：Shopify 在這裡的 list-of-metaobject Drop 上，
+          .first 取到的代理物件無法讀到內部 field（H6 confirmed via runtime probe），
+          但 `for x in demo_raw` 的 loop 變數能正確讀到。因此直接固定走 metaobject 分支。
+        {%- endcomment -%}
         {% liquid
           assign demo_raw = product.metafields.apgo.demo_videos.value
           assign use_metaobject_list = false
           assign use_file_list = false
           if demo_raw != blank
-            assign demo_first = demo_raw.first
-            comment
-              先判 metaobject（與 product.-2 一致）；避免誤走 file 列表導致 data-video-url 錯誤
-            endcomment
-            if demo_first.video_file != blank
-              assign use_metaobject_list = true
-            else
-              assign file_probe = demo_first | file_url
-              if file_probe != blank
-                assign use_file_list = true
-              endif
-            endif
+            assign use_metaobject_list = true
           endif
         %}
         {% if use_metaobject_list %}
@@ -3484,14 +3479,6 @@
         {% endif %}
       </div>
     </section>
-    {%- liquid
-      assign dbg_first_meta_url = demo_first.video_file | file_url
-      assign dbg_first_file_probe = demo_first | file_url
-      assign dbg_first_poster_imageurl = demo_first.poster | image_url: width: 80
-      assign dbg_first_video_alt = demo_first.video | file_url
-      assign dbg_first_thumb_alt = demo_first.thumbnail | image_url: width: 80
-      assign dbg_first_image_alt = demo_first.image | image_url: width: 80
-    -%}
     {%- comment -%}#region agent log{%- endcomment -%}
     <script>
       (function(){
@@ -3501,10 +3488,10 @@
             headers:{'Content-Type':'application/json','X-Debug-Session-Id':'0c453c'},
             body:JSON.stringify({
               sessionId:'0c453c',
-              runId:'init',
-              hypothesisId:'H1-liquid',
+              runId:'post-fix',
+              hypothesisId:'H6-firstDrop',
               location:'apgo_product_page_v3.liquid:video-showcase render',
-              message:'demo_videos render flags',
+              message:'demo_videos render flags (post-fix)',
               data:{
                 pdp:'v3',
                 productHandle:'{{ product.handle }}',
@@ -3512,19 +3499,9 @@
                 rawSize:{{ demo_raw.size | default: 0 }},
                 useMetaobject:{{ use_metaobject_list }},
                 useFile:{{ use_file_list }},
-                firstHasVideoFile:{% if demo_first.video_file != blank %}true{% else %}false{% endif %},
-                firstHasVideo:{% if demo_first.video != blank %}true{% else %}false{% endif %},
-                firstHasPoster:{% if demo_first.poster != blank %}true{% else %}false{% endif %},
-                firstHasThumbnail:{% if demo_first.thumbnail != blank %}true{% else %}false{% endif %},
-                firstHasImage:{% if demo_first.image != blank %}true{% else %}false{% endif %},
-                firstMetaUrl_video_file:{{ dbg_first_meta_url | json }},
-                firstMetaUrl_video:{{ dbg_first_video_alt | json }},
-                firstFileProbe:{{ dbg_first_file_probe | json }},
-                firstPosterUrl:{{ dbg_first_poster_imageurl | json }},
-                firstThumbUrl:{{ dbg_first_thumb_alt | json }},
-                firstImageUrl:{{ dbg_first_image_alt | json }},
-                firstJson:{{ demo_first | json }},
-                cards:document.querySelectorAll('.apgo-video-showcase .apgo-video-card').length
+                cards:document.querySelectorAll('.apgo-video-showcase .apgo-video-card').length,
+                firstCardVideoUrl:(function(){var c=document.querySelector('.apgo-video-showcase .apgo-video-card');return c?c.getAttribute('data-video-url'):null;})(),
+                firstCardSource:(function(){var c=document.querySelector('.apgo-video-showcase .apgo-video-card');return c?c.getAttribute('data-source'):null;})()
               },
               timestamp:Date.now()
             })
