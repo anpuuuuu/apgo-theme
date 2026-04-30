@@ -364,6 +364,16 @@
     opacity: 1;
   }
 
+  .apgo-product-thumbnails.apgo-product-thumbnails--no-subtitle-below {
+    padding-bottom: 14px;
+    margin-bottom: 4px;
+  }
+
+  .apgo-product-thumbnails.apgo-product-thumbnails--no-subtitle-below .apgo-thumbnails-container {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
   .apgo-thumbnail-play-icon {
     width: 20px;
     height: 20px;
@@ -380,12 +390,40 @@
   /* 手機優化 */
   @media (max-width: 768px) {
     .apgo-product-thumbnails {
-      padding: 16px 12px 24px;
+      padding: 10px 12px 14px;
+      margin-bottom: 10px;
+    }
+
+    .apgo-product-thumbnails.apgo-product-thumbnails--no-subtitle-below {
+      padding: 8px 12px 6px;
+      margin-bottom: 4px;
+    }
+
+    .apgo-product-thumbnails.apgo-product-thumbnails--no-subtitle-below .apgo-thumbnails-container {
+      padding-top: 2px;
+      padding-bottom: 2px;
+    }
+
+    .apgo-product-info {
+      padding: 14px 16px 20px;
+    }
+
+    .apgo-product-info.apgo-product-info--no-subtitle {
+      padding-top: 6px;
+    }
+
+    .apgo-product-info.apgo-product-info--no-subtitle .apgo-product-name {
+      margin-bottom: 0;
+    }
+
+    .apgo-product-header {
+      margin-bottom: 14px;
+      padding-bottom: 12px;
     }
 
     .apgo-thumbnails-container {
       gap: 10px;
-      padding: 8px 4px;
+      padding: 6px 4px;
     }
 
     .apgo-thumbnail-item {
@@ -403,6 +441,14 @@
   .apgo-product-info {
     padding: 24px 16px;
     background: var(--dark-bg);
+  }
+
+  .apgo-product-info.apgo-product-info--no-subtitle {
+    padding-top: 10px;
+  }
+
+  .apgo-product-info.apgo-product-info--no-subtitle .apgo-product-name {
+    margin-bottom: 0;
   }
 
   .apgo-product-header {
@@ -2346,7 +2392,7 @@
     display: flex;
     align-items: flex-start;
     justify-content: flex-start;
-    padding: 0 12px 40px;
+    padding: 0 12px 26px;
     overflow: hidden;
   }
 
@@ -2467,7 +2513,7 @@
     </section>
 
     <!-- 產品縮圖展示區 -->
-    <section class="apgo-product-thumbnails">
+    <section class="apgo-product-thumbnails{% if subtitle_display == blank %} apgo-product-thumbnails--no-subtitle-below{% endif %}">
       <div class="apgo-thumbnails-container">
         {% for image in product.images %}
           <div
@@ -2487,7 +2533,7 @@
     </section>
 
     <!-- 產品基本資訊 -->
-    <section class="apgo-product-info">
+    <section class="apgo-product-info{% if subtitle_display == blank %} apgo-product-info--no-subtitle{% endif %}">
       <div class="apgo-product-header">
         <h1 class="apgo-product-name">{{ product.title }}</h1>
         {% if subtitle_display != blank %}
