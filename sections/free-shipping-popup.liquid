@@ -242,11 +242,20 @@
   }
 
   /*
-    Responsive 字級：桌機沿用編輯器設定的 font_size（inline style，目前 var(--font-size--h3)），
-    手機 ≤768px 強制改小。要 override block 寫進來的 inline style 必須 !important。
-    調整時改下方 0.73rem 即可。
+    Responsive 字級：桌機沿用編輯器設定的 font_size（block inline style），手機強制改小。
+    需要 !important 才能蓋過 block 元素上的 inline style。
+    iOS Safari 防禦：
+      - text-size-adjust: 100% → 阻止 Mobile Safari 自動「文字放大」
+      - max-width 拉到 1024px → 涵蓋 iPad 直立 (810/834px) 與 iPhone Pro Max 橫向 (932px)
+    調整時改下方 font-size 數值即可。
   */
-  @media (max-width: 768px) {
+  .marquee__sticky-wrap {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  @media (max-width: 1024px) {
+    .marquee__sticky-wrap,
     .marquee__sticky-wrap .marquee__content,
     .marquee__sticky-wrap .marquee__content *,
     .marquee__sticky-wrap .marquee__promo-item {
