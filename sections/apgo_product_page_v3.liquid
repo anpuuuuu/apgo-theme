@@ -1,6 +1,6 @@
-﻿{% comment %}
-  APGO Product Section（v3：templates/product.v3.json）
-  metafield 分頁、looping Video、insidebox、短影音 showcase 等新版型。
+{% comment %}
+  APGO v3 PDP（程式內容同步自 git be16ff9 的 apgo_product_page）
+  檔案: sections/apgo_product_page_v3.liquid｜模板: templates/product.v3.json
 {% endcomment %}
 <style>
   * {
@@ -1445,16 +1445,14 @@
     font-size: 1.3rem;
   }
 
-  /* 產品預覽區：實心黑底避免半透明显灰、與白底商品圖對比過強 */
+  /* 產品預覽區 */
   .apgo-modal-product-preview {
     display: flex;
     gap: 16px;
     margin-bottom: 24px;
-    padding: 16px 16px 20px;
-    background: #000;
+    padding: 16px;
+    background: rgba(0, 0, 0, 0.5);
     border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    overflow: hidden;
   }
 
   .apgo-modal-product-image {
@@ -1462,7 +1460,7 @@
     height: 80px;
     object-fit: contain;
     filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
-    background: #000;
+    background: rgba(255, 255, 255, 0.02);
     border-radius: 8px;
     padding: 8px;
     cursor: pointer;
@@ -1481,9 +1479,13 @@
     font-size: 1.1rem;
     font-weight: 600;
     color: var(--text-white);
-    margin-bottom: 0;
-    line-height: 1.35;
-    padding-bottom: 6px;
+    margin-bottom: 4px;
+  }
+
+  .apgo-modal-product-desc {
+    font-size: 0.85rem;
+    color: var(--text-gray);
+    line-height: 1.4;
   }
 
   /* 手機／窄螢幕：預覽改為圖在上、文案在下 */
@@ -1493,7 +1495,6 @@
       align-items: center;
       text-align: center;
       gap: 12px;
-      padding: 16px 16px 20px;
     }
 
     .apgo-pdp-variant-shell .apgo-modal-product-image {
@@ -1502,8 +1503,6 @@
       height: auto;
       aspect-ratio: 1;
       object-fit: contain;
-      background: #000;
-      box-sizing: border-box;
     }
 
     .apgo-pdp-variant-shell .apgo-modal-product-info {
@@ -1566,34 +1565,34 @@
     /* 預覽區：彈性放大、有最大上限，避免空位浪費同時不過頭 */
     .apgo-pdp-variant-shell .apgo-modal-product-preview {
       flex: 1 1 auto;
-      gap: 10px;
-      padding: 12px 12px 22px;
+      gap: 8px;
+      padding: 10px;
       margin-bottom: 14px;
-      justify-content: flex-start;
-      align-items: center;
-      background: #000;
-      /* 勿讓子項 height:100% 撐滿把標題擠到框底；保留底部呼吸空間 */
-      min-height: 0;
+      justify-content: center;
+      /* 最低保留 ≈ 圖 140 + 名稱描述兩行；最高不超過視窗一半 */
+      min-height: 200px;
       max-height: min(50dvh, 360px);
     }
 
     .apgo-pdp-variant-shell .apgo-modal-product-image {
+      /* height 100% 讓圖片吃掉預覽區的可用高度，配合 aspect-ratio:1 維持正方形 */
       width: auto;
       max-width: min(280px, 70vw);
-      height: auto;
+      height: 100%;
       max-height: min(280px, 40dvh);
       aspect-ratio: 1;
       object-fit: contain;
-      flex: 0 0 auto;
-      background: #000;
-      padding: 12px;
+      flex: 0 1 auto;
     }
 
     .apgo-modal-product-name {
       font-size: 0.95rem;
-      margin-bottom: 0;
-      margin-top: 2px;
-      padding-bottom: 8px;
+      margin-bottom: 2px;
+    }
+
+    .apgo-modal-product-desc {
+      font-size: 0.78rem;
+      line-height: 1.35;
     }
 
     /* 變體卡片：縮小 padding 與字體 */
@@ -3437,6 +3436,9 @@
       > {% endcomment %}
       <div class="apgo-modal-product-info">
         <div class="apgo-modal-product-name">{{ product.title }}</div>
+        <div class="apgo-modal-product-desc">
+          {{ product.metafields.apgo.subtitle | default: section.settings.subtitle_fallback }}
+        </div>
       </div>
     </div>
 
@@ -4677,7 +4679,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 {% schema %}
 {
-  "name": "APGO product v3 PDP",
+  "name": "APGO 商品頁",
   "tag": "section",
   "class": "apgo-product",
   "settings": [
@@ -4833,7 +4835,7 @@ document.addEventListener('DOMContentLoaded', function() {
   ],
   "presets": [
     {
-      "name": "APGO product v3",
+      "name": "APGO 商品頁",
       "category": "商品",
       "blocks": [
         {
