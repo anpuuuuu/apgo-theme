@@ -1446,14 +1446,16 @@
     font-size: 1.3rem;
   }
 
-  /* 產品預覽區 */
+  /* 產品預覽區：實心黑底避免半透明显灰、與白底商品圖對比過強 */
   .apgo-modal-product-preview {
     display: flex;
     gap: 16px;
     margin-bottom: 24px;
     padding: 16px;
-    background: rgba(0, 0, 0, 0.5);
+    background: #000;
     border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    overflow: hidden;
   }
 
   .apgo-modal-product-image {
@@ -1461,7 +1463,7 @@
     height: 80px;
     object-fit: contain;
     filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
-    background: rgba(255, 255, 255, 0.02);
+    background: #000;
     border-radius: 8px;
     padding: 8px;
     cursor: pointer;
@@ -1480,13 +1482,7 @@
     font-size: 1.1rem;
     font-weight: 600;
     color: var(--text-white);
-    margin-bottom: 4px;
-  }
-
-  .apgo-modal-product-desc {
-    font-size: 0.85rem;
-    color: var(--text-gray);
-    line-height: 1.4;
+    margin-bottom: 0;
   }
 
   /* 手機／窄螢幕：預覽改為圖在上、文案在下 */
@@ -1504,6 +1500,8 @@
       height: auto;
       aspect-ratio: 1;
       object-fit: contain;
+      background: #000;
+      box-sizing: border-box;
     }
 
     .apgo-pdp-variant-shell .apgo-modal-product-info {
@@ -1567,11 +1565,12 @@
     .apgo-pdp-variant-shell .apgo-modal-product-preview {
       flex: 1 1 auto;
       gap: 8px;
-      padding: 10px;
+      padding: 12px;
       margin-bottom: 14px;
       justify-content: center;
-      /* 最低保留 ≈ 圖 140 + 名稱描述兩行；最高不超過視窗一半 */
-      min-height: 200px;
+      background: #000;
+      /* 最低保留 ≈ 圖 + 品名一行；最高不超過視窗一半 */
+      min-height: 160px;
       max-height: min(50dvh, 360px);
     }
 
@@ -1584,16 +1583,14 @@
       aspect-ratio: 1;
       object-fit: contain;
       flex: 0 1 auto;
+      background: #000;
+      padding: 12px;
     }
 
     .apgo-modal-product-name {
       font-size: 0.95rem;
-      margin-bottom: 2px;
-    }
-
-    .apgo-modal-product-desc {
-      font-size: 0.78rem;
-      line-height: 1.35;
+      margin-bottom: 0;
+      margin-top: 4px;
     }
 
     /* 變體卡片：縮小 padding 與字體 */
@@ -3437,9 +3434,6 @@
       > {% endcomment %}
       <div class="apgo-modal-product-info">
         <div class="apgo-modal-product-name">{{ product.title }}</div>
-        <div class="apgo-modal-product-desc">
-          {{ product.metafields.apgo.subtitle | default: section.settings.subtitle_fallback }}
-        </div>
       </div>
     </div>
 
