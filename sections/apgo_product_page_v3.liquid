@@ -3366,6 +3366,82 @@
           {% endfor %}
         {% elsif use_file_list %}
           {% for file_ref in demo_raw %}
+            {% if forloop.first %}
+              {%- liquid
+                assign dbg_t_video = file_ref.video | file_url
+                assign dbg_t_video_file = file_ref.video_file | file_url
+                assign dbg_t_file = file_ref.file | file_url
+                assign dbg_t_media = file_ref.media | file_url
+                assign dbg_t_source = file_ref.source | file_url
+                assign dbg_t_mp4 = file_ref.mp4 | file_url
+                assign dbg_t_clip = file_ref.clip | file_url
+                assign dbg_t_asset = file_ref.asset | file_url
+                assign dbg_t_upload = file_ref.upload | file_url
+                assign dbg_t_demo_video = file_ref.demo_video | file_url
+                assign dbg_t_self = file_ref | file_url
+                assign dbg_t_poster = file_ref.poster | image_url: width: 80
+                assign dbg_t_cover = file_ref.cover | image_url: width: 80
+                assign dbg_t_preview = file_ref.preview | image_url: width: 80
+                assign dbg_t_thumb = file_ref.thumbnail | image_url: width: 80
+                assign dbg_t_image = file_ref.image | image_url: width: 80
+                assign dbg_t_cover_image = file_ref.cover_image | image_url: width: 80
+                assign dbg_t_poster_image = file_ref.poster_image | image_url: width: 80
+                assign dbg_t_title = file_ref.title
+                assign dbg_t_duration = file_ref.duration
+                assign dbg_t_views = file_ref.views
+                assign dbg_t_sort = file_ref.sort_order
+                assign dbg_t_type = file_ref.type
+                assign dbg_t_sys_type = file_ref.system.type
+                assign dbg_t_sys_handle = file_ref.system.handle
+              -%}
+              {%- comment -%}#region agent log{%- endcomment -%}
+              <script>
+                (function(){
+                  try{
+                    fetch('http://127.0.0.1:7664/ingest/6d6da4c4-6868-481c-8830-6f610c9dd71e',{
+                      method:'POST',
+                      headers:{'Content-Type':'application/json','X-Debug-Session-Id':'0c453c'},
+                      body:JSON.stringify({
+                        sessionId:'0c453c',
+                        runId:'init',
+                        hypothesisId:'H5-fields',
+                        location:'apgo_product_page_v3.liquid:demo_videos for_loop first',
+                        message:'metaobject in-loop probe',
+                        data:{
+                          sysType:{{ dbg_t_sys_type | json }},
+                          sysHandle:{{ dbg_t_sys_handle | json }},
+                          title:{{ dbg_t_title | json }},
+                          duration:{{ dbg_t_duration | json }},
+                          views:{{ dbg_t_views | json }},
+                          sortOrder:{{ dbg_t_sort | json }},
+                          type:{{ dbg_t_type | json }},
+                          self_url:{{ dbg_t_self | json }},
+                          video_url:{{ dbg_t_video | json }},
+                          video_file_url:{{ dbg_t_video_file | json }},
+                          file_url:{{ dbg_t_file | json }},
+                          media_url:{{ dbg_t_media | json }},
+                          source_url:{{ dbg_t_source | json }},
+                          mp4_url:{{ dbg_t_mp4 | json }},
+                          clip_url:{{ dbg_t_clip | json }},
+                          asset_url:{{ dbg_t_asset | json }},
+                          upload_url:{{ dbg_t_upload | json }},
+                          demo_video_url:{{ dbg_t_demo_video | json }},
+                          poster:{{ dbg_t_poster | json }},
+                          cover:{{ dbg_t_cover | json }},
+                          preview:{{ dbg_t_preview | json }},
+                          thumbnail:{{ dbg_t_thumb | json }},
+                          image:{{ dbg_t_image | json }},
+                          cover_image:{{ dbg_t_cover_image | json }},
+                          poster_image:{{ dbg_t_poster_image | json }}
+                        },
+                        timestamp:Date.now()
+                      })
+                    }).catch(function(){});
+                  }catch(e){}
+                })();
+              </script>
+              {%- comment -%}#endregion{%- endcomment -%}
+            {% endif %}
             {% assign video_url = file_ref | file_url %}
             <div
               class="apgo-video-card"
