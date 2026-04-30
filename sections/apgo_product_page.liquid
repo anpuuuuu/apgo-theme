@@ -2846,9 +2846,13 @@
         assign review_has_any = true
       endif
 
-      assign tab1_has_story = false
-      if gallery_has or has_looping_video or desc_has or loop_desc_has or sf != blank
-        assign tab1_has_story = true
+      assign tab1_has_text = false
+      if desc_has or loop_desc_has or sf != blank
+        assign tab1_has_text = true
+      endif
+      assign tab1_has_visual = false
+      if tab1_has_text or gallery_has or has_looping_video
+        assign tab1_has_visual = true
       endif
     %}
     <section
@@ -2966,7 +2970,10 @@
                   </div>
                 {% endif %}
 
-                {% if tab1_has_story %}
+                {% unless tab1_has_visual %}
+                  <p class="apgo-tab-empty">No description available.</p>
+                {% endunless %}
+                {% if tab1_has_text %}
                   <div class="apgo-looping-desc-content">
                     {% if desc_has %}
                       <div class="apgo-looping-desc-block apgo-looping-desc-block--description">
@@ -2980,8 +2987,6 @@
                       </div>
                     {% endif %}
                   </div>
-                {% else %}
-                  <p class="apgo-tab-empty">No description available.</p>
                 {% endif %}
               </div>
             </div>
