@@ -517,13 +517,25 @@
 
   .apgo-pdp-tablist-wrap {
     position: sticky;
+    /*
+      top:0 會黏在視窗最頂端，易與吸在 header 下方的全局跑馬燈垂直重疊；
+     且跑馬燈 z-index 為 calc(layer-sticky - 1)，若 Tab 沿用過大的 z-index 會把跑馬燈字遮住。
+      有 free-shipping 跑馬燈時改見下方 :has(...) 規則，對齊 header-group + 跑馬燈條頂緣，
+      --apgo-global-marquee-sticky-height 定義於 free-shipping-popup section。
+    */
     top: 0;
-    z-index: 35;
+    z-index: calc(var(--layer-sticky, 8) + 2);
     background: rgba(0, 0, 0, 0.94);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid rgba(240, 132, 24, 0.22);
     margin: 0 0 12px;
     padding: 6px 0 0;
+  }
+
+  html:has(#shopify-section-free-shipping-popup) .apgo-product-section .apgo-pdp-tablist-wrap {
+    top: calc(
+      var(--header-group-height, 100px) - 1px + env(safe-area-inset-top, 0px) + var(--apgo-global-marquee-sticky-height, 2.875rem)
+    );
   }
 
   .apgo-pdp-tablist {
