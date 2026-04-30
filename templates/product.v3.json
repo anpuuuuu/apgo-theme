@@ -1,84 +1,16 @@
 /*
  * ------------------------------------------------------------
- * product.v3 — 僅使用 APGO 自訂 PDP（sections/apgo_product_page_v3）
- * 已移除：product-information（main）、cart-upsell（product_upsell_v3）
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
  * ------------------------------------------------------------
  */
 {
   "sections": {
     "apgo_product_v3": {
       "type": "apgo_product_page_v3",
-      "blocks": {
-        "badge_a": {
-          "type": "badge",
-          "disabled": true,
-          "settings": {
-            "text": ""
-          }
-        },
-        "badge_b": {
-          "type": "badge",
-          "disabled": true,
-          "settings": {
-            "text": ""
-          }
-        },
-        "m1": {
-          "type": "metric",
-          "disabled": true,
-          "settings": {
-            "label": "",
-            "value": "",
-            "percent": 50
-          }
-        },
-        "m2": {
-          "type": "metric",
-          "disabled": true,
-          "settings": {
-            "label": "",
-            "value": "",
-            "percent": 50
-          }
-        },
-        "m3": {
-          "type": "metric",
-          "disabled": true,
-          "settings": {
-            "label": "",
-            "value": "",
-            "percent": 50
-          }
-        },
-        "m4": {
-          "type": "metric",
-          "disabled": true,
-          "settings": {
-            "label": "",
-            "value": "",
-            "percent": 50
-          }
-        },
-        "v1": {
-          "type": "video",
-          "disabled": true,
-          "settings": {
-            "title": "",
-            "mp4_url": "",
-            "views": "",
-            "duration": ""
-          }
-        }
-      },
-      "block_order": [
-        "badge_a",
-        "badge_b",
-        "m1",
-        "m2",
-        "m3",
-        "m4",
-        "v1"
-      ],
       "name": "APGO 商品頁 (v3)",
       "settings": {
         "show_particles": true,
