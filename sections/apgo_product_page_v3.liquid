@@ -211,7 +211,9 @@
     height: 100%;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
+    overflow: hidden;
+    min-width: 0;
   }
 
   .apgo-carousel-track {
@@ -2835,7 +2837,9 @@
     height: 100%;
     display: flex;
     align-items: flex-start;
-    justify-content: center;
+    justify-content: flex-start;
+    overflow: hidden;
+    min-width: 0;
   }
 
   .apgo-carousel-track {
@@ -2878,7 +2882,12 @@
       padding: 24px 16px;
     }
 
-    .apgo-carousel-container,
+    .apgo-carousel-container {
+      align-items: center;
+      justify-content: flex-start;
+      overflow: hidden;
+    }
+
     .apgo-carousel-track,
     .apgo-carousel-slide {
       align-items: center;
@@ -3913,7 +3922,12 @@ class APGOCarousel {
             message: 'ctor_wrap_dims',
             data: {
               wrapClientW: wrap ? wrap.clientWidth : 0,
-              showcaseCW: self.showcase ? self.showcase.clientWidth : 0
+              showcaseCW: self.showcase ? self.showcase.clientWidth : 0,
+              wrapJustifyComputed: wrap
+                ? typeof getComputedStyle !== 'undefined'
+                  ? getComputedStyle(wrap).justifyContent
+                  : ''
+                : ''
             },
             timestamp: Date.now()
           })
