@@ -430,17 +430,6 @@
     color: var(--text-gray);
   }
 
-  .apgo-product-metafield-subtitle + .apgo-product-tagline {
-    margin-top: 0;
-  }
-
-  .apgo-product-tagline {
-    font-size: 1rem;
-    color: var(--text-light-gray);
-    line-height: 1.5;
-    margin-top: 12px;
-  }
-
   /* 性能指標展示 */
   .apgo-performance-metrics {
     background: var(--card-bg);
@@ -2814,17 +2803,14 @@
 
     <!-- 產品基本資訊 -->
     <section class="apgo-product-info">
-      {% liquid
-        assign product_custom_subtitle = product.metafields.custom.product_subtitle.value | default: product.metafields.custom.product_subtitle
-      %}
       <div class="apgo-product-header">
         <h1 class="apgo-product-name">{{ product.title }}</h1>
-        {% if product_custom_subtitle != blank %}
-          <p class="apgo-product-metafield-subtitle">{{ product_custom_subtitle | escape }}</p>
+        {% comment %}
+          副標來自檔案頂端 liquid：custom.product_subtitle（metafield_text）→ fallback apgo.subtitle，變數名 subtitle_display。
+        {% endcomment %}
+        {% if subtitle_display != blank %}
+          <p class="apgo-product-metafield-subtitle">{{ subtitle_display | escape }}</p>
         {% endif %}
-        <p class="apgo-product-tagline">
-          {{ product.metafields.apgo.subtitle | default: section.settings.subtitle_fallback }}
-        </p>
       </div>
 
       {% if product.metafields.apgo.performance_metrics.value %}
@@ -2909,7 +2895,7 @@
         assign description_tab_pics_has = true
       endif
 
-      assign sf = section.settings.subtitle_fallback | strip
+      assign sf = subtitle_display | strip
 
       assign how_has = false
       if how_to_use_raw != blank
@@ -3490,7 +3476,9 @@
       <div class="apgo-modal-product-info">
         <div class="apgo-modal-product-name">{{ product.title }}</div>
         <div class="apgo-modal-product-desc">
-          {{ product.metafields.apgo.subtitle | default: section.settings.subtitle_fallback }}
+          {% if subtitle_display != blank %}
+            {{ subtitle_display | escape }}
+          {% endif %}
         </div>
       </div>
     </div>
@@ -4750,8 +4738,9 @@ document.addEventListener('DOMContentLoaded', function() {
     {
       "type": "text",
       "id": "subtitle_fallback",
-      "label": "產品副標（預設）",
-      "default": "釉面質感，提升表面滑順與抗污能力"
+      "label": "產品副標（已不使用）",
+      "info": "標題下方副標請於商品填入 Metafields：custom.product_subtitle；備援：apgo.subtitle。此欄位不再套用在畫面。",
+      "default": ""
     },
     {
       "type": "checkbox",
