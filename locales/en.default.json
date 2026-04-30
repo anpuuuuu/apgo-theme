@@ -312,6 +312,7 @@
     "image_alt": "Image {{ index }}",
     "description": "Description",
     "how_to_use": "How to use",
+    "faq_tab": "FAQ",
     "variation": "Variation",
     "whats_included": "What's Included",
     "whats_included_subline": "IN SINGLE BOTTLE",

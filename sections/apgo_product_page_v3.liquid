@@ -712,6 +712,34 @@
     margin-block: 10px;
   }
 
+  .apgo-tab-panel--faq {
+    text-align: left;
+  }
+
+  .apgo-pdp-faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-width: 0;
+  }
+
+  .apgo-pdp-faq-item:not(:first-child) {
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .apgo-pdp-faq-q {
+    margin: 0 0 0.45rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--primary-orange);
+    line-height: 1.35;
+  }
+
+  .apgo-pdp-faq-item .apgo-pdp-faq-a {
+    margin: 0;
+  }
+
   .apgo-tab-empty {
     color: var(--text-gray);
     font-size: 0.9rem;
@@ -2962,6 +2990,19 @@
         assign review_has_any = true
       endif
 
+      assign product_faq_list = product.metafields.custom.product_faq.value
+      assign faq_has_any = false
+      if product_faq_list != blank
+        for faq_entry in product_faq_list
+          assign faq_q = faq_entry.question.value | default: faq_entry.question | strip
+          assign faq_a = faq_entry.answer.value | default: faq_entry.answer | strip
+          if faq_q != blank and faq_a != blank
+            assign faq_has_any = true
+            break
+          endif
+        endfor
+      endif
+
       assign lead_has_text = false
       if desc_has or loop_desc_has or sf != blank
         assign lead_has_text = true
@@ -3225,6 +3266,19 @@
             >
               How to use
             </button>
+            {% if faq_has_any %}
+              <button
+                type="button"
+                class="apgo-pdp-tab"
+                role="tab"
+                id="apgo-tab-faq-{{ section.id }}"
+                aria-controls="apgo-tab-panel-faq-{{ section.id }}"
+                aria-selected="false"
+                tabindex="-1"
+              >
+                {{ 'product.faq_tab' | t }}
+              </button>
+            {% endif %}
             <button
               type="button"
               class="apgo-pdp-tab"
@@ -3287,6 +3341,29 @@
               <p class="apgo-tab-empty">No usage instructions available.</p>
             {% endif %}
           </div>
+
+          {% if faq_has_any %}
+            <div
+              class="apgo-tab-panel apgo-tab-panel--faq"
+              id="apgo-tab-panel-faq-{{ section.id }}"
+              role="tabpanel"
+              aria-labelledby="apgo-tab-faq-{{ section.id }}"
+              hidden
+            >
+              <div class="apgo-pdp-faq-list">
+                {% for faq_entry in product_faq_list %}
+                  {% assign fq = faq_entry.question.value | default: faq_entry.question | strip %}
+                  {% assign fa = faq_entry.answer.value | default: faq_entry.answer | strip %}
+                  {% if fq != blank and fa != blank %}
+                    <div class="apgo-pdp-faq-item">
+                      <h4 class="apgo-pdp-faq-q">{{ fq | escape }}</h4>
+                      <div class="apgo-pdp-faq-a apgo-tab-plain-body">{{ fa | escape | newline_to_br }}</div>
+                    </div>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
 
           <div
             class="apgo-tab-panel apgo-tab-panel--review"

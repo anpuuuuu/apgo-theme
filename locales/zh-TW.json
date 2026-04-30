@@ -282,6 +282,7 @@
     "image_alt": "圖片 {{ index }}",
     "description": "產品描述",
     "how_to_use": "使用方式",
+    "faq_tab": "常見問題",
     "variation": "規格／組合",
     "whats_included": "内含物",
     "whats_included_subline": "單瓶版本",
