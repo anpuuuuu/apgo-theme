@@ -3,6 +3,29 @@ import { trapFocus, removeTrapFocus } from '@theme/focus';
 import { onAnimationEnd } from '@theme/utilities';
 
 /**
+ * @param {Element} drawerHost - <header-drawer> root
+ */
+function resetAllOpenDrawerDetails(drawerHost) {
+  if (!(drawerHost instanceof Element)) return;
+  drawerHost.querySelectorAll('details[open]').forEach(reset);
+}
+
+let apgoHeaderDrawerPageshowHooked = false;
+function hookPageshowForceCloseMenus() {
+  if (apgoHeaderDrawerPageshowHooked) return;
+  apgoHeaderDrawerPageshowHooked = true;
+  window.addEventListener(
+    'pageshow',
+    () => {
+      document.querySelectorAll('header-drawer').forEach(resetAllOpenDrawerDetails);
+      removeTrapFocus();
+      document.documentElement.removeAttribute('scroll-lock');
+    },
+    false
+  );
+}
+
+/**
  * A custom element that manages the main menu drawer.
  *
  * @typedef {object} Refs
@@ -16,14 +39,46 @@ class HeaderDrawer extends Component {
   connectedCallback() {
     super.connectedCallback();
 
+    hookPageshowForceCloseMenus();
+
     this.addEventListener('keyup', this.#onKeyUp);
+    this.addEventListener('click', this.#onCapturedLinkClick, true);
     this.#setupAnimatedElementListeners();
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
     this.removeEventListener('keyup', this.#onKeyUp);
+    this.removeEventListener('click', this.#onCapturedLinkClick, true);
   }
+
+  /**
+   * 離開／換頁前立即關閉（不依賴 onAnimationEnd；避免 View Transitions / BFCache 帶著 open 到新頁看起來像自動彈出）
+   */
+  forceCloseImmediately() {
+    resetAllOpenDrawerDetails(this);
+    removeTrapFocus();
+    document.documentElement.removeAttribute('scroll-lock');
+  }
+
+  /** @param {MouseEvent} e */
+  #onCapturedLinkClick = (e) => {
+    const t = /** @type {Element | null} */ (e.target instanceof Element ? e.target : null);
+    if (!t) return;
+    const anchor = /** @type {HTMLAnchorElement | null} */ (t.closest('a'));
+    if (!anchor || !this.contains(anchor)) return;
+
+    if (anchor.getAttribute('role') === 'button') return;
+    const hrefRaw = anchor.getAttribute('href');
+    if (!hrefRaw || hrefRaw.startsWith('#') || hrefRaw === '#' || /^javascript\s*:/i.test(hrefRaw)) return;
+
+    const hasModifier =
+      e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0;
+    if (hasModifier) return;
+    if ((anchor.target && anchor.target !== '') || anchor.download) return;
+
+    this.forceCloseImmediately();
+  };
 
   /**
    * Close the main menu drawer when the Escape key is pressed
