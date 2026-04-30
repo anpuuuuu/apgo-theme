@@ -3292,11 +3292,14 @@
           assign use_file_list = false
           if demo_raw != blank
             assign demo_first = demo_raw.first
-            assign file_probe = demo_first | file_url
-            if file_probe != blank
-              assign use_file_list = true
-            elsif demo_first.video_file != blank
+            # 先判 metaobject（與 -2 一致）；避免誤走 file 列表導致 data-video-url 錯誤
+            if demo_first.video_file != blank
               assign use_metaobject_list = true
+            else
+              assign file_probe = demo_first | file_url
+              if file_probe != blank
+                assign use_file_list = true
+              endif
             endif
           endif
         %}
@@ -4912,7 +4915,9 @@ class APGOVideoPlayerMO {
     }
   }
   bindCards() {
-    const cards = document.querySelectorAll('.apgo-video-card[data-video-url]');
+    const cards = document.querySelectorAll(
+      '.apgo-video-showcase .apgo-video-card[data-source="metaobject"], .apgo-video-showcase .apgo-video-card[data-source="file"]'
+    );
     cards.forEach(card => {
       const videoUrl = card.getAttribute('data-video-url');
       if (!videoUrl || videoUrl.trim() === '' || videoUrl === 'VideoDrop') {
