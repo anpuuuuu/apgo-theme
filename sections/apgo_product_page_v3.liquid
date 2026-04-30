@@ -3901,18 +3901,41 @@ class APGOCarousel {
       var self = this;
       requestAnimationFrame(function () {
         requestAnimationFrame(function () {
+          self.syncSlideMetrics();
+          if (self.track) self.track.style.transform = 'translateX(0px)';
           if (self._apgoDbgSnap) self._apgoDbgSnap('ctor_rAF2', 'H-init');
         });
       });
     }
   }
 
+  slideViewportWidth() {
+    const wrap = this.track && this.track.parentElement;
+    if (wrap && wrap.clientWidth > 0) return wrap.clientWidth;
+    return this.showcase && this.showcase.clientWidth > 0 ? this.showcase.clientWidth : 1;
+  }
+
+  syncSlideMetrics() {
+    if (!this.track || !this.slides.length) return;
+    const w = this.slideViewportWidth();
+    const n = this.slides.length;
+    for (let i = 0; i < n; i++) {
+      const slide = this.slides[i];
+      slide.style.flex = `0 0 ${w}px`;
+      slide.style.width = `${w}px`;
+      slide.style.minWidth = `${w}px`;
+      slide.style.maxWidth = `${w}px`;
+      slide.style.boxSizing = 'border-box';
+    }
+    this.track.style.width = `${w * n}px`;
+  }
+
   handleResizeCarousel() {
     if (!this.track || !this.slides.length) return;
-    const n = this.slides.length;
-    const pct = -(this.currentIndex / n) * 100;
+    this.syncSlideMetrics();
+    const w = this.slideViewportWidth();
     this.track.style.transition = 'none';
-    this.track.style.transform = `translateX(${pct}%)`;
+    this.track.style.transform = `translateX(-${this.currentIndex * w}px)`;
     requestAnimationFrame(() => {
       if (this.track) this.track.style.transition = '';
       if (this._apgoDbgSnap) this._apgoDbgSnap('after_resize', 'H-layout');
@@ -3977,15 +4000,11 @@ class APGOCarousel {
     // 横向手势：我们自己处理（阻止默认以避免页面滚动）
     if (this.lock === 'x') {
       e.preventDefault(); // 只在横向时阻止默认
-      const n = this.slides.length;
-      const w = Math.max(
-        (this.track.parentElement && this.track.parentElement.offsetWidth) || 0,
-        this.showcase.offsetWidth || 0,
-        1
-      );
-      const currentPct = -(this.currentIndex / n) * 100;
-      const translate = currentPct + (dx / w) * (100 / n);
-      this.track.style.transform = `translateX(${translate}%)`;
+      this.syncSlideMetrics();
+      const w = this.slideViewportWidth();
+      const currentPx = -this.currentIndex * w;
+      const translatePx = currentPx + dx;
+      this.track.style.transform = `translateX(${translatePx}px)`;
       this.isDragging = true;
     }
   }
@@ -4029,15 +4048,10 @@ class APGOCarousel {
     e.preventDefault();
     this.currentX = e.clientX;
     const diff = this.currentX - this.startX;
-    const n = this.slides.length;
-    const w = Math.max(
-      (this.track.parentElement && this.track.parentElement.offsetWidth) || 0,
-      this.showcase.offsetWidth || 0,
-      1
-    );
-    const currentPct = -(this.currentIndex / n) * 100;
-    const translate = currentPct + (diff / w) * (100 / n);
-    this.track.style.transform = `translateX(${translate}%)`;
+    this.syncSlideMetrics();
+    const w = this.slideViewportWidth();
+    const translatePx = -this.currentIndex * w + diff;
+    this.track.style.transform = `translateX(${translatePx}px)`;
   }
 
   handleMouseUp() {
@@ -4063,9 +4077,10 @@ class APGOCarousel {
     const n = this.slides.length;
     if (index < 0 || index >= n) return;
     this.currentIndex = index;
-    const pct = -(index / n) * 100;
+    this.syncSlideMetrics();
+    const w = this.slideViewportWidth();
     this.track.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-    this.track.style.transform = `translateX(${pct}%)`;
+    this.track.style.transform = `translateX(-${index * w}px)`;
 
     // 更新指示点
     this.dots.forEach((dot, i) => {
@@ -4091,19 +4106,25 @@ APGOCarousel.prototype._apgoDbgSnap = function (reason, hypothesisId) {
     var wrap = this.track && this.track.parentElement;
     var cw = wrap ? wrap.clientWidth : 0;
     var pct = this.slides.length ? -(this.currentIndex / this.slides.length) * 100 : 0;
+    var vw =
+      cw > 0 ? cw : this.showcase && this.showcase.clientWidth > 0 ? this.showcase.clientWidth : 1;
+    if (!vw || vw < 1) vw = 1;
     window.apgoDbgCarouselIngest(hypothesisId || 'H-layout', 'APGOCarousel._apgoDbgSnap', reason, {
       slideCount: this.slides.length,
       dotCount: document.querySelectorAll('.apgo-dot').length,
       thumbCount: document.querySelectorAll('.apgo-thumbnail-item').length,
       currentIndex: this.currentIndex,
       containerClientW: cw,
+      slideViewportW: vw,
       containerOffsetW: wrap ? wrap.offsetWidth : 0,
       trackOffsetW: this.track ? this.track.offsetWidth : 0,
       trackScrollW: this.track ? this.track.scrollWidth : 0,
       showcaseClientW: this.showcase ? this.showcase.clientWidth : 0,
       transform: this.track ? this.track.style.transform : '',
-      expectedPct: pct,
-      pctPerSlide: this.slides.length ? 100 / this.slides.length : 0
+      legacyExpectedPctHint: pct,
+      expectedTranslatePx: -this.currentIndex * vw,
+      slideWidthMatch:
+        this.slides.length && this.track ? this.track.scrollWidth / this.slides.length : 0
     });
   } catch (e) {}
 };
