@@ -48,7 +48,17 @@
     --border-color: #333333;
   }
 
+  /* PDP 區塊在 #MainContent 內須明示滿寬，避免繼承建議寬度在部分 flex 環境留下右側 gutter */
+  section.shopify-section.apgo-product {
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+  }
+
   .apgo-product-section {
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Microsoft JhengHei', sans-serif;
     background: var(--dark-bg);
     color: var(--text-white);
@@ -129,6 +139,8 @@
 
   /* 主內容區 */
   .apgo-main-container {
+    width: 100%;
+    max-width: none;
     min-height: 100vh;
     padding-bottom: 28px;
     -ms-overflow-style: none; /* IE 和 Edge */
