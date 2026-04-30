@@ -3899,11 +3899,50 @@ class APGOCarousel {
       this.handleResizeCarousel = this.handleResizeCarousel.bind(this);
       window.addEventListener('resize', this.handleResizeCarousel);
       var self = this;
+      var wrap = this.track.parentElement;
+      // #region agent log
+      try {
+        fetch('http://127.0.0.1:7664/ingest/6d6da4c4-6868-481c-8830-6f610c9dd71e', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '0c453c' },
+          body: JSON.stringify({
+            sessionId: '0c453c',
+            runId: 'init',
+            hypothesisId: 'H-initial',
+            location: 'apgo_product_page_v3.liquid:APGOCarousel.constructor',
+            message: 'ctor_wrap_dims',
+            data: {
+              wrapClientW: wrap ? wrap.clientWidth : 0,
+              showcaseCW: self.showcase ? self.showcase.clientWidth : 0
+            },
+            timestamp: Date.now()
+          })
+        }).catch(function () {});
+      } catch (e) {}
+      // #endregion
+      function applyLayoutPass(tag) {
+        if (!self.track || !self.slides.length) return;
+        self.track.style.transition = 'none';
+        self.syncSlideMetrics();
+        var w = self.slideViewportWidth();
+        self.track.style.transform = 'translateX(-' + self.currentIndex * w + 'px)';
+        if (self._apgoDbgSnap) self._apgoDbgSnap(tag, 'H-initial');
+      }
+      if (wrap && wrap.clientWidth > 0) {
+        applyLayoutPass('ctor_sync0');
+      }
+      if (wrap && typeof ResizeObserver !== 'undefined') {
+        this._apgoCarouselRO = new ResizeObserver(function () {
+          self.handleResizeCarousel();
+        });
+        this._apgoCarouselRO.observe(wrap);
+      }
       requestAnimationFrame(function () {
         requestAnimationFrame(function () {
-          self.syncSlideMetrics();
-          if (self.track) self.track.style.transform = 'translateX(0px)';
-          if (self._apgoDbgSnap) self._apgoDbgSnap('ctor_rAF2', 'H-init');
+          applyLayoutPass('ctor_rAF2');
+          requestAnimationFrame(function () {
+            if (self.track) self.track.style.transition = '';
+          });
         });
       });
     }
