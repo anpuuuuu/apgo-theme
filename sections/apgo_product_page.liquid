@@ -729,6 +729,10 @@
     margin: 0 0 10px;
   }
 
+  [id^='apgo-tab-panel-how-'] .apgo-looping-desc-content .apgo-looping-desc-block-title:not(:first-child) {
+    margin-top: 1.25rem;
+  }
+
   /* Match in-RTE section headers (e.g. DESCRIPTION) to block titles */
   .apgo-looping-desc-block--description > h1:first-child,
   .apgo-looping-desc-block--description > h2:first-child,
@@ -3165,10 +3169,8 @@
             {% if how_tab_has_any %}
               <div class="apgo-looping-desc-content">
                 {% if how_has %}
+                  <h4 class="apgo-looping-desc-block-title">{{ 'product.how_to_use' | t }}</h4>
                   <div class="apgo-tab-plain-body">{{ how_to_use_raw | escape | newline_to_br }}</div>
-                {% endif %}
-                {% if how_has and precautions_has %}
-                  <hr class="apgo-looping-desc-divider">
                 {% endif %}
                 {% if precautions_has %}
                   <h4 class="apgo-looping-desc-block-title">{{ 'product.precautions' | t }}</h4>
