@@ -1,4 +1,4 @@
-{% comment %}
+﻿{% comment %}
   APGO v3 PDP（程式內容同步自 git be16ff9 的 apgo_product_page）
   檔案: sections/apgo_product_page_v3.liquid｜模板: templates/product.v3.json
 {% endcomment %}
@@ -640,6 +640,10 @@
   .apgo-tab-pane-empty-slot {
     min-height: 56px;
     box-sizing: border-box;
+  }
+
+  .apgo-description-tab-gallery {
+    margin-bottom: 0;
   }
 
   .apgo-tab-plain-body {
@@ -2837,6 +2841,12 @@
         assign gallery_has = true
       endif
 
+      assign description_tab_pic_list = product.metafields.custom.description_pic.value
+      assign description_tab_pics_has = false
+      if description_tab_pic_list != blank and description_tab_pic_list.size != 0
+        assign description_tab_pics_has = true
+      endif
+
       assign sf = section.settings.subtitle_fallback | strip
 
       assign how_has = false
@@ -3155,7 +3165,23 @@
             role="tabpanel"
             aria-labelledby="apgo-tab-desc-{{ section.id }}"
           >
-            <div class="apgo-tab-pane-empty-slot" aria-hidden="true">&nbsp;</div>
+            {% if description_tab_pics_has %}
+              <div class="apgo-tab-desc-gallery apgo-description-tab-gallery">
+                {% for pic in description_tab_pic_list %}
+                  {% if pic != blank %}
+                    <img
+                      src="{{ pic | image_url: width: 1400 }}"
+                      alt="{{ product.title | escape }} — {{ forloop.index }}"
+                      loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                      width="1400"
+                      height="1400"
+                    >
+                  {% endif %}
+                {% endfor %}
+              </div>
+            {% else %}
+              <div class="apgo-tab-pane-empty-slot" aria-hidden="true">&nbsp;</div>
+            {% endif %}
           </div>
 
           <div
@@ -4708,7 +4734,7 @@ document.addEventListener('DOMContentLoaded', function() {
     },
     {
       "type": "paragraph",
-      "content": "**Above tabs:** looping video (**custom.looping_video**), gallery (**custom.tab_description_images**), and body copy (description / **looping_description** / subtitle fallback). **Description tab** is intentionally empty for now."
+      "content": "**Tabs 上方區：** looping（**custom.looping_video**）、圖組（**custom.tab_description_images**）、主說明（description / **looping_description** / 副標）。**Description 分頁：** 圖組 **custom.description_pic**（列表・圖片檔）；未填維持空白占位。"
     }
   ],
   "blocks": [
