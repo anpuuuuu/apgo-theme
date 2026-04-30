@@ -493,6 +493,11 @@
   }
 
   /* PDP tabs (English labels) — video + RTE block below */
+  .apgo-pdp-looping-lead {
+    padding: 0 16px 12px;
+    background: var(--dark-bg);
+  }
+
   .apgo-pdp-tabs {
     padding: 0 16px 24px;
     background: var(--dark-bg);
@@ -631,6 +636,11 @@
 
   .apgo-tab-faq-placeholder {
     min-height: 32px;
+  }
+
+  .apgo-tab-pane-empty-slot {
+    min-height: 56px;
+    box-sizing: border-box;
   }
 
   .apgo-tab-plain-body {
@@ -2442,6 +2452,10 @@
       padding-bottom: 84px;
     }
 
+    .apgo-pdp-looping-lead {
+      padding: 0 12px 10px;
+    }
+
     .apgo-pdp-tabs {
       padding: 0 12px 20px;
     }
@@ -2846,15 +2860,84 @@
         assign review_has_any = true
       endif
 
-      assign tab1_has_text = false
+      assign lead_has_text = false
       if desc_has or loop_desc_has or sf != blank
-        assign tab1_has_text = true
+        assign lead_has_text = true
       endif
-      assign tab1_has_visual = false
-      if tab1_has_text or gallery_has or has_looping_video
-        assign tab1_has_visual = true
+      assign lead_has_visual = false
+      if lead_has_text or gallery_has or has_looping_video
+        assign lead_has_visual = true
       endif
     %}
+    <section class="apgo-pdp-looping-lead" aria-label="Product description — video and details">
+      <div class="apgo-pdp-tabs-inner">
+        <div class="apgo-tab-desc-layout {% if has_looping_video %}has-video{% endif %}">
+          {% if has_looping_video %}
+            <div class="apgo-looping-video-wrap">
+              {{
+                looping_video_media
+                | video_tag:
+                  autoplay: true,
+                  loop: true,
+                  muted: true,
+                  controls: false,
+                  playsinline: true
+              }}
+            </div>
+          {% endif %}
+
+          <div class="apgo-looping-desc-wrap">
+            <h4 class="apgo-looping-desc-block-title apgo-looping-desc-block-title--leadin">Product description</h4>
+
+            {% if gallery_has %}
+              <div class="apgo-tab-desc-gallery">
+                {% for mf in tab_desc_media %}
+                  {% assign mf_mt = mf.media_type | default: '' | downcase %}
+                  {% if mf_mt contains 'video' %}
+                    {{
+                      mf
+                      | video_tag:
+                        controls: true,
+                        muted: false,
+                        playsinline: true,
+                        preload: 'metadata'
+                    }}
+                  {% else %}
+                    <img
+                      src="{{ mf | image_url: width: 1200 }}"
+                      alt="{{ product.title | escape }} — {{ forloop.index }}"
+                      loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                      width="1200"
+                      height="1200"
+                    >
+                  {% endif %}
+                {% endfor %}
+              </div>
+            {% endif %}
+
+            {% unless lead_has_visual %}
+              <p class="apgo-tab-empty">No description available.</p>
+            {% endunless %}
+            {% if lead_has_text %}
+              <div class="apgo-looping-desc-content">
+                {% if desc_has %}
+                  <div class="apgo-looping-desc-block apgo-looping-desc-block--description">
+                    {{ product.description }}
+                  </div>
+                {% elsif loop_desc_has %}
+                  {{ looping_description_value | metafield_tag }}
+                {% elsif sf != blank %}
+                  <div class="apgo-looping-desc-block apgo-looping-desc-block--description">
+                    {{ sf | escape | newline_to_br }}
+                  </div>
+                {% endif %}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section
       class="apgo-pdp-tabs"
       aria-label="Product detail tabs"
@@ -2928,68 +3011,7 @@
             role="tabpanel"
             aria-labelledby="apgo-tab-desc-{{ section.id }}"
           >
-            <div class="apgo-tab-desc-layout {% if has_looping_video %}has-video{% endif %}">
-              {% if has_looping_video %}
-                <div class="apgo-looping-video-wrap">
-                  {{
-                    looping_video_media
-                    | video_tag:
-                      autoplay: true,
-                      loop: true,
-                      muted: true,
-                      controls: false,
-                      playsinline: true
-                  }}
-                </div>
-              {% endif %}
-
-              <div class="apgo-looping-desc-wrap">
-                {% if gallery_has %}
-                  <div class="apgo-tab-desc-gallery">
-                    {% for mf in tab_desc_media %}
-                      {% assign mf_mt = mf.media_type | default: '' | downcase %}
-                      {% if mf_mt contains 'video' %}
-                        {{
-                          mf
-                          | video_tag:
-                            controls: true,
-                            muted: false,
-                            playsinline: true,
-                            preload: 'metadata'
-                        }}
-                      {% else %}
-                        <img
-                          src="{{ mf | image_url: width: 1200 }}"
-                          alt="{{ product.title | escape }} — {{ forloop.index }}"
-                          loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
-                          width="1200"
-                          height="1200"
-                        >
-                      {% endif %}
-                    {% endfor %}
-                  </div>
-                {% endif %}
-
-                {% unless tab1_has_visual %}
-                  <p class="apgo-tab-empty">No description available.</p>
-                {% endunless %}
-                {% if tab1_has_text %}
-                  <div class="apgo-looping-desc-content">
-                    {% if desc_has %}
-                      <div class="apgo-looping-desc-block apgo-looping-desc-block--description">
-                        {{ product.description }}
-                      </div>
-                    {% elsif loop_desc_has %}
-                      {{ looping_description_value | metafield_tag }}
-                    {% elsif sf != blank %}
-                      <div class="apgo-looping-desc-block apgo-looping-desc-block--description">
-                        {{ sf | escape | newline_to_br }}
-                      </div>
-                    {% endif %}
-                  </div>
-                {% endif %}
-              </div>
-            </div>
+            <div class="apgo-tab-pane-empty-slot" aria-hidden="true">&nbsp;</div>
           </div>
 
           <div
@@ -4698,7 +4720,7 @@ document.addEventListener('DOMContentLoaded', function() {
     },
     {
       "type": "paragraph",
-      "content": "PDP tabs use English labels. Product metafield **custom.tab_description_images** (list of files/images) renders in Tab 1. Also use **custom.how_to_use**, **custom.variation**, **custom.customer_review**, **custom.customer_review_mobile**."
+      "content": "**Above tabs:** looping video (**custom.looping_video**), gallery (**custom.tab_description_images**), and body copy (description / **looping_description** / subtitle fallback). **Product description tab** is intentionally empty for now."
     }
   ],
   "blocks": [
