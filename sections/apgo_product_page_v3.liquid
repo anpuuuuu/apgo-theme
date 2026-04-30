@@ -3167,8 +3167,10 @@
                       src="{{ mf | image_url: width: 1200 }}"
                       alt="{{ product.title | escape }} — {{ forloop.index }}"
                       loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
-                      width="1200"
-                      height="1200"
+                      {% if mf.width and mf.height %}
+                        width="{{ mf.width }}"
+                        height="{{ mf.height }}"
+                      {% endif %}
                     >
                   {% endif %}
                 {% endfor %}
@@ -3425,8 +3427,10 @@
                       src="{{ pic | image_url: width: 1400 }}"
                       alt="{{ product.title | escape }} — {{ forloop.index }}"
                       loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
-                      width="1400"
-                      height="1400"
+                      {% if pic.width and pic.height %}
+                        width="{{ pic.width }}"
+                        height="{{ pic.height }}"
+                      {% endif %}
                     >
                   {% endif %}
                 {% endfor %}
