@@ -2873,15 +2873,12 @@
 
       assign customer_review_image = product.metafields.custom.customer_review.value | default: product.metafields.custom.customer_review
       assign mobile_review_list = product.metafields.custom.customer_review_mobile.value
-      assign mobile_review_image = nil
-      if mobile_review_list != blank
-        for mf in mobile_review_list limit: 1
-          assign mobile_review_image = mf
-        endfor
-      endif
 
       assign review_has_any = false
-      if customer_review_image != blank or mobile_review_image != blank
+      if customer_review_image != blank
+        assign review_has_any = true
+      endif
+      if mobile_review_list != blank
         assign review_has_any = true
       endif
 
@@ -3245,24 +3242,19 @@
                   </div>
                 {% endif %}
                 <div class="apgo-customer-review-mobile-only">
-                  {% if mobile_review_list != blank and mobile_review_list.size > 1 %}
+                  {% if mobile_review_list != blank %}
                     <div class="apgo-customer-review-mobile-scroll">
                       {% for mf in mobile_review_list %}
-                        <img
-                          class="apgo-customer-review-image apgo-customer-review-image--tile"
-                          src="{{ mf | image_url: width: 2000 }}"
-                          alt="Review {{ forloop.index }}"
-                          loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
-                        >
+                        {% if mf != blank %}
+                          <img
+                            class="apgo-customer-review-image apgo-customer-review-image--tile"
+                            src="{{ mf | image_url: width: 2000 }}"
+                            alt="Review {{ forloop.index }}"
+                            loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                          >
+                        {% endif %}
                       {% endfor %}
                     </div>
-                  {% elsif mobile_review_image != blank %}
-                    <img
-                      class="apgo-customer-review-image"
-                      src="{{ mobile_review_image | image_url: width: 2000 }}"
-                      alt="Review"
-                      loading="lazy"
-                    >
                   {% elsif customer_review_image != blank %}
                     <img
                       class="apgo-customer-review-image"
