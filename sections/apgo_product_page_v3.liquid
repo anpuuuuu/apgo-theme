@@ -658,22 +658,20 @@
     object-fit: contain;
   }
 
-  .apgo-tab-review-panel-inner {
-    background: #000000;
-    border-radius: 14px;
-    padding: 14px 16px 18px;
-    border: 1px solid rgba(240, 132, 24, 0.15);
-    text-align: center;
-  }
-
-  .apgo-tab-review-panel-inner .apgo-customer-review-image {
-    max-width: 100%;
+  /* Review 分頁：不要內層卡片，圖片貼齊 Tabs 區塊左右內邊界 */
+  .apgo-tab-panel--review {
+    margin-left: -16px;
+    margin-right: -16px;
+    width: calc(100% + 32px);
+    max-width: none;
+    box-sizing: border-box;
+    padding: 0;
   }
 
   .apgo-pdp-review-media-stack {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 0;
     width: 100%;
     min-width: 0;
     text-align: left;
@@ -682,6 +680,15 @@
   .apgo-pdp-review-media-stack .apgo-customer-review-image {
     margin: 0;
     object-fit: contain;
+    border-radius: 0;
+    max-width: none !important;
+    width: 100%;
+    display: block;
+  }
+
+  .apgo-tab-panel--review .apgo-tab-empty {
+    padding-inline: 16px;
+    margin-block: 10px;
   }
 
   .apgo-tab-empty {
@@ -2506,6 +2513,16 @@
       padding: 0 12px 20px;
     }
 
+    .apgo-tab-panel--review {
+      margin-left: -12px;
+      margin-right: -12px;
+      width: calc(100% + 24px);
+    }
+
+    .apgo-tab-panel--review .apgo-tab-empty {
+      padding-inline: 12px;
+    }
+
     .apgo-tab-desc-layout.has-video {
       grid-template-columns: 1fr;
       gap: 10px;
@@ -3254,40 +3271,38 @@
           </div>
 
           <div
-            class="apgo-tab-panel"
+            class="apgo-tab-panel apgo-tab-panel--review"
             id="apgo-tab-panel-rev-{{ section.id }}"
             role="tabpanel"
             aria-labelledby="apgo-tab-rev-{{ section.id }}"
             hidden
           >
-            <div class="apgo-tab-review-panel-inner">
-              {% if review_has_any %}
-                <div class="apgo-pdp-review-media-stack">
-                  {% if customer_review_image != blank %}
-                    <img
-                      class="apgo-customer-review-image"
-                      src="{{ customer_review_image | image_url: width: 2000 }}"
-                      alt="Review"
-                      loading="lazy"
-                    >
-                  {% endif %}
-                  {% if mobile_review_list != blank %}
-                    {% for mf in mobile_review_list %}
-                      {% if mf != blank %}
-                        <img
-                          class="apgo-customer-review-image"
-                          src="{{ mf | image_url: width: 2000 }}"
-                          alt="Review {{ forloop.index }}"
-                          loading="{% if customer_review_image == blank and forloop.first %}eager{% else %}lazy{% endif %}"
-                        >
-                      {% endif %}
-                    {% endfor %}
-                  {% endif %}
-                </div>
-              {% else %}
-                <p class="apgo-tab-empty">No customer review images yet.</p>
-              {% endif %}
-            </div>
+            {% if review_has_any %}
+              <div class="apgo-pdp-review-media-stack">
+                {% if customer_review_image != blank %}
+                  <img
+                    class="apgo-customer-review-image"
+                    src="{{ customer_review_image | image_url: width: 2000 }}"
+                    alt="Review"
+                    loading="lazy"
+                  >
+                {% endif %}
+                {% if mobile_review_list != blank %}
+                  {% for mf in mobile_review_list %}
+                    {% if mf != blank %}
+                      <img
+                        class="apgo-customer-review-image"
+                        src="{{ mf | image_url: width: 2000 }}"
+                        alt="Review {{ forloop.index }}"
+                        loading="{% if customer_review_image == blank and forloop.first %}eager{% else %}lazy{% endif %}"
+                      >
+                    {% endif %}
+                  {% endfor %}
+                {% endif %}
+              </div>
+            {% else %}
+              <p class="apgo-tab-empty">No customer review images yet.</p>
+            {% endif %}
           </div>
         </div>
       </div>
