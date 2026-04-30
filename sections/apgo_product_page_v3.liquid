@@ -363,6 +363,16 @@
     opacity: 1;
   }
 
+  .apgo-product-thumbnails.apgo-product-thumbnails--no-subtitle-below {
+    padding-bottom: 14px;
+    margin-bottom: 4px;
+  }
+
+  .apgo-product-thumbnails.apgo-product-thumbnails--no-subtitle-below .apgo-thumbnails-container {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
   .apgo-thumbnail-play-icon {
     width: 20px;
     height: 20px;
@@ -380,6 +390,20 @@
   @media (max-width: 768px) {
     .apgo-product-thumbnails {
       padding: 16px 12px 24px;
+    }
+
+    .apgo-product-thumbnails.apgo-product-thumbnails--no-subtitle-below {
+      padding: 12px 12px 8px;
+      margin-bottom: 0;
+    }
+
+    .apgo-product-thumbnails.apgo-product-thumbnails--no-subtitle-below .apgo-thumbnails-container {
+      padding-top: 4px;
+      padding-bottom: 4px;
+    }
+
+    .apgo-product-info.apgo-product-info--no-subtitle {
+      padding-top: 6px;
     }
 
     .apgo-thumbnails-container {
@@ -402,6 +426,14 @@
   .apgo-product-info {
     padding: 24px 16px;
     background: var(--dark-bg);
+  }
+
+  .apgo-product-info.apgo-product-info--no-subtitle {
+    padding-top: 10px;
+  }
+
+  .apgo-product-info.apgo-product-info--no-subtitle .apgo-product-name {
+    margin-bottom: 0;
   }
 
   .apgo-product-header {
@@ -2782,7 +2814,7 @@
     </section>
 
     <!-- 產品縮圖展示區 -->
-    <section class="apgo-product-thumbnails">
+    <section class="apgo-product-thumbnails{% if subtitle_display == blank %} apgo-product-thumbnails--no-subtitle-below{% endif %}">
       <div class="apgo-thumbnails-container">
         {% for image in product.images %}
           <div
@@ -2802,7 +2834,7 @@
     </section>
 
     <!-- 產品基本資訊 -->
-    <section class="apgo-product-info">
+    <section class="apgo-product-info{% if subtitle_display == blank %} apgo-product-info--no-subtitle{% endif %}">
       <div class="apgo-product-header">
         <h1 class="apgo-product-name">{{ product.title }}</h1>
         {% comment %}
