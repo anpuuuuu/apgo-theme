@@ -241,19 +241,6 @@
     object-fit: contain;
   }
 
-  /*
-    手機版字級降一階。schema 預設 text block 會把 font-size 以 inline style 寫在 block 包裝上
-    （var(--font-size--h3)），需要 !important 才能蓋過 inline style。
-  */
-  @media (max-width: 768px) {
-    .marquee__sticky-wrap .marquee__content,
-    .marquee__sticky-wrap .marquee__content *,
-    .marquee__sticky-wrap .marquee__promo-item {
-      font-size: 0.78rem !important;
-      line-height: 1.2 !important;
-    }
-  }
-
   @media (prefers-reduced-motion: no-preference) {
     marquee-component:not([data-disabled]) .marquee__wrapper {
       animation: marquee-motion var(--marquee-speed) linear infinite var(--marquee-direction);
