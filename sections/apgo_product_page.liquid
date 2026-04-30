@@ -2841,6 +2841,18 @@
         assign how_has = true
       endif
 
+      assign insidebox_image = product.metafields.custom.insidebox.value | default: product.metafields.custom.insidebox
+      assign precautions_text = product.metafields.custom.precautions.value | default: product.metafields.custom.precautions
+      assign precautions_has = false
+      if precautions_text != blank
+        assign precautions_has = true
+      endif
+
+      assign how_tab_has_any = false
+      if how_has or precautions_has
+        assign how_tab_has_any = true
+      endif
+
       assign var_has = false
       if variation_raw != blank
         assign var_has = true
@@ -2938,183 +2950,6 @@
       </div>
     </section>
 
-    <section
-      class="apgo-pdp-tabs"
-      aria-label="Product detail tabs"
-      data-apgo-pdp-tabs-root="{{ section.id }}"
-    >
-      <div class="apgo-pdp-tabs-inner">
-        <div class="apgo-pdp-tablist-wrap">
-          <div class="apgo-pdp-tablist" role="tablist">
-            <button
-              type="button"
-              class="apgo-pdp-tab"
-              role="tab"
-              id="apgo-tab-desc-{{ section.id }}"
-              aria-controls="apgo-tab-panel-desc-{{ section.id }}"
-              aria-selected="true"
-              tabindex="0"
-            >
-              Product description
-            </button>
-            <button
-              type="button"
-              class="apgo-pdp-tab"
-              role="tab"
-              id="apgo-tab-how-{{ section.id }}"
-              aria-controls="apgo-tab-panel-how-{{ section.id }}"
-              aria-selected="false"
-              tabindex="-1"
-            >
-              How to use
-            </button>
-            <button
-              type="button"
-              class="apgo-pdp-tab"
-              role="tab"
-              id="apgo-tab-spec-{{ section.id }}"
-              aria-controls="apgo-tab-panel-spec-{{ section.id }}"
-              aria-selected="false"
-              tabindex="-1"
-            >
-              Specifications
-            </button>
-            <button
-              type="button"
-              class="apgo-pdp-tab"
-              role="tab"
-              id="apgo-tab-rev-{{ section.id }}"
-              aria-controls="apgo-tab-panel-rev-{{ section.id }}"
-              aria-selected="false"
-              tabindex="-1"
-            >
-              Customer reviews
-            </button>
-            <button
-              type="button"
-              class="apgo-pdp-tab"
-              role="tab"
-              id="apgo-tab-faq-{{ section.id }}"
-              aria-controls="apgo-tab-panel-faq-{{ section.id }}"
-              aria-selected="false"
-              tabindex="-1"
-            >
-              FAQ
-            </button>
-          </div>
-        </div>
-
-        <div class="apgo-tab-panels">
-          <div
-            class="apgo-tab-panel apgo-looping-desc-content"
-            id="apgo-tab-panel-desc-{{ section.id }}"
-            role="tabpanel"
-            aria-labelledby="apgo-tab-desc-{{ section.id }}"
-          >
-            <div class="apgo-tab-pane-empty-slot" aria-hidden="true">&nbsp;</div>
-          </div>
-
-          <div
-            class="apgo-tab-panel"
-            id="apgo-tab-panel-how-{{ section.id }}"
-            role="tabpanel"
-            aria-labelledby="apgo-tab-how-{{ section.id }}"
-            hidden
-          >
-            {% if how_has %}
-              <div class="apgo-looping-desc-content">
-                <div class="apgo-tab-plain-body">{{ how_to_use_raw | escape | newline_to_br }}</div>
-              </div>
-            {% else %}
-              <p class="apgo-tab-empty">No usage instructions available.</p>
-            {% endif %}
-          </div>
-
-          <div
-            class="apgo-tab-panel"
-            id="apgo-tab-panel-spec-{{ section.id }}"
-            role="tabpanel"
-            aria-labelledby="apgo-tab-spec-{{ section.id }}"
-            hidden
-          >
-            {% if var_has %}
-              <div class="apgo-looping-desc-content">
-                <div class="apgo-tab-plain-body">{{ variation_raw | escape | newline_to_br }}</div>
-              </div>
-            {% else %}
-              <p class="apgo-tab-empty">No specification details available.</p>
-            {% endif %}
-          </div>
-
-          <div
-            class="apgo-tab-panel"
-            id="apgo-tab-panel-rev-{{ section.id }}"
-            role="tabpanel"
-            aria-labelledby="apgo-tab-rev-{{ section.id }}"
-            hidden
-          >
-            <div class="apgo-tab-review-panel-inner">
-              {% if review_has_any %}
-                {% if customer_review_image != blank %}
-                  <div class="apgo-customer-review-desktop-only">
-                    <div class="apgo-customer-review-scroll">
-                      <img
-                        class="apgo-customer-review-image"
-                        src="{{ customer_review_image | image_url: width: 2000 }}"
-                        alt="Customer reviews"
-                        loading="lazy"
-                      >
-                    </div>
-                  </div>
-                {% endif %}
-                <div class="apgo-customer-review-mobile-only">
-                  {% if mobile_review_list != blank and mobile_review_list.size > 1 %}
-                    <div class="apgo-customer-review-mobile-scroll">
-                      {% for mf in mobile_review_list %}
-                        <img
-                          class="apgo-customer-review-image apgo-customer-review-image--tile"
-                          src="{{ mf | image_url: width: 2000 }}"
-                          alt="Customer review {{ forloop.index }}"
-                          loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
-                        >
-                      {% endfor %}
-                    </div>
-                  {% elsif mobile_review_image != blank %}
-                    <img
-                      class="apgo-customer-review-image"
-                      src="{{ mobile_review_image | image_url: width: 2000 }}"
-                      alt="Customer reviews"
-                      loading="lazy"
-                    >
-                  {% elsif customer_review_image != blank %}
-                    <img
-                      class="apgo-customer-review-image"
-                      src="{{ customer_review_image | image_url: width: 2000 }}"
-                      alt="Customer reviews"
-                      loading="lazy"
-                    >
-                  {% endif %}
-                </div>
-              {% else %}
-                <p class="apgo-tab-empty">No customer review images yet.</p>
-              {% endif %}
-            </div>
-          </div>
-
-          <div
-            class="apgo-tab-panel"
-            id="apgo-tab-panel-faq-{{ section.id }}"
-            role="tabpanel"
-            aria-labelledby="apgo-tab-faq-{{ section.id }}"
-            hidden
-          >
-            <div class="apgo-tab-faq-placeholder" aria-hidden="true">&nbsp;</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    {% assign insidebox_image = product.metafields.custom.insidebox.value | default: product.metafields.custom.insidebox %}
     {% if insidebox_image != blank %}
       <section class="apgo-insidebox">
         <div class="apgo-insidebox-inner">
@@ -3126,55 +2961,6 @@
             alt="{{ 'product.whats_included' | t }}"
             loading="lazy"
           >
-        </div>
-      </section>
-    {% endif %}
-
-    {% assign precautions_text = product.metafields.custom.precautions.value | default: product.metafields.custom.precautions %}
-    {% if precautions_text != blank %}
-      <section class="apgo-precautions">
-        <div class="apgo-precautions-header">
-          <h3 class="apgo-precautions-title-outside">{{ 'product.precautions' | t }}</h3>
-        </div>
-        <div class="apgo-precautions-inner">
-          <div class="apgo-precautions-content">{{ precautions_text | escape | newline_to_br }}</div>
-        </div>
-      </section>
-    {% endif %}
-
-    {% liquid
-      assign cs_mf = product.metafields.custom.construction_steps
-      assign cs_steps = nil
-      if cs_mf != blank and cs_mf.value != blank
-        assign cs_try = cs_mf.value
-        assign cs_probe = cs_try.first.title | default: cs_try.first.desc | default: cs_try.first.description | default: cs_try.first.step
-        if cs_probe != blank
-          assign cs_steps = cs_try
-        else
-          assign cs_steps = cs_mf.value | parse_json
-        endif
-      endif
-    %}
-    {% if cs_steps != blank %}
-      <section class="apgo-construction-steps" id="ConstructionSteps-{{ section.id }}">
-        <div class="apgo-construction-steps-inner">
-          <header class="apgo-construction-steps-header">
-            <h3 class="apgo-construction-steps-title">{{ 'product.construction_steps' | t }}</h3>
-          </header>
-          {% for step in cs_steps %}
-            {% assign st_title = step.title | default: step.step %}
-            {% assign st_body = step.desc | default: step.description | default: step.body %}
-            {% if st_title != blank or st_body != blank %}
-              <article class="apgo-step-card">
-                {% if st_title != blank %}
-                  <h4 class="apgo-step-card-title">{{ st_title | escape }}</h4>
-                {% endif %}
-                {% if st_body != blank %}
-                  <div class="apgo-step-card-body">{{ st_body | escape | newline_to_br }}</div>
-                {% endif %}
-              </article>
-            {% endif %}
-          {% endfor %}
         </div>
       </section>
     {% endif %}
@@ -3303,6 +3089,228 @@
         {% endif %}
       </div>
     </section>
+
+    <section
+      class="apgo-pdp-tabs"
+      aria-label="Product detail tabs"
+      data-apgo-pdp-tabs-root="{{ section.id }}"
+    >
+      <div class="apgo-pdp-tabs-inner">
+        <div class="apgo-pdp-tablist-wrap">
+          <div class="apgo-pdp-tablist" role="tablist">
+            <button
+              type="button"
+              class="apgo-pdp-tab"
+              role="tab"
+              id="apgo-tab-desc-{{ section.id }}"
+              aria-controls="apgo-tab-panel-desc-{{ section.id }}"
+              aria-selected="true"
+              tabindex="0"
+            >
+              Product description
+            </button>
+            <button
+              type="button"
+              class="apgo-pdp-tab"
+              role="tab"
+              id="apgo-tab-how-{{ section.id }}"
+              aria-controls="apgo-tab-panel-how-{{ section.id }}"
+              aria-selected="false"
+              tabindex="-1"
+            >
+              How to use
+            </button>
+            <button
+              type="button"
+              class="apgo-pdp-tab"
+              role="tab"
+              id="apgo-tab-spec-{{ section.id }}"
+              aria-controls="apgo-tab-panel-spec-{{ section.id }}"
+              aria-selected="false"
+              tabindex="-1"
+            >
+              Specifications
+            </button>
+            <button
+              type="button"
+              class="apgo-pdp-tab"
+              role="tab"
+              id="apgo-tab-rev-{{ section.id }}"
+              aria-controls="apgo-tab-panel-rev-{{ section.id }}"
+              aria-selected="false"
+              tabindex="-1"
+            >
+              Customer reviews
+            </button>
+            <button
+              type="button"
+              class="apgo-pdp-tab"
+              role="tab"
+              id="apgo-tab-faq-{{ section.id }}"
+              aria-controls="apgo-tab-panel-faq-{{ section.id }}"
+              aria-selected="false"
+              tabindex="-1"
+            >
+              FAQ
+            </button>
+          </div>
+        </div>
+
+        <div class="apgo-tab-panels">
+          <div
+            class="apgo-tab-panel apgo-looping-desc-content"
+            id="apgo-tab-panel-desc-{{ section.id }}"
+            role="tabpanel"
+            aria-labelledby="apgo-tab-desc-{{ section.id }}"
+          >
+            <div class="apgo-tab-pane-empty-slot" aria-hidden="true">&nbsp;</div>
+          </div>
+
+          <div
+            class="apgo-tab-panel"
+            id="apgo-tab-panel-how-{{ section.id }}"
+            role="tabpanel"
+            aria-labelledby="apgo-tab-how-{{ section.id }}"
+            hidden
+          >
+            {% if how_tab_has_any %}
+              <div class="apgo-looping-desc-content">
+                {% if how_has %}
+                  <div class="apgo-tab-plain-body">{{ how_to_use_raw | escape | newline_to_br }}</div>
+                {% endif %}
+                {% if how_has and precautions_has %}
+                  <hr class="apgo-looping-desc-divider">
+                {% endif %}
+                {% if precautions_has %}
+                  <h4 class="apgo-looping-desc-block-title">{{ 'product.precautions' | t }}</h4>
+                  <div class="apgo-tab-plain-body">{{ precautions_text | escape | newline_to_br }}</div>
+                {% endif %}
+              </div>
+            {% else %}
+              <p class="apgo-tab-empty">No usage instructions available.</p>
+            {% endif %}
+          </div>
+
+          <div
+            class="apgo-tab-panel"
+            id="apgo-tab-panel-spec-{{ section.id }}"
+            role="tabpanel"
+            aria-labelledby="apgo-tab-spec-{{ section.id }}"
+            hidden
+          >
+            {% if var_has %}
+              <div class="apgo-looping-desc-content">
+                <div class="apgo-tab-plain-body">{{ variation_raw | escape | newline_to_br }}</div>
+              </div>
+            {% else %}
+              <p class="apgo-tab-empty">No specification details available.</p>
+            {% endif %}
+          </div>
+
+          <div
+            class="apgo-tab-panel"
+            id="apgo-tab-panel-rev-{{ section.id }}"
+            role="tabpanel"
+            aria-labelledby="apgo-tab-rev-{{ section.id }}"
+            hidden
+          >
+            <div class="apgo-tab-review-panel-inner">
+              {% if review_has_any %}
+                {% if customer_review_image != blank %}
+                  <div class="apgo-customer-review-desktop-only">
+                    <div class="apgo-customer-review-scroll">
+                      <img
+                        class="apgo-customer-review-image"
+                        src="{{ customer_review_image | image_url: width: 2000 }}"
+                        alt="Customer reviews"
+                        loading="lazy"
+                      >
+                    </div>
+                  </div>
+                {% endif %}
+                <div class="apgo-customer-review-mobile-only">
+                  {% if mobile_review_list != blank and mobile_review_list.size > 1 %}
+                    <div class="apgo-customer-review-mobile-scroll">
+                      {% for mf in mobile_review_list %}
+                        <img
+                          class="apgo-customer-review-image apgo-customer-review-image--tile"
+                          src="{{ mf | image_url: width: 2000 }}"
+                          alt="Customer review {{ forloop.index }}"
+                          loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                        >
+                      {% endfor %}
+                    </div>
+                  {% elsif mobile_review_image != blank %}
+                    <img
+                      class="apgo-customer-review-image"
+                      src="{{ mobile_review_image | image_url: width: 2000 }}"
+                      alt="Customer reviews"
+                      loading="lazy"
+                    >
+                  {% elsif customer_review_image != blank %}
+                    <img
+                      class="apgo-customer-review-image"
+                      src="{{ customer_review_image | image_url: width: 2000 }}"
+                      alt="Customer reviews"
+                      loading="lazy"
+                    >
+                  {% endif %}
+                </div>
+              {% else %}
+                <p class="apgo-tab-empty">No customer review images yet.</p>
+              {% endif %}
+            </div>
+          </div>
+
+          <div
+            class="apgo-tab-panel"
+            id="apgo-tab-panel-faq-{{ section.id }}"
+            role="tabpanel"
+            aria-labelledby="apgo-tab-faq-{{ section.id }}"
+            hidden
+          >
+            <div class="apgo-tab-faq-placeholder" aria-hidden="true">&nbsp;</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {% liquid
+      assign cs_mf = product.metafields.custom.construction_steps
+      assign cs_steps = nil
+      if cs_mf != blank and cs_mf.value != blank
+        assign cs_try = cs_mf.value
+        assign cs_probe = cs_try.first.title | default: cs_try.first.desc | default: cs_try.first.description | default: cs_try.first.step
+        if cs_probe != blank
+          assign cs_steps = cs_try
+        else
+          assign cs_steps = cs_mf.value | parse_json
+        endif
+      endif
+    %}
+    {% if cs_steps != blank %}
+      <section class="apgo-construction-steps" id="ConstructionSteps-{{ section.id }}">
+        <div class="apgo-construction-steps-inner">
+          <header class="apgo-construction-steps-header">
+            <h3 class="apgo-construction-steps-title">{{ 'product.construction_steps' | t }}</h3>
+          </header>
+          {% for step in cs_steps %}
+            {% assign st_title = step.title | default: step.step %}
+            {% assign st_body = step.desc | default: step.description | default: step.body %}
+            {% if st_title != blank or st_body != blank %}
+              <article class="apgo-step-card">
+                {% if st_title != blank %}
+                  <h4 class="apgo-step-card-title">{{ st_title | escape }}</h4>
+                {% endif %}
+                {% if st_body != blank %}
+                  <div class="apgo-step-card-body">{{ st_body | escape | newline_to_br }}</div>
+                {% endif %}
+              </article>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
 
     {% liquid
       assign rel_mf = product.metafields.custom.related_products
