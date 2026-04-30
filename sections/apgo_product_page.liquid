@@ -2805,14 +2805,8 @@
         {% liquid
           assign customer_review_image = product.metafields.custom.customer_review.value | default: product.metafields.custom.customer_review
           assign mobile_review_list = product.metafields.custom.customer_review_mobile.value
-          assign mobile_review_image = nil
-          if mobile_review_list != blank
-            for mf in mobile_review_list limit: 1
-              assign mobile_review_image = mf
-            endfor
-          endif
         %}
-        {% if customer_review_image != blank or mobile_review_image != blank %}
+        {% if customer_review_image != blank or mobile_review_list != blank %}
           {% if customer_review_image != blank %}
             <div class="apgo-customer-review-desktop-only">
               <div class="apgo-customer-review-scroll">
@@ -2826,13 +2820,17 @@
             </div>
           {% endif %}
           <div class="apgo-customer-review-mobile-only">
-            {% if mobile_review_image != blank %}
-              <img
-                class="apgo-customer-review-image"
-                src="{{ mobile_review_image | image_url: width: 2000 }}"
-                alt="{{ 'product.customer_reviews' | t }}"
-                loading="lazy"
-              >
+            {% if mobile_review_list != blank %}
+              {% for mf in mobile_review_list %}
+                {% if mf != blank %}
+                  <img
+                    class="apgo-customer-review-image"
+                    src="{{ mf | image_url: width: 2000 }}"
+                    alt="{{ 'product.customer_reviews' | t }} {{ forloop.index }}"
+                    loading="{% if customer_review_image == blank and forloop.first %}eager{% else %}lazy{% endif %}"
+                  >
+                {% endif %}
+              {% endfor %}
             {% elsif customer_review_image != blank %}
               <img
                 class="apgo-customer-review-image"
