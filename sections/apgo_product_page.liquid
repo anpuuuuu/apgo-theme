@@ -2231,6 +2231,10 @@
       padding-bottom: 84px;
     }
 
+    .apgo-product-section .apgo-main-container > .apgo-hero-visual:first-child {
+      margin-top: -6px;
+    }
+
     .apgo-looping-intro {
       padding: 0 12px 20px;
     }
@@ -2407,20 +2411,24 @@
 
   .apgo-carousel-track {
     display: flex;
+    width: 100%;
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     will-change: transform;
     height: 100%;
     align-items: flex-start;
+    flex-shrink: 0;
   }
 
   .apgo-carousel-slide {
     flex: 0 0 100%;
+    min-width: 100%;
     width: 100%;
     height: 100%;
     display: flex;
     align-items: flex-start;
     justify-content: center;
     position: relative;
+    box-sizing: border-box;
   }
   .apgo-product-showcase,
 .apgo-carousel-container,
@@ -3128,7 +3136,20 @@ class APGOCarousel {
 
     if (this.track && this.slides.length > 0) {
       this.init();
+      this.handleResizeCarousel = this.handleResizeCarousel.bind(this);
+      window.addEventListener('resize', this.handleResizeCarousel);
     }
+  }
+
+  handleResizeCarousel() {
+    if (!this.track || !this.slides.length) return;
+    const n = this.slides.length;
+    const pct = -(this.currentIndex / n) * 100;
+    this.track.style.transition = 'none';
+    this.track.style.transform = `translateX(${pct}%)`;
+    requestAnimationFrame(() => {
+      if (this.track) this.track.style.transition = '';
+    });
   }
 
   init() {
@@ -3189,8 +3210,14 @@ class APGOCarousel {
     // 横向手势：我们自己处理（阻止默认以避免页面滚动）
     if (this.lock === 'x') {
       e.preventDefault(); // 只在横向时阻止默认
-      const currentTranslate = -this.currentIndex * 100;
-      const translate = currentTranslate + (dx / this.showcase.offsetWidth) * 100;
+      const n = this.slides.length;
+      const w = Math.max(
+        (this.track.parentElement && this.track.parentElement.offsetWidth) || 0,
+        this.showcase.offsetWidth || 0,
+        1
+      );
+      const currentPct = -(this.currentIndex / n) * 100;
+      const translate = currentPct + (dx / w) * (100 / n);
       this.track.style.transform = `translateX(${translate}%)`;
       this.isDragging = true;
     }
@@ -3235,8 +3262,14 @@ class APGOCarousel {
     e.preventDefault();
     this.currentX = e.clientX;
     const diff = this.currentX - this.startX;
-    const currentTranslate = -this.currentIndex * 100;
-    const translate = currentTranslate + (diff / this.showcase.offsetWidth) * 100;
+    const n = this.slides.length;
+    const w = Math.max(
+      (this.track.parentElement && this.track.parentElement.offsetWidth) || 0,
+      this.showcase.offsetWidth || 0,
+      1
+    );
+    const currentPct = -(this.currentIndex / n) * 100;
+    const translate = currentPct + (diff / w) * (100 / n);
     this.track.style.transform = `translateX(${translate}%)`;
   }
 
@@ -3260,10 +3293,12 @@ class APGOCarousel {
   }
 
   goToSlide(index) {
-    if (index < 0 || index >= this.slides.length) return;
+    const n = this.slides.length;
+    if (index < 0 || index >= n) return;
     this.currentIndex = index;
+    const pct = -(index / n) * 100;
     this.track.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-    this.track.style.transform = `translateX(-${index * 100}%)`;
+    this.track.style.transform = `translateX(${pct}%)`;
 
     // 更新指示点
     this.dots.forEach((dot, i) => {
