@@ -293,6 +293,7 @@
     "video_views": "{{ count }}次觀看",
     "no_videos": "暫無展示影片",
     "construction_steps": "施工步驟",
+    "related_via_metafield": "相關商品",
     "no_description": "暫無產品描述",
     "recommended_products": "推薦搭配",
     "select_variant": "選擇規格",

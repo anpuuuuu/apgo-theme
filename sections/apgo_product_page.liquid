@@ -711,6 +711,170 @@
     word-break: break-word;
   }
 
+  .apgo-construction-steps {
+    padding: 0 16px 28px;
+    background: var(--dark-bg);
+  }
+
+  .apgo-construction-steps-inner {
+    background: #000000;
+    border-radius: 14px;
+    border: 1px solid var(--border-color);
+    padding: 16px 18px 20px;
+  }
+
+  .apgo-construction-steps-header {
+    margin: 0 0 14px;
+  }
+
+  .apgo-construction-steps-title {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-white);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .apgo-construction-steps-title::before {
+    content: '▶';
+    color: var(--primary-orange);
+    font-size: 0.9rem;
+  }
+
+  .apgo-step-card {
+    border-radius: 12px;
+    border: 1px solid rgba(240, 132, 24, 0.25);
+    background: rgba(26, 26, 26, 0.8);
+    padding: 14px 16px;
+    margin-bottom: 12px;
+  }
+
+  .apgo-step-card:last-child {
+    margin-bottom: 0;
+  }
+
+  .apgo-step-card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-white);
+    margin: 0 0 8px;
+  }
+
+  .apgo-step-card-body {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.65;
+    color: var(--text-light-gray);
+    word-break: break-word;
+  }
+
+  .apgo-related-mf {
+    padding: 0 16px 32px;
+    background: var(--dark-bg);
+  }
+
+  .apgo-related-mf-inner {
+    max-width: none;
+    margin: 0 auto;
+  }
+
+  .apgo-related-mf-title {
+    margin: 0 0 14px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-white);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .apgo-related-mf-title::before {
+    content: '▶';
+    color: var(--primary-orange);
+    font-size: 0.9rem;
+  }
+
+  .apgo-related-mf-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .apgo-related-mf-card {
+    display: block;
+    text-decoration: none;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    background: #101010;
+    color: inherit;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .apgo-related-mf-card:hover {
+    border-color: rgba(240, 132, 24, 0.5);
+  }
+
+  .apgo-related-mf-media {
+    aspect-ratio: 1;
+    background: #1a1a1a;
+  }
+
+  .apgo-related-mf-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 0 !important;
+  }
+
+  .apgo-related-mf-info {
+    padding: 10px 12px 12px;
+  }
+
+  .apgo-related-mf-product-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-white);
+    margin: 0 0 4px;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .apgo-related-mf-price {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--primary-orange);
+    margin: 0;
+  }
+
+  .apgo-customer-review-mobile-scroll {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 6px;
+  }
+
+  .apgo-customer-review-mobile-scroll .apgo-customer-review-image--tile {
+    flex: 0 0 86%;
+    max-width: 360px;
+    scroll-snap-align: start;
+  }
+
+  @media (min-width: 769px) {
+    .apgo-related-mf-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+  }
+
   .apgo-customer-review {
     padding: 0 16px 24px;
     background: var(--dark-bg);
@@ -784,6 +948,8 @@
     .apgo-video-scroll-container,
     .apgo-precautions-header,
     .apgo-precautions-inner,
+    .apgo-construction-steps-inner,
+    .apgo-related-mf-inner,
     .apgo-customer-review-header,
     .apgo-customer-review-inner {
       max-width: min(1200px, 66vw);
@@ -1614,6 +1780,8 @@
     .apgo-product-section .apgo-video-scroll-container,
     .apgo-product-section .apgo-precautions-header,
     .apgo-product-section .apgo-precautions-inner,
+    .apgo-product-section .apgo-construction-steps-inner,
+    .apgo-product-section .apgo-related-mf-inner,
     .apgo-product-section .apgo-customer-review-header,
     .apgo-product-section .apgo-customer-review-inner {
       max-width: var(--apgo-pdp-pane-max);
@@ -1687,6 +1855,8 @@
     body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-video-scroll-container,
     body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-precautions-header,
     body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-precautions-inner,
+    body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-construction-steps-inner,
+    body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-related-mf-inner,
     body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-customer-review-header,
     body.apgo-pdp-variant-sidebar-open .apgo-product-section .apgo-customer-review-inner {
       max-width: min(1200px, calc(100vw - var(--apgo-pdp-sidebar-width, 33.33vw) - 32px));
@@ -1799,6 +1969,8 @@
     .apgo-product-section .apgo-video-scroll-container,
     .apgo-product-section .apgo-precautions-header,
     .apgo-product-section .apgo-precautions-inner,
+    .apgo-product-section .apgo-construction-steps-inner,
+    .apgo-product-section .apgo-related-mf-inner,
     .apgo-product-section .apgo-customer-review-header,
     .apgo-product-section .apgo-customer-review-inner,
     body:has(.apgo-product-section) .cart-upsell-wrapper.cart-upsell-wrapper--product,
@@ -2633,6 +2805,43 @@
       </section>
     {% endif %}
 
+    {% liquid
+      assign cs_mf = product.metafields.custom.construction_steps
+      assign cs_steps = nil
+      if cs_mf != blank and cs_mf.value != blank
+        assign cs_try = cs_mf.value
+        assign cs_probe = cs_try.first.title | default: cs_try.first.desc | default: cs_try.first.description | default: cs_try.first.step
+        if cs_probe != blank
+          assign cs_steps = cs_try
+        else
+          assign cs_steps = cs_mf.value | parse_json
+        endif
+      endif
+    %}
+    {% if cs_steps != blank %}
+      <section class="apgo-construction-steps" id="ConstructionSteps-{{ section.id }}">
+        <div class="apgo-construction-steps-inner">
+          <header class="apgo-construction-steps-header">
+            <h3 class="apgo-construction-steps-title">{{ 'product.construction_steps' | t }}</h3>
+          </header>
+          {% for step in cs_steps %}
+            {% assign st_title = step.title | default: step.step %}
+            {% assign st_body = step.desc | default: step.description | default: step.body %}
+            {% if st_title != blank or st_body != blank %}
+              <article class="apgo-step-card">
+                {% if st_title != blank %}
+                  <h4 class="apgo-step-card-title">{{ st_title | escape }}</h4>
+                {% endif %}
+                {% if st_body != blank %}
+                  <div class="apgo-step-card-body">{{ st_body | escape | newline_to_br }}</div>
+                {% endif %}
+              </article>
+            {% endif %}
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+
     <!-- 短影音展示區 -->
     <section class="apgo-video-showcase">
       <div class="apgo-video-header">
@@ -2640,8 +2849,22 @@
       </div>
 
       <div class="apgo-video-scroll-container">
-        {% if product.metafields.apgo.demo_videos and product.metafields.apgo.demo_videos.value %}
-          {% assign video_objects = product.metafields.apgo.demo_videos.value %}
+        {% liquid
+          assign demo_raw = product.metafields.apgo.demo_videos.value
+          assign use_metaobject_list = false
+          assign use_file_list = false
+          if demo_raw != blank
+            assign demo_first = demo_raw.first
+            assign file_probe = demo_first | file_url
+            if file_probe != blank
+              assign use_file_list = true
+            elsif demo_first.video_file != blank
+              assign use_metaobject_list = true
+            endif
+          endif
+        %}
+        {% if use_metaobject_list %}
+          {% assign video_objects = demo_raw %}
           {% assign sorted_videos = video_objects | sort: 'sort_order' %}
 
           {% for video_obj in sorted_videos %}
@@ -2699,6 +2922,43 @@
               </span>
             </div>
           {% endfor %}
+        {% elsif use_file_list %}
+          {% for file_ref in demo_raw %}
+            {% assign video_url = file_ref | file_url %}
+            <div
+              class="apgo-video-card"
+              data-source="file"
+              data-video-url="{{ video_url | escape }}"
+              data-video-index="{{ forloop.index }}"
+            >
+              <div class="apgo-video-thumbnail apgo-video-placeholder" style="position: relative;">
+                <svg
+                  width="60"
+                  height="60"
+                  viewBox="0 0 24 24"
+                  fill="#f08418"
+                  style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"
+                >
+                  <path d="M8 5v14l11-7z"/>
+                </svg>
+                <div style="background: #333; width: 100%; height: 100%;"></div>
+              </div>
+
+              <div class="apgo-video-overlay">
+                <div class="apgo-video-play-btn"></div>
+                <div class="apgo-video-info">
+                  <div class="apgo-video-subtitle">
+                    {% if file_ref.alt != blank %}
+                      {{ file_ref.alt }}
+                    {% else %}
+                      {{ 'product.video_default_title' | t }} {{ forloop.index }}
+                    {% endif %}
+                  </div>
+                  <div class="apgo-video-views">{{ 'product.video_views' | t: count: forloop.index }}</div>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
         {% else %}
           <div class="apgo-no-videos">
             <p>{{ 'product.no_videos' | t }}</p>
@@ -2736,7 +2996,18 @@
             </div>
           {% endif %}
           <div class="apgo-customer-review-mobile-only">
-            {% if mobile_review_image != blank %}
+            {% if mobile_review_list != blank and mobile_review_list.size > 1 %}
+              <div class="apgo-customer-review-mobile-scroll">
+                {% for mf in mobile_review_list %}
+                  <img
+                    class="apgo-customer-review-image apgo-customer-review-image--tile"
+                    src="{{ mf | image_url: width: 2000 }}"
+                    alt="{{ 'product.customer_reviews' | t }} — {{ forloop.index }}"
+                    loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                  >
+                {% endfor %}
+              </div>
+            {% elsif mobile_review_image != blank %}
               <img
                 class="apgo-customer-review-image"
                 src="{{ mobile_review_image | image_url: width: 2000 }}"
@@ -2755,6 +3026,42 @@
         {% endif %}
       </div>
     </section>
+
+    {% liquid
+      assign rel_mf = product.metafields.custom.related_products
+      assign rel_list = nil
+      if rel_mf != blank
+        assign rel_list = rel_mf.value
+      endif
+    %}
+    {% if rel_list != blank %}
+      <section class="apgo-related-mf" id="RelatedMetafield-{{ section.id }}" aria-labelledby="apgo-rel-title-{{ section.id }}">
+        <div class="apgo-related-mf-inner">
+          <h3 class="apgo-related-mf-title" id="apgo-rel-title-{{ section.id }}">{{ 'product.related_via_metafield' | t }}</h3>
+          <div class="apgo-related-mf-grid">
+            {% for rp in rel_list limit: 6 %}
+              <a class="apgo-related-mf-card" href="{{ rp.url }}">
+                <div class="apgo-related-mf-media">
+                  {% if rp.featured_image %}
+                    <img
+                      src="{{ rp.featured_image | image_url: width: 600 }}"
+                      alt="{{ rp.title | escape }}"
+                      width="600"
+                      height="600"
+                      loading="lazy"
+                    >
+                  {% endif %}
+                </div>
+                <div class="apgo-related-mf-info">
+                  <p class="apgo-related-mf-product-title">{{ rp.title }}</p>
+                  <p class="apgo-related-mf-price">{{ rp.price_min | money }}</p>
+                </div>
+              </a>
+            {% endfor %}
+          </div>
+        </div>
+      </section>
+    {% endif %}
 
     <!-- 視頻模態框 -->
     <div class="apgo-video-modal" id="apgoVideoModal" aria-hidden="true">
@@ -3867,10 +4174,13 @@ class APGOVideoPlayerMO {
     }
   }
   bindCards() {
-    const cards = document.querySelectorAll('.apgo-video-card[data-source="metaobject"]');
+    const cards = document.querySelectorAll('.apgo-video-card[data-video-url]');
     cards.forEach(card => {
       const videoUrl = card.getAttribute('data-video-url');
-      
+      if (!videoUrl || videoUrl.trim() === '' || videoUrl === 'VideoDrop') {
+        return;
+      }
+
       // 如果没有设置封面图，则尝试自动生成
       const thumbnailElement = card.querySelector('.apgo-video-thumbnail');
       if (thumbnailElement && 

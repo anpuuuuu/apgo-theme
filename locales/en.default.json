@@ -323,6 +323,7 @@
     "video_views": "{{ count }} views",
     "no_videos": "No videos available",
     "construction_steps": "Application Steps",
+    "related_via_metafield": "Related products",
     "no_description": "No product description available",
     "recommended_products": "Recommended Products",
     "select_variant": "Select Options",
