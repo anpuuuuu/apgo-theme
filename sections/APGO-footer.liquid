@@ -132,8 +132,8 @@
     </template>
   {% endif %}
   
-  <!-- 返回頂部按鈕 -->
-  {% if section.settings.show_back_to_top %}
+  <!-- 返回頂部按鈕：僅首頁顯示 -->
+  {% if section.settings.show_back_to_top and template.name == 'index' %}
   <div class="apgo-back-to-top" id="apgoBackToTop">
     <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
       <path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/>
@@ -635,8 +635,8 @@
   </style>
   
   <script>
-    // 返回頂部功能
-    {% if section.settings.show_back_to_top %}
+    // 返回頂部功能（僅首頁）
+    {% if section.settings.show_back_to_top and template.name == 'index' %}
     const apgoBackToTop = document.getElementById('apgoBackToTop');
     
     window.addEventListener('scroll', () => {
