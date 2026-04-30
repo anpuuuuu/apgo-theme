@@ -241,6 +241,20 @@
     object-fit: contain;
   }
 
+  /*
+    Responsive 字級：桌機沿用編輯器設定的 font_size（inline style，目前 var(--font-size--h3)），
+    手機 ≤768px 強制改小。要 override block 寫進來的 inline style 必須 !important。
+    調整時改下方 0.73rem 即可。
+  */
+  @media (max-width: 768px) {
+    .marquee__sticky-wrap .marquee__content,
+    .marquee__sticky-wrap .marquee__content *,
+    .marquee__sticky-wrap .marquee__promo-item {
+      font-size: 0.73rem !important;
+      line-height: 1.2 !important;
+    }
+  }
+
   @media (prefers-reduced-motion: no-preference) {
     marquee-component:not([data-disabled]) .marquee__wrapper {
       animation: marquee-motion var(--marquee-speed) linear infinite var(--marquee-direction);
