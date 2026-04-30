@@ -600,9 +600,9 @@
   }
 
   .apgo-tab-desc-gallery {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
     margin-bottom: 14px;
     width: 100%;
     min-width: 0;
@@ -615,7 +615,7 @@
     border-radius: 10px;
     display: block;
     background: #111;
-    object-fit: cover;
+    object-fit: contain;
   }
 
   .apgo-tab-review-panel-inner {
@@ -628,6 +628,20 @@
 
   .apgo-tab-review-panel-inner .apgo-customer-review-image {
     max-width: 100%;
+  }
+
+  .apgo-pdp-review-media-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    min-width: 0;
+    text-align: left;
+  }
+
+  .apgo-pdp-review-media-stack .apgo-customer-review-image {
+    margin: 0;
+    object-fit: contain;
   }
 
   .apgo-tab-empty {
@@ -989,21 +1003,6 @@
     font-weight: 700;
     color: var(--primary-orange);
     margin: 0;
-  }
-
-  .apgo-customer-review-mobile-scroll {
-    display: flex;
-    gap: 10px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scroll-snap-type: x mandatory;
-    padding-bottom: 6px;
-  }
-
-  .apgo-customer-review-mobile-scroll .apgo-customer-review-image--tile {
-    flex: 0 0 86%;
-    max-width: 360px;
-    scroll-snap-align: start;
   }
 
   @media (min-width: 769px) {
@@ -3229,39 +3228,26 @@
           >
             <div class="apgo-tab-review-panel-inner">
               {% if review_has_any %}
-                {% if customer_review_image != blank %}
-                  <div class="apgo-customer-review-desktop-only">
-                    <div class="apgo-customer-review-scroll">
-                      <img
-                        class="apgo-customer-review-image"
-                        src="{{ customer_review_image | image_url: width: 2000 }}"
-                        alt="Review"
-                        loading="lazy"
-                      >
-                    </div>
-                  </div>
-                {% endif %}
-                <div class="apgo-customer-review-mobile-only">
-                  {% if mobile_review_list != blank %}
-                    <div class="apgo-customer-review-mobile-scroll">
-                      {% for mf in mobile_review_list %}
-                        {% if mf != blank %}
-                          <img
-                            class="apgo-customer-review-image apgo-customer-review-image--tile"
-                            src="{{ mf | image_url: width: 2000 }}"
-                            alt="Review {{ forloop.index }}"
-                            loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
-                          >
-                        {% endif %}
-                      {% endfor %}
-                    </div>
-                  {% elsif customer_review_image != blank %}
+                <div class="apgo-pdp-review-media-stack">
+                  {% if customer_review_image != blank %}
                     <img
                       class="apgo-customer-review-image"
                       src="{{ customer_review_image | image_url: width: 2000 }}"
                       alt="Review"
                       loading="lazy"
                     >
+                  {% endif %}
+                  {% if mobile_review_list != blank %}
+                    {% for mf in mobile_review_list %}
+                      {% if mf != blank %}
+                        <img
+                          class="apgo-customer-review-image"
+                          src="{{ mf | image_url: width: 2000 }}"
+                          alt="Review {{ forloop.index }}"
+                          loading="{% if customer_review_image == blank and forloop.first %}eager{% else %}lazy{% endif %}"
+                        >
+                      {% endif %}
+                    {% endfor %}
                   {% endif %}
                 </div>
               {% else %}
