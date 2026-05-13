@@ -335,14 +335,6 @@
             "link_url": "shopify://collections/科技執法測速器"
           }
         },
-        "service_link_D6NX8w": {
-          "type": "service_link",
-          "name": "Tutorials",
-          "settings": {
-            "link_text": "Tutorials",
-            "link_url": "shopify://pages/short-videos"
-          }
-        },
         "about_link_KXzidM": {
           "type": "about_link",
           "name": "About Us",
@@ -371,7 +363,6 @@
         "product_link_FX3VGj",
         "product_link_MXKHFB",
         "product_link_qHagph",
-        "service_link_D6NX8w",
         "about_link_KXzidM",
         "service_link_FeatVL"
       ],
