@@ -425,7 +425,7 @@
         "line_url": "",
         "show_products_section": true,
         "products_title": "Product Series",
-        "show_service_section": true,
+        "show_service_section": false,
         "service_title": "Service Support",
         "show_about_section": true,
         "about_title": "About APGO",
