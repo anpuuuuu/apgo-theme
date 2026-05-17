@@ -2929,6 +2929,248 @@
       justify-content: center;
     }
   }
+
+  /* =============================================================
+     Car Care Mobile Buy Bar (Block B)
+     - Fixed bottom, mobile only (≤749px). Desktop hidden.
+     - Tokens reused from APGO theme: --primary-orange, --dark-bg, etc.
+     ============================================================= */
+  .apgo-cc-buybar {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 100000;
+    pointer-events: none;
+    display: block;
+  }
+  @media (min-width: 750px) {
+    .apgo-cc-buybar { display: none; }
+  }
+
+  .apgo-cc-buybar__backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .25s ease, visibility .25s ease;
+    pointer-events: none;
+  }
+  .apgo-cc-buybar.is-open .apgo-cc-buybar__backdrop {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .apgo-cc-buybar__panel {
+    position: relative;
+    background: #141414;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px 16px 0 0;
+    pointer-events: auto;
+    box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.45);
+  }
+
+  /* Sheet: collapsed = 0 height; expanded = scrollable up to 65vh */
+  .apgo-cc-buybar__sheet {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .3s ease;
+  }
+  .apgo-cc-buybar.is-open .apgo-cc-buybar__sheet {
+    max-height: 65vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .apgo-cc-buybar__sheet-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px 8px;
+    gap: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  .apgo-cc-buybar__collapse {
+    background: transparent;
+    border: none;
+    color: var(--text-gray, #a8a8a8);
+    font-size: 12px;
+    padding: 4px 6px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .apgo-cc-buybar__cart-title {
+    padding: 14px 16px 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-white, #fff);
+  }
+
+  .apgo-cc-buybar__items {
+    padding: 4px 16px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .apgo-cc-buybar__empty {
+    margin: 16px 0;
+    color: var(--text-gray, #a8a8a8);
+    font-size: 13px;
+    text-align: center;
+  }
+  .apgo-cc-buybar__item {
+    display: grid;
+    grid-template-columns: 44px 1fr auto;
+    align-items: center;
+    gap: 10px;
+  }
+  .apgo-cc-buybar__item-thumb {
+    width: 44px;
+    height: 44px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.04);
+  }
+  .apgo-cc-buybar__item-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .apgo-cc-buybar__item-info { min-width: 0; }
+  .apgo-cc-buybar__item-name {
+    font-size: 13px;
+    line-height: 1.3;
+    color: var(--text-white, #fff);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .apgo-cc-buybar__item-qty {
+    font-size: 11px;
+    color: var(--text-gray, #a8a8a8);
+    margin-top: 2px;
+  }
+  .apgo-cc-buybar__item-price {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--primary-orange, #f08418);
+    white-space: nowrap;
+  }
+
+  .apgo-cc-buybar__subtotal-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 12px 16px 4px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  .apgo-cc-buybar__subtotal-label {
+    font-size: 12px;
+    color: var(--text-gray, #a8a8a8);
+  }
+  .apgo-cc-buybar__subtotal-val {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--primary-orange, #f08418);
+  }
+
+  /* Bottom CTA bar (always visible) */
+  .apgo-cc-buybar__bar {
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .apgo-cc-buybar__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    background: transparent;
+    border: none;
+    padding: 4px 2px;
+    color: inherit;
+    cursor: pointer;
+    width: 100%;
+  }
+  .apgo-cc-buybar__top-hint {
+    font-size: 11px;
+    color: var(--text-gray, #a8a8a8);
+  }
+  .apgo-cc-buybar__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(240, 132, 24, 0.2);
+    color: var(--primary-orange, #f08418);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .apgo-cc-buybar__chip-sep { opacity: 0.6; }
+
+  .apgo-cc-buybar__actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .apgo-cc-buybar__btn {
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity .15s ease, background .15s ease;
+    border: 2px solid var(--primary-orange, #f08418);
+    background: transparent;
+    color: var(--primary-orange, #f08418);
+  }
+  .apgo-cc-buybar__btn--buy {
+    background: linear-gradient(45deg, var(--primary-orange, #f08418), var(--secondary-orange, #ff9a3c));
+    color: #fff;
+  }
+  .apgo-cc-buybar__btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Reusable toast (used by buybar add-to-cart feedback) */
+  .apgo-cc-toast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(120px + env(safe-area-inset-bottom, 0px));
+    transform: translateX(-50%) translateY(20px);
+    background: rgba(20, 20, 20, 0.95);
+    color: #fff;
+    font-size: 13px;
+    padding: 10px 16px;
+    border-radius: 999px;
+    border: 1px solid rgba(240, 132, 24, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .2s ease, transform .2s ease, visibility .2s ease;
+    z-index: 100001;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .apgo-cc-toast.is-visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+  .apgo-cc-toast--err {
+    border-color: rgba(255, 100, 100, 0.5);
+  }
 </style>
 
 <div class="apgo-product-section" data-apgo-currency="{{ cart.currency.iso_code }}" data-apgo-pdp="v3">
@@ -3684,8 +3926,8 @@
     <!-- Recommended products section removed -->
   </main>
 
-  <!-- 底部購買欄 -->
-  {% if section.settings.show_bottom_bar %}
+  <!-- 底部購買欄（舊版，已由 Car Care buybar 取代；保留 markup 但隱藏，避免破壞既有 JS 引用） -->
+  {% if section.settings.show_bottom_bar and false %}
     {% assign is_my_market = false %}
     {% if localization.country.iso_code == 'MY' %}
       {% assign is_my_market = true %}
@@ -3730,6 +3972,17 @@
         <button class="apgo-buy-button" onclick="apgoShowVariantModal()">{{ 'product.select_variant' | t }}</button>
       </div>
     </div>
+  {% endif %}
+
+  {%- comment -%}
+    新版手機底部購買欄（取代上方舊 .apgo-bottom-bar）。
+    - Fixed bottom，手機顯示、桌機隱藏（CSS 控制）
+    - 上滑/點擊展開迷你購物車 sheet
+    - 加購讀 .apgo-cc-pdp__form（Phase 2 內聯 picker 後生效）；fallback 讀 window.currentVariantId
+    - 配套 JS：assets/apgo-cc-buybar.js（本 section 末尾載入）
+  {%- endcomment -%}
+  {% if section.settings.show_bottom_bar %}
+    {% render 'apgo-cc-mobile-buybar', product: product %}
   {% endif %}
 
   <!-- 變體選擇模態框（桌面：右側欄；手機：底部抽屜） -->
@@ -5127,6 +5380,13 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   })();
 </script>
+
+{%- comment -%}
+  Car Care 手機底部購買欄 JS — assets/apgo-cc-buybar.js
+  defer 保證主要文檔先解析；script 自己 query DOM 並做事件綁定。
+{%- endcomment -%}
+<script src="{{ 'apgo-cc-buybar.js' | asset_url }}" defer></script>
+
 {% schema %}
 {
   "name": "APGO 商品頁",
