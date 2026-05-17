@@ -618,8 +618,8 @@
     top: var(--apgo-pdp-tabs-sticky-top, 100px);
     z-index: calc(var(--layer-sticky, 8) - 2);
     background: var(--dark-bg);
-    /* 加粗 + 提高不透明度，讓 tab 列下緣的橘線清楚分隔下方內容 */
-    border-bottom: 2px solid var(--primary-orange);
+    /* 細線即可：0.5px 實色橘，hairline 級別的分隔 */
+    border-bottom: 0.5px solid var(--primary-orange);
     margin: 0 0 12px;
     padding: 6px 0 0;
   }
@@ -639,7 +639,8 @@
     padding: 10px 12px;
     margin: 0;
     border: none;
-    border-bottom: 2px solid transparent;
+    /* 取消底部 indicator 邊框：active 僅靠文字顏色標示 */
+    border-bottom: none;
     border-radius: 8px 8px 0 0;
     background: transparent;
     color: var(--text-gray);
@@ -660,7 +661,6 @@
 
   .apgo-pdp-tab[aria-selected="true"] {
     color: var(--primary-orange);
-    border-bottom-color: var(--primary-orange);
   }
 
   .apgo-pdp-tab:focus-visible {
