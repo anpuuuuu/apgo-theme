@@ -2947,16 +2947,20 @@
       grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
       column-gap: 36px;
       align-items: start;
-      max-width: 1200px;
-      margin-left: auto;
-      margin-right: auto;
+      /* full width on desktop — no 1200px cap. Only side padding. */
+      max-width: none;
       padding-inline: 24px;
     }
 
-    /* Hero gallery + thumbnails: col 1 */
+    /* Hero gallery + thumbnails: col 1. Override the dark gradient that the
+       mobile-first .apgo-hero-visual rule paints so the desktop card sits flush
+       against the page background instead of looking like a separate grey panel. */
     body:not(.apgo-pdp-variant-sidebar-open) .apgo-main-container > .apgo-hero-visual,
     body:not(.apgo-pdp-variant-sidebar-open) .apgo-main-container > .apgo-product-thumbnails {
       grid-column: 1;
+    }
+    body:not(.apgo-pdp-variant-sidebar-open) .apgo-main-container > .apgo-hero-visual {
+      background: transparent;
     }
 
     /* Let .apgo-product-info's children participate directly in the parent grid */
