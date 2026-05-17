@@ -313,23 +313,22 @@
   }
 
   /*
-    Thumbnail strip — tightened to hug the main image with no breathing gap
-    above and minimal below. Background still --dark-bg so it blends with the
-    page; previous 20px top / 32px bottom / 16px margin made the strip float
-    in its own band.
+    Thumbnail strip — minimal, left-aligned, no vertical padding.
+    Smaller tiles (52px) so a row of 5+ fits on a phone without horizontal scroll
+    on a typical product. Background blends into the page.
   */
   .apgo-product-thumbnails {
-    padding: 4px 16px 8px;
+    padding: 0;
     background: var(--dark-bg);
-    margin-bottom: 0;
+    margin: 0;
   }
 
   .apgo-thumbnails-container {
     display: flex;
-    gap: 12px;
-    justify-content: center;
+    gap: 6px;
+    justify-content: flex-start;
     overflow-x: auto;
-    padding: 4px 0;
+    padding: 0 12px;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
@@ -350,15 +349,15 @@
 
   .apgo-thumbnail-item {
     flex: 0 0 auto;
-    width: 72px;
-    height: 72px;
-    border-radius: 16px;
+    width: 52px;
+    height: 52px;
+    border-radius: 8px;
     overflow: hidden;
     position: relative;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: border-color .2s ease, transform .15s ease;
     scroll-snap-align: start;
-    border: 3px solid transparent;
+    border: 2px solid transparent;
     background: var(--card-bg);
     touch-action: manipulation;
     -webkit-touch-callout: none;
@@ -368,8 +367,6 @@
 
   .apgo-thumbnail-item.active {
     border-color: var(--primary-orange);
-    transform: scale(1.08);
-    box-shadow: 0 4px 12px rgba(240, 132, 24, 0.3);
   }
 
   .apgo-thumbnail-item:active {
@@ -381,8 +378,7 @@
     height: 100%;
     object-fit: cover;
     background: #2a2a2a;
-    transition: all 0.3s ease;
-    border-radius: 12px;
+    border-radius: 6px;
   }
 
   .apgo-thumbnail-overlay {
@@ -401,14 +397,18 @@
     opacity: 1;
   }
 
+  /*
+    --no-subtitle-below modifier no longer adds vertical padding; the strip
+    stays edge-to-edge regardless of subtitle presence.
+  */
   .apgo-product-thumbnails.apgo-product-thumbnails--no-subtitle-below {
-    padding-bottom: 14px;
-    margin-bottom: 4px;
+    padding-bottom: 0;
+    margin-bottom: 0;
   }
 
   .apgo-product-thumbnails.apgo-product-thumbnails--no-subtitle-below .apgo-thumbnails-container {
-    padding-top: 8px;
-    padding-bottom: 8px;
+    padding-top: 0;
+    padding-bottom: 0;
   }
 
   .apgo-thumbnail-play-icon {
@@ -426,18 +426,20 @@
 
   /* 手機優化 */
   @media (max-width: 768px) {
+    /* Keep the strip edge-to-edge with no vertical padding on mobile too —
+       previous overrides re-introduced the band we just removed. */
     .apgo-product-thumbnails {
-      padding: 16px 12px 24px;
+      padding: 0;
     }
 
     .apgo-product-thumbnails.apgo-product-thumbnails--no-subtitle-below {
-      padding: 12px 12px 8px;
+      padding: 0;
       margin-bottom: 0;
     }
 
     .apgo-product-thumbnails.apgo-product-thumbnails--no-subtitle-below .apgo-thumbnails-container {
-      padding-top: 4px;
-      padding-bottom: 4px;
+      padding-top: 0;
+      padding-bottom: 0;
     }
 
     .apgo-product-info.apgo-product-info--no-subtitle {
@@ -445,18 +447,19 @@
     }
 
     .apgo-thumbnails-container {
-      gap: 10px;
-      padding: 8px 4px;
+      gap: 6px;
+      padding: 0 12px;
     }
 
     .apgo-thumbnail-item {
-      width: 68px;
-      height: 68px;
-      border-radius: 14px;
+      width: 52px;
+      height: 52px;
+      border-radius: 8px;
     }
 
+    /* No scale on active — keeps tile size constant so the row doesn't jiggle when swapping */
     .apgo-thumbnail-item.active {
-      transform: scale(1.06);
+      transform: none;
     }
   }
 
