@@ -153,12 +153,19 @@
     scrollbar-width: none; /* Firefox */
   }
 
-  /* 產品主視覺區 */
+  /*
+    Hero visual — was a fixed 400px box with a dark-grey gradient. That left a
+    grey letterbox around portrait/square product photos and pushed the swipe
+    dots into the leftover space below the image. Switch to aspect-ratio:1
+    (square — matches typical product shots) and transparent background so the
+    image fills the box, the dots overlap the image edge, and there's no grey
+    panel showing through.
+  */
   .apgo-hero-visual {
     position: relative;
     width: 100%;
-    height: 400px;
-    background: linear-gradient(180deg, rgba(26, 26, 26, 0.8) 0%, rgba(0, 0, 0, 0.95) 100%);
+    aspect-ratio: 1 / 1;
+    background: transparent;
     overflow: hidden;
   }
 
