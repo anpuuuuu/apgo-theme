@@ -206,8 +206,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 40px 20px;
-    overflow: hidden; /* 添加這行 */
+    padding: 4px 12px 12px;
+    overflow: hidden;
   }
 
   /* 輪播容器樣式 */
@@ -218,8 +218,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 40px 20px;
-    overflow: hidden; /* 添加這行 */
+    padding: 4px 12px 12px;
+    overflow: hidden;
   }
 
   /* 輪播圖片容器 */
@@ -299,11 +299,16 @@
     }
   }
 
-  /* 產品縮圖展示區 */
+  /*
+    Thumbnail strip — tightened to hug the main image with no breathing gap
+    above and minimal below. Background still --dark-bg so it blends with the
+    page; previous 20px top / 32px bottom / 16px margin made the strip float
+    in its own band.
+  */
   .apgo-product-thumbnails {
-    padding: 20px 16px 32px;
+    padding: 4px 16px 8px;
     background: var(--dark-bg);
-    margin-bottom: 16px;
+    margin-bottom: 0;
   }
 
   .apgo-thumbnails-container {
@@ -311,7 +316,7 @@
     gap: 12px;
     justify-content: center;
     overflow-x: auto;
-    padding: 12px 0;
+    padding: 4px 0;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
@@ -442,9 +447,9 @@
     }
   }
 
-  /* 產品基本資訊 */
+  /* 產品基本資訊 — tighter top padding so title sits close to thumbnails strip */
   .apgo-product-info {
-    padding: 24px 16px;
+    padding: 12px 16px;
     background: var(--dark-bg);
   }
 
@@ -458,8 +463,9 @@
 
   .apgo-product-header {
     text-align: center;
-    margin-bottom: 24px;
-    padding-bottom: 20px;
+    /* Tight spacing — title sits close to the price card below */
+    margin-bottom: 8px;
+    padding-bottom: 0;
   }
 
   .apgo-product-name {
@@ -3000,7 +3006,8 @@
      - Mobile-first single-column; desktop inherits.
      ============================================================= */
   .apgo-cc-pdp__price-card {
-    margin: 12px 0 14px;
+    /* Tighter margin so the price hugs the title above */
+    margin: 4px 0 10px;
   }
   .apgo-cc-pdp__price-card--sale {
     background: rgba(0, 0, 0, 0.4);
