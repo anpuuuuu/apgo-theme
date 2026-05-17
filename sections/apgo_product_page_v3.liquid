@@ -2931,6 +2931,231 @@
   }
 
   /* =============================================================
+     Car Care Inline Price / Variant / Qty / Shipping / CTA (Block A)
+     - Uses our theme tokens (--primary-orange, --dark-bg).
+     - Mobile-first single-column; desktop inherits.
+     ============================================================= */
+  .apgo-cc-pdp__price-card {
+    margin: 12px 0 14px;
+  }
+  .apgo-cc-pdp__price-card--sale {
+    background: rgba(0, 0, 0, 0.4);
+    border-left: 3px solid var(--primary-orange, #f08418);
+    border-radius: 10px;
+    padding: 10px 14px;
+  }
+  .apgo-cc-pdp__price-top {
+    margin-bottom: 4px;
+  }
+  .apgo-cc-pdp__price-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--primary-orange, #f08418);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .apgo-cc-pdp__price-bottom {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .apgo-cc-pdp__price-current {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--primary-orange, #f08418);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+  }
+  .apgo-cc-pdp__price-compare {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.35);
+    text-decoration: line-through;
+  }
+  .apgo-cc-pdp__price-save {
+    margin-left: auto;
+    font-size: 11px;
+    font-weight: 600;
+    background: rgba(240, 132, 24, 0.12);
+    color: var(--primary-orange, #f08418);
+    padding: 3px 9px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  /* Promo pills */
+  .apgo-cc-pdp__promos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0 0 14px;
+  }
+  .apgo-cc-pdp__promo {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 999px;
+    letter-spacing: 0.02em;
+  }
+  .apgo-cc-pdp__promo--orange { background: rgba(240, 132, 24, 0.14); color: #ffaa55; }
+  .apgo-cc-pdp__promo--green  { background: rgba( 64, 192,  96, 0.14); color: #8be39a; }
+  .apgo-cc-pdp__promo--blue   { background: rgba( 80, 150, 240, 0.14); color: #8db8ff; }
+  .apgo-cc-pdp__promo--red    { background: rgba(255,  80,  80, 0.14); color: #ff9a9a; }
+  .apgo-cc-pdp__promo--neutral{ background: rgba(255, 255, 255, 0.06); color: rgba(255, 255, 255, 0.7); }
+
+  /* Inline form: dividers between price/variant/qty/shipping */
+  .apgo-cc-pdp__form > .apgo-cc-pdp__option-group {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 14px;
+    margin-top: 14px;
+  }
+  .apgo-cc-pdp__form > .apgo-cc-pdp__qty-row {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 14px;
+    margin-top: 14px;
+  }
+  .apgo-cc-pdp__form > .apgo-cc-pdp__shipping {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 12px;
+    margin-top: 14px;
+  }
+
+  /* Option group (label left, chips right) */
+  .apgo-cc-pdp__option-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+  }
+  .apgo-cc-pdp__option-label {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .apgo-cc-pdp__option-name {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.55);
+  }
+  .apgo-cc-pdp__option-current {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.35);
+  }
+  .apgo-cc-pdp__option-chips {
+    flex: 1 1 auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: flex-end;
+  }
+  .apgo-cc-pdp__chip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 999px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 12px;
+    cursor: pointer;
+    transition: background .15s ease, border-color .15s ease, color .15s ease;
+    user-select: none;
+  }
+  .apgo-cc-pdp__chip input { position: absolute; opacity: 0; pointer-events: none; }
+  .apgo-cc-pdp__chip:hover { border-color: rgba(240, 132, 24, 0.4); }
+  .apgo-cc-pdp__chip.is-active {
+    background: var(--primary-orange, #f08418);
+    border-color: var(--primary-orange, #f08418);
+    color: #fff;
+  }
+
+  /* Quantity stepper */
+  .apgo-cc-pdp__qty-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+  }
+  .apgo-cc-pdp__qty-label {
+    flex: 0 0 auto;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.55);
+  }
+  .apgo-cc-pdp__qty {
+    flex: 0 0 auto;
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.35);
+  }
+  .apgo-cc-pdp__qty button {
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: none;
+    color: var(--primary-orange, #f08418);
+    font-size: 16px;
+    cursor: pointer;
+  }
+  .apgo-cc-pdp__qty input {
+    width: 38px;
+    height: 32px;
+    background: transparent;
+    border: none;
+    color: #fff;
+    text-align: center;
+    font-size: 14px;
+    -moz-appearance: textfield;
+  }
+  .apgo-cc-pdp__qty input::-webkit-outer-spin-button,
+  .apgo-cc-pdp__qty input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Shipping info row */
+  .apgo-cc-pdp__shipping {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.55);
+  }
+  .apgo-cc-pdp__shipping-sep { opacity: 0.4; }
+  .apgo-cc-pdp__shipping-stock { color: #8be39a; font-weight: 600; }
+  .apgo-cc-pdp__shipping-stock--out { color: #ff9a9a; }
+
+  /* CTA row */
+  .apgo-cc-pdp__cta-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .apgo-cc-pdp__cta {
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity .15s ease, transform .05s ease;
+    border: 2px solid var(--primary-orange, #f08418);
+  }
+  .apgo-cc-pdp__cta--secondary {
+    background: transparent;
+    color: var(--primary-orange, #f08418);
+  }
+  .apgo-cc-pdp__cta--primary {
+    background: linear-gradient(45deg, var(--primary-orange, #f08418), var(--secondary-orange, #ff9a3c));
+    color: #fff;
+  }
+  .apgo-cc-pdp__cta:active { transform: scale(0.98); }
+  .apgo-cc-pdp__cta:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* =============================================================
      Car Care Mobile Buy Bar (Block B)
      - Fixed bottom, mobile only (≤749px). Desktop hidden.
      - Tokens reused from APGO theme: --primary-orange, --dark-bg, etc.
@@ -3268,6 +3493,129 @@
           <p class="apgo-product-metafield-subtitle">{{ subtitle_display | escape }}</p>
         {% endif %}
       </div>
+
+      {%- comment -%}
+        ============================================================
+        Car Care inline price / promo / variant / qty / shipping / CTA
+        (Phase 2: replaces the old modal-only variant flow.)
+        - Money values use Shopify's `money` filter so MY/SG/TW currencies
+          render correctly per the active market.
+        - Labels in English (Limited time deal / Save / Quantity / In stock /
+          Out of stock / Add to cart / Buy now) per user direction.
+        - Wraps in <form.apgo-cc-pdp__form> so apgo-cc-buybar.js can read
+          variant id + quantity via FormData.
+        ============================================================
+      {%- endcomment -%}
+      {%- assign on_sale = false -%}
+      {%- if product.compare_at_price > product.price -%}{%- assign on_sale = true -%}{%- endif -%}
+      {%- assign save_amount = product.compare_at_price | minus: product.price -%}
+
+      {%- comment -%} Price card — boxed style with orange left border on sale; plain large on regular. {%- endcomment -%}
+      <div class="apgo-cc-pdp__price-card{% if on_sale %} apgo-cc-pdp__price-card--sale{% endif %}">
+        {%- if on_sale -%}
+          <div class="apgo-cc-pdp__price-top">
+            <span class="apgo-cc-pdp__price-label">Limited time deal</span>
+          </div>
+          <div class="apgo-cc-pdp__price-bottom">
+            <span class="apgo-cc-pdp__price-current" data-apgo-cc-price>{{ product.price | money }}</span>
+            <span class="apgo-cc-pdp__price-compare">{{ product.compare_at_price | money }}</span>
+            <span class="apgo-cc-pdp__price-save">Save {{ save_amount | money }}</span>
+          </div>
+        {%- else -%}
+          <span class="apgo-cc-pdp__price-current" data-apgo-cc-price>{{ product.price | money }}</span>
+        {%- endif -%}
+      </div>
+
+      {%- comment -%} Promo pills row (admin-configurable 1-3 pills with colour). {%- endcomment -%}
+      {%- if section.settings.show_promo_pills -%}
+        {%- assign p1 = section.settings.promo_pill_1_text -%}
+        {%- assign p2 = section.settings.promo_pill_2_text -%}
+        {%- assign p3 = section.settings.promo_pill_3_text -%}
+        {%- if p1 != blank or p2 != blank or p3 != blank -%}
+          <div class="apgo-cc-pdp__promos">
+            {%- if p1 != blank -%}
+              <span class="apgo-cc-pdp__promo apgo-cc-pdp__promo--{{ section.settings.promo_pill_1_color }}">{{ p1 }}</span>
+            {%- endif -%}
+            {%- if p2 != blank -%}
+              <span class="apgo-cc-pdp__promo apgo-cc-pdp__promo--{{ section.settings.promo_pill_2_color }}">{{ p2 }}</span>
+            {%- endif -%}
+            {%- if p3 != blank -%}
+              <span class="apgo-cc-pdp__promo apgo-cc-pdp__promo--{{ section.settings.promo_pill_3_color }}">{{ p3 }}</span>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      {%- endif -%}
+
+      <form action="/cart/add" method="post" enctype="multipart/form-data" class="apgo-cc-pdp__form" data-apgo-cc-form>
+        <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}" data-apgo-cc-variant-id>
+
+        {%- for option in product.options_with_values -%}
+          <div class="apgo-cc-pdp__option-group" data-apgo-cc-option-group data-option-position="{{ option.position }}">
+            <div class="apgo-cc-pdp__option-label">
+              <span class="apgo-cc-pdp__option-name">{{ option.name }}</span>
+              <span class="apgo-cc-pdp__option-current" data-apgo-cc-option-current>{{ option.selected_value }}</span>
+            </div>
+            <div class="apgo-cc-pdp__option-chips">
+              {%- for value in option.values -%}
+                <label class="apgo-cc-pdp__chip {% if option.selected_value == value %}is-active{% endif %}">
+                  <input
+                    type="radio"
+                    name="options[{{ option.name | escape }}]"
+                    value="{{ value | escape }}"
+                    data-apgo-cc-option-input
+                    {% if option.selected_value == value %}checked{% endif %}
+                  >
+                  <span>{{ value }}</span>
+                </label>
+              {%- endfor -%}
+            </div>
+          </div>
+        {%- endfor -%}
+
+        <div class="apgo-cc-pdp__qty-row">
+          <span class="apgo-cc-pdp__qty-label">Quantity</span>
+          <div class="apgo-cc-pdp__qty">
+            <button type="button" data-apgo-cc-qty="down" aria-label="Decrease">−</button>
+            <input type="number" name="quantity" value="1" min="1" data-apgo-cc-qty-input>
+            <button type="button" data-apgo-cc-qty="up" aria-label="Increase">+</button>
+          </div>
+        </div>
+
+        {%- comment -%} Shipping info row: "<label> · ● In stock / Out of stock". {%- endcomment -%}
+        {%- if section.settings.show_shipping -%}
+          <div class="apgo-cc-pdp__shipping">
+            <span class="apgo-cc-pdp__shipping-label">{{ section.settings.shipping_label | default: '2–3 business days' }}</span>
+            <span class="apgo-cc-pdp__shipping-sep" aria-hidden="true">·</span>
+            <span class="apgo-cc-pdp__shipping-stock{% unless product.available %} apgo-cc-pdp__shipping-stock--out{% endunless %}">
+              {%- if product.available -%}● In stock{%- else -%}● Out of stock{%- endif -%}
+            </span>
+          </div>
+        {%- endif -%}
+
+        <div class="apgo-cc-pdp__cta-row">
+          <button
+            type="submit"
+            class="apgo-cc-pdp__cta apgo-cc-pdp__cta--secondary"
+            data-apgo-cc-add
+            {% if product.available == false %}disabled{% endif %}
+          >
+            {%- if product.available -%}Add to cart{%- else -%}Sold out{%- endif -%}
+          </button>
+          {%- if section.settings.show_buy_now -%}
+            <button type="button" class="apgo-cc-pdp__cta apgo-cc-pdp__cta--primary" data-apgo-cc-buy-now>
+              Buy now
+            </button>
+          {%- endif -%}
+        </div>
+      </form>
+
+      {%- comment -%}
+        Variants JSON for client-side option → variant matching.
+        Read by the inline-picker JS at the section's script tail.
+      {%- endcomment -%}
+      <script type="application/json" data-apgo-cc-variants>
+        {{ product.variants | json }}
+      </script>
 
       {% if product.metafields.apgo.performance_metrics.value %}
         <div class="apgo-performance-metrics">
@@ -5382,6 +5730,170 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 {%- comment -%}
+  Car Care 內聯 picker JS（Block A 切換/數量/加購）
+  - 監聽 .apgo-cc-pdp__form 內 radio change → 比對 variants JSON 取得 variant id
+  - 同步：隱藏 id input、價格顯示、chip is-active、option 當前值、window.currentVariantId（讓 buybar fallback 可用）
+  - 數量 stepper +/- 限制 ≥1
+  - Add to cart 按鈕：阻止表單原生 submit，改 AJAX /cart/add.js + 三 dispatch + 自動展開 buybar
+  - Buy now 按鈕：同 add 邏輯，成功後跳 /cart
+{%- endcomment -%}
+<script>
+(function () {
+  'use strict';
+  var form = document.querySelector('.apgo-cc-pdp__form');
+  if (!form) return;
+
+  var dataEl = document.querySelector('[data-apgo-cc-variants]');
+  var variants = [];
+  try { variants = JSON.parse((dataEl && dataEl.textContent) || '[]'); } catch (e) {}
+
+  var idInput = form.querySelector('[data-apgo-cc-variant-id]');
+  var priceEl = document.querySelector('[data-apgo-cc-price]');
+  var addBtn  = form.querySelector('[data-apgo-cc-add]');
+  var buyBtn  = form.querySelector('[data-apgo-cc-buy-now]');
+  var qtyInput= form.querySelector('[data-apgo-cc-qty-input]');
+
+  function fmtMoney(cents) {
+    if (window.Shopify && typeof window.Shopify.formatMoney === 'function') {
+      var fmt = (window.theme && window.theme.moneyFormat) || 'NT${{amount}}';
+      try { return window.Shopify.formatMoney(cents, fmt); } catch (e) {}
+    }
+    return 'NT$ ' + (Number(cents) / 100).toLocaleString('zh-TW', { maximumFractionDigits: 0 });
+  }
+
+  function currentOptionValues() {
+    var out = [];
+    form.querySelectorAll('[data-apgo-cc-option-group]').forEach(function (g) {
+      var checked = g.querySelector('input[type="radio"]:checked');
+      out.push(checked ? checked.value : null);
+    });
+    return out;
+  }
+
+  function findVariant(opts) {
+    for (var i = 0; i < variants.length; i++) {
+      var v = variants[i];
+      if (!v.options) continue;
+      var match = true;
+      for (var j = 0; j < opts.length; j++) {
+        if (v.options[j] !== opts[j]) { match = false; break; }
+      }
+      if (match) return v;
+    }
+    return null;
+  }
+
+  function syncChipsActive() {
+    form.querySelectorAll('[data-apgo-cc-option-group]').forEach(function (g) {
+      var checked = g.querySelector('input[type="radio"]:checked');
+      g.querySelectorAll('.apgo-cc-pdp__chip').forEach(function (chip) {
+        var input = chip.querySelector('input[type="radio"]');
+        chip.classList.toggle('is-active', !!input && input === checked);
+      });
+      var cur = g.querySelector('[data-apgo-cc-option-current]');
+      if (cur && checked) cur.textContent = checked.value;
+    });
+  }
+
+  function refreshVariant() {
+    var opts = currentOptionValues();
+    var v = findVariant(opts);
+    syncChipsActive();
+    if (!v) return;
+
+    if (idInput) idInput.value = v.id;
+    window.currentVariantId = v.id;
+    if (priceEl) priceEl.textContent = fmtMoney(v.price);
+
+    /* Disable add button if variant not available */
+    if (addBtn) {
+      addBtn.disabled = !v.available;
+      addBtn.textContent = v.available ? 'Add to cart' : 'Sold out';
+    }
+    if (buyBtn) buyBtn.disabled = !v.available;
+  }
+
+  form.querySelectorAll('input[type="radio"][data-apgo-cc-option-input]').forEach(function (r) {
+    r.addEventListener('change', refreshVariant);
+  });
+
+  /* Qty stepper */
+  form.querySelectorAll('[data-apgo-cc-qty]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      if (!qtyInput) return;
+      var n = parseInt(qtyInput.value, 10) || 1;
+      n += (btn.getAttribute('data-apgo-cc-qty') === 'up' ? 1 : -1);
+      if (n < 1) n = 1;
+      qtyInput.value = n;
+    });
+  });
+
+  /* Shared add-to-cart logic for both buttons */
+  function addToCart(opts) {
+    opts = opts || {};
+    var btn = opts.btn;
+    var fd = new FormData(form);
+    var orig = btn ? btn.textContent : '';
+    if (btn) { btn.disabled = true; btn.textContent = 'Adding…'; }
+
+    return fetch('/cart/add.js', {
+      method: 'POST',
+      headers: { 'Accept': 'application/json' },
+      body: fd
+    })
+      .then(function (r) {
+        return r.json().then(function (data) {
+          if (!r.ok) return Promise.reject(data);
+          return data;
+        });
+      })
+      .then(function () {
+        return fetch('/cart.js?_=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); });
+      })
+      .then(function (cart) {
+        document.dispatchEvent(new CustomEvent('cart:update', { detail: { cart: cart } }));
+        document.documentElement.dispatchEvent(new CustomEvent('cart:refresh', { bubbles: true, detail: { cart: cart } }));
+        document.dispatchEvent(new CustomEvent('cart:updated'));
+        try {
+          import('@theme/events').then(function (mod) {
+            if (mod && mod.CartUpdateEvent) {
+              document.dispatchEvent(new mod.CartUpdateEvent(cart, 'apgo-cc-pdp', { itemCount: cart.item_count, source: 'apgo-cc-pdp', sections: {} }));
+            }
+            if (mod && mod.CartAddEvent) {
+              document.dispatchEvent(new mod.CartAddEvent({}, 'apgo-cc-pdp', { source: 'apgo-cc-pdp' }));
+            }
+          }).catch(function () {});
+        } catch (_) {}
+        if (btn) { btn.disabled = false; btn.textContent = orig; }
+        return cart;
+      })
+      .catch(function (err) {
+        console.error('[apgo-cc-pdp] add failed:', err);
+        if (btn) { btn.disabled = false; btn.textContent = orig; }
+        throw err;
+      });
+  }
+
+  if (addBtn) {
+    addBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      addToCart({ btn: addBtn });
+    });
+  }
+  if (buyBtn) {
+    buyBtn.addEventListener('click', function () {
+      addToCart({ btn: buyBtn }).then(function () {
+        window.location.href = '/cart';
+      }).catch(function () {});
+    });
+  }
+
+  /* Initial sync (covers SSR-checked state) */
+  refreshVariant();
+})();
+</script>
+
+{%- comment -%}
   Car Care 手機底部購買欄 JS — assets/apgo-cc-buybar.js
   defer 保證主要文檔先解析；script 自己 query DOM 並做事件綁定。
 {%- endcomment -%}
@@ -5423,6 +5935,84 @@ document.addEventListener('DOMContentLoaded', function() {
       "label": "顯示產品次圖（縮圖列）",
       "info": "關閉後主圖下方的縮圖列將不會顯示。",
       "default": true
+    },
+    {
+      "type": "header",
+      "content": "內聯購買區（Car Care PDP）"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_buy_now",
+      "label": "顯示「Buy now」按鈕",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_shipping",
+      "label": "顯示運送資訊（X 個工作日 · In stock）",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "shipping_label",
+      "label": "運送說明文字",
+      "default": "2–3 business days"
+    },
+    {
+      "type": "header",
+      "content": "促銷膠囊（1–3 顆）"
+    },
+    {
+      "type": "paragraph",
+      "content": "在價格區下方顯示 1～3 個彩色膠囊（例如 Free shipping over $79 / Member 10% off）。空白欄會自動跳過。"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_promo_pills",
+      "label": "顯示促銷膠囊",
+      "default": false
+    },
+    { "type": "text", "id": "promo_pill_1_text", "label": "膠囊 1 · 文字" },
+    {
+      "type": "select",
+      "id": "promo_pill_1_color",
+      "label": "膠囊 1 · 顏色",
+      "options": [
+        { "value": "orange",  "label": "橘" },
+        { "value": "green",   "label": "綠" },
+        { "value": "blue",    "label": "藍" },
+        { "value": "red",     "label": "紅" },
+        { "value": "neutral", "label": "灰（中性）" }
+      ],
+      "default": "orange"
+    },
+    { "type": "text", "id": "promo_pill_2_text", "label": "膠囊 2 · 文字" },
+    {
+      "type": "select",
+      "id": "promo_pill_2_color",
+      "label": "膠囊 2 · 顏色",
+      "options": [
+        { "value": "orange",  "label": "橘" },
+        { "value": "green",   "label": "綠" },
+        { "value": "blue",    "label": "藍" },
+        { "value": "red",     "label": "紅" },
+        { "value": "neutral", "label": "灰（中性）" }
+      ],
+      "default": "green"
+    },
+    { "type": "text", "id": "promo_pill_3_text", "label": "膠囊 3 · 文字" },
+    {
+      "type": "select",
+      "id": "promo_pill_3_color",
+      "label": "膠囊 3 · 顏色",
+      "options": [
+        { "value": "orange",  "label": "橘" },
+        { "value": "green",   "label": "綠" },
+        { "value": "blue",    "label": "藍" },
+        { "value": "red",     "label": "紅" },
+        { "value": "neutral", "label": "灰（中性）" }
+      ],
+      "default": "blue"
     },
     {
       "type": "paragraph",
