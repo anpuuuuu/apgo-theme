@@ -16,7 +16,17 @@
         "show_particles": true,
         "subtitle_fallback": "",
         "show_bottom_bar": true,
-        "show_thumbnails": false
+        "show_thumbnails": true,
+        "show_buy_now": true,
+        "show_shipping": true,
+        "shipping_label": "2–3 business days",
+        "show_promo_pills": false,
+        "promo_pill_1_text": "",
+        "promo_pill_1_color": "orange",
+        "promo_pill_2_text": "",
+        "promo_pill_2_color": "green",
+        "promo_pill_3_text": "",
+        "promo_pill_3_color": "blue"
       }
     }
   },
