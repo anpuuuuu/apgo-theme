@@ -6141,59 +6141,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
     /*
       Variant-aware Variation block.
-      Strategy: tokenize the variant title + each section's key into
-      lowercase words (≥2 chars, alphanumeric only — so emoji/punctuation
-      like ✨ or ° or ! drop out automatically). Score each section by the
-      count of overlapping tokens with the variant title. Show only the
-      section with the highest score.
-      Why tokenization beats substring matching:
-        - "Atomic Coating Bundle" doesn't substring-match "Atomic Coating
-          360° Bundle" (the 360° breaks contiguity).
-        - "Atomic Coating Bottle" doesn't substring-match a section whose
-          first line is just "Atomic Bottle" (missing the word Coating).
-        - Token overlap handles both cleanly.
-      Safety net: if no section overlaps at all, show every section so the
-      customer isn't left with a blank Variation block.
+      Strict positional mapping: variant N → section N.
+      Token-overlap matching was tried earlier but produced surprising
+      results when section names share many words with variants other than
+      their own (e.g. "Atomic Coating Bundle" variant scoring higher against
+      "Atomic Coating 360° Bundle" section than against its real match).
+      Positional is deterministic and easy for admin to reason about:
+      write the metafield sections in the SAME ORDER as the variants in
+      the Shopify product editor, separated by blank lines.
+      Clamps to the first section if variants outnumber sections.
     */
-    function tokenize(str) {
-      return (str || '')
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, ' ')
-        .split(/\s+/)
-        .filter(function (s) { return s.length >= 2; });
-    }
-    var vTokens = tokenize(v.title);
     var sectionsRoot = document.querySelector('[data-apgo-cc-variation-sections]');
     if (sectionsRoot) {
       var sections = Array.prototype.slice.call(
         sectionsRoot.querySelectorAll('.apgo-cc-pdp__variation-section')
       );
-      /*
-        Default: map by INDEX — variant N → section N. Guarantees something
-        sensible shows on first paint even when titles don't share any
-        tokens (e.g. variant "Interior Coating" vs section "Atomic Coating
-        360° Bundle"). Clamps to the first section if variants > sections.
-      */
       var variantIdx = variants.indexOf(v);
-      var bestIdx = (variantIdx >= 0 && variantIdx < sections.length) ? variantIdx : 0;
-      var bestScore = 0;
-      /*
-        Override the index-based default if any section has stronger token
-        overlap with the variant title — handles re-ordered metafields and
-        admin-written keys that don't follow variant ordering.
-      */
-      sections.forEach(function (s, i) {
-        var kTokens = tokenize(s.getAttribute('data-variant-key') || '');
-        var overlap = 0;
-        vTokens.forEach(function (t) {
-          if (kTokens.indexOf(t) !== -1) overlap++;
-        });
-        if (overlap > bestScore) {
-          bestScore = overlap;
-          bestIdx = i;
-        }
-      });
-      sections.forEach(function (s, i) { s.hidden = (i !== bestIdx); });
+      var targetIdx = (variantIdx >= 0 && variantIdx < sections.length) ? variantIdx : 0;
+      sections.forEach(function (s, i) { s.hidden = (i !== targetIdx); });
     }
   }
 
