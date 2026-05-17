@@ -5894,24 +5894,30 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     /*
-      ignoreScrollspy: short window after a tab click during which the
-      scrollspy listener is suppressed so it doesn't wrongly snap active
-      back to the previous panel while the smooth-scroll animation is in
-      flight (the destination panel's top hasn't quite passed the sticky
-      edge yet during the easing, so scrollspy would otherwise pick the
-      previous panel until the very end of the animation).
+      Position-triggered lock for the smooth-scroll animation:
+      A fixed-duration "ignore scrollspy" window doesn't work well because the
+      browser's smooth-scroll duration varies with distance (longer page →
+      longer animation). When the window expires mid-animation, scrollspy
+      picks the still-current panel (not the target), causing a brief flicker
+      back to the previous tab before snapping to the destination.
+
+      Instead, lock the active tab to the clicked one. Release the lock only
+      when scrollspy's "natural" pick equals the locked tab — i.e. the target
+      panel has actually arrived at the active reading position. A 3-second
+      hard-release safety timeout prevents the lock from sticking forever if
+      something goes wrong (panel removed, scroll interrupted, etc.).
     */
-    var ignoreScrollspy = false;
-    var ignoreTimer = null;
+    var lockedTabId = null;
+    var lockTimer = null;
     function activateAndScroll(tabBtn) {
       var panelId = tabBtn.getAttribute('aria-controls');
       if (!panelId) return;
       var panel = document.getElementById(panelId);
       if (!panel) return;
       setActive(tabBtn);
-      ignoreScrollspy = true;
-      clearTimeout(ignoreTimer);
-      ignoreTimer = setTimeout(function () { ignoreScrollspy = false; }, 800);
+      lockedTabId = tabBtn.id;
+      clearTimeout(lockTimer);
+      lockTimer = setTimeout(function () { lockedTabId = null; }, 3000);
       var offset = getStickyOffset();
       var rect = panel.getBoundingClientRect();
       window.scrollTo({
@@ -5943,7 +5949,6 @@ document.addEventListener('DOMContentLoaded', function() {
     */
     var ticking = false;
     function syncActiveFromScroll() {
-      if (ignoreScrollspy) return; /* suppressed during click-driven smooth-scroll */
       if (ticking) return;
       ticking = true;
       requestAnimationFrame(function () {
@@ -5965,11 +5970,30 @@ document.addEventListener('DOMContentLoaded', function() {
             break;
           }
         }
-        var matchingTab = tabs.find(function (t) {
+        var naturalTab = tabs.find(function (t) {
           return t.getAttribute('aria-controls') === panels[activeIdx].id;
         });
-        if (matchingTab && matchingTab.getAttribute('aria-selected') !== 'true') {
-          setActive(matchingTab);
+        if (!naturalTab) return;
+
+        /*
+          Lock handling: if a tab click set a lockedTabId, hold active on
+          that tab. Only when scrollspy's natural pick agrees with the lock
+          (i.e. the smooth-scroll has actually arrived at the target panel)
+          do we release. This eliminates the mid-animation flicker where the
+          previous panel briefly grabbed active.
+        */
+        if (lockedTabId) {
+          if (naturalTab.id === lockedTabId) {
+            clearTimeout(lockTimer);
+            lockedTabId = null;
+            /* fall through — also normal-update active below (already correct) */
+          } else {
+            return;
+          }
+        }
+
+        if (naturalTab.getAttribute('aria-selected') !== 'true') {
+          setActive(naturalTab);
         }
       });
     }
