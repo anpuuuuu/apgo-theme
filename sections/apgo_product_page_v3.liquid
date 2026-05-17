@@ -2970,13 +2970,11 @@
       grid-column: 1;
     }
 
-    /* The Car Care buy panel: col 2, sticks to the top of the left stack and stays put while scrolling. */
+    /* The Car Care buy panel: col 2, plain card style (no sticky — sits naturally at the top of the right rail). */
     body:not(.apgo-pdp-variant-sidebar-open) .apgo-cc-pdp__buy-col {
       grid-column: 2;
       grid-row: 1 / span 20;
       align-self: start;
-      position: sticky;
-      top: calc(var(--apgo-pdp-tabs-sticky-top, 100px) + 12px);
       padding: 24px;
       background: rgba(0, 0, 0, 0.35);
       border-radius: 14px;
@@ -3239,12 +3237,19 @@
   }
   .apgo-cc-pdp__shipping-stock--out { color: #ff9a9a; }
 
-  /* CTA row */
+  /*
+    CTA row — desktop only (≥1024px). On mobile the fixed bottom buybar
+    already provides Add to cart / Buy now, so we suppress this row to avoid
+    duplicate buttons stacked above the buybar.
+  */
   .apgo-cc-pdp__cta-row {
-    display: grid;
+    display: none;
     grid-template-columns: 1fr 1fr;
     gap: 8px;
     margin-top: 16px;
+  }
+  @media (min-width: 1024px) {
+    .apgo-cc-pdp__cta-row { display: grid; }
   }
   .apgo-cc-pdp__cta {
     padding: 12px;
@@ -3724,9 +3729,26 @@
         {%- endif -%}
 
         {%- comment -%}
-          Inline CTA row removed — actions live entirely in the bottom buybar
-          to avoid duplicate Add/Buy buttons on the page.
+          Desktop-only CTA row. Mobile (≤1023px) hides it via CSS because the
+          fixed bottom buybar covers those actions. The data attributes wire up
+          to the existing inline JS handlers (apgo_product_page_v3.liquid script:
+          [data-apgo-cc-add] → addToCart, [data-apgo-cc-buy-now] → buyNow + /cart).
         {%- endcomment -%}
+        <div class="apgo-cc-pdp__cta-row">
+          <button
+            type="submit"
+            class="apgo-cc-pdp__cta apgo-cc-pdp__cta--secondary"
+            data-apgo-cc-add
+            {% if product.available == false %}disabled{% endif %}
+          >
+            {%- if product.available -%}Add to cart{%- else -%}Sold out{%- endif -%}
+          </button>
+          {%- if section.settings.show_buy_now -%}
+            <button type="button" class="apgo-cc-pdp__cta apgo-cc-pdp__cta--primary" data-apgo-cc-buy-now>
+              Buy now
+            </button>
+          {%- endif -%}
+        </div>
       </form>
 
       {%- comment -%}
