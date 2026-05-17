@@ -472,13 +472,21 @@
   }
 
   .apgo-product-name {
-    font-size: 2rem;
+    /* Match the v3 template's title sizing — 1.35rem mobile / 1.6rem desktop */
+    font-size: 1.35rem;
+    line-height: 1.25;
     font-weight: bold;
     background: linear-gradient(45deg, var(--primary-orange), var(--secondary-orange));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     margin-bottom: 8px;
+  }
+
+  @media (min-width: 769px) {
+    .apgo-product-name {
+      font-size: 1.6rem;
+    }
   }
 
   .apgo-product-metafield-subtitle {
@@ -3002,7 +3010,7 @@
               <div
   class="apgo-variant-option {% if variant == first_available_variant %}selected{% endif %} {% unless variant.available %}disabled{% endunless %}"
   {% if variant.available %}
-    onclick="apgoSelectVariant(this, {{ variant.id }}, {{ variant.price | divided_by: 100.0 }}, '{{ variant.featured_media | image_url: width: 800 }}')"
+    onclick="apgoSelectVariant(this, {{ variant.id }}, {{ variant.price | divided_by: 100.0 }}, '{{ variant.featured_media | image_url: width: 800 }}', {{ variant.featured_image.position | default: 0 }})"
   {% endif %}
   {% if variant.featured_media %}
     data-variant-image="{{ variant.featured_media | image_url: width: 800 }}"
@@ -3052,7 +3060,7 @@
                 <div
   class="apgo-variant-option {% if variant == first_available_variant %}selected{% endif %} {% unless variant.available %}disabled{% endunless %}"
   {% if variant.available %}
-    onclick="apgoSelectVariant(this, {{ variant.id }}, {{ variant.price | divided_by: 100.0 }}, '{{ variant.featured_media | image_url: width: 800 }}')"
+    onclick="apgoSelectVariant(this, {{ variant.id }}, {{ variant.price | divided_by: 100.0 }}, '{{ variant.featured_media | image_url: width: 800 }}', {{ variant.featured_image.position | default: 0 }})"
   {% endif %}
   {% if variant.featured_media %}
     data-variant-image="{{ variant.featured_media | image_url: width: 800 }}"
@@ -3644,22 +3652,36 @@ window.apgoCloseVariantModal = function() {
   }
 };
 
-window.apgoSelectVariant = function(element, variantId, price, imageUrl) {
+window.apgoSelectVariant = function(element, variantId, price, imageUrl, imagePosition) {
   if (element.classList.contains('disabled')) {
     return;
   }
-  
+
   // 移除其他選項的選中狀態
   document.querySelectorAll('.apgo-variant-option').forEach(option => {
     option.classList.remove('selected');
   });
-  
+
   // 添加現在選項的選中狀態
   element.classList.add('selected');
-  
+
   // 更新當前變體ID和價格
   currentVariantId = variantId;
   currentPrice = price;
+
+  /*
+    Switch the main page gallery to the variant's featured image.
+    imagePosition comes from Liquid (variant.featured_image.position, 1-indexed)
+    matching the slide order in product.images. Falls through quietly when the
+    variant has no featured_image (position === 0) — same image stays.
+  */
+  if (imagePosition && imagePosition > 0 && window.apgoCarousel && typeof window.apgoCarousel.goToSlide === 'function') {
+    var mainSlideIdx = imagePosition - 1;
+    window.apgoCarousel.goToSlide(mainSlideIdx);
+    document.querySelectorAll('.apgo-thumbnail-item').forEach(function (t, i) {
+      t.classList.toggle('active', i === mainSlideIdx);
+    });
+  }
 
   // 切換規格時數量重置為 1
   currentQuantity = 1;
