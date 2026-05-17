@@ -3395,38 +3395,10 @@
   }
 
   /*
-    Reusable toast (used by buybar add-to-cart feedback).
-    Positioned at the TOP of the viewport so the mini-cart sheet sliding up
-    from the bottom (and the buybar itself) doesn't obscure the feedback.
-    safe-area-inset-top covers iPhone notches.
+    Buybar add-to-cart feedback now reuses the global #apgo-cart-toast pill
+    (style: snippets/apgo-cart-toast.liquid, JS reused: apgo-cc-buybar.js
+    showToast). No section-local toast CSS needed.
   */
-  .apgo-cc-toast {
-    position: fixed;
-    left: 50%;
-    top: calc(12px + env(safe-area-inset-top, 0px));
-    transform: translateX(-50%) translateY(-20px);
-    background: rgba(20, 20, 20, 0.95);
-    color: #fff;
-    font-size: 13px;
-    padding: 10px 16px;
-    border-radius: 999px;
-    border: 1px solid rgba(240, 132, 24, 0.3);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity .2s ease, transform .2s ease, visibility .2s ease;
-    z-index: 100001;
-    pointer-events: none;
-    white-space: nowrap;
-  }
-  .apgo-cc-toast.is-visible {
-    opacity: 1;
-    visibility: visible;
-    transform: translateX(-50%) translateY(0);
-  }
-  .apgo-cc-toast--err {
-    border-color: rgba(255, 100, 100, 0.5);
-  }
 </style>
 
 <div class="apgo-product-section" data-apgo-currency="{{ cart.currency.iso_code }}" data-apgo-pdp="v3">

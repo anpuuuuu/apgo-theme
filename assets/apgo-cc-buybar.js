@@ -65,21 +65,26 @@
     }
   }
 
-  // ---------- Toast (reuse if .apgo-cc-toast styled; otherwise minimal) ----------
-  var toastEl = null;
-  function showToast(msg, ok) {
-    if (!toastEl) {
-      toastEl = document.createElement('div');
-      toastEl.className = 'apgo-cc-toast';
-      document.body.appendChild(toastEl);
+  /* Reuse the existing global #apgo-cart-toast pill (style from
+     snippets/apgo-cart-toast.liquid, same visual as the collection page
+     quick-add feedback) so success notifications are visually consistent
+     across the whole storefront. data-visible toggle drives the animation. */
+  function showToast(msg) {
+    var el = document.getElementById('apgo-cart-toast');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'apgo-cart-toast';
+      el.className = 'apgo-cart-toast';
+      el.setAttribute('role', 'status');
+      el.setAttribute('aria-live', 'polite');
+      document.body.appendChild(el);
     }
-    toastEl.textContent = msg;
-    toastEl.classList.toggle('apgo-cc-toast--err', ok === false);
-    toastEl.classList.add('is-visible');
-    clearTimeout(toastEl._t);
-    toastEl._t = setTimeout(function () {
-      toastEl.classList.remove('is-visible');
-    }, 2200);
+    el.textContent = msg;
+    el.dataset.visible = 'true';
+    clearTimeout(el._apgoCcHide);
+    el._apgoCcHide = setTimeout(function () {
+      delete el.dataset.visible;
+    }, 2800);
   }
 
   // ---------- Open / close sheet ----------
