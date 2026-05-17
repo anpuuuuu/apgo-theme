@@ -10,7 +10,7 @@
     - Dispatches cart:update / cart:updated / cart:refresh (+ Horizon CartUpdateEvent)
 {%- endcomment -%}
 
-<aside class="apgo-cc-buybar" data-apgo-cc-buybar aria-label="加入購物車">
+<aside class="apgo-cc-buybar" data-apgo-cc-buybar aria-label="Add to cart">
   <div class="apgo-cc-buybar__backdrop" data-apgo-cc-buybar-backdrop aria-hidden="true"></div>
 
   <div class="apgo-cc-buybar__panel">
@@ -20,28 +20,28 @@
         <button type="button"
                 class="apgo-cc-buybar__collapse"
                 data-apgo-cc-buybar-close
-                aria-label="收起購物車預覽">
+                aria-label="Collapse cart preview">
           <svg class="apgo-cc-buybar__collapse-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <polyline points="6 9 12 15 18 9"/>
           </svg>
-          <span>下拉收起</span>
+          <span>Close</span>
         </button>
         <span class="apgo-cc-buybar__chip" data-apgo-cc-buybar-chip>
-          <span><span data-apgo-cc-buybar-count>0</span> 件</span>
+          <span><span data-apgo-cc-buybar-count>0</span> item(s)</span>
           <span class="apgo-cc-buybar__chip-sep" aria-hidden="true">·</span>
           <span data-apgo-cc-buybar-chip-total>{{ 0 | money }}</span>
         </span>
       </div>
 
-      <div class="apgo-cc-buybar__cart-title">購物車</div>
+      <div class="apgo-cc-buybar__cart-title">Cart</div>
 
       <div class="apgo-cc-buybar__items" data-apgo-cc-buybar-items>
         {%- comment -%} populated by JS from /cart.js {%- endcomment -%}
-        <p class="apgo-cc-buybar__empty" data-apgo-cc-buybar-empty>購物車是空的</p>
+        <p class="apgo-cc-buybar__empty" data-apgo-cc-buybar-empty>Your cart is empty</p>
       </div>
 
       <div class="apgo-cc-buybar__subtotal-row">
-        <span class="apgo-cc-buybar__subtotal-label">小計 (含運)</span>
+        <span class="apgo-cc-buybar__subtotal-label">Subtotal (incl. shipping)</span>
         <span class="apgo-cc-buybar__subtotal-val" data-apgo-cc-buybar-subtotal>
           {{ 0 | money }}
         </span>
@@ -53,12 +53,12 @@
       <button type="button"
               class="apgo-cc-buybar__top"
               data-apgo-cc-buybar-handle
-              aria-label="展開購物車預覽">
+              aria-label="Expand cart preview">
         <span class="apgo-cc-buybar__top-hint" data-apgo-cc-buybar-hint>
-          上滑查看購物車
+          Swipe up to view cart
         </span>
         <span class="apgo-cc-buybar__chip" data-apgo-cc-buybar-chip>
-          <span><span data-apgo-cc-buybar-count>0</span> 件</span>
+          <span><span data-apgo-cc-buybar-count>0</span> item(s)</span>
           <span class="apgo-cc-buybar__chip-sep" aria-hidden="true">·</span>
           <span data-apgo-cc-buybar-chip-total>{{ 0 | money }}</span>
         </span>
@@ -68,12 +68,12 @@
                 class="apgo-cc-buybar__btn apgo-cc-buybar__btn--add"
                 data-apgo-cc-buybar-add
                 {% if product.available == false %}disabled{% endif %}>
-          {%- if product.available -%}加入購物車{%- else -%}已售完{%- endif -%}
+          {%- if product.available -%}Add to cart{%- else -%}Sold out{%- endif -%}
         </button>
         <button type="button"
                 class="apgo-cc-buybar__btn apgo-cc-buybar__btn--buy"
                 data-apgo-cc-buybar-checkout>
-          立即購買
+          Buy now
         </button>
       </div>
     </div>

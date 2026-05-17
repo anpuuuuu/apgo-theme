@@ -246,13 +246,13 @@
       if (addBtn.disabled) return;
       var fd = buildAddPayload();
       if (!fd) {
-        showToast('請先選擇商品規格', false);
+        showToast('Please select a variant first', false);
         return;
       }
 
       var orig = addBtn.textContent;
       addBtn.disabled = true;
-      addBtn.textContent = '加入中…';
+      addBtn.textContent = 'Adding…';
 
       fetch('/cart/add.js', {
         method: 'POST',
@@ -288,7 +288,7 @@
             }).catch(function () {});
           } catch (_) {}
 
-          showToast('✓ 已加入購物車');
+          showToast('✓ Added to cart');
           addBtn.disabled = false;
           addBtn.textContent = orig;
 
@@ -296,7 +296,7 @@
         })
         .catch(function (err) {
           console.error('[apgo-cc-buybar] add failed:', err);
-          var msg = (err && err.description) || (err && err.message) || '加入失敗，請稍後再試';
+          var msg = (err && err.description) || (err && err.message) || 'Failed to add. Please try again.';
           showToast(msg, false);
           addBtn.disabled = false;
           addBtn.textContent = orig;

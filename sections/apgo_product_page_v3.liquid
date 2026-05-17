@@ -3020,33 +3020,32 @@
     margin-top: 14px;
   }
 
-  /* Option group (label left, chips right) */
+  /* Option group: label/current value stacked on top, chips full-width below */
   .apgo-cc-pdp__option-group {
     display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 12px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
   }
   .apgo-cc-pdp__option-label {
-    flex: 0 0 auto;
     display: flex;
-    flex-direction: column;
-    gap: 2px;
+    align-items: baseline;
+    gap: 8px;
   }
   .apgo-cc-pdp__option-name {
     font-size: 13px;
-    color: rgba(255, 255, 255, 0.55);
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 600;
   }
   .apgo-cc-pdp__option-current {
     font-size: 11px;
-    color: rgba(255, 255, 255, 0.35);
+    color: rgba(255, 255, 255, 0.45);
   }
   .apgo-cc-pdp__option-chips {
-    flex: 1 1 auto;
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
-    justify-content: flex-end;
+    justify-content: flex-start;
   }
   .apgo-cc-pdp__chip {
     position: relative;
@@ -3592,21 +3591,10 @@
           </div>
         {%- endif -%}
 
-        <div class="apgo-cc-pdp__cta-row">
-          <button
-            type="submit"
-            class="apgo-cc-pdp__cta apgo-cc-pdp__cta--secondary"
-            data-apgo-cc-add
-            {% if product.available == false %}disabled{% endif %}
-          >
-            {%- if product.available -%}Add to cart{%- else -%}Sold out{%- endif -%}
-          </button>
-          {%- if section.settings.show_buy_now -%}
-            <button type="button" class="apgo-cc-pdp__cta apgo-cc-pdp__cta--primary" data-apgo-cc-buy-now>
-              Buy now
-            </button>
-          {%- endif -%}
-        </div>
+        {%- comment -%}
+          Inline CTA row removed — actions live entirely in the bottom buybar
+          to avoid duplicate Add/Buy buttons on the page.
+        {%- endcomment -%}
       </form>
 
       {%- comment -%}
