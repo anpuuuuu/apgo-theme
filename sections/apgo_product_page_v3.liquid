@@ -3509,19 +3509,24 @@
       {%- if product.compare_at_price > product.price -%}{%- assign on_sale = true -%}{%- endif -%}
       {%- assign save_amount = product.compare_at_price | minus: product.price -%}
 
-      {%- comment -%} Price card — boxed style with orange left border on sale; plain large on regular. {%- endcomment -%}
+      {%- comment -%}
+        Price card — boxed style with orange left border on sale; plain large on regular.
+        data-cents attributes carry raw cents so the inline JS can re-render via Intl.NumberFormat
+        using the active market currency (Liquid's `| money` defaults to shop currency, which can
+        mismatch the buyer's market in multi-market stores).
+      {%- endcomment -%}
       <div class="apgo-cc-pdp__price-card{% if on_sale %} apgo-cc-pdp__price-card--sale{% endif %}">
         {%- if on_sale -%}
           <div class="apgo-cc-pdp__price-top">
             <span class="apgo-cc-pdp__price-label">Limited time deal</span>
           </div>
           <div class="apgo-cc-pdp__price-bottom">
-            <span class="apgo-cc-pdp__price-current" data-apgo-cc-price>{{ product.price | money }}</span>
-            <span class="apgo-cc-pdp__price-compare">{{ product.compare_at_price | money }}</span>
-            <span class="apgo-cc-pdp__price-save">Save {{ save_amount | money }}</span>
+            <span class="apgo-cc-pdp__price-current" data-apgo-cc-price data-cents="{{ product.price }}">{{ product.price | money }}</span>
+            <span class="apgo-cc-pdp__price-compare" data-apgo-cc-compare data-cents="{{ product.compare_at_price }}">{{ product.compare_at_price | money }}</span>
+            <span class="apgo-cc-pdp__price-save" data-apgo-cc-save data-cents="{{ save_amount }}">Save {{ save_amount | money }}</span>
           </div>
         {%- else -%}
-          <span class="apgo-cc-pdp__price-current" data-apgo-cc-price>{{ product.price | money }}</span>
+          <span class="apgo-cc-pdp__price-current" data-apgo-cc-price data-cents="{{ product.price }}">{{ product.price | money }}</span>
         {%- endif -%}
       </div>
 
@@ -5735,18 +5740,38 @@ document.addEventListener('DOMContentLoaded', function() {
   var variants = [];
   try { variants = JSON.parse((dataEl && dataEl.textContent) || '[]'); } catch (e) {}
 
-  var idInput = form.querySelector('[data-apgo-cc-variant-id]');
-  var priceEl = document.querySelector('[data-apgo-cc-price]');
-  var addBtn  = form.querySelector('[data-apgo-cc-add]');
-  var buyBtn  = form.querySelector('[data-apgo-cc-buy-now]');
-  var qtyInput= form.querySelector('[data-apgo-cc-qty-input]');
+  var idInput   = form.querySelector('[data-apgo-cc-variant-id]');
+  var priceEl   = document.querySelector('[data-apgo-cc-price]');
+  var compareEl = document.querySelector('[data-apgo-cc-compare]');
+  var saveEl    = document.querySelector('[data-apgo-cc-save]');
+  var addBtn    = form.querySelector('[data-apgo-cc-add]');
+  var buyBtn    = form.querySelector('[data-apgo-cc-buy-now]');
+  var qtyInput  = form.querySelector('[data-apgo-cc-qty-input]');
 
-  function fmtMoney(cents) {
-    if (window.Shopify && typeof window.Shopify.formatMoney === 'function') {
-      var fmt = (window.theme && window.theme.moneyFormat) || 'NT${{amount}}';
-      try { return window.Shopify.formatMoney(cents, fmt); } catch (e) {}
+  /* Market-aware money formatter: read currency code from .apgo-product-section[data-apgo-currency]
+     (Shopify sets this from {{ cart.currency.iso_code }}), then format via Intl.NumberFormat.
+     Falls back to TWD only if both the data attribute and Shopify global are unavailable. */
+  function getActiveCurrency() {
+    var sec = document.querySelector('[data-apgo-currency]');
+    if (sec && sec.dataset.apgoCurrency) return sec.dataset.apgoCurrency;
+    if (window.Shopify && window.Shopify.currency && window.Shopify.currency.active) {
+      return window.Shopify.currency.active;
     }
-    return 'NT$ ' + (Number(cents) / 100).toLocaleString('zh-TW', { maximumFractionDigits: 0 });
+    return 'TWD';
+  }
+  function fmtMoney(cents, currency) {
+    var ccy = currency || getActiveCurrency();
+    var noDecimal = ccy === 'TWD' || ccy === 'JPY' || ccy === 'KRW' || ccy === 'VND';
+    try {
+      return new Intl.NumberFormat(undefined, {
+        style: 'currency',
+        currency: ccy,
+        minimumFractionDigits: noDecimal ? 0 : 2,
+        maximumFractionDigits: noDecimal ? 0 : 2
+      }).format(Number(cents) / 100);
+    } catch (e) {
+      return ccy + ' ' + (Number(cents) / 100).toFixed(noDecimal ? 0 : 2);
+    }
   }
 
   function currentOptionValues() {
@@ -5792,6 +5817,24 @@ document.addEventListener('DOMContentLoaded', function() {
     if (idInput) idInput.value = v.id;
     window.currentVariantId = v.id;
     if (priceEl) priceEl.textContent = fmtMoney(v.price);
+
+    /* Compare-at + save badge — only shown when compare > price */
+    if (compareEl) {
+      if (v.compare_at_price && v.compare_at_price > v.price) {
+        compareEl.textContent = fmtMoney(v.compare_at_price);
+        compareEl.style.display = '';
+      } else {
+        compareEl.style.display = 'none';
+      }
+    }
+    if (saveEl) {
+      if (v.compare_at_price && v.compare_at_price > v.price) {
+        saveEl.textContent = 'Save ' + fmtMoney(v.compare_at_price - v.price);
+        saveEl.style.display = '';
+      } else {
+        saveEl.style.display = 'none';
+      }
+    }
 
     /* Disable add button if variant not available */
     if (addBtn) {

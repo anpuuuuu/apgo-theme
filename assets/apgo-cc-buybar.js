@@ -37,13 +37,32 @@
   var checkoutBtn  = bar.querySelector('[data-apgo-cc-buybar-checkout]');
 
   // ---------- Money formatter ----------
-  function formatMoney(cents) {
-    if (window.Shopify && typeof window.Shopify.formatMoney === 'function') {
-      var fmt = (window.theme && window.theme.moneyFormat) || 'NT${{amount}}';
-      try { return window.Shopify.formatMoney(cents, fmt); } catch (e) {}
+  /* Market-aware: prefer the cart's currency (set after fetch), then the
+     PDP section's data-apgo-currency attribute, then Shopify.currency.active.
+     Fall back to TWD only as a last resort. Format via Intl.NumberFormat. */
+  var currentCartCurrency = null;
+  function getActiveCurrency() {
+    if (currentCartCurrency) return currentCartCurrency;
+    var sec = document.querySelector('[data-apgo-currency]');
+    if (sec && sec.dataset.apgoCurrency) return sec.dataset.apgoCurrency;
+    if (window.Shopify && window.Shopify.currency && window.Shopify.currency.active) {
+      return window.Shopify.currency.active;
     }
-    var n = Number(cents) / 100;
-    return 'NT$ ' + n.toLocaleString('zh-TW', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    return 'TWD';
+  }
+  function formatMoney(cents, currency) {
+    var ccy = currency || getActiveCurrency();
+    var noDecimal = ccy === 'TWD' || ccy === 'JPY' || ccy === 'KRW' || ccy === 'VND';
+    try {
+      return new Intl.NumberFormat(undefined, {
+        style: 'currency',
+        currency: ccy,
+        minimumFractionDigits: noDecimal ? 0 : 2,
+        maximumFractionDigits: noDecimal ? 0 : 2
+      }).format(Number(cents) / 100);
+    } catch (e) {
+      return ccy + ' ' + (Number(cents) / 100).toFixed(noDecimal ? 0 : 2);
+    }
   }
 
   // ---------- Toast (reuse if .apgo-cc-toast styled; otherwise minimal) ----------
@@ -143,13 +162,16 @@
 
   function renderCart(cart) {
     if (!cart) return;
+    /* Cache the cart's currency (e.g. "MYR", "SGD", "TWD") so subsequent
+       formatMoney() calls render with the right symbol/decimals. */
+    if (cart.currency) currentCartCurrency = cart.currency;
     var count = cart.item_count || 0;
     var total = cart.total_price || 0;
     var subtotal = cart.items_subtotal_price != null ? cart.items_subtotal_price : total;
 
     Array.prototype.forEach.call(countEls,     function (el) { el.textContent = count; });
-    Array.prototype.forEach.call(chipTotalEls, function (el) { el.textContent = formatMoney(total); });
-    if (subtotalEl) subtotalEl.textContent = formatMoney(subtotal);
+    Array.prototype.forEach.call(chipTotalEls, function (el) { el.textContent = formatMoney(total, cart.currency); });
+    if (subtotalEl) subtotalEl.textContent = formatMoney(subtotal, cart.currency);
 
     if (!cart.items || cart.items.length === 0) {
       if (emptyEl) emptyEl.style.display = '';
@@ -197,7 +219,7 @@
 
       var price = document.createElement('div');
       price.className = 'apgo-cc-buybar__item-price';
-      price.textContent = formatMoney(item.final_line_price != null ? item.final_line_price : item.line_price);
+      price.textContent = formatMoney(item.final_line_price != null ? item.final_line_price : item.line_price, cart.currency);
       row.appendChild(price);
 
       itemsEl.appendChild(row);
