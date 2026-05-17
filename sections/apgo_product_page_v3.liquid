@@ -3260,6 +3260,17 @@
     word-break: break-word;
   }
 
+  /*
+    Variant-aware sections render with BOTH __variation-section + __variation-body.
+    The doubled-class selector wins over plain __variation-body so the currently
+    visible (non-hidden) section reads in solid white instead of the dim gray
+    that the body class otherwise applies. Hidden sections inherit the same
+    colour but aren't shown anyway.
+  */
+  .apgo-cc-pdp__variation-section.apgo-cc-pdp__variation-body {
+    color: rgba(255, 255, 255, 0.92);
+  }
+
   /* Shipping info row: label on the left, stock status pushed to the right */
   .apgo-cc-pdp__shipping {
     display: flex;
