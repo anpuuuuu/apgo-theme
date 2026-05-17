@@ -2985,7 +2985,8 @@
       </div>
     </section>
 
-    <!-- 產品縮圖展示區 -->
+    <!-- 產品縮圖展示區（編輯器開關：show_thumbnails，預設開） -->
+    {% if section.settings.show_thumbnails %}
     <section class="apgo-product-thumbnails{% if subtitle_display == blank %} apgo-product-thumbnails--no-subtitle-below{% endif %}">
       <div class="apgo-thumbnails-container">
         {% for image in product.images %}
@@ -3004,6 +3005,7 @@
         {% endfor %}
       </div>
     </section>
+    {% endif %}
 
     <!-- 產品基本資訊 -->
     <section class="apgo-product-info{% if subtitle_display == blank %} apgo-product-info--no-subtitle{% endif %}">
@@ -5145,6 +5147,13 @@ document.addEventListener('DOMContentLoaded', function() {
       "type": "checkbox",
       "id": "show_bottom_bar",
       "label": "显示底部购买栏",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_thumbnails",
+      "label": "顯示產品次圖（縮圖列）",
+      "info": "關閉後主圖下方的縮圖列將不會顯示。",
       "default": true
     },
     {
