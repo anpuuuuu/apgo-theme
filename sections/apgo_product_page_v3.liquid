@@ -6025,6 +6025,24 @@ document.addEventListener('DOMContentLoaded', function() {
       addBtn.textContent = v.available ? 'Add to cart' : 'Sold out';
     }
     if (buyBtn) buyBtn.disabled = !v.available;
+
+    /*
+      Swap the main gallery image to the variant's featured image.
+      Shopify exposes variant.featured_image with .position (1-indexed,
+      matching its place in product.images). The carousel slides are
+      rendered in that same order, so goToSlide(position - 1) lands on it.
+      Also sync the thumbnail strip's active highlight so it visually
+      follows the variant switch.
+    */
+    var fimg = v.featured_image || v.featured_media || null;
+    var pos = fimg && (fimg.position || (fimg.preview_image && fimg.preview_image.position));
+    if (pos && window.apgoCarousel && typeof window.apgoCarousel.goToSlide === 'function') {
+      var slideIdx = pos - 1;
+      window.apgoCarousel.goToSlide(slideIdx);
+      document.querySelectorAll('.apgo-thumbnail-item').forEach(function (t, i) {
+        t.classList.toggle('active', i === slideIdx);
+      });
+    }
   }
 
   form.querySelectorAll('input[type="radio"][data-apgo-cc-option-input]').forEach(function (r) {
