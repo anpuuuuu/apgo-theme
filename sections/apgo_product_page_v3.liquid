@@ -6104,26 +6104,51 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     /*
-      Variant-aware Variation block. Each section's data-variant-key holds
-      the section's first line (lowercased). We show only the section whose
-      key overlaps the current variant's title (case-insensitive, two-way
-      contains so admin can write "Atomic Sealing Bottle (Single)" while
-      the variant title is "Atomic Sealing Bottle").
-      Safety net: if nothing matches, show every section so the visitor
-      isn't left with a blank Variation block — same behaviour as before.
+      Variant-aware Variation block.
+      Strategy: tokenize the variant title + each section's key into
+      lowercase words (≥2 chars, alphanumeric only — so emoji/punctuation
+      like ✨ or ° or ! drop out automatically). Score each section by the
+      count of overlapping tokens with the variant title. Show only the
+      section with the highest score.
+      Why tokenization beats substring matching:
+        - "Atomic Coating Bundle" doesn't substring-match "Atomic Coating
+          360° Bundle" (the 360° breaks contiguity).
+        - "Atomic Coating Bottle" doesn't substring-match a section whose
+          first line is just "Atomic Bottle" (missing the word Coating).
+        - Token overlap handles both cleanly.
+      Safety net: if no section overlaps at all, show every section so the
+      customer isn't left with a blank Variation block.
     */
-    var vTitle = (v.title || '').toLowerCase().trim();
+    function tokenize(str) {
+      return (str || '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, ' ')
+        .split(/\s+/)
+        .filter(function (s) { return s.length >= 2; });
+    }
+    var vTokens = tokenize(v.title);
     var sectionsRoot = document.querySelector('[data-apgo-cc-variation-sections]');
     if (sectionsRoot) {
-      var sections = sectionsRoot.querySelectorAll('.apgo-cc-pdp__variation-section');
-      var matched = false;
-      sections.forEach(function (s) {
-        var key = (s.getAttribute('data-variant-key') || '').toLowerCase().trim();
-        var show = !!vTitle && (key.indexOf(vTitle) !== -1 || vTitle.indexOf(key) !== -1);
-        if (show) matched = true;
-        s.hidden = !show;
+      var sections = Array.prototype.slice.call(
+        sectionsRoot.querySelectorAll('.apgo-cc-pdp__variation-section')
+      );
+      var bestIdx = -1, bestScore = 0;
+      sections.forEach(function (s, i) {
+        var kTokens = tokenize(s.getAttribute('data-variant-key') || '');
+        var overlap = 0;
+        vTokens.forEach(function (t) {
+          if (kTokens.indexOf(t) !== -1) overlap++;
+        });
+        if (overlap > bestScore) {
+          bestScore = overlap;
+          bestIdx = i;
+        }
       });
-      if (!matched) sections.forEach(function (s) { s.hidden = false; });
+      if (bestIdx !== -1) {
+        sections.forEach(function (s, i) { s.hidden = (i !== bestIdx); });
+      } else {
+        sections.forEach(function (s) { s.hidden = false; });
+      }
     }
   }
 
