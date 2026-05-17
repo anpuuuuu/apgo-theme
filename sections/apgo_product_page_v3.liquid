@@ -3146,6 +3146,10 @@
     font-weight: 600;
     color: rgba(255, 255, 255, 0.7);  /* light gray (matches option-name) */
     letter-spacing: 0.02em;
+    /* Cancel base.css h4 default text-transform (var(--font-h4--case) resolves
+       to uppercase in this theme). Locale value 'Variation' already has the
+       capitalisation we want. */
+    text-transform: none;
   }
   .apgo-cc-pdp__variation-body {
     font-size: 12px;
