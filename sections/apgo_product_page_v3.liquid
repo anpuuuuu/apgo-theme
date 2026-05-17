@@ -4969,20 +4969,24 @@ document.addEventListener('DOMContentLoaded', function() {
   console.log('縮略圖拖拽初始化完成');
 
   /*
-    量測「整個吸頂棧高度」= header-group 高度 + 跑馬燈高度，寫到 body 的
-    --apgo-pdp-tabs-sticky-top 上；.apgo-pdp-tablist-wrap 的 sticky top 直接讀此值。
+    計算 tab bar 應該黏住的 top 值 = 跑馬燈的「實際視覺底緣」（含其 -1px 補縫）。
+    直接讀 marquee 的 computed top（calc()/env() 已展開為實 px），加上 marquee 高度，
+    避免和 marquee 之間出現 1px 視覺空隙。若沒有 marquee（如其他國家被隱藏），退回 header-group-height。
     觀察 marquee 尺寸變化（content/locale 切換）以及視窗縮放，自動更新。
   */
   function apgoUpdateTabsStickyTop() {
-    var hg = parseFloat(
-      getComputedStyle(document.body).getPropertyValue('--header-group-height')
-    ) || 0;
     var marquee = document.getElementById('shopify-section-free-shipping-popup');
-    var marqueeH = marquee ? marquee.getBoundingClientRect().height : 0;
-    document.body.style.setProperty(
-      '--apgo-pdp-tabs-sticky-top',
-      (hg + marqueeH) + 'px'
-    );
+    var stickyTop;
+    if (marquee) {
+      var mTop = parseFloat(getComputedStyle(marquee).top) || 0;
+      var mH = marquee.getBoundingClientRect().height;
+      stickyTop = mTop + mH;
+    } else {
+      stickyTop = parseFloat(
+        getComputedStyle(document.body).getPropertyValue('--header-group-height')
+      ) || 0;
+    }
+    document.body.style.setProperty('--apgo-pdp-tabs-sticky-top', stickyTop + 'px');
   }
   apgoUpdateTabsStickyTop();
   window.addEventListener('resize', apgoUpdateTabsStickyTop);
