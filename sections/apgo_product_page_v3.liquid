@@ -3128,6 +3128,33 @@
     margin: 0;
   }
 
+  /*
+    Variation block (under Quantity, above Shipping).
+    Title uses the light-gray of .apgo-cc-pdp__option-name; body uses the dimmer
+    gray of .apgo-cc-pdp__option-current — same two-tone hierarchy as the
+    variant option group's label/current-value pair.
+  */
+  .apgo-cc-pdp__variation {
+    /* Match the divider style other inline-form rows have */
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 14px;
+    margin-top: 14px;
+  }
+  .apgo-cc-pdp__variation-title {
+    margin: 0 0 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);  /* light gray (matches option-name) */
+    letter-spacing: 0.02em;
+  }
+  .apgo-cc-pdp__variation-body {
+    font-size: 12px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.45); /* dim gray (matches option-current) */
+    white-space: normal;
+    word-break: break-word;
+  }
+
   /* Shipping info row: label on the left, stock status pushed to the right */
   .apgo-cc-pdp__shipping {
     display: flex;
@@ -3597,6 +3624,21 @@
           </div>
         </div>
 
+        {%- comment -%}
+          Variation block — pulled up from the Description tab area to live right under the
+          quantity stepper, per spec. Source: custom.variation metafield (newline_to_br for
+          line-broken content).
+        {%- endcomment -%}
+        {%- assign variation_inline_raw = product.metafields.custom.variation.value | default: '' | strip -%}
+        {%- if variation_inline_raw != blank -%}
+          <section class="apgo-cc-pdp__variation" aria-labelledby="apgo-cc-variation-title-{{ section.id }}">
+            <h4 class="apgo-cc-pdp__variation-title" id="apgo-cc-variation-title-{{ section.id }}">
+              {{ 'product.variation' | t }}
+            </h4>
+            <div class="apgo-cc-pdp__variation-body">{{ variation_inline_raw | escape | newline_to_br }}</div>
+          </section>
+        {%- endif -%}
+
         {%- comment -%} Shipping info row: "<label> · ● In stock / Out of stock". {%- endcomment -%}
         {%- if section.settings.show_shipping -%}
           <div class="apgo-cc-pdp__shipping">
@@ -3828,20 +3870,13 @@
               </div>
             {% endif %}
 
-            {% if var_has %}
-              {% if gallery_has or lead_has_text %}
-                <hr class="apgo-looping-desc-divider" aria-hidden="true">
-              {% endif %}
-              <section
-                class="apgo-looping-desc-block apgo-looping-desc-block--variation"
-                aria-labelledby="apgo-lead-variation-{{ section.id }}"
-              >
-                <h5 class="apgo-looping-desc-block-title" id="apgo-lead-variation-{{ section.id }}">
-                  {{ 'product.variation' | t }}
-                </h5>
-                <div class="apgo-looping-desc-block-body">{{ variation_raw | escape | newline_to_br }}</div>
-              </section>
-            {% endif %}
+            {%- comment -%}
+              Variation block previously rendered here was moved into the inline picker
+              (right under the Quantity stepper) so the spec list sits closer to the price
+              and variant chips. Keep var_has computation upstream untouched in case other
+              conditionals depend on it, but no longer render the block in the looping
+              description area.
+            {%- endcomment -%}
           </div>
         </div>
       </div>
