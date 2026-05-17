@@ -65,27 +65,50 @@
     }
   }
 
-  /* Reuse the existing global #apgo-cart-toast pill (style from
-     snippets/apgo-cart-toast.liquid, same visual as the collection page
-     quick-add feedback) so success notifications are visually consistent
-     across the whole storefront. data-visible toggle drives the animation. */
-  function showToast(msg) {
-    var el = document.getElementById('apgo-cart-toast');
-    if (!el) {
-      el = document.createElement('div');
-      el.id = 'apgo-cart-toast';
-      el.className = 'apgo-cart-toast';
-      el.setAttribute('role', 'status');
-      el.setAttribute('aria-live', 'polite');
-      document.body.appendChild(el);
-    }
-    el.textContent = msg;
-    el.dataset.visible = 'true';
-    clearTimeout(el._apgoCcHide);
-    el._apgoCcHide = setTimeout(function () {
-      delete el.dataset.visible;
-    }, 2800);
+  function escapeHtml(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
+
+  /* Rich success toast: checkmark + product title + sub line + View Cart pill + close button.
+     Visual: snippets/apgo-cart-toast.liquid (.apgo-cart-success-toast*).
+     Same component the collection-page quick-add uses, so PDP buybar feedback
+     looks identical across the storefront. */
+  function showSuccessToast(title, sub) {
+    /* Tear down any previous instance so re-triggers don't stack */
+    document.querySelectorAll('.apgo-cart-success-toast').forEach(function (n) { n.remove(); });
+
+    var el = document.createElement('div');
+    el.className = 'apgo-cart-success-toast';
+    el.setAttribute('role', 'status');
+    el.setAttribute('aria-live', 'polite');
+    el.innerHTML = ''
+      + '<span class="apgo-cart-success-toast__check" aria-hidden="true">'
+      + '  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.25 4.75L6.5 12.25L2.75 8.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+      + '</span>'
+      + '<div class="apgo-cart-success-toast__body">'
+      + '  <span class="apgo-cart-success-toast__title">' + escapeHtml(title) + '</span>'
+      + '  <span class="apgo-cart-success-toast__sub">' + escapeHtml(sub) + '</span>'
+      + '</div>'
+      + '<a href="/cart" class="apgo-cart-success-toast__cta">View Cart</a>'
+      + '<button type="button" class="apgo-cart-success-toast__close" aria-label="Close">'
+      + '  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L11 11M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>'
+      + '</button>';
+
+    el.querySelector('.apgo-cart-success-toast__close').addEventListener('click', function () { el.remove(); });
+    document.body.appendChild(el);
+    requestAnimationFrame(function () { el.classList.add('apgo-cart-success-toast--visible'); });
+    setTimeout(function () {
+      el.classList.remove('apgo-cart-success-toast--visible');
+      setTimeout(function () { el.remove(); }, 380);
+    }, 4200);
+  }
+
+  /* Back-compat shim: existing call sites used showToast(msg). When called
+     with a single string we treat it as the title row and leave the sub blank.
+     For the success path we now prefer showSuccessToast(productTitle, sub). */
+  function showToast(msg) { showSuccessToast(msg, ''); }
 
   // ---------- Open / close sheet ----------
   function open() {
@@ -315,7 +338,13 @@
             }).catch(function () {});
           } catch (_) {}
 
-          showToast('✓ Added to cart');
+          /* Build a friendly title + sub line for the rich toast.
+             Pull the product title from the inline picker form's hidden state
+             or the PDP H1 so the toast actually names the item that was added. */
+          var pdpTitleEl = document.querySelector('.apgo-product-name')
+                          || document.querySelector('.apgo-cc-pdp__title');
+          var titleText = (pdpTitleEl && pdpTitleEl.textContent.trim()) || 'Item added';
+          showSuccessToast(titleText, 'Added to cart');
           addBtn.disabled = false;
           addBtn.textContent = orig;
 
