@@ -2930,6 +2930,67 @@
     }
   }
 
+  /*
+    Desktop 2-col layout for the v3 PDP top region:
+      [ gallery + thumbnails + title + performance metrics ]   [ buy col ]
+    On mobile the layout stays single-column (no grid applied).
+    Triggers from ≥1024px so tablets keep the single column.
+    Uses display:contents on .apgo-product-info so its children (header, perf,
+    variation, etc.) become direct grid children alongside .apgo-cc-pdp__buy-col;
+    that way we don't have to physically hoist the title or metrics out of the
+    info wrapper. .apgo-cc-pdp__buy-col is assigned to grid-column 2 and spans
+    multiple rows so it sits to the right of the whole left stack.
+  */
+  @media (min-width: 1024px) {
+    body:not(.apgo-pdp-variant-sidebar-open) .apgo-main-container {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+      column-gap: 36px;
+      align-items: start;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+      padding-inline: 24px;
+    }
+
+    /* Hero gallery + thumbnails: col 1 */
+    body:not(.apgo-pdp-variant-sidebar-open) .apgo-main-container > .apgo-hero-visual,
+    body:not(.apgo-pdp-variant-sidebar-open) .apgo-main-container > .apgo-product-thumbnails {
+      grid-column: 1;
+    }
+
+    /* Let .apgo-product-info's children participate directly in the parent grid */
+    body:not(.apgo-pdp-variant-sidebar-open) .apgo-main-container > .apgo-product-info {
+      display: contents;
+    }
+
+    /* Title + performance metrics + any other .apgo-product-info children default to col 1 */
+    body:not(.apgo-pdp-variant-sidebar-open) .apgo-product-header,
+    body:not(.apgo-pdp-variant-sidebar-open) .apgo-performance-metrics {
+      grid-column: 1;
+    }
+
+    /* The Car Care buy panel: col 2, sticks to the top of the left stack and stays put while scrolling. */
+    body:not(.apgo-pdp-variant-sidebar-open) .apgo-cc-pdp__buy-col {
+      grid-column: 2;
+      grid-row: 1 / span 20;
+      align-self: start;
+      position: sticky;
+      top: calc(var(--apgo-pdp-tabs-sticky-top, 100px) + 12px);
+      padding: 24px;
+      background: rgba(0, 0, 0, 0.35);
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    /* Everything that appears AFTER .apgo-product-info should span full width */
+    body:not(.apgo-pdp-variant-sidebar-open) .apgo-main-container > section:not(.apgo-hero-visual):not(.apgo-product-thumbnails):not(.apgo-product-info),
+    body:not(.apgo-pdp-variant-sidebar-open) .apgo-main-container > .apgo-pdp-looping-lead,
+    body:not(.apgo-pdp-variant-sidebar-open) .apgo-main-container > .apgo-pdp-tabs {
+      grid-column: 1 / -1;
+    }
+  }
+
   /* =============================================================
      Car Care Inline Price / Variant / Qty / Shipping / CTA (Block A)
      - Uses our theme tokens (--primary-orange, --dark-bg).
@@ -3553,6 +3614,14 @@
       {%- assign save_amount = product.compare_at_price | minus: product.price -%}
 
       {%- comment -%}
+        Buy column wrapper — groups price card + promos + form + variants JSON so the
+        desktop 2-col grid can pull this entire block to the right (col 2) while leaving
+        the gallery + thumbs + title on the left. On mobile this wrapper is just a passive
+        block (display:contents-equivalent), no styles applied.
+      {%- endcomment -%}
+      <div class="apgo-cc-pdp__buy-col">
+
+      {%- comment -%}
         Price card — boxed style with orange left border on sale; plain large on regular.
         data-cents attributes carry raw cents so the inline JS can re-render via Intl.NumberFormat
         using the active market currency (Liquid's `| money` defaults to shop currency, which can
@@ -3667,6 +3736,8 @@
       <script type="application/json" data-apgo-cc-variants>
         {{ product.variants | json }}
       </script>
+
+      </div>{%- comment -%} / .apgo-cc-pdp__buy-col {%- endcomment -%}
 
       {% if product.metafields.apgo.performance_metrics.value %}
         <div class="apgo-performance-metrics">
