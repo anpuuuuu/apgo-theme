@@ -360,10 +360,47 @@
     });
   }
 
-  // ---------- 立即購買 → /cart (not /checkout) ----------
+  /*
+    Buy now → POST /cart/add.js with the currently selected variant, then
+    redirect to /cart. Mirrors the inline PDP form's Buy now behaviour so
+    visitors who tap Buy now from the buybar still get the item added.
+    Previously this button only navigated, skipping the add — meaning
+    customers landed on an empty cart unless they had already pressed Add.
+  */
   if (checkoutBtn) {
     checkoutBtn.addEventListener('click', function () {
-      window.location.href = '/cart';
+      if (checkoutBtn.disabled) return;
+      var fd = buildAddPayload();
+      if (!fd) {
+        showToast('Please select a variant first', false);
+        return;
+      }
+
+      var orig = checkoutBtn.textContent;
+      checkoutBtn.disabled = true;
+      checkoutBtn.textContent = 'Adding…';
+
+      fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Accept': 'application/json' },
+        body: fd
+      })
+        .then(function (r) {
+          return r.json().then(function (data) {
+            if (!r.ok) return Promise.reject(data);
+            return data;
+          });
+        })
+        .then(function () {
+          window.location.href = '/cart';
+        })
+        .catch(function (err) {
+          console.error('[apgo-cc-buybar] buy-now add failed:', err);
+          var msg = (err && err.description) || (err && err.message) || 'Failed to add. Please try again.';
+          showToast(msg, false);
+          checkoutBtn.disabled = false;
+          checkoutBtn.textContent = orig;
+        });
     });
   }
 })();
