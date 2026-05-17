@@ -3793,32 +3793,20 @@
         {%- endcomment -%}
         {%- assign variation_inline_raw = product.metafields.custom.variation.value | default: '' | strip -%}
         {%- if variation_inline_raw != blank -%}
-          {%- assign variation_html = variation_inline_raw | escape | newline_to_br | strip -%}
-          {%- assign variation_sections = variation_html | split: '<br /><br />' -%}
-
           <section class="apgo-cc-pdp__variation" aria-labelledby="apgo-cc-variation-title-{{ section.id }}">
             <h4 class="apgo-cc-pdp__variation-title" id="apgo-cc-variation-title-{{ section.id }}">
               {{ 'product.variation' | t }}
             </h4>
 
-            {%- if variation_sections.size > 1 -%}
-              <div class="apgo-cc-pdp__variation-sections" data-apgo-cc-variation-sections>
-                {%- for sec in variation_sections -%}
-                  {%- assign sec_stripped = sec | strip -%}
-                  {%- if sec_stripped != blank -%}
-                    {%- assign first_line = sec_stripped | split: '<br />' | first | strip -%}
-                    <div
-                      class="apgo-cc-pdp__variation-section apgo-cc-pdp__variation-body"
-                      data-variant-key="{{ first_line | downcase | escape }}"
-                      hidden
-                    >{{ sec_stripped }}</div>
-                  {%- endif -%}
-                {%- endfor -%}
-              </div>
-            {%- else -%}
-              {%- comment -%} No blank-line splitter found → keep single-body behaviour {%- endcomment -%}
-              <div class="apgo-cc-pdp__variation-body">{{ variation_html }}</div>
-            {%- endif -%}
+            {%- comment -%}
+              Raw metafield text emitted as JSON so JS can apply a robust
+              blank-line split regex (Liquid's `split` is exact-string only
+              and can't handle '\n  \n' / '\r\n' / trailing-space variations).
+              JS builds the per-variant sections at boot.
+            {%- endcomment -%}
+            <script type="application/json" data-apgo-cc-variation-source>{{ variation_inline_raw | json }}</script>
+
+            <div class="apgo-cc-pdp__variation-sections" data-apgo-cc-variation-sections></div>
           </section>
         {%- endif -%}
 
@@ -6056,6 +6044,47 @@ document.addEventListener('DOMContentLoaded', function() {
       if (cur && checked) cur.textContent = checked.value;
     });
   }
+
+  /*
+    Build per-variant sections from the raw metafield text emitted as JSON
+    in a <script type="application/json" data-apgo-cc-variation-source>.
+    Splitting in JS (regex /\n\s*\n/) is more forgiving than Liquid's exact
+    `split: '<br /><br />'`, which can miss blank-line separators that have
+    trailing whitespace or use CRLF line endings.
+    Runs once at boot, before the first refreshVariant() call.
+  */
+  function escapeHtmlText(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+  function buildVariationSections() {
+    var sourceEl = document.querySelector('[data-apgo-cc-variation-source]');
+    var sectionsRoot = document.querySelector('[data-apgo-cc-variation-sections]');
+    if (!sourceEl || !sectionsRoot) return;
+    if (sectionsRoot.children.length > 0) return; /* already built */
+    var raw;
+    try { raw = JSON.parse(sourceEl.textContent); } catch (e) { return; }
+    if (typeof raw !== 'string' || !raw.trim()) return;
+
+    /* Normalise line endings, split on blank lines (any whitespace allowed) */
+    var normalised = raw.replace(/\r\n?/g, '\n').trim();
+    var rawSections = normalised.split(/\n\s*\n/);
+
+    rawSections.forEach(function (sec) {
+      var trimmed = sec.trim();
+      if (!trimmed) return;
+      var firstLine = trimmed.split('\n')[0].trim();
+      var div = document.createElement('div');
+      div.className = 'apgo-cc-pdp__variation-section apgo-cc-pdp__variation-body';
+      div.setAttribute('data-variant-key', firstLine.toLowerCase());
+      div.hidden = true;
+      /* HTML-escape, then convert \n → <br/> for visual line breaks */
+      div.innerHTML = escapeHtmlText(trimmed).replace(/\n/g, '<br/>');
+      sectionsRoot.appendChild(div);
+    });
+  }
+  buildVariationSections();
 
   function refreshVariant() {
     var opts = currentOptionValues();
