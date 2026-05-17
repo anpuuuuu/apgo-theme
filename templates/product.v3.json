@@ -15,7 +15,8 @@
       "settings": {
         "show_particles": true,
         "subtitle_fallback": "",
-        "show_bottom_bar": true
+        "show_bottom_bar": true,
+        "show_thumbnails": false
       }
     }
   },
