@@ -3726,7 +3726,14 @@
         {%- for option in product.options_with_values -%}
           <div class="apgo-cc-pdp__option-group" data-apgo-cc-option-group data-option-position="{{ option.position }}">
             <div class="apgo-cc-pdp__option-label">
-              <span class="apgo-cc-pdp__option-name">{{ option.name }}</span>
+              {%- comment -%}
+                Hardcode "Variations" instead of {{ option.name }} so the label
+                stays consistent regardless of whatever the admin named the
+                option in Shopify (e.g. "Atomic Coating" / "Style" / "Bundle Type").
+                If we ever need multi-option products to distinguish their groups,
+                fall back to option.name for groups beyond the first.
+              {%- endcomment -%}
+              <span class="apgo-cc-pdp__option-name">{% if forloop.first %}Variations{% else %}{{ option.name }}{% endif %}</span>
               <span class="apgo-cc-pdp__option-current" data-apgo-cc-option-current>{{ option.selected_value }}</span>
             </div>
             <div class="apgo-cc-pdp__option-chips">
