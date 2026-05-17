@@ -460,7 +460,6 @@
     text-align: center;
     margin-bottom: 24px;
     padding-bottom: 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .apgo-product-name {
@@ -2947,8 +2946,10 @@
       grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
       column-gap: 36px;
       align-items: start;
-      /* full width on desktop — no 1200px cap. Only side padding. */
-      max-width: none;
+      /* Cap at 1200px (~2/3 of typical desktop viewport) and centre */
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
       padding-inline: 24px;
     }
 
