@@ -697,11 +697,23 @@
   }
 
   .apgo-tab-panel {
-    padding: 4px 0 8px;
+    /* Continuous-scroll mode: all panels visible. scroll-margin-top gives
+       smooth-scroll anchor breathing room so the tab bar doesn't cover the
+       top of the panel when a tab is clicked. */
+    scroll-margin-top: calc(var(--apgo-pdp-tabs-sticky-top, 100px) + 60px);
+    padding: 16px 0 32px;
+    /* Faint divider between panels so the boundary is visible on scroll */
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
   }
+  .apgo-tab-panel:first-of-type { border-top: none; }
 
+  /*
+    Continuous-scroll mode means we no longer use [hidden] to switch tabs.
+    Keep the rule but as a no-op (display: revert) so any leftover hidden
+    attribute doesn't actually conceal a panel.
+  */
   .apgo-tab-panel[hidden] {
-    display: none !important;
+    display: revert;
   }
 
   .apgo-tab-desc-layout {
@@ -5839,55 +5851,110 @@ document.addEventListener('DOMContentLoaded', function() {
     if (apgoMarqueeEl) new ResizeObserver(apgoUpdateTabsStickyTop).observe(apgoMarqueeEl);
   }
 
+  /*
+    Continuous-scroll tab UX:
+      - All tab panels stay visible at all times (no more click-to-show/hide).
+      - User scrolls through panel content; when one finishes another begins.
+      - The sticky tab bar's active highlight follows whichever panel is
+        currently in the viewport (IntersectionObserver scrollspy).
+      - Clicking a tab smoothly scrolls to that panel, anchoring its top just
+        below the sticky stack (header + marquee + tab bar).
+    Implementation detail:
+      - Remove the `hidden` attribute Liquid emitted on non-default panels so
+        they all render.
+      - getStickyOffset() = sticky stack height (--apgo-pdp-tabs-sticky-top)
+        + tab-bar height (tablist-wrap offsetHeight). Used both for scroll
+        offset on tab click and as the IntersectionObserver's rootMargin top.
+      - scrollspy: pick the panel whose top is closest to (but not past) the
+        sticky bottom edge. We listen to scroll + use IntersectionObserver to
+        cheaply detect when a panel becomes the "currently reading" one.
+  */
   document.querySelectorAll('[data-apgo-pdp-tabs-root]').forEach(function (root) {
-    var tabs = root.querySelectorAll('[role="tab"]');
-    var activate = function (tabBtn) {
-      var panelId = tabBtn.getAttribute('aria-controls');
-      if (!panelId) return;
+    var tabs = Array.prototype.slice.call(root.querySelectorAll('[role="tab"]'));
+    var panels = Array.prototype.slice.call(root.querySelectorAll('[role="tabpanel"]'));
+
+    /* Step 1: reveal every panel so they stack vertically */
+    panels.forEach(function (p) { p.removeAttribute('hidden'); });
+
+    function getStickyOffset() {
+      var stickyTop = parseFloat(
+        getComputedStyle(document.body).getPropertyValue('--apgo-pdp-tabs-sticky-top')
+      ) || 0;
+      var bar = document.querySelector('.apgo-pdp-tablist-wrap');
+      var barH = bar ? bar.getBoundingClientRect().height : 0;
+      return stickyTop + barH;
+    }
+
+    function setActive(tabBtn) {
       tabs.forEach(function (t) {
         var sel = t === tabBtn;
         t.setAttribute('aria-selected', sel ? 'true' : 'false');
         t.setAttribute('tabindex', sel ? '0' : '-1');
       });
-      root.querySelectorAll('[role="tabpanel"]').forEach(function (p) {
-        if (p.id === panelId) p.removeAttribute('hidden');
-        else p.setAttribute('hidden', '');
-      });
+    }
 
-      /*
-        Sticky 校正：若 tab 列已經（或即將）黏在吸頂棧下方，切換到較短的 panel 後
-        頁面可能會出現「往下露白」的視覺異常。此時把頁面捲回讓 tab 列剛好貼著吸頂棧底緣。
-        阈值不用 0，要用吸頂棧高度。
-      */
-      var stickyTop = parseFloat(
-        getComputedStyle(document.body).getPropertyValue('--apgo-pdp-tabs-sticky-top')
-      ) || 0;
-      var rect = root.getBoundingClientRect();
-      if (rect.top < stickyTop) {
-        window.scrollTo({
-          top: window.scrollY + rect.top - stickyTop,
-          behavior: 'instant'
-        });
-      }
-    };
-    tabs.forEach(function (tab) {
-      tab.addEventListener('click', function () {
-        activate(tab);
+    function activateAndScroll(tabBtn) {
+      var panelId = tabBtn.getAttribute('aria-controls');
+      if (!panelId) return;
+      var panel = document.getElementById(panelId);
+      if (!panel) return;
+      setActive(tabBtn);
+      var offset = getStickyOffset();
+      var rect = panel.getBoundingClientRect();
+      window.scrollTo({
+        top: window.scrollY + rect.top - offset - 8,
+        behavior: 'smooth'
       });
+    }
+
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () { activateAndScroll(tab); });
       tab.addEventListener('keydown', function (e) {
-        var list = Array.prototype.slice.call(tabs);
-        var i = list.indexOf(tab);
+        var i = tabs.indexOf(tab);
         var next = null;
-        if (e.key === 'ArrowRight') next = list[(i + 1) % list.length];
-        else if (e.key === 'ArrowLeft') next = list[(i - 1 + list.length) % list.length];
-        else if (e.key === 'Home') next = list[0];
-        else if (e.key === 'End') next = list[list.length - 1];
+        if (e.key === 'ArrowRight') next = tabs[(i + 1) % tabs.length];
+        else if (e.key === 'ArrowLeft') next = tabs[(i - 1 + tabs.length) % tabs.length];
+        else if (e.key === 'Home') next = tabs[0];
+        else if (e.key === 'End') next = tabs[tabs.length - 1];
         else return;
         e.preventDefault();
         next.focus();
-        activate(next);
+        activateAndScroll(next);
       });
     });
+
+    /*
+      Scrollspy: as the user scrolls, find the panel whose top edge is just
+      below the sticky bottom (i.e. the one currently being read) and mark
+      its tab active. Throttled with rAF to keep cheap.
+    */
+    var ticking = false;
+    function syncActiveFromScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () {
+        ticking = false;
+        var offset = getStickyOffset() + 4;
+        var activeIdx = 0;
+        for (var i = 0; i < panels.length; i++) {
+          var top = panels[i].getBoundingClientRect().top;
+          if (top - offset <= 0) {
+            activeIdx = i;
+          } else {
+            break;
+          }
+        }
+        var matchingTab = tabs.find(function (t) {
+          return t.getAttribute('aria-controls') === panels[activeIdx].id;
+        });
+        if (matchingTab && matchingTab.getAttribute('aria-selected') !== 'true') {
+          setActive(matchingTab);
+        }
+      });
+    }
+    window.addEventListener('scroll', syncActiveFromScroll, { passive: true });
+    window.addEventListener('resize', syncActiveFromScroll);
+    syncActiveFromScroll();
   });
   
   // 點擊燈箱背景關閉
