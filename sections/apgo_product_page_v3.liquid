@@ -3745,17 +3745,62 @@
         </div>
 
         {%- comment -%}
-          Variation block — pulled up from the Description tab area to live right under the
-          quantity stepper, per spec. Source: custom.variation metafield (newline_to_br for
-          line-broken content).
+          Variation block — variant-aware.
+          Source: product.metafields.custom.variation. Admin writes each
+          variant's bundle contents separated by a BLANK LINE, e.g.:
+
+            Atomic Sealing Bottle
+            Bundle includes:
+            ✅ Atomic Coating ×1
+            ✅ Coating Cloth ×1
+                                    ← blank line splits sections
+            Atomic Sealing Bundle
+            Bundle includes:
+            ✅ Atomic Coating ×1
+            ...
+
+          Pipeline:
+            1. escape → newline_to_br: turn raw text into HTML-safe markup
+               where each \n becomes <br />, so two consecutive newlines
+               (blank line) become <br /><br />.
+            2. split on <br /><br /> → array of per-variant section strings.
+            3. For each section, the first line (before any <br />) is the
+               variant key. Stored on data-variant-key (lowercased).
+            4. All sections rendered into the DOM with `hidden` attribute.
+               apgo_product_page_v3 inline JS reads v.title and toggles
+               `hidden` so only the matching section is visible at a time.
+
+          Fallback: if the metafield has no blank lines (single section),
+          render exactly as before — the whole body shows for every variant.
         {%- endcomment -%}
         {%- assign variation_inline_raw = product.metafields.custom.variation.value | default: '' | strip -%}
         {%- if variation_inline_raw != blank -%}
+          {%- assign variation_html = variation_inline_raw | escape | newline_to_br | strip -%}
+          {%- assign variation_sections = variation_html | split: '<br /><br />' -%}
+
           <section class="apgo-cc-pdp__variation" aria-labelledby="apgo-cc-variation-title-{{ section.id }}">
             <h4 class="apgo-cc-pdp__variation-title" id="apgo-cc-variation-title-{{ section.id }}">
               {{ 'product.variation' | t }}
             </h4>
-            <div class="apgo-cc-pdp__variation-body">{{ variation_inline_raw | escape | newline_to_br }}</div>
+
+            {%- if variation_sections.size > 1 -%}
+              <div class="apgo-cc-pdp__variation-sections" data-apgo-cc-variation-sections>
+                {%- for sec in variation_sections -%}
+                  {%- assign sec_stripped = sec | strip -%}
+                  {%- if sec_stripped != blank -%}
+                    {%- assign first_line = sec_stripped | split: '<br />' | first | strip -%}
+                    <div
+                      class="apgo-cc-pdp__variation-section apgo-cc-pdp__variation-body"
+                      data-variant-key="{{ first_line | downcase | escape }}"
+                      hidden
+                    >{{ sec_stripped }}</div>
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+            {%- else -%}
+              {%- comment -%} No blank-line splitter found → keep single-body behaviour {%- endcomment -%}
+              <div class="apgo-cc-pdp__variation-body">{{ variation_html }}</div>
+            {%- endif -%}
           </section>
         {%- endif -%}
 
@@ -6045,6 +6090,29 @@ document.addEventListener('DOMContentLoaded', function() {
       document.querySelectorAll('.apgo-thumbnail-item').forEach(function (t, i) {
         t.classList.toggle('active', i === slideIdx);
       });
+    }
+
+    /*
+      Variant-aware Variation block. Each section's data-variant-key holds
+      the section's first line (lowercased). We show only the section whose
+      key overlaps the current variant's title (case-insensitive, two-way
+      contains so admin can write "Atomic Sealing Bottle (Single)" while
+      the variant title is "Atomic Sealing Bottle").
+      Safety net: if nothing matches, show every section so the visitor
+      isn't left with a blank Variation block — same behaviour as before.
+    */
+    var vTitle = (v.title || '').toLowerCase().trim();
+    var sectionsRoot = document.querySelector('[data-apgo-cc-variation-sections]');
+    if (sectionsRoot) {
+      var sections = sectionsRoot.querySelectorAll('.apgo-cc-pdp__variation-section');
+      var matched = false;
+      sections.forEach(function (s) {
+        var key = (s.getAttribute('data-variant-key') || '').toLowerCase().trim();
+        var show = !!vTitle && (key.indexOf(vTitle) !== -1 || vTitle.indexOf(key) !== -1);
+        if (show) matched = true;
+        s.hidden = !show;
+      });
+      if (!matched) sections.forEach(function (s) { s.hidden = false; });
     }
   }
 
