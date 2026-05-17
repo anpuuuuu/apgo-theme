@@ -6200,6 +6200,29 @@ document.addEventListener('DOMContentLoaded', function() {
   form.querySelectorAll('input[type="radio"][data-apgo-cc-option-input]').forEach(function (r) {
     r.addEventListener('change', refreshVariant);
   });
+  /*
+    Backup: bind click directly on the chip <label> too. Some browsers/CSS
+    combinations (pointer-events:none on the wrapped radio + opacity:0) can
+    fail to fire `change` on the input when the label is tapped, especially
+    on iOS. Catching the click here, manually flipping the radio's checked
+    state, then calling refreshVariant() guarantees the section actually
+    switches.
+  */
+  form.querySelectorAll('.apgo-cc-pdp__chip').forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      var input = chip.querySelector('input[type="radio"][data-apgo-cc-option-input]');
+      if (!input || input.checked) return;
+      /* Uncheck siblings in the same option group first */
+      var group = chip.closest('[data-apgo-cc-option-group]');
+      if (group) {
+        group.querySelectorAll('input[type="radio"][data-apgo-cc-option-input]').forEach(function (r) {
+          r.checked = false;
+        });
+      }
+      input.checked = true;
+      refreshVariant();
+    });
+  });
 
   /* Qty stepper */
   form.querySelectorAll('[data-apgo-cc-qty]').forEach(function (btn) {
