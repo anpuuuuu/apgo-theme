@@ -5893,12 +5893,25 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     }
 
+    /*
+      ignoreScrollspy: short window after a tab click during which the
+      scrollspy listener is suppressed so it doesn't wrongly snap active
+      back to the previous panel while the smooth-scroll animation is in
+      flight (the destination panel's top hasn't quite passed the sticky
+      edge yet during the easing, so scrollspy would otherwise pick the
+      previous panel until the very end of the animation).
+    */
+    var ignoreScrollspy = false;
+    var ignoreTimer = null;
     function activateAndScroll(tabBtn) {
       var panelId = tabBtn.getAttribute('aria-controls');
       if (!panelId) return;
       var panel = document.getElementById(panelId);
       if (!panel) return;
       setActive(tabBtn);
+      ignoreScrollspy = true;
+      clearTimeout(ignoreTimer);
+      ignoreTimer = setTimeout(function () { ignoreScrollspy = false; }, 800);
       var offset = getStickyOffset();
       var rect = panel.getBoundingClientRect();
       window.scrollTo({
@@ -5930,11 +5943,19 @@ document.addEventListener('DOMContentLoaded', function() {
     */
     var ticking = false;
     function syncActiveFromScroll() {
+      if (ignoreScrollspy) return; /* suppressed during click-driven smooth-scroll */
       if (ticking) return;
       ticking = true;
       requestAnimationFrame(function () {
         ticking = false;
-        var offset = getStickyOffset() + 4;
+        /*
+          Tolerance window: a panel counts as "active reading area" once
+          its top has crossed within 60px BELOW the sticky bottom edge.
+          Without tolerance, a freshly-scrolled-to panel (top ~8px below
+          sticky from scroll-margin + buffer) would fail the < 0 check
+          and the previous tab would stay highlighted.
+        */
+        var offset = getStickyOffset() + 60;
         var activeIdx = 0;
         for (var i = 0; i < panels.length; i++) {
           var top = panels[i].getBoundingClientRect().top;
