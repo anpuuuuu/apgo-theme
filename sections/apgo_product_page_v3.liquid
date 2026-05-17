@@ -3343,6 +3343,14 @@
     cursor: pointer;
     width: 100%;
   }
+  /*
+    When the mini-cart sheet is expanded, the sheet head already shows a
+    Close button + chip with the same item count + total, so the duplicate
+    "View cart" handle row below would be redundant. Hide it while open.
+  */
+  .apgo-cc-buybar.is-open .apgo-cc-buybar__top {
+    display: none;
+  }
   .apgo-cc-buybar__top-hint {
     display: inline-flex;
     align-items: center;
