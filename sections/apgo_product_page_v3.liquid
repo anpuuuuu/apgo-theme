@@ -2954,25 +2954,31 @@
     letter-spacing: 0.04em;
     text-transform: uppercase;
   }
+  /*
+    Two-row layout when on sale:
+      row 1: current price (left)  ............  save badge (right)
+      row 2: compare-at price strikethrough (left)
+    Using flex-wrap + order so we don't need a new wrapper element.
+    Current = order 1, Save = order 2 (margin-left:auto pushes right),
+    Compare = order 3 with flex-basis:100% forces a new line.
+  */
   .apgo-cc-pdp__price-bottom {
     display: flex;
     align-items: baseline;
     flex-wrap: wrap;
-    gap: 10px;
+    column-gap: 10px;
+    row-gap: 4px;
   }
   .apgo-cc-pdp__price-current {
+    order: 1;
     font-size: 26px;
     font-weight: 800;
     color: var(--primary-orange, #f08418);
     font-variant-numeric: tabular-nums;
     line-height: 1.1;
   }
-  .apgo-cc-pdp__price-compare {
-    font-size: 13px;
-    color: rgba(255, 255, 255, 0.35);
-    text-decoration: line-through;
-  }
   .apgo-cc-pdp__price-save {
+    order: 2;
     margin-left: auto;
     font-size: 11px;
     font-weight: 600;
@@ -2981,6 +2987,13 @@
     padding: 3px 9px;
     border-radius: 999px;
     white-space: nowrap;
+  }
+  .apgo-cc-pdp__price-compare {
+    order: 3;
+    flex-basis: 100%;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.35);
+    text-decoration: line-through;
   }
 
   /* Promo pills */
@@ -3115,7 +3128,7 @@
     margin: 0;
   }
 
-  /* Shipping info row */
+  /* Shipping info row: label on the left, stock status pushed to the right */
   .apgo-cc-pdp__shipping {
     display: flex;
     align-items: center;
@@ -3123,8 +3136,15 @@
     font-size: 12px;
     color: rgba(255, 255, 255, 0.55);
   }
-  .apgo-cc-pdp__shipping-sep { opacity: 0.4; }
-  .apgo-cc-pdp__shipping-stock { color: #8be39a; font-weight: 600; }
+  .apgo-cc-pdp__shipping-sep {
+    /* Hide the '·' divider — the two halves are now visually separated by spacing */
+    display: none;
+  }
+  .apgo-cc-pdp__shipping-stock {
+    margin-left: auto;
+    color: #8be39a;
+    font-weight: 600;
+  }
   .apgo-cc-pdp__shipping-stock--out { color: #ff9a9a; }
 
   /* CTA row */
