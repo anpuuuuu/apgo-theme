@@ -3394,12 +3394,17 @@
     cursor: not-allowed;
   }
 
-  /* Reusable toast (used by buybar add-to-cart feedback) */
+  /*
+    Reusable toast (used by buybar add-to-cart feedback).
+    Positioned at the TOP of the viewport so the mini-cart sheet sliding up
+    from the bottom (and the buybar itself) doesn't obscure the feedback.
+    safe-area-inset-top covers iPhone notches.
+  */
   .apgo-cc-toast {
     position: fixed;
     left: 50%;
-    bottom: calc(120px + env(safe-area-inset-bottom, 0px));
-    transform: translateX(-50%) translateY(20px);
+    top: calc(12px + env(safe-area-inset-top, 0px));
+    transform: translateX(-50%) translateY(-20px);
     background: rgba(20, 20, 20, 0.95);
     color: #fff;
     font-size: 13px;
