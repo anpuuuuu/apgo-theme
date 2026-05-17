@@ -62,7 +62,13 @@
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Microsoft JhengHei', sans-serif;
     background: var(--dark-bg);
     color: var(--text-white);
-    overflow-x: hidden;
+    /*
+      原本 overflow-x: hidden 會讓本元素變成 scroll container（y 軸自動計算為 auto），
+      內層 .apgo-pdp-tablist-wrap 的 position: sticky 會錯把本層當捲動祖先 → 黏不起來。
+      改用 overflow-x: clip：同樣裁掉橫向溢出，但不建立 scroll container，sticky 後代可以
+      正常以 viewport 為錨點。
+    */
+    overflow-x: clip;
     -ms-overflow-style: none; /* IE 和 Edge */
     scrollbar-width: none; /* Firefox */
     -webkit-font-smoothing: antialiased;
@@ -577,12 +583,15 @@
     background: var(--dark-bg);
     container-type: inline-size;
     container-name: apgo-pdp-tabs;
+    /* sticky 子元素必須能脫離本層；不能 hidden/clip/auto */
+    overflow: visible;
   }
 
   .apgo-pdp-tabs-inner {
     max-width: none;
     margin-left: auto;
     margin-right: auto;
+    overflow: visible;
   }
 
   @media (min-width: 769px) {
@@ -592,15 +601,16 @@
   }
 
   /*
-    Tab 列勿用 sticky：.apgo-product-section 為 overflow-x: hidden，許多環境會讓 sticky 與視窗對齊失準，
-    且 sticky + 整條不透明底會疊在全站馬燈（free-shipping-popup）之上（見該區 z-index）。
-    改為普通文流區塊，捲進頂區時馬燈層級高於區塊預設層級，馬燈不會再被一整條 Tab 底色蓋掉。
+    Sticky tab bar：黏在「整個吸頂棧（header-group + 跑馬燈）」下方。
+    --apgo-pdp-tabs-sticky-top 由本 section 末尾 JS 量測後寫到 body 上；fallback 100px。
+    z-index 用 layer-sticky - 2，低於 header (8) 與跑馬燈 (7)，避免 tab 底色蓋住跑馬燈。
   */
   .apgo-pdp-tablist-wrap {
-    position: static;
-    top: auto;
-    z-index: auto;
-    background: transparent;
+    position: -webkit-sticky;
+    position: sticky;
+    top: var(--apgo-pdp-tabs-sticky-top, 100px);
+    z-index: calc(var(--layer-sticky, 8) - 2);
+    background: var(--dark-bg);
     border-bottom: 1px solid rgba(240, 132, 24, 0.22);
     margin: 0 0 12px;
     padding: 6px 0 0;
@@ -4958,6 +4968,29 @@ document.addEventListener('DOMContentLoaded', function() {
   initThumbDragScroll();
   console.log('縮略圖拖拽初始化完成');
 
+  /*
+    量測「整個吸頂棧高度」= header-group 高度 + 跑馬燈高度，寫到 body 的
+    --apgo-pdp-tabs-sticky-top 上；.apgo-pdp-tablist-wrap 的 sticky top 直接讀此值。
+    觀察 marquee 尺寸變化（content/locale 切換）以及視窗縮放，自動更新。
+  */
+  function apgoUpdateTabsStickyTop() {
+    var hg = parseFloat(
+      getComputedStyle(document.body).getPropertyValue('--header-group-height')
+    ) || 0;
+    var marquee = document.getElementById('shopify-section-free-shipping-popup');
+    var marqueeH = marquee ? marquee.getBoundingClientRect().height : 0;
+    document.body.style.setProperty(
+      '--apgo-pdp-tabs-sticky-top',
+      (hg + marqueeH) + 'px'
+    );
+  }
+  apgoUpdateTabsStickyTop();
+  window.addEventListener('resize', apgoUpdateTabsStickyTop);
+  if (window.ResizeObserver) {
+    var apgoMarqueeEl = document.getElementById('shopify-section-free-shipping-popup');
+    if (apgoMarqueeEl) new ResizeObserver(apgoUpdateTabsStickyTop).observe(apgoMarqueeEl);
+  }
+
   document.querySelectorAll('[data-apgo-pdp-tabs-root]').forEach(function (root) {
     var tabs = root.querySelectorAll('[role="tab"]');
     var activate = function (tabBtn) {
@@ -4972,6 +5005,22 @@ document.addEventListener('DOMContentLoaded', function() {
         if (p.id === panelId) p.removeAttribute('hidden');
         else p.setAttribute('hidden', '');
       });
+
+      /*
+        Sticky 校正：若 tab 列已經（或即將）黏在吸頂棧下方，切換到較短的 panel 後
+        頁面可能會出現「往下露白」的視覺異常。此時把頁面捲回讓 tab 列剛好貼著吸頂棧底緣。
+        阈值不用 0，要用吸頂棧高度。
+      */
+      var stickyTop = parseFloat(
+        getComputedStyle(document.body).getPropertyValue('--apgo-pdp-tabs-sticky-top')
+      ) || 0;
+      var rect = root.getBoundingClientRect();
+      if (rect.top < stickyTop) {
+        window.scrollTo({
+          top: window.scrollY + rect.top - stickyTop,
+          behavior: 'instant'
+        });
+      }
     };
     tabs.forEach(function (tab) {
       tab.addEventListener('click', function () {
