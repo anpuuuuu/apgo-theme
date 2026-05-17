@@ -163,7 +163,12 @@
   */
   .apgo-hero-visual {
     position: relative;
+    /* Shrink the hero slightly so it doesn't dominate the viewport — leaves
+       breathing room on the sides on mobile. Centered. Square aspect ratio. */
     width: 100%;
+    max-width: 88vw;
+    margin-left: auto;
+    margin-right: auto;
     aspect-ratio: 1 / 1;
     background: transparent;
     overflow: hidden;
@@ -318,7 +323,9 @@
     on a typical product. Background blends into the page.
   */
   .apgo-product-thumbnails {
-    padding: 0;
+    /* Small breathing gap above the strip, no horizontal padding so the
+       container's own padding can center the row. */
+    padding: 10px 0 0;
     background: var(--dark-bg);
     margin: 0;
   }
@@ -326,7 +333,7 @@
   .apgo-thumbnails-container {
     display: flex;
     gap: 6px;
-    justify-content: flex-start;
+    justify-content: center;
     overflow-x: auto;
     padding: 0 12px;
     scroll-snap-type: x mandatory;
@@ -398,11 +405,10 @@
   }
 
   /*
-    --no-subtitle-below modifier no longer adds vertical padding; the strip
-    stays edge-to-edge regardless of subtitle presence.
+    --no-subtitle-below modifier — keep the same 10px top gap as the base rule.
   */
   .apgo-product-thumbnails.apgo-product-thumbnails--no-subtitle-below {
-    padding-bottom: 0;
+    padding: 10px 0 0;
     margin-bottom: 0;
   }
 
@@ -426,14 +432,13 @@
 
   /* 手機優化 */
   @media (max-width: 768px) {
-    /* Keep the strip edge-to-edge with no vertical padding on mobile too —
-       previous overrides re-introduced the band we just removed. */
+    /* Mobile mirrors the base: 10px top breathing gap, center-aligned strip. */
     .apgo-product-thumbnails {
-      padding: 0;
+      padding: 10px 0 0;
     }
 
     .apgo-product-thumbnails.apgo-product-thumbnails--no-subtitle-below {
-      padding: 0;
+      padding: 10px 0 0;
       margin-bottom: 0;
     }
 
@@ -449,6 +454,7 @@
     .apgo-thumbnails-container {
       gap: 6px;
       padding: 0 12px;
+      justify-content: center;
     }
 
     .apgo-thumbnail-item {
