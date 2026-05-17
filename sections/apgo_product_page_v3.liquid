@@ -464,13 +464,20 @@
   }
 
   .apgo-product-name {
-    font-size: 2rem;
+    font-size: 1.35rem;
+    line-height: 1.25;
     font-weight: bold;
     background: linear-gradient(45deg, var(--primary-orange), var(--secondary-orange));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     margin-bottom: 8px;
+  }
+
+  @media (min-width: 769px) {
+    .apgo-product-name {
+      font-size: 1.6rem;
+    }
   }
 
   .apgo-product-metafield-subtitle {
@@ -611,7 +618,8 @@
     top: var(--apgo-pdp-tabs-sticky-top, 100px);
     z-index: calc(var(--layer-sticky, 8) - 2);
     background: var(--dark-bg);
-    border-bottom: 1px solid rgba(240, 132, 24, 0.22);
+    /* 加粗 + 提高不透明度，讓 tab 列下緣的橘線清楚分隔下方內容 */
+    border-bottom: 2px solid var(--primary-orange);
     margin: 0 0 12px;
     padding: 6px 0 0;
   }
