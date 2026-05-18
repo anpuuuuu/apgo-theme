@@ -3281,7 +3281,24 @@
     that the body class otherwise applies. Hidden sections inherit the same
     colour but aren't shown anyway.
   */
+  /*
+    All variant sections are now always rendered. Default state is dimmed so
+    the non-active sections fade into the background; the active one gets
+    bumped to solid white via .is-active. Keeps the eye on the relevant
+    section without hiding the rest entirely.
+  */
   .apgo-cc-pdp__variation-section.apgo-cc-pdp__variation-body {
+    color: rgba(255, 255, 255, 0.35);
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  .apgo-cc-pdp__variation-section.apgo-cc-pdp__variation-body:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+  .apgo-cc-pdp__variation-section.apgo-cc-pdp__variation-body.is-active {
     color: rgba(255, 255, 255, 0.92);
   }
 
@@ -6193,7 +6210,8 @@ document.addEventListener('DOMContentLoaded', function() {
       var div = document.createElement('div');
       div.className = 'apgo-cc-pdp__variation-section apgo-cc-pdp__variation-body';
       div.setAttribute('data-variant-key', firstLine.toLowerCase());
-      div.hidden = true;
+      /* No longer hidden: every section is always visible. Active state is
+         a class toggle that bumps text colour up to white. */
       /* HTML-escape, then convert \n → <br/> for visual line breaks */
       div.innerHTML = escapeHtmlText(trimmed).replace(/\n/g, '<br/>');
       sectionsRoot.appendChild(div);
@@ -6273,7 +6291,7 @@ document.addEventListener('DOMContentLoaded', function() {
       );
       var variantIdx = variants.indexOf(v);
       var targetIdx = (variantIdx >= 0 && variantIdx < sections.length) ? variantIdx : 0;
-      sections.forEach(function (s, i) { s.hidden = (i !== targetIdx); });
+      sections.forEach(function (s, i) { s.classList.toggle('is-active', i === targetIdx); });
     }
   }
 
