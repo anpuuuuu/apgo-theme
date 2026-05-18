@@ -3977,8 +3977,20 @@
                 If we ever need multi-option products to distinguish their groups,
                 fall back to option.name for groups beyond the first.
               {%- endcomment -%}
-              <span class="apgo-cc-pdp__option-name">{% if forloop.first %}Variations{% else %}{{ option.name }}{% endif %}</span>
-              <span class="apgo-cc-pdp__option-current" data-apgo-cc-option-current>{{ option.selected_value }}</span>
+              {%- comment -%}
+                Inline picker label format: "Select option (N type)" where N is
+                the number of values in the first option group. The selected
+                value used to render here too but the chip itself shows active
+                state already, so the duplicated text is suppressed.
+              {%- endcomment -%}
+              <span class="apgo-cc-pdp__option-name">
+                {%- if forloop.first -%}
+                  Select option ({{ option.values.size }} type{% if option.values.size != 1 %}s{% endif %})
+                {%- else -%}
+                  {{ option.name }}
+                {%- endif -%}
+              </span>
+              <span class="apgo-cc-pdp__option-current" data-apgo-cc-option-current hidden></span>
             </div>
             <div class="apgo-cc-pdp__option-chips">
               {%- for value in option.values -%}
