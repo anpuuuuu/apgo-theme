@@ -27,23 +27,33 @@
   var ticking = false;
 
   function updateStackH() {
-    var hg = document.getElementById('header-group');
+    /*
+      #header-group is `display: contents` when the header is sticky, so its
+      own getBoundingClientRect returns 0×0 (no box). Sum the heights of its
+      direct .shopify-section children (the actual header shell + the
+      optional _blocks/secondary-menu shell), then add the marquee.
+    */
+    var hgH = 0;
+    document.querySelectorAll('#header-group > .shopify-section').forEach(function (el) {
+      hgH += el.getBoundingClientRect().height;
+    });
     var marquee = document.getElementById('shopify-section-free-shipping-popup');
-    /* getBoundingClientRect().height honours display:none (returns 0), and
-       gives sub-pixel precision so the slide-out lands cleanly. */
-    var h = (hg ? hg.getBoundingClientRect().height : 0) +
-            (marquee ? marquee.getBoundingClientRect().height : 0);
-    document.body.style.setProperty('--apgo-stack-h', h + 'px');
+    var marqueeH = marquee ? marquee.getBoundingClientRect().height : 0;
+    document.body.style.setProperty('--apgo-stack-h', (hgH + marqueeH) + 'px');
   }
   updateStackH();
   window.addEventListener('resize', updateStackH);
-  /* Marquee can change height when a market promo blurb appears/hides, or
-     when the user switches locale. Watch it. */
+  /*
+    Marquee + secondary-menu shells can change height when a market promo
+    blurb appears/hides, the user switches locale, or the page navigates to
+    /collections/all (secondary menu becomes visible). Observe everything.
+  */
   if (window.ResizeObserver) {
-    var hg = document.getElementById('header-group');
-    var marquee = document.getElementById('shopify-section-free-shipping-popup');
     var ro = new ResizeObserver(updateStackH);
-    if (hg) ro.observe(hg);
+    document.querySelectorAll('#header-group > .shopify-section').forEach(function (el) {
+      ro.observe(el);
+    });
+    var marquee = document.getElementById('shopify-section-free-shipping-popup');
     if (marquee) ro.observe(marquee);
   }
 

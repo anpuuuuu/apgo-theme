@@ -123,14 +123,20 @@
       height (header + secondary menu + marquee).
     {%- endcomment -%}
     <style id="apgo-scroll-hide-css">
-      #header-group > .shopify-section,
-      #shopify-section-free-shipping-popup {
-        transition: transform .28s cubic-bezier(0.22, 1, 0.36, 1);
-        will-change: transform;
-      }
-      body.apgo-scroll-hide #header-group > .shopify-section,
-      body.apgo-scroll-hide #shopify-section-free-shipping-popup {
-        transform: translateY(calc(-1 * var(--apgo-stack-h, 120px)));
+      /*
+        Mobile only (≤749px). Desktop keeps the always-pinned sticky header
+        + marquee that the user expects on larger viewports.
+      */
+      @media (max-width: 749px) {
+        #header-group > .shopify-section,
+        #shopify-section-free-shipping-popup {
+          transition: transform .28s cubic-bezier(0.22, 1, 0.36, 1);
+          will-change: transform;
+        }
+        body.apgo-scroll-hide #header-group > .shopify-section,
+        body.apgo-scroll-hide #shopify-section-free-shipping-popup {
+          transform: translateY(calc(-1 * var(--apgo-stack-h, 120px)));
+        }
       }
     </style>
     <script src="{{ 'apgo-scroll-hide.js' | asset_url }}" defer></script>
