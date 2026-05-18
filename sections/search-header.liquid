@@ -38,11 +38,11 @@
   .search-page__header [class*='heading'] h3 {
     position: relative !important;
     margin: 0 0 16px !important;
-    padding-left: 14px !important;
-    font-size: 18px !important;
+    padding-left: 16px !important;
+    font-size: clamp(20px, 3.4vw, 28px) !important;
     font-weight: 700 !important;
-    letter-spacing: 0.06em !important;
-    text-transform: uppercase !important;
+    letter-spacing: 0.02em !important;
+    text-transform: none !important;
     color: #ffffff !important;
   }
   .search-page__header > h1::before,
@@ -56,7 +56,7 @@
     top: 50%;
     transform: translateY(-50%);
     width: 4px !important;
-    height: 18px !important;
+    height: 65% !important;
     border-radius: 2px !important;
     background: linear-gradient(180deg, #f08418, #ff9a3c) !important;
   }

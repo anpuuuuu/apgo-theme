@@ -7,7 +7,7 @@
 
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
 <results-list
-  class="section product-grid-container spacing-style color-{{ section.settings.color_scheme }}"
+  class="section product-grid-container spacing-style color-{{ section.settings.color_scheme }} main-collection-zgrid apgo-search-results-root"
   style="--padding-block-start: {{ section.settings.padding-block-start }}px; --padding-block-end: {{ section.settings.padding-block-end }}px;"
   section-id="{{ section.id }}"
 >
@@ -118,17 +118,59 @@
     border-color: #f08418 !important;
   }
 
-  /* Product grid cards — soft dark card */
-  results-list .product-grid__item {
-    background: rgba(255, 255, 255, 0.025);
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    border-radius: 14px;
-    overflow: hidden;
-    transition: border-color .2s ease, transform .15s ease;
+  /* Product grid cards — match the main-collection z-grid treatment so
+     search results have the same polished look as the listing page.
+     Tokens mirror main-collection.liquid (--mc-z-card-bg / radius / shadow). */
+  results-list.main-collection-zgrid {
+    --mc-z-card-bg: #0f0f0f;
+    --mc-card-radius: 15px;
+    --mc-z-card-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.05),
+      0 10px 28px rgba(0, 0, 0, 0.35);
+    --mc-z-card-shadow-hover:
+      0 0 0 1px rgba(255, 255, 255, 0.09),
+      0 14px 36px rgba(0, 0, 0, 0.42);
   }
-  results-list .product-grid__item:hover {
-    border-color: rgba(240, 132, 24, 0.4);
-    transform: translateY(-2px);
+  results-list.main-collection-zgrid ul.product-grid {
+    align-items: stretch;
+  }
+  results-list.main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) {
+    box-sizing: border-box;
+    height: 100%;
+    background: var(--mc-z-card-bg);
+    border: none;
+    border-radius: var(--mc-card-radius);
+    box-shadow: var(--mc-z-card-shadow);
+    overflow: hidden;
+    position: relative;
+    transition: box-shadow .3s ease, transform .3s ease;
+  }
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    results-list.main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer):hover {
+      z-index: 2;
+      box-shadow: var(--mc-z-card-shadow-hover);
+      transform: translateY(-2px);
+    }
+  }
+  /* Card content (title / price area) sits on the same dark fill, no extra
+     border between the gallery and the text — matches the listing layout. */
+  results-list.main-collection-zgrid .product-grid__item product-card-link {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  results-list.main-collection-zgrid .product-grid__item .product-grid__card {
+    flex: 1 1 auto;
+    background: var(--mc-z-card-bg);
+    border-radius: var(--mc-card-radius);
+    color: rgba(245, 240, 230, 0.94);
+    gap: 10px;
+    padding: 0;
+  }
+  results-list.main-collection-zgrid .product-grid__item .product-grid__card > .group-block {
+    padding: 4px 12px 10px;
+    background: var(--mc-z-card-bg);
+    border-radius: 0 0 var(--mc-card-radius) var(--mc-card-radius);
   }
 
   /* Pagination */
