@@ -2950,10 +2950,19 @@
   -ms-touch-action: pan-y; /* 旧 Edge */
 }
 
-  /* 桌面：放大主視覺輪播（須放在檔末，避免被後面重複的 .apgo-product-showcase padding 蓋掉；手機維持 400px） */
+  /* 桌面：主視覺輪播 — 保持 1:1 並讓完整圖片可見（contain 不裁切） */
   @media (min-width: 769px) {
     .apgo-hero-visual {
-      height: min(56vh, 620px);
+      /* Inherit aspect-ratio: 1/1 from the base rule; cap so it doesn't dominate huge viewports. */
+      height: auto;
+      max-height: min(80vh, 720px);
+    }
+
+    /* On desktop the carousel dots can sit naturally below the photo —
+       show the entire image (contain) instead of cropping (cover) so
+       portrait/wide product shots aren't trimmed top/bottom. */
+    .apgo-product-image-main.is-cover {
+      object-fit: contain;
     }
 
     .apgo-product-showcase {
