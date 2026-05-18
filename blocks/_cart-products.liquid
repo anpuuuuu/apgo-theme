@@ -172,8 +172,13 @@
     border-radius: 14px !important;
     padding: 4px 12px !important;
   }
+  /* No divider line between items on any viewport. The snippet's default
+     adds border-bottom + my own previous override added border-top — kill
+     both. */
+  .cart-items--dividers .cart-items__table-row,
   .cart-items--dividers .cart-items__table-row + .cart-items__table-row {
-    border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+    border-top: 0 !important;
+    border-bottom: 0 !important;
   }
   .cart-items__table-row {
     padding-block: 14px !important;
