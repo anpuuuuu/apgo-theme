@@ -3180,6 +3180,35 @@
     color: var(--primary-orange, #f08418);
     font-weight: 600;
   }
+  /* "(N types)" tail of the label is dimmer/regular weight so the orange
+     "Select option" reads as the primary text. */
+  .apgo-cc-pdp__option-count {
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 400;
+    margin-left: 4px;
+  }
+
+  /* Variation block rendered inside the Description tab — full metafield, no
+     variant linking. The variant-aware sections still live (hidden) inside the
+     inline picker so the confirm modal can pull the active section's HTML. */
+  .apgo-tab-variation {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .apgo-tab-variation__title {
+    color: var(--primary-orange, #f08418);
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0 0 10px;
+    text-transform: none;
+  }
+  .apgo-tab-variation__body {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 14px;
+    line-height: 1.7;
+    white-space: normal;
+  }
   .apgo-cc-pdp__option-current {
     font-size: 11px;
     color: rgba(255, 255, 255, 0.45);
@@ -3554,10 +3583,15 @@
     border-top: 1px solid rgba(255, 255, 255, 0.06);
     background: #141414;
   }
-  /* Intent-based action visibility: only the button matching the buybar
-     button the user pressed is shown. The other stays in the DOM but hidden. */
+  /* Intent-based action visibility:
+       add  → only Add to cart
+       buy  → only Buy now
+       both → both buttons (variant area tap → user hasn't expressed intent yet) */
   .apgo-cc-confirm-modal[data-intent="add"] [data-apgo-cc-confirm-buy] { display: none; }
   .apgo-cc-confirm-modal[data-intent="buy"] [data-apgo-cc-confirm-add] { display: none; }
+  .apgo-cc-confirm-modal[data-intent="both"] .apgo-cc-confirm-modal__actions {
+    grid-template-columns: 1fr 1fr;
+  }
 
   body.apgo-cc-confirm-open {
     overflow: hidden;
@@ -3985,7 +4019,7 @@
               {%- endcomment -%}
               <span class="apgo-cc-pdp__option-name">
                 {%- if forloop.first -%}
-                  Select option ({{ option.values.size }} type{% if option.values.size != 1 %}s{% endif %})
+                  Select option <span class="apgo-cc-pdp__option-count">({{ option.values.size }} type{% if option.values.size != 1 %}s{% endif %})</span>
                 {%- else -%}
                   {{ option.name }}
                 {%- endif -%}
@@ -4055,7 +4089,12 @@
         {%- endcomment -%}
         {%- assign variation_inline_raw = product.metafields.custom.variation.value | default: '' | strip -%}
         {%- if variation_inline_raw != blank -%}
-          <section class="apgo-cc-pdp__variation" aria-labelledby="apgo-cc-variation-title-{{ section.id }}">
+          {%- comment -%}
+            Variant-aware sections are kept in the DOM but visually hidden — the
+            confirm modal still queries `.is-active` here as its data source. The
+            customer-facing variation block moved to the Description tab below.
+          {%- endcomment -%}
+          <section class="apgo-cc-pdp__variation apgo-cc-pdp__variation--hidden-data" aria-hidden="true" hidden>
             <h4 class="apgo-cc-pdp__variation-title" id="apgo-cc-variation-title-{{ section.id }}">
               {{ 'product.variation' | t }}
             </h4>
@@ -4570,6 +4609,19 @@
             {% else %}
               <div class="apgo-tab-pane-empty-slot" aria-hidden="true">&nbsp;</div>
             {% endif %}
+
+            {%- comment -%}
+              Static Variation block — renders the full product.metafields.custom.variation
+              metafield. No variant linking on this page (the per-variant split is preserved
+              for the confirm modal only, sourced from the hidden inline block above).
+            {%- endcomment -%}
+            {%- assign variation_desc_raw = product.metafields.custom.variation.value | default: '' | strip -%}
+            {%- if variation_desc_raw != blank -%}
+              <section class="apgo-tab-variation" aria-label="Variation contents">
+                <h4 class="apgo-tab-variation__title">{{ 'product.variation' | t }}</h4>
+                <div class="apgo-tab-variation__body">{{ variation_desc_raw | escape | newline_to_br }}</div>
+              </section>
+            {%- endif -%}
           </div>
 
           <div
@@ -6622,6 +6674,23 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
+  /*
+    Mobile-only: tapping anywhere inside the inline option-group (label or any
+    chip) opens the confirm modal with intent='both' so the user picks variant +
+    qty + commits via Add/Buy from the modal. Capture-phase + preventDefault to
+    swallow the click before the chip's own click handler / the radio's change
+    event fires, so the inline radio doesn't flip behind the user's back.
+    Desktop is untouched — the inline chips remain the direct selection control.
+  */
+  form.querySelectorAll('[data-apgo-cc-option-group]').forEach(function (g) {
+    g.addEventListener('click', function (e) {
+      if (!window.matchMedia || !window.matchMedia('(max-width: 1023px)').matches) return;
+      e.preventDefault();
+      e.stopPropagation();
+      if (typeof window.apgoOpenConfirmModal === 'function') window.apgoOpenConfirmModal('both');
+    }, true /* capture */);
+  });
+
   /* Qty stepper */
   form.querySelectorAll('[data-apgo-cc-qty]').forEach(function (btn) {
     btn.addEventListener('click', function () {
@@ -6879,9 +6948,15 @@ document.addEventListener('DOMContentLoaded', function() {
     /* Desktop uses inline CTA buttons in the form, not the modal. Guard here
        so any accidental call from buybar / API consumers no-ops on desktop. */
     if (window.matchMedia && window.matchMedia('(min-width: 1024px)').matches) return;
-    /* Default to 'add' if no intent passed. The CSS data-intent rule hides
-       the non-matching button so the actions row only shows the relevant CTA. */
-    confirmModal.setAttribute('data-intent', intent === 'buy' ? 'buy' : 'add');
+    /* Intent values:
+         'add'  → show only Add to cart
+         'buy'  → show only Buy now
+         'both' → show both buttons (used when the user taps the variant area)
+       The CSS rule hides the non-matching button via data-intent. */
+    var resolvedIntent = 'add';
+    if (intent === 'buy') resolvedIntent = 'buy';
+    else if (intent === 'both') resolvedIntent = 'both';
+    confirmModal.setAttribute('data-intent', resolvedIntent);
     syncConfirmModal();
     /* Seed modal qty from the hidden form qty (default 1) so it isn't a fresh value each time */
     if (confirmQtyInput && qtyInput) confirmQtyInput.value = parseInt(qtyInput.value, 10) || 1;
