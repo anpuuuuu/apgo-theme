@@ -278,12 +278,11 @@
     height: 100%;
     max-height: 100%;
     /*
-      Fill the square hero (no letterbox) so the swipe-dots indicator at
-      bottom:16px overlays the image edge instead of sitting in a black band
-      below it. Slight bottom cropping is acceptable for typical product
-      photos; if a future product needs full-frame, swap back to `contain`.
+      Show the FULL image (no cropping) so non-square product shots aren't
+      clipped on mobile. Container background is transparent so the letterbox
+      blends with the page. Desktop has its own hero rules.
     */
-    object-fit: cover;
+    object-fit: contain;
   }
 
   /* 產品標籤 */
