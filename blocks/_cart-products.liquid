@@ -133,6 +133,176 @@
   .cart-page__title + .cart-page__items {
     margin-block-start: var(--margin-lg);
   }
+
+  /* =========================================================
+     APGO Cart UI upgrade (2026-05) — inline so cascade order
+     guarantees this beats any earlier base.css / section stylesheet.
+     ========================================================= */
+  .cart-products-title {
+    color: #ffffff !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.06em !important;
+    text-transform: uppercase !important;
+    padding-left: 14px !important;
+  }
+  .cart-products-title::before {
+    width: 4px !important;
+    height: 16px !important;
+    border-radius: 2px !important;
+    background: linear-gradient(180deg, #f08418, #ff9a3c) !important;
+  }
+  .cart-products-action {
+    color: rgba(255, 255, 255, 0.7) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    background: transparent !important;
+  }
+  .cart-products-action:hover {
+    color: #f08418 !important;
+    border-color: #f08418 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+
+  /* Cart items wrap → dark card */
+  .cart-items {
+    background: rgba(255, 255, 255, 0.025) !important;
+    border: 1px solid rgba(255, 255, 255, 0.07) !important;
+    border-radius: 14px !important;
+    padding: 4px 12px !important;
+  }
+  .cart-items--dividers .cart-items__table-row + .cart-items__table-row {
+    border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+  }
+  .cart-items__table-row {
+    padding-block: 14px !important;
+  }
+
+  /* Product thumb */
+  .cart-items__media-container,
+  .cart-items__media {
+    border-radius: 10px !important;
+    overflow: hidden !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  }
+
+  /* Title + variant */
+  .cart-items__title,
+  .cart-items__title a {
+    color: rgba(255, 255, 255, 0.95) !important;
+    font-weight: 600 !important;
+    font-size: 15px !important;
+    line-height: 1.35 !important;
+    text-decoration: none !important;
+  }
+  .cart-items__title a:hover { color: #f08418 !important; }
+  .cart-items__variants,
+  .cart-items__variant,
+  .cart-items__bundle {
+    color: rgba(255, 255, 255, 0.55) !important;
+    font-size: 13px !important;
+  }
+
+  /* Inline price under title */
+  .cart-items__details .compare-at-price {
+    color: rgba(255, 255, 255, 0.35) !important;
+    text-decoration: line-through !important;
+    font-size: 13px !important;
+    margin-left: 4px !important;
+  }
+
+  /* Quantity stepper */
+  .cart-items__quantity quantity-input,
+  .cart-items__quantity .quantity-selector,
+  .cart-items__quantity {
+    background: rgba(0, 0, 0, 0.35) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 8px !important;
+    overflow: hidden !important;
+  }
+  .cart-items__quantity button,
+  .cart-items__quantity .quantity-selector__button {
+    background: transparent !important;
+    border: 0 !important;
+    color: rgba(255, 255, 255, 0.8) !important;
+    width: 32px !important;
+    height: 32px !important;
+  }
+  .cart-items__quantity button:hover,
+  .cart-items__quantity .quantity-selector__button:hover {
+    color: #f08418 !important;
+  }
+  .cart-items__quantity input,
+  .cart-items__quantity .quantity-selector__input {
+    background: transparent !important;
+    border: 0 !important;
+    color: #ffffff !important;
+    font-size: 14px !important;
+    text-align: center !important;
+    width: 38px !important;
+  }
+
+  /* Remove button */
+  .cart-items__remove {
+    color: rgba(255, 255, 255, 0.45) !important;
+    background: transparent !important;
+    border: 0 !important;
+    padding: 6px !important;
+    border-radius: 6px !important;
+  }
+  .cart-items__remove:hover {
+    color: #f08418 !important;
+    background: rgba(240, 132, 24, 0.08) !important;
+  }
+
+  /* Line-item price column */
+  .cart-items__price {
+    color: #f08418 !important;
+    font-weight: 700 !important;
+    font-size: 15px !important;
+  }
+  .cart-items__price .compare-at-price {
+    color: rgba(255, 255, 255, 0.4) !important;
+    font-weight: 400 !important;
+    font-size: 12px !important;
+    text-decoration: line-through !important;
+    margin-left: 6px !important;
+  }
+  .cart-items__price-unit {
+    color: rgba(255, 255, 255, 0.5) !important;
+    font-size: 12px !important;
+  }
+
+  /* Cart-page H1 + count chip (rendered by _cart-title block above) */
+  .cart-title,
+  .cart-page__title h1 {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+  }
+  .cart-title__count {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 28px !important;
+    height: 28px !important;
+    padding: 0 8px !important;
+    margin-left: 10px !important;
+    border-radius: 999px !important;
+    background: rgba(240, 132, 24, 0.15) !important;
+    color: #f08418 !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+  }
+
+  @media (max-width: 749px) {
+    .cart-items { padding: 0 10px !important; }
+    .cart-items__table-row { padding-block: 12px !important; }
+    .cart-items__title,
+    .cart-items__title a { font-size: 14px !important; }
+    .cart-items__price { font-size: 14px !important; }
+  }
 </style>
 
 <!-- 購物車商品標題 -->
