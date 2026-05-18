@@ -297,6 +297,20 @@
   }
 
   @media (max-width: 749px) {
+    /* Align the cart-items area's horizontal edge with the free-shipping
+       bar below. .cart-page__items adds its own padding-inline on top of
+       the section wrapper, so cards ended up inset from the section edge.
+       Zero out the inner paddings and let the cards sit flush with the
+       same edge the free-shipping bar uses. */
+    .cart-page__items,
+    .cart-page__title,
+    .cart-page__more-blocks {
+      padding-inline: 0 !important;
+    }
+    .cart-products-header {
+      padding: 0 !important;
+    }
+
     /* Outer card chrome off — each row is its own padded block */
     .cart-items {
       padding: 0 !important;
