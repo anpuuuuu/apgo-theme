@@ -6732,6 +6732,45 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   /* Shared add-to-cart logic for both buttons */
+  /*
+    Rich success toast — same visual as the buybar / collection quick-add
+    (.apgo-cart-success-toast, defined in snippets/apgo-cart-toast.liquid).
+    Mounted at the top of the page so the user gets immediate confirmation
+    after Add to cart on the PDP. Replaces any previous instance so rapid
+    re-clicks don't stack.
+  */
+  function showAddedToCartToast(title, sub) {
+    document.querySelectorAll('.apgo-cart-success-toast').forEach(function (n) { n.remove(); });
+    function esc(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+    var el = document.createElement('div');
+    el.className = 'apgo-cart-success-toast';
+    el.setAttribute('role', 'status');
+    el.setAttribute('aria-live', 'polite');
+    el.innerHTML = ''
+      + '<span class="apgo-cart-success-toast__check" aria-hidden="true">'
+      + '  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.25 4.75L6.5 12.25L2.75 8.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+      + '</span>'
+      + '<div class="apgo-cart-success-toast__body">'
+      + '  <span class="apgo-cart-success-toast__title">' + esc(title) + '</span>'
+      + '  <span class="apgo-cart-success-toast__sub">' + esc(sub) + '</span>'
+      + '</div>'
+      + '<a href="/cart" class="apgo-cart-success-toast__cta">View Cart</a>'
+      + '<button type="button" class="apgo-cart-success-toast__close" aria-label="Close">'
+      + '  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L11 11M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>'
+      + '</button>';
+    el.querySelector('.apgo-cart-success-toast__close').addEventListener('click', function () { el.remove(); });
+    document.body.appendChild(el);
+    requestAnimationFrame(function () { el.classList.add('apgo-cart-success-toast--visible'); });
+    setTimeout(function () {
+      el.classList.remove('apgo-cart-success-toast--visible');
+      setTimeout(function () { el.remove(); }, 380);
+    }, 4200);
+  }
+
   function addToCart(opts) {
     opts = opts || {};
     var btn = opts.btn;
@@ -6768,6 +6807,15 @@ document.addEventListener('DOMContentLoaded', function() {
           }).catch(function () {});
         } catch (_) {}
         if (btn) { btn.disabled = false; btn.textContent = orig; }
+        /* Success toast at the top of the page. Skipped when opts.silent is
+           true so Buy-now (which immediately redirects to /cart) doesn't
+           flash a toast just before navigation. */
+        if (!opts.silent) {
+          var titleEl = document.querySelector('.apgo-product-name')
+                       || document.querySelector('.apgo-cc-pdp__title');
+          var name = (titleEl && titleEl.textContent.trim()) || 'Item';
+          showAddedToCartToast(name, 'Added to cart');
+        }
         return cart;
       })
       .catch(function (err) {
@@ -6785,7 +6833,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   if (buyBtn) {
     buyBtn.addEventListener('click', function () {
-      addToCart({ btn: buyBtn }).then(function () {
+      addToCart({ btn: buyBtn, silent: true }).then(function () {
         window.location.href = '/cart';
       }).catch(function () {});
     });
@@ -7044,7 +7092,7 @@ document.addEventListener('DOMContentLoaded', function() {
   /* Modal Add / Buy — write the modal qty back into the hidden form qty, then commit */
   function commitFromConfirm(intent, triggerBtn) {
     if (qtyInput && confirmQtyInput) qtyInput.value = parseInt(confirmQtyInput.value, 10) || 1;
-    addToCart({ btn: triggerBtn }).then(function () {
+    addToCart({ btn: triggerBtn, silent: intent === 'buy' }).then(function () {
       closeConfirmModal();
       if (intent === 'buy') window.location.href = '/cart';
     }).catch(function () {});
