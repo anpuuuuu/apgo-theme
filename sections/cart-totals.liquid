@@ -349,14 +349,27 @@
   /* =========================================================
      APGO theme overlay (2026-05) — same dark-card + orange-accent
      language used on the PDP and cart items list above.
+
+     Single outer card holds the breakdown + estimated total. They're
+     separated by a 2px orange divider that highlights the total section.
      ========================================================= */
-  /* Wrap the breakdown rows in a soft dark card */
-  .cart-totals--standalone .cart-totals__breakdown {
+  /* Outer card */
+  .cart-totals--standalone .cart__total-container {
     background: rgba(255, 255, 255, 0.025) !important;
     border: 1px solid rgba(255, 255, 255, 0.07) !important;
     border-radius: 14px !important;
-    padding: 14px 16px !important;
-    margin-bottom: 14px !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+  }
+
+  /* Breakdown rows (subtotal / shipping goal / discount) */
+  .cart-totals--standalone .cart-totals__breakdown {
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    padding: 14px 18px !important;
+    margin: 0 !important;
   }
   .cart-totals--standalone .cart-totals__breakdown .cart__summary-item {
     padding: 6px 0 !important;
@@ -374,23 +387,18 @@
     font-weight: 600 !important;
   }
 
-  /* Estimated total — primary orange card */
+  /* Estimated total — same card, divider is the orange accent line */
   .cart-totals--standalone .cart-totals__estimated-card {
-    background: rgba(255, 255, 255, 0.025) !important;
-    border: 1px solid rgba(240, 132, 24, 0.35) !important;
-    border-radius: 14px !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-top: 2px solid #f08418 !important;
+    border-radius: 0 !important;
     padding: 18px 20px !important;
     position: relative !important;
-    overflow: hidden !important;
+    overflow: visible !important;
   }
   .cart-totals--standalone .cart-totals__estimated-card::before {
-    content: '' !important;
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    height: 3px !important;
-    background: linear-gradient(90deg, #f08418, #ff9a3c) !important;
+    display: none !important;
   }
   .cart-totals--standalone .cart-totals__estimated-title,
   .cart-totals--standalone .cart-totals__estimated-price {
