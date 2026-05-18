@@ -290,117 +290,47 @@
     return fd;
   }
 
-  // ---------- Add to cart ----------
+  /* ---------- Add / Buy buttons ----------
+     New flow (May 2026 refactor): the buybar's Add and Buy buttons no longer
+     commit the cart directly. Instead they open the confirm modal exposed by
+     the PDP (window.apgoOpenConfirmModal) so the customer re-confirms variant,
+     quantity, and sees the active variation contents before final commit. The
+     modal handles the actual /cart/add.js call, toast, redirect, etc. */
+  function openConfirm(intent) {
+    if (typeof window.apgoOpenConfirmModal === 'function') {
+      window.apgoOpenConfirmModal(intent);
+      return;
+    }
+    /* Fallback: if the PDP modal isn't present on this page (shouldn't happen
+       on PDP, but be defensive), fall back to the legacy direct-add path. */
+    var fd = buildAddPayload();
+    if (!fd) { showToast('Please select a variant first', false); return; }
+    fetch('/cart/add.js', { method: 'POST', headers: { 'Accept': 'application/json' }, body: fd })
+      .then(function (r) { return r.json(); })
+      .then(function () {
+        if (intent === 'buy') { window.location.href = '/cart'; return; }
+        return fetchCart().then(function (cart) {
+          renderCart(cart);
+          document.dispatchEvent(new CustomEvent('cart:updated'));
+          var t = document.querySelector('.apgo-product-name');
+          showSuccessToast((t && t.textContent.trim()) || 'Item added', 'Added to cart');
+        });
+      })
+      .catch(function (err) {
+        showToast((err && err.description) || 'Failed to add. Please try again.', false);
+      });
+  }
+
   if (addBtn) {
     addBtn.addEventListener('click', function () {
       if (addBtn.disabled) return;
-      var fd = buildAddPayload();
-      if (!fd) {
-        showToast('Please select a variant first', false);
-        return;
-      }
-
-      var orig = addBtn.textContent;
-      addBtn.disabled = true;
-      addBtn.textContent = 'Adding…';
-
-      fetch('/cart/add.js', {
-        method: 'POST',
-        headers: { 'Accept': 'application/json' },
-        body: fd
-      })
-        .then(function (r) {
-          return r.json().then(function (data) {
-            if (!r.ok) return Promise.reject(data);
-            return data;
-          });
-        })
-        .then(function () { return fetchCart(); })
-        .then(function (cart) {
-          renderCart(cart);
-
-          /* Three flavours of cart-update events for cross-theme compatibility */
-          document.dispatchEvent(new CustomEvent('cart:update', { detail: { cart: cart } }));
-          document.documentElement.dispatchEvent(new CustomEvent('cart:refresh', { bubbles: true, detail: { cart: cart } }));
-          document.dispatchEvent(new CustomEvent('cart:updated'));
-
-          /* Horizon themes ship a typed event module; try to dispatch its events too */
-          try {
-            import('@theme/events').then(function (mod) {
-              if (mod && mod.CartUpdateEvent) {
-                document.dispatchEvent(new mod.CartUpdateEvent(cart, 'apgo-cc-buybar', {
-                  itemCount: cart.item_count, source: 'apgo-cc-buybar', sections: {}
-                }));
-              }
-              if (mod && mod.CartAddEvent) {
-                document.dispatchEvent(new mod.CartAddEvent({}, 'apgo-cc-buybar', { source: 'apgo-cc-buybar' }));
-              }
-            }).catch(function () {});
-          } catch (_) {}
-
-          /* Build a friendly title + sub line for the rich toast.
-             Pull the product title from the inline picker form's hidden state
-             or the PDP H1 so the toast actually names the item that was added. */
-          var pdpTitleEl = document.querySelector('.apgo-product-name')
-                          || document.querySelector('.apgo-cc-pdp__title');
-          var titleText = (pdpTitleEl && pdpTitleEl.textContent.trim()) || 'Item added';
-          showSuccessToast(titleText, 'Added to cart');
-          addBtn.disabled = false;
-          addBtn.textContent = orig;
-
-          if (!bar.classList.contains('is-open')) open();
-        })
-        .catch(function (err) {
-          console.error('[apgo-cc-buybar] add failed:', err);
-          var msg = (err && err.description) || (err && err.message) || 'Failed to add. Please try again.';
-          showToast(msg, false);
-          addBtn.disabled = false;
-          addBtn.textContent = orig;
-        });
+      openConfirm('add');
     });
   }
-
-  /*
-    Buy now → POST /cart/add.js with the currently selected variant, then
-    redirect to /cart. Mirrors the inline PDP form's Buy now behaviour so
-    visitors who tap Buy now from the buybar still get the item added.
-    Previously this button only navigated, skipping the add — meaning
-    customers landed on an empty cart unless they had already pressed Add.
-  */
   if (checkoutBtn) {
     checkoutBtn.addEventListener('click', function () {
       if (checkoutBtn.disabled) return;
-      var fd = buildAddPayload();
-      if (!fd) {
-        showToast('Please select a variant first', false);
-        return;
-      }
-
-      var orig = checkoutBtn.textContent;
-      checkoutBtn.disabled = true;
-      checkoutBtn.textContent = 'Adding…';
-
-      fetch('/cart/add.js', {
-        method: 'POST',
-        headers: { 'Accept': 'application/json' },
-        body: fd
-      })
-        .then(function (r) {
-          return r.json().then(function (data) {
-            if (!r.ok) return Promise.reject(data);
-            return data;
-          });
-        })
-        .then(function () {
-          window.location.href = '/cart';
-        })
-        .catch(function (err) {
-          console.error('[apgo-cc-buybar] buy-now add failed:', err);
-          var msg = (err && err.description) || (err && err.message) || 'Failed to add. Please try again.';
-          showToast(msg, false);
-          checkoutBtn.disabled = false;
-          checkoutBtn.textContent = orig;
-        });
+      openConfirm('buy');
     });
   }
 })();

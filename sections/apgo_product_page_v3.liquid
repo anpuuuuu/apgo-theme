@@ -3373,6 +3373,128 @@
   .apgo-cc-pdp__cta:disabled { opacity: 0.5; cursor: not-allowed; }
 
   /* =============================================================
+     Purchase-confirm modal — appears when buybar Add/Buy is clicked.
+     Centered card with backdrop. Slides up on mobile, scales in on desktop.
+     ============================================================= */
+  .apgo-cc-confirm-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 100100;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .apgo-cc-confirm-modal.is-open {
+    visibility: visible;
+    pointer-events: auto;
+  }
+  .apgo-cc-confirm-modal__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(3px);
+    opacity: 0;
+    transition: opacity .25s ease;
+  }
+  .apgo-cc-confirm-modal.is-open .apgo-cc-confirm-modal__backdrop {
+    opacity: 1;
+  }
+  .apgo-cc-confirm-modal__panel {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #141414;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px 18px 0 0;
+    max-height: 88vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transform: translateY(100%);
+    transition: transform .3s cubic-bezier(0.22, 1, 0.36, 1);
+    box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.6);
+  }
+  .apgo-cc-confirm-modal.is-open .apgo-cc-confirm-modal__panel {
+    transform: translateY(0);
+  }
+  @media (min-width: 750px) {
+    .apgo-cc-confirm-modal__panel {
+      left: 50%;
+      right: auto;
+      bottom: auto;
+      top: 50%;
+      width: min(440px, calc(100vw - 32px));
+      transform: translate(-50%, -45%) scale(0.96);
+      border-radius: 18px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      transition: transform .25s cubic-bezier(0.22, 1, 0.36, 1), opacity .2s ease;
+      opacity: 0;
+    }
+    .apgo-cc-confirm-modal.is-open .apgo-cc-confirm-modal__panel {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+    }
+  }
+
+  .apgo-cc-confirm-modal__close {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    color: rgba(255, 255, 255, 0.8);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    z-index: 1;
+    transition: background .15s ease;
+  }
+  .apgo-cc-confirm-modal__close:hover {
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .apgo-cc-confirm-modal__body {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 36px 20px 20px;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+  .apgo-cc-confirm-modal__body > * + * {
+    margin-top: 16px;
+  }
+
+  /* Variation block inside the modal — same look as inline white-on-dim, but only
+     the active one is shown (we copy the single active section). */
+  .apgo-cc-confirm-modal__variation {
+    font-size: 12px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.92);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    padding-top: 12px;
+  }
+  .apgo-cc-confirm-modal__variation:empty {
+    display: none;
+  }
+  /* The body content gets dropped in as plain HTML; first line bolder */
+
+  .apgo-cc-confirm-modal__actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 12px 20px calc(20px + env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    background: #141414;
+  }
+
+  body.apgo-cc-confirm-open {
+    overflow: hidden;
+  }
+
+  /* =============================================================
      Car Care Mobile Buy Bar (Block B)
      - Fixed bottom, mobile only (≤749px). Desktop hidden.
      - Tokens reused from APGO theme: --primary-orange, --dark-bg, etc.
@@ -3384,9 +3506,9 @@
     pointer-events: none;
     display: block;
   }
-  @media (min-width: 750px) {
-    .apgo-cc-buybar { display: none; }
-  }
+  /* Buybar visible on every viewport now (was hidden on desktop).
+     The bottom bar is the single commit entry-point for Add/Buy across
+     mobile + desktop. */
 
   .apgo-cc-buybar__backdrop {
     position: fixed;
@@ -3801,14 +3923,14 @@
           </div>
         {%- endfor -%}
 
-        <div class="apgo-cc-pdp__qty-row">
-          <span class="apgo-cc-pdp__qty-label">Quantity</span>
-          <div class="apgo-cc-pdp__qty">
-            <button type="button" data-apgo-cc-qty="down" aria-label="Decrease">−</button>
-            <input type="number" name="quantity" value="1" min="1" data-apgo-cc-qty-input>
-            <button type="button" data-apgo-cc-qty="up" aria-label="Increase">+</button>
-          </div>
-        </div>
+        {%- comment -%}
+          Inline quantity stepper removed — quantity is now picked inside the
+          purchase-confirm modal that opens from the bottom buybar (so the
+          on-page picker stays clean and the commit step is consolidated).
+          The form still carries a hidden `quantity` input that the modal
+          updates before /cart/add fires.
+        {%- endcomment -%}
+        <input type="hidden" name="quantity" value="1" data-apgo-cc-qty-input>
 
         {%- comment -%}
           Variation block — variant-aware.
@@ -3870,26 +3992,10 @@
         {%- endif -%}
 
         {%- comment -%}
-          Desktop-only CTA row. Mobile (≤1023px) hides it via CSS because the
-          fixed bottom buybar covers those actions. The data attributes wire up
-          to the existing inline JS handlers (apgo_product_page_v3.liquid script:
-          [data-apgo-cc-add] → addToCart, [data-apgo-cc-buy-now] → buyNow + /cart).
+          Inline Add/Buy CTA row removed. The bottom buybar is now the only
+          place users commit a purchase; clicking it opens the confirm modal
+          (markup below) which has its own Add to cart + Buy now buttons.
         {%- endcomment -%}
-        <div class="apgo-cc-pdp__cta-row">
-          <button
-            type="submit"
-            class="apgo-cc-pdp__cta apgo-cc-pdp__cta--secondary"
-            data-apgo-cc-add
-            {% if product.available == false %}disabled{% endif %}
-          >
-            {%- if product.available -%}Add to cart{%- else -%}Sold out{%- endif -%}
-          </button>
-          {%- if section.settings.show_buy_now -%}
-            <button type="button" class="apgo-cc-pdp__cta apgo-cc-pdp__cta--primary" data-apgo-cc-buy-now>
-              Buy now
-            </button>
-          {%- endif -%}
-        </div>
       </form>
 
       {%- comment -%}
@@ -6108,6 +6214,65 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 {%- comment -%}
+  Purchase-confirm modal. Opens when the visitor clicks Add to cart / Buy now
+  in the bottom buybar. Mirrors the inline picker (variant chips, quantity,
+  active Variation section) but adds a final commit step (Add / Buy buttons).
+  All chips/qty/variation are rebuilt from JS at open time so the modal always
+  reflects the current page state.
+{%- endcomment -%}
+<aside class="apgo-cc-confirm-modal" data-apgo-cc-confirm-modal aria-hidden="true">
+  <div class="apgo-cc-confirm-modal__backdrop" data-apgo-cc-confirm-close></div>
+  <div class="apgo-cc-confirm-modal__panel" role="dialog" aria-modal="true" aria-label="Confirm purchase">
+    <button type="button" class="apgo-cc-confirm-modal__close" data-apgo-cc-confirm-close aria-label="Close">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+
+    <div class="apgo-cc-confirm-modal__body">
+      {%- for option in product.options_with_values -%}
+        <div class="apgo-cc-confirm-modal__option-group" data-apgo-cc-confirm-option-group data-option-position="{{ option.position }}">
+          <div class="apgo-cc-pdp__option-label">
+            <span class="apgo-cc-pdp__option-name">{% if forloop.first %}Variations{% else %}{{ option.name }}{% endif %}</span>
+            <span class="apgo-cc-pdp__option-current" data-apgo-cc-confirm-option-current>{{ option.selected_value }}</span>
+          </div>
+          <div class="apgo-cc-pdp__option-chips">
+            {%- for value in option.values -%}
+              <button
+                type="button"
+                class="apgo-cc-pdp__chip"
+                data-apgo-cc-confirm-chip
+                data-option-value="{{ value | escape }}"
+              >
+                <span>{{ value }}</span>
+              </button>
+            {%- endfor -%}
+          </div>
+        </div>
+      {%- endfor -%}
+
+      <div class="apgo-cc-pdp__qty-row apgo-cc-confirm-modal__qty">
+        <span class="apgo-cc-pdp__qty-label">Quantity</span>
+        <div class="apgo-cc-pdp__qty">
+          <button type="button" data-apgo-cc-confirm-qty="down" aria-label="Decrease">−</button>
+          <input type="number" value="1" min="1" data-apgo-cc-confirm-qty-input>
+          <button type="button" data-apgo-cc-confirm-qty="up" aria-label="Increase">+</button>
+        </div>
+      </div>
+
+      <div class="apgo-cc-confirm-modal__variation" data-apgo-cc-confirm-variation>
+        {%- comment -%} Populated by JS at open time — copy of the active variant's variation section {%- endcomment -%}
+      </div>
+    </div>
+
+    <div class="apgo-cc-confirm-modal__actions">
+      <button type="button" class="apgo-cc-pdp__cta apgo-cc-pdp__cta--secondary" data-apgo-cc-confirm-add>Add to cart</button>
+      <button type="button" class="apgo-cc-pdp__cta apgo-cc-pdp__cta--primary" data-apgo-cc-confirm-buy>Buy now</button>
+    </div>
+  </div>
+</aside>
+
+{%- comment -%}
   Car Care 內聯 picker JS（Block A 切換/數量/加購）
   - 監聽 .apgo-cc-pdp__form 內 radio change → 比對 variants JSON 取得 variant id
   - 同步：隱藏 id input、價格顯示、chip is-active、option 當前值、window.currentVariantId（讓 buybar fallback 可用）
@@ -6479,6 +6644,132 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(patchCarouselGoToSlide, 100);
   }
   patchCarouselGoToSlide();
+
+  /*
+    Purchase-confirm modal — opens when bottom buybar Add/Buy is clicked.
+    The modal mirrors the picker state (variant chips, quantity, active
+    Variation section) and provides the final Add to cart / Buy now commit.
+    The page-level inline picker no longer renders quantity or CTAs; this is
+    the single commit step for both mobile and desktop.
+
+    Architecture:
+      - Modal markup is rendered server-side with chips for each option value
+        (so labels survive view-source / no-JS bots), but everything else
+        (active state, current value, variation content) is JS-driven at
+        open time and on variant change.
+      - refreshVariant() (defined above) already syncs the inline picker.
+        We wrap its tail so the modal mirrors the same updates without
+        rerunning the full logic.
+      - Modal Add/Buy fetches /cart/add.js with the hidden form's variant id
+        + the modal's qty input value (also written back into the hidden
+        `quantity` input so subsequent buybar paths read the right qty).
+  */
+  var confirmModal      = document.querySelector('[data-apgo-cc-confirm-modal]');
+  var confirmCloseEls   = confirmModal ? confirmModal.querySelectorAll('[data-apgo-cc-confirm-close]') : [];
+  var confirmQtyInput   = confirmModal ? confirmModal.querySelector('[data-apgo-cc-confirm-qty-input]') : null;
+  var confirmQtyBtns    = confirmModal ? confirmModal.querySelectorAll('[data-apgo-cc-confirm-qty]') : [];
+  var confirmAddBtn     = confirmModal ? confirmModal.querySelector('[data-apgo-cc-confirm-add]') : null;
+  var confirmBuyBtn     = confirmModal ? confirmModal.querySelector('[data-apgo-cc-confirm-buy]') : null;
+  var confirmVariationEl= confirmModal ? confirmModal.querySelector('[data-apgo-cc-confirm-variation]') : null;
+  var confirmGroups     = confirmModal ? confirmModal.querySelectorAll('[data-apgo-cc-confirm-option-group]') : [];
+
+  function syncConfirmModal() {
+    if (!confirmModal) return;
+    /* Sync chip active state + current-value label per option group from inline radios */
+    confirmGroups.forEach(function (g, gi) {
+      var sourceGroup = form.querySelectorAll('[data-apgo-cc-option-group]')[gi];
+      if (!sourceGroup) return;
+      var checked = sourceGroup.querySelector('input[type="radio"]:checked');
+      var currentVal = checked ? checked.value : '';
+      var curEl = g.querySelector('[data-apgo-cc-confirm-option-current]');
+      if (curEl) curEl.textContent = currentVal;
+      g.querySelectorAll('[data-apgo-cc-confirm-chip]').forEach(function (chip) {
+        var val = chip.getAttribute('data-option-value');
+        chip.classList.toggle('is-active', val === currentVal);
+      });
+    });
+    /* Mirror the inline picker's currently-visible Variation section */
+    if (confirmVariationEl) {
+      var activeSection = document.querySelector('[data-apgo-cc-variation-sections] .apgo-cc-pdp__variation-section.is-active');
+      if (activeSection) {
+        confirmVariationEl.innerHTML = activeSection.innerHTML;
+      } else {
+        confirmVariationEl.innerHTML = '';
+      }
+    }
+  }
+
+  function openConfirmModal() {
+    if (!confirmModal) return;
+    syncConfirmModal();
+    /* Seed modal qty from the hidden form qty (default 1) so it isn't a fresh value each time */
+    if (confirmQtyInput && qtyInput) confirmQtyInput.value = parseInt(qtyInput.value, 10) || 1;
+    confirmModal.classList.add('is-open');
+    confirmModal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('apgo-cc-confirm-open');
+  }
+  function closeConfirmModal() {
+    if (!confirmModal) return;
+    confirmModal.classList.remove('is-open');
+    confirmModal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('apgo-cc-confirm-open');
+  }
+  /* Expose so the buybar JS (a separate file) can trigger the open */
+  window.apgoOpenConfirmModal = openConfirmModal;
+  window.apgoCloseConfirmModal = closeConfirmModal;
+
+  /* Close interactions: X button, backdrop, Esc */
+  confirmCloseEls.forEach(function (el) { el.addEventListener('click', closeConfirmModal); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && confirmModal && confirmModal.classList.contains('is-open')) closeConfirmModal();
+  });
+
+  /* Modal chip click → set the matching inline radio + run refreshVariant + re-sync modal */
+  confirmGroups.forEach(function (g, gi) {
+    g.querySelectorAll('[data-apgo-cc-confirm-chip]').forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        var val = chip.getAttribute('data-option-value');
+        var sourceGroup = form.querySelectorAll('[data-apgo-cc-option-group]')[gi];
+        if (!sourceGroup) return;
+        sourceGroup.querySelectorAll('input[type="radio"][data-apgo-cc-option-input]').forEach(function (r) {
+          r.checked = (r.value === val);
+        });
+        refreshVariant(); /* propagates to chip is-active, price, image, Variation, etc. */
+        syncConfirmModal();
+      });
+    });
+  });
+
+  /* Modal qty stepper */
+  confirmQtyBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      if (!confirmQtyInput) return;
+      var n = parseInt(confirmQtyInput.value, 10) || 1;
+      n += (btn.getAttribute('data-apgo-cc-confirm-qty') === 'up' ? 1 : -1);
+      if (n < 1) n = 1;
+      confirmQtyInput.value = n;
+    });
+  });
+
+  /* Modal Add / Buy — write the modal qty back into the hidden form qty, then commit */
+  function commitFromConfirm(intent, triggerBtn) {
+    if (qtyInput && confirmQtyInput) qtyInput.value = parseInt(confirmQtyInput.value, 10) || 1;
+    addToCart({ btn: triggerBtn }).then(function () {
+      closeConfirmModal();
+      if (intent === 'buy') window.location.href = '/cart';
+    }).catch(function () {});
+  }
+  if (confirmAddBtn) confirmAddBtn.addEventListener('click', function () { commitFromConfirm('add', confirmAddBtn); });
+  if (confirmBuyBtn) confirmBuyBtn.addEventListener('click', function () { commitFromConfirm('buy', confirmBuyBtn); });
+
+  /* Whenever the inline picker refreshes (variant change from any source —
+     chip click, image swipe, etc.) keep the modal mirrored. We wrap the
+     existing refreshVariant so callers don't need to know about the modal. */
+  var _origRefreshVariant = refreshVariant;
+  refreshVariant = function () {
+    _origRefreshVariant.apply(this, arguments);
+    syncConfirmModal();
+  };
 
   /* Initial sync (covers SSR-checked state) */
   refreshVariant();
