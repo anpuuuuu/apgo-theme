@@ -126,15 +126,23 @@
       /*
         Mobile only (≤749px). Desktop keeps the always-pinned sticky header
         + marquee that the user expects on larger viewports.
+
+        The PDP tab bar (.apgo-pdp-tablist-wrap) is also covered: when the
+        header + marquee slide up, the tab bar slides up the same distance
+        so it ends at top:0 (its sticky `top` was already var(--stack-h)).
+        Without this, the tab bar would stay in its original position and
+        page content would scroll through the empty space above it.
       */
       @media (max-width: 749px) {
         #header-group > .shopify-section,
-        #shopify-section-free-shipping-popup {
+        #shopify-section-free-shipping-popup,
+        .apgo-pdp-tablist-wrap {
           transition: transform .28s cubic-bezier(0.22, 1, 0.36, 1);
           will-change: transform;
         }
         body.apgo-scroll-hide #header-group > .shopify-section,
-        body.apgo-scroll-hide #shopify-section-free-shipping-popup {
+        body.apgo-scroll-hide #shopify-section-free-shipping-popup,
+        body.apgo-scroll-hide .apgo-pdp-tablist-wrap {
           transform: translateY(calc(-1 * var(--apgo-stack-h, 120px)));
         }
       }
