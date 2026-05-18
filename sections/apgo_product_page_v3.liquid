@@ -4381,18 +4381,15 @@
             {% endif %}
 
             {%- comment -%}
-              Variant-aware Variation block — mirrors only the active variant's
-              section. Body is populated/refreshed by JS from
-              [data-apgo-cc-variation-sections] .is-active so it tracks the
-              picker's current selection. Hidden when no variation metafield.
+              Static full-metafield Variation block — shows ALL variants stacked
+              for reference. The variant-aware "currently active" block lives in
+              the right-side inline picker (desktop) / confirm modal (mobile).
             {%- endcomment -%}
             {%- assign variation_lead_raw = product.metafields.custom.variation.value | default: '' | strip -%}
             {%- if variation_lead_raw != blank -%}
               <section class="apgo-lead-variation" aria-label="Variation contents">
                 <h4 class="apgo-lead-variation__title">{{ 'product.variation' | t }}</h4>
-                <div class="apgo-lead-variation__body" data-apgo-lead-variation>
-                  {%- comment -%} Filled by JS at boot + on every variant change {%- endcomment -%}
-                </div>
+                <div class="apgo-lead-variation__body">{{ variation_lead_raw | escape | newline_to_br }}</div>
               </section>
             {%- endif -%}
           </div>
@@ -7049,24 +7046,13 @@ document.addEventListener('DOMContentLoaded', function() {
   if (confirmAddBtn) confirmAddBtn.addEventListener('click', function () { commitFromConfirm('add', confirmAddBtn); });
   if (confirmBuyBtn) confirmBuyBtn.addEventListener('click', function () { commitFromConfirm('buy', confirmBuyBtn); });
 
-  /* Lead-description Variation block mirror: copies the currently active
-     per-variant section into the lead block so it stays variant-aware without
-     duplicating the split logic. */
-  var leadVariationEl = document.querySelector('[data-apgo-lead-variation]');
-  function syncLeadVariation() {
-    if (!leadVariationEl) return;
-    var activeSection = document.querySelector('[data-apgo-cc-variation-sections] .apgo-cc-pdp__variation-section.is-active');
-    leadVariationEl.innerHTML = activeSection ? activeSection.innerHTML : '';
-  }
-
   /* Whenever the inline picker refreshes (variant change from any source —
-     chip click, image swipe, etc.) keep the modal + lead block mirrored.
-     We wrap the existing refreshVariant so callers don't need to know. */
+     chip click, image swipe, etc.) keep the modal mirrored. We wrap the
+     existing refreshVariant so callers don't need to know about the modal. */
   var _origRefreshVariant = refreshVariant;
   refreshVariant = function () {
     _origRefreshVariant.apply(this, arguments);
     syncConfirmModal();
-    syncLeadVariation();
   };
 
   /* Initial sync (covers SSR-checked state) */
