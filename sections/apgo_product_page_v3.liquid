@@ -3218,6 +3218,28 @@
     align-items: center;
     gap: 12px;
   }
+  /* The inline qty row inside the form is desktop-only. Mobile uses the
+     confirm modal (opened from the bottom buybar) for quantity selection.
+     The modal qty row reuses the same .apgo-cc-pdp__qty-row class but is
+     scoped under .apgo-cc-confirm-modal__qty so the hide rule doesn't reach it. */
+  .apgo-cc-pdp__qty-row--desktop { display: none; }
+  @media (min-width: 1024px) {
+    .apgo-cc-pdp__qty-row--desktop { display: flex; }
+  }
+  .apgo-cc-pdp__qty-row--desktop input[type="number"] {
+    width: 44px;
+    height: 32px;
+    border: 0;
+    background: transparent;
+    color: #fff;
+    text-align: center;
+    font-size: 14px;
+    -moz-appearance: textfield;
+  }
+  .apgo-cc-pdp__qty-row--desktop input[type="number"]::-webkit-outer-spin-button,
+  .apgo-cc-pdp__qty-row--desktop input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none; margin: 0;
+  }
   .apgo-cc-pdp__qty-label {
     flex: 0 0 auto;
     font-size: 13px;
@@ -3506,9 +3528,12 @@
     pointer-events: none;
     display: block;
   }
-  /* Buybar visible on every viewport now (was hidden on desktop).
-     The bottom bar is the single commit entry-point for Add/Buy across
-     mobile + desktop. */
+  /* Buybar + confirm modal are MOBILE ONLY (≤1023px). Desktop uses the
+     inline Add/Buy CTA row + inline qty stepper inside the form. */
+  @media (min-width: 1024px) {
+    .apgo-cc-buybar { display: none !important; }
+    .apgo-cc-confirm-modal { display: none !important; }
+  }
 
   .apgo-cc-buybar__backdrop {
     position: fixed;
@@ -3924,13 +3949,19 @@
         {%- endfor -%}
 
         {%- comment -%}
-          Inline quantity stepper removed — quantity is now picked inside the
-          purchase-confirm modal that opens from the bottom buybar (so the
-          on-page picker stays clean and the commit step is consolidated).
-          The form still carries a hidden `quantity` input that the modal
-          updates before /cart/add fires.
+          Quantity stepper — desktop only (≥1024px). On mobile the visible row
+          is hidden via CSS and the confirm modal (opened from the bottom buybar)
+          provides its own qty stepper. The same data-apgo-cc-qty-input below is
+          the canonical quantity carrier; the modal mirrors its value back.
         {%- endcomment -%}
-        <input type="hidden" name="quantity" value="1" data-apgo-cc-qty-input>
+        <div class="apgo-cc-pdp__qty-row apgo-cc-pdp__qty-row--desktop">
+          <span class="apgo-cc-pdp__qty-label">Quantity</span>
+          <div class="apgo-cc-pdp__qty">
+            <button type="button" data-apgo-cc-qty="down" aria-label="Decrease quantity">−</button>
+            <input type="number" name="quantity" value="1" min="1" inputmode="numeric" data-apgo-cc-qty-input>
+            <button type="button" data-apgo-cc-qty="up" aria-label="Increase quantity">+</button>
+          </div>
+        </div>
 
         {%- comment -%}
           Variation block — variant-aware.
@@ -3992,10 +4023,15 @@
         {%- endif -%}
 
         {%- comment -%}
-          Inline Add/Buy CTA row removed. The bottom buybar is now the only
-          place users commit a purchase; clicking it opens the confirm modal
-          (markup below) which has its own Add to cart + Buy now buttons.
+          Desktop CTA row. Visible only ≥1024px (CSS `.apgo-cc-pdp__cta-row`).
+          Mobile commits via the bottom buybar → confirm modal flow instead.
         {%- endcomment -%}
+        <div class="apgo-cc-pdp__cta-row">
+          <button type="button" class="apgo-cc-pdp__cta apgo-cc-pdp__cta--secondary" data-apgo-cc-add>
+            {%- if product.available -%}Add to cart{%- else -%}Sold out{%- endif -%}
+          </button>
+          <button type="button" class="apgo-cc-pdp__cta apgo-cc-pdp__cta--primary" data-apgo-cc-buy-now>Buy now</button>
+        </div>
       </form>
 
       {%- comment -%}
@@ -6701,6 +6737,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function openConfirmModal() {
     if (!confirmModal) return;
+    /* Desktop uses inline CTA buttons in the form, not the modal. Guard here
+       so any accidental call from buybar / API consumers no-ops on desktop. */
+    if (window.matchMedia && window.matchMedia('(min-width: 1024px)').matches) return;
     syncConfirmModal();
     /* Seed modal qty from the hidden form qty (default 1) so it isn't a fresh value each time */
     if (confirmQtyInput && qtyInput) confirmQtyInput.value = parseInt(qtyInput.value, 10) || 1;
