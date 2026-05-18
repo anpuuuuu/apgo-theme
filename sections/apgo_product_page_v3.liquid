@@ -2950,12 +2950,18 @@
   -ms-touch-action: pan-y; /* 旧 Edge */
 }
 
-  /* 桌面：主視覺輪播 — 保持 1:1 並讓完整圖片可見（contain 不裁切） */
+  /*
+    桌面：主視覺輪播 — 改用「固定高度 + contain」而非「1:1 + contain」。
+    1:1 在 ~600px 寬的桌面欄裡會強制 600 高，遇到較寬（非方形）的產品圖時
+    上下會留大量 letterbox 空白。固定高度配合 contain 讓圖片填得更滿，
+    letterbox 只在實際比例差異時才出現，且明顯較小。
+  */
   @media (min-width: 769px) {
     .apgo-hero-visual {
-      /* Inherit aspect-ratio: 1/1 from the base rule; cap so it doesn't dominate huge viewports. */
-      height: auto;
-      max-height: min(80vh, 720px);
+      /* Override base aspect-ratio: 1/1 — use a fixed height tuned for typical product shots */
+      aspect-ratio: auto;
+      height: clamp(360px, 48vh, 520px);
+      max-height: none;
     }
 
     /* On desktop the carousel dots can sit naturally below the photo —
@@ -2968,7 +2974,8 @@
     .apgo-product-showcase {
       align-items: center;
       justify-content: center;
-      padding: 24px 16px;
+      /* Tight padding so image takes more of the hero box, less visible letterbox */
+      padding: 8px;
     }
 
     .apgo-carousel-container {
