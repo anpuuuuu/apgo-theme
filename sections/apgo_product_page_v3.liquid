@@ -3328,6 +3328,34 @@
     padding-top: 14px;
     margin-top: 14px;
   }
+  /* Mobile: hide visually but KEEP IN THE LAYOUT-FREE LAYER so the confirm
+     modal can still query `.is-active` for its variant-aware body. Use
+     position:absolute + visibility:hidden so it occupies no space yet
+     getBoundingClientRect / innerHTML still work. */
+  .apgo-cc-pdp__variation--desktop-only {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+    pointer-events: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  @media (min-width: 1024px) {
+    .apgo-cc-pdp__variation--desktop-only {
+      position: static;
+      width: auto;
+      height: auto;
+      overflow: visible;
+      visibility: visible;
+      pointer-events: auto;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 14px;
+      margin-top: 14px;
+    }
+  }
   .apgo-cc-pdp__variation-title {
     margin: 0 0 6px;
     font-size: 13px;
@@ -4091,11 +4119,12 @@
         {%- assign variation_inline_raw = product.metafields.custom.variation.value | default: '' | strip -%}
         {%- if variation_inline_raw != blank -%}
           {%- comment -%}
-            Variant-aware sections are kept in the DOM but visually hidden — the
-            confirm modal still queries `.is-active` here as its data source. The
-            customer-facing variation block moved to the Description tab below.
+            Variant-aware variation block — DESKTOP ONLY (≥1024px). Shows the
+            active variant's bundle contents in the right-side picker. On
+            mobile the block is hidden via CSS, but stays in the DOM so the
+            confirm modal can still read `.is-active` as its data source.
           {%- endcomment -%}
-          <section class="apgo-cc-pdp__variation apgo-cc-pdp__variation--hidden-data" aria-hidden="true" hidden>
+          <section class="apgo-cc-pdp__variation apgo-cc-pdp__variation--desktop-only" aria-labelledby="apgo-cc-variation-title-{{ section.id }}">
             <h4 class="apgo-cc-pdp__variation-title" id="apgo-cc-variation-title-{{ section.id }}">
               {{ 'product.variation' | t }}
             </h4>
