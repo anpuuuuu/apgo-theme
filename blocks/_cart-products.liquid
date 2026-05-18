@@ -352,7 +352,9 @@
     .cart-items__media-image {
       width: 100% !important;
       height: 100% !important;
-      object-fit: cover !important;
+      /* Contain so portrait/landscape product shots aren't cropped — they
+         get letterboxed inside the square thumbnail instead. */
+      object-fit: contain !important;
     }
     /* Details cell — title / variant / inline price stacked */
     .cart-items__details {
