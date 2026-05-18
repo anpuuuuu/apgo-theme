@@ -3520,9 +3520,9 @@
   }
   .apgo-cc-confirm-modal__thumb {
     flex: 0 0 auto;
-    width: 64px;
-    height: 64px;
-    border-radius: 8px;
+    width: 96px;
+    height: 96px;
+    border-radius: 10px;
     overflow: hidden;
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -3540,7 +3540,7 @@
     min-width: 0;
   }
   .apgo-cc-confirm-modal__price {
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 700;
     color: var(--primary-orange, #f08418);
   }
@@ -6312,6 +6312,23 @@ document.addEventListener('DOMContentLoaded', function() {
     </button>
 
     <div class="apgo-cc-confirm-modal__body">
+      {%- comment -%}
+        Product summary at the top — variant-aware image + price.
+        Updated by syncConfirmModal() from the active variant.
+      {%- endcomment -%}
+      <div class="apgo-cc-confirm-modal__summary" data-apgo-cc-confirm-summary>
+        <div class="apgo-cc-confirm-modal__thumb">
+          <img data-apgo-cc-confirm-image
+               src="{{ product.featured_image | image_url: width: 240 }}"
+               alt="{{ product.title | escape }}"
+               loading="lazy"
+               width="96" height="96">
+        </div>
+        <div class="apgo-cc-confirm-modal__summary-info">
+          <span class="apgo-cc-confirm-modal__price" data-apgo-cc-confirm-price data-cents="{{ product.selected_or_first_available_variant.price }}">{{ product.selected_or_first_available_variant.price | money }}</span>
+        </div>
+      </div>
+
       {%- for option in product.options_with_values -%}
         <div class="apgo-cc-confirm-modal__option-group" data-apgo-cc-confirm-option-group data-option-position="{{ option.position }}">
           <div class="apgo-cc-pdp__option-label">
@@ -6339,25 +6356,6 @@ document.addEventListener('DOMContentLoaded', function() {
           <button type="button" data-apgo-cc-confirm-qty="down" aria-label="Decrease">−</button>
           <input type="number" value="1" min="1" data-apgo-cc-confirm-qty-input>
           <button type="button" data-apgo-cc-confirm-qty="up" aria-label="Increase">+</button>
-        </div>
-      </div>
-
-      {%- comment -%}
-        Product summary above the variation block — variant-aware image + price.
-        Populated/updated in syncConfirmModal() from the active variant's
-        featured_image and price. Falls back to the product's main featured image
-        for variants without their own image.
-      {%- endcomment -%}
-      <div class="apgo-cc-confirm-modal__summary" data-apgo-cc-confirm-summary>
-        <div class="apgo-cc-confirm-modal__thumb">
-          <img data-apgo-cc-confirm-image
-               src="{{ product.featured_image | image_url: width: 200 }}"
-               alt="{{ product.title | escape }}"
-               loading="lazy"
-               width="64" height="64">
-        </div>
-        <div class="apgo-cc-confirm-modal__summary-info">
-          <span class="apgo-cc-confirm-modal__price" data-apgo-cc-confirm-price data-cents="{{ product.selected_or_first_available_variant.price }}">{{ product.selected_or_first_available_variant.price | money }}</span>
         </div>
       </div>
 
@@ -6829,6 +6827,38 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
+  /*
+    Lock the variation block to the height of the TALLEST variant's section so
+    switching variants doesn't cause the modal to grow/shrink. Measures once
+    when the modal first opens (DOM has been laid out + fonts are ready) by
+    temporarily swapping each section's HTML into the variation slot off-screen.
+    Cached to a module-level flag so we only do this once.
+  */
+  var confirmVariationHeightLocked = false;
+  function lockConfirmVariationHeight() {
+    if (confirmVariationHeightLocked || !confirmVariationEl) return;
+    var sections = document.querySelectorAll('[data-apgo-cc-variation-sections] .apgo-cc-pdp__variation-section');
+    if (!sections.length) return;
+    /* Save original content + styles so we can restore after measuring */
+    var origHTML = confirmVariationEl.innerHTML;
+    var origVisibility = confirmVariationEl.style.visibility;
+    var maxH = 0;
+    /* Measure each section by mounting it in the live slot (preserves the
+       slot's actual width/font/padding) but hidden via visibility. */
+    confirmVariationEl.style.visibility = 'hidden';
+    sections.forEach(function (sec) {
+      confirmVariationEl.innerHTML = sec.innerHTML;
+      var h = confirmVariationEl.getBoundingClientRect().height;
+      if (h > maxH) maxH = h;
+    });
+    confirmVariationEl.innerHTML = origHTML;
+    confirmVariationEl.style.visibility = origVisibility;
+    if (maxH > 0) {
+      confirmVariationEl.style.minHeight = Math.ceil(maxH) + 'px';
+      confirmVariationHeightLocked = true;
+    }
+  }
+
   function openConfirmModal(intent) {
     if (!confirmModal) return;
     /* Desktop uses inline CTA buttons in the form, not the modal. Guard here
@@ -6843,6 +6873,11 @@ document.addEventListener('DOMContentLoaded', function() {
     confirmModal.classList.add('is-open');
     confirmModal.setAttribute('aria-hidden', 'false');
     document.body.classList.add('apgo-cc-confirm-open');
+    /* Lock variation block height to the tallest variant's section so switching
+       variants doesn't bounce the modal layout. Done after open so the slot has
+       its final laid-out width. requestAnimationFrame ensures we measure after
+       the show transition has applied. */
+    requestAnimationFrame(function () { lockConfirmVariationHeight(); });
   }
   function closeConfirmModal() {
     if (!confirmModal) return;
