@@ -3188,22 +3188,23 @@
     margin-left: 4px;
   }
 
-  /* Variation block rendered inside the Description tab — full metafield, no
-     variant linking. The variant-aware sections still live (hidden) inside the
-     inline picker so the confirm modal can pull the active section's HTML. */
-  .apgo-tab-variation {
-    margin-top: 20px;
-    padding-top: 16px;
+  /* Variation block rendered right under the lead "Description" text — full
+     metafield content, no variant linking. The variant-aware sections still
+     live (hidden) inside the inline picker so the confirm modal can pull the
+     active section's HTML. */
+  .apgo-lead-variation {
+    margin-top: 18px;
+    padding-top: 14px;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
   }
-  .apgo-tab-variation__title {
+  .apgo-lead-variation__title {
     color: var(--primary-orange, #f08418);
     font-size: 16px;
     font-weight: 700;
     margin: 0 0 10px;
     text-transform: none;
   }
-  .apgo-tab-variation__body {
+  .apgo-lead-variation__body {
     color: rgba(255, 255, 255, 0.85);
     font-size: 14px;
     line-height: 1.7;
@@ -4351,12 +4352,18 @@
             {% endif %}
 
             {%- comment -%}
-              Variation block previously rendered here was moved into the inline picker
-              (right under the Quantity stepper) so the spec list sits closer to the price
-              and variant chips. Keep var_has computation upstream untouched in case other
-              conditionals depend on it, but no longer render the block in the looping
-              description area.
+              Variation metafield rendered as a static block right under the
+              Description text. Full content, not split per variant — the
+              variant-aware split is preserved only inside the confirm modal,
+              which reads from the hidden inline-picker source.
             {%- endcomment -%}
+            {%- assign variation_lead_raw = product.metafields.custom.variation.value | default: '' | strip -%}
+            {%- if variation_lead_raw != blank -%}
+              <section class="apgo-lead-variation" aria-label="Variation contents">
+                <h4 class="apgo-lead-variation__title">{{ 'product.variation' | t }}</h4>
+                <div class="apgo-lead-variation__body">{{ variation_lead_raw | escape | newline_to_br }}</div>
+              </section>
+            {%- endif -%}
           </div>
         </div>
       </div>
@@ -4610,18 +4617,6 @@
               <div class="apgo-tab-pane-empty-slot" aria-hidden="true">&nbsp;</div>
             {% endif %}
 
-            {%- comment -%}
-              Static Variation block — renders the full product.metafields.custom.variation
-              metafield. No variant linking on this page (the per-variant split is preserved
-              for the confirm modal only, sourced from the hidden inline block above).
-            {%- endcomment -%}
-            {%- assign variation_desc_raw = product.metafields.custom.variation.value | default: '' | strip -%}
-            {%- if variation_desc_raw != blank -%}
-              <section class="apgo-tab-variation" aria-label="Variation contents">
-                <h4 class="apgo-tab-variation__title">{{ 'product.variation' | t }}</h4>
-                <div class="apgo-tab-variation__body">{{ variation_desc_raw | escape | newline_to_br }}</div>
-              </section>
-            {%- endif -%}
           </div>
 
           <div
