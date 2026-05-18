@@ -172,6 +172,20 @@
     background: var(--mc-z-card-bg);
     border-radius: 0 0 var(--mc-card-radius) var(--mc-card-radius);
   }
+  /* Product title — solid white. Matches the listing page (which uses
+     rgba(245, 240, 230, 0.96)). Without this the title inherits dim
+     colour from the section's color-scheme tokens. */
+  results-list.main-collection-zgrid .product-grid__item .product-grid__card .h4,
+  results-list.main-collection-zgrid .product-grid__item .product-grid__card .text-block:is(.h4, .h5),
+  results-list.main-collection-zgrid .product-grid__item .product-grid__card .text-block:is(.h4, .h5) > *,
+  results-list.main-collection-zgrid .product-grid__item .product-grid__card a,
+  results-list.main-collection-zgrid .product-grid__item .product-grid__card a:visited {
+    color: rgba(245, 240, 230, 0.96) !important;
+    text-decoration: none !important;
+  }
+  results-list.main-collection-zgrid .product-grid__item .product-grid__card a:hover {
+    color: #f08418 !important;
+  }
 
   /* Pagination */
   results-list .pagination,
