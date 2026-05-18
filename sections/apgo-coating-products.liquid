@@ -184,7 +184,8 @@
         root.classList.remove('is-locked');
         root.classList.add('is-unlocked');
         if (status) status.textContent = `🔓 {{ 'apgo_cart.free_shipping_unlocked_label' | t | escape }}`;
-        msg.textContent = `{{ 'apgo_cart.free_shipping_unlocked' | t | escape }}`;
+        /* Status row already shows "Unlocked" — drop the duplicate message row. */
+        msg.textContent = '';
       } else {
         root.classList.remove('is-unlocked');
         root.classList.add('is-locked');
