@@ -107,6 +107,27 @@
       }
     </style>
 
+    {%- comment -%}
+      Scroll-up reveal for the header + marquee stack.
+      Both keep `position: sticky` (defined in their own sections) so layout
+      flow is unaffected. We add a transform that slides them off-screen when
+      `<body class="apgo-scroll-hide">` is set by assets/apgo-scroll-hide.js.
+      The transform distance comes from a JS-computed --apgo-stack-h variable
+      so the slide-out exactly matches the live combined height.
+    {%- endcomment -%}
+    <style id="apgo-scroll-hide-css">
+      #header-group,
+      #shopify-section-free-shipping-popup {
+        transition: transform .28s cubic-bezier(0.22, 1, 0.36, 1);
+        will-change: transform;
+      }
+      body.apgo-scroll-hide #header-group,
+      body.apgo-scroll-hide #shopify-section-free-shipping-popup {
+        transform: translateY(calc(-1 * var(--apgo-stack-h, 120px)));
+      }
+    </style>
+    <script src="{{ 'apgo-scroll-hide.js' | asset_url }}" defer></script>
+
     {% render 'search-modal' %}
     {% render 'apgo-cart-toast' %}
     {% if template.name == 'collection' %}
