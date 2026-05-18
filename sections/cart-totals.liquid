@@ -345,6 +345,74 @@
   .cart-totals--standalone:hover {
     box-shadow: none !important;
   }
+
+  /* =========================================================
+     APGO theme overlay (2026-05) — same dark-card + orange-accent
+     language used on the PDP and cart items list above.
+     ========================================================= */
+  /* Wrap the breakdown rows in a soft dark card */
+  .cart-totals--standalone .cart-totals__breakdown {
+    background: rgba(255, 255, 255, 0.025) !important;
+    border: 1px solid rgba(255, 255, 255, 0.07) !important;
+    border-radius: 14px !important;
+    padding: 14px 16px !important;
+    margin-bottom: 14px !important;
+  }
+  .cart-totals--standalone .cart-totals__breakdown .cart__summary-item {
+    padding: 6px 0 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+  }
+  .cart-totals--standalone .cart-totals__breakdown .cart__summary-item:last-child {
+    border-bottom: 0 !important;
+  }
+  .cart-totals--standalone .cart__label {
+    color: rgba(255, 255, 255, 0.7) !important;
+    font-weight: 500 !important;
+  }
+  .cart-totals--standalone .cart__value {
+    color: rgba(255, 255, 255, 0.95) !important;
+    font-weight: 600 !important;
+  }
+
+  /* Estimated total — primary orange card */
+  .cart-totals--standalone .cart-totals__estimated-card {
+    background: rgba(255, 255, 255, 0.025) !important;
+    border: 1px solid rgba(240, 132, 24, 0.35) !important;
+    border-radius: 14px !important;
+    padding: 18px 20px !important;
+    position: relative !important;
+    overflow: hidden !important;
+  }
+  .cart-totals--standalone .cart-totals__estimated-card::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 3px !important;
+    background: linear-gradient(90deg, #f08418, #ff9a3c) !important;
+  }
+  .cart-totals--standalone .cart-totals__estimated-title,
+  .cart-totals--standalone .cart-totals__estimated-price {
+    color: #f08418 !important;
+    -webkit-text-fill-color: #f08418 !important;
+  }
+
+  /* Cart-totals actions row (note + discount) — soft card */
+  .cart-totals--standalone .cart-totals__actions {
+    background: rgba(255, 255, 255, 0.025) !important;
+    border: 1px solid rgba(255, 255, 255, 0.07) !important;
+    border-radius: 14px !important;
+    padding: 14px 16px !important;
+    margin: 0 0 14px 0 !important;
+  }
+
+  /* Edge alignment with cart items + free-shipping bar above */
+  @media (max-width: 749px) {
+    .cart-totals--standalone {
+      padding-inline: 0 !important;
+    }
+  }
   {% endstylesheet %}
   
   {% javascript %}

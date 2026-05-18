@@ -27,18 +27,32 @@
     padding: 0 var(--apgo-cart-inline-space);
   }
 
+  /* APGO theme — soft dark card with subtle border, orange accent bar on top */
   .apgo-combined-goal__inner {
-    background: #0f0f0f;
-    border: 1px solid #404040;
-    border-radius: 16px;
+    position: relative;
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 14px;
     padding: 18px;
+    overflow: hidden;
+  }
+  .apgo-combined-goal__inner::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #f08418, #ff9a3c);
   }
 
   .apgo-combined-goal__title {
     margin: 0 0 12px;
-    font-size: 16px;
+    font-size: 13px;
     font-weight: 700;
-    color: {{ section.settings.text_color }};
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #ffffff;
   }
 
   .apgo-combined-goal__track {
@@ -109,9 +123,12 @@
       0 0 48px rgb(22 163 74 / 45%);
   }
 
-@media (max-width: 768px) {
+@media (max-width: 749px) {
+    /* Match the cart-items + cart-totals edge — they zero padding-inline
+       on mobile and live inside the section wrapper's own padding. */
     .apgo-combined-goal {
-    padding: 0 12px;
+      padding: 0 !important;
+      margin-top: 14px;
     }
   }
 
