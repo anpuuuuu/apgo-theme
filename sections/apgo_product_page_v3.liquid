@@ -3195,9 +3195,14 @@
     display: inline-flex;
     align-items: center;
     padding: 5px 12px;
+    /* Force transparent background so when the chip is rendered as a <button>
+       (confirm modal markup) it doesn't pick up the UA's default light-grey button
+       background. The inline picker uses <label> so this was a no-op before. */
+    background: transparent;
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 999px;
     color: rgba(255, 255, 255, 0.7);
+    font-family: inherit;
     font-size: 12px;
     cursor: pointer;
     transition: background .15s ease, border-color .15s ease, color .15s ease;
@@ -3375,10 +3380,11 @@
     .apgo-cc-pdp__cta-row { display: grid; }
   }
   .apgo-cc-pdp__cta {
-    padding: 12px;
-    border-radius: 10px;
-    font-size: 14px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
     font-weight: 600;
+    line-height: 1.2;
     cursor: pointer;
     transition: opacity .15s ease, transform .05s ease;
     border: 2px solid var(--primary-orange, #f08418);
@@ -3503,14 +3509,54 @@
   }
   /* The body content gets dropped in as plain HTML; first line bolder */
 
+  /* Product summary row above the variation block: small thumbnail + price.
+     Image is refreshed by syncConfirmModal() to the active variant's featured image. */
+  .apgo-cc-confirm-modal__summary {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  .apgo-cc-confirm-modal__thumb {
+    flex: 0 0 auto;
+    width: 64px;
+    height: 64px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .apgo-cc-confirm-modal__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .apgo-cc-confirm-modal__summary-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .apgo-cc-confirm-modal__price {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--primary-orange, #f08418);
+  }
+
   .apgo-cc-confirm-modal__actions {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 10px;
-    padding: 12px 20px calc(20px + env(safe-area-inset-bottom, 0px));
+    padding: 10px 20px calc(16px + env(safe-area-inset-bottom, 0px));
     border-top: 1px solid rgba(255, 255, 255, 0.06);
     background: #141414;
   }
+  /* Intent-based action visibility: only the button matching the buybar
+     button the user pressed is shown. The other stays in the DOM but hidden. */
+  .apgo-cc-confirm-modal[data-intent="add"] [data-apgo-cc-confirm-buy] { display: none; }
+  .apgo-cc-confirm-modal[data-intent="buy"] [data-apgo-cc-confirm-add] { display: none; }
 
   body.apgo-cc-confirm-open {
     overflow: hidden;
@@ -6296,11 +6342,35 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
       </div>
 
+      {%- comment -%}
+        Product summary above the variation block — variant-aware image + price.
+        Populated/updated in syncConfirmModal() from the active variant's
+        featured_image and price. Falls back to the product's main featured image
+        for variants without their own image.
+      {%- endcomment -%}
+      <div class="apgo-cc-confirm-modal__summary" data-apgo-cc-confirm-summary>
+        <div class="apgo-cc-confirm-modal__thumb">
+          <img data-apgo-cc-confirm-image
+               src="{{ product.featured_image | image_url: width: 200 }}"
+               alt="{{ product.title | escape }}"
+               loading="lazy"
+               width="64" height="64">
+        </div>
+        <div class="apgo-cc-confirm-modal__summary-info">
+          <span class="apgo-cc-confirm-modal__price" data-apgo-cc-confirm-price data-cents="{{ product.selected_or_first_available_variant.price }}">{{ product.selected_or_first_available_variant.price | money }}</span>
+        </div>
+      </div>
+
       <div class="apgo-cc-confirm-modal__variation" data-apgo-cc-confirm-variation>
         {%- comment -%} Populated by JS at open time — copy of the active variant's variation section {%- endcomment -%}
       </div>
     </div>
 
+    {%- comment -%}
+      Actions row — only ONE button is shown depending on which buybar button the
+      user pressed. Both are rendered; commitFromConfirm sets a `--intent` data
+      attribute on the modal and CSS hides the other. (Avoids re-binding handlers.)
+    {%- endcomment -%}
     <div class="apgo-cc-confirm-modal__actions">
       <button type="button" class="apgo-cc-pdp__cta apgo-cc-pdp__cta--secondary" data-apgo-cc-confirm-add>Add to cart</button>
       <button type="button" class="apgo-cc-pdp__cta apgo-cc-pdp__cta--primary" data-apgo-cc-confirm-buy>Buy now</button>
@@ -6708,6 +6778,8 @@ document.addEventListener('DOMContentLoaded', function() {
   var confirmBuyBtn     = confirmModal ? confirmModal.querySelector('[data-apgo-cc-confirm-buy]') : null;
   var confirmVariationEl= confirmModal ? confirmModal.querySelector('[data-apgo-cc-confirm-variation]') : null;
   var confirmGroups     = confirmModal ? confirmModal.querySelectorAll('[data-apgo-cc-confirm-option-group]') : [];
+  var confirmImageEl    = confirmModal ? confirmModal.querySelector('[data-apgo-cc-confirm-image]') : null;
+  var confirmPriceEl    = confirmModal ? confirmModal.querySelector('[data-apgo-cc-confirm-price]') : null;
 
   function syncConfirmModal() {
     if (!confirmModal) return;
@@ -6724,6 +6796,28 @@ document.addEventListener('DOMContentLoaded', function() {
         chip.classList.toggle('is-active', val === currentVal);
       });
     });
+    /* Mirror image + price from the current variant. Reads cents/img from the
+       same `variants` array + the inline price element so it always tracks the
+       live selection regardless of which input (chip click / swipe) drove it. */
+    var curOpts = currentOptionValues();
+    var curV = findVariant(curOpts);
+    if (curV) {
+      if (confirmPriceEl) {
+        confirmPriceEl.setAttribute('data-cents', curV.price);
+        confirmPriceEl.textContent = fmtMoney(curV.price);
+      }
+      if (confirmImageEl) {
+        var fimg = curV.featured_image || (curV.featured_media && curV.featured_media.preview_image);
+        var src = (fimg && fimg.src)
+                  || (priceEl && priceEl.closest('.apgo-product-section') && (priceEl.closest('.apgo-product-section').querySelector('.apgo-hero-visual img') || {}).src)
+                  || confirmImageEl.getAttribute('src');
+        if (src) {
+          /* Request a small width to keep payload tiny on mobile */
+          var sized = src.replace(/(\.[a-z]+)(\?|$)/i, '_200x$1$2');
+          if (confirmImageEl.getAttribute('src') !== sized) confirmImageEl.setAttribute('src', sized);
+        }
+      }
+    }
     /* Mirror the inline picker's currently-visible Variation section */
     if (confirmVariationEl) {
       var activeSection = document.querySelector('[data-apgo-cc-variation-sections] .apgo-cc-pdp__variation-section.is-active');
@@ -6735,11 +6829,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  function openConfirmModal() {
+  function openConfirmModal(intent) {
     if (!confirmModal) return;
     /* Desktop uses inline CTA buttons in the form, not the modal. Guard here
        so any accidental call from buybar / API consumers no-ops on desktop. */
     if (window.matchMedia && window.matchMedia('(min-width: 1024px)').matches) return;
+    /* Default to 'add' if no intent passed. The CSS data-intent rule hides
+       the non-matching button so the actions row only shows the relevant CTA. */
+    confirmModal.setAttribute('data-intent', intent === 'buy' ? 'buy' : 'add');
     syncConfirmModal();
     /* Seed modal qty from the hidden form qty (default 1) so it isn't a fresh value each time */
     if (confirmQtyInput && qtyInput) confirmQtyInput.value = parseInt(qtyInput.value, 10) || 1;
