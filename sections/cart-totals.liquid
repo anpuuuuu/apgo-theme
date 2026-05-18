@@ -34,8 +34,10 @@
         endif
       endif
       assign final_total_with_shipping_minor = cart.total_price
-      # Standalone estimated row: symbol only (e.g. RM…), not money_with_currency (… MYR)
-      assign total_price_formatted = final_total_with_shipping_minor | money
+      # Standalone estimated row: symbol only (e.g. RM…) — strip trailing
+      # currency iso code (… MYR / … SGD) when the shop's money format includes it.
+      assign total_price_formatted = final_total_with_shipping_minor | money | replace: cart.currency.iso_code, '' | strip
+      assign free_shipping_remaining_formatted = free_shipping_remaining_formatted | replace: cart.currency.iso_code, '' | strip
     -%}
 
     {%- if section.settings.show_note_or_code -%}
@@ -59,7 +61,7 @@
         <div class="cart-totals__breakdown">
           <div class="cart__summary-item cart__original-total">
             <span class="cart__label">{{ 'content.cart_subtotal' | t }}</span>
-            <span class="cart__value">{{ cart.original_total_price | money }}</span>
+            <span class="cart__value">{{ cart.original_total_price | money | replace: cart.currency.iso_code, '' | strip }}</span>
           </div>
 
           {% if is_sg_market or is_my_market %}
@@ -78,7 +80,7 @@
           {% if discount_total_minor > 0 %}
             <div class="cart__summary-item cart__discount-total">
               <span class="cart__label">{{ 'content.discount' | t }}</span>
-              <span class="cart__value">-{{ discount_total_minor | money }}</span>
+              <span class="cart__value">-{{ discount_total_minor | money | replace: cart.currency.iso_code, '' | strip }}</span>
             </div>
           {% endif %}
 
@@ -89,7 +91,7 @@
                   {{- 'icon-discount.svg' | inline_asset_content -}}
                   {{ discount.title | escape }}
                 </span>
-                <span class="cart__value">-{{ discount.total_allocated_amount | money }}</span>
+                <span class="cart__value">-{{ discount.total_allocated_amount | money | replace: cart.currency.iso_code, '' | strip }}</span>
               </div>
             {%- endfor -%}
           {%- endif -%}
