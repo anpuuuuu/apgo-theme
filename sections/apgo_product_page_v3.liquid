@@ -3388,19 +3388,18 @@
     bumped to solid white via .is-active. Keeps the eye on the relevant
     section without hiding the rest entirely.
   */
+  /* Only the active variant section is rendered. Non-active sections stay
+     in the DOM so the confirm modal can read their innerHTML, but are
+     visually removed from the inline picker layout. */
   .apgo-cc-pdp__variation-section.apgo-cc-pdp__variation-body {
-    color: rgba(255, 255, 255, 0.35);
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    display: none;
   }
-  .apgo-cc-pdp__variation-section.apgo-cc-pdp__variation-body:first-child {
+  .apgo-cc-pdp__variation-section.apgo-cc-pdp__variation-body.is-active {
+    display: block;
+    color: rgba(255, 255, 255, 0.92);
     margin-top: 0;
     padding-top: 0;
     border-top: none;
-  }
-  .apgo-cc-pdp__variation-section.apgo-cc-pdp__variation-body.is-active {
-    color: rgba(255, 255, 255, 0.92);
   }
 
   /* Shipping info row: label on the left, stock status pushed to the right */
@@ -3435,7 +3434,15 @@
     margin-top: 16px;
   }
   @media (min-width: 1024px) {
-    .apgo-cc-pdp__cta-row { display: grid; }
+    .apgo-cc-pdp__cta-row { display: grid; gap: 12px; margin-top: 20px; }
+    /* Make the inline desktop CTA buttons more prominent than the mobile/modal
+       variants — bigger padding + font, slightly larger radius. */
+    .apgo-cc-pdp__cta-row .apgo-cc-pdp__cta {
+      padding: 14px 18px;
+      font-size: 15px;
+      border-radius: 10px;
+      letter-spacing: 0.02em;
+    }
   }
   .apgo-cc-pdp__cta {
     padding: 8px 12px;
