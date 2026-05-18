@@ -109,7 +109,7 @@
           "button_icon": "chat_bubble",
           "button_text": "chat_with_us",
           "button_horizontal_position": "bottom_right",
-          "button_vertical_position": "higher",
+          "button_vertical_position": "highest",
           "greeting_message": ""
         }
       }
