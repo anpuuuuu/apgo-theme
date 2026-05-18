@@ -323,20 +323,23 @@
     .cart-items__table-row {
       display: grid !important;
       grid-template-columns: 33% minmax(0, 1fr) !important;
-      grid-template-rows: auto !important;
-      grid-template-areas: 'media details' !important;
+      grid-template-rows: auto auto !important;
+      grid-template-areas:
+        'media details'
+        'media quantity' !important;
       column-gap: 12px !important;
-      row-gap: 0 !important;
-      align-items: stretch !important;
+      row-gap: 6px !important;
+      align-items: start !important;
       position: relative !important;
       padding: 12px !important;
       background: rgba(255, 255, 255, 0.025) !important;
       border: 1px solid rgba(255, 255, 255, 0.07) !important;
       border-radius: 12px !important;
     }
-    /* Image cell — square thumbnail */
+    /* Image cell — square thumbnail, spans both rows */
     .cart-items__media {
       grid-area: media !important;
+      grid-row: 1 / 3 !important;
       padding: 0 !important;
     }
     .cart-items__media-container {
@@ -355,8 +358,8 @@
     .cart-items__details {
       grid-area: details !important;
       min-width: 0 !important;
-      padding-right: 92px !important; /* room for the qty stepper anchored bottom-right */
-      padding-bottom: 32px !important;
+      padding-right: 0 !important;
+      padding-bottom: 0 !important;
       color: rgba(255, 255, 255, 0.95) !important;
     }
     .cart-items__details > p:first-child {
@@ -400,12 +403,11 @@
     .cart-items__price {
       display: none !important;
     }
-    /* Quantity stepper: anchor bottom-right of the card. Remove surrounding
-       border/background per request. */
+    /* Quantity stepper: row below the price, in the details column.
+       Borderless wrapper per request; small 24×24 +/- buttons. */
     .cart-items__quantity {
-      position: absolute !important;
-      right: 12px !important;
-      bottom: 12px !important;
+      grid-area: quantity !important;
+      position: static !important;
       display: flex !important;
       align-items: center !important;
       gap: 4px !important;
@@ -413,7 +415,7 @@
       border: 0 !important;
       padding: 0 !important;
       margin: 0 !important;
-      grid-area: auto !important;
+      justify-self: start !important;
     }
     /* Inner quantity-selector-component (custom element) */
     .cart-items__quantity .quantity-selector {
