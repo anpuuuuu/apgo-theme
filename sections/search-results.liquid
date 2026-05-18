@@ -52,6 +52,148 @@
   </div>
 </results-list>
 
+{% stylesheet %}
+  /* APGO theme — search results
+     Matches PDP / cart visual language: dark cards, orange accents,
+     rounded corners, orange focus/hover.
+     Scoped to results-list so it doesn't leak to other collection pages. */
+  results-list {
+    --apgo-cart-inline-space: clamp(12px, 2.2vw, 28px);
+  }
+
+  /* Empty-state title — orange-bar accent */
+  results-list .main-collection-grid__empty-title,
+  results-list .main-collection-grid__title {
+    position: relative;
+    padding-left: 14px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 14px;
+  }
+  results-list .main-collection-grid__empty-title::before,
+  results-list .main-collection-grid__title::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 18px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, #f08418, #ff9a3c);
+  }
+
+  /* Filter / sort bar pills */
+  results-list .filters,
+  results-list .facets-toolbar {
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 14px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+  }
+  results-list .filters button,
+  results-list .facets-toolbar button,
+  results-list .filters [type='button'],
+  results-list .facets-toolbar [type='button'] {
+    background: transparent;
+    color: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 13px;
+    transition: border-color .15s ease, color .15s ease, background .15s ease;
+  }
+  results-list .filters button:hover,
+  results-list .facets-toolbar button:hover {
+    color: #f08418;
+    border-color: #f08418;
+  }
+  results-list .filters [aria-pressed='true'],
+  results-list .facets-toolbar [aria-pressed='true'],
+  results-list .filters .is-active,
+  results-list .facets-toolbar .is-active {
+    background: rgba(240, 132, 24, 0.15) !important;
+    color: #f08418 !important;
+    border-color: #f08418 !important;
+  }
+
+  /* Product grid cards — soft dark card */
+  results-list .product-grid__item {
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: border-color .2s ease, transform .15s ease;
+  }
+  results-list .product-grid__item:hover {
+    border-color: rgba(240, 132, 24, 0.4);
+    transform: translateY(-2px);
+  }
+
+  /* Pagination */
+  results-list .pagination,
+  results-list nav[role='navigation'][aria-label*='ag' i] {
+    margin-top: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+  }
+  results-list .pagination a,
+  results-list .pagination span,
+  results-list nav[role='navigation'] a,
+  results-list nav[role='navigation'] span {
+    min-width: 36px;
+    height: 36px;
+    padding: 0 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    font-size: 13px;
+    transition: border-color .15s ease, color .15s ease, background .15s ease;
+  }
+  results-list .pagination a:hover,
+  results-list nav[role='navigation'] a:hover {
+    color: #f08418;
+    border-color: #f08418;
+  }
+  results-list .pagination [aria-current='page'],
+  results-list nav[role='navigation'] [aria-current='page'] {
+    background: linear-gradient(45deg, #f08418, #ff9a3c) !important;
+    color: #ffffff !important;
+    border-color: transparent !important;
+  }
+
+  /* Empty state container */
+  results-list .main-collection-grid__empty {
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 14px;
+    padding: 24px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  @media (max-width: 749px) {
+    results-list {
+      padding-inline: 0 !important;
+    }
+    results-list .filters,
+    results-list .facets-toolbar {
+      border-radius: 10px;
+      padding: 8px 10px;
+    }
+    results-list .product-grid__item {
+      border-radius: 10px;
+    }
+  }
+{% endstylesheet %}
+
 {% schema %}
 {
   "name": "t:names.search_results",

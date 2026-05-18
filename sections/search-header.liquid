@@ -24,6 +24,85 @@
   </div>
 </div>
 
+{% stylesheet %}
+  /* APGO theme — search header
+     Orange accent bar on the title, dark-card search input with
+     orange focus ring. Scoped to .search-page__header. */
+  .search-page__header {
+    padding-inline: clamp(12px, 2.2vw, 28px) !important;
+  }
+  .search-page__header > h1,
+  .search-page__header > h2,
+  .search-page__header > h3,
+  .search-page__header > h4,
+  .search-page__header [class*='heading'] h3 {
+    position: relative !important;
+    margin: 0 0 16px !important;
+    padding-left: 14px !important;
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.06em !important;
+    text-transform: uppercase !important;
+    color: #ffffff !important;
+  }
+  .search-page__header > h1::before,
+  .search-page__header > h2::before,
+  .search-page__header > h3::before,
+  .search-page__header > h4::before,
+  .search-page__header [class*='heading'] h3::before {
+    content: '' !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px !important;
+    height: 18px !important;
+    border-radius: 2px !important;
+    background: linear-gradient(180deg, #f08418, #ff9a3c) !important;
+  }
+
+  /* Search input — dark card with orange focus */
+  .search-page__header .search-page-input__parent {
+    position: relative !important;
+    max-width: 720px !important;
+  }
+  .search-page__header .search-page-input {
+    width: 100% !important;
+    padding: 14px 16px 14px 44px !important;
+    background: rgba(255, 255, 255, 0.025) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 12px !important;
+    color: #ffffff !important;
+    font-size: 15px !important;
+    transition: border-color .15s ease, box-shadow .15s ease !important;
+  }
+  .search-page__header .search-page-input::placeholder {
+    color: rgba(255, 255, 255, 0.45) !important;
+  }
+  .search-page__header .search-page-input:focus,
+  .search-page__header .search-page-input:focus-visible {
+    outline: none !important;
+    border-color: #f08418 !important;
+    box-shadow: 0 0 0 3px rgba(240, 132, 24, 0.18) !important;
+  }
+  .search-page__header .search__icon {
+    color: rgba(255, 255, 255, 0.6) !important;
+    left: 14px !important;
+  }
+  .search-page__header .search__reset-button {
+    color: rgba(255, 255, 255, 0.55) !important;
+  }
+  .search-page__header .search__reset-button:hover {
+    color: #f08418 !important;
+  }
+
+  @media (max-width: 749px) {
+    .search-page__header {
+      padding-inline: 0 !important;
+    }
+  }
+{% endstylesheet %}
+
 {% schema %}
 {
   "name": "t:names.search",
