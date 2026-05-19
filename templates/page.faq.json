@@ -242,7 +242,7 @@
         "whatsapp_display": "",
         "prefill_message": "",
         "cta_label": "Chat on WhatsApp",
-        "hours": "Mon–Fri · 9:00–18:00 (GMT+8)",
+        "hours": "Mon–Sun · 2:00–11:00 (GMT+8)",
         "qr_caption": "Scan to chat",
         "padding-block-start": 40,
         "padding-block-end": 40
