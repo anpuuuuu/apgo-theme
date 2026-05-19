@@ -1,0 +1,363 @@
+{%- comment -%}
+  APGO WhatsApp Contact section.
+  Designed to drop into /pages/contact (Find Us) as an additional block.
+  Renders: title, number, intro line, "Chat on WhatsApp" CTA pill (wa.me link),
+  optional QR image, optional business hours. Themed to match the rest of
+  the storefront (dark card, orange accents).
+{%- endcomment -%}
+
+{%- assign wa_raw = section.settings.whatsapp_number | default: '' -%}
+{%- assign wa_digits = wa_raw | replace: '+', '' | replace: ' ', '' | replace: '-', '' | replace: '(', '' | replace: ')' -%}
+{%- assign wa_display = section.settings.whatsapp_display | default: wa_raw -%}
+{%- assign wa_prefill = section.settings.prefill_message | default: '' | url_encode -%}
+
+<section
+  class="apgo-wa-contact spacing-style"
+  style="
+    --padding-block-start: {{ section.settings.padding-block-start }}px;
+    --padding-block-end: {{ section.settings.padding-block-end }}px;
+  "
+>
+  <div class="apgo-wa-contact__inner">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="apgo-wa-contact__heading">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+
+    {%- if section.settings.intro != blank -%}
+      <p class="apgo-wa-contact__intro">{{ section.settings.intro }}</p>
+    {%- endif -%}
+
+    <div class="apgo-wa-contact__card">
+      <div class="apgo-wa-contact__main">
+        {%- comment -%} WhatsApp icon {%- endcomment -%}
+        <div class="apgo-wa-contact__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19.05 4.91A9.82 9.82 0 0 0 12 2C6.5 2 2.07 6.45 2.06 11.93c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.93 9.93 0 0 0 4.74 1.21h.01c5.5 0 9.93-4.45 9.94-9.93a9.9 9.9 0 0 0-2.89-6.99Zm-7.05 15.31h-.01a8.27 8.27 0 0 1-4.21-1.16l-.3-.18-3.12.82.83-3.04-.2-.31a8.21 8.21 0 0 1-1.26-4.39c0-4.55 3.71-8.25 8.26-8.25a8.21 8.21 0 0 1 5.84 2.42 8.18 8.18 0 0 1 2.42 5.84c-.01 4.55-3.72 8.25-8.25 8.25Zm4.52-6.18c-.25-.12-1.47-.72-1.7-.81-.23-.08-.39-.12-.56.12-.16.25-.64.81-.79.97-.14.16-.29.18-.54.06a6.8 6.8 0 0 1-2-1.24 7.55 7.55 0 0 1-1.39-1.73c-.14-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.16.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.49-.41-.42-.56-.43h-.48c-.16 0-.43.06-.66.31-.23.25-.86.84-.86 2.06s.88 2.39 1 2.55c.12.16 1.74 2.66 4.21 3.73.59.25 1.05.41 1.41.52.59.19 1.13.16 1.55.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.1-.22-.16-.47-.28Z"/>
+          </svg>
+        </div>
+
+        <div class="apgo-wa-contact__body">
+          {%- if section.settings.subtitle != blank -%}
+            <span class="apgo-wa-contact__label">{{ section.settings.subtitle }}</span>
+          {%- endif -%}
+          {%- if wa_display != blank -%}
+            <a class="apgo-wa-contact__number" href="https://wa.me/{{ wa_digits }}{% if wa_prefill != blank %}?text={{ wa_prefill }}{% endif %}" target="_blank" rel="noopener">
+              {{ wa_display }}
+            </a>
+          {%- endif -%}
+          {%- if section.settings.hours != blank -%}
+            <span class="apgo-wa-contact__hours">{{ section.settings.hours }}</span>
+          {%- endif -%}
+        </div>
+
+        {%- if wa_digits != blank -%}
+          <a
+            class="apgo-wa-contact__cta"
+            href="https://wa.me/{{ wa_digits }}{% if wa_prefill != blank %}?text={{ wa_prefill }}{% endif %}"
+            target="_blank"
+            rel="noopener"
+          >
+            {{ section.settings.cta_label | default: 'Chat on WhatsApp' }}
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/>
+            </svg>
+          </a>
+        {%- endif -%}
+      </div>
+
+      {%- if section.settings.qr_image != blank -%}
+        <div class="apgo-wa-contact__qr">
+          <img
+            src="{{ section.settings.qr_image | image_url: width: 400 }}"
+            alt="WhatsApp QR — {{ wa_display | escape }}"
+            loading="lazy"
+            width="160"
+            height="160"
+          >
+          {%- if section.settings.qr_caption != blank -%}
+            <span class="apgo-wa-contact__qr-caption">{{ section.settings.qr_caption }}</span>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .apgo-wa-contact {
+    padding-block: var(--padding-block-start, 32px) var(--padding-block-end, 32px);
+    padding-inline: clamp(12px, 2.2vw, 28px);
+    color: #fff;
+  }
+  .apgo-wa-contact__inner {
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+  .apgo-wa-contact__heading {
+    position: relative;
+    margin: 0 0 8px;
+    padding-left: 16px;
+    font-size: clamp(20px, 3.4vw, 28px);
+    font-weight: 700;
+    color: #fff;
+  }
+  .apgo-wa-contact__heading::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 65%;
+    border-radius: 2px;
+    background: linear-gradient(180deg, #f08418, #ff9a3c);
+  }
+  .apgo-wa-contact__intro {
+    margin: 0 0 16px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  /* Card */
+  .apgo-wa-contact__card {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 24px;
+    padding: 22px 24px;
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .apgo-wa-contact__card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #25D366, #128C7E);
+  }
+
+  .apgo-wa-contact__main {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .apgo-wa-contact__icon {
+    flex: 0 0 auto;
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(135deg, #25D366, #128C7E);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(37, 211, 102, 0.35);
+  }
+  .apgo-wa-contact__body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .apgo-wa-contact__label {
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+  }
+  .apgo-wa-contact__number {
+    color: #fff;
+    font-size: clamp(18px, 3vw, 22px);
+    font-weight: 700;
+    text-decoration: none;
+    word-break: break-all;
+  }
+  .apgo-wa-contact__number:hover { color: #f08418; }
+  .apgo-wa-contact__hours {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 13px;
+    margin-top: 2px;
+  }
+
+  .apgo-wa-contact__cta {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 18px;
+    border-radius: 999px;
+    background: linear-gradient(45deg, #f08418, #ff9a3c);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+    white-space: nowrap;
+  }
+  .apgo-wa-contact__cta:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 22px rgba(240, 132, 24, 0.35);
+    filter: brightness(1.05);
+  }
+
+  /* QR */
+  .apgo-wa-contact__qr {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 10px;
+    background: #fff;
+    border-radius: 12px;
+  }
+  .apgo-wa-contact__qr img {
+    display: block;
+    width: 140px;
+    height: 140px;
+    object-fit: contain;
+  }
+  .apgo-wa-contact__qr-caption {
+    color: #111;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  @media (max-width: 749px) {
+    .apgo-wa-contact { padding-inline: 0; }
+    .apgo-wa-contact__card {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 16px;
+      padding: 18px;
+      border-radius: 12px;
+    }
+    .apgo-wa-contact__main {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .apgo-wa-contact__cta {
+      width: 100%;
+      justify-content: center;
+    }
+    .apgo-wa-contact__qr {
+      align-self: center;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "APGO WhatsApp Contact",
+  "tag": "section",
+  "class": "section-apgo-wa-contact",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Chat with us on WhatsApp"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle (above number)",
+      "default": "WhatsApp"
+    },
+    {
+      "type": "textarea",
+      "id": "intro",
+      "label": "Intro line",
+      "default": "Have a question or need help with an order? Send us a message — we usually reply within an hour."
+    },
+    {
+      "type": "header",
+      "content": "WhatsApp number"
+    },
+    {
+      "type": "text",
+      "id": "whatsapp_number",
+      "label": "WhatsApp number (international format, e.g. 60123456789)",
+      "info": "Used in the wa.me link. Strip + / spaces / dashes automatically."
+    },
+    {
+      "type": "text",
+      "id": "whatsapp_display",
+      "label": "Display format",
+      "info": "How it shows on the page, e.g. +60 12-345 6789. Leave blank to show the raw number."
+    },
+    {
+      "type": "textarea",
+      "id": "prefill_message",
+      "label": "Pre-filled message (optional)",
+      "info": "Auto-fills the user's WhatsApp message box when they tap the CTA."
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "CTA button label",
+      "default": "Chat on WhatsApp"
+    },
+    {
+      "type": "text",
+      "id": "hours",
+      "label": "Business hours (optional)",
+      "default": "Mon–Fri · 9:00–18:00 (GMT+8)"
+    },
+    {
+      "type": "header",
+      "content": "QR code (optional)"
+    },
+    {
+      "type": "image_picker",
+      "id": "qr_image",
+      "label": "QR code image"
+    },
+    {
+      "type": "text",
+      "id": "qr_caption",
+      "label": "QR caption",
+      "default": "Scan to chat"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "presets": [
+    {
+      "name": "APGO WhatsApp Contact"
+    }
+  ]
+}
+{% endschema %}
