@@ -230,9 +230,27 @@
         "heading": "F.A.Q.",
         "color_scheme": "scheme-1"
       }
+    },
+    "apgo_whatsapp_contact_JqDY7a": {
+      "type": "apgo-whatsapp-contact",
+      "name": "APGO WhatsApp Contact",
+      "settings": {
+        "heading": "Chat with us on WhatsApp",
+        "subtitle": "WhatsApp",
+        "intro": "Have a question or need help with an order? Send us a message — we usually reply within an hour.",
+        "whatsapp_number": "",
+        "whatsapp_display": "",
+        "prefill_message": "",
+        "cta_label": "Chat on WhatsApp",
+        "hours": "Mon–Fri · 9:00–18:00 (GMT+8)",
+        "qr_caption": "Scan to chat",
+        "padding-block-start": 40,
+        "padding-block-end": 40
+      }
     }
   },
   "order": [
-    "faq_main"
+    "faq_main",
+    "apgo_whatsapp_contact_JqDY7a"
   ]
 }
