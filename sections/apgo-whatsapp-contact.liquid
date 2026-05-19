@@ -243,12 +243,19 @@
       padding: 18px;
       border-radius: 12px;
     }
+    /* Icon + label/number stay on the same row; CTA wraps to its own row */
     .apgo-wa-contact__main {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 12px;
+      flex-direction: row;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+    .apgo-wa-contact__body {
+      flex: 1 1 0;
+      min-width: 0;
     }
     .apgo-wa-contact__cta {
+      flex-basis: 100%;
       width: 100%;
       justify-content: center;
     }
