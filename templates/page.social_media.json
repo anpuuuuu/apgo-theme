@@ -170,12 +170,30 @@
       "settings": {
         "heading": "JOIN OUR SOCIAL"
       }
+    },
+    "apgo_whatsapp_contact_VYNWpt": {
+      "type": "apgo-whatsapp-contact",
+      "name": "APGO WhatsApp Contact",
+      "settings": {
+        "heading": "Chat with us on WhatsApp",
+        "subtitle": "WhatsApp",
+        "intro": "Have a question or need help with an order? Send us a message — we usually reply within an hour.",
+        "whatsapp_number": "+60 12-7900 170",
+        "whatsapp_display": "",
+        "prefill_message": "",
+        "cta_label": "Chat on WhatsApp",
+        "hours": "Mon–Sun · 2:00–12:00 (GMT+8)",
+        "qr_caption": "Scan to chat",
+        "padding-block-start": 40,
+        "padding-block-end": 40
+      }
     }
   },
   "order": [
     "shogun-helper",
     "main",
     "shogun-optimizer",
-    "social_media_GBjLwC"
+    "social_media_GBjLwC",
+    "apgo_whatsapp_contact_VYNWpt"
   ]
 }
