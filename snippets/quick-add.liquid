@@ -372,4 +372,31 @@
     width: 1.1em;
     height: 1.1em;
   }
+
+  /* =========================================================
+     APGO theme — orange round outline for the quick-add button
+     on collection / search product cards.
+     ========================================================= */
+  .quick-add .quick-add__button,
+  .quick-add.quick-add--price-row .quick-add__button {
+    background: transparent !important;
+    color: #f08418 !important;
+    border: 1.5px solid #f08418 !important;
+    box-shadow: none !important;
+    transition: background .15s ease, color .15s ease, transform .05s ease, box-shadow .15s ease !important;
+  }
+  .quick-add .quick-add__button:hover,
+  .quick-add.quick-add--price-row .quick-add__button:hover {
+    background: rgba(240, 132, 24, 0.12) !important;
+    color: #f08418 !important;
+    box-shadow: 0 0 0 4px rgba(240, 132, 24, 0.10) !important;
+  }
+  .quick-add .quick-add__button:active,
+  .quick-add.quick-add--price-row .quick-add__button:active {
+    transform: scale(0.96) !important;
+  }
+  .quick-add .quick-add__button .add-to-cart-icon,
+  .quick-add .quick-add__button .add-to-cart-icon svg {
+    color: #f08418 !important;
+  }
 {% endstylesheet %}
