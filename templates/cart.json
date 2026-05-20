@@ -131,11 +131,6 @@
         "products_visible_mobile": 1.5
       }
     },
-    "checkout_prefill_mH8EUg": {
-      "type": "checkout-prefill",
-      "name": "Shipping Address",
-      "settings": {}
-    },
     "cart_cta_aCdf4g": {
       "type": "cart-cta",
       "name": "Cart CTA (Standalone)",
@@ -151,7 +146,6 @@
     "custom_liquid_QNhCUK",
     "cart_totals_Cya3eE",
     "cart_upsell_recommendations_L4gQhn",
-    "checkout_prefill_mH8EUg",
     "cart_cta_aCdf4g"
   ]
 }
