@@ -161,8 +161,24 @@
       return null;
     };
 
-    const formatMoney = (minor, currency) =>
-      new Intl.NumberFormat(document.documentElement.lang || 'en', { style: 'currency', currency }).format((minor || 0) / 100);
+    /* Format with a market-specific currency symbol instead of the ISO code
+       Intl outputs (which gave "MYR 772.00"). Override MYR → "RM", SGD → "S$";
+       fall back to narrowSymbol for any other currency. */
+    const formatMoney = (minor, currency) => {
+      const amount = (minor || 0) / 100;
+      const fixed = amount.toLocaleString(document.documentElement.lang || 'en', {
+        minimumFractionDigits: 2, maximumFractionDigits: 2
+      });
+      if (currency === 'MYR') return `RM ${fixed}`;
+      if (currency === 'SGD') return `S$ ${fixed}`;
+      try {
+        return new Intl.NumberFormat(document.documentElement.lang || 'en', {
+          style: 'currency', currency, currencyDisplay: 'narrowSymbol'
+        }).format(amount);
+      } catch (_) {
+        return `${currency} ${fixed}`;
+      }
+    };
 
     const render = (subtotalMinor) => {
       const rule = getRule(country);

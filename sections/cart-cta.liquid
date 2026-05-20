@@ -17,10 +17,12 @@
       </div>
     {%- endif -%}
     {%- comment -%}
-      Trust row — replaces the generic "Safe & Secure Checkout" line with
-      explicit signals: SSL encryption, Shopify-secured payment, buyer
-      protection / return guarantee. Inline SVGs to avoid extra requests.
+      Trust block — "Safe & Secure Checkout. We value your privacy." kept
+      as a heading on top, followed by 3 explicit signals (SSL encryption,
+      Shopify-secured payment, buyer protection). Inline SVGs avoid extra
+      requests.
     {%- endcomment -%}
+    <p class="cart-cta__trust-title">{{ 'content.checkout_redirect_notice' | t }}</p>
     <ul class="cart-cta__trust" role="list">
       <li class="cart-cta__trust-item">
         <span class="cart-cta__trust-icon" aria-hidden="true">
@@ -190,6 +192,15 @@
     margin-right: auto !important;
   }
 
+  /* Trust title — "Safe & Secure Checkout. We value your privacy." */
+  .cart-cta .cart-cta__trust-title {
+    margin: 14px auto 6px !important;
+    text-align: center !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: rgba(255, 255, 255, 0.85) !important;
+    letter-spacing: 0.01em !important;
+  }
   /* Trust row under the Checkout button — SSL / Shopify Payments / Buyer protection */
   .cart-cta .cart-cta__trust {
     display: flex !important;
@@ -197,7 +208,7 @@
     justify-content: center !important;
     align-items: center !important;
     gap: 6px 10px !important;
-    margin: 14px auto 0 !important;
+    margin: 0 auto !important;
     padding: 0 !important;
     max-width: 640px !important;
     list-style: none !important;
@@ -238,27 +249,36 @@
     #checkout-standalone.cart__checkout-button {
       padding: 18px 32px !important;
       font-size: 16px !important;
-      margin: 24px auto 32px auto !important;
+      /* Pull trust block closer to the CTA on mobile */
+      margin: 24px auto 8px auto !important;
       border-radius: 14px !important;
     }
-    
+
     .cart-cta {
-      margin: 24px 0 32px 0;
+      margin: 24px 0 24px 0;
+    }
+    /* Tighter spacing between CTA, trust title, and trust row on mobile */
+    .cart-cta .cart-cta__trust-title {
+      margin: 6px auto 4px !important;
+      font-size: 12px !important;
     }
   }
-  
+
   @media (max-width: 480px) {
     .cart-cta .cart__checkout-button,
     .cart-cta .button,
     #checkout-standalone.cart__checkout-button {
       padding: 16px 28px !important;
       font-size: 15px !important;
-      margin: 20px auto 28px auto !important;
+      margin: 20px auto 6px auto !important;
       border-radius: 12px !important;
     }
-    
+
     .cart-cta {
-      margin: 20px 0 28px 0;
+      margin: 20px 0 20px 0;
+    }
+    .cart-cta .cart-cta__trust-title {
+      margin: 4px auto 2px !important;
     }
   }
   
