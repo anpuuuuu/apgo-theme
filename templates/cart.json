@@ -92,6 +92,7 @@
     },
     "apgo_checkout_steps_x7K2pQ": {
       "type": "apgo-cart-checkout-steps",
+      "disabled": true,
       "name": "Almost There — Checkout Steps",
       "settings": {
         "heading": "Almost there — just one step left",
