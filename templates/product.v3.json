@@ -22,7 +22,7 @@
         "shipping_label": "2–3 business days",
         "deal_label": "Limited time deal",
         "deal_end_at": "",
-        "deal_evergreen_hours": 72,
+        "deal_evergreen_hours": 0,
         "deal_loading_text": "Ends soon",
         "deal_aria_label": "Deal countdown",
         "show_promo_pills": false,
