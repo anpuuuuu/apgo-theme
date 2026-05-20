@@ -100,9 +100,9 @@
         "step_1_title": "Cart reviewed",
         "step_1_sub": "Your items are saved and ready",
         "step_2_title": "Click \"Check out\"",
-        "step_2_sub": "Enter shipping info and pick a preferred payment method at checkout page",
+        "step_2_sub": "Click button below and enter shipping info",
         "step_3_title": "Order confirmed",
-        "step_3_sub": "Confirmation emailed instantly <br>We ship in 2–3 days",
+        "step_3_sub": "Confirmation emailed instantly<br> We ship in 2–3 days",
         "footnote": "",
         "padding-block-start": 8,
         "padding-block-end": 8
