@@ -378,16 +378,16 @@
     z-index: 2 !important;
   }
 
-  /* Breakdown rows (subtotal / shipping goal / discount) */
+  /* Breakdown rows (subtotal / shipping goal / discount) — tightened */
   .cart-totals--standalone .cart-totals__breakdown {
     background: transparent !important;
     border: 0 !important;
     border-radius: 0 !important;
-    padding: 14px 18px !important;
+    padding: 12px 16px 4px !important;
     margin: 0 !important;
   }
   .cart-totals--standalone .cart-totals__breakdown .cart__summary-item {
-    padding: 6px 0 !important;
+    padding: 4px 0 !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
   }
   .cart-totals--standalone .cart-totals__breakdown .cart__summary-item:last-child {
@@ -402,13 +402,12 @@
     font-weight: 600 !important;
   }
 
-  /* Estimated total — same card, divider is the orange accent line */
+  /* Estimated total — same card, no divider between breakdown and total */
   .cart-totals--standalone .cart-totals__estimated-card {
     background: transparent !important;
     border: 0 !important;
-    border-top: 2px solid #f08418 !important;
     border-radius: 0 !important;
-    padding: 18px 20px !important;
+    padding: 6px 16px 14px !important;
     position: relative !important;
     overflow: visible !important;
   }
