@@ -1,13 +1,8 @@
 {%- comment -%}
-  APGO Cart — "Almost there" 3-step checkout primer.
-
-  Sits between the cart totals and the Checkout CTA. Tells the customer
-  there's only one step left and previews what they'll do on the
-  Shopify-hosted checkout (shipping info + secure payment), reducing
-  checkout anxiety right before the final click.
-
-  All copy is admin-editable via section schema so the team can A/B test,
-  localize, or seasonally tweak without touching the file.
+  APGO Cart — simplified "One step left" primer.
+  Single-line banner with an icon that sits between the cart totals and
+  the Checkout CTA. Aims to nudge the customer through the final click
+  without overwhelming the page.
 {%- endcomment -%}
 
 <section
@@ -17,70 +12,22 @@
     --padding-block-end: {{ section.settings.padding-block-end }}px;
   "
 >
-  <div class="apgo-checkout-steps__inner">
-    {%- if section.settings.heading != blank -%}
-      <h3 class="apgo-checkout-steps__heading">
-        {%- if section.settings.heading_icon != blank -%}
-          <span class="apgo-checkout-steps__heading-icon" aria-hidden="true">{{ section.settings.heading_icon }}</span>
-        {%- endif -%}
-        {{ section.settings.heading }}
-      </h3>
-    {%- endif -%}
+  <div class="apgo-checkout-steps__banner">
+    <span class="apgo-checkout-steps__icon" aria-hidden="true">
+      {%- comment -%} Lightning bolt = "fast / one step" {%- endcomment -%}
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" fill="currentColor"/>
+      </svg>
+    </span>
 
-    {%- if section.settings.subtitle != blank -%}
-      <p class="apgo-checkout-steps__subtitle">{{ section.settings.subtitle }}</p>
-    {%- endif -%}
-
-    <ol class="apgo-checkout-steps__list" role="list">
-      {%- comment -%} Step 1 — done {%- endcomment -%}
-      <li class="apgo-checkout-steps__item apgo-checkout-steps__item--done">
-        <span class="apgo-checkout-steps__dot" aria-hidden="true">
-          <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M13.25 4.75L6.5 12.25L2.75 8.5"/>
-          </svg>
-        </span>
-        <div class="apgo-checkout-steps__body">
-          <span class="apgo-checkout-steps__step-label">Step 1</span>
-          <span class="apgo-checkout-steps__step-title">{{ section.settings.step_1_title }}</span>
-          <span class="apgo-checkout-steps__step-sub">{{ section.settings.step_1_sub }}</span>
-        </div>
-      </li>
-
-      {%- comment -%} Step 2 — current {%- endcomment -%}
-      <li class="apgo-checkout-steps__item apgo-checkout-steps__item--current">
-        <span class="apgo-checkout-steps__dot" aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="6" width="18" height="13" rx="2"/>
-            <line x1="3" y1="11" x2="21" y2="11"/>
-          </svg>
-        </span>
-        <div class="apgo-checkout-steps__body">
-          <span class="apgo-checkout-steps__step-label">Step 2 · You are here</span>
-          <span class="apgo-checkout-steps__step-title">{{ section.settings.step_2_title }}</span>
-          <span class="apgo-checkout-steps__step-sub">{{ section.settings.step_2_sub }}</span>
-        </div>
-      </li>
-
-      {%- comment -%} Step 3 — pending {%- endcomment -%}
-      <li class="apgo-checkout-steps__item apgo-checkout-steps__item--pending">
-        <span class="apgo-checkout-steps__dot" aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 7h13l5 5v6a2 2 0 0 1-2 2h-1"/>
-            <circle cx="7" cy="20" r="2"/>
-            <circle cx="17" cy="20" r="2"/>
-          </svg>
-        </span>
-        <div class="apgo-checkout-steps__body">
-          <span class="apgo-checkout-steps__step-label">Step 3</span>
-          <span class="apgo-checkout-steps__step-title">{{ section.settings.step_3_title }}</span>
-          <span class="apgo-checkout-steps__step-sub">{{ section.settings.step_3_sub }}</span>
-        </div>
-      </li>
-    </ol>
-
-    {%- if section.settings.footnote != blank -%}
-      <p class="apgo-checkout-steps__footnote">{{ section.settings.footnote }}</p>
-    {%- endif -%}
+    <p class="apgo-checkout-steps__text">
+      {%- if section.settings.lead_text != blank -%}
+        <strong class="apgo-checkout-steps__lead">{{ section.settings.lead_text }}</strong>
+      {%- endif -%}
+      {%- if section.settings.body_text != blank -%}
+        <span class="apgo-checkout-steps__body">{{ section.settings.body_text }}</span>
+      {%- endif -%}
+    </p>
   </div>
 </section>
 
@@ -90,17 +37,20 @@
     padding-inline: clamp(12px, 2.2vw, 28px);
     color: #fff;
   }
-  .apgo-checkout-steps__inner {
+  .apgo-checkout-steps__banner {
     position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
     margin: 0 auto;
     max-width: 1200px;
+    padding: 14px 18px;
     background: rgba(255, 255, 255, 0.025);
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    border-radius: 14px;
-    padding: 18px 22px 22px;
+    border: 1px solid rgba(240, 132, 24, 0.35);
+    border-radius: 12px;
     overflow: hidden;
   }
-  .apgo-checkout-steps__inner::before {
+  .apgo-checkout-steps__banner::before {
     content: '';
     position: absolute;
     top: 0;
@@ -109,174 +59,44 @@
     height: 3px;
     background: linear-gradient(90deg, #f08418, #ff9a3c);
   }
-
-  .apgo-checkout-steps__heading {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    position: relative;
-    margin: 0 0 6px;
-    padding-left: 14px;
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: #ffffff;
-  }
-  .apgo-checkout-steps__heading::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 4px;
-    height: 16px;
-    border-radius: 2px;
-    background: linear-gradient(180deg, #f08418, #ff9a3c);
-  }
-  .apgo-checkout-steps__heading-icon {
-    font-size: 1.1em;
-    line-height: 1;
-  }
-  .apgo-checkout-steps__subtitle {
-    margin: 0 0 14px;
-    color: rgba(255, 255, 255, 0.65);
-    font-size: 13px;
-    line-height: 1.5;
-  }
-
-  /* Steps — horizontal on desktop, vertical on mobile */
-  .apgo-checkout-steps__list {
-    --apgo-step-dot: 28px;
-    position: relative;
-    display: flex;
-    justify-content: space-between;
-    gap: 14px;
-    list-style: none;
-    margin: 0;
-    padding: 6px 0 0;
-  }
-  /* Connecting line behind the dots (desktop only) */
-  .apgo-checkout-steps__list::before {
-    content: '';
-    position: absolute;
-    top: calc(6px + var(--apgo-step-dot) / 2 - 1px);
-    left: 14%;
-    right: 14%;
-    height: 2px;
-    background: linear-gradient(90deg, #f08418 0%, #f08418 50%, rgba(255, 255, 255, 0.12) 50%, rgba(255, 255, 255, 0.12) 100%);
-    z-index: 0;
-  }
-
-  .apgo-checkout-steps__item {
-    position: relative;
-    z-index: 1;
-    flex: 1 1 0;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    text-align: center;
-  }
-  .apgo-checkout-steps__dot {
+  .apgo-checkout-steps__icon {
     flex: 0 0 auto;
-    width: var(--apgo-step-dot);
-    height: var(--apgo-step-dot);
-    border-radius: 999px;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1.5px solid rgba(255, 255, 255, 0.18);
-    color: rgba(255, 255, 255, 0.6);
-    transition: transform .15s ease, box-shadow .2s ease;
-  }
-  .apgo-checkout-steps__item--done .apgo-checkout-steps__dot {
     background: linear-gradient(135deg, #f08418, #ff9a3c);
-    border-color: transparent;
     color: #fff;
+    box-shadow: 0 4px 14px rgba(240, 132, 24, 0.4);
   }
-  .apgo-checkout-steps__item--current .apgo-checkout-steps__dot {
-    background: #0f0f0f;
-    border-color: #f08418;
-    color: #f08418;
-    box-shadow: 0 0 0 4px rgba(240, 132, 24, 0.18), 0 0 18px rgba(240, 132, 24, 0.45);
-    animation: apgoStepPulse 2.4s ease-in-out infinite;
-  }
-  @keyframes apgoStepPulse {
-    0%, 100% { box-shadow: 0 0 0 4px rgba(240, 132, 24, 0.18), 0 0 18px rgba(240, 132, 24, 0.45); }
-    50%      { box-shadow: 0 0 0 6px rgba(240, 132, 24, 0.22), 0 0 26px rgba(240, 132, 24, 0.60); }
-  }
-
-  .apgo-checkout-steps__body {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
-  }
-  .apgo-checkout-steps__step-label {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.5);
-  }
-  .apgo-checkout-steps__item--current .apgo-checkout-steps__step-label {
-    color: #f08418;
-  }
-  .apgo-checkout-steps__step-title {
+  .apgo-checkout-steps__text {
+    margin: 0;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.9);
     font-size: 14px;
+  }
+  .apgo-checkout-steps__lead {
+    color: #f08418;
     font-weight: 700;
-    color: #fff;
+    margin-right: 4px;
   }
-  .apgo-checkout-steps__step-sub {
-    font-size: 12px;
-    line-height: 1.4;
-    color: rgba(255, 255, 255, 0.6);
+  .apgo-checkout-steps__body {
+    color: rgba(255, 255, 255, 0.8);
   }
-
-  .apgo-checkout-steps__footnote {
-    margin: 18px 0 0;
-    padding: 12px 14px;
-    background: rgba(240, 132, 24, 0.08);
-    border: 1px solid rgba(240, 132, 24, 0.25);
-    border-radius: 10px;
-    color: rgba(255, 255, 255, 0.85);
-    font-size: 13px;
-    line-height: 1.55;
-    text-align: center;
-  }
-
-  /* Mobile: stack vertically with a left-aligned timeline */
   @media (max-width: 749px) {
     .apgo-checkout-steps { padding-inline: 0; }
-    .apgo-checkout-steps__inner {
-      padding: 16px 16px 18px;
-      border-radius: 12px;
+    .apgo-checkout-steps__banner {
+      padding: 12px 14px;
+      gap: 10px;
+      border-radius: 10px;
     }
-    .apgo-checkout-steps__list {
-      flex-direction: column;
-      gap: 12px;
-      padding-top: 4px;
+    .apgo-checkout-steps__icon {
+      width: 32px;
+      height: 32px;
     }
-    .apgo-checkout-steps__list::before {
-      top: 14px;
-      bottom: 14px;
-      left: calc(var(--apgo-step-dot) / 2 - 1px);
-      right: auto;
-      width: 2px;
-      height: auto;
-      background: linear-gradient(180deg, #f08418 0%, #f08418 33%, rgba(255, 255, 255, 0.12) 33%, rgba(255, 255, 255, 0.12) 100%);
-    }
-    .apgo-checkout-steps__item {
-      flex-direction: row;
-      align-items: flex-start;
-      text-align: left;
-      gap: 12px;
-    }
-    .apgo-checkout-steps__step-title { font-size: 13px; }
-    .apgo-checkout-steps__step-sub   { font-size: 12px; }
+    .apgo-checkout-steps__text { font-size: 13px; }
   }
 {% endstylesheet %}
 
@@ -289,79 +109,15 @@
   "settings": [
     {
       "type": "text",
-      "id": "heading",
-      "label": "Heading",
-      "default": "Almost there — just one step left"
+      "id": "lead_text",
+      "label": "Lead text (orange)",
+      "default": "One step left."
     },
     {
       "type": "text",
-      "id": "heading_icon",
-      "label": "Heading emoji (optional)",
-      "default": "🎯"
-    },
-    {
-      "type": "textarea",
-      "id": "subtitle",
-      "label": "Subtitle",
-      "default": "You're seconds away from finishing your order. Here's what happens next."
-    },
-    {
-      "type": "header",
-      "content": "Step 1 — Review cart"
-    },
-    {
-      "type": "text",
-      "id": "step_1_title",
-      "label": "Step 1 title",
-      "default": "Cart reviewed"
-    },
-    {
-      "type": "text",
-      "id": "step_1_sub",
-      "label": "Step 1 sub",
-      "default": "Your items are saved and ready"
-    },
-    {
-      "type": "header",
-      "content": "Step 2 — Checkout"
-    },
-    {
-      "type": "text",
-      "id": "step_2_title",
-      "label": "Step 2 title",
-      "default": "Click \"Checkout\""
-    },
-    {
-      "type": "text",
-      "id": "step_2_sub",
-      "label": "Step 2 sub",
-      "default": "Enter shipping info and pick a secure payment method"
-    },
-    {
-      "type": "header",
-      "content": "Step 3 — Done"
-    },
-    {
-      "type": "text",
-      "id": "step_3_title",
-      "label": "Step 3 title",
-      "default": "Order confirmed"
-    },
-    {
-      "type": "text",
-      "id": "step_3_sub",
-      "label": "Step 3 sub",
-      "default": "Confirmation emailed instantly · We ship in 2–3 days"
-    },
-    {
-      "type": "header",
-      "content": "Footer note"
-    },
-    {
-      "type": "textarea",
-      "id": "footnote",
-      "label": "Footnote (optional)",
-      "default": "Tap the Checkout button below — you'll be on Shopify's encrypted, PCI-DSS compliant checkout page in seconds."
+      "id": "body_text",
+      "label": "Body text",
+      "default": "Click Checkout to finish in under a minute."
     },
     {
       "type": "header",
