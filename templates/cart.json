@@ -90,6 +90,14 @@
         "color_scheme": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26"
       }
     },
+    "cart_cta_aCdf4g": {
+      "type": "cart-cta",
+      "name": "Cart CTA (Standalone)",
+      "settings": {
+        "show_accelerated": true,
+        "color_scheme": "scheme-9a9df36f-52ae-4a86-948a-8b59a473eca0"
+      }
+    },
     "cart_upsell_recommendations_L4gQhn": {
       "type": "cart-upsell-recommendations",
       "name": "Recommended Items",
@@ -130,14 +138,6 @@
         "hide_price_mobile": false,
         "products_visible_mobile": 1.5
       }
-    },
-    "cart_cta_aCdf4g": {
-      "type": "cart-cta",
-      "name": "Cart CTA (Standalone)",
-      "settings": {
-        "show_accelerated": true,
-        "color_scheme": "scheme-9a9df36f-52ae-4a86-948a-8b59a473eca0"
-      }
     }
   },
   "order": [
@@ -145,7 +145,7 @@
     "apgo_coating_products_VU6az3",
     "custom_liquid_QNhCUK",
     "cart_totals_Cya3eE",
-    "cart_upsell_recommendations_L4gQhn",
-    "cart_cta_aCdf4g"
+    "cart_cta_aCdf4g",
+    "cart_upsell_recommendations_L4gQhn"
   ]
 }
