@@ -355,12 +355,24 @@
      ========================================================= */
   /* Outer card */
   .cart-totals--standalone .cart__total-container {
+    position: relative !important;
     background: rgba(255, 255, 255, 0.025) !important;
     border: 1px solid rgba(255, 255, 255, 0.07) !important;
     border-radius: 14px !important;
     padding: 0 !important;
     overflow: hidden !important;
     margin: 0 !important;
+  }
+  /* Orange accent bar across the top — matches the free-shipping card above */
+  .cart-totals--standalone .cart__total-container::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 3px !important;
+    background: linear-gradient(90deg, #f08418, #ff9a3c) !important;
+    z-index: 1 !important;
   }
 
   /* Breakdown rows (subtotal / shipping goal / discount) */
