@@ -138,6 +138,11 @@
         "hide_price_mobile": false,
         "products_visible_mobile": 1.5
       }
+    },
+    "apgo_checkout_steps_x7K2pQ": {
+      "type": "apgo-cart-checkout-steps",
+      "name": "Almost There — Checkout Steps",
+      "settings": {}
     }
   },
   "order": [
@@ -145,6 +150,7 @@
     "apgo_coating_products_VU6az3",
     "custom_liquid_QNhCUK",
     "cart_totals_Cya3eE",
+    "apgo_checkout_steps_x7K2pQ",
     "cart_cta_aCdf4g",
     "cart_upsell_recommendations_L4gQhn"
   ]
