@@ -4034,22 +4034,27 @@
         {%- if on_sale -%}
           {%- comment -%}
             Deal countdown — all times in Malaysia (GMT+8).
-            Resolution order (first non-blank wins):
-              1) Metafield custom.deal_end_date      (Date — overrides everything)
-              2) Section deal_end_date               (Date picker)
-              3) Metafield custom.deal_end_days_offset → "Today"/"Tomorrow"/+N days
-              4) Section deal_end_days_offset        ("0"="Off", "1"="Today", "2"="Tomorrow", ..., "8"="+7 days")
-              5) (no countdown)
-            Time-of-day comes from custom.deal_end_time → section deal_end_time (HH:MM, default "12:00").
+            Resolution order (first wins):
+              1) Metafield custom.deal_end_date / Section deal_end_date (固定日期)
+              2) Metafield custom.deal_end_weekday / Section deal_end_weekday (每週固定星期)
+                 → counts down to next occurrence of that weekday at HH:MM MY.
+                 Auto-resets every 7 days. Never expires. Perfect for weekly
+                 "Sunday only" deals.
+              3) Metafield custom.deal_end_days_offset / Section deal_end_days_offset
+                 → rolling N-day window (also never expires).
+              4) (no countdown)
+            Time-of-day from custom.deal_end_time → section deal_end_time → "12:00".
             Label: custom.deal_label → section deal_label → "Limited time deal".
           {%- endcomment -%}
-          {%- assign mf_deal_date   = product.metafields.custom.deal_end_date.value | default: product.metafields.custom.deal_end_date -%}
-          {%- assign mf_deal_time   = product.metafields.custom.deal_end_time.value | default: product.metafields.custom.deal_end_time | strip -%}
-          {%- assign mf_deal_offset = product.metafields.custom.deal_end_days_offset.value | default: product.metafields.custom.deal_end_days_offset -%}
-          {%- assign mf_deal_label  = product.metafields.custom.deal_label.value | default: product.metafields.custom.deal_label | strip -%}
+          {%- assign mf_deal_date    = product.metafields.custom.deal_end_date.value | default: product.metafields.custom.deal_end_date -%}
+          {%- assign mf_deal_time    = product.metafields.custom.deal_end_time.value | default: product.metafields.custom.deal_end_time | strip -%}
+          {%- assign mf_deal_weekday = product.metafields.custom.deal_end_weekday.value | default: product.metafields.custom.deal_end_weekday -%}
+          {%- assign mf_deal_offset  = product.metafields.custom.deal_end_days_offset.value | default: product.metafields.custom.deal_end_days_offset -%}
+          {%- assign mf_deal_label   = product.metafields.custom.deal_label.value | default: product.metafields.custom.deal_label | strip -%}
 
           {%- assign deal_end_date   = mf_deal_date | default: section.settings.deal_end_date -%}
           {%- assign deal_end_time   = mf_deal_time | default: section.settings.deal_end_time | default: '12:00' -%}
+          {%- assign deal_weekday_raw = mf_deal_weekday | default: section.settings.deal_end_weekday | default: 'off' -%}
           {%- assign deal_days_offset_raw = mf_deal_offset | default: section.settings.deal_end_days_offset | default: '0' -%}
           {%- assign deal_label_text = mf_deal_label | default: section.settings.deal_label | default: 'Limited time deal' -%}
 
@@ -4063,14 +4068,27 @@
             {%- assign deal_end_date_str = '' -%}
           {%- endif -%}
           {%- assign deal_days_offset = deal_days_offset_raw | plus: 0 -%}
+          {%- comment -%}
+            Normalise the weekday raw value: "off" (or blank) disables the
+            weekly mode. Otherwise expect a number "0"–"6" (Sunday=0…Saturday=6).
+            Numbers below 0 / above 6 are treated as off so bad input fails safe.
+          {%- endcomment -%}
+          {%- assign deal_weekday = -1 -%}
+          {%- if deal_weekday_raw != blank and deal_weekday_raw != 'off' -%}
+            {%- assign deal_weekday_num = deal_weekday_raw | plus: 0 -%}
+            {%- if deal_weekday_num >= 0 and deal_weekday_num <= 6 -%}
+              {%- assign deal_weekday = deal_weekday_num -%}
+            {%- endif -%}
+          {%- endif -%}
 
           <div class="apgo-cc-pdp__price-top">
             <span class="apgo-cc-pdp__price-label">{{ deal_label_text }}</span>
-            {%- if deal_end_date_str != '' or deal_days_offset > 0 -%}
+            {%- if deal_end_date_str != '' or deal_weekday >= 0 or deal_days_offset > 0 -%}
               <span
                 class="apgo-cc-pdp__deal-timer"
                 data-apgo-deal-timer
                 {% if deal_end_date_str != '' %}data-deal-end-date="{{ deal_end_date_str | escape }}"{% endif %}
+                {% if deal_weekday >= 0 %}data-deal-weekday="{{ deal_weekday }}"{% endif %}
                 {% if deal_days_offset > 0 %}data-deal-days-offset="{{ deal_days_offset | minus: 1 }}"{% endif %}
                 data-deal-end-time="{{ deal_end_time | escape }}"
                 data-deal-tz-offset="+08:00"
@@ -7219,35 +7237,61 @@ document.addEventListener('DOMContentLoaded', function() {
   /*
     Resolve countdown end timestamp in Malaysia time (GMT+8).
     Inputs (data-*):
-      - data-deal-end-date  → "YYYY-MM-DD" (fixed date, MY)
-      - data-deal-days-offset → integer days from today (MY), 0=today, 1=tomorrow…
-      - data-deal-end-time  → "HH:MM" (24h, MY local)
-      - data-deal-tz-offset → e.g. "+08:00" (timezone suffix)
-    If neither date nor offset is present, return 0 (no timer).
+      - data-deal-end-date    → "YYYY-MM-DD" (fixed date, MY) [highest priority]
+      - data-deal-weekday     → 0–6 (Sun=0…Sat=6). Next occurrence of that
+                                weekday at HH:MM MY. Auto-resets weekly.
+      - data-deal-days-offset → integer days from today MY (rolling)
+      - data-deal-end-time    → "HH:MM" (24h, MY local)
+      - data-deal-tz-offset   → "+08:00"
+    Returns 0 if nothing is configured.
   */
   function resolveEndMs() {
     var tz = timerEl.getAttribute('data-deal-tz-offset') || '+08:00';
     var time = timerEl.getAttribute('data-deal-end-time') || '12:00';
     var dateStr = timerEl.getAttribute('data-deal-end-date') || '';
+
+    /* Helper — today's date in MY timezone as UTC components describing MY date */
+    function myTodayParts() {
+      var nowMs = Date.now();
+      var myNow = new Date(nowMs + 8 * 3600 * 1000);
+      return {
+        y: myNow.getUTCFullYear(),
+        m: myNow.getUTCMonth(),
+        d: myNow.getUTCDate(),
+        dow: myNow.getUTCDay() /* 0=Sunday … 6=Saturday */
+      };
+    }
+    function fmtDate(y, m, d) {
+      var t = new Date(Date.UTC(y, m, d));
+      return t.getUTCFullYear() + '-' +
+             String(t.getUTCMonth() + 1).padStart(2, '0') + '-' +
+             String(t.getUTCDate()).padStart(2, '0');
+    }
+
+    if (!dateStr) {
+      var weekdayAttr = timerEl.getAttribute('data-deal-weekday');
+      if (weekdayAttr !== null && weekdayAttr !== '') {
+        var targetDow = parseInt(weekdayAttr, 10);
+        if (!isNaN(targetDow) && targetDow >= 0 && targetDow <= 6) {
+          var today = myTodayParts();
+          var addDays = (targetDow - today.dow + 7) % 7;
+          /* Same weekday today → check if HH:MM has already passed; if so skip to next week. */
+          if (addDays === 0) {
+            var todayISO = fmtDate(today.y, today.m, today.d) + 'T' + time + ':00' + tz;
+            if (Date.parse(todayISO) <= Date.now()) addDays = 7;
+          }
+          dateStr = fmtDate(today.y, today.m, today.d + addDays);
+        }
+      }
+    }
+
     if (!dateStr) {
       var offsetAttr = timerEl.getAttribute('data-deal-days-offset');
       if (offsetAttr === null || offsetAttr === '') return 0;
       var offset = parseInt(offsetAttr, 10);
       if (isNaN(offset) || offset < 0) return 0;
-      /* Get TODAY in Malaysia (GMT+8) regardless of visitor's local zone.
-         Trick: shift `now` by the GMT+8 offset, then read UTC date parts —
-         those parts now describe MY local date. */
-      var nowMs = Date.now();
-      var myNow = new Date(nowMs + 8 * 3600 * 1000);
-      var y = myNow.getUTCFullYear();
-      var m = myNow.getUTCMonth();
-      var d = myNow.getUTCDate() + offset;
-      /* Normalise overflow (e.g. day=32 → next month) via Date.UTC. */
-      var target = new Date(Date.UTC(y, m, d));
-      var yyyy = target.getUTCFullYear();
-      var mm = String(target.getUTCMonth() + 1).padStart(2, '0');
-      var dd = String(target.getUTCDate()).padStart(2, '0');
-      dateStr = yyyy + '-' + mm + '-' + dd;
+      var p = myTodayParts();
+      dateStr = fmtDate(p.y, p.m, p.d + offset);
     }
     var iso = dateStr + 'T' + time + ':00' + tz;
     var t = Date.parse(iso);
@@ -7257,14 +7301,26 @@ document.addEventListener('DOMContentLoaded', function() {
   var endMs = resolveEndMs();
   if (!endMs) { timerEl.setAttribute('hidden', ''); return; }
 
+  /* Recurring modes (weekday / days-offset) recompute past expiry instead
+     of hiding — they never truly end. Fixed-date mode hides on expiry. */
+  var isRecurring = timerEl.hasAttribute('data-deal-weekday') || timerEl.hasAttribute('data-deal-days-offset');
+
   function pad(n) { return n < 10 ? '0' + n : '' + n; }
 
   function render() {
     var diff = endMs - Date.now();
     if (diff <= 0) {
-      /* Expired — hide the badge so the price card doesn't claim a deal that ended */
-      timerEl.setAttribute('hidden', '');
-      return false;
+      if (isRecurring) {
+        /* Weekly / rolling mode — roll forward to the next cycle and keep ticking */
+        endMs = resolveEndMs();
+        if (!endMs) { timerEl.setAttribute('hidden', ''); return false; }
+        diff = endMs - Date.now();
+        if (diff <= 0) { timerEl.setAttribute('hidden', ''); return false; }
+      } else {
+        /* Fixed-date deal that has ended — hide the badge */
+        timerEl.setAttribute('hidden', '');
+        return false;
+      }
     }
     var totalSec = Math.floor(diff / 1000);
     var days = Math.floor(totalSec / 86400);
@@ -7364,7 +7420,7 @@ document.addEventListener('DOMContentLoaded', function() {
     },
     {
       "type": "paragraph",
-      "content": "全店預設值。個別商品可在 Product Admin → Metafields 用 namespace `custom` 的同名 key 覆蓋：\n• custom.deal_end_date（Date）\n• custom.deal_end_time（Single line text，HH:MM）\n• custom.deal_end_days_offset（Integer，0=Off / 1=Today / 2=Tomorrow / …）\n• custom.deal_label（Single line text）\n\n時間一律按馬來西亞 GMT+8 計算（系統自動補時區，不用自己打 +08:00）。\n固定日期與「N 天後」模式擇一即可；兩者都填以固定日期為準。"
+      "content": "全店預設值。個別商品可在 Product Admin → Metafields（namespace `custom`）覆蓋：\n• custom.deal_end_date（Date · 固定到期日）\n• custom.deal_end_time（Text · HH:MM）\n• custom.deal_end_weekday（Integer · 0=Sun / 1=Mon / … / 6=Sat，每週重複）\n• custom.deal_end_days_offset（Integer · 1=Today / 2=Tomorrow / … / 8=+7d）\n• custom.deal_label（Text）\n\n所有時間按馬來西亞 GMT+8（系統自動補時區）。\n模式優先順序：固定日期 → 每週固定星期 → N 天後滾動 → 不顯示。"
     },
     {
       "type": "text",
@@ -7387,8 +7443,25 @@ document.addEventListener('DOMContentLoaded', function() {
     },
     {
       "type": "select",
+      "id": "deal_end_weekday",
+      "label": "或：每週固定到期星期（自動重複）",
+      "options": [
+        { "value": "off", "label": "Off · 不啟用" },
+        { "value": "0", "label": "Sunday · 每週日" },
+        { "value": "1", "label": "Monday · 每週一" },
+        { "value": "2", "label": "Tuesday · 每週二" },
+        { "value": "3", "label": "Wednesday · 每週三" },
+        { "value": "4", "label": "Thursday · 每週四" },
+        { "value": "5", "label": "Friday · 每週五" },
+        { "value": "6", "label": "Saturday · 每週六" }
+      ],
+      "default": "off",
+      "info": "倒數至下個指定星期的 HH:MM（馬來西亞時間）。到了之後自動重設為下一週，最多 7 天循環，永不過期。例：選 Sunday + 23:59 → 每週都倒數到下個週日午夜。"
+    },
+    {
+      "type": "select",
       "id": "deal_end_days_offset",
-      "label": "或：N 天後到期",
+      "label": "或：N 天後到期（每天滾動，永不真正結束）",
       "options": [
         { "value": "0", "label": "Off · 不啟用" },
         { "value": "1", "label": "Today · 今天" },
@@ -7401,7 +7474,7 @@ document.addEventListener('DOMContentLoaded', function() {
         { "value": "8", "label": "+7 days" }
       ],
       "default": "0",
-      "info": "未填固定日期時生效。到期時刻採用上方 HH:MM。"
+      "info": "未填固定日期、未選每週模式時才生效。每次訪客打開頁面都重新從今天起算 → 視覺上永遠顯示 N 天倒數，純粹用來製造緊迫感。"
     },
     {
       "type": "text",
