@@ -3072,6 +3072,10 @@
   }
   .apgo-cc-pdp__price-top {
     margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
   }
   .apgo-cc-pdp__price-label {
     font-size: 12px;
@@ -3080,6 +3084,34 @@
     letter-spacing: 0.04em;
     text-transform: uppercase;
   }
+  /* Deal countdown badge — pulses softly when < 1h remaining to add urgency */
+  .apgo-cc-pdp__deal-timer {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #ffffff;
+    background: linear-gradient(45deg, #f08418, #ff9a3c);
+    border-radius: 999px;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    box-shadow: 0 2px 8px rgba(240, 132, 24, 0.35);
+    font-variant-numeric: tabular-nums;
+  }
+  .apgo-cc-pdp__deal-timer-icon {
+    display: inline-flex;
+    align-items: center;
+  }
+  .apgo-cc-pdp__deal-timer[data-urgent="true"] {
+    animation: apgoDealPulse 1.4s ease-in-out infinite;
+  }
+  @keyframes apgoDealPulse {
+    0%, 100% { box-shadow: 0 2px 8px rgba(240, 132, 24, 0.35); transform: scale(1); }
+    50%      { box-shadow: 0 4px 18px rgba(240, 132, 24, 0.65); transform: scale(1.04); }
+  }
+  .apgo-cc-pdp__deal-timer[hidden] { display: none !important; }
   /*
     Two-row layout when on sale:
       row 1: current price (left)  ............  save badge (right)
@@ -4001,7 +4033,36 @@
       <div class="apgo-cc-pdp__price-card{% if on_sale %} apgo-cc-pdp__price-card--sale{% endif %}">
         {%- if on_sale -%}
           <div class="apgo-cc-pdp__price-top">
-            <span class="apgo-cc-pdp__price-label">Limited time deal</span>
+            <span class="apgo-cc-pdp__price-label">{{ section.settings.deal_label | default: 'Limited time deal' }}</span>
+            {%- comment -%}
+              Optional countdown timer next to the LIMITED TIME DEAL badge.
+              Admin sets either a fixed end date/time (section.settings.deal_end_at,
+              ISO format like "2026-05-31T23:59:00+08:00") or a per-visitor
+              evergreen countdown that restarts on first visit (deal_evergreen_hours).
+              JS picks the source at boot.
+            {%- endcomment -%}
+            {%- assign deal_end = section.settings.deal_end_at | strip -%}
+            {%- assign deal_evergreen = section.settings.deal_evergreen_hours | default: 0 -%}
+            {%- if deal_end != blank or deal_evergreen > 0 -%}
+              <span
+                class="apgo-cc-pdp__deal-timer"
+                data-apgo-deal-timer
+                {% if deal_end != blank %}data-deal-end="{{ deal_end | escape }}"{% endif %}
+                {% if deal_evergreen > 0 %}data-deal-evergreen-hours="{{ deal_evergreen }}"{% endif %}
+                data-deal-product-id="{{ product.id }}"
+                aria-label="{{ section.settings.deal_aria_label | default: 'Deal countdown' | escape }}"
+              >
+                <span class="apgo-cc-pdp__deal-timer-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="13" r="8"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="13" x2="15" y2="15"/>
+                    <line x1="9" y1="2" x2="15" y2="2"/>
+                  </svg>
+                </span>
+                <span class="apgo-cc-pdp__deal-timer-text" data-apgo-deal-timer-text>{{ section.settings.deal_loading_text | default: 'Ends soon' }}</span>
+              </span>
+            {%- endif -%}
           </div>
           <div class="apgo-cc-pdp__price-bottom">
             <span class="apgo-cc-pdp__price-current" data-apgo-cc-price data-cents="{{ product.price }}">{{ product.price | money }}</span>
@@ -7112,6 +7173,79 @@ document.addEventListener('DOMContentLoaded', function() {
   /* Initial sync (covers SSR-checked state) */
   refreshVariant();
 })();
+
+/*
+  Deal countdown — drives .apgo-cc-pdp__deal-timer
+  Source:
+    1) data-deal-end="<ISO>" → fixed end date/time. When reached, the badge hides.
+    2) data-deal-evergreen-hours="<N>" → per-visitor evergreen countdown,
+       restarts when localStorage entry first set; persists across reloads
+       until N hours after first visit. Scoped per product id so different
+       products have independent timers.
+  Updates once per second; switches to "urgent" pulse animation in the
+  final 60 minutes.
+*/
+(function () {
+  'use strict';
+  var timerEl = document.querySelector('[data-apgo-deal-timer]');
+  if (!timerEl) return;
+  var textEl = timerEl.querySelector('[data-apgo-deal-timer-text]') || timerEl;
+
+  function resolveEndMs() {
+    var endAttr = timerEl.getAttribute('data-deal-end');
+    if (endAttr) {
+      var t = Date.parse(endAttr);
+      if (!isNaN(t)) return t;
+    }
+    var hours = parseFloat(timerEl.getAttribute('data-deal-evergreen-hours') || '0');
+    if (hours > 0) {
+      var pid = timerEl.getAttribute('data-deal-product-id') || 'default';
+      var key = 'apgoDealStart::' + pid + '::' + hours;
+      var startStr = null;
+      try { startStr = localStorage.getItem(key); } catch (_) {}
+      var startMs = startStr ? parseInt(startStr, 10) : NaN;
+      if (!startMs || isNaN(startMs) || startMs > Date.now()) {
+        startMs = Date.now();
+        try { localStorage.setItem(key, String(startMs)); } catch (_) {}
+      }
+      return startMs + hours * 3600 * 1000;
+    }
+    return 0;
+  }
+
+  var endMs = resolveEndMs();
+  if (!endMs) { timerEl.setAttribute('hidden', ''); return; }
+
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+
+  function render() {
+    var diff = endMs - Date.now();
+    if (diff <= 0) {
+      /* Expired — hide the badge so the price card doesn't claim a deal that ended */
+      timerEl.setAttribute('hidden', '');
+      return false;
+    }
+    var totalSec = Math.floor(diff / 1000);
+    var days = Math.floor(totalSec / 86400);
+    var hours = Math.floor((totalSec % 86400) / 3600);
+    var mins  = Math.floor((totalSec % 3600) / 60);
+    var secs  = totalSec % 60;
+    var str;
+    if (days > 0) {
+      str = days + 'd ' + pad(hours) + ':' + pad(mins) + ':' + pad(secs);
+    } else {
+      str = pad(hours) + ':' + pad(mins) + ':' + pad(secs);
+    }
+    textEl.textContent = str;
+    /* Final hour → pulsing urgent animation */
+    timerEl.setAttribute('data-urgent', diff < 3600 * 1000 ? 'true' : 'false');
+    return true;
+  }
+
+  if (render()) {
+    setInterval(render, 1000);
+  }
+})();
 </script>
 
 {%- comment -%}
@@ -7182,6 +7316,53 @@ document.addEventListener('DOMContentLoaded', function() {
     {
       "type": "header",
       "content": "促銷膠囊（1–3 顆）"
+    },
+    {
+      "type": "header",
+      "content": "Limited time deal · 倒數計時器"
+    },
+    {
+      "type": "paragraph",
+      "content": "顯示在 LIMITED TIME DEAL 標籤旁的小型倒數膠囊。兩種模式擇一：\n• 固定到期：填寫 ISO 格式日期（例如 2026-05-31T23:59:00+08:00）\n• 常青模式：留空到期欄、填寫小時數，每位訪客首次進入後從那一刻起倒數。\n兩欄都留空則不顯示。"
+    },
+    {
+      "type": "text",
+      "id": "deal_label",
+      "label": "標籤文字",
+      "default": "Limited time deal"
+    },
+    {
+      "type": "text",
+      "id": "deal_end_at",
+      "label": "固定到期時間（ISO 8601）",
+      "info": "例：2026-05-31T23:59:00+08:00"
+    },
+    {
+      "type": "range",
+      "id": "deal_evergreen_hours",
+      "label": "常青倒數時數",
+      "min": 0,
+      "max": 72,
+      "step": 1,
+      "unit": "h",
+      "default": 0,
+      "info": "若沒填固定到期，此處設定 > 0 會啟用常青倒數，每位訪客自首次進入起倒數此小時數。"
+    },
+    {
+      "type": "text",
+      "id": "deal_loading_text",
+      "label": "載入中顯示文字",
+      "default": "Ends soon"
+    },
+    {
+      "type": "text",
+      "id": "deal_aria_label",
+      "label": "輔助科技 aria-label",
+      "default": "Deal countdown"
+    },
+    {
+      "type": "header",
+      "content": "促銷膠囊（價格下方）"
     },
     {
       "type": "paragraph",
