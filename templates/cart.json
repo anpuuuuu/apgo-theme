@@ -90,6 +90,24 @@
         "color_scheme": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26"
       }
     },
+    "apgo_checkout_steps_x7K2pQ": {
+      "type": "apgo-cart-checkout-steps",
+      "name": "Almost There — Checkout Steps",
+      "settings": {
+        "heading": "Almost there — just one step left",
+        "heading_icon": "🎯",
+        "subtitle": "You're seconds away from finishing your order. Here's what happens next.",
+        "step_1_title": "Cart reviewed",
+        "step_1_sub": "Your items are saved and ready",
+        "step_2_title": "Click \"Check out\"",
+        "step_2_sub": "Enter shipping info and pick a preferred payment method at checkout page",
+        "step_3_title": "Order confirmed",
+        "step_3_sub": "Confirmation emailed instantly <br>We ship in 2–3 days",
+        "footnote": "",
+        "padding-block-start": 8,
+        "padding-block-end": 8
+      }
+    },
     "cart_cta_aCdf4g": {
       "type": "cart-cta",
       "name": "Cart CTA (Standalone)",
@@ -138,11 +156,6 @@
         "hide_price_mobile": false,
         "products_visible_mobile": 1.5
       }
-    },
-    "apgo_checkout_steps_x7K2pQ": {
-      "type": "apgo-cart-checkout-steps",
-      "name": "Almost There — Checkout Steps",
-      "settings": {}
     }
   },
   "order": [
