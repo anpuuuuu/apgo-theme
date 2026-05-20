@@ -209,13 +209,13 @@
                   <div>
                     {% if item.original_price != item.final_price %}
                       <span class="visually-hidden">{{ 'content.price_sale' | t }}</span>
-                      <span>{{ item.final_price | money }}</span>
+                      <span>{{ item.final_price | money | replace: cart.currency.iso_code, '' | strip }}</span>
                       <span class="visually-hidden">{{ 'content.price_regular' | t }}</span>
                       <s class="compare-at-price">
                         {% if item.variant.compare_at_price > item.original_price %}
-                          {{ item.variant.compare_at_price | money }}
+                          {{ item.variant.compare_at_price | money | replace: cart.currency.iso_code, '' | strip }}
                         {% else %}
-                          {{ item.original_price | money }}
+                          {{ item.original_price | money | replace: cart.currency.iso_code, '' | strip }}
                         {% endif %}
                       </s>
                     {% else %}
@@ -225,11 +225,11 @@
                         <span class="visually-hidden">{{ 'content.price' | t }}</span>
                       {% endif %}
 
-                      <span>{{ item.original_price | money }}</span>
+                      <span>{{ item.original_price | money | replace: cart.currency.iso_code, '' | strip }}</span>
 
                       {% if item.variant.compare_at_price > item.original_price %}
                         <span class="visually-hidden">{{ 'content.price_regular' | t }}</span>
-                        <s class="compare-at-price">{{ item.variant.compare_at_price | money }}</s>
+                        <s class="compare-at-price">{{ item.variant.compare_at_price | money | replace: cart.currency.iso_code, '' | strip }}</s>
                       {% endif %}
                     {% endif %}
                   </div>
@@ -283,13 +283,11 @@
                   headers="productTotal"
                 >
                   {%- liquid
-                    if settings.currency_code_enabled_cart_items
-                      assign price = item.final_line_price | money_with_currency
-                      assign unit_price = item.unit_price | money_with_currency
-                    else
-                      assign price = item.final_line_price | money
-                      assign unit_price = item.unit_price | money
-                    endif
+                    # Force money (no currency suffix) and also strip the
+                    # trailing ISO code in case the shop's money format
+                    # itself includes it. Results in "RM35.00" not "RM35.00 MYR".
+                    assign price = item.final_line_price | money | replace: cart.currency.iso_code, '' | strip
+                    assign unit_price = item.unit_price | money | replace: cart.currency.iso_code, '' | strip
                   -%}
                   <text-component value="{{ price | strip_html }}">{{ price }}</text-component>
                   {%- if item.unit_price_measurement -%}

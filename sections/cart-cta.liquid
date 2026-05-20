@@ -16,7 +16,33 @@
         {{ content_for_additional_checkout_buttons }}
       </div>
     {%- endif -%}
-    <small class="cart__checkout-redirect-notice">{{ 'content.checkout_redirect_notice' | t }}</small>
+    {%- comment -%}
+      Trust row — replaces the generic "Safe & Secure Checkout" line with
+      explicit signals: SSL encryption, Shopify-secured payment, buyer
+      protection / return guarantee. Inline SVGs to avoid extra requests.
+    {%- endcomment -%}
+    <ul class="cart-cta__trust" role="list">
+      <li class="cart-cta__trust-item">
+        <span class="cart-cta__trust-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </span>
+        <span>256-bit SSL encrypted</span>
+      </li>
+      <li class="cart-cta__trust-sep" aria-hidden="true">·</li>
+      <li class="cart-cta__trust-item">
+        <span class="cart-cta__trust-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+        </span>
+        <span>Secured by Shopify Payments</span>
+      </li>
+      <li class="cart-cta__trust-sep" aria-hidden="true">·</li>
+      <li class="cart-cta__trust-item">
+        <span class="cart-cta__trust-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </span>
+        <span>Buyer protection &amp; easy returns</span>
+      </li>
+    </ul>
   </div>
   
   {% stylesheet %}
@@ -152,7 +178,7 @@
     transform: translateY(-2px) !important;
   }
 
-  /* 結帳按鈕下方的跳轉提示 */
+  /* 結帳按鈕下方的跳轉提示（legacy fallback if locale string is rendered elsewhere） */
   .cart-cta .cart__checkout-redirect-notice {
     display: block !important;
     margin-top: 12px !important;
@@ -162,6 +188,47 @@
     max-width: 480px !important;
     margin-left: auto !important;
     margin-right: auto !important;
+  }
+
+  /* Trust row under the Checkout button — SSL / Shopify Payments / Buyer protection */
+  .cart-cta .cart-cta__trust {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 6px 10px !important;
+    margin: 14px auto 0 !important;
+    padding: 0 !important;
+    max-width: 640px !important;
+    list-style: none !important;
+    font-size: 12px !important;
+    color: rgba(255, 255, 255, 0.65) !important;
+    line-height: 1.4 !important;
+  }
+  .cart-cta .cart-cta__trust-item {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    white-space: nowrap !important;
+  }
+  .cart-cta .cart-cta__trust-icon {
+    display: inline-flex !important;
+    align-items: center !important;
+    color: #f08418 !important;
+  }
+  .cart-cta .cart-cta__trust-sep {
+    color: rgba(255, 255, 255, 0.25) !important;
+    user-select: none !important;
+  }
+  @media (max-width: 480px) {
+    .cart-cta .cart-cta__trust {
+      gap: 4px 8px !important;
+      font-size: 11px !important;
+    }
+    /* On small screens drop the dot separators so the three items stack
+       cleanly under each other. */
+    .cart-cta .cart-cta__trust-sep { display: none !important; }
+    .cart-cta .cart-cta__trust-item { flex-basis: 100%; justify-content: center; }
   }
   
   /* 響應式設計 */
