@@ -4032,17 +4032,22 @@
       {%- endcomment -%}
       <div class="apgo-cc-pdp__price-card{% if on_sale %} apgo-cc-pdp__price-card--sale{% endif %}">
         {%- if on_sale -%}
+          {%- comment -%}
+            Deal countdown — per-product override via metafields, falls back
+            to the section-level defaults so the admin can either set a
+            shop-wide deal (section) or single-product deal (metafield).
+              custom.deal_end_at         → ISO date string
+              custom.deal_evergreen_hours → integer / decimal hours
+              custom.deal_label          → override "Limited time deal" text
+          {%- endcomment -%}
+          {%- assign mf_deal_end = product.metafields.custom.deal_end_at.value | default: product.metafields.custom.deal_end_at | strip -%}
+          {%- assign mf_deal_hours = product.metafields.custom.deal_evergreen_hours.value | default: product.metafields.custom.deal_evergreen_hours -%}
+          {%- assign mf_deal_label = product.metafields.custom.deal_label.value | default: product.metafields.custom.deal_label | strip -%}
+          {%- assign deal_end = mf_deal_end | default: section.settings.deal_end_at | strip -%}
+          {%- assign deal_evergreen = mf_deal_hours | default: section.settings.deal_evergreen_hours | default: 0 | plus: 0 -%}
+          {%- assign deal_label_text = mf_deal_label | default: section.settings.deal_label | default: 'Limited time deal' -%}
           <div class="apgo-cc-pdp__price-top">
-            <span class="apgo-cc-pdp__price-label">{{ section.settings.deal_label | default: 'Limited time deal' }}</span>
-            {%- comment -%}
-              Optional countdown timer next to the LIMITED TIME DEAL badge.
-              Admin sets either a fixed end date/time (section.settings.deal_end_at,
-              ISO format like "2026-05-31T23:59:00+08:00") or a per-visitor
-              evergreen countdown that restarts on first visit (deal_evergreen_hours).
-              JS picks the source at boot.
-            {%- endcomment -%}
-            {%- assign deal_end = section.settings.deal_end_at | strip -%}
-            {%- assign deal_evergreen = section.settings.deal_evergreen_hours | default: 0 -%}
+            <span class="apgo-cc-pdp__price-label">{{ deal_label_text }}</span>
             {%- if deal_end != blank or deal_evergreen > 0 -%}
               <span
                 class="apgo-cc-pdp__deal-timer"
@@ -7323,7 +7328,7 @@ document.addEventListener('DOMContentLoaded', function() {
     },
     {
       "type": "paragraph",
-      "content": "顯示在 LIMITED TIME DEAL 標籤旁的小型倒數膠囊。兩種模式擇一：\n• 固定到期：填寫 ISO 格式日期（例如 2026-05-31T23:59:00+08:00）\n• 常青模式：留空到期欄、填寫小時數，每位訪客首次進入後從那一刻起倒數。\n兩欄都留空則不顯示。"
+      "content": "顯示在 LIMITED TIME DEAL 標籤旁的小型倒數膠囊。此處設定為「全店預設」，個別商品可在 Product Admin → Metafields 用以下 key 覆蓋：\n• custom.deal_end_at（Single line text，ISO 時間）\n• custom.deal_evergreen_hours（Integer / Decimal）\n• custom.deal_label（Single line text，覆蓋徽章文字）\n\n模式擇一：\n• 固定到期：填寫 ISO 格式日期（例如 2026-05-31T23:59:00+08:00）\n• 常青模式：留空到期欄、填寫小時數，每位訪客首次進入後從那一刻起倒數。\n兩欄都留空且 metafield 也沒設 → 不顯示倒數。"
     },
     {
       "type": "text",
