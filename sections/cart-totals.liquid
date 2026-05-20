@@ -363,16 +363,19 @@
     overflow: hidden !important;
     margin: 0 !important;
   }
-  /* Orange accent bar across the top — matches the free-shipping card above */
+  /* Orange accent bar across the top — matches the free-shipping card above.
+     `display: block` re-enables the pseudo (an earlier rule in this same
+     stylesheet sets `display: none !important` on the same selector). */
   .cart-totals--standalone .cart__total-container::before {
     content: '' !important;
+    display: block !important;
     position: absolute !important;
     top: 0 !important;
     left: 0 !important;
     right: 0 !important;
     height: 3px !important;
     background: linear-gradient(90deg, #f08418, #ff9a3c) !important;
-    z-index: 1 !important;
+    z-index: 2 !important;
   }
 
   /* Breakdown rows (subtotal / shipping goal / discount) */
