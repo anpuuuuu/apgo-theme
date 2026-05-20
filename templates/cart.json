@@ -92,7 +92,6 @@
     },
     "apgo_checkout_steps_x7K2pQ": {
       "type": "apgo-cart-checkout-steps",
-      "disabled": true,
       "name": "Almost There — Checkout Steps",
       "settings": {
         "heading": "Almost there — just one step left",
@@ -103,7 +102,7 @@
         "step_2_title": "Click \"Check out\"",
         "step_2_sub": "Click button below and enter shipping info",
         "step_3_title": "Order confirmed",
-        "step_3_sub": "Confirmation emailed instantly<br> We ship in 2–3 days",
+        "step_3_sub": "Confirmation emailed instantly We ship in 2–3 days",
         "footnote": "",
         "padding-block-start": 8,
         "padding-block-end": 8
