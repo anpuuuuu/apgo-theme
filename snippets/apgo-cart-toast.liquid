@@ -56,7 +56,11 @@
     position: fixed;
     z-index: 100002;
     left: 50%;
-    top: calc(10px + env(safe-area-inset-top, 0px));
+    /* Sit below the sticky header + marquee stack. `--apgo-stack-h` is
+       maintained by assets/apgo-scroll-hide.js and equals the live combined
+       height of #header-group + the free-shipping marquee. Fallback 120px
+       covers pages without that script. */
+    top: calc(var(--apgo-stack-h, 120px) + 10px + env(safe-area-inset-top, 0px));
     display: flex;
     align-items: center;
     gap: 10px;

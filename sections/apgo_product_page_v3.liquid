@@ -3641,6 +3641,20 @@
     font-weight: 700;
     color: var(--primary-orange, #f08418);
   }
+  /* Bump animation applied to the header cart icon when fly-to-cart lands.
+     Targets the icon globally so it works regardless of which markup
+     variant Horizon renders. */
+  cart-icon.apgo-cart-icon-bump,
+  .header-actions__cart-icon.apgo-cart-icon-bump {
+    animation: apgoCartIconBump .42s cubic-bezier(.34, 1.56, .64, 1);
+  }
+  @keyframes apgoCartIconBump {
+    0%   { transform: scale(1);    }
+    35%  { transform: scale(1.28); }
+    65%  { transform: scale(0.94); }
+    100% { transform: scale(1);    }
+  }
+
   /* Stock indicator under the price. Colour switches via data-stock-state. */
   .apgo-cc-confirm-modal__stock {
     display: inline-flex !important;
@@ -6877,6 +6891,56 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 4200);
   }
 
+  /*
+    Fly-to-cart — animate a small thumbnail of the active variant image
+    from the source button to the header cart icon. Pure CSS transition,
+    no library. Bails out gracefully when targets are missing.
+  */
+  function playFlyToCart(srcBtn) {
+    var cartIcon = document.querySelector('cart-icon, .header-actions__cart-icon, [data-testid="cart-icon"]');
+    if (!cartIcon || !srcBtn) return;
+    var thumbEl = document.querySelector('.apgo-hero-visual img, .apgo-product-image-main, [data-apgo-cc-confirm-image]');
+    var imgSrc = thumbEl && (thumbEl.src || thumbEl.getAttribute('src'));
+    if (!imgSrc) return;
+
+    var btnRect = srcBtn.getBoundingClientRect();
+    var iconRect = cartIcon.getBoundingClientRect();
+    var startX = btnRect.left + btnRect.width / 2;
+    var startY = btnRect.top + btnRect.height / 2;
+    var endX = iconRect.left + iconRect.width / 2;
+    var endY = iconRect.top + iconRect.height / 2;
+
+    var ghost = document.createElement('div');
+    ghost.className = 'apgo-fly-to-cart';
+    ghost.style.cssText =
+      'position:fixed;' +
+      'left:' + (startX - 28) + 'px;' +
+      'top:' + (startY - 28) + 'px;' +
+      'width:56px;height:56px;' +
+      'border-radius:12px;' +
+      'background:#fff center/cover no-repeat url("' + imgSrc + '");' +
+      'box-shadow:0 8px 24px rgba(240,132,24,0.45),0 0 0 2px rgba(240,132,24,0.6);' +
+      'z-index:100050;pointer-events:none;' +
+      'transition:transform .7s cubic-bezier(.55,-0.05,.3,1.4),opacity .25s ease .55s;' +
+      'transform:translate(0,0) scale(1);' +
+      'opacity:1;';
+    document.body.appendChild(ghost);
+
+    /* Force layout flush, then animate to the cart icon */
+    void ghost.offsetWidth;
+    var dx = endX - startX;
+    var dy = endY - startY;
+    ghost.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(0.18) rotate(8deg)';
+    ghost.style.opacity = '0';
+
+    /* On arrival → pulse the cart icon for extra feedback */
+    setTimeout(function () {
+      ghost.remove();
+      cartIcon.classList.add('apgo-cart-icon-bump');
+      setTimeout(function () { cartIcon.classList.remove('apgo-cart-icon-bump'); }, 480);
+    }, 760);
+  }
+
   function addToCart(opts) {
     opts = opts || {};
     var btn = opts.btn;
@@ -6902,6 +6966,32 @@ document.addEventListener('DOMContentLoaded', function() {
         document.dispatchEvent(new CustomEvent('cart:update', { detail: { cart: cart } }));
         document.documentElement.dispatchEvent(new CustomEvent('cart:refresh', { bubbles: true, detail: { cart: cart } }));
         document.dispatchEvent(new CustomEvent('cart:updated'));
+
+        /*
+          Header cart-icon update — Horizon's <cart-icon> listens to the
+          'cart:update' event but reads `event.detail.data.itemCount`.
+          The dynamic `import('@theme/events')` below can race or fail on
+          non-Horizon-bundled pages, so dispatch a manually-shaped Event
+          synchronously here too. Either path triggers the bubble.
+        */
+        try {
+          var manualCartEvent = new Event('cart:update', { bubbles: true });
+          manualCartEvent.detail = {
+            resource: cart,
+            sourceId: 'apgo-cc-pdp',
+            data: { itemCount: cart.item_count, source: 'apgo-cc-pdp', sections: {} }
+          };
+          document.dispatchEvent(manualCartEvent);
+        } catch (_) {}
+        /* Persist count so the cart-icon's ensureCartBubbleIsCorrect picks it up
+           on next page navigation within 10 s. */
+        try {
+          sessionStorage.setItem('cart-count', JSON.stringify({
+            value: String(cart.item_count || 0),
+            timestamp: Date.now()
+          }));
+        } catch (_) {}
+
         try {
           import('@theme/events').then(function (mod) {
             if (mod && mod.CartUpdateEvent) {
@@ -6913,6 +7003,13 @@ document.addEventListener('DOMContentLoaded', function() {
           }).catch(function () {});
         } catch (_) {}
         if (btn) { btn.disabled = false; btn.textContent = orig; }
+        /* Fly-to-cart animation — animates a tiny "ghost" of the product
+           thumbnail from the clicked button to the header cart icon for
+           visual confirmation. No-op on mobile or if either DOM target
+           is missing. */
+        if (!opts.silent) {
+          try { playFlyToCart(opts.btn); } catch (_) {}
+        }
         /* Success toast at the top of the page. Skipped when opts.silent is
            true so Buy-now (which immediately redirects to /cart) doesn't
            flash a toast just before navigation. */
