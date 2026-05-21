@@ -6968,11 +6968,12 @@ document.addEventListener('DOMContentLoaded', function() {
         document.dispatchEvent(new CustomEvent('cart:updated'));
 
         /*
-          Header cart-icon update — Horizon's <cart-icon> listens to the
-          'cart:update' event but reads `event.detail.data.itemCount`.
-          The dynamic `import('@theme/events')` below can race or fail on
-          non-Horizon-bundled pages, so dispatch a manually-shaped Event
-          synchronously here too. Either path triggers the bubble.
+          Header cart-icon update — three layers of attempts so the badge
+          updates regardless of which event path Horizon happens to honour
+          on this build:
+            (a) synthetic Event dispatch with the shape <cart-icon> expects,
+            (b) async import + native CartUpdateEvent dispatch below,
+            (c) direct DOM update on .cart-bubble children as a safety net.
         */
         try {
           var manualCartEvent = new Event('cart:update', { bubbles: true });
@@ -6983,6 +6984,24 @@ document.addEventListener('DOMContentLoaded', function() {
           };
           document.dispatchEvent(manualCartEvent);
         } catch (_) {}
+
+        /* (c) Direct DOM update — won't lose to event-listener races.
+           Touches the same classes Horizon's CartIcon.renderCartBubble does. */
+        try {
+          var count = cart.item_count || 0;
+          var cartIconEls = document.querySelectorAll('cart-icon, .header-actions__cart-icon');
+          cartIconEls.forEach(function (icon) {
+            var countEl = icon.querySelector('[ref="cartBubbleCount"], .cart-bubble__text-count');
+            var bubbleEl = icon.querySelector('[ref="cartBubble"], .cart-bubble');
+            if (countEl) {
+              countEl.textContent = count < 100 ? String(count) : '';
+              countEl.classList.toggle('hidden', count === 0);
+            }
+            if (bubbleEl) bubbleEl.classList.toggle('visually-hidden', count === 0);
+            icon.classList.toggle('header-actions__cart-icon--has-cart', count > 0);
+          });
+        } catch (_) {}
+
         /* Persist count so the cart-icon's ensureCartBubbleIsCorrect picks it up
            on next page navigation within 10 s. */
         try {
