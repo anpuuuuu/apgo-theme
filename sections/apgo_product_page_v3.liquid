@@ -4257,13 +4257,25 @@
           </section>
         {%- endif -%}
 
-        {%- comment -%} Shipping info row: "<label> · ● In stock / Out of stock". {%- endcomment -%}
+        {%- comment -%}
+          Shipping info row: "<label> · ● In stock / Out of stock".
+          The stock status is VARIANT-aware (not product-wide), so a
+          sold-out variant doesn't borrow availability from a sibling
+          variant. SSR uses selected_or_first_available_variant; JS
+          (refreshVariant → syncInlineStock) flips the state on every
+          variant change.
+        {%- endcomment -%}
         {%- if section.settings.show_shipping -%}
+          {%- assign initial_variant = product.selected_or_first_available_variant -%}
+          {%- assign initial_available = initial_variant.available -%}
           <div class="apgo-cc-pdp__shipping">
             <span class="apgo-cc-pdp__shipping-label">{{ section.settings.shipping_label | default: '2–3 business days' }}</span>
             <span class="apgo-cc-pdp__shipping-sep" aria-hidden="true">·</span>
-            <span class="apgo-cc-pdp__shipping-stock{% unless product.available %} apgo-cc-pdp__shipping-stock--out{% endunless %}">
-              {%- if product.available -%}● In stock{%- else -%}● Out of stock{%- endif -%}
+            <span
+              class="apgo-cc-pdp__shipping-stock{% unless initial_available %} apgo-cc-pdp__shipping-stock--out{% endunless %}"
+              data-apgo-cc-inline-stock
+            >
+              {%- if initial_available -%}● In stock{%- else -%}● Out of stock{%- endif -%}
             </span>
           </div>
         {%- endif -%}
@@ -6754,6 +6766,23 @@ document.addEventListener('DOMContentLoaded', function() {
       addBtn.textContent = v.available ? 'Add to cart' : 'Sold out';
     }
     if (buyBtn) buyBtn.disabled = !v.available;
+
+    /*
+      Inline shipping-row stock indicator (right of "2–3 business days").
+      Tied to the CURRENT variant's `available` flag — independent from
+      `product.available`, which would borrow availability from any
+      in-stock sibling variant.
+    */
+    var inlineStockEl = document.querySelector('[data-apgo-cc-inline-stock]');
+    if (inlineStockEl) {
+      if (v.available) {
+        inlineStockEl.textContent = '● In stock';
+        inlineStockEl.classList.remove('apgo-cc-pdp__shipping-stock--out');
+      } else {
+        inlineStockEl.textContent = '● Out of stock';
+        inlineStockEl.classList.add('apgo-cc-pdp__shipping-stock--out');
+      }
+    }
 
     /*
       Swap the main gallery image to the variant's featured image.
