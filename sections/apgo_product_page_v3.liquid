@@ -4172,17 +4172,37 @@
               <span class="apgo-cc-pdp__option-current" data-apgo-cc-option-current hidden></span>
             </div>
             <div class="apgo-cc-pdp__option-chips">
+              {%- comment -%}
+                Skip option values whose corresponding variant has
+                inventory_quantity <= 0 AND inventory_management is set.
+                Liquid has server-side access to inventory_quantity (the
+                value is stripped from client-emitted variants JSON, but
+                accessible in Liquid). Limited to single-option products
+                here; multi-option pages still render every value.
+              {%- endcomment -%}
               {%- for value in option.values -%}
-                <label class="apgo-cc-pdp__chip {% if option.selected_value == value %}is-active{% endif %}">
-                  <input
-                    type="radio"
-                    name="options[{{ option.name | escape }}]"
-                    value="{{ value | escape }}"
-                    data-apgo-cc-option-input
-                    {% if option.selected_value == value %}checked{% endif %}
-                  >
-                  <span>{{ value }}</span>
-                </label>
+                {%- assign chip_variant = nil -%}
+                {%- if product.options_with_values.size == 1 -%}
+                  {%- for v in product.variants -%}
+                    {%- if v.option1 == value -%}{%- assign chip_variant = v -%}{%- break -%}{%- endif -%}
+                  {%- endfor -%}
+                {%- endif -%}
+                {%- assign chip_out_of_stock = false -%}
+                {%- if chip_variant and chip_variant.inventory_management and chip_variant.inventory_quantity != blank and chip_variant.inventory_quantity <= 0 -%}
+                  {%- assign chip_out_of_stock = true -%}
+                {%- endif -%}
+                {%- unless chip_out_of_stock -%}
+                  <label class="apgo-cc-pdp__chip {% if option.selected_value == value %}is-active{% endif %}">
+                    <input
+                      type="radio"
+                      name="options[{{ option.name | escape }}]"
+                      value="{{ value | escape }}"
+                      data-apgo-cc-option-input
+                      {% if option.selected_value == value %}checked{% endif %}
+                    >
+                    <span>{{ value }}</span>
+                  </label>
+                {%- endunless -%}
               {%- endfor -%}
             </div>
           </div>
@@ -6564,7 +6584,22 @@ document.addEventListener('DOMContentLoaded', function() {
             <span class="apgo-cc-pdp__option-current" data-apgo-cc-confirm-option-current>{{ option.selected_value }}</span>
           </div>
           <div class="apgo-cc-pdp__option-chips">
+            {%- comment -%}
+              Hide out-of-stock variant chips from the confirm modal too
+              (mirrors the inline picker). Single-option products only.
+            {%- endcomment -%}
             {%- for value in option.values -%}
+              {%- assign mchip_variant = nil -%}
+              {%- if product.options_with_values.size == 1 -%}
+                {%- for v in product.variants -%}
+                  {%- if v.option1 == value -%}{%- assign mchip_variant = v -%}{%- break -%}{%- endif -%}
+                {%- endfor -%}
+              {%- endif -%}
+              {%- assign mchip_out = false -%}
+              {%- if mchip_variant and mchip_variant.inventory_management and mchip_variant.inventory_quantity != blank and mchip_variant.inventory_quantity <= 0 -%}
+                {%- assign mchip_out = true -%}
+              {%- endif -%}
+              {%- unless mchip_out -%}
               <button
                 type="button"
                 class="apgo-cc-pdp__chip"
@@ -6573,6 +6608,7 @@ document.addEventListener('DOMContentLoaded', function() {
               >
                 <span>{{ value }}</span>
               </button>
+              {%- endunless -%}
             {%- endfor -%}
           </div>
         </div>
