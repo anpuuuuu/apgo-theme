@@ -6963,30 +6963,38 @@ document.addEventListener('DOMContentLoaded', function() {
         return fetch('/cart.js?_=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); });
       })
       .then(function (cart) {
-        document.dispatchEvent(new CustomEvent('cart:update', { detail: { cart: cart } }));
-        document.documentElement.dispatchEvent(new CustomEvent('cart:refresh', { bubbles: true, detail: { cart: cart } }));
-        document.dispatchEvent(new CustomEvent('cart:updated'));
-
         /*
-          Header cart-icon update — three layers of attempts so the badge
-          updates regardless of which event path Horizon happens to honour
-          on this build:
-            (a) synthetic Event dispatch with the shape <cart-icon> expects,
-            (b) async import + native CartUpdateEvent dispatch below,
-            (c) direct DOM update on .cart-bubble children as a safety net.
+          Cart update event — ONE properly-shaped CustomEvent matching
+          Horizon's <cart-icon> contract.
+            event.detail.data.itemCount  → number of items
+            event.detail.data.source     → 'apgo-cc-pdp' (NOT 'product-form-component',
+                                            so cart-icon treats itemCount as the
+                                            absolute new total, not a delta to add)
+          ⚠️ DO NOT dispatch a parallel `{ detail: { cart } }` shape on the
+          same event name — cart-icon reads `detail.data?.itemCount`, gets
+          undefined ?? 0, and HIDES the badge.
+          ⚠️ DO NOT `import('@theme/events')` — bare specifier, browsers can't
+          resolve it without a registered importmap; the dynamic import
+          rejects silently and the supposed "fallback" never fires.
         */
-        try {
-          var manualCartEvent = new Event('cart:update', { bubbles: true });
-          manualCartEvent.detail = {
+        document.dispatchEvent(new CustomEvent('cart:update', {
+          bubbles: true,
+          detail: {
             resource: cart,
             sourceId: 'apgo-cc-pdp',
-            data: { itemCount: cart.item_count, source: 'apgo-cc-pdp', sections: {} }
-          };
-          document.dispatchEvent(manualCartEvent);
-        } catch (_) {}
+            data: {
+              itemCount: cart.item_count,
+              source: 'apgo-cc-pdp',
+              sections: {}
+            }
+          }
+        }));
+        /* Legacy event names for any app/theme code still listening to them */
+        document.documentElement.dispatchEvent(new CustomEvent('cart:refresh', { bubbles: true, detail: { cart: cart } }));
+        document.dispatchEvent(new CustomEvent('cart:updated', { detail: { cart: cart } }));
 
-        /* (c) Direct DOM update — won't lose to event-listener races.
-           Touches the same classes Horizon's CartIcon.renderCartBubble does. */
+        /* Direct DOM update — belt-and-braces in case the custom-element
+           upgrade is still pending or any other listener overrides things. */
         try {
           var count = cart.item_count || 0;
           var cartIconEls = document.querySelectorAll('cart-icon, .header-actions__cart-icon');
@@ -7002,24 +7010,12 @@ document.addEventListener('DOMContentLoaded', function() {
           });
         } catch (_) {}
 
-        /* Persist count so the cart-icon's ensureCartBubbleIsCorrect picks it up
-           on next page navigation within 10 s. */
+        /* Persist for cart-icon's ensureCartBubbleIsCorrect on next nav (<10s). */
         try {
           sessionStorage.setItem('cart-count', JSON.stringify({
             value: String(cart.item_count || 0),
             timestamp: Date.now()
           }));
-        } catch (_) {}
-
-        try {
-          import('@theme/events').then(function (mod) {
-            if (mod && mod.CartUpdateEvent) {
-              document.dispatchEvent(new mod.CartUpdateEvent(cart, 'apgo-cc-pdp', { itemCount: cart.item_count, source: 'apgo-cc-pdp', sections: {} }));
-            }
-            if (mod && mod.CartAddEvent) {
-              document.dispatchEvent(new mod.CartAddEvent({}, 'apgo-cc-pdp', { source: 'apgo-cc-pdp' }));
-            }
-          }).catch(function () {});
         } catch (_) {}
         if (btn) { btn.disabled = false; btn.textContent = orig; }
         /* Fly-to-cart animation — animates a tiny "ghost" of the product
