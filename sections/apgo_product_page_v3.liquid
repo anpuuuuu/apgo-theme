@@ -3641,40 +3641,43 @@
     font-weight: 700;
     color: var(--primary-orange, #f08418);
   }
-  /* Stock indicator under the price. Colour switches via data-stock-state:
-       in-stock  → soft green dot + dim text
-       low-stock → orange dot + orange text (urgency)
-       sold-out  → red dot + red text */
+  /* Stock indicator under the price. Colour switches via data-stock-state. */
   .apgo-cc-confirm-modal__stock {
-    display: inline-flex;
+    display: inline-flex !important;
     align-items: center;
     gap: 6px;
+    margin-top: 4px;
     font-size: 12px;
     font-weight: 600;
-    margin-top: 4px;
     color: rgba(255, 255, 255, 0.7);
+    line-height: 1.2;
   }
-  .apgo-cc-confirm-modal__stock::before {
-    content: '';
-    display: inline-block;
+  .apgo-cc-confirm-modal__stock[hidden] { display: none !important; }
+  .apgo-cc-confirm-modal__stock-dot {
+    flex: 0 0 auto;
     width: 7px;
     height: 7px;
     border-radius: 50%;
     background: #34d399;
     box-shadow: 0 0 6px rgba(52, 211, 153, 0.6);
   }
+  .apgo-cc-confirm-modal__stock-text {
+    color: inherit;
+  }
+  /* Low-stock state — orange + pulsing dot for urgency */
   .apgo-cc-confirm-modal__stock[data-stock-state="low"] {
     color: #f08418;
   }
-  .apgo-cc-confirm-modal__stock[data-stock-state="low"]::before {
+  .apgo-cc-confirm-modal__stock[data-stock-state="low"] .apgo-cc-confirm-modal__stock-dot {
     background: #f08418;
     box-shadow: 0 0 8px rgba(240, 132, 24, 0.7);
     animation: apgoStockPulse 1.6s ease-in-out infinite;
   }
+  /* Sold-out state */
   .apgo-cc-confirm-modal__stock[data-stock-state="out"] {
     color: #f87171;
   }
-  .apgo-cc-confirm-modal__stock[data-stock-state="out"]::before {
+  .apgo-cc-confirm-modal__stock[data-stock-state="out"] .apgo-cc-confirm-modal__stock-dot {
     background: #f87171;
     box-shadow: 0 0 6px rgba(248, 113, 113, 0.6);
   }
@@ -6518,8 +6521,13 @@ document.addEventListener('DOMContentLoaded', function() {
           {%- comment -%}
             Stock line — populated by syncConfirmModal(). Hidden when the
             variant's inventory isn't tracked or stock data is unavailable.
+            Two child spans: explicit dot + label text (avoid relying on
+            ::before pseudo for the dot so the text node is always visible).
           {%- endcomment -%}
-          <span class="apgo-cc-confirm-modal__stock" data-apgo-cc-confirm-stock hidden></span>
+          <span class="apgo-cc-confirm-modal__stock" data-apgo-cc-confirm-stock hidden>
+            <span class="apgo-cc-confirm-modal__stock-dot" aria-hidden="true"></span>
+            <span class="apgo-cc-confirm-modal__stock-text" data-apgo-cc-confirm-stock-text></span>
+          </span>
         </div>
       </div>
 
@@ -7038,6 +7046,7 @@ document.addEventListener('DOMContentLoaded', function() {
   var confirmImageEl    = confirmModal ? confirmModal.querySelector('[data-apgo-cc-confirm-image]') : null;
   var confirmPriceEl    = confirmModal ? confirmModal.querySelector('[data-apgo-cc-confirm-price]') : null;
   var confirmStockEl    = confirmModal ? confirmModal.querySelector('[data-apgo-cc-confirm-stock]') : null;
+  var confirmStockTxtEl = confirmModal ? confirmModal.querySelector('[data-apgo-cc-confirm-stock-text]') : null;
   /* Below this threshold the stock line switches to the orange "Only X left"
      state to add urgency. Above this threshold we show plain "In stock". */
   var APGO_LOW_STOCK_THRESHOLD = 10;
@@ -7084,20 +7093,22 @@ document.addEventListener('DOMContentLoaded', function() {
       if (confirmStockEl) {
         var tracked = curV.inventory_management != null;
         var qty = curV.inventory_quantity;
+        function setStock(state, txt) {
+          confirmStockEl.removeAttribute('hidden');
+          confirmStockEl.setAttribute('data-stock-state', state);
+          if (confirmStockTxtEl) confirmStockTxtEl.textContent = txt;
+        }
         if (!tracked || typeof qty !== 'number') {
-          confirmStockEl.setAttribute('hidden', '');
+          /* Inventory not tracked → show "In stock" as the safest default
+             (was previously hiding, but the user reported a bare dot which
+             suggests this path was firing; keep the indicator informative). */
+          setStock('in', 'In stock');
         } else if (!curV.available || qty <= 0) {
-          confirmStockEl.removeAttribute('hidden');
-          confirmStockEl.setAttribute('data-stock-state', 'out');
-          confirmStockEl.textContent = 'Sold out';
+          setStock('out', 'Sold out');
         } else if (qty <= APGO_LOW_STOCK_THRESHOLD) {
-          confirmStockEl.removeAttribute('hidden');
-          confirmStockEl.setAttribute('data-stock-state', 'low');
-          confirmStockEl.textContent = 'Only ' + qty + ' left in stock';
+          setStock('low', 'Only ' + qty + ' left in stock');
         } else {
-          confirmStockEl.removeAttribute('hidden');
-          confirmStockEl.setAttribute('data-stock-state', 'in');
-          confirmStockEl.textContent = 'In stock';
+          setStock('in', 'In stock');
         }
       }
     }
