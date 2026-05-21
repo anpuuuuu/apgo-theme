@@ -3641,6 +3641,47 @@
     font-weight: 700;
     color: var(--primary-orange, #f08418);
   }
+  /* Stock indicator under the price. Colour switches via data-stock-state:
+       in-stock  → soft green dot + dim text
+       low-stock → orange dot + orange text (urgency)
+       sold-out  → red dot + red text */
+  .apgo-cc-confirm-modal__stock {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 4px;
+    color: rgba(255, 255, 255, 0.7);
+  }
+  .apgo-cc-confirm-modal__stock::before {
+    content: '';
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #34d399;
+    box-shadow: 0 0 6px rgba(52, 211, 153, 0.6);
+  }
+  .apgo-cc-confirm-modal__stock[data-stock-state="low"] {
+    color: #f08418;
+  }
+  .apgo-cc-confirm-modal__stock[data-stock-state="low"]::before {
+    background: #f08418;
+    box-shadow: 0 0 8px rgba(240, 132, 24, 0.7);
+    animation: apgoStockPulse 1.6s ease-in-out infinite;
+  }
+  .apgo-cc-confirm-modal__stock[data-stock-state="out"] {
+    color: #f87171;
+  }
+  .apgo-cc-confirm-modal__stock[data-stock-state="out"]::before {
+    background: #f87171;
+    box-shadow: 0 0 6px rgba(248, 113, 113, 0.6);
+  }
+  @keyframes apgoStockPulse {
+    0%, 100% { transform: scale(1);   opacity: 1;   }
+    50%      { transform: scale(1.3); opacity: 0.7; }
+  }
 
   .apgo-cc-confirm-modal__actions {
     display: grid;
@@ -6474,6 +6515,11 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
         <div class="apgo-cc-confirm-modal__summary-info">
           <span class="apgo-cc-confirm-modal__price" data-apgo-cc-confirm-price data-cents="{{ product.selected_or_first_available_variant.price }}">{{ product.selected_or_first_available_variant.price | money }}</span>
+          {%- comment -%}
+            Stock line — populated by syncConfirmModal(). Hidden when the
+            variant's inventory isn't tracked or stock data is unavailable.
+          {%- endcomment -%}
+          <span class="apgo-cc-confirm-modal__stock" data-apgo-cc-confirm-stock hidden></span>
         </div>
       </div>
 
@@ -6991,6 +7037,10 @@ document.addEventListener('DOMContentLoaded', function() {
   var confirmGroups     = confirmModal ? confirmModal.querySelectorAll('[data-apgo-cc-confirm-option-group]') : [];
   var confirmImageEl    = confirmModal ? confirmModal.querySelector('[data-apgo-cc-confirm-image]') : null;
   var confirmPriceEl    = confirmModal ? confirmModal.querySelector('[data-apgo-cc-confirm-price]') : null;
+  var confirmStockEl    = confirmModal ? confirmModal.querySelector('[data-apgo-cc-confirm-stock]') : null;
+  /* Below this threshold the stock line switches to the orange "Only X left"
+     state to add urgency. Above this threshold we show plain "In stock". */
+  var APGO_LOW_STOCK_THRESHOLD = 10;
 
   function syncConfirmModal() {
     if (!confirmModal) return;
@@ -7026,6 +7076,28 @@ document.addEventListener('DOMContentLoaded', function() {
           /* Request a small width to keep payload tiny on mobile */
           var sized = src.replace(/(\.[a-z]+)(\?|$)/i, '_200x$1$2');
           if (confirmImageEl.getAttribute('src') !== sized) confirmImageEl.setAttribute('src', sized);
+        }
+      }
+      /* Stock indicator. Variants without tracked inventory have
+         inventory_management === null; we hide the line in that case to
+         avoid showing misleading "0 in stock". */
+      if (confirmStockEl) {
+        var tracked = curV.inventory_management != null;
+        var qty = curV.inventory_quantity;
+        if (!tracked || typeof qty !== 'number') {
+          confirmStockEl.setAttribute('hidden', '');
+        } else if (!curV.available || qty <= 0) {
+          confirmStockEl.removeAttribute('hidden');
+          confirmStockEl.setAttribute('data-stock-state', 'out');
+          confirmStockEl.textContent = 'Sold out';
+        } else if (qty <= APGO_LOW_STOCK_THRESHOLD) {
+          confirmStockEl.removeAttribute('hidden');
+          confirmStockEl.setAttribute('data-stock-state', 'low');
+          confirmStockEl.textContent = 'Only ' + qty + ' left in stock';
+        } else {
+          confirmStockEl.removeAttribute('hidden');
+          confirmStockEl.setAttribute('data-stock-state', 'in');
+          confirmStockEl.textContent = 'In stock';
         }
       }
     }
