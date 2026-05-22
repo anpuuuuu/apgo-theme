@@ -99,6 +99,11 @@
   .apgo-daily-gift-backdrop.is-visible { opacity: 1; pointer-events: auto; }
   .apgo-daily-gift-backdrop[hidden] { display: none !important; }
 
+  .apgo-daily-gift,
+  .apgo-daily-gift * {
+    /* Match the storefront-wide font set in layout/theme.liquid */
+    font-family: 'Poppins', 'Microsoft JhengHei', Arial, sans-serif !important;
+  }
   .apgo-daily-gift {
     position: fixed;
     top: 50%;
@@ -215,7 +220,7 @@
     margin-bottom: 10px;
     border-radius: 999px;
     background: linear-gradient(45deg, #f08418, #ff9a3c);
-    color: #fff;
+    color: #1a1a1a;
     font-size: 10px;
     font-weight: 800;
     letter-spacing: 0.12em;
