@@ -4171,6 +4171,13 @@
       <form action="/cart/add" method="post" enctype="multipart/form-data" class="apgo-cc-pdp__form" data-apgo-cc-form>
         <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}" data-apgo-cc-variant-id>
 
+        {%- comment -%}
+          When the product has only the default variant (no real options
+          configured), Shopify still emits a synthetic option named "Title"
+          with one value "Default Title". Skip the whole option-group loop
+          so the picker isn't cluttered with a useless "Default Title" chip.
+        {%- endcomment -%}
+        {%- unless product.has_only_default_variant -%}
         {%- for option in product.options_with_values -%}
           <div class="apgo-cc-pdp__option-group" data-apgo-cc-option-group data-option-position="{{ option.position }}">
             <div class="apgo-cc-pdp__option-label">
@@ -4257,6 +4264,7 @@
             </div>
           </div>
         {%- endfor -%}
+        {%- endunless -%}{%- comment -%} / has_only_default_variant guard {%- endcomment -%}
 
         {%- comment -%}
           Quantity stepper — desktop only (≥1024px). On mobile the visible row
@@ -6691,6 +6699,7 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
       </div>
 
+      {%- unless product.has_only_default_variant -%}
       {%- for option in product.options_with_values -%}
         <div class="apgo-cc-confirm-modal__option-group" data-apgo-cc-confirm-option-group data-option-position="{{ option.position }}">
           <div class="apgo-cc-pdp__option-label">
@@ -6727,6 +6736,7 @@ document.addEventListener('DOMContentLoaded', function() {
           </div>
         </div>
       {%- endfor -%}
+      {%- endunless -%}
 
       <div class="apgo-cc-pdp__qty-row apgo-cc-confirm-modal__qty">
         <span class="apgo-cc-pdp__qty-label">Quantity</span>
