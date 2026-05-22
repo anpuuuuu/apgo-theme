@@ -4750,6 +4750,29 @@
       </div>
     </section>
 
+    {%- comment -%}
+      Per-tab content-presence flags. If a tab has no content the button +
+      panel are skipped entirely so the tab bar doesn't show a label that
+      leads to an empty section.
+        desc_tab_has  ← description tab pics
+        how_tab_has_any ← already computed earlier
+        faq_has_any   ← already computed earlier
+        review_has_any ← already computed earlier
+      The first tab with content becomes the SSR-selected one.
+    {%- endcomment -%}
+    {%- assign desc_tab_has = description_tab_pics_has -%}
+    {%- assign first_tab_id = '' -%}
+    {%- if desc_tab_has -%}
+      {%- assign first_tab_id = 'desc' -%}
+    {%- elsif how_tab_has_any -%}
+      {%- assign first_tab_id = 'how' -%}
+    {%- elsif faq_has_any -%}
+      {%- assign first_tab_id = 'faq' -%}
+    {%- elsif review_has_any -%}
+      {%- assign first_tab_id = 'rev' -%}
+    {%- endif -%}
+
+    {%- if first_tab_id != '' -%}
     <section
       class="apgo-pdp-tabs"
       aria-label="Product detail tabs"
@@ -4758,28 +4781,32 @@
       <div class="apgo-pdp-tabs-inner">
         <div class="apgo-pdp-tablist-wrap">
           <div class="apgo-pdp-tablist" role="tablist">
-            <button
-              type="button"
-              class="apgo-pdp-tab"
-              role="tab"
-              id="apgo-tab-desc-{{ section.id }}"
-              aria-controls="apgo-tab-panel-desc-{{ section.id }}"
-              aria-selected="true"
-              tabindex="0"
-            >
-              Description
-            </button>
-            <button
-              type="button"
-              class="apgo-pdp-tab"
-              role="tab"
-              id="apgo-tab-how-{{ section.id }}"
-              aria-controls="apgo-tab-panel-how-{{ section.id }}"
-              aria-selected="false"
-              tabindex="-1"
-            >
-              How to use
-            </button>
+            {%- if desc_tab_has -%}
+              <button
+                type="button"
+                class="apgo-pdp-tab"
+                role="tab"
+                id="apgo-tab-desc-{{ section.id }}"
+                aria-controls="apgo-tab-panel-desc-{{ section.id }}"
+                aria-selected="{% if first_tab_id == 'desc' %}true{% else %}false{% endif %}"
+                tabindex="{% if first_tab_id == 'desc' %}0{% else %}-1{% endif %}"
+              >
+                Description
+              </button>
+            {%- endif -%}
+            {%- if how_tab_has_any -%}
+              <button
+                type="button"
+                class="apgo-pdp-tab"
+                role="tab"
+                id="apgo-tab-how-{{ section.id }}"
+                aria-controls="apgo-tab-panel-how-{{ section.id }}"
+                aria-selected="{% if first_tab_id == 'how' %}true{% else %}false{% endif %}"
+                tabindex="{% if first_tab_id == 'how' %}0{% else %}-1{% endif %}"
+              >
+                How to use
+              </button>
+            {%- endif -%}
             {% if faq_has_any %}
               <button
                 type="button"
@@ -4787,27 +4814,30 @@
                 role="tab"
                 id="apgo-tab-faq-{{ section.id }}"
                 aria-controls="apgo-tab-panel-faq-{{ section.id }}"
-                aria-selected="false"
-                tabindex="-1"
+                aria-selected="{% if first_tab_id == 'faq' %}true{% else %}false{% endif %}"
+                tabindex="{% if first_tab_id == 'faq' %}0{% else %}-1{% endif %}"
               >
                 {{ 'product.faq_tab' | t }}
               </button>
             {% endif %}
-            <button
-              type="button"
-              class="apgo-pdp-tab"
-              role="tab"
-              id="apgo-tab-rev-{{ section.id }}"
-              aria-controls="apgo-tab-panel-rev-{{ section.id }}"
-              aria-selected="false"
-              tabindex="-1"
-            >
-              Review
-            </button>
+            {%- if review_has_any -%}
+              <button
+                type="button"
+                class="apgo-pdp-tab"
+                role="tab"
+                id="apgo-tab-rev-{{ section.id }}"
+                aria-controls="apgo-tab-panel-rev-{{ section.id }}"
+                aria-selected="{% if first_tab_id == 'rev' %}true{% else %}false{% endif %}"
+                tabindex="{% if first_tab_id == 'rev' %}0{% else %}-1{% endif %}"
+              >
+                Review
+              </button>
+            {%- endif -%}
           </div>
         </div>
 
         <div class="apgo-tab-panels">
+          {%- if desc_tab_has -%}
           <div
             class="apgo-tab-panel apgo-looping-desc-content{% if description_tab_pics_has %} apgo-tab-panel--description{% endif %}"
             id="apgo-tab-panel-desc-{{ section.id }}"
@@ -4835,29 +4865,28 @@
             {% endif %}
 
           </div>
+          {%- endif -%}{%- comment -%} / desc_tab_has {%- endcomment -%}
 
+          {%- if how_tab_has_any -%}
           <div
             class="apgo-tab-panel"
             id="apgo-tab-panel-how-{{ section.id }}"
             role="tabpanel"
             aria-labelledby="apgo-tab-how-{{ section.id }}"
-            hidden
+            {% if first_tab_id != 'how' %}hidden{% endif %}
           >
-            {% if how_tab_has_any %}
-              <div class="apgo-looping-desc-content">
-                {% if how_has %}
-                  <h4 class="apgo-looping-desc-block-title">{{ 'product.how_to_use' | t }}</h4>
-                  <div class="apgo-tab-plain-body">{{ how_to_use_raw | escape | newline_to_br }}</div>
-                {% endif %}
-                {% if precautions_has %}
-                  <h4 class="apgo-looping-desc-block-title">{{ 'product.precautions' | t }}</h4>
-                  <div class="apgo-tab-plain-body">{{ precautions_text | escape | newline_to_br }}</div>
-                {% endif %}
-              </div>
-            {% else %}
-              <p class="apgo-tab-empty">No usage instructions available.</p>
-            {% endif %}
+            <div class="apgo-looping-desc-content">
+              {% if how_has %}
+                <h4 class="apgo-looping-desc-block-title">{{ 'product.how_to_use' | t }}</h4>
+                <div class="apgo-tab-plain-body">{{ how_to_use_raw | escape | newline_to_br }}</div>
+              {% endif %}
+              {% if precautions_has %}
+                <h4 class="apgo-looping-desc-block-title">{{ 'product.precautions' | t }}</h4>
+                <div class="apgo-tab-plain-body">{{ precautions_text | escape | newline_to_br }}</div>
+              {% endif %}
+            </div>
           </div>
+          {%- endif -%}
 
           {% if faq_has_any %}
             <div
@@ -4889,43 +4918,42 @@
             </div>
           {% endif %}
 
+          {%- if review_has_any -%}
           <div
             class="apgo-tab-panel apgo-tab-panel--review"
             id="apgo-tab-panel-rev-{{ section.id }}"
             role="tabpanel"
             aria-labelledby="apgo-tab-rev-{{ section.id }}"
-            hidden
+            {% if first_tab_id != 'rev' %}hidden{% endif %}
           >
-            {% if review_has_any %}
-              <div class="apgo-pdp-review-media-stack">
-                {% if customer_review_image != blank %}
-                  <img
-                    class="apgo-customer-review-image"
-                    src="{{ customer_review_image | image_url: width: 2000 }}"
-                    alt="Review"
-                    loading="lazy"
-                  >
-                {% endif %}
-                {% if mobile_review_list != blank %}
-                  {% for mf in mobile_review_list %}
-                    {% if mf != blank %}
-                      <img
-                        class="apgo-customer-review-image"
-                        src="{{ mf | image_url: width: 2000 }}"
-                        alt="Review {{ forloop.index }}"
-                        loading="{% if customer_review_image == blank and forloop.first %}eager{% else %}lazy{% endif %}"
-                      >
-                    {% endif %}
-                  {% endfor %}
-                {% endif %}
-              </div>
-            {% else %}
-              <p class="apgo-tab-empty">No customer review images yet.</p>
-            {% endif %}
+            <div class="apgo-pdp-review-media-stack">
+              {% if customer_review_image != blank %}
+                <img
+                  class="apgo-customer-review-image"
+                  src="{{ customer_review_image | image_url: width: 2000 }}"
+                  alt="Review"
+                  loading="lazy"
+                >
+              {% endif %}
+              {% if mobile_review_list != blank %}
+                {% for mf in mobile_review_list %}
+                  {% if mf != blank %}
+                    <img
+                      class="apgo-customer-review-image"
+                      src="{{ mf | image_url: width: 2000 }}"
+                      alt="Review {{ forloop.index }}"
+                      loading="{% if customer_review_image == blank and forloop.first %}eager{% else %}lazy{% endif %}"
+                    >
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+            </div>
           </div>
+          {%- endif -%}
         </div>
       </div>
     </section>
+    {%- endif -%}{%- comment -%} / first_tab_id != '' {%- endcomment -%}
 
     {% liquid
       assign cs_mf = product.metafields.custom.construction_steps
