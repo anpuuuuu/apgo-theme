@@ -2,26 +2,23 @@
   APGO Daily Gift Popup — center-screen modal style.
   Used on the Hari Raya Haji Bundle product page only.
 
-  Show rules (in order):
-    1. Product handle guard is on the parent section (apgo_product_page_v3.liquid).
-    2. Within `start_str` ↔ `end_str` window only (MY GMT+8).
-    3. Once per browser session (sessionStorage flag) — if the visitor
-       sees it during this session it won't reappear on subsequent page
-       loads until a new tab/session.
-    4. Also respects a per-day localStorage dismiss flag for when user
-       explicitly closes via the X — won't reappear that day either.
+  Show rules:
+    1. Product handle guard on parent section (apgo_product_page_v3.liquid).
+    2. Only after `start_str` (MY GMT+8). Empty `end_str` = no expiry.
+    3. Once per browser session (sessionStorage).
+    4. Per-day localStorage dismiss flag set by X click / backdrop / Esc.
 
-  Edit values inside the assign block to change copy / dates.
+  Edit values in the assign block to change copy / dates.
 {%- enddoc -%}
 
 {%- comment -%} ============ EDIT THESE TO CHANGE THE PROMO ============ {%- endcomment -%}
 {%- assign start_str       = '2026-05-22' -%}
-{%- assign end_str         = '2026-05-24' -%}
+{%- assign end_str         = '' -%}{%- comment -%} blank = no expiry {%- endcomment -%}
 {%- assign end_time_str    = '23:59' -%}
-{%- assign badge_text      = 'LIMITED · 3 DAYS ONLY' -%}
-{%- assign title_text      = 'Free shampoo with this bundle' -%}
-{%- assign subtitle_text   = 'Hari Raya Haji special — pick up your Atomic Glaze Coating bundle and we will include a Car Wash Shampoo free of charge.' -%}
-{%- assign timer_label     = 'Promo ends in' -%}
+{%- assign badge_text      = 'TODAY ONLY' -%}
+{%- assign title_text      = 'Free Car Wash Shampoo' -%}
+{%- assign subtitle_text   = 'Add this bundle to cart and we will include it free.' -%}
+{%- assign timer_label     = 'Ends in' -%}
 {%- assign storage_key_day = 'apgo_gift_popup_haji_day' -%}
 {%- assign storage_key_session = 'apgo_gift_popup_haji_seen' -%}
 {%- comment -%} ========================================================== {%- endcomment -%}
@@ -49,7 +46,7 @@
   aria-labelledby="apgoDailyGiftTitle"
 >
   <button type="button" class="apgo-daily-gift__close" data-apgo-daily-gift-close aria-label="Close">
-    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
       <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
     </svg>
   </button>
@@ -65,10 +62,10 @@
     {%- else -%}
       <div class="apgo-daily-gift__image-fallback" aria-hidden="true">🎁</div>
     {%- endif -%}
-    <span class="apgo-daily-gift__badge">{{ badge_text }}</span>
   </div>
 
   <div class="apgo-daily-gift__body">
+    <span class="apgo-daily-gift__badge">🎁 {{ badge_text }}</span>
     <p class="apgo-daily-gift__title" id="apgoDailyGiftTitle">{{ title_text }}</p>
     {%- if subtitle_text != blank -%}
       <p class="apgo-daily-gift__sub">{{ subtitle_text }}</p>
@@ -85,17 +82,14 @@
     position: fixed;
     inset: 0;
     z-index: 89999;
-    background: rgba(0, 0, 0, 0.65);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     opacity: 0;
     transition: opacity .3s ease;
     pointer-events: none;
   }
-  .apgo-daily-gift-backdrop.is-visible {
-    opacity: 1;
-    pointer-events: auto;
-  }
+  .apgo-daily-gift-backdrop.is-visible { opacity: 1; pointer-events: auto; }
   .apgo-daily-gift-backdrop[hidden] { display: none !important; }
 
   .apgo-daily-gift {
@@ -107,8 +101,11 @@
     width: min(86vw, 360px);
     border-radius: 18px;
     background: #111;
-    border: 1px solid rgba(240, 132, 24, 0.45);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(240, 132, 24, 0.18) inset;
+    border: 1px solid rgba(240, 132, 24, 0.55);
+    box-shadow:
+      0 20px 60px rgba(0, 0, 0, 0.65),
+      0 0 0 1px rgba(240, 132, 24, 0.18) inset,
+      0 0 36px rgba(240, 132, 24, 0.18);
     color: #fff;
     opacity: 0;
     transition: opacity .35s cubic-bezier(.16,1,.3,1), transform .35s cubic-bezier(.16,1,.3,1);
@@ -120,38 +117,36 @@
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
     pointer-events: auto;
+    animation: apgoGiftPop .55s cubic-bezier(.34,1.56,.64,1);
   }
-  /* Orange accent strip at top */
-  .apgo-daily-gift::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #f08418, #ff9a3c);
-    z-index: 2;
+  @keyframes apgoGiftPop {
+    0%   { transform: translate(-50%, -50%) scale(0.88); }
+    65%  { transform: translate(-50%, -50%) scale(1.03); }
+    100% { transform: translate(-50%, -50%) scale(1);    }
   }
 
+  /* X button — no background, plain white icon */
   .apgo-daily-gift__close {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 28px;
-    height: 28px;
+    top: 8px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
     border: 0;
     padding: 0;
-    border-radius: 999px;
-    background: rgba(0, 0, 0, 0.55);
-    color: rgba(255, 255, 255, 0.85);
+    background: transparent;
+    color: #ffffff;
     cursor: pointer;
     display: grid;
     place-items: center;
     z-index: 3;
-    backdrop-filter: blur(8px);
+    border-radius: 0;
+    opacity: 0.9;
+    transition: opacity .15s ease, transform .15s ease;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
   }
-  .apgo-daily-gift__close:hover {
-    background: rgba(0, 0, 0, 0.75);
-    color: #fff;
-  }
+  .apgo-daily-gift__close:hover { opacity: 1; transform: scale(1.1); }
+  .apgo-daily-gift__close:active { transform: scale(0.95); }
 
   .apgo-daily-gift__image-wrap {
     position: relative;
@@ -175,69 +170,77 @@
     line-height: 1;
     background: linear-gradient(135deg, rgba(240, 132, 24, 0.15), rgba(255, 154, 60, 0.05));
   }
+
+  .apgo-daily-gift__body {
+    padding: 16px 20px 20px;
+    text-align: center;
+  }
   .apgo-daily-gift__badge {
-    position: absolute;
-    bottom: 12px;
-    left: 12px;
-    padding: 4px 10px;
+    display: inline-block;
+    padding: 5px 14px;
+    margin-bottom: 12px;
     border-radius: 999px;
     background: linear-gradient(45deg, #f08418, #ff9a3c);
     color: #fff;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 800;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    box-shadow: 0 4px 12px rgba(240, 132, 24, 0.4);
+    box-shadow: 0 4px 14px rgba(240, 132, 24, 0.45);
+    animation: apgoGiftBadgePulse 2.2s ease-in-out infinite;
   }
-
-  .apgo-daily-gift__body {
-    padding: 16px 18px 18px;
+  @keyframes apgoGiftBadgePulse {
+    0%, 100% { box-shadow: 0 4px 14px rgba(240, 132, 24, 0.45); }
+    50%      { box-shadow: 0 4px 22px rgba(240, 132, 24, 0.75); }
   }
   .apgo-daily-gift__title {
     margin: 0 0 6px;
-    font-size: 17px;
+    font-size: 20px;
     font-weight: 800;
     color: #fff;
-    line-height: 1.3;
+    line-height: 1.25;
     letter-spacing: 0.01em;
   }
   .apgo-daily-gift__sub {
-    margin: 0 0 12px;
+    margin: 0 0 14px;
     font-size: 13px;
     color: rgba(255, 255, 255, 0.7);
-    line-height: 1.5;
+    line-height: 1.55;
   }
+  /* Inline center timer — no box, just label + time on one line */
   .apgo-daily-gift__timer-row {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    align-items: baseline;
+    justify-content: center;
     gap: 8px;
-    padding: 10px 12px;
-    margin-top: 4px;
-    border-radius: 10px;
-    background: rgba(240, 132, 24, 0.1);
-    border: 1px solid rgba(240, 132, 24, 0.3);
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border: 0;
   }
   .apgo-daily-gift__timer-label {
-    color: rgba(255, 255, 255, 0.75);
+    color: rgba(255, 255, 255, 0.6);
     font-size: 12px;
     font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
   }
   .apgo-daily-gift__timer {
     font-weight: 800;
-    font-size: 16px;
+    font-size: 18px;
     color: #f08418;
     font-variant-numeric: tabular-nums;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.05em;
+    text-shadow: 0 0 12px rgba(240, 132, 24, 0.5);
   }
 
-  /* Tablet/desktop — slightly larger card */
   @media (min-width: 750px) {
     .apgo-daily-gift {
       width: min(420px, 90vw);
     }
-    .apgo-daily-gift__title { font-size: 18px; }
+    .apgo-daily-gift__title { font-size: 22px; }
     .apgo-daily-gift__sub { font-size: 14px; }
+    .apgo-daily-gift__timer { font-size: 20px; }
   }
 </style>
 
@@ -255,7 +258,6 @@
   var dayKey   = root.getAttribute('data-storage-day-key');
   var sessKey  = root.getAttribute('data-storage-session-key');
 
-  /* Date in MY (GMT+8) — used for date window check + day dismiss flag */
   function myTodayStr() {
     var now = new Date(Date.now() + 8 * 3600 * 1000);
     return now.getUTCFullYear() + '-' +
@@ -264,15 +266,9 @@
   }
 
   var today = myTodayStr();
-
-  /* Guard 1: outside promo window */
   if (startStr && today < startStr) return;
-  if (endStr && today > endStr) return;
-
-  /* Guard 2: per-session — already shown this tab/session */
+  if (endStr && today > endStr) return; /* blank end_str → never expires */
   try { if (sessKey && sessionStorage.getItem(sessKey) === '1') return; } catch (_) {}
-
-  /* Guard 3: per-day dismiss flag set by X click */
   try { if (dayKey && localStorage.getItem(dayKey) === today) return; } catch (_) {}
 
   var timerEl = root.querySelector('[data-apgo-daily-gift-timer]');
@@ -304,10 +300,8 @@
   }
   if (!render()) return;
 
-  /* Mark session-seen IMMEDIATELY so even reloads don't re-show */
   try { if (sessKey) sessionStorage.setItem(sessKey, '1'); } catch (_) {}
 
-  /* Reveal */
   root.removeAttribute('hidden');
   backdrop && backdrop.removeAttribute('hidden');
   setTimeout(function () {
