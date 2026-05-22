@@ -3452,6 +3452,7 @@
     font-weight: 600;
   }
   .apgo-cc-pdp__shipping-stock--out { color: #ff9a9a; }
+  .apgo-cc-pdp__shipping-stock--low { color: #f08418; font-weight: 700; }
 
   /*
     CTA row — desktop only (≥1024px). On mobile the fixed bottom buybar
@@ -4318,6 +4319,21 @@
       {%- endcomment -%}
       <script type="application/json" data-apgo-cc-variants>
         {{ product.variants | json }}
+      </script>
+
+      {%- comment -%}
+        Server-side inventory snapshot — Shopify strips inventory_quantity
+        from `product.variants | json` for privacy. Emit it ourselves so
+        the inline stock indicator + confirm modal can show variant-aware
+        "Only N left" / exact counts. Map shape: { variant_id: qty }.
+        Untracked variants get `null` so JS can distinguish from 0.
+      {%- endcomment -%}
+      <script type="application/json" data-apgo-cc-inventory>
+        {
+          {%- for v in product.variants -%}
+            "{{ v.id }}": {%- if v.inventory_management != blank and v.inventory_quantity != blank -%}{{ v.inventory_quantity }}{%- else -%}null{%- endif -%}{%- unless forloop.last -%},{%- endunless -%}
+          {%- endfor -%}
+        }
       </script>
 
       </div>{%- comment -%} / .apgo-cc-pdp__buy-col {%- endcomment -%}
@@ -6658,6 +6674,22 @@ document.addEventListener('DOMContentLoaded', function() {
   var variants = [];
   try { variants = JSON.parse((dataEl && dataEl.textContent) || '[]'); } catch (e) {}
 
+  /* Server-emitted inventory map { variant_id: qty | null }.
+     Used to enrich the variants array with inventory_quantity (which
+     Shopify strips from the public variants JSON for privacy). */
+  var invEl = document.querySelector('[data-apgo-cc-inventory]');
+  var inventoryMap = {};
+  try { inventoryMap = JSON.parse((invEl && invEl.textContent) || '{}'); } catch (e) {}
+  /* Merge inventory into the variants array so curV.inventory_quantity
+     works downstream without callers needing to know about the map. */
+  variants.forEach(function (vv) {
+    var key = String(vv.id);
+    if (Object.prototype.hasOwnProperty.call(inventoryMap, key)) {
+      vv.inventory_quantity = inventoryMap[key];
+    }
+  });
+  var APGO_LOW_STOCK_THRESHOLD = 10;
+
   var idInput   = form.querySelector('[data-apgo-cc-variant-id]');
   var priceEl   = document.querySelector('[data-apgo-cc-price]');
   var compareEl = document.querySelector('[data-apgo-cc-compare]');
@@ -6805,18 +6837,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
     /*
       Inline shipping-row stock indicator (right of "2–3 business days").
-      Tied to the CURRENT variant's `available` flag — independent from
-      `product.available`, which would borrow availability from any
-      in-stock sibling variant.
+      Variant-aware — uses the per-variant available + inventory_quantity
+      we merged from the server-emitted inventory map. Three states:
+        > APGO_LOW_STOCK_THRESHOLD → "● In stock"          (green)
+        1..threshold                → "● Only N left"      (orange)
+        ≤0 or !available            → "● Out of stock"     (red)
+      Untracked variants fall back to "● In stock" (no count to show).
     */
     var inlineStockEl = document.querySelector('[data-apgo-cc-inline-stock]');
     if (inlineStockEl) {
-      if (v.available) {
-        inlineStockEl.textContent = '● In stock';
-        inlineStockEl.classList.remove('apgo-cc-pdp__shipping-stock--out');
-      } else {
+      var iqty = v.inventory_quantity;
+      var hasQty = typeof iqty === 'number';
+      inlineStockEl.classList.remove(
+        'apgo-cc-pdp__shipping-stock--out',
+        'apgo-cc-pdp__shipping-stock--low'
+      );
+      if (!v.available || (hasQty && iqty <= 0)) {
         inlineStockEl.textContent = '● Out of stock';
         inlineStockEl.classList.add('apgo-cc-pdp__shipping-stock--out');
+      } else if (hasQty && iqty <= APGO_LOW_STOCK_THRESHOLD) {
+        inlineStockEl.textContent = '● Only ' + iqty + ' left';
+        inlineStockEl.classList.add('apgo-cc-pdp__shipping-stock--low');
+      } else {
+        inlineStockEl.textContent = '● In stock';
       }
     }
 
@@ -7224,9 +7267,8 @@ document.addEventListener('DOMContentLoaded', function() {
   var confirmPriceEl    = confirmModal ? confirmModal.querySelector('[data-apgo-cc-confirm-price]') : null;
   var confirmStockEl    = confirmModal ? confirmModal.querySelector('[data-apgo-cc-confirm-stock]') : null;
   var confirmStockTxtEl = confirmModal ? confirmModal.querySelector('[data-apgo-cc-confirm-stock-text]') : null;
-  /* Below this threshold the stock line switches to the orange "Only X left"
-     state to add urgency. Above this threshold we show plain "In stock". */
-  var APGO_LOW_STOCK_THRESHOLD = 10;
+  /* APGO_LOW_STOCK_THRESHOLD already defined at the top of this IIFE next
+     to the inventory map parse — re-declaration was redundant. */
 
   function syncConfirmModal() {
     if (!confirmModal) return;
