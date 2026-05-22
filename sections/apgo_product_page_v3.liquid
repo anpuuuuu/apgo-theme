@@ -7394,12 +7394,15 @@ document.addEventListener('DOMContentLoaded', function() {
           confirmStockEl.setAttribute('data-stock-state', state);
           if (confirmStockTxtEl) confirmStockTxtEl.textContent = txt;
         }
-        if (!tracked || typeof qty !== 'number') {
-          /* Inventory not tracked → show "In stock" as the safest default
-             (was previously hiding, but the user reported a bare dot which
-             suggests this path was firing; keep the indicator informative). */
+        /* Order matters: check `available` first. A variant where Shopify
+           reports available=false should ALWAYS read as Sold out — even if
+           inventory_management isn't set (untracked) or qty isn't numeric. */
+        if (!curV.available) {
+          setStock('out', 'Sold out');
+        } else if (!tracked || typeof qty !== 'number') {
+          /* Tracked-but-unknown qty (or fully untracked) → safe default */
           setStock('in', 'In stock');
-        } else if (!curV.available || qty <= 0) {
+        } else if (qty <= 0) {
           setStock('out', 'Sold out');
         } else if (qty <= APGO_LOW_STOCK_THRESHOLD) {
           setStock('low', 'Only ' + qty + ' left in stock');
