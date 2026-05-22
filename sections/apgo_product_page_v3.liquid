@@ -4163,9 +4163,34 @@
                 value used to render here too but the chip itself shows active
                 state already, so the duplicated text is suppressed.
               {%- endcomment -%}
+              {%- comment -%}
+                Count IN-STOCK option values only — out-of-stock chips are
+                hidden in the loop below, so the (N types) label should
+                match what the customer actually sees. Single-option
+                products use the per-variant inventory check; multi-option
+                pages fall back to option.values.size (we don't currently
+                resolve value-pair intersections for those).
+              {%- endcomment -%}
+              {%- assign visible_count = 0 -%}
+              {%- if product.options_with_values.size == 1 -%}
+                {%- for ov in option.values -%}
+                  {%- assign ov_variant = nil -%}
+                  {%- for vv in product.variants -%}
+                    {%- if vv.option1 == ov -%}{%- assign ov_variant = vv -%}{%- break -%}{%- endif -%}
+                  {%- endfor -%}
+                  {%- if ov_variant and ov_variant.inventory_management != blank and ov_variant.inventory_quantity != blank and ov_variant.inventory_quantity <= 0 -%}
+                    {%- comment -%} skip {%- endcomment -%}
+                  {%- else -%}
+                    {%- assign visible_count = visible_count | plus: 1 -%}
+                  {%- endif -%}
+                {%- endfor -%}
+              {%- else -%}
+                {%- assign visible_count = option.values.size -%}
+              {%- endif -%}
+
               <span class="apgo-cc-pdp__option-name">
                 {%- if forloop.first -%}
-                  Select option <span class="apgo-cc-pdp__option-count">({{ option.values.size }} type{% if option.values.size != 1 %}s{% endif %})</span>
+                  Select option <span class="apgo-cc-pdp__option-count">({{ visible_count }} type{% if visible_count != 1 %}s{% endif %})</span>
                 {%- else -%}
                   {{ option.name }}
                 {%- endif -%}
