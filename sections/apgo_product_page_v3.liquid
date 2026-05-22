@@ -4172,12 +4172,15 @@
         <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}" data-apgo-cc-variant-id>
 
         {%- comment -%}
-          When the product has only the default variant (no real options
-          configured), Shopify still emits a synthetic option named "Title"
-          with one value "Default Title". Skip the whole option-group loop
-          so the picker isn't cluttered with a useless "Default Title" chip.
+          When the product has only the default variant Shopify emits a
+          synthetic option "Title" / value "Default Title". We still want
+          the chip rendered (so the UI looks like every other product),
+          but replace the user-visible label with a generic word taken
+          from section.settings.default_variant_label (default "Standard").
+          The underlying option value stays "Default Title" so the form
+          still submits the correct variant id.
         {%- endcomment -%}
-        {%- unless product.has_only_default_variant -%}
+        {%- assign apgo_default_variant_label = section.settings.default_variant_label | default: 'Standard' -%}
         {%- for option in product.options_with_values -%}
           <div class="apgo-cc-pdp__option-group" data-apgo-cc-option-group data-option-position="{{ option.position }}">
             <div class="apgo-cc-pdp__option-label">
@@ -4248,6 +4251,16 @@
                 {%- if chip_variant and chip_variant.inventory_management and chip_variant.inventory_quantity != blank and chip_variant.inventory_quantity <= 0 -%}
                   {%- assign chip_out_of_stock = true -%}
                 {%- endif -%}
+                {%- comment -%}
+                  Replace the user-visible "Default Title" with the generic
+                  label so single-variant products still get a clean chip.
+                  Underlying form value stays "Default Title" so /cart/add
+                  matches the right variant.
+                {%- endcomment -%}
+                {%- assign chip_label = value -%}
+                {%- if value == 'Default Title' -%}
+                  {%- assign chip_label = apgo_default_variant_label -%}
+                {%- endif -%}
                 {%- unless chip_out_of_stock -%}
                   <label class="apgo-cc-pdp__chip {% if option.selected_value == value %}is-active{% endif %}">
                     <input
@@ -4257,14 +4270,13 @@
                       data-apgo-cc-option-input
                       {% if option.selected_value == value %}checked{% endif %}
                     >
-                    <span>{{ value }}</span>
+                    <span>{{ chip_label }}</span>
                   </label>
                 {%- endunless -%}
               {%- endfor -%}
             </div>
           </div>
         {%- endfor -%}
-        {%- endunless -%}{%- comment -%} / has_only_default_variant guard {%- endcomment -%}
 
         {%- comment -%}
           Quantity stepper — desktop only (≥1024px). On mobile the visible row
@@ -6699,7 +6711,7 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
       </div>
 
-      {%- unless product.has_only_default_variant -%}
+      {%- assign apgo_default_variant_label_modal = section.settings.default_variant_label | default: 'Standard' -%}
       {%- for option in product.options_with_values -%}
         <div class="apgo-cc-confirm-modal__option-group" data-apgo-cc-confirm-option-group data-option-position="{{ option.position }}">
           <div class="apgo-cc-pdp__option-label">
@@ -6722,6 +6734,10 @@ document.addEventListener('DOMContentLoaded', function() {
               {%- if mchip_variant and mchip_variant.inventory_management and mchip_variant.inventory_quantity != blank and mchip_variant.inventory_quantity <= 0 -%}
                 {%- assign mchip_out = true -%}
               {%- endif -%}
+              {%- assign mchip_label = value -%}
+              {%- if value == 'Default Title' -%}
+                {%- assign mchip_label = apgo_default_variant_label_modal -%}
+              {%- endif -%}
               {%- unless mchip_out -%}
               <button
                 type="button"
@@ -6729,14 +6745,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 data-apgo-cc-confirm-chip
                 data-option-value="{{ value | escape }}"
               >
-                <span>{{ value }}</span>
+                <span>{{ mchip_label }}</span>
               </button>
               {%- endunless -%}
             {%- endfor -%}
           </div>
         </div>
       {%- endfor -%}
-      {%- endunless -%}
 
       <div class="apgo-cc-pdp__qty-row apgo-cc-confirm-modal__qty">
         <span class="apgo-cc-pdp__qty-label">Quantity</span>
@@ -6841,6 +6856,17 @@ document.addEventListener('DOMContentLoaded', function() {
     {
       "type": "header",
       "content": "促銷膠囊（1–3 顆）"
+    },
+    {
+      "type": "header",
+      "content": "Variant 顯示"
+    },
+    {
+      "type": "text",
+      "id": "default_variant_label",
+      "label": "「Default Title」chip 顯示文字",
+      "default": "Standard",
+      "info": "只有 1 個 variant 的商品，Shopify 會用 \"Default Title\" 當值；前端會把這個字替換成這裡填的（例：Standard / Get yours / Pre-order）。表單實際送的 value 不變，所以不會影響加購。"
     },
     {
       "type": "header",
