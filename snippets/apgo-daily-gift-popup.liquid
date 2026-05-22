@@ -78,15 +78,22 @@
 </aside>
 
 <style>
+  /*
+    Z-index strategy: backdrop + popup sit at near-MAX_INT so they cover
+    the mobile buybar (.apgo-cc-buybar z-index 100000), the floating chat
+    widget injected by Shopify/3rd-party apps, and any other fixed-position
+    overlay the site might inject. Anything that uses MAX_INT exactly
+    (2147483647) will still win — usually only iframed chat widgets do.
+  */
   .apgo-daily-gift-backdrop {
     position: fixed;
     inset: 0;
-    z-index: 89999;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    z-index: 2147483640;
+    background: rgba(0, 0, 0, 0.78);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     opacity: 0;
-    transition: opacity .3s ease;
+    transition: opacity .35s ease;
     pointer-events: none;
   }
   .apgo-daily-gift-backdrop.is-visible { opacity: 1; pointer-events: auto; }
@@ -97,15 +104,20 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%) scale(0.94);
-    z-index: 90000;
-    width: min(86vw, 360px);
-    border-radius: 18px;
-    background: #111;
-    border: 1px solid rgba(240, 132, 24, 0.55);
+    z-index: 2147483641;
+    /* Tighter on mobile — was 86vw/360. Now 78vw/300. */
+    width: min(78vw, 300px);
+    border-radius: 22px;
+    /* Premium dark gradient panel — lifts from solid #111 */
+    background:
+      linear-gradient(170deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0) 50%),
+      linear-gradient(180deg, #181818, #0b0b0b);
+    /* Hairline orange border — very subtle, no harsh strip at top */
+    border: 1px solid rgba(240, 132, 24, 0.18);
     box-shadow:
-      0 20px 60px rgba(0, 0, 0, 0.65),
-      0 0 0 1px rgba(240, 132, 24, 0.18) inset,
-      0 0 36px rgba(240, 132, 24, 0.18);
+      0 24px 60px rgba(0, 0, 0, 0.72),
+      0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+      0 0 48px rgba(240, 132, 24, 0.14);
     color: #fff;
     opacity: 0;
     transition: opacity .35s cubic-bezier(.16,1,.3,1), transform .35s cubic-bezier(.16,1,.3,1);
@@ -117,21 +129,21 @@
     opacity: 1;
     transform: translate(-50%, -50%) scale(1);
     pointer-events: auto;
-    animation: apgoGiftPop .55s cubic-bezier(.34,1.56,.64,1);
+    animation: apgoGiftPop .6s cubic-bezier(.34,1.56,.64,1);
   }
   @keyframes apgoGiftPop {
-    0%   { transform: translate(-50%, -50%) scale(0.88); }
+    0%   { transform: translate(-50%, -50%) scale(0.86); }
     65%  { transform: translate(-50%, -50%) scale(1.03); }
     100% { transform: translate(-50%, -50%) scale(1);    }
   }
 
-  /* X button — no background, plain white icon */
+  /* X — borderless plain white icon with shadow */
   .apgo-daily-gift__close {
     position: absolute;
-    top: 8px;
-    right: 8px;
-    width: 32px;
-    height: 32px;
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
     border: 0;
     padding: 0;
     background: transparent;
@@ -141,11 +153,11 @@
     place-items: center;
     z-index: 3;
     border-radius: 0;
-    opacity: 0.9;
+    opacity: 0.95;
     transition: opacity .15s ease, transform .15s ease;
-    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.7));
   }
-  .apgo-daily-gift__close:hover { opacity: 1; transform: scale(1.1); }
+  .apgo-daily-gift__close:hover { opacity: 1; transform: scale(1.12); }
   .apgo-daily-gift__close:active { transform: scale(0.95); }
 
   .apgo-daily-gift__image-wrap {
@@ -161,30 +173,52 @@
     object-fit: cover;
     display: block;
   }
+  /* Bottom fade overlay — smooths the image → text transition */
+  .apgo-daily-gift__image-wrap::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 38%;
+    background: linear-gradient(180deg, rgba(11, 11, 11, 0) 0%, rgba(11, 11, 11, 0.95) 100%);
+    pointer-events: none;
+  }
   .apgo-daily-gift__image-fallback {
     width: 100%;
     height: 100%;
     display: grid;
     place-items: center;
-    font-size: 96px;
+    font-size: 86px;
     line-height: 1;
     background: linear-gradient(135deg, rgba(240, 132, 24, 0.15), rgba(255, 154, 60, 0.05));
   }
 
   .apgo-daily-gift__body {
-    padding: 16px 20px 20px;
+    /* Tighter padding on mobile */
+    padding: 14px 18px 18px;
     text-align: center;
+    position: relative;
+  }
+  /* Decorative orange divider above the badge — adds a "premium card" feel */
+  .apgo-daily-gift__body::before {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 2px;
+    margin: 0 auto 10px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, transparent, #f08418, transparent);
+    opacity: 0.7;
   }
   .apgo-daily-gift__badge {
     display: inline-block;
-    padding: 5px 14px;
-    margin-bottom: 12px;
+    padding: 5px 13px;
+    margin-bottom: 10px;
     border-radius: 999px;
     background: linear-gradient(45deg, #f08418, #ff9a3c);
     color: #fff;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 800;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     box-shadow: 0 4px 14px rgba(240, 132, 24, 0.45);
     animation: apgoGiftBadgePulse 2.2s ease-in-out infinite;
@@ -193,19 +227,25 @@
     0%, 100% { box-shadow: 0 4px 14px rgba(240, 132, 24, 0.45); }
     50%      { box-shadow: 0 4px 22px rgba(240, 132, 24, 0.75); }
   }
+  /* Title — soft gradient text for that premium touch */
   .apgo-daily-gift__title {
     margin: 0 0 6px;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 800;
-    color: #fff;
     line-height: 1.25;
     letter-spacing: 0.01em;
+    background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.78) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
   }
   .apgo-daily-gift__sub {
-    margin: 0 0 14px;
-    font-size: 13px;
-    color: rgba(255, 255, 255, 0.7);
+    margin: 0 0 12px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.62);
     line-height: 1.55;
+    padding: 0 6px;
   }
   /* Inline center timer — no box, just label + time on one line */
   .apgo-daily-gift__timer-row {
@@ -219,27 +259,29 @@
     border: 0;
   }
   .apgo-daily-gift__timer-label {
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 12px;
-    font-weight: 500;
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 10.5px;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.1em;
   }
   .apgo-daily-gift__timer {
     font-weight: 800;
-    font-size: 18px;
+    font-size: 17px;
     color: #f08418;
     font-variant-numeric: tabular-nums;
     letter-spacing: 0.05em;
-    text-shadow: 0 0 12px rgba(240, 132, 24, 0.5);
+    text-shadow: 0 0 14px rgba(240, 132, 24, 0.55);
   }
 
   @media (min-width: 750px) {
     .apgo-daily-gift {
-      width: min(420px, 90vw);
+      width: min(380px, 90vw);
+      border-radius: 24px;
     }
+    .apgo-daily-gift__body { padding: 16px 22px 22px; }
     .apgo-daily-gift__title { font-size: 22px; }
-    .apgo-daily-gift__sub { font-size: 14px; }
+    .apgo-daily-gift__sub { font-size: 13.5px; }
     .apgo-daily-gift__timer { font-size: 20px; }
   }
 </style>
