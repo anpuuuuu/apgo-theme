@@ -66,18 +66,32 @@
           <span data-apgo-cc-buybar-chip-total>{{ 0 | money }}</span>
         </span>
       </button>
-      <div class="apgo-cc-buybar__actions">
-        <button type="button"
-                class="apgo-cc-buybar__btn apgo-cc-buybar__btn--add"
-                data-apgo-cc-buybar-add
-                {% if product.available == false %}disabled{% endif %}>
-          {%- if product.available -%}Add to cart{%- else -%}Sold out{%- endif -%}
-        </button>
-        <button type="button"
-                class="apgo-cc-buybar__btn apgo-cc-buybar__btn--buy"
-                data-apgo-cc-buybar-checkout>
-          Buy now
-        </button>
+      {%- comment -%}
+        When every variant of this product is out of stock, collapse the
+        Add to cart + Buy now into one disabled "Out of stock" button.
+        `product.available` is false only when ALL variants are unavailable.
+        Per-variant out-of-stock state is handled separately by the inline
+        picker JS (which disables both buttons via .disabled + label swap).
+      {%- endcomment -%}
+      <div class="apgo-cc-buybar__actions{% if product.available == false %} apgo-cc-buybar__actions--out{% endif %}">
+        {%- if product.available -%}
+          <button type="button"
+                  class="apgo-cc-buybar__btn apgo-cc-buybar__btn--add"
+                  data-apgo-cc-buybar-add>
+            Add to cart
+          </button>
+          <button type="button"
+                  class="apgo-cc-buybar__btn apgo-cc-buybar__btn--buy"
+                  data-apgo-cc-buybar-checkout>
+            Buy now
+          </button>
+        {%- else -%}
+          <button type="button"
+                  class="apgo-cc-buybar__btn apgo-cc-buybar__btn--out"
+                  disabled>
+            Out of stock
+          </button>
+        {%- endif -%}
       </div>
     </div>
   </div>

@@ -3715,6 +3715,20 @@
        both → both buttons (variant area tap → user hasn't expressed intent yet) */
   .apgo-cc-confirm-modal[data-intent="add"] [data-apgo-cc-confirm-buy] { display: none; }
   .apgo-cc-confirm-modal[data-intent="buy"] [data-apgo-cc-confirm-add] { display: none; }
+  /* When the active variant is out of stock, collapse the action row to a
+     single "Out of stock" CTA. Hide the Buy now button so the disabled
+     Add button stretches across full width. */
+  .apgo-cc-confirm-modal[data-out-of-stock="true"] [data-apgo-cc-confirm-buy] { display: none !important; }
+  .apgo-cc-confirm-modal[data-out-of-stock="true"] .apgo-cc-confirm-modal__actions {
+    grid-template-columns: 1fr !important;
+  }
+  .apgo-cc-pdp__cta--out,
+  .apgo-cc-pdp__cta--out:hover {
+    background: rgba(255, 255, 255, 0.06) !important;
+    color: rgba(255, 255, 255, 0.5) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    cursor: not-allowed !important;
+  }
   .apgo-cc-confirm-modal[data-intent="both"] .apgo-cc-confirm-modal__actions {
     grid-template-columns: 1fr 1fr;
   }
@@ -3934,6 +3948,10 @@
     grid-template-columns: 1fr 1fr;
     gap: 8px;
   }
+  /* Whole-product out-of-stock state — single column, no Buy now */
+  .apgo-cc-buybar__actions--out {
+    grid-template-columns: 1fr;
+  }
   .apgo-cc-buybar__btn {
     /* Match .apgo-cc-pdp__cta in the modal + inline CTA row for height consistency */
     padding: 8px 12px;
@@ -3951,8 +3969,14 @@
     background: linear-gradient(45deg, var(--primary-orange, #f08418), var(--secondary-orange, #ff9a3c));
     color: #fff;
   }
+  .apgo-cc-buybar__btn--out {
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.55);
+    border-color: rgba(255, 255, 255, 0.15);
+    cursor: not-allowed;
+  }
   .apgo-cc-buybar__btn:disabled {
-    opacity: 0.5;
+    opacity: 0.7;
     cursor: not-allowed;
   }
 
@@ -7392,6 +7416,30 @@ document.addEventListener('DOMContentLoaded', function() {
       } else {
         confirmVariationEl.innerHTML = '';
       }
+    }
+
+    /*
+      Out-of-stock state for the modal's Add / Buy buttons. When the
+      active variant is unavailable, both CTAs collapse to a single
+      disabled "Out of stock" pill so the customer can't try to commit
+      to a variant that Shopify will reject anyway.
+    */
+    if (confirmAddBtn || confirmBuyBtn) {
+      var soldOut = curV && !curV.available;
+      [confirmAddBtn, confirmBuyBtn].forEach(function (b) {
+        if (!b) return;
+        if (soldOut) {
+          b.disabled = true;
+          b.dataset.apgoOrigLabel = b.dataset.apgoOrigLabel || b.textContent.trim();
+          b.textContent = 'Out of stock';
+          b.classList.add('apgo-cc-pdp__cta--out');
+        } else if (b.dataset.apgoOrigLabel) {
+          b.disabled = false;
+          b.textContent = b.dataset.apgoOrigLabel;
+          b.classList.remove('apgo-cc-pdp__cta--out');
+        }
+      });
+      if (confirmModal) confirmModal.setAttribute('data-out-of-stock', soldOut ? 'true' : 'false');
     }
   }
 
