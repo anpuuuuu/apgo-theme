@@ -524,6 +524,58 @@
       margin-top: 6px !important;
     }
   }
+
+  /* =========================================================
+     Free-gift (GWP) line-item styling — applied via JS adding
+     .apgo-cart-item--gift to a .cart-items__table-row when
+     item.properties._free_gift === 'true'.
+     ========================================================= */
+  .apgo-cart-item--gift .apgo-cart-gift-badge {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    padding: 2px 8px !important;
+    margin: 4px 0 0 !important;
+    border-radius: 999px !important;
+    background: linear-gradient(45deg, #f08418, #ff9a3c) !important;
+    color: #fff !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.04em !important;
+    text-transform: uppercase !important;
+    line-height: 1.4 !important;
+    box-shadow: 0 2px 8px rgba(240, 132, 24, 0.35) !important;
+  }
+  .apgo-cart-item--gift .apgo-cart-gift-sub {
+    display: block !important;
+    font-size: 11px !important;
+    color: rgba(255, 255, 255, 0.55) !important;
+    margin-top: 2px !important;
+    font-weight: 500 !important;
+  }
+  /* Lock quantity stepper buttons + input on gift rows */
+  .apgo-cart-item--gift .cart-items__quantity .quantity-minus,
+  .apgo-cart-item--gift .cart-items__quantity .quantity-plus,
+  .apgo-cart-item--gift .cart-items__quantity .quantity-selector__button {
+    opacity: 0.4 !important;
+    pointer-events: none !important;
+    cursor: not-allowed !important;
+  }
+  .apgo-cart-item--gift .cart-items__quantity input[type="number"] {
+    pointer-events: none !important;
+    color: rgba(255, 255, 255, 0.55) !important;
+  }
+  /* Price column → show "FREE" in green-ish accent */
+  .apgo-cart-item--gift .cart-items__price {
+    color: #34d399 !important;
+    font-weight: 700 !important;
+  }
+  .apgo-cart-item--gift .cart-items__price .compare-at-price {
+    display: none !important;
+  }
+  .apgo-cart-item--gift .cart-items__details .compare-at-price {
+    display: none !important;
+  }
 </style>
 
 <!-- 購物車商品標題 -->
@@ -547,6 +599,129 @@
 
 <!-- 原始購物車商品內容 -->
 {% render 'cart-products' %}
+
+{%- comment -%}
+  Free-gift line-item decorator. Reads /cart.js, marks rows whose
+  line-item properties include `_free_gift === 'true'` with:
+    .apgo-cart-item--gift class on the table row
+    🎁 FREE GIFT badge inside the details cell
+    "Free with <X title>" sub-label (if _gift_from_product is present)
+    Trash button gets a localStorage dismiss flag so the gift doesn't
+    auto-re-add on next product page visit.
+  Reruns on every cart-update event so AJAX-driven changes pick up.
+{%- endcomment -%}
+<script>
+(function () {
+  'use strict';
+
+  function decorateGifts() {
+    fetch('/cart.js?_=' + Date.now(), { cache: 'no-store' })
+      .then(function (r) { return r.json(); })
+      .then(function (cart) {
+        var giftLines = (cart.items || []).filter(function (i) {
+          return i.properties && i.properties._free_gift === 'true';
+        });
+        /* Build map of line-key → gift props so we can match against
+           rendered rows that carry a line key in their ref or attr. */
+        var giftByVariant = {};
+        giftLines.forEach(function (l) { giftByVariant[l.variant_id] = l; });
+
+        document.querySelectorAll('.cart-items__table-row').forEach(function (row) {
+          /* Find which variant this row represents. The remove button has
+             on:click="/onLineItemRemove/<index>" and rows carry the variant
+             in their image href / title link. Easiest: read the qty input's
+             data-cart-line attribute and look up cart.items[index-1]. */
+          var qtyInput = row.querySelector('.cart-items__quantity input[type="number"]');
+          var lineIdx = qtyInput ? parseInt(qtyInput.getAttribute('data-cart-line'), 10) : NaN;
+          if (isNaN(lineIdx)) return;
+          var item = cart.items[lineIdx - 1];
+          if (!item) return;
+
+          var isGift = item.properties && item.properties._free_gift === 'true';
+          row.classList.toggle('apgo-cart-item--gift', isGift);
+
+          if (isGift) {
+            var details = row.querySelector('.cart-items__details');
+            if (details && !details.querySelector('.apgo-cart-gift-badge')) {
+              var badge = document.createElement('span');
+              badge.className = 'apgo-cart-gift-badge';
+              badge.textContent = '🎁 Free gift';
+              /* Insert badge right after the title <p> */
+              var titleP = details.querySelector('p');
+              if (titleP) titleP.insertAdjacentElement('afterend', badge);
+              else details.prepend(badge);
+            }
+            if (details && !details.querySelector('.apgo-cart-gift-sub') && item.properties._gift_from_product) {
+              var sub = document.createElement('span');
+              sub.className = 'apgo-cart-gift-sub';
+              sub.textContent = 'Free with ' + item.properties._gift_from_product;
+              var existingBadge = details.querySelector('.apgo-cart-gift-badge');
+              if (existingBadge) existingBadge.insertAdjacentElement('afterend', sub);
+              else details.appendChild(sub);
+            }
+            /* When user clicks the remove (trash) button, record the
+               dismiss so the gift doesn't re-add on next reconcile. */
+            var removeBtn = row.querySelector('.cart-items__remove');
+            if (removeBtn && !removeBtn.dataset.apgoGiftDismissBound) {
+              removeBtn.dataset.apgoGiftDismissBound = '1';
+              removeBtn.addEventListener('click', function () {
+                var xId = item.properties._gift_for;
+                if (xId) {
+                  try { localStorage.setItem('apgo_gift_dismissed_' + xId, '1'); } catch (_) {}
+                }
+              }, true);
+            }
+          }
+        });
+      })
+      .catch(function () {});
+  }
+
+  /*
+    Standalone reconciler — when the cart page loads and X has been
+    removed (e.g. between sessions, or via quantity → 0 from the cart
+    page), the stale Y gift needs to disappear. We have no access to
+    APGO_GIFT_MAP here (it lives on the PDP), so we walk all gift
+    lines and drop the ones whose `_gift_for` X variant id is no
+    longer present in the cart.
+  */
+  function pruneStaleGifts() {
+    return fetch('/cart.js?_=' + Date.now(), { cache: 'no-store' })
+      .then(function (r) { return r.json(); })
+      .then(function (cart) {
+        var presentXIds = new Set((cart.items || []).map(function (i) { return String(i.variant_id); }));
+        var ops = [];
+        (cart.items || []).forEach(function (i) {
+          if (!i.properties || i.properties._free_gift !== 'true') return;
+          var xId = i.properties._gift_for;
+          if (!xId || presentXIds.has(String(xId))) return;
+          var fd = new FormData();
+          fd.append('id', i.key);
+          fd.append('quantity', '0');
+          ops.push(fetch('/cart/change.js', { method: 'POST', headers: { Accept: 'application/json' }, body: fd }).catch(function () {}));
+        });
+        if (ops.length) {
+          return Promise.all(ops).then(function () {
+            /* Reload cart page so the rendered items reflect the prune */
+            window.location.reload();
+          });
+        }
+      })
+      .catch(function () {});
+  }
+
+  /* Run on page load + whenever the cart updates */
+  document.addEventListener('DOMContentLoaded', function () {
+    pruneStaleGifts();
+    decorateGifts();
+  });
+  document.addEventListener('cart:update', function () { setTimeout(decorateGifts, 50); });
+  document.addEventListener('cart:updated', function () { setTimeout(decorateGifts, 50); });
+  document.addEventListener('cart:refresh', function () { setTimeout(decorateGifts, 50); });
+  /* In case cart-update happens before this script runs */
+  if (document.readyState !== 'loading') decorateGifts();
+})();
+</script>
 
 {% if section.settings.show_action_button and section.settings.action_type == 'clear' %}
 <script>

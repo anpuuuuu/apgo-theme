@@ -4385,6 +4385,27 @@
         }
       </script>
 
+      {%- comment -%}
+        Gift-with-purchase map — when this product has a free gift configured
+        in custom.free_gift_variant, register every variant of this product
+        as an "X" that triggers adding the gift Y variant. The map persists
+        across PDP visits (additive merge) so visiting product A and then B
+        accumulates both products' gift mappings.
+      {%- endcomment -%}
+      {%- assign apgo_gift_target = product.metafields.custom.free_gift_variant.value -%}
+      {%- if apgo_gift_target != blank and apgo_gift_target.id != blank -%}
+        <script>
+          (function () {
+            window.APGO_GIFT_MAP = window.APGO_GIFT_MAP || {};
+            window.APGO_GIFT_PRODUCT_TITLES = window.APGO_GIFT_PRODUCT_TITLES || {};
+            {%- for v in product.variants -%}
+              window.APGO_GIFT_MAP[{{ v.id }}] = {{ apgo_gift_target.id }};
+              window.APGO_GIFT_PRODUCT_TITLES[{{ v.id }}] = {{ product.title | json }};
+            {%- endfor -%}
+          })();
+        </script>
+      {%- endif -%}
+
       </div>{%- comment -%} / .apgo-cc-pdp__buy-col {%- endcomment -%}
 
       {% if product.metafields.apgo.performance_metrics.value %}
@@ -7081,6 +7102,129 @@ document.addEventListener('DOMContentLoaded', function() {
     from the source button to the header cart icon. Pure CSS transition,
     no library. Bails out gracefully when targets are missing.
   */
+  /*
+    GIFT-WITH-PURCHASE reconciler
+    ------------------------------
+    When a product configured with `custom.free_gift_variant` is in the
+    cart, ensure the corresponding gift Y variant is also there with
+    line-item properties marking it as a free gift. Lifecycle handled:
+      - X just added                → add Y at qty matching qty(X)
+      - X qty changes               → adjust Y qty to match
+      - X removed                   → remove Y (separate listener path)
+      - User manually removed Y     → localStorage dismiss flag, don't re-add
+      - Y already in cart from prior session (not as gift) → leave it alone
+    Properties stored on the gift line:
+      _free_gift  = 'true'
+      _gift_for   = <X variant id>
+      _gift_from_product = <X product title>  (for the "Free with <name>"
+                                                sub-label on the cart UI)
+    Shopify's automatic Buy-X-get-Y discount handles the actual pricing;
+    this JS only manages presence + visual marking.
+  */
+  function isGiftDismissed(xVariantId) {
+    try { return localStorage.getItem('apgo_gift_dismissed_' + xVariantId) === '1'; }
+    catch (_) { return false; }
+  }
+  function markGiftDismissed(xVariantId) {
+    try { localStorage.setItem('apgo_gift_dismissed_' + xVariantId, '1'); } catch (_) {}
+  }
+  function clearGiftDismissed(xVariantId) {
+    try { localStorage.removeItem('apgo_gift_dismissed_' + xVariantId); } catch (_) {}
+  }
+  /* Expose remove + dismiss path so cart UI can call from a "remove gift" button */
+  window.apgoDismissGift = function (xVariantId) { markGiftDismissed(xVariantId); };
+  window.apgoUndismissGift = clearGiftDismissed;
+
+  function reconcileFreeGifts() {
+    if (!window.APGO_GIFT_MAP || Object.keys(window.APGO_GIFT_MAP).length === 0) {
+      /* No gift mappings registered for any product visited so far → nothing to do.
+         (We still want to clean up stale gifts on X-removal, but without a map
+         we don't know what's a gift. That cleanup runs from the cart page only.) */
+      return Promise.resolve();
+    }
+    return fetch('/cart.js?_=' + Date.now(), { cache: 'no-store' })
+      .then(function (r) { return r.json(); })
+      .then(function (cart) {
+        /* Build desired-gifts map: { giftVariantId: { qty, xVariantId, xTitle } }.
+           A gift line stays at qty equal to the sum of all X qtys that map to it
+           (if two different X products share the same Y, we still only need 1 Y
+           per X "trigger" — collapse to max). For now: 1 gift per unique X. */
+        var desired = {};
+        cart.items.forEach(function (item) {
+          /* Skip lines that are themselves gifts to avoid recursive triggering */
+          if (item.properties && item.properties._free_gift === 'true') return;
+          var giftId = window.APGO_GIFT_MAP[item.variant_id];
+          if (!giftId) return;
+          if (isGiftDismissed(item.variant_id)) return;
+          if (!desired[giftId]) desired[giftId] = { qty: 0, xVariantId: item.variant_id, xTitle: (window.APGO_GIFT_PRODUCT_TITLES || {})[item.variant_id] || item.product_title || '' };
+          desired[giftId].qty += 1; /* 1:1 — every X line contributes 1 gift */
+        });
+
+        /* What gift lines currently exist? */
+        var existingGifts = []; /* [{ key, variant_id, quantity, properties }] */
+        cart.items.forEach(function (item) {
+          if (item.properties && item.properties._free_gift === 'true') {
+            existingGifts.push(item);
+          }
+        });
+
+        var ops = [];
+
+        /* Add / update each desired gift */
+        Object.keys(desired).forEach(function (giftIdStr) {
+          var giftId = parseInt(giftIdStr, 10);
+          var spec = desired[giftIdStr];
+          var existing = existingGifts.find(function (e) { return e.variant_id === giftId; });
+          if (!existing) {
+            /* Need to add the gift line */
+            var fd = new FormData();
+            fd.append('id', String(giftId));
+            fd.append('quantity', String(spec.qty));
+            fd.append('properties[_free_gift]', 'true');
+            fd.append('properties[_gift_for]', String(spec.xVariantId));
+            if (spec.xTitle) fd.append('properties[_gift_from_product]', spec.xTitle);
+            ops.push(fetch('/cart/add.js', { method: 'POST', headers: { Accept: 'application/json' }, body: fd }).catch(function () {}));
+          } else if (existing.quantity !== spec.qty) {
+            /* Adjust quantity to match expected */
+            var fd2 = new FormData();
+            fd2.append('id', existing.key);
+            fd2.append('quantity', String(spec.qty));
+            ops.push(fetch('/cart/change.js', { method: 'POST', headers: { Accept: 'application/json' }, body: fd2 }).catch(function () {}));
+          }
+        });
+
+        /* Remove gift lines whose triggering X is no longer in cart (or dismissed) */
+        existingGifts.forEach(function (g) {
+          if (!desired[g.variant_id]) {
+            var fd3 = new FormData();
+            fd3.append('id', g.key);
+            fd3.append('quantity', '0');
+            ops.push(fetch('/cart/change.js', { method: 'POST', headers: { Accept: 'application/json' }, body: fd3 }).catch(function () {}));
+          }
+        });
+
+        if (!ops.length) return cart;
+        return Promise.all(ops).then(function () {
+          /* Re-fetch + dispatch update so the bubble + UI reflect the new state */
+          return fetch('/cart.js?_=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); });
+        }).then(function (newCart) {
+          var ev = new CustomEvent('cart:update', {
+            bubbles: true,
+            detail: {
+              resource: newCart,
+              sourceId: 'apgo-cc-pdp-gift',
+              data: { itemCount: newCart.item_count, source: 'apgo-cc-pdp-gift', sections: {} }
+            }
+          });
+          document.dispatchEvent(ev);
+          return newCart;
+        });
+      })
+      .catch(function (err) { console.warn('[apgo-gift] reconcile failed', err); });
+  }
+  /* Expose so the buybar / cart drawer can also trigger after their own adds */
+  window.apgoReconcileFreeGifts = reconcileFreeGifts;
+
   function playFlyToCart(srcBtn) {
     var cartIcon = document.querySelector('cart-icon, .header-actions__cart-icon, [data-testid="cart-icon"]');
     if (!cartIcon || !srcBtn) return;
@@ -7219,6 +7363,10 @@ document.addEventListener('DOMContentLoaded', function() {
           var name = (titleEl && titleEl.textContent.trim()) || 'Item';
           showAddedToCartToast(name, 'Added to cart');
         }
+        /* Gift-with-purchase: auto-add the configured free gift Y if X
+           (the just-added product) has one mapped. Re-dispatches cart
+           events after settling so the badge + cart UI reflect both X+Y. */
+        try { reconcileFreeGifts(); } catch (_) {}
         return cart;
       })
       .catch(function (err) {
