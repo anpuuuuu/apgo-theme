@@ -3478,10 +3478,13 @@
     }
   }
   .apgo-cc-pdp__cta {
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 600;
+    /* Match .apgo-cc-buybar__btn so the modal's bottom Add to cart /
+       Buy now buttons have the same chunky height as the buybar
+       outside. Keeps every CTA across PDP + buybar + modal consistent. */
+    padding: 13px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
     line-height: 1.2;
     cursor: pointer;
     transition: opacity .15s ease, transform .05s ease;
