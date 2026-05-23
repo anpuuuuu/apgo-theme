@@ -195,20 +195,6 @@
     {% endif %}
 
     {%- comment -%}
-      Hari Raya Haji 3-day shampoo promo popup. Shows on:
-       - the homepage (template.name == 'index')
-       - the Hari Raya Haji Bundle PDP (specific product handle)
-      Once per session (sessionStorage flag inside the snippet), so seeing
-      it on the homepage prevents another appearance on the PDP and vice
-      versa. Edit dates/copy inside snippets/apgo-daily-gift-popup.liquid.
-    {%- endcomment -%}
-    {% if settings.apgo_gwp_enabled
-       and (template.name == 'index'
-            or (template.name == 'product' and product.handle == 'atomic-glaze-coating-hari-raya-haji-bundle')) %}
-      {% render 'apgo-daily-gift-popup' %}
-    {% endif %}
-
-    {%- comment -%}
       GWP buybar hint — small semi-transparent toast that pops above the
       mobile buybar/select-option sheet on the bundle PDP only. Reassures
       the customer that hitting Add to cart will auto-include the gift.
