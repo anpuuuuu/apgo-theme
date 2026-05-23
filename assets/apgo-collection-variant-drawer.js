@@ -360,6 +360,15 @@ async function addToCart(shell) {
     const name = state.product?.title || '';
     showSuccessNotification(name, strFromShell(shell, 'i18nAddedToast'), strFromShell(shell, 'i18nViewCart'));
 
+    /* GWP: trigger gift reconciler so any auto-add gifts come along.
+       Fire-and-forget here is OK since we're not navigating away —
+       the global reconciler also listens to cart:update so it would
+       run anyway; explicit call ensures it runs immediately rather
+       than waiting for the next event tick. */
+    if (typeof window.apgoReconcileFreeGifts === 'function') {
+      try { window.apgoReconcileFreeGifts(); } catch (_) {}
+    }
+
     window.setTimeout(() => {
       btn.innerHTML = original;
       btn.disabled = false;
@@ -386,6 +395,12 @@ async function buyNow(shell) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id: state.currentVariantId, quantity: state.currentQuantity }),
     });
+    /* GWP: let the global reconciler add any free gifts BEFORE we navigate
+       away. Without this await the /cart redirect happens before the gift
+       POST settles, so the customer lands in checkout without Y. */
+    if (typeof window.apgoReconcileFreeGifts === 'function') {
+      try { await window.apgoReconcileFreeGifts(); } catch (_) {}
+    }
     window.location.href = '/cart';
   } catch {
     btn.innerHTML = original;
