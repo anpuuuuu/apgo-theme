@@ -392,7 +392,12 @@
           if (!giftId) return;
           if (isGiftDismissed(item.variant_id)) return;
           if (!desired[giftId]) desired[giftId] = { qty: 0, xVariantId: item.variant_id, xTitle: (window.APGO_GIFT_PRODUCT_TITLES || {})[item.variant_id] || item.product_title || '' };
-          desired[giftId].qty += 1; /* 1:1 — every X line contributes 1 gift */
+          /* 1:1 mapping — gift qty matches the SUM of X quantities, not the
+             number of X lines. Shopify can split the same variant into
+             multiple lines (e.g. when properties differ across adds), and
+             counting +1 per line would under-count when each line carries
+             qty > 1. */
+          desired[giftId].qty += item.quantity;
         });
 
         /* What gift lines currently exist? */
