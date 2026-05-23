@@ -68,15 +68,21 @@
   var running = false; /* prevent overlapping runs */
   var scheduled = false; /* request-frame coalescing */
   var selfDispatching = false; /* skip our own cart:update events */
+  var pendingCart = null; /* cart from latest event, reused to skip a fetch */
 
-  function reconcile() {
+  function reconcile(eventCart) {
     if (running) return Promise.resolve();
     if (!window.APGO_GIFT_MAP || Object.keys(window.APGO_GIFT_MAP).length === 0) {
       return Promise.resolve();
     }
     running = true;
-    return fetch('/cart.js?_=' + Date.now(), { cache: 'no-store' })
-      .then(function (r) { return r.json(); })
+    /* Fast path: use cart from the triggering cart:update event when
+       available (Horizon passes it in event.detail.resource). Saves one
+       ~200ms round-trip. Fall back to fetching when not provided. */
+    var cartPromise = eventCart && eventCart.items
+      ? Promise.resolve(eventCart)
+      : fetch('/cart.js?_=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); });
+    return cartPromise
       .then(function (cart) {
         /* First pass: compute current X quantities (across all lines) per
            X variant id. Used both to (a) detect qty-increase → clear
@@ -133,85 +139,113 @@
           })
         });
 
-        var ops = [];
-
         /*
-          Deduplicate: race conditions or Shopify line-property mismatches
-          can create MULTIPLE gift lines for the same variant_id. Only
-          the first one will receive the Shopify discount; the rest are
-          billed at full price and look like a bug to the customer.
-          Strategy: keep the first occurrence, queue removal for the rest.
+          Build a SINGLE /cart/update.js payload that batches:
+            - dedupe duplicates (set qty 0)
+            - update existing Y qty
+            - remove stale gifts
+          /cart/update.js returns the full updated cart in one round-trip,
+          replacing the previous fetch → multiple POSTs → re-fetch chain.
+
+          Only one operation can't be batched: ADD a new gift line that
+          doesn't exist yet (need /cart/add.js). Rare on the cart page —
+          most flows already have the gift line from the PDP atomic add.
         */
+        var updates = {}; /* { line_key: qty } */
+        var newAdds = []; /* gift lines that need /cart/add.js */
+
+        /* Dedupe pass — same variant in multiple gift lines: keep first, rest → 0 */
         var seenGiftVariants = {};
-        var duplicateGifts = [];
         existingGifts.forEach(function (g) {
           if (seenGiftVariants[g.variant_id]) {
-            duplicateGifts.push(g);
+            updates[g.key] = 0; /* dup */
           } else {
             seenGiftVariants[g.variant_id] = g;
           }
         });
-        duplicateGifts.forEach(function (dup) {
-          var fdDup = new FormData();
-          fdDup.append('id', dup.key);
-          fdDup.append('quantity', '0');
-          ops.push(fetch('/cart/change.js', {
-            method: 'POST', headers: { Accept: 'application/json' }, body: fdDup
-          }).catch(function () {}));
-        });
-        /* Replace the existingGifts list with the deduplicated set so the
-           qty-adjust / removal logic below operates on canonical lines. */
-        existingGifts = Object.keys(seenGiftVariants).map(function (k) { return seenGiftVariants[k]; });
+        var canonicalGifts = Object.keys(seenGiftVariants).map(function (k) { return seenGiftVariants[k]; });
 
         Object.keys(desired).forEach(function (giftIdStr) {
           var giftId = parseInt(giftIdStr, 10);
           var spec = desired[giftIdStr];
-          var existing = existingGifts.find(function (e) { return e.variant_id === giftId; });
+          var existing = canonicalGifts.find(function (e) { return e.variant_id === giftId; });
           if (!existing) {
-            console.info('[apgo-gift] ADD Y', { giftId: giftId, qty: spec.qty, xVariantId: spec.xVariantId });
-            var fd = new FormData();
-            fd.append('id', String(giftId));
-            fd.append('quantity', String(spec.qty));
-            fd.append('properties[_free_gift]', 'true');
-            fd.append('properties[_gift_for]', String(spec.xVariantId));
-            if (spec.xTitle) fd.append('properties[_gift_from_product]', spec.xTitle);
-            ops.push(fetch('/cart/add.js', {
-              method: 'POST', headers: { Accept: 'application/json' }, body: fd
-            }).then(function (r) {
-              if (!r.ok) return r.json().then(function (j) {
-                console.warn('[apgo-gift] ADD Y FAILED', r.status, j);
-              });
-            }).catch(function (e) { console.warn('[apgo-gift] ADD Y NETWORK ERROR', e); }));
+            newAdds.push({ giftId: giftId, spec: spec });
           } else if (existing.quantity !== spec.qty) {
-            console.info('[apgo-gift] CHANGE Y qty', { from: existing.quantity, to: spec.qty, key: existing.key });
-            var fd2 = new FormData();
-            fd2.append('id', existing.key);
-            fd2.append('quantity', String(spec.qty));
-            ops.push(fetch('/cart/change.js', {
-              method: 'POST', headers: { Accept: 'application/json' }, body: fd2
-            }).then(function (r) {
-              if (!r.ok) return r.json().then(function (j) {
-                console.warn('[apgo-gift] CHANGE Y FAILED', r.status, j, '(usually means Y is sold out or qty limited)');
-              });
-            }).catch(function (e) { console.warn('[apgo-gift] CHANGE Y NETWORK ERROR', e); }));
+            console.info('[apgo-gift] queue CHANGE Y qty', { from: existing.quantity, to: spec.qty, key: existing.key });
+            updates[existing.key] = spec.qty;
           }
         });
 
-        /* Prune gift lines whose triggering X is gone or dismissed */
-        existingGifts.forEach(function (g) {
+        /* Prune: existing gift with no triggering X → set qty 0 */
+        canonicalGifts.forEach(function (g) {
           if (!desired[g.variant_id]) {
-            var fd3 = new FormData();
-            fd3.append('id', g.key);
-            fd3.append('quantity', '0');
-            ops.push(fetch('/cart/change.js', {
-              method: 'POST', headers: { Accept: 'application/json' }, body: fd3
-            }).catch(function () {}));
+            updates[g.key] = 0;
           }
         });
 
-        if (!ops.length) return cart;
-        return Promise.all(ops).then(function () {
-          return fetch('/cart.js?_=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); });
+        var hasUpdates = Object.keys(updates).length > 0;
+        var hasAdds = newAdds.length > 0;
+        if (!hasUpdates && !hasAdds) {
+          return cart; /* nothing to do — cart already in sync */
+        }
+
+        /* Step 1: batch updates in single /cart/update.js call. */
+        var batchUpdate = hasUpdates
+          ? fetch('/cart/update.js', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+              body: JSON.stringify({ updates: updates })
+            }).then(function (r) {
+              if (!r.ok) {
+                return r.json().then(function (j) {
+                  console.warn('[apgo-gift] /cart/update.js FAILED', r.status, j);
+                  return null;
+                });
+              }
+              return r.json();
+            }).catch(function (e) {
+              console.warn('[apgo-gift] /cart/update.js NETWORK ERROR', e);
+              return null;
+            })
+          : Promise.resolve(cart);
+
+        /* Step 2: add any new gift lines (rare). Sequential to keep Shopify
+           cart state predictable. */
+        return batchUpdate.then(function (batchCart) {
+          var newCart = batchCart || cart;
+          if (!hasAdds) return newCart;
+          var addChain = Promise.resolve(newCart);
+          newAdds.forEach(function (a) {
+            addChain = addChain.then(function () {
+              console.info('[apgo-gift] ADD Y', { giftId: a.giftId, qty: a.spec.qty });
+              var fd = new FormData();
+              fd.append('id', String(a.giftId));
+              fd.append('quantity', String(a.spec.qty));
+              fd.append('properties[_free_gift]', 'true');
+              fd.append('properties[_gift_for]', String(a.spec.xVariantId));
+              if (a.spec.xTitle) fd.append('properties[_gift_from_product]', a.spec.xTitle);
+              return fetch('/cart/add.js', {
+                method: 'POST', headers: { Accept: 'application/json' }, body: fd
+              }).then(function (r) {
+                if (!r.ok) {
+                  return r.json().then(function (j) {
+                    console.warn('[apgo-gift] ADD Y FAILED', r.status, j);
+                    return null;
+                  });
+                }
+                return r.json();
+              }).then(function () {
+                /* Only re-fetch after the LAST add so we have authoritative cart */
+                if (a === newAdds[newAdds.length - 1]) {
+                  return fetch('/cart.js?_=' + Date.now(), { cache: 'no-store' })
+                    .then(function (r) { return r.json(); });
+                }
+                return newCart;
+              }).catch(function () { return newCart; });
+            });
+          });
+          return addChain;
         }).then(function (newCart) {
           /* Re-dispatch so cart-icon, drawer, etc. pick up the new totals.
              selfDispatching guards against the recursive cart:update we
@@ -249,13 +283,18 @@
       .then(function (result) { running = false; return result; });
   }
 
-  /* Public entry — debounced through requestAnimationFrame */
-  function schedule() {
+  /* Public entry — debounced through requestAnimationFrame. Stashes the
+     most recent cart from event.detail.resource so the actual reconcile
+     can skip the initial fetch and start with that data. */
+  function schedule(cartFromEvent) {
+    if (cartFromEvent) pendingCart = cartFromEvent;
     if (scheduled) return;
     scheduled = true;
     requestAnimationFrame(function () {
       scheduled = false;
-      reconcile();
+      var cart = pendingCart;
+      pendingCart = null;
+      reconcile(cart);
     });
   }
   window.apgoReconcileFreeGifts = function () {
@@ -267,13 +306,15 @@
      apps that dispatch the standard event). Skip our own events. */
   document.addEventListener('cart:update', function (ev) {
     if (selfDispatching) return;
-    /* Also skip events tagged as coming from our own reconciler in case
-       another script re-broadcasts them */
     if (ev && ev.detail && ev.detail.data && ev.detail.data.source === 'apgo-gift-reconciler') return;
-    schedule();
+    /* Pass through event.detail.resource (Horizon's contract) so the
+       reconciler can skip the initial cart fetch. */
+    var resourceCart = ev && ev.detail && ev.detail.resource;
+    schedule(resourceCart);
   });
-  document.addEventListener('cart:updated', function () {
+  document.addEventListener('cart:updated', function (ev) {
     if (selfDispatching) return;
-    schedule();
+    var resourceCart = ev && ev.detail && (ev.detail.resource || ev.detail.cart);
+    schedule(resourceCart);
   });
 })();
