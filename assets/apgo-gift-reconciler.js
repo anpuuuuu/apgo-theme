@@ -115,12 +115,41 @@
           desired[giftId].qty += item.quantity; /* sum quantities, not lines */
         });
 
+        /* Find all existing gift lines (lines carrying our _free_gift property). */
         var existingGifts = [];
         cart.items.forEach(function (item) {
           if (item.properties && item.properties._free_gift === 'true') existingGifts.push(item);
         });
 
         var ops = [];
+
+        /*
+          Deduplicate: race conditions or Shopify line-property mismatches
+          can create MULTIPLE gift lines for the same variant_id. Only
+          the first one will receive the Shopify discount; the rest are
+          billed at full price and look like a bug to the customer.
+          Strategy: keep the first occurrence, queue removal for the rest.
+        */
+        var seenGiftVariants = {};
+        var duplicateGifts = [];
+        existingGifts.forEach(function (g) {
+          if (seenGiftVariants[g.variant_id]) {
+            duplicateGifts.push(g);
+          } else {
+            seenGiftVariants[g.variant_id] = g;
+          }
+        });
+        duplicateGifts.forEach(function (dup) {
+          var fdDup = new FormData();
+          fdDup.append('id', dup.key);
+          fdDup.append('quantity', '0');
+          ops.push(fetch('/cart/change.js', {
+            method: 'POST', headers: { Accept: 'application/json' }, body: fdDup
+          }).catch(function () {}));
+        });
+        /* Replace the existingGifts list with the deduplicated set so the
+           qty-adjust / removal logic below operates on canonical lines. */
+        existingGifts = Object.keys(seenGiftVariants).map(function (k) { return seenGiftVariants[k]; });
 
         Object.keys(desired).forEach(function (giftIdStr) {
           var giftId = parseInt(giftIdStr, 10);
