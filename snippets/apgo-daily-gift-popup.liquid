@@ -61,18 +61,47 @@
     </svg>
   </button>
 
-  <div class="apgo-daily-gift__image-wrap">
-    {%- if promo_image != blank -%}
-      <img
-        class="apgo-daily-gift__image"
-        src="{{ promo_image | image_url: width: 600 }}"
-        alt="{{ promo_product.title | default: 'Promo' | escape }}"
-        loading="lazy"
-      >
-    {%- else -%}
-      <div class="apgo-daily-gift__image-fallback" aria-hidden="true">🎁</div>
-    {%- endif -%}
-  </div>
+  {%- comment -%}
+    Clickable image — sends visitors to the bundle PDP. Wrapped in <a>
+    only when we actually have a product URL; otherwise falls back to
+    a plain div so the layout/styling stays identical.
+  {%- endcomment -%}
+  {%- if promo_product.url != blank -%}
+    <a class="apgo-daily-gift__image-wrap apgo-daily-gift__image-wrap--link"
+       href="{{ promo_product.url }}"
+       data-apgo-daily-gift-image-link
+       aria-label="{{ promo_product.title | default: 'View promo' | escape }}">
+      {%- if promo_image != blank -%}
+        <img
+          class="apgo-daily-gift__image"
+          src="{{ promo_image | image_url: width: 600 }}"
+          alt="{{ promo_product.title | default: 'Promo' | escape }}"
+          loading="lazy"
+        >
+      {%- else -%}
+        <div class="apgo-daily-gift__image-fallback" aria-hidden="true">🎁</div>
+      {%- endif -%}
+      <span class="apgo-daily-gift__image-hint" aria-hidden="true">
+        Tap to view
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/>
+        </svg>
+      </span>
+    </a>
+  {%- else -%}
+    <div class="apgo-daily-gift__image-wrap">
+      {%- if promo_image != blank -%}
+        <img
+          class="apgo-daily-gift__image"
+          src="{{ promo_image | image_url: width: 600 }}"
+          alt="{{ promo_product.title | default: 'Promo' | escape }}"
+          loading="lazy"
+        >
+      {%- else -%}
+        <div class="apgo-daily-gift__image-fallback" aria-hidden="true">🎁</div>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
 
   <div class="apgo-daily-gift__body">
     <span class="apgo-daily-gift__badge">🎁 {{ badge_text }}</span>
@@ -182,6 +211,43 @@
     background: #0a0a0a;
     overflow: hidden;
   }
+  /* Linked-image state — same dimensions, plus subtle hover affordance */
+  .apgo-daily-gift__image-wrap--link {
+    display: block;
+    cursor: pointer;
+    color: inherit;
+    text-decoration: none;
+    transition: transform .2s ease;
+  }
+  .apgo-daily-gift__image-wrap--link:hover .apgo-daily-gift__image {
+    transform: scale(1.03);
+  }
+  .apgo-daily-gift__image-wrap--link .apgo-daily-gift__image {
+    transition: transform .35s ease;
+  }
+  /* Floating "Tap to view →" pill in the bottom-right of the image */
+  .apgo-daily-gift__image-hint {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: linear-gradient(45deg, #f08418, #ff9a3c);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    box-shadow: 0 4px 12px rgba(240, 132, 24, 0.5);
+    pointer-events: none;
+  }
+  .apgo-daily-gift__image-wrap--link:hover .apgo-daily-gift__image-hint svg {
+    transform: translateX(3px);
+  }
+  .apgo-daily-gift__image-hint svg { transition: transform .2s ease; }
   .apgo-daily-gift__image {
     width: 100%;
     height: 100%;
