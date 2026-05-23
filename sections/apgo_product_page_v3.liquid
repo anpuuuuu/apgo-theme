@@ -3954,12 +3954,13 @@
     grid-template-columns: 1fr;
   }
   .apgo-cc-buybar__btn {
-    /* Match .apgo-cc-pdp__cta in the modal + inline CTA row for height consistency */
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 13px;
+    /* Slightly taller than the modal CTA so the thumb-reach target on mobile
+       feels closer to the chunky desktop Add/Buy buttons. */
+    padding: 13px 14px;
+    border-radius: 10px;
+    font-size: 14px;
     line-height: 1.2;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
     transition: opacity .15s ease, background .15s ease;
     border: 2px solid var(--primary-orange, #f08418);

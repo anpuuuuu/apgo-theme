@@ -24,6 +24,15 @@
 {%- comment -%} ========================================================== {%- endcomment -%}
 
 {%- assign promo_product = all_products[promo_handle] -%}
+{%- comment -%}
+  On the promo product's own PDP we hide the CTA button — clicking
+  "View deal" to land on the same page is pointless. The countdown +
+  copy still render so the urgency cue stays.
+{%- endcomment -%}
+{%- assign on_promo_pdp = false -%}
+{%- if template.name == 'product' and product.handle == promo_handle -%}
+  {%- assign on_promo_pdp = true -%}
+{%- endif -%}
 {%- if promo_product != blank and promo_product.handle != blank -%}
   <a class="apgo-promo-banner"
      href="{{ promo_product.url }}"
@@ -48,14 +57,16 @@
         <span class="apgo-promo-banner__timer" data-apgo-promo-timer>--:--:--</span>
       </span>
     </span>
-    <span class="apgo-promo-banner__cta-col">
-      <span class="apgo-promo-banner__cta">
-        {{ promo_cta }}
-        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/>
-        </svg>
+    {%- unless on_promo_pdp -%}
+      <span class="apgo-promo-banner__cta-col">
+        <span class="apgo-promo-banner__cta">
+          {{ promo_cta }}
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/>
+          </svg>
+        </span>
       </span>
-    </span>
+    {%- endunless -%}
   </a>
 
   <style>
