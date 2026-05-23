@@ -61,17 +61,8 @@
   /collections/limited-time-deals only. Edit copy / target product handle
   inside snippets/apgo-collection-promo-banner.liquid.
 {%- endcomment -%}
-{%- liquid
-  assign apgo_show_banner = false
-  if settings.apgo_gwp_enabled
-    if collection.handle == 'all' and settings.apgo_gwp_banner_on_all
-      assign apgo_show_banner = true
-    elsif collection.handle == 'collections-limited-time-deals' and settings.apgo_gwp_banner_on_limited_time_deals
-      assign apgo_show_banner = true
-    endif
-  endif
--%}
-{% if apgo_show_banner %}
+{% if settings.apgo_gwp_enabled
+   and (collection.handle == 'all' or collection.handle == 'collections-limited-time-deals') %}
   {% render 'apgo-collection-promo-banner' %}
 {% endif %}
 
