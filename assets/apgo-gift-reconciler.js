@@ -121,6 +121,18 @@
           if (item.properties && item.properties._free_gift === 'true') existingGifts.push(item);
         });
 
+        /* Diagnostic snapshot — visible in browser console so users hitting
+           "Y qty doesn't match X" issues can share what the reconciler saw. */
+        console.info('[apgo-gift] reconcile snapshot', {
+          xQtyInCart: currentXQty,
+          desiredY: Object.keys(desired).reduce(function (acc, k) {
+            acc[k] = desired[k].qty; return acc;
+          }, {}),
+          existingYLines: existingGifts.map(function (g) {
+            return { variant_id: g.variant_id, qty: g.quantity, key: g.key };
+          })
+        });
+
         var ops = [];
 
         /*
@@ -156,6 +168,7 @@
           var spec = desired[giftIdStr];
           var existing = existingGifts.find(function (e) { return e.variant_id === giftId; });
           if (!existing) {
+            console.info('[apgo-gift] ADD Y', { giftId: giftId, qty: spec.qty, xVariantId: spec.xVariantId });
             var fd = new FormData();
             fd.append('id', String(giftId));
             fd.append('quantity', String(spec.qty));
@@ -164,14 +177,23 @@
             if (spec.xTitle) fd.append('properties[_gift_from_product]', spec.xTitle);
             ops.push(fetch('/cart/add.js', {
               method: 'POST', headers: { Accept: 'application/json' }, body: fd
-            }).catch(function () {}));
+            }).then(function (r) {
+              if (!r.ok) return r.json().then(function (j) {
+                console.warn('[apgo-gift] ADD Y FAILED', r.status, j);
+              });
+            }).catch(function (e) { console.warn('[apgo-gift] ADD Y NETWORK ERROR', e); }));
           } else if (existing.quantity !== spec.qty) {
+            console.info('[apgo-gift] CHANGE Y qty', { from: existing.quantity, to: spec.qty, key: existing.key });
             var fd2 = new FormData();
             fd2.append('id', existing.key);
             fd2.append('quantity', String(spec.qty));
             ops.push(fetch('/cart/change.js', {
               method: 'POST', headers: { Accept: 'application/json' }, body: fd2
-            }).catch(function () {}));
+            }).then(function (r) {
+              if (!r.ok) return r.json().then(function (j) {
+                console.warn('[apgo-gift] CHANGE Y FAILED', r.status, j, '(usually means Y is sold out or qty limited)');
+              });
+            }).catch(function (e) { console.warn('[apgo-gift] CHANGE Y NETWORK ERROR', e); }));
           }
         });
 
