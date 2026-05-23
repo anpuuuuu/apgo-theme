@@ -149,6 +149,25 @@
     </style>
     <script src="{{ 'apgo-scroll-hide.js' | asset_url }}" defer></script>
 
+    {%- comment -%}
+      Global APGO Gift-with-Purchase map (X variant id → Y variant id).
+      Loaded on every page so quick-add (collection page), cart drawer,
+      app-driven cart updates etc. all trigger gift reconciliation.
+
+      To run a new GWP promo: add an entry below, then make sure the
+      matching Shopify Discount (Buy X get Y) is set up so Y is free at
+      checkout. The PDP-level emission in apgo_product_page_v3.liquid
+      still works — both add into the same window.APGO_GIFT_MAP.
+    {%- endcomment -%}
+    <script>
+      window.APGO_GIFT_MAP = window.APGO_GIFT_MAP || {};
+      window.APGO_GIFT_PRODUCT_TITLES = window.APGO_GIFT_PRODUCT_TITLES || {};
+      /* Hari Raya Haji Bundle → Car Wash Shampoo */
+      window.APGO_GIFT_MAP[48112452010138] = 46516355006618;
+      window.APGO_GIFT_PRODUCT_TITLES[48112452010138] = 'Atomic Glaze Coating Hari Raya Haji Bundle';
+    </script>
+    <script src="{{ 'apgo-gift-reconciler.js' | asset_url }}" defer></script>
+
     {% render 'search-modal' %}
     {% render 'apgo-cart-toast' %}
     {% if template.name == 'collection' %}
