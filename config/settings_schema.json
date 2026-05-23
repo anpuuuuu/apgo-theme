@@ -23,6 +23,26 @@
         "id": "apgo_gwp_enabled",
         "label": "Enable Free Gift promo (all UI + auto-add behavior)",
         "default": true
+      },
+      {
+        "type": "header",
+        "content": "Per-page promo banner toggles"
+      },
+      {
+        "type": "paragraph",
+        "content": "Fine-grained control for the orange Hari Raya promo banner card. The master switch above must also be ON for any banner to appear. Use these to hide the banner on individual collection pages without taking the whole promo down."
+      },
+      {
+        "type": "checkbox",
+        "id": "apgo_gwp_banner_on_all",
+        "label": "Show banner on /collections/all",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "apgo_gwp_banner_on_limited_time_deals",
+        "label": "Show banner on /collections/collections-limited-time-deals",
+        "default": true
       }
     ]
   },
