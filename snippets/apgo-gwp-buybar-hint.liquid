@@ -30,11 +30,14 @@
 <style>
   .apgo-gwp-buybar-hint {
     position: fixed;
-    /* Center of viewport, both axes — guaranteed visible no matter
-       what modal panel is on screen below. */
-    top: 50%;
+    /* JS positions `top` dynamically to sit just above whichever modal
+       panel is currently open. left/transform centers horizontally; the
+       Y axis is overridden inline by the script. Fallback `top: 12px`
+       handles the brief moment between show() and positionAboveModal()
+       running. */
+    top: 12px;
     left: 50%;
-    transform: translate(-50%, calc(-50% + 12px));
+    transform: translate(-50%, 8px);
     z-index: 100200; /* above confirm-modal (z 100100) + buybar (z 100000) */
     /* Explicit width (not just max-width) so the flex container can't
        shrink-to-fit into a narrow column on mobile. */
@@ -61,7 +64,7 @@
   .apgo-gwp-buybar-hint[hidden] { display: none !important; }
   .apgo-gwp-buybar-hint.is-visible {
     opacity: 1;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, 0);
     pointer-events: auto;
   }
   .apgo-gwp-buybar-hint__icon {
@@ -119,11 +122,58 @@
   if (!hint) return;
   var closeBtn = hint.querySelector('[data-apgo-gwp-buybar-hint-close]');
 
+  /* Place the hint so its bottom edge sits ~12px above the currently
+     open modal panel's top edge. Falls back to 12px from viewport top
+     if no panel is found (or the modal animation hasn't laid out yet). */
+  function positionAboveModal() {
+    /* Look for the topmost edge among open panels we know about */
+    var panelSelectors = [
+      '.apgo-cc-confirm-modal.is-open .apgo-cc-confirm-modal__panel',
+      '.apgo-pdp-variant-shell[aria-hidden="false"] .apgo-variant-modal',
+      '.apgo-pdp-variant-shell.is-open .apgo-variant-modal'
+    ];
+    var panelTop = null;
+    for (var i = 0; i < panelSelectors.length; i++) {
+      var p = document.querySelector(panelSelectors[i]);
+      if (p) {
+        var rect = p.getBoundingClientRect();
+        if (rect.height > 0) {
+          if (panelTop === null || rect.top < panelTop) panelTop = rect.top;
+        }
+      }
+    }
+    var hintHeight = hint.offsetHeight || 80;
+    var safeTopMin = 12; /* never crowd the viewport edge */
+    var target;
+    if (panelTop !== null && panelTop > 0) {
+      target = Math.max(safeTopMin, panelTop - hintHeight - 12);
+    } else {
+      target = safeTopMin;
+    }
+    hint.style.top = target + 'px';
+  }
+
+  /* Re-run positioning at multiple frames because the modal panel slides
+     up via transform animation — its `top` (via getBoundingClientRect)
+     changes for ~300ms. Sampling on a few rAF ticks gives the hint a
+     chance to land in the right final spot. */
+  function reposition(loops) {
+    loops = (typeof loops === 'number') ? loops : 6;
+    positionAboveModal();
+    if (loops > 0) {
+      requestAnimationFrame(function () { reposition(loops - 1); });
+    }
+  }
+
   function show() {
     if (hint.hasAttribute('hidden')) hint.removeAttribute('hidden');
-    /* Force reflow so the transition kicks in even on rapid re-show */
+    /* Force reflow so transition kicks in even on rapid re-show */
     void hint.offsetHeight;
+    /* Position FIRST so the slide-in animation starts from above the modal */
+    positionAboveModal();
     hint.classList.add('is-visible');
+    /* Then keep correcting while the modal panel slides into place */
+    requestAnimationFrame(function () { reposition(10); });
   }
   function hide() {
     hint.classList.remove('is-visible');
@@ -134,6 +184,15 @@
       }
     }, 350);
   }
+
+  /* Recompute on viewport changes too — keyboard appearing on mobile,
+     orientation change, etc. all shift the modal panel's top. */
+  window.addEventListener('resize', function () {
+    if (hint.classList.contains('is-visible')) positionAboveModal();
+  });
+  window.addEventListener('scroll', function () {
+    if (hint.classList.contains('is-visible')) positionAboveModal();
+  }, { passive: true });
 
   if (closeBtn) closeBtn.addEventListener('click', hide);
 
