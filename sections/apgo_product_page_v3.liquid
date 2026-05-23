@@ -4418,7 +4418,7 @@
         accumulates both products' gift mappings.
       {%- endcomment -%}
       {%- assign apgo_gift_target = product.metafields.custom.free_gift_variant.value -%}
-      {%- if apgo_gift_target != blank and apgo_gift_target.id != blank -%}
+      {%- if settings.apgo_gwp_enabled and apgo_gift_target != blank and apgo_gift_target.id != blank -%}
         <script>
           (function () {
             window.APGO_GIFT_MAP = window.APGO_GIFT_MAP || {};

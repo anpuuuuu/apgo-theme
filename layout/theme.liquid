@@ -95,7 +95,9 @@
         framing. The snippet itself guards on `all_products[promo_handle]`
         so it no-ops if the product is removed.
       {%- endcomment -%}
-      {% if template.name == 'product' and product.handle == 'atomic-glaze-coating-hari-raya-haji-bundle' %}
+      {% if settings.apgo_gwp_enabled
+         and template.name == 'product'
+         and product.handle == 'atomic-glaze-coating-hari-raya-haji-bundle' %}
         {% render 'apgo-collection-promo-banner' %}
       {% endif %}
       {{ content_for_layout }}
@@ -168,14 +170,23 @@
       checkout. The PDP-level emission in apgo_product_page_v3.liquid
       still works — both add into the same window.APGO_GIFT_MAP.
     {%- endcomment -%}
-    <script>
-      window.APGO_GIFT_MAP = window.APGO_GIFT_MAP || {};
-      window.APGO_GIFT_PRODUCT_TITLES = window.APGO_GIFT_PRODUCT_TITLES || {};
-      /* Hari Raya Haji Bundle → Car Wash Shampoo */
-      window.APGO_GIFT_MAP[48112452010138] = 46516355006618;
-      window.APGO_GIFT_PRODUCT_TITLES[48112452010138] = 'Atomic Glaze Coating Hari Raya Haji Bundle';
-    </script>
-    <script src="{{ 'apgo-gift-reconciler.js' | asset_url }}" defer></script>
+    {%- comment -%}
+      Whole GWP system — emission of APGO_GIFT_MAP + reconciler script —
+      gated on the master kill switch (theme settings: APGO — Free Gift
+      Promo → Enable Free Gift promo). When off, the map is empty so
+      the reconciler does nothing AND the script tag is skipped entirely
+      to save the network round trip.
+    {%- endcomment -%}
+    {% if settings.apgo_gwp_enabled %}
+      <script>
+        window.APGO_GIFT_MAP = window.APGO_GIFT_MAP || {};
+        window.APGO_GIFT_PRODUCT_TITLES = window.APGO_GIFT_PRODUCT_TITLES || {};
+        /* Hari Raya Haji Bundle → Car Wash Shampoo */
+        window.APGO_GIFT_MAP[48112452010138] = 46516355006618;
+        window.APGO_GIFT_PRODUCT_TITLES[48112452010138] = 'Atomic Glaze Coating Hari Raya Haji Bundle';
+      </script>
+      <script src="{{ 'apgo-gift-reconciler.js' | asset_url }}" defer></script>
+    {% endif %}
 
     {% render 'search-modal' %}
     {% render 'apgo-cart-toast' %}
@@ -191,8 +202,9 @@
       it on the homepage prevents another appearance on the PDP and vice
       versa. Edit dates/copy inside snippets/apgo-daily-gift-popup.liquid.
     {%- endcomment -%}
-    {% if template.name == 'index'
-       or (template.name == 'product' and product.handle == 'atomic-glaze-coating-hari-raya-haji-bundle') %}
+    {% if settings.apgo_gwp_enabled
+       and (template.name == 'index'
+            or (template.name == 'product' and product.handle == 'atomic-glaze-coating-hari-raya-haji-bundle')) %}
       {% render 'apgo-daily-gift-popup' %}
     {% endif %}
 
@@ -201,7 +213,9 @@
       mobile buybar/select-option sheet on the bundle PDP only. Reassures
       the customer that hitting Add to cart will auto-include the gift.
     {%- endcomment -%}
-    {% if template.name == 'product' and product.handle == 'atomic-glaze-coating-hari-raya-haji-bundle' %}
+    {% if settings.apgo_gwp_enabled
+       and template.name == 'product'
+       and product.handle == 'atomic-glaze-coating-hari-raya-haji-bundle' %}
       {% render 'apgo-gwp-buybar-hint' %}
     {% endif %}
 

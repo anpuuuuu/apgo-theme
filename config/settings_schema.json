@@ -8,6 +8,25 @@
     "theme_support_url": "https://support.shopify.com/"
   },
   {
+    "name": "APGO — Free Gift Promo",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Gift-with-Purchase (GWP) master switch"
+      },
+      {
+        "type": "paragraph",
+        "content": "Turn OFF to instantly hide every storefront element tied to the Hari Raya free shampoo promo: the collection promo banner, the daily gift popup, the mobile buybar reassurance toast, the cart-page \"Free gift\" badge, AND the automatic add of the free 300ml shampoo when the bundle is added to cart. No code changes needed."
+      },
+      {
+        "type": "checkbox",
+        "id": "apgo_gwp_enabled",
+        "label": "Enable Free Gift promo (all UI + auto-add behavior)",
+        "default": true
+      }
+    ]
+  },
+  {
     "name": "t:names.logo_and_favicon",
     "settings": [
       {
