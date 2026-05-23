@@ -12,10 +12,11 @@
 {%- enddoc -%}
 
 <div class="apgo-gwp-buybar-hint" data-apgo-gwp-buybar-hint hidden role="status" aria-live="polite">
+  <span class="apgo-gwp-buybar-hint__accent" aria-hidden="true"></span>
   <span class="apgo-gwp-buybar-hint__icon" aria-hidden="true">🎁</span>
   <span class="apgo-gwp-buybar-hint__text">
-    <strong>You're on the right page.</strong>
-    Click <em>button below</em> and the FREE 300ml shampoo is added automatically.
+    <strong>Your free 300ml shampoo is ready.</strong>
+    Just tap the <em>button below</em> — we'll auto-include it for you.
   </span>
   <button type="button"
           class="apgo-gwp-buybar-hint__close"
@@ -25,31 +26,31 @@
       <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
     </svg>
   </button>
+  <span class="apgo-gwp-buybar-hint__tail" aria-hidden="true"></span>
 </div>
 
 <style>
   .apgo-gwp-buybar-hint {
     position: fixed;
     /* JS positions `top` dynamically to sit just above whichever modal
-       panel is currently open. left/transform centers horizontally; the
-       Y axis is overridden inline by the script. Fallback `top: 12px`
-       handles the brief moment between show() and positionAboveModal()
-       running. */
+       panel is currently open. Fallback `top: 12px` handles the brief
+       moment between show() and positionAboveModal() running. */
     top: 12px;
     left: 50%;
     transform: translate(-50%, 8px);
     z-index: 100200; /* above confirm-modal (z 100100) + buybar (z 100000) */
-    /* Explicit width (not just max-width) so the flex container can't
-       shrink-to-fit into a narrow column on mobile. */
     width: min(86vw, 340px);
     box-sizing: border-box;
-    padding: 14px 40px 14px 16px;
+    /* Extra left padding to make room for the 4px accent stripe */
+    padding: 14px 40px 14px 20px;
     border-radius: 14px;
     background: rgba(20, 20, 20, 0.82);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
-    border: 1px solid rgba(240, 132, 24, 0.5);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55), 0 0 24px rgba(240, 132, 24, 0.12);
+    /* Faint white hairline on the right / top / bottom — no full orange
+       loop. The orange stripe lives in ::before (the accent column). */
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
     color: #fff;
     font-family: 'Poppins', 'Microsoft JhengHei', Arial, sans-serif;
     font-size: 13px;
@@ -66,6 +67,57 @@
     opacity: 1;
     transform: translate(-50%, 0);
     pointer-events: auto;
+    /* macOS-notification-style left stripe + outer glow pulse for
+       the first ~3.6 seconds, then settles into a static stripe. */
+    animation: apgoGwpHintGlow 1.8s ease-in-out 0s 2 forwards;
+  }
+  @keyframes apgoGwpHintGlow {
+    0%, 100% { box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55), 0 0 0 0 rgba(240, 132, 24, 0); }
+    50%      { box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55), 0 0 24px 2px rgba(240, 132, 24, 0.35); }
+  }
+  /* 4px left accent stripe — solid orange, full height, rounded to
+     follow the toast's left corners. Sits inside the padded area. */
+  .apgo-gwp-buybar-hint__accent {
+    position: absolute;
+    top: 8px;
+    bottom: 8px;
+    left: 6px;
+    width: 4px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #f08418, #ff9a3c);
+    box-shadow: 0 0 10px rgba(240, 132, 24, 0.55);
+  }
+  /* Downward-pointing tail arrow at the bottom-center, visually linking
+     the toast to the modal panel below. Drawn with two stacked triangles
+     so it inherits the same background + faint border seamlessly. */
+  .apgo-gwp-buybar-hint__tail {
+    position: absolute;
+    left: 50%;
+    bottom: -9px;
+    transform: translateX(-50%);
+    width: 16px;
+    height: 9px;
+    pointer-events: none;
+  }
+  .apgo-gwp-buybar-hint__tail::before,
+  .apgo-gwp-buybar-hint__tail::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+  }
+  /* Outer/border triangle — slightly larger, white hairline color */
+  .apgo-gwp-buybar-hint__tail::before {
+    border-top: 9px solid rgba(255, 255, 255, 0.08);
+  }
+  /* Inner triangle — toast's background color, inset by 1px to fake border */
+  .apgo-gwp-buybar-hint__tail::after {
+    top: -1px;
+    border-top: 9px solid rgba(20, 20, 20, 0.82);
   }
   .apgo-gwp-buybar-hint__icon {
     font-size: 20px;
