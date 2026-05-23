@@ -720,6 +720,32 @@
       .catch(function () {});
   }
 
+  /*
+    Stop Enter in qty inputs from submitting the cart form.
+
+    The qty stepper lives inside <form id="cart-form"> whose submit button
+    is "Checkout". A keyboard user typing a new qty + Enter triggers the
+    native form submit → instant redirect to checkout, bypassing the
+    customer's intended qty edit. Intercept Enter on qty inputs and
+    blur the field instead — that fires the existing on:blur handler
+    which actually updates the qty via /cart/change.js.
+  */
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' && e.keyCode !== 13) return;
+    var t = e.target;
+    if (!t) return;
+    var isQty = t.matches && (
+      t.matches('.cart-items__quantity input[type="number"]') ||
+      t.matches('quantity-selector-component input[type="number"]') ||
+      (t.tagName === 'INPUT' && t.type === 'number' && t.closest && t.closest('.cart-items__quantity'))
+    );
+    if (!isQty) return;
+    e.preventDefault();
+    /* Blur triggers Shopify's on:blur="/setQuantity" handler which does
+       the actual cart update — same behaviour as clicking out of the field. */
+    t.blur();
+  }, true);
+
   /* Run on page load + whenever the cart updates */
   document.addEventListener('DOMContentLoaded', function () {
     pruneStaleGifts();
