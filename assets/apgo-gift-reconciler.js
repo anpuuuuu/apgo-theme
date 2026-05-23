@@ -30,16 +30,37 @@
 (function () {
   'use strict';
 
+  /*
+    Dismissal state — kept in sessionStorage so it resets when the tab
+    closes. Combined with the "qty went up = clear dismiss" logic below,
+    this gives the expected UX:
+      - Remove Y from cart → dismiss flag set, Y won't auto-add back
+        on passive cart reloads (page nav, drawer open, etc.)
+      - User actively adds MORE X → dismiss cleared, Y re-added
+      - New tab / new session → dismiss cleared, Y back on next add
+  */
   function isGiftDismissed(xVariantId) {
     try {
-      return localStorage.getItem('apgo_gift_dismissed_' + xVariantId) === '1';
+      return sessionStorage.getItem('apgo_gift_dismissed_' + xVariantId) === '1';
     } catch (_) { return false; }
   }
   function markGiftDismissed(xVariantId) {
-    try { localStorage.setItem('apgo_gift_dismissed_' + xVariantId, '1'); } catch (_) {}
+    try { sessionStorage.setItem('apgo_gift_dismissed_' + xVariantId, '1'); } catch (_) {}
   }
   function clearGiftDismissed(xVariantId) {
-    try { localStorage.removeItem('apgo_gift_dismissed_' + xVariantId); } catch (_) {}
+    try { sessionStorage.removeItem('apgo_gift_dismissed_' + xVariantId); } catch (_) {}
+  }
+
+  /* Track previously-seen X quantities so we can detect "user added more X"
+     and re-arm the gift. Stored in sessionStorage so a page navigation
+     within the same tab preserves the baseline (otherwise a reload would
+     compare current X to 0 and always clear dismiss). */
+  function getLastXQty() {
+    try { return JSON.parse(sessionStorage.getItem('apgo_gift_last_x_qty') || '{}') || {}; }
+    catch (_) { return {}; }
+  }
+  function setLastXQty(map) {
+    try { sessionStorage.setItem('apgo_gift_last_x_qty', JSON.stringify(map)); } catch (_) {}
   }
   window.apgoDismissGift = function (id) { markGiftDismissed(id); };
   window.apgoUndismissGift = clearGiftDismissed;
@@ -57,6 +78,27 @@
     return fetch('/cart.js?_=' + Date.now(), { cache: 'no-store' })
       .then(function (r) { return r.json(); })
       .then(function (cart) {
+        /* First pass: compute current X quantities (across all lines) per
+           X variant id. Used both to (a) detect qty-increase → clear
+           dismiss, and (b) populate the desired-gift map. */
+        var currentXQty = {};
+        cart.items.forEach(function (item) {
+          if (item.properties && item.properties._free_gift === 'true') return;
+          if (!window.APGO_GIFT_MAP[item.variant_id]) return;
+          currentXQty[item.variant_id] = (currentXQty[item.variant_id] || 0) + item.quantity;
+        });
+
+        /* Detect "user added more X since last reconcile" → user clearly
+           wants the gift back, so clear the dismiss flag. */
+        var lastXQty = getLastXQty();
+        Object.keys(currentXQty).forEach(function (xVariantId) {
+          var prev = lastXQty[xVariantId] || 0;
+          if (currentXQty[xVariantId] > prev) {
+            clearGiftDismissed(xVariantId);
+          }
+        });
+        setLastXQty(currentXQty);
+
         var desired = {};
         cart.items.forEach(function (item) {
           if (item.properties && item.properties._free_gift === 'true') return;

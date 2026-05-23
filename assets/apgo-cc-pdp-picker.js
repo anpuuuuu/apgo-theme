@@ -356,19 +356,28 @@
     Shopify's automatic Buy-X-get-Y discount handles the actual pricing;
     this JS only manages presence + visual marking.
   */
+  /* Dismiss flag storage — sessionStorage so it auto-clears on new tab/
+     session. The global reconciler (assets/apgo-gift-reconciler.js) uses
+     the same keys + clears dismiss when X quantity increases. */
   function isGiftDismissed(xVariantId) {
-    try { return localStorage.getItem('apgo_gift_dismissed_' + xVariantId) === '1'; }
+    try { return sessionStorage.getItem('apgo_gift_dismissed_' + xVariantId) === '1'; }
     catch (_) { return false; }
   }
   function markGiftDismissed(xVariantId) {
-    try { localStorage.setItem('apgo_gift_dismissed_' + xVariantId, '1'); } catch (_) {}
+    try { sessionStorage.setItem('apgo_gift_dismissed_' + xVariantId, '1'); } catch (_) {}
   }
   function clearGiftDismissed(xVariantId) {
-    try { localStorage.removeItem('apgo_gift_dismissed_' + xVariantId); } catch (_) {}
+    try { sessionStorage.removeItem('apgo_gift_dismissed_' + xVariantId); } catch (_) {}
   }
-  /* Expose remove + dismiss path so cart UI can call from a "remove gift" button */
-  window.apgoDismissGift = function (xVariantId) { markGiftDismissed(xVariantId); };
-  window.apgoUndismissGift = clearGiftDismissed;
+  /* The global reconciler exposes apgoDismissGift / apgoUndismissGift; we
+     only define them here as a fallback in case the global reconciler
+     isn't loaded yet (legacy paths). */
+  if (typeof window.apgoDismissGift !== 'function') {
+    window.apgoDismissGift = function (xVariantId) { markGiftDismissed(xVariantId); };
+  }
+  if (typeof window.apgoUndismissGift !== 'function') {
+    window.apgoUndismissGift = clearGiftDismissed;
+  }
 
   function reconcileFreeGifts() {
     if (!window.APGO_GIFT_MAP || Object.keys(window.APGO_GIFT_MAP).length === 0) {
