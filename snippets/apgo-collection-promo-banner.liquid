@@ -1,0 +1,168 @@
+{%- doc -%}
+  APGO Collection promo banner — a click-through card that surfaces the
+  current GWP promo at the top of /collections/* pages.
+
+  Renders only when the configured promo product still exists. Clicking
+  the card opens the product page. Edit copy / handle in the assign
+  block below.
+{%- enddoc -%}
+
+{%- comment -%} ============ EDIT THESE TO CHANGE THE PROMO ============ {%- endcomment -%}
+{%- assign promo_handle    = 'atomic-glaze-coating-hari-raya-haji-bundle' -%}
+{%- assign promo_badge     = '🎁 LIMITED DEAL' -%}
+{%- assign promo_headline  = 'Grab this deal now' -%}
+{%- assign promo_body      = 'and receive an additional FREE 300ml shampoo from us!' -%}
+{%- assign promo_cta       = 'View deal' -%}
+{%- comment -%} ========================================================== {%- endcomment -%}
+
+{%- assign promo_product = all_products[promo_handle] -%}
+{%- if promo_product != blank and promo_product.handle != blank -%}
+  <a class="apgo-promo-banner" href="{{ promo_product.url }}" aria-label="{{ promo_headline | escape }} — {{ promo_body | escape }}">
+    {%- if promo_product.featured_image != blank -%}
+      <span class="apgo-promo-banner__image-wrap">
+        <img class="apgo-promo-banner__image"
+             src="{{ promo_product.featured_image | image_url: width: 400 }}"
+             alt=""
+             loading="lazy">
+      </span>
+    {%- endif -%}
+    <span class="apgo-promo-banner__body">
+      <span class="apgo-promo-banner__badge">{{ promo_badge }}</span>
+      <span class="apgo-promo-banner__headline">{{ promo_headline }}</span>
+      <span class="apgo-promo-banner__sub">{{ promo_body }}</span>
+    </span>
+    <span class="apgo-promo-banner__cta">
+      {{ promo_cta }}
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/>
+      </svg>
+    </span>
+  </a>
+
+  <style>
+    .apgo-promo-banner,
+    .apgo-promo-banner * {
+      font-family: 'Poppins', 'Microsoft JhengHei', Arial, sans-serif !important;
+    }
+    .apgo-promo-banner {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      max-width: 1200px;
+      margin: 16px auto 24px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background:
+        radial-gradient(120% 200% at 0% 0%, rgba(240, 132, 24, 0.18) 0%, rgba(240, 132, 24, 0) 55%),
+        linear-gradient(135deg, #181818 0%, #0c0c0c 100%);
+      border: 1px solid rgba(240, 132, 24, 0.32);
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4), 0 0 32px rgba(240, 132, 24, 0.08);
+      color: #fff;
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+      transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+    .apgo-promo-banner::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #f08418, #ff9a3c);
+    }
+    .apgo-promo-banner:hover {
+      transform: translateY(-2px);
+      border-color: rgba(240, 132, 24, 0.55);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55), 0 0 44px rgba(240, 132, 24, 0.18);
+    }
+    .apgo-promo-banner__image-wrap {
+      flex: 0 0 auto;
+      width: 72px;
+      height: 72px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #0a0a0a;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+    }
+    .apgo-promo-banner__image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .apgo-promo-banner__body {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+    .apgo-promo-banner__badge {
+      display: inline-block;
+      align-self: flex-start;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: linear-gradient(45deg, #f08418, #ff9a3c);
+      color: #1a1a1a;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      box-shadow: 0 2px 8px rgba(240, 132, 24, 0.35);
+    }
+    .apgo-promo-banner__headline {
+      font-size: 15px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.25;
+    }
+    .apgo-promo-banner__sub {
+      font-size: 12.5px;
+      color: rgba(255, 255, 255, 0.7);
+      line-height: 1.4;
+    }
+    .apgo-promo-banner__cta {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: linear-gradient(45deg, #f08418, #ff9a3c);
+      color: #fff;
+      font-size: 12.5px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      box-shadow: 0 4px 14px rgba(240, 132, 24, 0.4);
+      white-space: nowrap;
+    }
+    .apgo-promo-banner__cta svg { transition: transform .2s ease; }
+    .apgo-promo-banner:hover .apgo-promo-banner__cta svg { transform: translateX(3px); }
+
+    @media (max-width: 749px) {
+      .apgo-promo-banner {
+        gap: 10px;
+        padding: 10px 12px;
+        margin: 12px auto 16px;
+        border-radius: 14px;
+      }
+      .apgo-promo-banner__image-wrap { width: 56px; height: 56px; }
+      .apgo-promo-banner__headline { font-size: 13px; }
+      .apgo-promo-banner__sub { font-size: 11.5px; }
+      .apgo-promo-banner__badge { font-size: 9px; padding: 2px 8px; }
+      .apgo-promo-banner__cta {
+        padding: 7px 10px;
+        font-size: 11px;
+      }
+      /* Hide CTA label text on very narrow phones — keep only the arrow icon */
+      @media (max-width: 380px) {
+        .apgo-promo-banner__cta {
+          font-size: 0;
+          padding: 8px 10px;
+          gap: 0;
+        }
+        .apgo-promo-banner__cta svg { width: 14px; height: 14px; }
+      }
+    }
+  </style>
+{%- endif -%}

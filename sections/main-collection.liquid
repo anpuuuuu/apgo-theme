@@ -54,6 +54,17 @@
 
 {% comment %} We always render this full-width, as the child blocks have width: page/full settings {% endcomment %}
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
+
+{%- comment -%}
+  GWP promo banner — clickable card surfacing the current free-gift promo
+  above the product grid. Shows on /collections/all and
+  /collections/limited-time-deals only. Edit copy / target product handle
+  inside snippets/apgo-collection-promo-banner.liquid.
+{%- endcomment -%}
+{% if collection.handle == 'all' or collection.handle == 'limited-time-deals' %}
+  {% render 'apgo-collection-promo-banner' %}
+{% endif %}
+
 {% if use_all_catalog_hub %}
   <div
     class="section product-grid-container color-{{ section.settings.color_scheme }} main-collection-zgrid apgo-all-catalog-root"
