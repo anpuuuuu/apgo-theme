@@ -1,13 +1,14 @@
 {%- doc -%}
-  Small semi-transparent toast that appears on mobile when the bottom
-  buybar / select-option sheet opens on the Hari Raya Haji Bundle PDP.
-  Tells the user "✅ You're on the right page — clicking Add to cart
-  will automatically include the FREE gift" so they don't worry that
-  they have to do anything extra.
+  Semi-transparent reassurance toast that appears on mobile when the
+  bottom buybar / select-option / variant-shell modal opens on the
+  Hari Raya Haji Bundle PDP. Tells the user "✅ You're on the right
+  page — clicking Add to cart will automatically include the FREE
+  gift" so they don't worry they have to do anything extra.
 
-  Mobile only (≤749px). Mounts a MutationObserver on .apgo-cc-buybar
-  watching for the `.is-open` class, then shows once per page-session
-  (sessionStorage flag) so it doesn't nag.
+  Mobile only (≤749px). Watches `.is-open` class on three possible
+  containers and fires every time any of them opens. No auto-dismiss
+  — user closes via the X button (or it disappears when the modal
+  itself closes).
 {%- enddoc -%}
 
 <div class="apgo-gwp-buybar-hint" data-apgo-gwp-buybar-hint hidden role="status" aria-live="polite">
@@ -16,49 +17,52 @@
     <strong>You're on the right page.</strong>
     Click <em>Add to cart</em> and the FREE 300ml shampoo is added automatically.
   </span>
+  <button type="button"
+          class="apgo-gwp-buybar-hint__close"
+          data-apgo-gwp-buybar-hint-close
+          aria-label="Dismiss">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+    </svg>
+  </button>
 </div>
 
 <style>
   .apgo-gwp-buybar-hint {
     position: fixed;
+    /* Center of viewport, both axes — guaranteed visible no matter
+       what modal panel is on screen below. */
+    top: 50%;
     left: 50%;
-    /* Floats near the top so it's always visible — when the
-       confirm-modal slides up it covers the bottom 88vh of the
-       viewport, so anchoring to bottom would hide the hint. */
-    top: calc(env(safe-area-inset-top, 0px) + 16px);
-    transform: translate(-50%, -8px);
+    transform: translate(-50%, calc(-50% + 12px));
     z-index: 100200; /* above confirm-modal (z 100100) + buybar (z 100000) */
-    max-width: min(92vw, 360px);
-    padding: 10px 14px;
-    border-radius: 12px;
-    background: rgba(20, 20, 20, 0.78);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(240, 132, 24, 0.45);
-    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
+    max-width: min(86vw, 340px);
+    padding: 14px 38px 14px 16px;
+    border-radius: 14px;
+    background: rgba(20, 20, 20, 0.82);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(240, 132, 24, 0.5);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55), 0 0 24px rgba(240, 132, 24, 0.12);
     color: #fff;
     font-family: 'Poppins', 'Microsoft JhengHei', Arial, sans-serif;
-    font-size: 12.5px;
-    line-height: 1.4;
+    font-size: 13px;
+    line-height: 1.45;
     display: flex;
     align-items: flex-start;
     gap: 10px;
     opacity: 0;
     pointer-events: none;
-    transition: opacity .28s ease, transform .28s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: opacity .28s ease, transform .35s cubic-bezier(0.22, 1, 0.36, 1);
   }
   .apgo-gwp-buybar-hint[hidden] { display: none !important; }
   .apgo-gwp-buybar-hint.is-visible {
     opacity: 1;
-    transform: translate(-50%, 0);
-  }
-  /* When confirm-modal is open, nudge the hint down a little so it
-     sits visually inside the dim-cover area, not crowding the header */
-  body:has(.apgo-cc-confirm-modal.is-open) .apgo-gwp-buybar-hint {
-    top: calc(env(safe-area-inset-top, 0px) + 24px);
+    transform: translate(-50%, -50%);
+    pointer-events: auto;
   }
   .apgo-gwp-buybar-hint__icon {
-    font-size: 18px;
+    font-size: 20px;
     line-height: 1;
     flex: 0 0 auto;
     margin-top: 1px;
@@ -68,14 +72,36 @@
     color: #ff9a3c;
     font-weight: 700;
     display: block;
-    margin-bottom: 1px;
-    font-size: 12px;
+    margin-bottom: 2px;
+    font-size: 12.5px;
     letter-spacing: 0.02em;
   }
   .apgo-gwp-buybar-hint__text em {
     font-style: normal;
     color: #ff9a3c;
     font-weight: 700;
+  }
+  /* Close X — top-right inside the toast */
+  .apgo-gwp-buybar-hint__close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border: 0;
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.85);
+    border-radius: 999px;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: background .15s ease, color .15s ease, transform .15s ease;
+  }
+  .apgo-gwp-buybar-hint__close:hover {
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
+    transform: scale(1.08);
   }
   /* Mobile-only — hide on desktop where the buybar itself is hidden */
   @media (min-width: 750px) {
@@ -88,58 +114,57 @@
   'use strict';
   var hint = document.querySelector('[data-apgo-gwp-buybar-hint]');
   if (!hint) return;
+  var closeBtn = hint.querySelector('[data-apgo-gwp-buybar-hint-close]');
 
-  /* Once per page-session — set when shown, cleared on full unload so
-     the next page visit sees it again. We deliberately use
-     sessionStorage so reloading the same tab won't re-trigger. */
-  var SESSION_KEY = 'apgo_gwp_buybar_hint_shown';
-  function alreadyShown() {
-    try { return sessionStorage.getItem(SESSION_KEY) === '1'; } catch (_) { return false; }
-  }
-  function markShown() {
-    try { sessionStorage.setItem(SESSION_KEY, '1'); } catch (_) {}
-  }
-
-  var hideTimer = null;
   function show() {
-    if (alreadyShown()) return;
     if (hint.hasAttribute('hidden')) hint.removeAttribute('hidden');
-    /* Force reflow so the transition kicks in */
+    /* Force reflow so the transition kicks in even on rapid re-show */
     void hint.offsetHeight;
     hint.classList.add('is-visible');
-    markShown();
-    clearTimeout(hideTimer);
-    hideTimer = setTimeout(hide, 5200);
   }
   function hide() {
     hint.classList.remove('is-visible');
-    clearTimeout(hideTimer);
+    /* Hide after transition so it can't intercept taps */
     setTimeout(function () {
-      hint.setAttribute('hidden', '');
-    }, 320);
+      if (!hint.classList.contains('is-visible')) {
+        hint.setAttribute('hidden', '');
+      }
+    }, 350);
   }
 
-  /* Watch every "drawer/modal" element that signals the visitor is
-     interacting with the add-to-cart flow:
-       - .apgo-cc-buybar         — the cart sheet that opens from chip
-       - .apgo-cc-confirm-modal  — the purchase-confirm modal (the one
-                                   with Standard / Quantity / Add to cart)
-       - .apgo-pdp-variant-shell — the variant picker shell (if used)
-     Each toggles `.is-open` on itself; we MutationObserver each one. */
+  if (closeBtn) closeBtn.addEventListener('click', hide);
+
+  /* Watch every "drawer/modal" container that signals the visitor is
+     in the add-to-cart flow. Each toggles `.is-open` on itself. */
   var SELECTORS = [
     '.apgo-cc-buybar',
     '.apgo-cc-confirm-modal',
     '.apgo-pdp-variant-shell'
   ];
 
+  /* If ANY watched container is currently open, show; else hide. This
+     way the hint also auto-disappears when the visitor closes the
+     modal without explicitly dismissing the toast. */
+  function syncToOpenState() {
+    var anyOpen = false;
+    for (var i = 0; i < SELECTORS.length; i++) {
+      var nodes = document.querySelectorAll(SELECTORS[i]);
+      for (var j = 0; j < nodes.length; j++) {
+        if (nodes[j].classList.contains('is-open')) { anyOpen = true; break; }
+      }
+      if (anyOpen) break;
+    }
+    if (anyOpen) show();
+    else hide();
+  }
+
   function attach(el) {
     if (!el || el.__apgoGwpHintWatched) return;
     el.__apgoGwpHintWatched = true;
-    if (el.classList.contains('is-open')) show();
     var observer = new MutationObserver(function (mutations) {
       for (var i = 0; i < mutations.length; i++) {
-        if (mutations[i].attributeName === 'class' && el.classList.contains('is-open')) {
-          show();
+        if (mutations[i].attributeName === 'class') {
+          syncToOpenState();
           break;
         }
       }
@@ -156,15 +181,14 @@
 
   function start() {
     scan();
-    /* Some elements mount after DOMContentLoaded (Shopify section render
-       races) — keep polling for the first few seconds. */
+    syncToOpenState();
+    /* Catch elements that mount after initial DOM ready */
     var tries = 0;
     var poll = setInterval(function () {
       scan();
       tries++;
-      if (tries > 20) clearInterval(poll); /* 20 * 300ms = 6s */
+      if (tries > 20) clearInterval(poll); /* ~6s of catch-up */
     }, 300);
-    /* Also catch later dynamic mounts via a body-level observer */
     new MutationObserver(scan).observe(document.body, { childList: true, subtree: true });
   }
 
