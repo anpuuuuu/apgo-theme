@@ -6038,11 +6038,56 @@ window.apgoAddToCart = async function(event) {
 };
 
 // 立即購買
-window.apgoBuyNow = async function() {
-  const button = event.target;
+// 立即购买
+window.apgoBuyNow = async function(event) {
+  const button = event ? event.target : document.querySelector('.apgo-modal-btn-primary');
+  
+  if (!button || button.disabled) {
+    return;
+  }
+
   const originalText = button.innerHTML;
-  button.innerHTML = '<span class="apgo-loading-spinner"></span> ' + '{{ 'product.processing' | t }}';
+
+  button.innerHTML = '<span class="apgo-loading-spinner"></span> ' + '{{ "product.processing" | t }}';
   button.disabled = true;
+
+  try {
+
+    // 加入购物车
+    await fetch('/cart/add.js', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        id: currentVariantId,
+        quantity: currentQuantity
+      })
+    });
+
+    // 获取最新购物车（让 free gift app 有时间处理）
+    await fetch('/cart.js');
+
+    // 手机震动反馈
+    if (navigator.vibrate) {
+      navigator.vibrate([50, 30, 50]);
+    }
+
+    // 稍微等待一下再 checkout
+    setTimeout(() => {
+      window.location.href = '/checkout';
+    }, 500);
+
+  } catch (error) {
+
+    console.error('Buy Now Error:', error);
+
+    button.innerHTML = originalText;
+    button.disabled = false;
+
+    alert('{{ "products.product.add_to_cart_error" | t }}');
+  }
+};
 
   try {
     await fetch('/cart/add.js', {
