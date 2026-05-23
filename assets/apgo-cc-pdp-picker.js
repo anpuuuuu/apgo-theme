@@ -600,9 +600,17 @@
         }
         /* Gift-with-purchase: auto-add the configured free gift Y if X
            (the just-added product) has one mapped. Re-dispatches cart
-           events after settling so the badge + cart UI reflect both X+Y. */
-        try { reconcileFreeGifts(); } catch (_) {}
-        return cart;
+           events after settling so the badge + cart UI reflect both X+Y.
+           IMPORTANT: chain the promise so Buy-now waits for Y to be added
+           before navigating to /cart. Previously we fire-and-forgot,
+           which meant the /cart redirect could race ahead of the gift
+           POST and the customer would land in checkout without Y. */
+        var giftPromise;
+        try { giftPromise = reconcileFreeGifts(); } catch (_) {}
+        if (!giftPromise || typeof giftPromise.then !== 'function') {
+          giftPromise = Promise.resolve();
+        }
+        return giftPromise.then(function () { return cart; });
       })
       .catch(function (err) {
         console.error('[apgo-cc-pdp] add failed:', err);
