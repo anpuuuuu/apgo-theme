@@ -2,9 +2,17 @@
   APGO Collection promo banner — a click-through card that surfaces the
   current GWP promo at the top of /collections/* pages.
 
+  Layout:
+    ┌──────────┬───────────────────────────────────────────┐
+    │          │  🎁 LIMITED DEAL          [ View deal → ] │
+    │  IMG     │  Grab this deal now                       │
+    │ (flush)  │  and receive an additional FREE 300ml...  │
+    │          │  Ends in  23:59:59                        │
+    └──────────┴───────────────────────────────────────────┘
+
   Renders only when the configured promo product still exists. Clicking
-  the card opens the product page. Edit copy / handle in the assign
-  block below.
+  the card opens the product page. Countdown ticks down to 23:59 MY
+  (GMT+8) and rolls over to the next day automatically.
 {%- enddoc -%}
 
 {%- comment -%} ============ EDIT THESE TO CHANGE THE PROMO ============ {%- endcomment -%}
@@ -13,11 +21,18 @@
 {%- assign promo_headline  = 'Grab this deal now' -%}
 {%- assign promo_body      = 'and receive an additional FREE 300ml shampoo from us!' -%}
 {%- assign promo_cta       = 'View deal' -%}
+{%- assign promo_timer_label = 'Ends in' -%}
+{%- assign promo_daily_end = '23:59' -%}
 {%- comment -%} ========================================================== {%- endcomment -%}
 
 {%- assign promo_product = all_products[promo_handle] -%}
 {%- if promo_product != blank and promo_product.handle != blank -%}
-  <a class="apgo-promo-banner" href="{{ promo_product.url }}" aria-label="{{ promo_headline | escape }} — {{ promo_body | escape }}">
+  <a class="apgo-promo-banner"
+     href="{{ promo_product.url }}"
+     aria-label="{{ promo_headline | escape }} — {{ promo_body | escape }}"
+     data-apgo-promo-banner
+     data-daily-end="{{ promo_daily_end }}"
+     data-tz-offset="+08:00">
     {%- if promo_product.featured_image != blank -%}
       <span class="apgo-promo-banner__image-wrap">
         <img class="apgo-promo-banner__image"
@@ -27,15 +42,21 @@
       </span>
     {%- endif -%}
     <span class="apgo-promo-banner__body">
-      <span class="apgo-promo-banner__badge">{{ promo_badge }}</span>
+      <span class="apgo-promo-banner__top">
+        <span class="apgo-promo-banner__badge">{{ promo_badge }}</span>
+        <span class="apgo-promo-banner__cta">
+          {{ promo_cta }}
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/>
+          </svg>
+        </span>
+      </span>
       <span class="apgo-promo-banner__headline">{{ promo_headline }}</span>
       <span class="apgo-promo-banner__sub">{{ promo_body }}</span>
-    </span>
-    <span class="apgo-promo-banner__cta">
-      {{ promo_cta }}
-      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/>
-      </svg>
+      <span class="apgo-promo-banner__timer-row">
+        <span class="apgo-promo-banner__timer-label">{{ promo_timer_label }}</span>
+        <span class="apgo-promo-banner__timer" data-apgo-promo-timer>--:--:--</span>
+      </span>
     </span>
   </a>
 
@@ -46,43 +67,36 @@
     }
     .apgo-promo-banner {
       display: flex;
-      align-items: center;
-      gap: 14px;
+      align-items: stretch;
+      gap: 0;
       max-width: 1200px;
       margin: 16px auto 24px;
-      padding: 12px 14px;
+      padding: 0;
       border-radius: 16px;
-      background:
-        radial-gradient(120% 200% at 0% 0%, rgba(240, 132, 24, 0.18) 0%, rgba(240, 132, 24, 0) 55%),
-        linear-gradient(135deg, #181818 0%, #0c0c0c 100%);
-      border: 1px solid rgba(240, 132, 24, 0.32);
-      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4), 0 0 32px rgba(240, 132, 24, 0.08);
+      /* Toned-down background — single dark gradient, no orange radial wash */
+      background: linear-gradient(135deg, #1a1a1a 0%, #0c0c0c 100%);
+      /* Subtler hairline border — less orange saturation */
+      border: 1px solid rgba(240, 132, 24, 0.18);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.38);
       color: #fff;
       text-decoration: none;
       position: relative;
       overflow: hidden;
       transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
     }
-    .apgo-promo-banner::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, #f08418, #ff9a3c);
-    }
     .apgo-promo-banner:hover {
       transform: translateY(-2px);
-      border-color: rgba(240, 132, 24, 0.55);
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55), 0 0 44px rgba(240, 132, 24, 0.18);
+      border-color: rgba(240, 132, 24, 0.32);
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.5);
     }
+    /* Image flush to the left edge of the card */
     .apgo-promo-banner__image-wrap {
       flex: 0 0 auto;
-      width: 72px;
-      height: 72px;
-      border-radius: 12px;
-      overflow: hidden;
+      width: 96px;
+      align-self: stretch;
       background: #0a0a0a;
-      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+      overflow: hidden;
+      position: relative;
     }
     .apgo-promo-banner__image {
       width: 100%;
@@ -93,22 +107,31 @@
     .apgo-promo-banner__body {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 6px;
       flex: 1 1 auto;
       min-width: 0;
+      padding: 12px 14px;
     }
+    .apgo-promo-banner__top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      width: 100%;
+    }
+    /* Toned-down badge — outline style, no big orange fill */
     .apgo-promo-banner__badge {
       display: inline-block;
-      align-self: flex-start;
-      padding: 3px 10px;
+      padding: 3px 9px;
       border-radius: 999px;
-      background: linear-gradient(45deg, #f08418, #ff9a3c);
-      color: #1a1a1a;
+      background: rgba(240, 132, 24, 0.12);
+      color: #ff9a3c;
+      border: 1px solid rgba(240, 132, 24, 0.45);
       font-size: 10px;
-      font-weight: 800;
+      font-weight: 700;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      box-shadow: 0 2px 8px rgba(240, 132, 24, 0.35);
+      white-space: nowrap;
     }
     .apgo-promo-banner__headline {
       font-size: 15px;
@@ -121,19 +144,40 @@
       color: rgba(255, 255, 255, 0.7);
       line-height: 1.4;
     }
+    .apgo-promo-banner__timer-row {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-top: 2px;
+    }
+    .apgo-promo-banner__timer-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.5);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    .apgo-promo-banner__timer {
+      font-size: 13px;
+      font-weight: 800;
+      color: #ff9a3c;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.04em;
+    }
+    /* CTA — the one remaining orange accent */
     .apgo-promo-banner__cta {
       flex: 0 0 auto;
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 8px 14px;
+      padding: 7px 13px;
       border-radius: 999px;
       background: linear-gradient(45deg, #f08418, #ff9a3c);
       color: #fff;
       font-size: 12.5px;
       font-weight: 700;
       letter-spacing: 0.02em;
-      box-shadow: 0 4px 14px rgba(240, 132, 24, 0.4);
+      box-shadow: 0 3px 10px rgba(240, 132, 24, 0.32);
       white-space: nowrap;
     }
     .apgo-promo-banner__cta svg { transition: transform .2s ease; }
@@ -141,28 +185,72 @@
 
     @media (max-width: 749px) {
       .apgo-promo-banner {
-        gap: 10px;
-        padding: 10px 12px;
         margin: 12px auto 16px;
         border-radius: 14px;
       }
-      .apgo-promo-banner__image-wrap { width: 56px; height: 56px; }
+      .apgo-promo-banner__image-wrap { width: 84px; }
+      .apgo-promo-banner__body { padding: 10px 12px; gap: 5px; }
       .apgo-promo-banner__headline { font-size: 13px; }
       .apgo-promo-banner__sub { font-size: 11.5px; }
-      .apgo-promo-banner__badge { font-size: 9px; padding: 2px 8px; }
+      .apgo-promo-banner__badge { font-size: 9px; padding: 2px 7px; }
       .apgo-promo-banner__cta {
-        padding: 7px 10px;
+        padding: 6px 10px;
         font-size: 11px;
       }
-      /* Hide CTA label text on very narrow phones — keep only the arrow icon */
+      .apgo-promo-banner__timer { font-size: 12px; }
+      .apgo-promo-banner__timer-label { font-size: 9px; }
+      /* Very narrow phones — drop CTA label, keep only the arrow icon */
       @media (max-width: 380px) {
         .apgo-promo-banner__cta {
           font-size: 0;
-          padding: 8px 10px;
+          padding: 7px 9px;
           gap: 0;
         }
         .apgo-promo-banner__cta svg { width: 14px; height: 14px; }
       }
     }
   </style>
+
+  <script>
+  (function () {
+    'use strict';
+    var root = document.querySelector('[data-apgo-promo-banner]');
+    if (!root) return;
+    var timerEl = root.querySelector('[data-apgo-promo-timer]');
+    if (!timerEl) return;
+
+    var dailyEnd = root.getAttribute('data-daily-end') || '23:59';
+    var tz       = root.getAttribute('data-tz-offset') || '+08:00';
+
+    function myTodayStr() {
+      var now = new Date(Date.now() + 8 * 3600 * 1000);
+      return now.getUTCFullYear() + '-' +
+             String(now.getUTCMonth() + 1).padStart(2, '0') + '-' +
+             String(now.getUTCDate()).padStart(2, '0');
+    }
+    function endOfDayMs(day) {
+      var iso = day + 'T' + dailyEnd + ':00' + tz;
+      var t = Date.parse(iso);
+      if (t <= Date.now()) t += 24 * 3600 * 1000;
+      return t;
+    }
+    var today = myTodayStr();
+    var endMs = endOfDayMs(today);
+    function pad(n) { return n < 10 ? '0' + n : '' + n; }
+    function tick() {
+      var diff = endMs - Date.now();
+      if (diff <= 0) {
+        today = myTodayStr();
+        endMs = endOfDayMs(today);
+        diff = endMs - Date.now();
+      }
+      var h = Math.floor(diff / 3600000);
+      var m = Math.floor((diff % 3600000) / 60000);
+      var s = Math.floor((diff % 60000) / 1000);
+      timerEl.textContent = pad(h) + ':' + pad(m) + ':' + pad(s);
+    }
+    tick();
+    setInterval(tick, 1000);
+  })();
+  </script>
 {%- endif -%}
