@@ -660,14 +660,24 @@
               else details.appendChild(sub);
             }
             /* When user clicks the remove (trash) button, record the
-               dismiss so the gift doesn't re-add on next reconcile. */
+               dismiss so the gift doesn't re-add on next reconcile.
+               IMPORTANT: must use sessionStorage to match the global
+               reconciler (assets/apgo-gift-reconciler.js). Previously
+               used localStorage which the reconciler never read → the
+               dismiss flag never "stuck" and Y immediately came back. */
             var removeBtn = row.querySelector('.cart-items__remove');
             if (removeBtn && !removeBtn.dataset.apgoGiftDismissBound) {
               removeBtn.dataset.apgoGiftDismissBound = '1';
               removeBtn.addEventListener('click', function () {
                 var xId = item.properties._gift_for;
                 if (xId) {
-                  try { localStorage.setItem('apgo_gift_dismissed_' + xId, '1'); } catch (_) {}
+                  try { sessionStorage.setItem('apgo_gift_dismissed_' + xId, '1'); } catch (_) {}
+                  /* Also call the exposed helper if available — it goes
+                     through the same sessionStorage path but stays robust
+                     if the storage key prefix ever changes. */
+                  if (typeof window.apgoDismissGift === 'function') {
+                    try { window.apgoDismissGift(xId); } catch (_) {}
+                  }
                 }
               }, true);
             }
