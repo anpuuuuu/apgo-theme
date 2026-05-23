@@ -724,12 +724,46 @@
   document.addEventListener('DOMContentLoaded', function () {
     pruneStaleGifts();
     decorateGifts();
+    installCartMutationObserver();
   });
+  /* event-driven retries — useful when no DOM mutation happens but cart
+     properties changed (e.g. _gift_for set after add) */
   document.addEventListener('cart:update', function () { setTimeout(decorateGifts, 50); });
   document.addEventListener('cart:updated', function () { setTimeout(decorateGifts, 50); });
   document.addEventListener('cart:refresh', function () { setTimeout(decorateGifts, 50); });
   /* In case cart-update happens before this script runs */
-  if (document.readyState !== 'loading') decorateGifts();
+  if (document.readyState !== 'loading') {
+    decorateGifts();
+    installCartMutationObserver();
+  }
+
+  /*
+    Shopify Horizon's cart-items component re-renders the entire <table>
+    HTML on every quantity change (server-rendered section refresh).
+    That blows away the FREE GIFT badge / locked-qty styling we added.
+    A 50ms setTimeout after cart:update used to race the re-render and
+    lose half the time.
+
+    MutationObserver watches the cart-items wrapper for any descendant
+    change. We debounce 80ms after the last mutation (Shopify swaps a
+    bunch of nodes at once → batched) and re-decorate. This catches
+    EVERY re-render reliably, regardless of event timing.
+  */
+  var cartMutationObserver = null;
+  function installCartMutationObserver() {
+    if (cartMutationObserver) return; /* already installed */
+    var target = document.querySelector('.cart-items__wrapper, .cart-items, cart-items-component, .cart-form');
+    if (!target) return;
+    var pending = null;
+    cartMutationObserver = new MutationObserver(function () {
+      if (pending) clearTimeout(pending);
+      pending = setTimeout(function () {
+        pending = null;
+        decorateGifts();
+      }, 80);
+    });
+    cartMutationObserver.observe(target, { childList: true, subtree: true });
+  }
 })();
 </script>
 
