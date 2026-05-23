@@ -89,6 +89,15 @@
       data-product-transition="{{ settings.transition_to_main_product }}"
       data-template="{{ template }}"
     >
+      {%- comment -%}
+        GWP promo banner — also show inside the Hari Raya Haji Bundle PDP
+        so visitors on the product page see the same countdown / deal
+        framing. The snippet itself guards on `all_products[promo_handle]`
+        so it no-ops if the product is removed.
+      {%- endcomment -%}
+      {% if template.name == 'product' and product.handle == 'atomic-glaze-coating-hari-raya-haji-bundle' %}
+        {% render 'apgo-collection-promo-banner' %}
+      {% endif %}
       {{ content_for_layout }}
     </main>
 
