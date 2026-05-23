@@ -1,0 +1,144 @@
+{%- doc -%}
+  Small semi-transparent toast that appears on mobile when the bottom
+  buybar / select-option sheet opens on the Hari Raya Haji Bundle PDP.
+  Tells the user "✅ You're on the right page — clicking Add to cart
+  will automatically include the FREE gift" so they don't worry that
+  they have to do anything extra.
+
+  Mobile only (≤749px). Mounts a MutationObserver on .apgo-cc-buybar
+  watching for the `.is-open` class, then shows once per page-session
+  (sessionStorage flag) so it doesn't nag.
+{%- enddoc -%}
+
+<div class="apgo-gwp-buybar-hint" data-apgo-gwp-buybar-hint hidden role="status" aria-live="polite">
+  <span class="apgo-gwp-buybar-hint__icon" aria-hidden="true">🎁</span>
+  <span class="apgo-gwp-buybar-hint__text">
+    <strong>You're on the right page.</strong>
+    Click <em>Add to cart</em> and the FREE 300ml shampoo is added automatically.
+  </span>
+</div>
+
+<style>
+  .apgo-gwp-buybar-hint {
+    position: fixed;
+    left: 50%;
+    /* Sits above the buybar (~64-80px tall on mobile) — clearly visible */
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 96px);
+    transform: translate(-50%, 8px);
+    z-index: 100050; /* above buybar (z 100000) */
+    max-width: min(92vw, 360px);
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: rgba(20, 20, 20, 0.78);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(240, 132, 24, 0.45);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
+    color: #fff;
+    font-family: 'Poppins', 'Microsoft JhengHei', Arial, sans-serif;
+    font-size: 12.5px;
+    line-height: 1.4;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .28s ease, transform .28s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .apgo-gwp-buybar-hint[hidden] { display: none !important; }
+  .apgo-gwp-buybar-hint.is-visible {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  .apgo-gwp-buybar-hint__icon {
+    font-size: 18px;
+    line-height: 1;
+    flex: 0 0 auto;
+    margin-top: 1px;
+  }
+  .apgo-gwp-buybar-hint__text { flex: 1 1 auto; }
+  .apgo-gwp-buybar-hint__text strong {
+    color: #ff9a3c;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 1px;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+  }
+  .apgo-gwp-buybar-hint__text em {
+    font-style: normal;
+    color: #ff9a3c;
+    font-weight: 700;
+  }
+  /* Mobile-only — hide on desktop where the buybar itself is hidden */
+  @media (min-width: 750px) {
+    .apgo-gwp-buybar-hint { display: none !important; }
+  }
+</style>
+
+<script>
+(function () {
+  'use strict';
+  var hint = document.querySelector('[data-apgo-gwp-buybar-hint]');
+  if (!hint) return;
+
+  /* Once per page-session — set when shown, cleared on full unload so
+     the next page visit sees it again. We deliberately use
+     sessionStorage so reloading the same tab won't re-trigger. */
+  var SESSION_KEY = 'apgo_gwp_buybar_hint_shown';
+  function alreadyShown() {
+    try { return sessionStorage.getItem(SESSION_KEY) === '1'; } catch (_) { return false; }
+  }
+  function markShown() {
+    try { sessionStorage.setItem(SESSION_KEY, '1'); } catch (_) {}
+  }
+
+  var hideTimer = null;
+  function show() {
+    if (alreadyShown()) return;
+    if (hint.hasAttribute('hidden')) hint.removeAttribute('hidden');
+    /* Force reflow so the transition kicks in */
+    void hint.offsetHeight;
+    hint.classList.add('is-visible');
+    markShown();
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(hide, 5200);
+  }
+  function hide() {
+    hint.classList.remove('is-visible');
+    clearTimeout(hideTimer);
+    setTimeout(function () {
+      hint.setAttribute('hidden', '');
+    }, 320);
+  }
+
+  function watchBuybar() {
+    var bar = document.querySelector('.apgo-cc-buybar');
+    if (!bar) {
+      /* Buybar might mount slightly after — retry briefly */
+      setTimeout(watchBuybar, 400);
+      return;
+    }
+    /* If user already opened it (e.g. via hash / direct interaction) when we
+       initialized, fire immediately. */
+    if (bar.classList.contains('is-open')) show();
+
+    var observer = new MutationObserver(function (mutations) {
+      for (var i = 0; i < mutations.length; i++) {
+        if (mutations[i].attributeName === 'class') {
+          if (bar.classList.contains('is-open')) {
+            show();
+          }
+        }
+      }
+    });
+    observer.observe(bar, { attributes: true, attributeFilter: ['class'] });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', watchBuybar);
+  } else {
+    watchBuybar();
+  }
+})();
+</script>

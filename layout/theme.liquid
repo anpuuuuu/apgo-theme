@@ -196,6 +196,15 @@
       {% render 'apgo-daily-gift-popup' %}
     {% endif %}
 
+    {%- comment -%}
+      GWP buybar hint — small semi-transparent toast that pops above the
+      mobile buybar/select-option sheet on the bundle PDP only. Reassures
+      the customer that hitting Add to cart will auto-include the gift.
+    {%- endcomment -%}
+    {% if template.name == 'product' and product.handle == 'atomic-glaze-coating-hari-raya-haji-bundle' %}
+      {% render 'apgo-gwp-buybar-hint' %}
+    {% endif %}
+
     {% # theme-check-disable ParserBlockingScript %}
     <script src="{{ 'critical.js' | asset_url }}"></script>
     {% # theme-check-enable ParserBlockingScript %}
