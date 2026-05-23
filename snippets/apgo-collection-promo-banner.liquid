@@ -16,7 +16,7 @@
 
 {%- comment -%} ============ EDIT THESE TO CHANGE THE PROMO ============ {%- endcomment -%}
 {%- assign promo_handle    = 'atomic-glaze-coating-hari-raya-haji-bundle' -%}
-{%- assign promo_headline  = 'Grab this deal now' -%}
+{%- assign promo_headline  = 'GRAB THIS DEAL NOW!' -%}
 {%- assign promo_body      = 'and receive an additional FREE 300ml shampoo from us!' -%}
 {%- assign promo_cta       = 'View deal' -%}
 {%- assign promo_timer_label = 'Ends in' -%}
@@ -40,20 +40,20 @@
       </span>
     {%- endif -%}
     <span class="apgo-promo-banner__body">
-      <span class="apgo-promo-banner__top-row">
-        <span class="apgo-promo-banner__headline">{{ promo_headline }}</span>
-        <span class="apgo-promo-banner__cta">
-          {{ promo_cta }}
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/>
-          </svg>
-        </span>
-      </span>
+      <span class="apgo-promo-banner__headline">{{ promo_headline }}</span>
       <span class="apgo-promo-banner__sub">{{ promo_body }}</span>
       <span class="apgo-promo-banner__action-row">
         <span class="apgo-promo-banner__pulse-dot" aria-hidden="true"></span>
         <span class="apgo-promo-banner__timer-label">{{ promo_timer_label }}</span>
         <span class="apgo-promo-banner__timer" data-apgo-promo-timer>--:--:--</span>
+      </span>
+    </span>
+    <span class="apgo-promo-banner__cta-col">
+      <span class="apgo-promo-banner__cta">
+        {{ promo_cta }}
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/>
+        </svg>
       </span>
     </span>
   </a>
@@ -129,19 +129,21 @@
       font-weight: 800;
       color: #fff;
       line-height: 1.25;
+      letter-spacing: 0.02em;
     }
     .apgo-promo-banner__sub {
       font-size: 12.5px;
       color: rgba(255, 255, 255, 0.7);
       line-height: 1.4;
     }
-    /* Top row — headline left, CTA right */
-    .apgo-promo-banner__top-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      width: 100%;
+    /* Right CTA column — its own grid cell, vertically centered */
+    .apgo-promo-banner__cta-col {
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      padding: 12px 16px;
+      border-left: 1px solid rgba(255, 255, 255, 0.06);
+      background: linear-gradient(180deg, rgba(240, 132, 24, 0.04), rgba(240, 132, 24, 0));
     }
     /* Bottom action row — red dot + ENDS IN + orange timer */
     .apgo-promo-banner__action-row {
@@ -209,6 +211,7 @@
         border-radius: 14px;
       }
       .apgo-promo-banner__image-wrap { width: 92px; }
+      .apgo-promo-banner__cta-col { padding: 10px 12px; }
       .apgo-promo-banner__body { padding: 10px 12px; gap: 3px; }
       .apgo-promo-banner__headline { font-size: 13px; }
       .apgo-promo-banner__sub { font-size: 11.5px; }
