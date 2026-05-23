@@ -22,10 +22,12 @@
   .apgo-gwp-buybar-hint {
     position: fixed;
     left: 50%;
-    /* Sits above the buybar (~64-80px tall on mobile) — clearly visible */
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 96px);
-    transform: translate(-50%, 8px);
-    z-index: 100050; /* above buybar (z 100000) */
+    /* Floats near the top so it's always visible — when the
+       confirm-modal slides up it covers the bottom 88vh of the
+       viewport, so anchoring to bottom would hide the hint. */
+    top: calc(env(safe-area-inset-top, 0px) + 16px);
+    transform: translate(-50%, -8px);
+    z-index: 100200; /* above confirm-modal (z 100100) + buybar (z 100000) */
     max-width: min(92vw, 360px);
     padding: 10px 14px;
     border-radius: 12px;
@@ -49,6 +51,11 @@
   .apgo-gwp-buybar-hint.is-visible {
     opacity: 1;
     transform: translate(-50%, 0);
+  }
+  /* When confirm-modal is open, nudge the hint down a little so it
+     sits visually inside the dim-cover area, not crowding the header */
+  body:has(.apgo-cc-confirm-modal.is-open) .apgo-gwp-buybar-hint {
+    top: calc(env(safe-area-inset-top, 0px) + 24px);
   }
   .apgo-gwp-buybar-hint__icon {
     font-size: 18px;
@@ -112,33 +119,59 @@
     }, 320);
   }
 
-  function watchBuybar() {
-    var bar = document.querySelector('.apgo-cc-buybar');
-    if (!bar) {
-      /* Buybar might mount slightly after — retry briefly */
-      setTimeout(watchBuybar, 400);
-      return;
-    }
-    /* If user already opened it (e.g. via hash / direct interaction) when we
-       initialized, fire immediately. */
-    if (bar.classList.contains('is-open')) show();
+  /* Watch every "drawer/modal" element that signals the visitor is
+     interacting with the add-to-cart flow:
+       - .apgo-cc-buybar         — the cart sheet that opens from chip
+       - .apgo-cc-confirm-modal  — the purchase-confirm modal (the one
+                                   with Standard / Quantity / Add to cart)
+       - .apgo-pdp-variant-shell — the variant picker shell (if used)
+     Each toggles `.is-open` on itself; we MutationObserver each one. */
+  var SELECTORS = [
+    '.apgo-cc-buybar',
+    '.apgo-cc-confirm-modal',
+    '.apgo-pdp-variant-shell'
+  ];
 
+  function attach(el) {
+    if (!el || el.__apgoGwpHintWatched) return;
+    el.__apgoGwpHintWatched = true;
+    if (el.classList.contains('is-open')) show();
     var observer = new MutationObserver(function (mutations) {
       for (var i = 0; i < mutations.length; i++) {
-        if (mutations[i].attributeName === 'class') {
-          if (bar.classList.contains('is-open')) {
-            show();
-          }
+        if (mutations[i].attributeName === 'class' && el.classList.contains('is-open')) {
+          show();
+          break;
         }
       }
     });
-    observer.observe(bar, { attributes: true, attributeFilter: ['class'] });
+    observer.observe(el, { attributes: true, attributeFilter: ['class'] });
+  }
+
+  function scan() {
+    SELECTORS.forEach(function (sel) {
+      var nodes = document.querySelectorAll(sel);
+      for (var i = 0; i < nodes.length; i++) attach(nodes[i]);
+    });
+  }
+
+  function start() {
+    scan();
+    /* Some elements mount after DOMContentLoaded (Shopify section render
+       races) — keep polling for the first few seconds. */
+    var tries = 0;
+    var poll = setInterval(function () {
+      scan();
+      tries++;
+      if (tries > 20) clearInterval(poll); /* 20 * 300ms = 6s */
+    }, 300);
+    /* Also catch later dynamic mounts via a body-level observer */
+    new MutationObserver(scan).observe(document.body, { childList: true, subtree: true });
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', watchBuybar);
+    document.addEventListener('DOMContentLoaded', start);
   } else {
-    watchBuybar();
+    start();
   }
 })();
 </script>
