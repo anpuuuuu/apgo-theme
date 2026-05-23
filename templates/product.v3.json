@@ -20,20 +20,12 @@
         "show_buy_now": true,
         "show_shipping": true,
         "shipping_label": "2–3 business days",
+        "default_variant_label": "Standard",
         "deal_label": "Limited time deal",
-        "deal_end_date": "",
+        "deal_end_weekday": "6",
         "deal_end_time": "",
-        "deal_end_weekday": "0",
-        "deal_end_days_offset": "0",
         "deal_loading_text": "Ends soon",
-        "deal_aria_label": "Deal countdown",
-        "show_promo_pills": false,
-        "promo_pill_1_text": "",
-        "promo_pill_1_color": "orange",
-        "promo_pill_2_text": "",
-        "promo_pill_2_color": "green",
-        "promo_pill_3_text": "",
-        "promo_pill_3_color": "blue"
+        "deal_aria_label": "Deal countdown"
       }
     }
   },
