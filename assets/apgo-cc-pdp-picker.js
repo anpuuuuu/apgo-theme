@@ -526,11 +526,52 @@
     var orig = btn ? btn.textContent : '';
     if (btn) { btn.disabled = true; btn.textContent = 'Adding…'; }
 
-    return fetch('/cart/add.js', {
-      method: 'POST',
-      headers: { 'Accept': 'application/json' },
-      body: fd
-    })
+    /*
+      Atomic GWP: if this X is mapped to a free gift Y, submit BOTH in a
+      single POST /cart/add.js with `items: []`. Eliminates the ~500ms
+      window where the cart UI shows only X before the reconciler post-
+      hook adds Y. Shopify treats the multi-item add as one transaction:
+      either both add or both fail (e.g. Y sold out).
+      Falls back to standard FormData submit when no gift mapped.
+    */
+    var xId = fd.get('id');
+    var xQty = parseInt(fd.get('quantity') || '1', 10) || 1;
+    var giftId = window.APGO_GIFT_MAP && window.APGO_GIFT_MAP[xId];
+    var addedGiftAtomically = !!giftId;
+
+    var fetchOptions;
+    if (giftId) {
+      var xItem = { id: parseInt(xId, 10), quantity: xQty };
+      /* Forward any line-item properties from the form onto X */
+      fd.forEach(function (val, key) {
+        if (key.indexOf('properties[') === 0 && key.charAt(key.length - 1) === ']') {
+          xItem.properties = xItem.properties || {};
+          xItem.properties[key.slice(11, -1)] = val;
+        }
+      });
+      var yItem = {
+        id: parseInt(giftId, 10),
+        quantity: xQty,
+        properties: {
+          _free_gift: 'true',
+          _gift_for: String(xId),
+          _gift_from_product: (window.APGO_GIFT_PRODUCT_TITLES || {})[xId] || ''
+        }
+      };
+      fetchOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ items: [xItem, yItem] })
+      };
+    } else {
+      fetchOptions = {
+        method: 'POST',
+        headers: { 'Accept': 'application/json' },
+        body: fd
+      };
+    }
+
+    return fetch('/cart/add.js', fetchOptions)
       .then(function (r) {
         return r.json().then(function (data) {
           if (!r.ok) return Promise.reject(data);
@@ -612,13 +653,14 @@
           var name = (titleEl && titleEl.textContent.trim()) || 'Item';
           showAddedToCartToast(name, 'Added to cart');
         }
-        /* Gift-with-purchase: auto-add the configured free gift Y if X
-           (the just-added product) has one mapped. Re-dispatches cart
-           events after settling so the badge + cart UI reflect both X+Y.
-           IMPORTANT: chain the promise so Buy-now waits for Y to be added
-           before navigating to /cart. Previously we fire-and-forgot,
-           which meant the /cart redirect could race ahead of the gift
-           POST and the customer would land in checkout without Y. */
+        /*
+          When X had a gift mapping, X+Y were added atomically in the
+          same /cart/add.js call above — no separate reconcile needed
+          and no flicker between "X added" and "Y appears". For non-
+          mapped X (no GWP), reconcile in case the global map gains
+          entries later or to clean up stale gifts.
+        */
+        if (addedGiftAtomically) return cart;
         var giftPromise;
         try { giftPromise = reconcileFreeGifts(); } catch (_) {}
         if (!giftPromise || typeof giftPromise.then !== 'function') {
