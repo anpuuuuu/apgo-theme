@@ -37,6 +37,19 @@
     -webkit-tap-highlight-color: transparent;
   }
 
+  /* ========== 隐藏 Buy now（贴在这里）========== */
+  [data-apgo-cc-buy-now],
+  [data-apgo-cc-confirm-buy],
+  .apgo-cc-buybar__btn--buy,
+  .apgo-modal-btn-primary[onclick*="apgoBuyNow"] {
+    display: none !important;
+  }
+  .apgo-cc-pdp__cta-row,
+  .apgo-cc-buybar__actions,
+  .apgo-cc-confirm-modal__actions {
+    grid-template-columns: 1fr !important;
+  }
+
   :root {
     --primary-orange: #f08418;
     --secondary-orange: #ff9a3c;
