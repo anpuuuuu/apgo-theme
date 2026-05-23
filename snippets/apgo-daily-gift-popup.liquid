@@ -23,7 +23,17 @@
 {%- assign storage_key_session = 'apgo_gift_popup_haji_seen' -%}
 {%- comment -%} ========================================================== {%- endcomment -%}
 
-{%- assign promo_image = product.featured_image -%}
+{%- comment -%}
+  Promo image source — try the current page's product first (PDP path),
+  fall back to looking up the bundle product by handle (works on homepage
+  / collection / anywhere with no product context).
+{%- endcomment -%}
+{%- assign promo_handle = 'atomic-glaze-coating-hari-raya-haji-bundle' -%}
+{%- assign promo_product = product | default: all_products[promo_handle] -%}
+{%- if promo_product == blank or promo_product.featured_image == blank -%}
+  {%- assign promo_product = all_products[promo_handle] -%}
+{%- endif -%}
+{%- assign promo_image = promo_product.featured_image -%}
 
 <div
   class="apgo-daily-gift-backdrop"
@@ -56,7 +66,7 @@
       <img
         class="apgo-daily-gift__image"
         src="{{ promo_image | image_url: width: 600 }}"
-        alt="{{ product.title | escape }}"
+        alt="{{ promo_product.title | default: 'Promo' | escape }}"
         loading="lazy"
       >
     {%- else -%}

@@ -5173,12 +5173,11 @@
   {% endif %}
 
   {%- comment -%}
-    Hari Raya Haji 3-day shampoo promo popup — only on this specific
-    product page. Edit dates/copy inside snippets/apgo-daily-gift-popup.liquid.
+    Hari Raya Haji 3-day shampoo promo popup — rendering moved to
+    layout/theme.liquid so it can appear on both the PDP and the
+    homepage. Single render across the storefront means the
+    sessionStorage "seen this session" flag works as intended.
   {%- endcomment -%}
-  {% if product.handle == 'atomic-glaze-coating-hari-raya-haji-bundle' %}
-    {% render 'apgo-daily-gift-popup' %}
-  {% endif %}
 
   <!-- 變體選擇模態框（桌面：右側欄；手機：底部抽屜） -->
   <div class="apgo-pdp-variant-shell" id="apgoPdpVariantShell">
