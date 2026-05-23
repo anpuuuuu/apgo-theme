@@ -19,7 +19,6 @@
 {%- assign promo_headline  = 'Grab this deal now' -%}
 {%- assign promo_body      = 'and receive an additional FREE 300ml shampoo from us!' -%}
 {%- assign promo_cta       = 'View deal' -%}
-{%- assign promo_urgency   = 'HURRY!' -%}
 {%- assign promo_timer_label = 'Ends in' -%}
 {%- assign promo_daily_end = '23:59' -%}
 {%- comment -%} ========================================================== {%- endcomment -%}
@@ -41,23 +40,20 @@
       </span>
     {%- endif -%}
     <span class="apgo-promo-banner__body">
-      <span class="apgo-promo-banner__headline">{{ promo_headline }}</span>
-      <span class="apgo-promo-banner__sub">{{ promo_body }}</span>
-      <span class="apgo-promo-banner__action-row">
+      <span class="apgo-promo-banner__top-row">
+        <span class="apgo-promo-banner__headline">{{ promo_headline }}</span>
         <span class="apgo-promo-banner__cta">
           {{ promo_cta }}
           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/>
           </svg>
         </span>
-        <span class="apgo-promo-banner__urgency">
-          <span class="apgo-promo-banner__pulse-dot" aria-hidden="true"></span>
-          <span class="apgo-promo-banner__urgency-text">{{ promo_urgency }}</span>
-        </span>
-        <span class="apgo-promo-banner__timer-block">
-          <span class="apgo-promo-banner__timer-label">{{ promo_timer_label }}</span>
-          <span class="apgo-promo-banner__timer" data-apgo-promo-timer>--:--:--</span>
-        </span>
+      </span>
+      <span class="apgo-promo-banner__sub">{{ promo_body }}</span>
+      <span class="apgo-promo-banner__action-row">
+        <span class="apgo-promo-banner__pulse-dot" aria-hidden="true"></span>
+        <span class="apgo-promo-banner__timer-label">{{ promo_timer_label }}</span>
+        <span class="apgo-promo-banner__timer" data-apgo-promo-timer>--:--:--</span>
       </span>
     </span>
   </a>
@@ -139,11 +135,19 @@
       color: rgba(255, 255, 255, 0.7);
       line-height: 1.4;
     }
-    /* Bottom action row — CTA left, urgency middle, timer right */
-    .apgo-promo-banner__action-row {
+    /* Top row — headline left, CTA right */
+    .apgo-promo-banner__top-row {
       display: flex;
       align-items: center;
-      gap: 10px;
+      justify-content: space-between;
+      gap: 12px;
+      width: 100%;
+    }
+    /* Bottom action row — red dot + ENDS IN + orange timer */
+    .apgo-promo-banner__action-row {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
       margin-top: 8px;
       flex-wrap: wrap;
     }
@@ -165,12 +169,6 @@
     .apgo-promo-banner__cta svg { transition: transform .2s ease; }
     .apgo-promo-banner:hover .apgo-promo-banner__cta svg { transform: translateX(3px); }
 
-    /* Urgency block — pulsing red dot + "HURRY!" label */
-    .apgo-promo-banner__urgency {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
     .apgo-promo-banner__pulse-dot {
       width: 8px;
       height: 8px;
@@ -184,30 +182,6 @@
       70%  { box-shadow: 0 0 0 10px rgba(229, 57, 53, 0); transform: scale(1.15); }
       100% { box-shadow: 0 0 0 0 rgba(229, 57, 53, 0); transform: scale(1); }
     }
-    .apgo-promo-banner__urgency-text {
-      font-size: 11px;
-      font-weight: 800;
-      color: #ff4d4d;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      animation: apgoPromoUrgencyShake 2.6s ease-in-out infinite;
-      transform-origin: center;
-    }
-    @keyframes apgoPromoUrgencyShake {
-      0%, 88%, 100% { transform: translateX(0); }
-      90%   { transform: translateX(-1.5px) rotate(-1.5deg); }
-      92%   { transform: translateX(1.5px) rotate(1.5deg); }
-      94%   { transform: translateX(-1.5px) rotate(-1.5deg); }
-      96%   { transform: translateX(1px) rotate(1deg); }
-      98%   { transform: translateX(0); }
-    }
-    /* Timer block — pushed to the right, ticking red digits */
-    .apgo-promo-banner__timer-block {
-      margin-left: auto;
-      display: inline-flex;
-      align-items: baseline;
-      gap: 6px;
-    }
     .apgo-promo-banner__timer-label {
       font-size: 10px;
       font-weight: 600;
@@ -218,10 +192,10 @@
     .apgo-promo-banner__timer {
       font-size: 14px;
       font-weight: 800;
-      color: #ff4d4d;
+      color: #ff9a3c;
       font-variant-numeric: tabular-nums;
       letter-spacing: 0.05em;
-      text-shadow: 0 0 10px rgba(229, 57, 53, 0.45);
+      text-shadow: 0 0 10px rgba(240, 132, 24, 0.4);
       animation: apgoPromoTimerTick 1s steps(2) infinite;
     }
     @keyframes apgoPromoTimerTick {
@@ -243,13 +217,11 @@
         padding: 6px 10px;
         font-size: 11px;
       }
-      .apgo-promo-banner__urgency-text { font-size: 10px; letter-spacing: 0.1em; }
       .apgo-promo-banner__pulse-dot { width: 7px; height: 7px; }
       .apgo-promo-banner__timer { font-size: 12.5px; }
       .apgo-promo-banner__timer-label { font-size: 9px; }
-      /* Very narrow phones — hide the urgency text (dot still pulses) */
+      /* Very narrow phones — drop CTA label, keep only the arrow icon */
       @media (max-width: 380px) {
-        .apgo-promo-banner__urgency-text { display: none; }
         .apgo-promo-banner__timer-label { display: none; }
         .apgo-promo-banner__cta {
           font-size: 0;
