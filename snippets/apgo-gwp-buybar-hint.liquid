@@ -36,8 +36,11 @@
     left: 50%;
     transform: translate(-50%, calc(-50% + 12px));
     z-index: 100200; /* above confirm-modal (z 100100) + buybar (z 100000) */
-    max-width: min(86vw, 340px);
-    padding: 14px 38px 14px 16px;
+    /* Explicit width (not just max-width) so the flex container can't
+       shrink-to-fit into a narrow column on mobile. */
+    width: min(86vw, 340px);
+    box-sizing: border-box;
+    padding: 14px 40px 14px 16px;
     border-radius: 14px;
     background: rgba(20, 20, 20, 0.82);
     backdrop-filter: blur(14px);
