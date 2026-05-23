@@ -137,10 +137,11 @@
 
   if (closeBtn) closeBtn.addEventListener('click', hide);
 
-  /* Watch every "drawer/modal" container that signals the visitor is
-     in the add-to-cart flow. Each toggles `.is-open` on itself. */
+  /* Watch only the modals where the user is actually picking a variant
+     / about to Add to cart. The cart sheet drawer (.apgo-cc-buybar's
+     `is-open`) is NOT included — that just shows the existing cart
+     contents and the reassurance toast would be noise there. */
   var SELECTORS = [
-    '.apgo-cc-buybar',
     '.apgo-cc-confirm-modal',
     '.apgo-pdp-variant-shell'
   ];
