@@ -4121,27 +4121,74 @@
       <div class="apgo-cc-pdp__price-card{% if on_sale %} apgo-cc-pdp__price-card--sale{% endif %}">
         {%- if on_sale -%}
           {%- comment -%}
-            Deal countdown — weekly recurring mode only.
-            Counts down to the next occurrence of `deal_end_weekday` at
-            `deal_end_time` in Malaysia (GMT+8). Auto-resets every 7 days.
-            Section-only (no metafield override) — same schedule for every
-            product that uses this template.
+            Deal countdown — TWO modes, in priority order:
+
+            1) Per-product fixed-date mode (preferred, new):
+               When `custom.deal_timer_enabled` is true AND
+               `custom.deal_timer_end_at` is set on this product, count
+               down to that exact date/time. One-shot — hides on expiry.
+
+            2) Section-level weekly recurring (legacy fallback):
+               When the metafield is NOT set, fall back to the section's
+               `deal_end_weekday` + `deal_end_time` and recur every 7 days.
+               This keeps existing products working without per-product
+               configuration.
+
+            Setting `custom.deal_timer_enabled = false` on a product is an
+            explicit opt-out: no timer renders regardless of section
+            settings.
           {%- endcomment -%}
-          {%- assign deal_end_time    = section.settings.deal_end_time | default: '12:00' -%}
-          {%- assign deal_weekday_raw = section.settings.deal_end_weekday | default: 'off' -%}
           {%- assign deal_label_text  = section.settings.deal_label | default: 'Limited time deal' -%}
 
-          {%- assign deal_weekday = -1 -%}
-          {%- if deal_weekday_raw != blank and deal_weekday_raw != 'off' -%}
-            {%- assign deal_weekday_num = deal_weekday_raw | plus: 0 -%}
-            {%- if deal_weekday_num >= 0 and deal_weekday_num <= 6 -%}
-              {%- assign deal_weekday = deal_weekday_num -%}
+          {%- assign product_timer_enabled_raw = product.metafields.custom.deal_timer_enabled -%}
+          {%- assign product_timer_end_at      = product.metafields.custom.deal_timer_end_at -%}
+
+          {%- comment -%} Resolve enabled flag: true / false / nil (= no override) {%- endcomment -%}
+          {%- assign product_timer_mode = 'unset' -%}
+          {%- if product_timer_enabled_raw == true -%}
+            {%- assign product_timer_mode = 'on' -%}
+          {%- elsif product_timer_enabled_raw == false -%}
+            {%- assign product_timer_mode = 'off' -%}
+          {%- endif -%}
+
+          {%- assign use_fixed_date = false -%}
+          {%- assign use_weekly     = false -%}
+
+          {%- if product_timer_mode == 'on' and product_timer_end_at != blank -%}
+            {%- assign use_fixed_date = true -%}
+          {%- elsif product_timer_mode == 'unset' -%}
+            {%- assign deal_weekday_raw = section.settings.deal_end_weekday | default: 'off' -%}
+            {%- if deal_weekday_raw != blank and deal_weekday_raw != 'off' -%}
+              {%- assign deal_weekday_num = deal_weekday_raw | plus: 0 -%}
+              {%- if deal_weekday_num >= 0 and deal_weekday_num <= 6 -%}
+                {%- assign deal_weekday = deal_weekday_num -%}
+                {%- assign deal_end_time = section.settings.deal_end_time | default: '12:00' -%}
+                {%- assign use_weekly = true -%}
+              {%- endif -%}
             {%- endif -%}
           {%- endif -%}
 
           <div class="apgo-cc-pdp__price-top">
             <span class="apgo-cc-pdp__price-label">{{ deal_label_text }}</span>
-            {%- if deal_weekday >= 0 -%}
+            {%- if use_fixed_date -%}
+              <span
+                class="apgo-cc-pdp__deal-timer"
+                data-apgo-deal-timer
+                data-deal-end-iso="{{ product_timer_end_at | date: '%Y-%m-%dT%H:%M:%S%z' }}"
+                data-deal-product-id="{{ product.id }}"
+                aria-label="{{ section.settings.deal_aria_label | default: 'Deal countdown' | escape }}"
+              >
+                <span class="apgo-cc-pdp__deal-timer-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="13" r="8"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="13" x2="15" y2="15"/>
+                    <line x1="9" y1="2" x2="15" y2="2"/>
+                  </svg>
+                </span>
+                <span class="apgo-cc-pdp__deal-timer-text" data-apgo-deal-timer-text>{{ section.settings.deal_loading_text | default: 'Ends soon' }}</span>
+              </span>
+            {%- elsif use_weekly -%}
               <span
                 class="apgo-cc-pdp__deal-timer"
                 data-apgo-deal-timer

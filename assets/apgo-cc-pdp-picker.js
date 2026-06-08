@@ -1036,16 +1036,36 @@
   var textEl = timerEl.querySelector('[data-apgo-deal-timer-text]') || timerEl;
 
   /*
-    Resolve countdown end timestamp in Malaysia time (GMT+8).
-    Weekly recurring mode only. Inputs (data-*):
-      - data-deal-weekday   → 0–6 (Sun=0…Sat=6)
-      - data-deal-end-time  → "HH:MM" (24h, MY local)
-      - data-deal-tz-offset → "+08:00"
-    Counts down to the next occurrence of that weekday at HH:MM MY;
-    when it passes, re-resolves to the following week.
-    Returns 0 if no weekday configured.
+    Resolve countdown end timestamp. Two modes:
+
+    1) Per-product fixed-date mode (preferred):
+       - data-deal-end-iso → ISO 8601 string from product metafield
+         e.g. "2026-06-15T12:00:00+0800"
+       One-shot — when it passes, the timer hides (no recurrence).
+
+    2) Weekly recurring (legacy fallback):
+       - data-deal-weekday   → 0–6 (Sun=0…Sat=6)
+       - data-deal-end-time  → "HH:MM" (24h, MY local)
+       - data-deal-tz-offset → "+08:00"
+       Counts down to the next occurrence of that weekday at HH:MM MY;
+       when it passes, re-resolves to the following week.
+
+    Returns 0 if neither mode is configured.
   */
+
+  /* Fixed-date mode flag — set on first resolve, drives the
+     recurrence decision in render() below. */
+  var fixedDateMode = !!timerEl.getAttribute('data-deal-end-iso');
+
   function resolveEndMs() {
+    /* Mode 1 — explicit ISO end timestamp from product metafield */
+    var isoAttr = timerEl.getAttribute('data-deal-end-iso');
+    if (isoAttr) {
+      var t = Date.parse(isoAttr);
+      return isNaN(t) ? 0 : t;
+    }
+
+    /* Mode 2 — weekly recurring fallback */
     var tz = timerEl.getAttribute('data-deal-tz-offset') || '+08:00';
     var time = timerEl.getAttribute('data-deal-end-time') || '12:00';
     var weekdayAttr = timerEl.getAttribute('data-deal-weekday');
@@ -1082,8 +1102,9 @@
   var endMs = resolveEndMs();
   if (!endMs) { timerEl.setAttribute('hidden', ''); return; }
 
-  /* Weekly mode is always recurring — re-resolves to next week on expiry. */
-  var isRecurring = true;
+  /* Fixed-date mode: one-shot — hide on expiry, do not re-resolve.
+     Weekly mode: recurring — re-resolves to next week on expiry. */
+  var isRecurring = !fixedDateMode;
 
   function pad(n) { return n < 10 ? '0' + n : '' + n; }
 
