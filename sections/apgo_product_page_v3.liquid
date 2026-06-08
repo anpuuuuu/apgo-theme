@@ -4127,7 +4127,7 @@
               every product on this template gets that weekly recurring
               timer by default.
             - A product can OVERRIDE with its own one-shot end date by filling
-              the `custom.deal_timer_end_at` metafield. While that date is
+              the `custom.deal_timer_ends_at` metafield. While that date is
               still in the future, the timer counts down to it specifically.
             - Once that one-shot date passes, the timer automatically switches
               back to the section's weekly mode — never showing an empty slot
@@ -4145,7 +4145,7 @@
             {%- assign deal_label_text = section.settings.deal_label | default: 'Limited time deal' -%}
           {%- endif -%}
 
-          {%- assign product_timer_end_at = product.metafields.custom.deal_timer_end_at.value -%}
+          {%- assign product_timer_end_at = product.metafields.custom.deal_timer_ends_at.value -%}
 
           {%- comment -%} Section-editor weekly (baseline) {%- endcomment -%}
           {%- assign has_weekly = false -%}
