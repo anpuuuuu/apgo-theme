@@ -4144,21 +4144,28 @@
             ("6.6 MEGA DEAL", "RAYA EXCLUSIVE", etc.) without changing
             theme settings.
           {%- endcomment -%}
-          {%- assign product_timer_label = product.metafields.custom.deal_timer_label -%}
+          {%- comment -%}
+            Important: Shopify boolean metafields return a Metafield object
+            when accessed directly. Comparing that object to `true` / `false`
+            never matches — you have to use `.value` to get the underlying
+            primitive. Same for date_time metafields (need .value for `| date:`
+            to format reliably across Shopify versions).
+          {%- endcomment -%}
+          {%- assign product_timer_label  = product.metafields.custom.deal_timer_label.value -%}
           {%- if product_timer_label != blank -%}
             {%- assign deal_label_text = product_timer_label -%}
           {%- else -%}
             {%- assign deal_label_text = section.settings.deal_label | default: 'Limited time deal' -%}
           {%- endif -%}
 
-          {%- assign product_timer_enabled_raw = product.metafields.custom.deal_timer_enabled -%}
-          {%- assign product_timer_end_at      = product.metafields.custom.deal_timer_end_at -%}
+          {%- assign product_timer_enabled_val = product.metafields.custom.deal_timer_enabled.value -%}
+          {%- assign product_timer_end_at      = product.metafields.custom.deal_timer_end_at.value -%}
 
           {%- comment -%} Resolve enabled flag: true / false / nil (= no override) {%- endcomment -%}
           {%- assign product_timer_mode = 'unset' -%}
-          {%- if product_timer_enabled_raw == true -%}
+          {%- if product_timer_enabled_val == true -%}
             {%- assign product_timer_mode = 'on' -%}
-          {%- elsif product_timer_enabled_raw == false -%}
+          {%- elsif product_timer_enabled_val == false -%}
             {%- assign product_timer_mode = 'off' -%}
           {%- endif -%}
 
