@@ -4138,7 +4138,18 @@
             explicit opt-out: no timer renders regardless of section
             settings.
           {%- endcomment -%}
-          {%- assign deal_label_text  = section.settings.deal_label | default: 'Limited time deal' -%}
+          {%- comment -%}
+            Label resolution: per-product metafield wins, fall back to
+            section-wide default. Lets each product show a unique tag
+            ("6.6 MEGA DEAL", "RAYA EXCLUSIVE", etc.) without changing
+            theme settings.
+          {%- endcomment -%}
+          {%- assign product_timer_label = product.metafields.custom.deal_timer_label -%}
+          {%- if product_timer_label != blank -%}
+            {%- assign deal_label_text = product_timer_label -%}
+          {%- else -%}
+            {%- assign deal_label_text = section.settings.deal_label | default: 'Limited time deal' -%}
+          {%- endif -%}
 
           {%- assign product_timer_enabled_raw = product.metafields.custom.deal_timer_enabled -%}
           {%- assign product_timer_end_at      = product.metafields.custom.deal_timer_end_at -%}
