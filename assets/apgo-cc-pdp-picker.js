@@ -1038,41 +1038,51 @@
   /*
     Resolve countdown end timestamp. Two modes:
 
-    1) Per-product fixed-date mode (preferred):
-       - data-deal-end-iso → ISO 8601 string from product metafield
-         e.g. "2026-06-15T12:00:00+0800"
-       One-shot — when it passes, the timer hides (no recurrence).
+    1) Per-product fixed-date (one-shot, preferred):
+       - data-deal-end-ts  → Unix epoch seconds (most reliable)
+       - data-deal-end-iso → ISO 8601 string (fallback)
 
-    2) Weekly recurring (legacy fallback):
+    2) Weekly recurring (section editor baseline):
        - data-deal-weekday   → 0–6 (Sun=0…Sat=6)
        - data-deal-end-time  → "HH:MM" (24h, MY local)
        - data-deal-tz-offset → "+08:00"
-       Counts down to the next occurrence of that weekday at HH:MM MY;
-       when it passes, re-resolves to the following week.
 
-    Returns 0 if neither mode is configured.
+    When a product has BOTH (fixed override + weekly baseline), we tick
+    on the fixed date until it expires, then automatically downgrade to
+    the weekly mode without the user seeing an empty slot.
+
+    Returns 0 if the currently selected mode is unresolvable.
   */
 
-  /* Fixed-date mode flag — set on first resolve, drives the
-     recurrence decision in render() below. */
-  var fixedDateMode = !!(timerEl.getAttribute('data-deal-end-ts') ||
-                          timerEl.getAttribute('data-deal-end-iso'));
+  /* Does this element have fixed-date data? Set once on init, then
+     flipped to false after the fixed-date phase expires. */
+  var fixedAvailable = !!(timerEl.getAttribute('data-deal-end-ts') ||
+                           timerEl.getAttribute('data-deal-end-iso'));
+  var weeklyAvailable = (function () {
+    var w = timerEl.getAttribute('data-deal-weekday');
+    if (w === null || w === '') return false;
+    var n = parseInt(w, 10);
+    return !isNaN(n) && n >= 0 && n <= 6;
+  })();
 
-  function resolveEndMs() {
-    /* Mode 1a — Unix epoch seconds (most reliable, no parser quirks) */
+  /* Active mode — starts as fixed if available, falls back to weekly */
+  var mode = fixedAvailable ? 'fixed' : (weeklyAvailable ? 'weekly' : 'none');
+
+  function resolveFixedMs() {
     var tsAttr = timerEl.getAttribute('data-deal-end-ts');
     if (tsAttr) {
       var ts = parseInt(tsAttr, 10);
       if (!isNaN(ts) && ts > 0) return ts * 1000;
     }
-    /* Mode 1b — ISO 8601 string fallback */
     var isoAttr = timerEl.getAttribute('data-deal-end-iso');
     if (isoAttr) {
       var t = Date.parse(isoAttr);
-      return isNaN(t) ? 0 : t;
+      if (!isNaN(t)) return t;
     }
+    return 0;
+  }
 
-    /* Mode 2 — weekly recurring fallback */
+  function resolveWeeklyMs() {
     var tz = timerEl.getAttribute('data-deal-tz-offset') || '+08:00';
     var time = timerEl.getAttribute('data-deal-end-time') || '12:00';
     var weekdayAttr = timerEl.getAttribute('data-deal-weekday');
@@ -1106,19 +1116,44 @@
     return isNaN(t) ? 0 : t;
   }
 
+  /* Single resolver that respects the currently-active mode */
+  function resolveEndMs() {
+    if (mode === 'fixed')  return resolveFixedMs();
+    if (mode === 'weekly') return resolveWeeklyMs();
+    return 0;
+  }
+
+  /* If the fixed date has already passed at page load, skip straight
+     to weekly without showing a 0:00:00 frame. */
+  if (mode === 'fixed') {
+    var initMs = resolveFixedMs();
+    if (!initMs || initMs - Date.now() <= 0) {
+      mode = weeklyAvailable ? 'weekly' : 'none';
+    }
+  }
+  if (mode === 'none') { timerEl.setAttribute('hidden', ''); return; }
+
   var endMs = resolveEndMs();
   if (!endMs) { timerEl.setAttribute('hidden', ''); return; }
-
-  /* Fixed-date mode: one-shot — hide on expiry, do not re-resolve.
-     Weekly mode: recurring — re-resolves to next week on expiry. */
-  var isRecurring = !fixedDateMode;
 
   function pad(n) { return n < 10 ? '0' + n : '' + n; }
 
   function render() {
     var diff = endMs - Date.now();
     if (diff <= 0) {
-      if (isRecurring) {
+      if (mode === 'fixed') {
+        /* Fixed-date expired → automatically downgrade to weekly so the
+           timer keeps ticking with the section editor's baseline. */
+        if (weeklyAvailable) {
+          mode = 'weekly';
+          endMs = resolveWeeklyMs();
+          if (!endMs) { timerEl.setAttribute('hidden', ''); return false; }
+          diff = endMs - Date.now();
+        } else {
+          timerEl.setAttribute('hidden', '');
+          return false;
+        }
+      } else if (mode === 'weekly') {
         /* Weekly / rolling mode — roll forward to the next cycle and keep ticking */
         endMs = resolveEndMs();
         if (!endMs) { timerEl.setAttribute('hidden', ''); return false; }
