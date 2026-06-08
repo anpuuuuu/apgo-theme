@@ -1055,10 +1055,17 @@
 
   /* Fixed-date mode flag — set on first resolve, drives the
      recurrence decision in render() below. */
-  var fixedDateMode = !!timerEl.getAttribute('data-deal-end-iso');
+  var fixedDateMode = !!(timerEl.getAttribute('data-deal-end-ts') ||
+                          timerEl.getAttribute('data-deal-end-iso'));
 
   function resolveEndMs() {
-    /* Mode 1 — explicit ISO end timestamp from product metafield */
+    /* Mode 1a — Unix epoch seconds (most reliable, no parser quirks) */
+    var tsAttr = timerEl.getAttribute('data-deal-end-ts');
+    if (tsAttr) {
+      var ts = parseInt(tsAttr, 10);
+      if (!isNaN(ts) && ts > 0) return ts * 1000;
+    }
+    /* Mode 1b — ISO 8601 string fallback */
     var isoAttr = timerEl.getAttribute('data-deal-end-iso');
     if (isoAttr) {
       var t = Date.parse(isoAttr);

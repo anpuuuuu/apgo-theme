@@ -4158,23 +4158,26 @@
             {%- assign deal_label_text = section.settings.deal_label | default: 'Limited time deal' -%}
           {%- endif -%}
 
-          {%- assign product_timer_enabled_val = product.metafields.custom.deal_timer_enabled.value -%}
-          {%- assign product_timer_end_at      = product.metafields.custom.deal_timer_end_at.value -%}
+          {%- comment -%}
+            Simpler decision tree — the END DATE is the actual trigger,
+            the enabled boolean only acts as an explicit "force off" flag.
 
-          {%- comment -%} Resolve enabled flag: true / false / nil (= no override) {%- endcomment -%}
-          {%- assign product_timer_mode = 'unset' -%}
-          {%- if product_timer_enabled_val == true -%}
-            {%- assign product_timer_mode = 'on' -%}
-          {%- elsif product_timer_enabled_val == false -%}
-            {%- assign product_timer_mode = 'off' -%}
-          {%- endif -%}
+            Rules:
+              - end_at filled         -> use fixed-date timer
+              - enabled = false (explicit) -> no timer (even if end_at set)
+              - end_at blank + enabled not false -> fall back to section weekly
+          {%- endcomment -%}
+          {%- assign product_timer_end_at  = product.metafields.custom.deal_timer_end_at.value -%}
+          {%- assign product_timer_enabled = product.metafields.custom.deal_timer_enabled.value -%}
 
           {%- assign use_fixed_date = false -%}
           {%- assign use_weekly     = false -%}
 
-          {%- if product_timer_mode == 'on' and product_timer_end_at != blank -%}
+          {%- if product_timer_enabled == false -%}
+            {%- comment -%} Explicit opt-out — render no timer at all {%- endcomment -%}
+          {%- elsif product_timer_end_at != blank -%}
             {%- assign use_fixed_date = true -%}
-          {%- elsif product_timer_mode == 'unset' -%}
+          {%- else -%}
             {%- assign deal_weekday_raw = section.settings.deal_end_weekday | default: 'off' -%}
             {%- if deal_weekday_raw != blank and deal_weekday_raw != 'off' -%}
               {%- assign deal_weekday_num = deal_weekday_raw | plus: 0 -%}
@@ -4189,9 +4192,15 @@
           <div class="apgo-cc-pdp__price-top">
             <span class="apgo-cc-pdp__price-label">{{ deal_label_text }}</span>
             {%- if use_fixed_date -%}
+              {%- comment -%}
+                Emit BOTH a Unix epoch (seconds, JS multiplies *1000) AND
+                an ISO string. JS prefers the epoch — it is unambiguous and
+                immune to browser ISO-parsing quirks. ISO stays as fallback.
+              {%- endcomment -%}
               <span
                 class="apgo-cc-pdp__deal-timer"
                 data-apgo-deal-timer
+                data-deal-end-ts="{{ product_timer_end_at | date: '%s' }}"
                 data-deal-end-iso="{{ product_timer_end_at | date: '%Y-%m-%dT%H:%M:%S%z' }}"
                 data-deal-product-id="{{ product.id }}"
                 aria-label="{{ section.settings.deal_aria_label | default: 'Deal countdown' | escape }}"
