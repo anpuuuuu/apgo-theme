@@ -63,8 +63,31 @@
     text-underline-offset: 2px;
   }
 
-  .cart-gwp-wrapper.is-unlocked .cart-gwp-prompt {
+  .cart-gwp-wrapper.is-unlocked .cart-gwp-prompt,
+  .cart-gwp-wrapper.is-unlocked .cart-gwp-triggers {
     display: none;
+  }
+
+  .cart-gwp-triggers {
+    margin-bottom: 16px;
+  }
+
+  .cart-gwp-triggers__label {
+    margin: 0 4px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.55);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .cart-gwp-gifts__label {
+    margin: 0 4px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.55);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
   }
 
   .cart-gwp-section {
@@ -221,12 +244,17 @@
     assign is_my_market = true
   endif
 
-  assign trigger_product = section.settings.trigger_product
+  assign trigger_products = section.settings.trigger_product_list
   assign trigger_in_cart = false
-  if trigger_product != blank
-    for item in cart.items
-      if item.product_id == trigger_product.id
-        assign trigger_in_cart = true
+  if trigger_products != blank
+    for trigger in trigger_products
+      for item in cart.items
+        if item.product_id == trigger.id
+          assign trigger_in_cart = true
+          break
+        endif
+      endfor
+      if trigger_in_cart
         break
       endif
     endfor
@@ -236,30 +264,95 @@
   if prompt_text == blank
     assign prompt_text = 'apgo_cart.gwp_prompt_default' | t
   endif
+
+  capture trigger_product_links
+    for trigger in trigger_products
+      unless forloop.first
+        echo ', '
+      endunless
+      echo trigger.title | link_to: trigger.url
+    endfor
+  endcapture
+
+  assign img_width = 400
+  case section.settings.image_ratio
+    when 'portrait'
+      assign img_height = 500
+    when 'landscape'
+      assign img_height = 300
+    else
+      assign img_height = 400
+  endcase
 %}
 
 <div class="cart-gwp-wrapper{% if trigger_in_cart %} is-unlocked{% endif %}"
      id="cart-gwp-{{ section.id }}"
      data-section-id="{{ section.id }}"
-     data-trigger-product-id="{{ trigger_product.id | default: '' }}">
+     data-trigger-product-ids="{% for trigger in trigger_products %}{{ trigger.id }}{% unless forloop.last %},{% endunless %}{% endfor %}">
 
   <div class="cart-gwp-header">
     <h3 class="cart-gwp-title">{{ section.settings.section_title }}</h3>
   </div>
 
-  {% if trigger_product != blank %}
+  {% if trigger_products != blank %}
     <div class="cart-gwp-prompt" data-gwp-prompt>
-      {% capture product_link %}{{ trigger_product.title | link_to: trigger_product.url }}{% endcapture %}
       {% if prompt_text contains '%%PRODUCT%%' %}
-        {{ prompt_text | replace: '%%PRODUCT%%', product_link }}
+        {{ prompt_text | replace: '%%PRODUCT%%', trigger_product_links }}
       {% else %}
         {{ prompt_text }}
-        <a href="{{ trigger_product.url }}">{{ trigger_product.title }}</a>
+        {{ trigger_product_links }}
       {% endif %}
+    </div>
+
+    <div class="cart-gwp-triggers" data-gwp-triggers>
+      <p class="cart-gwp-triggers__label">{{ 'apgo_cart.gwp_trigger_label' | t }}</p>
+      <div class="cart-gwp-grid">
+        {% for trigger in trigger_products %}
+          {% assign trigger_price = trigger.price | money %}
+          {% if is_my_market %}
+            {% assign trigger_price = trigger_price | replace: ' MYR', '' | replace: 'MYR', '' | strip %}
+          {% endif %}
+
+          <div class="cart-gwp-card cart-gwp-card--trigger">
+            <a href="{{ trigger.url }}" class="cart-gwp-card__link">
+              <div class="cart-gwp-card__image {{ section.settings.image_ratio }}">
+                {% if trigger.featured_image %}
+                  <img src="{{ trigger.featured_image | image_url: width: img_width }}"
+                       alt="{{ trigger.title | escape }}"
+                       width="{{ img_width }}"
+                       height="{{ img_height }}"
+                       loading="lazy">
+                {% else %}
+                  {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                {% endif %}
+              </div>
+              <div class="cart-gwp-card__info">
+                <h4 class="cart-gwp-card__title">{{ trigger.title }}</h4>
+                {% if section.settings.show_prices %}
+                  <div class="cart-gwp-card__prices">
+                    <span class="cart-gwp-card__price-regular">{{ trigger_price }}</span>
+                  </div>
+                {% endif %}
+              </div>
+            </a>
+            {% if section.settings.enable_quick_add %}
+              <button type="button"
+                      class="cart-gwp-add"
+                      data-variant-id="{{ trigger.selected_or_first_available_variant.id }}"
+                      data-gwp-add>
+                <span>+</span>
+              </button>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
     </div>
   {% endif %}
 
-  <div class="cart-gwp-section">
+  <div class="cart-gwp-section cart-gwp-gifts">
+    {% if trigger_products != blank %}
+      <p class="cart-gwp-gifts__label">{{ 'apgo_cart.gwp_gifts_label' | t }}</p>
+    {% endif %}
     <div class="cart-gwp-grid">
       {% assign gift_count = 0 %}
       {% for block in section.blocks %}
@@ -271,16 +364,6 @@
           {% continue %}
         {% endif %}
         {% assign gift_count = gift_count | plus: 1 %}
-
-        {% assign img_width = 400 %}
-        {% case section.settings.image_ratio %}
-          {% when 'portrait' %}
-            {% assign img_height = 500 %}
-          {% when 'landscape' %}
-            {% assign img_height = 300 %}
-          {% else %}
-            {% assign img_height = 400 %}
-        {% endcase %}
 
         {% assign regular_price = gift_product.price | money %}
         {% if is_my_market %}
@@ -343,13 +426,15 @@
   var root = document.getElementById('cart-gwp-{{ section.id }}');
   if (!root) return;
 
-  var triggerId = root.getAttribute('data-trigger-product-id') || '';
+  var triggerIds = (root.getAttribute('data-trigger-product-ids') || '')
+    .split(',')
+    .map(function (id) { return parseInt(id.trim(), 10); })
+    .filter(function (id) { return !isNaN(id); });
 
   function cartHasTrigger(cart) {
-    if (!triggerId || !cart || !cart.items) return false;
-    var tid = parseInt(triggerId, 10);
+    if (!triggerIds.length || !cart || !cart.items) return false;
     return cart.items.some(function (item) {
-      return Number(item.product_id) === tid;
+      return triggerIds.indexOf(Number(item.product_id)) !== -1;
     });
   }
 
@@ -358,7 +443,7 @@
   }
 
   function syncFromCart(cart) {
-    if (!triggerId) return;
+    if (!triggerIds.length) return;
     setUnlocked(cartHasTrigger(cart));
   }
 
@@ -460,7 +545,7 @@
     document.addEventListener(ev, handleCartSignal);
   });
 
-  if (triggerId) {
+  if (triggerIds.length) {
     fetch('/cart.js', { credentials: 'same-origin', cache: 'no-store' })
       .then(function (r) { return r.json(); })
       .then(syncFromCart)
@@ -491,17 +576,18 @@
       "default": "Gift with Purchase"
     },
     {
-      "type": "product",
-      "id": "trigger_product",
+      "type": "product_list",
+      "id": "trigger_product_list",
       "label": "觸發商品 (X)",
-      "info": "顧客購物車需有此商品才解鎖折扣價顯示"
+      "limit": 12,
+      "info": "可選多個商品；未解鎖時會顯示圖片、價格與加購按鈕。購物車含任一 X 即解鎖下方贈品價"
     },
     {
       "type": "textarea",
       "id": "prompt_text",
       "label": "未解鎖提示文字",
       "default": "Add %%PRODUCT%% to unlock special prices below",
-      "info": "使用 %%PRODUCT%% 插入商品連結；留空則使用預設翻譯"
+      "info": "使用 %%PRODUCT%% 插入多個商品連結（逗號分隔）；留空則使用預設翻譯"
     },
     {
       "type": "range",
