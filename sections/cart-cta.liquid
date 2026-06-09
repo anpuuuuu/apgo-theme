@@ -76,13 +76,9 @@
 
       assign loc = request.locale.iso_code | downcase
       if loc contains 'zh'
-        assign label_subtotal_suffix = '件 · 小計'
-        assign label_tax_note        = '含稅、結帳計運費'
-        assign label_checkout        = '前往結帳'
+        assign label_checkout = '前往結帳'
       else
-        assign label_subtotal_suffix = 'items · Subtotal'
-        assign label_tax_note        = 'Tax & shipping at checkout'
-        assign label_checkout        = 'Check out'
+        assign label_checkout = 'Check out'
       endif
 
       assign sticky_progress_pct = 0
@@ -117,25 +113,21 @@
         </div>
       {%- endif -%}
       <div class="cart-sticky-cta__zone cart-sticky-cta__zone--price">
-        <span class="cart-sticky-cta__count">
-          <span data-sticky-count>{{ cart.item_count }}</span> {{ label_subtotal_suffix }}
-        </span>
+        <span class="cart-sticky-cta__label">{{ 'content.cart_estimated_total' | t }}</span>
         <span class="cart-sticky-cta__total" data-sticky-total>
           {{ sticky_total_formatted }}
         </span>
       </div>
-      <div class="cart-sticky-cta__zone cart-sticky-cta__zone--action">
-        <button
-          type="submit"
-          class="cart-sticky-cta__button button"
-          form="cart-form"
-          name="checkout"
-          data-sticky-checkout
-          {%- if cart == empty -%}disabled{%- endif -%}
-        >
-          {{ label_checkout }}
-        </button>
-      </div>
+      <button
+        type="submit"
+        class="cart-sticky-cta__zone cart-sticky-cta__zone--action button"
+        form="cart-form"
+        name="checkout"
+        data-sticky-checkout
+        {%- if cart == empty -%}disabled{%- endif -%}
+      >
+        {{ label_checkout }}
+      </button>
     </div>
   {%- endif -%}
 
@@ -428,6 +420,7 @@
     }
     .cart-sticky-cta__zone--goal {
       grid-column: 1 / -1;
+      padding: 6px 14px 7px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.12);
     }
     .cart-sticky-cta__zone--price {
@@ -437,14 +430,50 @@
       justify-content: center;
       line-height: 1.2;
       min-width: 0;
+      padding: 8px 14px;
       border-right: 1px solid rgba(255, 255, 255, 0.12);
     }
+    /* Entire zone is the checkout CTA — orange gradient + glow */
     .cart-sticky-cta__zone--action {
       grid-column: 2;
+      align-self: stretch;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 10px 14px;
+      min-width: 128px;
+      padding: 0 18px;
+      border: none;
+      border-radius: 0;
+      background: linear-gradient(135deg, #ff6b35 0%, #f7931e 55%, #ff9a3c 100%);
+      color: #ffffff;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.02em;
+      text-transform: none;
+      cursor: pointer;
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.25),
+        0 0 18px rgba(255, 107, 53, 0.5),
+        0 0 36px rgba(247, 147, 30, 0.28);
+      transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .cart-sticky-cta__zone--action:hover {
+      background: linear-gradient(135deg, #ff7a45 0%, #ffa030 55%, #ffb04a 100%);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.3),
+        0 0 24px rgba(255, 107, 53, 0.65),
+        0 0 48px rgba(247, 147, 30, 0.38);
+    }
+    .cart-sticky-cta__zone--action:active {
+      transform: scale(0.99);
+    }
+    .cart-sticky-cta__zone--action:disabled {
+      background: linear-gradient(135deg, #555555, #444444);
+      cursor: not-allowed;
+      box-shadow: none;
+      opacity: 0.55;
     }
     /* No free-shipping row: price + button only, still two zones with vertical divider */
     .cart-sticky-cta:not(:has(.cart-sticky-cta__zone--goal)) .cart-sticky-cta__zone--price {
@@ -453,44 +482,17 @@
     .cart-sticky-cta:not(:has(.cart-sticky-cta__zone--goal)) .cart-sticky-cta__zone--action {
       grid-row: 1;
     }
-    .cart-sticky-cta__count {
+    .cart-sticky-cta__label {
       font-size: 11px;
       color: #9a9a9a;
       letter-spacing: 0.02em;
     }
     .cart-sticky-cta__total {
-      font-size: 22px;
+      font-size: 20px;
       font-weight: 700;
       color: #ffffff;
       margin-top: 2px;
       letter-spacing: -0.01em;
-    }
-
-    .cart-sticky-cta__button {
-      flex: 0 0 auto;
-      min-width: 120px;
-      min-height: 0;
-      padding: 10px 18px;
-      border: none;
-      border-radius: 8px;
-      background: #f7931e;
-      color: #ffffff;
-      font-weight: 600;
-      font-size: 14px;
-      line-height: 1.2;
-      letter-spacing: 0.01em;
-      text-transform: none;
-      cursor: pointer;
-      box-shadow: 0 2px 8px rgba(247, 147, 30, 0.25);
-      transition: background 0.15s ease, transform 0.1s ease;
-    }
-    .cart-sticky-cta__button:hover { background: #ff6b35; }
-    .cart-sticky-cta__button:active { transform: scale(0.98); }
-    .cart-sticky-cta__button:disabled {
-      background: #555;
-      cursor: not-allowed;
-      box-shadow: none;
-      opacity: 0.5;
     }
 
     /* Free shipping — title + progress bar, hint text centered inside the track */
@@ -498,9 +500,10 @@
       margin: 0;
     }
     .cart-sticky-cta__goal-title {
-      margin: 0 0 6px;
-      font-size: 11px;
+      margin: 0 0 3px;
+      font-size: 10px;
       font-weight: 700;
+      line-height: 1.2;
       letter-spacing: 0.06em;
       text-transform: uppercase;
       color: #ffffff;
@@ -509,7 +512,7 @@
     .cart-sticky-cta__goal-track {
       position: relative;
       width: 100%;
-      height: 20px;
+      height: 18px;
       background: linear-gradient(180deg, #3a3a3a 0%, #2a2a2a 100%);
       border-radius: 999px;
       overflow: hidden;
@@ -538,9 +541,9 @@
       z-index: 1;
       display: block;
       padding: 0 10px;
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 600;
-      line-height: 20px;
+      line-height: 18px;
       text-align: center;
       color: #ffffff;
       white-space: nowrap;
@@ -655,7 +658,6 @@
     var bar = document.querySelector('[data-cart-sticky-cta]');
     if (!bar) return;
 
-    var countEl    = bar.querySelector('[data-sticky-count]');
     var totalEl    = bar.querySelector('[data-sticky-total]');
     var btnEl      = bar.querySelector('[data-sticky-checkout]');
     var goalEl     = bar.querySelector('[data-sticky-goal]');
@@ -694,7 +696,6 @@
       }
       bar.removeAttribute('hidden');
       if (btnEl) btnEl.disabled = false;
-      if (countEl) countEl.textContent = cart.item_count;
 
       // CRITICAL: use the SAME field as apgo-coating-products and cart-totals
       // (cart.original_total_price || cart.total_price) so all three bars
