@@ -488,9 +488,17 @@
         {% endif %}
         {% assign gift_count = gift_count | plus: 1 %}
 
-        {% assign regular_price = gift_product.price | money %}
+        {% assign gift_variant = gift_product.selected_or_first_available_variant %}
+        {% assign original_cents = gift_variant.compare_at_price %}
+        {% if original_cents == blank or original_cents == 0 %}
+          {% assign original_cents = gift_product.compare_at_price %}
+        {% endif %}
+        {% if original_cents == blank or original_cents == 0 or original_cents <= gift_variant.price %}
+          {% assign original_cents = gift_variant.price %}
+        {% endif %}
+        {% assign original_price = original_cents | money %}
         {% if is_my_market %}
-          {% assign regular_price = regular_price | replace: ' MYR', '' | replace: 'MYR', '' | strip %}
+          {% assign original_price = original_price | replace: ' MYR', '' | replace: 'MYR', '' | strip %}
         {% endif %}
 
         {% assign unlocked_label = block.settings.unlocked_price_label | default: 'FREE' %}
@@ -514,7 +522,7 @@
               {% if section.settings.show_prices %}
                 <div class="cart-gwp-card__prices">
                   <div class="cart-gwp-card__price-deal">
-                    <span class="cart-gwp-card__price-regular">{{ regular_price }}</span>
+                    <span class="cart-gwp-card__price-regular">{{ original_price }}</span>
                     <span class="cart-gwp-card__price-arrow" aria-hidden="true">→</span>
                     <span class="cart-gwp-card__price-unlocked">{{ unlocked_label }}</span>
                   </div>
@@ -796,7 +804,7 @@
           "id": "unlocked_price_label",
           "label": "解鎖後顯示價",
           "default": "FREE",
-          "info": "須與 Shopify 後台 Buy X Get Y 折扣一致，僅供前台展示"
+          "info": "須與 Shopify 後台 Buy X Get Y 折扣一致，僅供前台展示。刪除線價格取自商品 Compare-at price（原價）"
         }
       ]
     }
