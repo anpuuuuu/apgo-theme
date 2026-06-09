@@ -70,6 +70,25 @@
       assign sticky_remaining_formatted = sticky_remaining_minor | money | replace: cart.currency.iso_code, '' | strip
       assign sticky_total_formatted = cart.total_price | money | replace: cart.currency.iso_code, '' | strip
 
+      # Was-price: compare-at sum per line, else cart subtotal before discounts
+      assign sticky_was_minor = 0
+      for item in cart.items
+        assign compare_line_minor = item.variant.compare_at_price | default: 0 | times: item.quantity
+        if compare_line_minor > item.original_line_price
+          assign sticky_was_minor = sticky_was_minor | plus: compare_line_minor
+        else
+          assign sticky_was_minor = sticky_was_minor | plus: item.original_line_price
+        endif
+      endfor
+      assign sticky_show_was = false
+      if sticky_was_minor > cart.total_price
+        assign sticky_show_was = true
+      elsif cart.original_total_price > cart.total_price
+        assign sticky_was_minor = cart.original_total_price
+        assign sticky_show_was = true
+      endif
+      assign sticky_was_formatted = sticky_was_minor | money | replace: cart.currency.iso_code, '' | strip
+
       # Locale-aware templates for sticky in-bar hint text
       assign sticky_fs_unlocked_label = 'apgo_cart.free_shipping_unlocked_label' | t
       assign sticky_fs_remaining_template = 'apgo_cart.free_shipping_remaining' | t: amount: '%%AMT%%'
@@ -99,14 +118,16 @@
         endif
       endif
     -%}
+    <div class="cart-sticky-footer"
+         data-cart-sticky-footer
+         {% if cart == empty %}hidden{% endif %}>
     <div class="cart-sticky-cta"
          data-cart-sticky-cta
          data-threshold-minor="{{ sticky_threshold_minor }}"
          data-fs-unlocked-label="{{ sticky_fs_unlocked_label | escape }}"
          data-fs-remaining-template="{{ sticky_fs_remaining_template | escape }}"
          data-items-singular="{% if loc contains 'zh' %}%%COUNT%% 件{% else %}%%COUNT%% item{% endif %}"
-         data-items-plural="{% if loc contains 'zh' %}%%COUNT%% 件{% else %}%%COUNT%% items{% endif %}"
-         {% if cart == empty %}hidden{% endif %}>
+         data-items-plural="{% if loc contains 'zh' %}%%COUNT%% 件{% else %}%%COUNT%% items{% endif %}">
       {%- if section.settings.show_free_shipping_progress and sticky_threshold_minor > 0 -%}
         <div class="cart-sticky-cta__zone cart-sticky-cta__zone--goal">
           <div class="cart-sticky-cta__goal {% if sticky_free_shipping_unlocked %}is-unlocked{% else %}is-locked{% endif %}" data-sticky-goal>
@@ -127,7 +148,10 @@
       <div class="cart-sticky-cta__zone cart-sticky-cta__zone--price">
         <span class="cart-sticky-cta__items" data-sticky-items>{{ sticky_items_label }}</span>
         <span class="cart-sticky-cta__label">{{ 'content.cart_estimated_total' | t }}</span>
-        <span class="cart-sticky-cta__total" data-sticky-total>{{ sticky_total_formatted }}</span>
+        <div class="cart-sticky-cta__prices" data-sticky-prices>
+          <span class="cart-sticky-cta__was" data-sticky-was {% unless sticky_show_was %}hidden{% endunless %}>{{ sticky_was_formatted }}</span>
+          <span class="cart-sticky-cta__total" data-sticky-total>{{ sticky_total_formatted }}</span>
+        </div>
       </div>
       <button
         type="submit"
@@ -139,6 +163,10 @@
       >
         {{ label_checkout }}
       </button>
+    </div>
+    <div class="cart-sticky-footer__tax">
+      {% render 'tax-info', has_discounts_enabled: settings.show_add_discount_code %}
+    </div>
     </div>
   {%- endif -%}
 
@@ -399,9 +427,9 @@
   }
 
   /* ========================================
-     Mobile Sticky Checkout Bar
+     Mobile Sticky Checkout Bar + tax disclaimer
      ======================================== */
-  .cart-sticky-cta { display: none; }
+  .cart-sticky-footer { display: none; }
 
   @media (max-width: 749px) {
     /* Main checkout must stay below the fixed sticky bar when scrolling */
@@ -412,16 +440,14 @@
       position: relative;
     }
 
-    .cart-sticky-cta {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      grid-template-rows: auto auto;
+    .cart-sticky-footer {
+      display: block;
       position: fixed;
       inset: auto 0 0 0;
       z-index: 9999;
       isolation: isolate;
       font-family: 'Poppins', 'Microsoft JhengHei', Arial, sans-serif;
-      background: linear-gradient(180deg, #0a0a0a 0%, #000 100%);
+      background: #000;
       border-top: 1px solid rgba(255, 107, 53, 0.3);
       box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.5);
       padding-bottom: env(safe-area-inset-bottom);
@@ -429,8 +455,15 @@
       transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
       animation: fadeInUp 0.4s ease-out;
     }
-    .cart-sticky-cta[hidden] { display: none; }
-    .cart-sticky-cta.is-keyboard-open { transform: translateY(120%); }
+    .cart-sticky-footer[hidden] { display: none; }
+    .cart-sticky-footer.is-keyboard-open { transform: translateY(120%); }
+
+    .cart-sticky-cta {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      grid-template-rows: auto auto;
+      background: linear-gradient(180deg, #0a0a0a 0%, #000 100%);
+    }
 
     /* Three zones separated by divider lines */
     .cart-sticky-cta__zone {
@@ -518,16 +551,55 @@
       color: #9a9a9a;
       letter-spacing: 0.02em;
     }
-    .cart-sticky-cta__total {
+    .cart-sticky-cta__prices {
       grid-column: 2;
       grid-row: 1 / -1;
       align-self: center;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 1px;
+      min-width: 0;
+    }
+    .cart-sticky-cta__was {
+      font-size: 11px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.42);
+      text-decoration: line-through;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+      line-height: 1.2;
+    }
+    .cart-sticky-cta__was[hidden] { display: none; }
+    .cart-sticky-cta__total {
       font-size: 20px;
       font-weight: 700;
-      color: #ffffff;
+      color: #ef4444;
       letter-spacing: -0.01em;
       text-align: right;
       white-space: nowrap;
+      line-height: 1.15;
+      text-shadow: 0 0 12px rgba(239, 68, 68, 0.35);
+    }
+
+    .cart-sticky-footer__tax {
+      padding: 7px 14px 6px;
+      text-align: center;
+      font-size: 10px;
+      line-height: 1.4;
+      color: rgba(255, 255, 255, 0.5);
+      background: #000;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .cart-sticky-footer__tax small {
+      font-size: inherit;
+      color: inherit;
+    }
+    .cart-sticky-footer__tax a {
+      color: rgba(255, 255, 255, 0.65);
+      text-decoration: underline;
+      text-underline-offset: 2px;
     }
 
     /* Free shipping — title + progress bar, hint text centered inside the track */
@@ -690,10 +762,13 @@
      /cart.js patch path, and stays accurate independent of section settings.
      ======================================== */
   (function(){
-    var bar = document.querySelector('[data-cart-sticky-cta]');
+    var footer = document.querySelector('[data-cart-sticky-footer]');
+    if (!footer) return;
+    var bar = footer.querySelector('[data-cart-sticky-cta]');
     if (!bar) return;
 
     var totalEl    = bar.querySelector('[data-sticky-total]');
+    var wasEl      = bar.querySelector('[data-sticky-was]');
     var itemsEl    = bar.querySelector('[data-sticky-items]');
     var btnEl      = bar.querySelector('[data-sticky-checkout]');
     var itemsSingular = bar.getAttribute('data-items-singular') || '%%COUNT%% item';
@@ -707,8 +782,39 @@
     var fsRemainingTemplate = bar.getAttribute('data-fs-remaining-template') || '';
 
     function syncStickyHeight(){
-      if (bar.hasAttribute('hidden')) return;
-      document.documentElement.style.setProperty('--apgo-sticky-cta-h', bar.offsetHeight + 'px');
+      if (footer.hasAttribute('hidden')) return;
+      document.documentElement.style.setProperty('--apgo-sticky-cta-h', footer.offsetHeight + 'px');
+    }
+
+    var lastCartSnapshot = null;
+
+    function computeWasMinor(cart) {
+      var was = 0;
+      var rows = document.querySelectorAll('cart-items-component tr.cart-items__table-row[data-line-original-cents]');
+      if (rows.length) {
+        rows.forEach(function (row) {
+          var compare = parseInt(row.getAttribute('data-compare-at-cents'), 10) || 0;
+          var orig = parseInt(row.getAttribute('data-line-original-cents'), 10) || 0;
+          was += compare > orig ? compare : orig;
+        });
+      }
+      var total = Number(cart.total_price) || 0;
+      if (was > total) return was;
+      var origTotal = Number(cart.original_total_price) || 0;
+      if (origTotal > total) return origTotal;
+      return 0;
+    }
+
+    function updateWasDisplay(cart) {
+      if (!cart || !wasEl) return;
+      var ccy = cart.currency;
+      var wasMinor = computeWasMinor(cart);
+      if (wasMinor > Number(cart.total_price)) {
+        wasEl.textContent = fmtMoney(wasMinor, ccy);
+        wasEl.removeAttribute('hidden');
+      } else {
+        wasEl.setAttribute('hidden', '');
+      }
     }
 
     // Keep currency symbols in lock-step with apgo-coating-products and
@@ -727,12 +833,13 @@
 
     function refreshFromCart(cart){
       if (!cart) return;
+      lastCartSnapshot = cart;
       if (cart.item_count === 0) {
-        bar.setAttribute('hidden', '');
+        footer.setAttribute('hidden', '');
         if (btnEl) btnEl.disabled = true;
         return;
       }
-      bar.removeAttribute('hidden');
+      footer.removeAttribute('hidden');
       if (btnEl) btnEl.disabled = false;
       if (itemsEl) {
         var tpl = cart.item_count === 1 ? itemsSingular : itemsPlural;
@@ -745,6 +852,7 @@
       var basis = Number(cart.original_total_price || cart.total_price || 0);
       var ccy = cart.currency;
 
+      updateWasDisplay(cart);
       if (totalEl) totalEl.textContent = fmtMoney(cart.total_price, ccy);
 
       if (thresholdMinor > 0 && goalEl) {
@@ -805,6 +913,7 @@
     var cartItemsEl = document.querySelector('cart-items-component');
     if (cartItemsEl && 'MutationObserver' in window) {
       new MutationObserver(function(){
+        if (lastCartSnapshot) updateWasDisplay(lastCartSnapshot);
         if (Date.now() - lastInlineUpdate < 900) return;
         refreshSticky();
       }).observe(cartItemsEl, { childList: true, subtree: true, characterData: true });
@@ -815,13 +924,13 @@
       var baseHeight = window.innerHeight;
       window.visualViewport.addEventListener('resize', function(){
         var kbOpen = window.visualViewport.height < baseHeight - 100;
-        bar.classList.toggle('is-keyboard-open', kbOpen);
+        footer.classList.toggle('is-keyboard-open', kbOpen);
         syncStickyHeight();
       });
     }
 
     if ('ResizeObserver' in window) {
-      new ResizeObserver(syncStickyHeight).observe(bar);
+      new ResizeObserver(syncStickyHeight).observe(footer);
     }
     syncStickyHeight();
     refreshSticky();

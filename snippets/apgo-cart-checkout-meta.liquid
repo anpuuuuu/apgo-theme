@@ -1,13 +1,9 @@
 {%- comment -%}
-  Compact tax disclaimer + trust signals for cart page.
-  Placed below main-cart items (mobile only). Plain centered text,
-  no card chrome.
+  Trust signals for cart page (mobile only, below cart items).
+  Tax disclaimer lives under the sticky bar — see sections/cart-cta.liquid.
 {%- endcomment -%}
 {%- unless cart == empty -%}
   <div class="apgo-cart-checkout-meta" aria-label="Checkout information">
-    <div class="apgo-cart-checkout-meta__tax">
-      {% render 'tax-info', has_discounts_enabled: settings.show_add_discount_code %}
-    </div>
     <p class="apgo-cart-checkout-meta__trust-title">{{ 'content.checkout_redirect_notice' | t }}</p>
     <ul class="apgo-cart-checkout-meta__trust" role="list">
       <li class="apgo-cart-checkout-meta__trust-item">
