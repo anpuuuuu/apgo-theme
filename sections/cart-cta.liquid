@@ -767,6 +767,16 @@
     }
 
     var refreshTimer = null;
+    var lastInlineUpdate = 0;
+
+    function cartFromEvent(ev) {
+      if (!ev || !ev.detail) return null;
+      return ev.detail.resource
+        || (ev.detail.data && ev.detail.data.cart)
+        || ev.detail.cart
+        || null;
+    }
+
     function refreshSticky(){
       clearTimeout(refreshTimer);
       refreshTimer = setTimeout(function(){
@@ -774,20 +784,30 @@
           .then(function(r){ return r.json(); })
           .then(refreshFromCart)
           .catch(function(){});
-      }, 120);
+      }, 80);
+    }
+
+    function handleCartSignal(ev) {
+      var cart = cartFromEvent(ev);
+      if (cart && cart.items) {
+        lastInlineUpdate = Date.now();
+        refreshFromCart(cart);
+        return;
+      }
+      refreshSticky();
     }
 
     ['cart:update', 'cart:updated', 'cart:refresh', 'quantity-selector:update'].forEach(function(ev){
-      document.addEventListener(ev, refreshSticky);
+      document.addEventListener(ev, handleCartSignal);
     });
 
-    // Belt-and-suspenders: observe cart-items-component for any DOM change
-    // (qty input edits, remove buttons, etc.) so we resync even when the
-    // theme doesn't emit one of the events above.
+    // DOM 變動兜底：若剛從事件拿到 cart 就略過，避免 morph 後又多打一次 /cart.js
     var cartItemsEl = document.querySelector('cart-items-component');
     if (cartItemsEl && 'MutationObserver' in window) {
-      new MutationObserver(refreshSticky)
-        .observe(cartItemsEl, { childList: true, subtree: true, characterData: true });
+      new MutationObserver(function(){
+        if (Date.now() - lastInlineUpdate < 900) return;
+        refreshSticky();
+      }).observe(cartItemsEl, { childList: true, subtree: true, characterData: true });
     }
 
     // iOS / mobile keyboard: hide bar when keyboard opens so it doesn't cover inputs

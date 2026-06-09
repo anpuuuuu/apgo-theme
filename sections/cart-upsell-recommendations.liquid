@@ -688,99 +688,85 @@
     }
   });
 
-  // 加入購物車功能 - Savor 主題專用
+  // 收集需同步重渲染的 cart section（與 product-form.js 相同做法）
+  function getCartSectionIds() {
+    var ids = [];
+    document.querySelectorAll('cart-items-component[data-section-id]').forEach(function (el) {
+      if (el.dataset.sectionId) ids.push(el.dataset.sectionId);
+    });
+    return ids;
+  }
+
+  // 一次派發 cart:update，帶 sections HTML + resource，避免二次 section fetch
+  function dispatchCartUpdate(cart, sections) {
+    document.dispatchEvent(new CustomEvent('cart:update', {
+      bubbles: true,
+      detail: {
+        resource: cart,
+        sourceId: 'upsell-block',
+        data: {
+          itemCount: cart.item_count,
+          source: 'upsell-block',
+          sections: sections || {}
+        }
+      }
+    }));
+  }
+
+  // 加入購物車：單次 add（含 sections）+ 單次 /cart.js，不再 dynamic import
   function addToCartUpsell(button, event) {
     event.preventDefault();
     event.stopPropagation();
-    
-    const variantId = button.dataset.variantId;
-    const productId = button.dataset.productId;
-    
+
+    var variantId = button.dataset.variantId;
     if (!variantId) return;
-    
-    // 顯示載入狀態
+
     button.classList.add('loading');
     button.innerHTML = '<span>...</span>';
-    
-    // 使用 Shopify Cart API
+
+    var sectionIds = getCartSectionIds();
+    var payload = {
+      items: [{ id: parseInt(variantId, 10), quantity: 1 }]
+    };
+    if (sectionIds.length) {
+      payload.sections = sectionIds.join(',');
+      payload.sections_url = window.location.pathname;
+    }
+
     fetch(window.Shopify.routes.root + 'cart/add.js', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify({
-        items: [{
-          id: parseInt(variantId),
-          quantity: 1
-        }]
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify(payload)
+    })
+      .then(function (response) { return response.json(); })
+      .then(function (data) {
+        if (data.status) throw new Error(data.description || data.message || 'Add failed');
+
+        button.classList.remove('loading');
+        button.classList.add('added');
+        button.innerHTML = '<span>✓</span>';
+
+        // 一次 /cart.js 取得 totals；sections 已從 add 回應帶回，不需再 renderSection
+        return fetch('/cart.js', { credentials: 'same-origin', cache: 'no-store' })
+          .then(function (res) { return res.json(); })
+          .then(function (cart) {
+            dispatchCartUpdate(cart, data.sections);
+          });
       })
-    })
-    .then(response => response.json())
-    .then(data => {
-      // 成功加入購物車
-      button.classList.remove('loading');
-      button.classList.add('added');
-      button.innerHTML = '<span>✓</span>';
-      
-      // Savor/Horizon AI 主題：優先用 @theme/events 的 CartUpdateEvent；
-      // 載入失敗時退回 cart:refresh 自訂事件。
-
-      import('@theme/events').then(({ CartUpdateEvent }) => {
-        const cartDrawer = document.querySelector('cart-drawer-component');
-        fetch('/cart.js', { cache: 'no-store' })
-          .then(res => res.json())
-          .then(cart => {
-            const event = new CartUpdateEvent(cart, 'manual-trigger', {
-              itemCount: cart.item_count,
-              source: 'upsell-block',
-              sections: {}
-            });
-            document.dispatchEvent(event);
-
-            if (cartDrawer) {
-              if (cartDrawer.hasAttribute('auto-open')) {
-                cartDrawer.open();
-              } else if (typeof cartDrawer.open === 'function') {
-                cartDrawer.open();
-              } else if (typeof cartDrawer.toggle === 'function') {
-                cartDrawer.toggle(true);
-              }
-            }
-          });
-      }).catch(() => {
-        const cartDrawer = document.querySelector('cart-drawer-component, cart-drawer, .cart-drawer');
-        fetch('/cart.js', { cache: 'no-store' })
-          .then(res => res.json())
-          .then(cart => {
-            document.documentElement.dispatchEvent(new CustomEvent('cart:refresh', {
-              bubbles: true,
-              detail: { cart: cart }
-            }));
-            if (cartDrawer && typeof cartDrawer.open === 'function') {
-              cartDrawer.open();
-            } else {
-              const cartButton = document.querySelector('[data-cart-drawer-toggle], [data-cart-toggle], .cart-toggle');
-              if (cartButton) cartButton.click();
-            }
-          });
+      .then(function () {
+        setTimeout(function () {
+          button.classList.remove('added');
+          button.innerHTML = '<span>+</span>';
+        }, 3000);
+      })
+      .catch(function (error) {
+        console.error('加入購物車失敗:', error);
+        button.classList.remove('loading');
+        button.innerHTML = '<span>✗</span>';
+        setTimeout(function () {
+          button.innerHTML = '<span>+</span>';
+        }, 2000);
       });
-      
-      // 3秒後恢復原狀
-      setTimeout(() => {
-        button.classList.remove('added');
-        button.innerHTML = '<span>+</span>';
-      }, 3000);
-    })
-    .catch(error => {
-      console.error('加入購物車失敗:', error);
-      button.classList.remove('loading');
-      button.innerHTML = '<span>✗</span>';
-      
-      setTimeout(() => {
-        button.innerHTML = '<span>+</span>';
-      }, 2000);
-    });
   }
 </script>
 

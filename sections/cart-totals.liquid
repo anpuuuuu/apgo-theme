@@ -534,29 +534,50 @@
       }
     }
 
+    function patchFromCart(cart) {
+      if (!cart) return;
+      const ccy = cart.currency;
+      const subEl = document.querySelector('#' + contentId + ' .cart__original-total .cart__value');
+      const totEl = document.querySelector('#' + contentId + ' [data-cart-subtotal]');
+      if (subEl) subEl.textContent = fmtMoney(cart.original_total_price, ccy);
+      if (totEl) {
+        const t = fmtMoney(cart.total_price, ccy);
+        totEl.textContent = t;
+        totEl.setAttribute('value', t);
+      }
+    }
+
     function patchFromCartJs() {
       return fetch('/cart.js?_=' + Date.now(), { headers: { Accept: 'application/json' }, cache: 'no-store' })
         .then(r => r.json())
-        .then(cart => {
-          const ccy = cart.currency;
-          const subEl = document.querySelector('#' + contentId + ' .cart__original-total .cart__value');
-          const totEl = document.querySelector('#' + contentId + ' [data-cart-subtotal]');
-          if (subEl) subEl.textContent = fmtMoney(cart.original_total_price, ccy);
-          if (totEl) {
-            const t = fmtMoney(cart.total_price, ccy);
-            totEl.textContent = t;
-            totEl.setAttribute('value', t);
-          }
-        })
+        .then(patchFromCart)
         .catch(() => {});
     }
 
-    // updateAll：先即時改數字（權威來源 /cart.js），再重渲染 section 補折扣列，
-    // section 落地後再 patch 一次，確保不會被舊渲染蓋回去。
-    function updateAll() {
-      patchFromCartJs();
-      refreshTotals();
-      setTimeout(patchFromCartJs, 450);
+    const isMobileTotalsHidden = () => window.matchMedia('(max-width: 749px)').matches;
+    let refreshTotalsTimer;
+    function scheduleRefreshTotals() {
+      if (isMobileTotalsHidden()) return;
+      clearTimeout(refreshTotalsTimer);
+      refreshTotalsTimer = setTimeout(refreshTotals, 350);
+    }
+
+    // 有 event 內 cart 就同步改數字；section 重渲染僅桌面、且去抖避免連打
+    function updateAll(eventCart) {
+      if (eventCart && eventCart.items) {
+        patchFromCart(eventCart);
+      } else {
+        patchFromCartJs();
+      }
+      scheduleRefreshTotals();
+    }
+
+    function cartFromEvent(ev) {
+      if (!ev || !ev.detail) return null;
+      return ev.detail.resource
+        || (ev.detail.data && ev.detail.data.cart)
+        || ev.detail.cart
+        || null;
     }
 
     // —— A: 事件 —— //
@@ -564,15 +585,17 @@
       'cart:update','cart:updated','cart:change','cart:refresh',
       'quantity:change','quantity-selector:update',
       'product:added','cart:item:added','cart:item:updated','cart:item:removed'
-    ].forEach(evt => document.addEventListener(evt, () => debounce(updateAll, 200)));
+    ].forEach(evt => document.addEventListener(evt, (ev) => debounce(() => updateAll(cartFromEvent(ev)), 120)));
 
     // —— A2: 直接觀察 cart-items-component 的 DOM 變動（最可靠的「qty 改了」訊號）——
     function attachCartItemsObserver() {
       const cartItemsEl = document.querySelector('cart-items-component');
       if (!cartItemsEl || cartItemsEl.__cartTotalsObserved) return;
       cartItemsEl.__cartTotalsObserved = true;
-      new MutationObserver(() => debounce(updateAll, 200))
-        .observe(cartItemsEl, { childList: true, subtree: true, characterData: true });
+      new MutationObserver(() => {
+        if (Date.now() - lastEventAt < 900) return;
+        debounce(() => updateAll(null), 150);
+      }).observe(cartItemsEl, { childList: true, subtree: true, characterData: true });
     }
     attachCartItemsObserver();
     new MutationObserver(attachCartItemsObserver)
@@ -580,28 +603,22 @@
 
     // —— B: 攔截 cart 寫入請求。只比對「寫入」端點，避免 refreshTotals 自己的
     // /cart?sections= 與 /cart.js 又觸發自己造成無限迴圈。 ——
+    // fetch 攔截僅作兜底（無 cart:update 事件的舊路徑）；事件路徑已帶 resource 可略過重複 /cart.js
     const isCartWrite = (u) => /\/cart\/(change|add|update|clear)(\.js)?(\?|$)/.test(String(u || ''));
+    let lastEventAt = 0;
+    document.addEventListener('cart:update', () => { lastEventAt = Date.now(); });
+    document.addEventListener('cart:updated', () => { lastEventAt = Date.now(); });
+
     const _fetch = window.fetch;
     window.fetch = function(...args){
       return _fetch.apply(this, args).then(res => {
         try {
-          if (isCartWrite(args[0])) {
-            debounce(updateAll, 200);
+          if (isCartWrite(args[0]) && Date.now() - lastEventAt > 400) {
+            debounce(() => updateAll(null), 150);
           }
         } catch(e){}
         return res;
       });
-    };
-    const _open = XMLHttpRequest.prototype.open;
-    XMLHttpRequest.prototype.open = function(m, u, ...rest) {
-      this.addEventListener('load', function(){
-        try {
-          if (isCartWrite(u)) {
-            debounce(updateAll, 200);
-          }
-        } catch(e){}
-      });
-      return _open.apply(this, [m, u, ...rest]);
     };
 
     // 初始化先跑一次
