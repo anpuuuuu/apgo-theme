@@ -46,7 +46,43 @@
       </li>
     </ul>
   </div>
-  
+
+  {%- if section.settings.show_sticky_mobile -%}
+    {%- assign sticky_threshold = section.settings.free_shipping_threshold | default: 1500 -%}
+    <div class="cart-sticky-cta"
+         data-cart-sticky-cta
+         data-free-shipping-threshold="{{ sticky_threshold }}"
+         {% if cart == empty %}hidden{% endif %}>
+      {%- if section.settings.show_free_shipping_progress -%}
+        <div class="cart-sticky-cta__progress" data-sticky-progress>
+          <div class="cart-sticky-cta__progress-fill" data-sticky-progress-fill></div>
+          <span class="cart-sticky-cta__progress-text" data-sticky-progress-text>—</span>
+        </div>
+      {%- endif -%}
+      <div class="cart-sticky-cta__row">
+        <div class="cart-sticky-cta__summary">
+          <span class="cart-sticky-cta__count">
+            <span data-sticky-count>{{ cart.item_count }}</span> 件 · 小計
+          </span>
+          <span class="cart-sticky-cta__total" data-sticky-total>
+            {{ cart.total_price | money }}
+          </span>
+          <span class="cart-sticky-cta__note">含稅、結帳計運費</span>
+        </div>
+        <button
+          type="submit"
+          class="cart-sticky-cta__button button"
+          form="cart-form"
+          name="checkout"
+          data-sticky-checkout
+          {%- if cart == empty -%}disabled{%- endif -%}
+        >
+          前往結帳 <span aria-hidden="true">→</span>
+        </button>
+      </div>
+    </div>
+  {%- endif -%}
+
   {% stylesheet %}
   /* ========================================
      購物車結帳按鈕樣式設計
@@ -297,6 +333,119 @@
   .cart-cta {
     animation: fadeInUp 0.6s ease-out !important;
   }
+
+  /* ========================================
+     Mobile Sticky Checkout Bar
+     ======================================== */
+  .cart-sticky-cta { display: none; }
+
+  @media (max-width: 749px) {
+    .cart-sticky-cta {
+      display: block;
+      position: fixed;
+      inset: auto 0 0 0;
+      z-index: 70;
+      background: linear-gradient(180deg, #0a0a0a 0%, #000 100%);
+      border-top: 1px solid rgba(255, 107, 53, 0.3);
+      box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.5);
+      padding: 10px 16px calc(10px + env(safe-area-inset-bottom)) 16px;
+      transform: translateY(0);
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      animation: fadeInUp 0.4s ease-out;
+    }
+    .cart-sticky-cta[hidden] { display: none; }
+    .cart-sticky-cta.is-keyboard-open { transform: translateY(120%); }
+
+    .cart-sticky-cta__row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .cart-sticky-cta__summary {
+      flex: 1 1 auto;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2;
+    }
+    .cart-sticky-cta__count {
+      font-size: 12px;
+      color: #cccccc;
+      letter-spacing: 0.02em;
+    }
+    .cart-sticky-cta__total {
+      font-size: 20px;
+      font-weight: 700;
+      color: #f7931e;
+      margin-top: 2px;
+    }
+    .cart-sticky-cta__note {
+      font-size: 10px;
+      color: #888;
+      margin-top: 2px;
+    }
+
+    .cart-sticky-cta__button {
+      flex: 0 0 auto;
+      min-width: 144px;
+      padding: 14px 22px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #ff6b35, #f7931e);
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 16px;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(255, 107, 53, 0.45),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .cart-sticky-cta__button:active {
+      transform: scale(0.97);
+      box-shadow: 0 4px 12px rgba(255, 107, 53, 0.35);
+    }
+    .cart-sticky-cta__button:disabled {
+      background: linear-gradient(135deg, #666, #555);
+      cursor: not-allowed;
+      box-shadow: none;
+      opacity: 0.6;
+    }
+
+    /* Free shipping progress micro-bar */
+    .cart-sticky-cta__progress {
+      position: relative;
+      height: 22px;
+      margin: 0 0 8px 0;
+      border-radius: 11px;
+      background: rgba(255, 255, 255, 0.06);
+      overflow: hidden;
+    }
+    .cart-sticky-cta__progress-fill {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: var(--progress, 0%);
+      background: linear-gradient(90deg, #ff6b35, #f7931e);
+      transition: width 0.4s ease;
+    }
+    .cart-sticky-cta__progress-text {
+      position: relative;
+      z-index: 1;
+      display: block;
+      text-align: center;
+      font-size: 11px;
+      line-height: 22px;
+      color: #ffffff;
+      font-weight: 500;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    }
+    .cart-sticky-cta.is-free-shipping-met .cart-sticky-cta__progress-fill { width: 100%; }
+
+    /* Push page content up so the last item is not covered by the bar */
+    main,
+    .shopify-section--main-cart,
+    body { padding-bottom: calc(var(--apgo-sticky-cta-h, 110px) + env(safe-area-inset-bottom)); }
+  }
   {% endstylesheet %}
   
   <script>
@@ -307,10 +456,11 @@
     var REDIRECT_MODE = true;
     var CART_CHECKOUT_URL = {{ routes.cart_url | append: '/checkout' | json }};
 
-    var btn  = document.getElementById('checkout-standalone');
-    if (!btn) return;
+    var btns = document.querySelectorAll('#checkout-standalone, [data-sticky-checkout]');
+    if (!btns.length) return;
+    var primaryBtn = btns[0];
 
-    var formId = btn.getAttribute('form') || 'cart-form';
+    var formId = primaryBtn.getAttribute('form') || 'cart-form';
     var form   = document.getElementById(formId);
 
     // 取目前 query（先嘗試把最新輸入寫進網址）
@@ -336,10 +486,10 @@
     // 初始化同步一次（特別是 POST 模式要先設好 action）
     syncEntrancesNow();
 
-    // 主要行為：點擊 CTA
-    btn.addEventListener('click', function(ev){
-      // 若按鈕 disabled（空購物車），就不處理
-      if (btn.disabled || btn.getAttribute('aria-disabled') === 'true') return;
+    // 主要行為：點擊 CTA（同時綁定頁尾主按鈕與 sticky bar 按鈕）
+    function onCheckoutClick(ev){
+      var b = ev.currentTarget;
+      if (b.disabled || b.getAttribute('aria-disabled') === 'true') return;
 
       var validated = { valid: true, query: '' };
       if (typeof window.apgoValidateCheckoutAddress === 'function') {
@@ -353,15 +503,13 @@
       var qs = validated.query ? ('?' + validated.query) : getCurrentQuery();
 
       if (REDIRECT_MODE) {
-        // 攔截提交，經 cart/checkout 帶 query（email/phone 與 prefill 一致）
         ev.preventDefault();
         window.location.assign(CART_CHECKOUT_URL + qs);
       } else {
-        // 保留原本 POST：只把 action 改成 cart/checkout + query
         if (form) form.action = CART_CHECKOUT_URL + qs;
-        // 不 preventDefault，照常提交
       }
-    }, true);
+    }
+    btns.forEach(function(b){ b.addEventListener('click', onCheckoutClick, true); });
 
     // 若你的收件欄位用 history.replaceState 即時改網址，這裡再保險補一次
     window.addEventListener('popstate', syncEntrancesNow);
@@ -372,6 +520,101 @@
       if (++tries > 10) clearInterval(iv);
     }, 500);
   });
+
+  /* ========================================
+     Mobile Sticky CTA — refresh on cart change + iOS keyboard handling
+     ======================================== */
+  (function(){
+    var bar = document.querySelector('[data-cart-sticky-cta]');
+    if (!bar) return;
+
+    var countEl    = bar.querySelector('[data-sticky-count]');
+    var totalEl    = bar.querySelector('[data-sticky-total]');
+    var btnEl      = bar.querySelector('[data-sticky-checkout]');
+    var progressEl = bar.querySelector('[data-sticky-progress]');
+    var fillEl     = bar.querySelector('[data-sticky-progress-fill]');
+    var textEl     = bar.querySelector('[data-sticky-progress-text]');
+    var threshold  = parseInt(bar.getAttribute('data-free-shipping-threshold'), 10) || 0;
+
+    function getActiveCurrency(){
+      if (window.Shopify && window.Shopify.currency && window.Shopify.currency.active) {
+        return window.Shopify.currency.active;
+      }
+      return 'TWD';
+    }
+    function formatMoney(cents){
+      var ccy = getActiveCurrency();
+      var noDecimal = ccy === 'TWD' || ccy === 'JPY' || ccy === 'KRW' || ccy === 'VND';
+      var amount = noDecimal ? Math.round(cents / 100) : (cents / 100);
+      try {
+        return new Intl.NumberFormat(undefined, {
+          style: 'currency',
+          currency: ccy,
+          minimumFractionDigits: noDecimal ? 0 : 2,
+          maximumFractionDigits: noDecimal ? 0 : 2
+        }).format(amount);
+      } catch (e) {
+        return (noDecimal ? '$' : '$') + amount;
+      }
+    }
+
+    function updateProgress(totalCents){
+      if (!progressEl || !threshold) return;
+      var thresholdCents = threshold * 100;
+      var pct = Math.min(100, Math.round((totalCents / thresholdCents) * 100));
+      fillEl.style.width = pct + '%';
+      bar.style.setProperty('--progress', pct + '%');
+      if (totalCents >= thresholdCents) {
+        bar.classList.add('is-free-shipping-met');
+        textEl.textContent = '已享免運 🎉';
+      } else {
+        bar.classList.remove('is-free-shipping-met');
+        var remaining = thresholdCents - totalCents;
+        textEl.textContent = '再加 ' + formatMoney(remaining) + ' 即享免運';
+      }
+    }
+
+    function applyCart(cart){
+      if (!cart) return;
+      if (cart.item_count === 0) {
+        bar.setAttribute('hidden', '');
+        if (btnEl) btnEl.disabled = true;
+        return;
+      }
+      bar.removeAttribute('hidden');
+      if (btnEl) btnEl.disabled = false;
+      if (countEl) countEl.textContent = cart.item_count;
+      if (totalEl) totalEl.textContent = formatMoney(cart.total_price);
+      updateProgress(cart.total_price);
+    }
+
+    var refreshTimer = null;
+    function refreshSticky(){
+      clearTimeout(refreshTimer);
+      refreshTimer = setTimeout(function(){
+        fetch('/cart.js', { credentials: 'same-origin' })
+          .then(function(r){ return r.json(); })
+          .then(applyCart)
+          .catch(function(){});
+      }, 150);
+    }
+
+    ['cart:update', 'cart:updated', 'cart:refresh', 'quantity-selector:update'].forEach(function(ev){
+      document.addEventListener(ev, refreshSticky);
+    });
+
+    // initial paint (covers SSR/template editor renders)
+    refreshSticky();
+
+    // iOS / mobile keyboard: hide bar when keyboard opens so it doesn't cover inputs
+    if (window.visualViewport) {
+      var baseHeight = window.innerHeight;
+      window.visualViewport.addEventListener('resize', function(){
+        var kbOpen = window.visualViewport.height < baseHeight - 100;
+        bar.classList.toggle('is-keyboard-open', kbOpen);
+      });
+    }
+  })();
   </script>
   
   {% schema %}
@@ -379,7 +622,11 @@
     "name": "Cart CTA (Standalone)",
     "settings": [
       { "type": "checkbox", "id": "show_accelerated", "label": "Show accelerated checkout buttons (uses theme settings)", "default": true },
-      { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-3" }
+      { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-3" },
+      { "type": "header", "content": "Mobile Sticky CTA" },
+      { "type": "checkbox", "id": "show_sticky_mobile", "label": "手機顯示底部 sticky 結帳列", "default": true },
+      { "type": "checkbox", "id": "show_free_shipping_progress", "label": "Sticky 列顯示免運進度", "default": true },
+      { "type": "number", "id": "free_shipping_threshold", "label": "免運門檻 (NT$)", "default": 1500 }
     ],
     "blocks": [],
     "presets": [{ "name": "Cart CTA (Standalone)"}]
