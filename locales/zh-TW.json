@@ -542,6 +542,8 @@
     "free_shipping_locked_label": "未解鎖",
     "free_shipping_unlocked_label": "已解鎖",
     "sticky_save_amount": "已省 {{ amount }}",
+    "gwp_prompt_default": "加入 %%PRODUCT%% 即可解鎖下方特惠價",
+    "gwp_editor_empty": "請在區塊設定選擇觸發商品 (X)，並新增 Gift product 區塊。",
     "free_shipping_not_applicable": "僅適用西馬及新加坡",
     "total_after_discount": "预估总计",
     "estimated_total_checkout_note": "結帳時計算稅額、折扣和運費。",

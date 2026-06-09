@@ -1,0 +1,596 @@
+{% comment %}
+  Gift with Purchase — cart page upsell when trigger product X is in cart.
+  Display prices are configured per block; checkout discount = Shopify Admin Buy X Get Y.
+{% endcomment %}
+
+<style>
+  .shopify-section.section-cart-gwp,
+  [class*="shopify-section"][class*="cart_gift"] {
+    background: transparent !important;
+  }
+
+  .cart-gwp-wrapper {
+    --apgo-gwp-accent: {{ section.settings.accent_color_start | default: '#f08418' }};
+    --apgo-gwp-grad: linear-gradient(135deg, #ff6b35 0%, #f7931e 55%, #ff9a3c 100%);
+    width: 100%;
+    max-width: 1240px;
+    margin: 20px auto 0;
+    padding: 0 20px;
+    font-family: 'Poppins', 'Microsoft JhengHei', Arial, sans-serif;
+  }
+
+  .cart-gwp-header {
+    margin-bottom: 12px;
+    padding: 0 4px;
+  }
+
+  .cart-gwp-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: {{ section.settings.text_color }} !important;
+    margin: 0;
+    padding-left: 12px;
+    position: relative;
+  }
+
+  .cart-gwp-title::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 20px;
+    background: var(--apgo-gwp-accent);
+    border-radius: 2px;
+  }
+
+  .cart-gwp-prompt {
+    margin: 10px 4px 14px;
+    padding: 10px 12px;
+    font-size: 13px;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.75);
+    background: rgba(240, 132, 24, 0.08);
+    border: 1px solid rgba(240, 132, 24, 0.25);
+    border-radius: 8px;
+  }
+
+  .cart-gwp-prompt a {
+    color: var(--apgo-gwp-accent);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .cart-gwp-wrapper.is-unlocked .cart-gwp-prompt {
+    display: none;
+  }
+
+  .cart-gwp-section {
+    padding: 0;
+  }
+
+  .cart-gwp-grid {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding: 12px 0;
+    scrollbar-width: thin;
+    scrollbar-color: #f08418 #000;
+  }
+
+  .cart-gwp-card {
+    flex: 0 0 320px;
+    background: #000 !important;
+    border: 1px solid #404040 !important;
+    border-radius: 10px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    overflow: hidden;
+  }
+
+  .cart-gwp-card__link {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .cart-gwp-card__image {
+    width: 100%;
+    aspect-ratio: 1;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .cart-gwp-card__image.portrait { aspect-ratio: 4 / 5; }
+  .cart-gwp-card__image.landscape { aspect-ratio: 4 / 3; }
+
+  .cart-gwp-card__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .cart-gwp-card__info {
+    padding: 8px 8px 6px;
+  }
+
+  .cart-gwp-card__title {
+    font-size: 11px;
+    font-weight: 500;
+    color: {{ section.settings.text_color }} !important;
+    margin: 0 0 6px;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .cart-gwp-card__prices {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .cart-gwp-card__price-regular {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--apgo-gwp-accent);
+  }
+
+  .cart-gwp-card__price-unlocked {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.45);
+  }
+
+  .cart-gwp-card__lock {
+    flex-shrink: 0;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .cart-gwp-wrapper.is-unlocked .cart-gwp-card__price-regular {
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.45);
+    text-decoration: line-through;
+  }
+
+  .cart-gwp-wrapper.is-unlocked .cart-gwp-card__price-unlocked {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--apgo-gwp-accent);
+  }
+
+  .cart-gwp-wrapper.is-unlocked .cart-gwp-card__lock {
+    display: none;
+  }
+
+  .cart-gwp-add {
+    width: calc(100% - 16px);
+    height: 32px;
+    margin: 4px 8px 8px;
+    align-self: center;
+    border: none;
+    border-radius: 6px;
+    background: var(--apgo-gwp-grad) !important;
+    color: #fff !important;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 2px 10px rgba(255, 107, 53, 0.35);
+  }
+
+  .cart-gwp-add.loading { opacity: 0.7; pointer-events: none; }
+  .cart-gwp-add.added { opacity: 1; }
+
+  .cart-gwp-editor-note {
+    padding: 16px;
+    font-size: 13px;
+    color: #888;
+    text-align: center;
+    border: 1px dashed #404040;
+    border-radius: 8px;
+  }
+
+  @media (max-width: 768px) {
+    .cart-gwp-wrapper { padding: 0 16px; }
+    .cart-gwp-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      overflow: visible;
+      padding: 0;
+    }
+    .cart-gwp-card { flex: unset; width: auto; min-width: 0; }
+  }
+</style>
+
+{% liquid
+  assign is_my_market = false
+  if localization.country.iso_code == 'MY'
+    assign is_my_market = true
+  endif
+
+  assign trigger_product = section.settings.trigger_product
+  assign trigger_in_cart = false
+  if trigger_product != blank
+    for item in cart.items
+      if item.product_id == trigger_product.id
+        assign trigger_in_cart = true
+        break
+      endif
+    endfor
+  endif
+
+  assign prompt_text = section.settings.prompt_text
+  if prompt_text == blank
+    assign prompt_text = 'apgo_cart.gwp_prompt_default' | t
+  endif
+%}
+
+<div class="cart-gwp-wrapper{% if trigger_in_cart %} is-unlocked{% endif %}"
+     id="cart-gwp-{{ section.id }}"
+     data-section-id="{{ section.id }}"
+     data-trigger-product-id="{{ trigger_product.id | default: '' }}">
+
+  <div class="cart-gwp-header">
+    <h3 class="cart-gwp-title">{{ section.settings.section_title }}</h3>
+  </div>
+
+  {% if trigger_product != blank %}
+    <div class="cart-gwp-prompt" data-gwp-prompt>
+      {% capture product_link %}{{ trigger_product.title | link_to: trigger_product.url }}{% endcapture %}
+      {% if prompt_text contains '%%PRODUCT%%' %}
+        {{ prompt_text | replace: '%%PRODUCT%%', product_link }}
+      {% else %}
+        {{ prompt_text }}
+        <a href="{{ trigger_product.url }}">{{ trigger_product.title }}</a>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  <div class="cart-gwp-section">
+    <div class="cart-gwp-grid">
+      {% assign gift_count = 0 %}
+      {% for block in section.blocks %}
+        {% if gift_count >= section.settings.max_products %}
+          {% break %}
+        {% endif %}
+        {% assign gift_product = block.settings.product %}
+        {% if gift_product == blank %}
+          {% continue %}
+        {% endif %}
+        {% assign gift_count = gift_count | plus: 1 %}
+
+        {% assign img_width = 400 %}
+        {% case section.settings.image_ratio %}
+          {% when 'portrait' %}
+            {% assign img_height = 500 %}
+          {% when 'landscape' %}
+            {% assign img_height = 300 %}
+          {% else %}
+            {% assign img_height = 400 %}
+        {% endcase %}
+
+        {% assign regular_price = gift_product.price | money %}
+        {% if is_my_market %}
+          {% assign regular_price = regular_price | replace: ' MYR', '' | replace: 'MYR', '' | strip %}
+        {% endif %}
+
+        {% assign unlocked_label = block.settings.unlocked_price_label | default: 'FREE' %}
+
+        <div class="cart-gwp-card" {{ block.shopify_attributes }}>
+          <a href="{{ gift_product.url }}" class="cart-gwp-card__link">
+            <div class="cart-gwp-card__image {{ section.settings.image_ratio }}">
+              {% if gift_product.featured_image %}
+                <img src="{{ gift_product.featured_image | image_url: width: img_width }}"
+                     alt="{{ gift_product.title | escape }}"
+                     width="{{ img_width }}"
+                     height="{{ img_height }}"
+                     loading="lazy">
+              {% else %}
+                {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+              {% endif %}
+            </div>
+            <div class="cart-gwp-card__info">
+              <h4 class="cart-gwp-card__title">{{ gift_product.title }}</h4>
+              {% if section.settings.show_prices %}
+                <div class="cart-gwp-card__prices">
+                  <span class="cart-gwp-card__price-regular">{{ regular_price }}</span>
+                  <span class="cart-gwp-card__price-unlocked">
+                    <svg class="cart-gwp-card__lock" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                      <rect x="3" y="11" width="18" height="11" rx="2"/>
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                    <span>{{ unlocked_label }}</span>
+                  </span>
+                </div>
+              {% endif %}
+            </div>
+          </a>
+          {% if section.settings.enable_quick_add %}
+            <button type="button"
+                    class="cart-gwp-add"
+                    data-variant-id="{{ gift_product.selected_or_first_available_variant.id }}"
+                    data-gwp-add>
+              <span>+</span>
+            </button>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      {% if gift_count == 0 and request.design_mode %}
+        <div class="cart-gwp-editor-note">
+          {{ 'apgo_cart.gwp_editor_empty' | t }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var root = document.getElementById('cart-gwp-{{ section.id }}');
+  if (!root) return;
+
+  var triggerId = root.getAttribute('data-trigger-product-id') || '';
+
+  function cartHasTrigger(cart) {
+    if (!triggerId || !cart || !cart.items) return false;
+    var tid = parseInt(triggerId, 10);
+    return cart.items.some(function (item) {
+      return Number(item.product_id) === tid;
+    });
+  }
+
+  function setUnlocked(unlocked) {
+    root.classList.toggle('is-unlocked', unlocked);
+  }
+
+  function syncFromCart(cart) {
+    if (!triggerId) return;
+    setUnlocked(cartHasTrigger(cart));
+  }
+
+  function cartFromEvent(ev) {
+    if (!ev || !ev.detail) return null;
+    return ev.detail.resource
+      || (ev.detail.data && ev.detail.data.cart)
+      || ev.detail.cart
+      || null;
+  }
+
+  function getCartSectionIds() {
+    var ids = [];
+    document.querySelectorAll('cart-items-component[data-section-id]').forEach(function (el) {
+      if (el.dataset.sectionId) ids.push(el.dataset.sectionId);
+    });
+    return ids;
+  }
+
+  function dispatchCartUpdate(cart, sections) {
+    document.dispatchEvent(new CustomEvent('cart:update', {
+      bubbles: true,
+      detail: {
+        resource: cart,
+        sourceId: 'gwp-block-{{ section.id }}',
+        data: {
+          itemCount: cart.item_count,
+          source: 'gwp-block',
+          sections: sections || {}
+        }
+      }
+    }));
+  }
+
+  root.querySelectorAll('[data-gwp-add]').forEach(function (btn) {
+    btn.addEventListener('click', function (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+
+      var variantId = btn.getAttribute('data-variant-id');
+      if (!variantId) return;
+
+      btn.classList.add('loading');
+      btn.innerHTML = '<span>...</span>';
+
+      var sectionIds = getCartSectionIds();
+      var payload = { items: [{ id: parseInt(variantId, 10), quantity: 1 }] };
+      if (sectionIds.length) {
+        payload.sections = sectionIds.join(',');
+        payload.sections_url = window.location.pathname;
+      }
+
+      fetch(window.Shopify.routes.root + 'cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(payload)
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (data.status) throw new Error(data.description || data.message || 'Add failed');
+          btn.classList.remove('loading');
+          btn.classList.add('added');
+          btn.innerHTML = '<span>✓</span>';
+          return fetch('/cart.js', { credentials: 'same-origin', cache: 'no-store' })
+            .then(function (r) { return r.json(); })
+            .then(function (cart) {
+              syncFromCart(cart);
+              dispatchCartUpdate(cart, data.sections);
+            });
+        })
+        .then(function () {
+          setTimeout(function () {
+            btn.classList.remove('added');
+            btn.innerHTML = '<span>+</span>';
+          }, 3000);
+        })
+        .catch(function (err) {
+          console.error('[cart-gwp] add failed:', err);
+          btn.classList.remove('loading');
+          btn.innerHTML = '<span>✗</span>';
+          setTimeout(function () { btn.innerHTML = '<span>+</span>'; }, 2000);
+        });
+    });
+  });
+
+  function handleCartSignal(ev) {
+    var cart = cartFromEvent(ev);
+    if (cart && cart.items) {
+      syncFromCart(cart);
+      return;
+    }
+    fetch('/cart.js', { credentials: 'same-origin', cache: 'no-store' })
+      .then(function (r) { return r.json(); })
+      .then(syncFromCart)
+      .catch(function () {});
+  }
+
+  ['cart:update', 'cart:updated', 'cart:refresh'].forEach(function (ev) {
+    document.addEventListener(ev, handleCartSignal);
+  });
+
+  if (triggerId) {
+    fetch('/cart.js', { credentials: 'same-origin', cache: 'no-store' })
+      .then(function (r) { return r.json(); })
+      .then(syncFromCart)
+      .catch(function () {});
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Gift with Purchase",
+  "class": "section-cart-gwp",
+  "tag": "section",
+  "max_blocks": 12,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Configure a matching Buy X Get Y automatic discount in Shopify Admin. Set each gift block's unlocked price label to match that discount (e.g. FREE, RM29.00). Do not use the same gift SKU in APGO auto-gift reconciler unless intended."
+    },
+    {
+      "type": "header",
+      "content": "基本設定"
+    },
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "區塊標題",
+      "default": "Gift with Purchase"
+    },
+    {
+      "type": "product",
+      "id": "trigger_product",
+      "label": "觸發商品 (X)",
+      "info": "顧客購物車需有此商品才解鎖折扣價顯示"
+    },
+    {
+      "type": "textarea",
+      "id": "prompt_text",
+      "label": "未解鎖提示文字",
+      "default": "Add %%PRODUCT%% to unlock special prices below",
+      "info": "使用 %%PRODUCT%% 插入商品連結；留空則使用預設翻譯"
+    },
+    {
+      "type": "range",
+      "id": "max_products",
+      "label": "最多顯示商品數",
+      "min": 3,
+      "max": 12,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "顏色設定"
+    },
+    {
+      "type": "color",
+      "id": "accent_color_start",
+      "label": "強調色",
+      "default": "#f08418"
+    },
+    {
+      "type": "color",
+      "id": "accent_color_end",
+      "label": "強調色（結束）",
+      "default": "#f7931e"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "文字顏色",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "商品設定"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_prices",
+      "label": "顯示價格",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_quick_add",
+      "label": "啟用快速加入購物車",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "圖片比例",
+      "default": "square",
+      "options": [
+        { "value": "square", "label": "Square (1:1)" },
+        { "value": "portrait", "label": "Portrait (4:5)" },
+        { "value": "landscape", "label": "Landscape (4:3)" }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "type": "gift_item",
+      "name": "Gift product",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Gift product (Y)"
+        },
+        {
+          "type": "text",
+          "id": "unlocked_price_label",
+          "label": "解鎖後顯示價",
+          "default": "FREE",
+          "info": "須與 Shopify 後台 Buy X Get Y 折扣一致，僅供前台展示"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Gift with Purchase",
+      "category": "銷售功能",
+      "blocks": [
+        { "type": "gift_item" },
+        { "type": "gift_item" }
+      ]
+    }
+  ]
+}
+{% endschema %}
