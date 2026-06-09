@@ -70,30 +70,29 @@
       assign sticky_remaining_formatted = sticky_remaining_minor | money | replace: cart.currency.iso_code, '' | strip
       assign sticky_total_formatted = cart.total_price | money | replace: cart.currency.iso_code, '' | strip
 
-      # Was-price: compare-at sum per line, else cart subtotal before discounts
-      assign sticky_was_minor = 0
+      # Save badge: reference total (compare-at or pre-discount subtotal) minus current total
+      assign sticky_reference_minor = 0
       for item in cart.items
         assign compare_line_minor = item.variant.compare_at_price | default: 0 | times: item.quantity
         if compare_line_minor > item.original_line_price
-          assign sticky_was_minor = sticky_was_minor | plus: compare_line_minor
+          assign sticky_reference_minor = sticky_reference_minor | plus: compare_line_minor
         else
-          assign sticky_was_minor = sticky_was_minor | plus: item.original_line_price
+          assign sticky_reference_minor = sticky_reference_minor | plus: item.original_line_price
         endif
       endfor
-      assign sticky_show_was = false
-      if sticky_was_minor > cart.total_price
-        assign sticky_show_was = true
-      elsif cart.original_total_price > cart.total_price
-        assign sticky_was_minor = cart.original_total_price
-        assign sticky_show_was = true
+      if sticky_reference_minor < cart.original_total_price
+        assign sticky_reference_minor = cart.original_total_price
       endif
-      assign sticky_was_formatted = sticky_was_minor | money | replace: cart.currency.iso_code, '' | strip
+      assign sticky_save_minor = sticky_reference_minor | minus: cart.total_price
+      assign sticky_show_save = false
+      if sticky_save_minor > 0
+        assign sticky_show_save = true
+      endif
+      assign sticky_save_formatted = sticky_save_minor | money | replace: cart.currency.iso_code, '' | strip
+      assign sticky_save_label = 'apgo_cart.sticky_save_amount' | t: amount: sticky_save_formatted
       assign sticky_total_split = sticky_total_formatted | split: '.'
       assign sticky_total_main = sticky_total_split[0]
       assign sticky_total_dec = '.' | append: sticky_total_split[1]
-      assign sticky_was_split = sticky_was_formatted | split: '.'
-      assign sticky_was_main = sticky_was_split[0]
-      assign sticky_was_dec = '.' | append: sticky_was_split[1]
 
       # Locale-aware templates for sticky in-bar hint text
       assign sticky_fs_unlocked_label = 'apgo_cart.free_shipping_unlocked_label' | t
@@ -133,7 +132,8 @@
          data-fs-unlocked-label="{{ sticky_fs_unlocked_label | escape }}"
          data-fs-remaining-template="{{ sticky_fs_remaining_template | escape }}"
          data-items-singular="{% if loc contains 'zh' %}%%COUNT%% 件{% else %}%%COUNT%% item{% endif %}"
-         data-items-plural="{% if loc contains 'zh' %}%%COUNT%% 件{% else %}%%COUNT%% items{% endif %}">
+         data-items-plural="{% if loc contains 'zh' %}%%COUNT%% 件{% else %}%%COUNT%% items{% endif %}"
+         data-save-template="{{ 'apgo_cart.sticky_save_amount' | t: amount: '%%AMT%%' | escape }}">
       {%- if section.settings.show_free_shipping_progress and sticky_threshold_minor > 0 -%}
         <div class="cart-sticky-cta__zone cart-sticky-cta__zone--goal">
           <div class="cart-sticky-cta__goal {% if sticky_free_shipping_unlocked %}is-unlocked{% else %}is-locked{% endif %}" data-sticky-goal>
@@ -155,7 +155,7 @@
         <span class="cart-sticky-cta__items" data-sticky-items>{{ sticky_items_label }}</span>
         <span class="cart-sticky-cta__label">{{ 'content.cart_estimated_total' | t }}</span>
         <div class="cart-sticky-cta__prices" data-sticky-prices>
-          <span class="cart-sticky-cta__was" data-sticky-was {% unless sticky_show_was %}hidden{% endunless %}><span class="cart-sticky-cta__price-main">{{ sticky_was_main }}</span><span class="cart-sticky-cta__price-dec">{{ sticky_was_dec }}</span></span>
+          <span class="cart-sticky-cta__save" data-sticky-save {% unless sticky_show_save %}hidden{% endunless %}>{{ sticky_save_label }}</span>
           <span class="cart-sticky-cta__total" data-sticky-total><span class="cart-sticky-cta__price-main">{{ sticky_total_main }}</span><span class="cart-sticky-cta__price-dec">{{ sticky_total_dec }}</span></span>
         </div>
       </div>
@@ -568,16 +568,15 @@
       gap: 1px;
       min-width: 0;
     }
-    .cart-sticky-cta__was {
+    .cart-sticky-cta__save {
       font-size: 11px;
-      font-weight: 500;
-      color: rgba(255, 255, 255, 0.42);
-      text-decoration: line-through;
+      font-weight: 600;
+      color: #f08418;
       letter-spacing: 0.01em;
       white-space: nowrap;
       line-height: 1.2;
     }
-    .cart-sticky-cta__was[hidden] { display: none; }
+    .cart-sticky-cta__save[hidden] { display: none; }
     /* 电商促销红（淘宝/天猫 #FF0036） */
     .cart-sticky-cta__total {
       font-size: 22px;
@@ -604,11 +603,6 @@
     }
     .cart-sticky-cta__total .cart-sticky-cta__price-dec {
       color: #ff0036;
-    }
-    .cart-sticky-cta__was .cart-sticky-cta__price-dec {
-      font-size: 0.82em;
-      font-weight: 500;
-      color: rgba(255, 255, 255, 0.42);
     }
 
     .cart-sticky-footer__tax {
@@ -796,7 +790,8 @@
     if (!bar) return;
 
     var totalEl    = bar.querySelector('[data-sticky-total]');
-    var wasEl      = bar.querySelector('[data-sticky-was]');
+    var saveEl     = bar.querySelector('[data-sticky-save]');
+    var saveTemplate = bar.getAttribute('data-save-template') || 'Save %%AMT%%';
     var itemsEl    = bar.querySelector('[data-sticky-items]');
     var btnEl      = bar.querySelector('[data-sticky-checkout]');
     var itemsSingular = bar.getAttribute('data-items-singular') || '%%COUNT%% item';
@@ -816,21 +811,26 @@
 
     var lastCartSnapshot = null;
 
-    function computeWasMinor(cart) {
-      var was = 0;
+    function computeReferenceMinor(cart) {
+      var reference = 0;
       var rows = document.querySelectorAll('cart-items-component tr.cart-items__table-row[data-line-original-cents]');
       if (rows.length) {
         rows.forEach(function (row) {
           var compare = parseInt(row.getAttribute('data-compare-at-cents'), 10) || 0;
           var orig = parseInt(row.getAttribute('data-line-original-cents'), 10) || 0;
-          was += compare > orig ? compare : orig;
+          reference += compare > orig ? compare : orig;
         });
       }
-      var total = Number(cart.total_price) || 0;
-      if (was > total) return was;
       var origTotal = Number(cart.original_total_price) || 0;
-      if (origTotal > total) return origTotal;
-      return 0;
+      if (reference < origTotal) reference = origTotal;
+      return reference;
+    }
+
+    function computeSaveMinor(cart) {
+      var reference = computeReferenceMinor(cart);
+      var total = Number(cart.total_price) || 0;
+      var save = reference - total;
+      return save > 0 ? save : 0;
     }
 
     function fmtMoneyParts(minor, currency) {
@@ -857,14 +857,14 @@
       el.innerHTML = '<span class="cart-sticky-cta__price-main">' + p.main + '</span><span class="cart-sticky-cta__price-dec">' + p.dec + '</span>';
     }
 
-    function updateWasDisplay(cart) {
-      if (!cart || !wasEl) return;
-      var wasMinor = computeWasMinor(cart);
-      if (wasMinor > Number(cart.total_price)) {
-        setSplitPrice(wasEl, wasMinor, cart.currency);
-        wasEl.removeAttribute('hidden');
+    function updateSaveDisplay(cart) {
+      if (!cart || !saveEl) return;
+      var saveMinor = computeSaveMinor(cart);
+      if (saveMinor > 0) {
+        saveEl.textContent = saveTemplate.replace('%%AMT%%', fmtMoney(saveMinor, cart.currency));
+        saveEl.removeAttribute('hidden');
       } else {
-        wasEl.setAttribute('hidden', '');
+        saveEl.setAttribute('hidden', '');
       }
     }
 
@@ -896,7 +896,7 @@
       var basis = Number(cart.original_total_price || cart.total_price || 0);
       var ccy = cart.currency;
 
-      updateWasDisplay(cart);
+      updateSaveDisplay(cart);
       if (totalEl) setSplitPrice(totalEl, cart.total_price, ccy);
 
       if (thresholdMinor > 0 && goalEl) {
@@ -957,7 +957,7 @@
     var cartItemsEl = document.querySelector('cart-items-component');
     if (cartItemsEl && 'MutationObserver' in window) {
       new MutationObserver(function(){
-        if (lastCartSnapshot) updateWasDisplay(lastCartSnapshot);
+        if (lastCartSnapshot) updateSaveDisplay(lastCartSnapshot);
         if (Date.now() - lastInlineUpdate < 900) return;
         refreshSticky();
       }).observe(cartItemsEl, { childList: true, subtree: true, characterData: true });
