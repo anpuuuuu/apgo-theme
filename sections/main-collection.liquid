@@ -66,8 +66,18 @@
   /collections/limited-time-deals only. Edit copy / target product handle
   inside snippets/apgo-collection-promo-banner.liquid.
 {%- endcomment -%}
-{% if settings.apgo_gwp_enabled
-   and (collection.handle == 'all' or collection.handle == 'collections-limited-time-deals') %}
+{%- liquid
+  # Shopify Liquid does not support parentheses in `if` conditions and has
+  # no operator precedence (strict right-to-left). Flatten the GWP banner
+  # gate into nested ifs to keep the semantics identical.
+  assign show_gwp_banner = false
+  if collection.handle == 'all' or collection.handle == 'collections-limited-time-deals'
+    if settings.apgo_gwp_enabled
+      assign show_gwp_banner = true
+    endif
+  endif
+-%}
+{% if show_gwp_banner %}
   {% render 'apgo-collection-promo-banner' %}
 {% endif %}
 
