@@ -71,44 +71,36 @@
     "cart_gift_with_purchase": {
       "type": "cart-gift-with-purchase",
       "blocks": {
+        "gift_item_D8Y939": {
+          "type": "gift_item",
+          "settings": {
+            "product": "apgo-car-wash-shampoo-special-formula-refill-pack",
+            "unlocked_price_label": "FREE"
+          }
+        },
         "gift_item_Ya86Qz": {
           "type": "gift_item",
           "settings": {
-            "product": "",
-            "unlocked_price_label": "FREE"
-          }
-        },
-        "gift_item_yNgMbG": {
-          "type": "gift_item",
-          "settings": {
-            "product": "apgo-atomic-crystal-car-nano-coating-set-3-item",
-            "unlocked_price_label": "FREE"
-          }
-        },
-        "gift_item_gXDTVN": {
-          "type": "gift_item",
-          "settings": {
-            "product": "apgo-atomic-car-nano-coating-set-3-item",
+            "product": "apgo-car-paint-polish-cream-white-restorer",
             "unlocked_price_label": "FREE"
           }
         },
         "gift_item_qabcng": {
           "type": "gift_item",
           "settings": {
-            "product": "",
-            "unlocked_price_label": "FREE"
+            "product": "apgo-car-exterior-plastic-protectant",
+            "unlocked_price_label": "RM 10"
           }
         }
       },
       "block_order": [
+        "gift_item_D8Y939",
         "gift_item_Ya86Qz",
-        "gift_item_yNgMbG",
-        "gift_item_gXDTVN",
         "gift_item_qabcng"
       ],
       "name": "Gift with Purchase",
       "settings": {
-        "section_title": "Gift with Purchase",
+        "section_title": "Purchase with Purchase",
         "trigger_product_list": [
           "apgo-atomic-car-nano-coating-standard"
         ],
