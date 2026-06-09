@@ -45,25 +45,6 @@
     border-radius: 2px;
   }
 
-  .cart-gwp-prompt {
-    margin: 10px 4px 14px;
-    padding: 10px 12px;
-    font-size: 13px;
-    line-height: 1.45;
-    color: rgba(255, 255, 255, 0.75);
-    background: rgba(240, 132, 24, 0.08);
-    border: 1px solid rgba(240, 132, 24, 0.25);
-    border-radius: 8px;
-  }
-
-  .cart-gwp-prompt a {
-    color: var(--apgo-gwp-accent);
-    font-weight: 600;
-    text-decoration: underline;
-    text-underline-offset: 2px;
-  }
-
-  .cart-gwp-wrapper.is-unlocked .cart-gwp-prompt,
   .cart-gwp-wrapper.is-unlocked .cart-gwp-triggers {
     display: none;
   }
@@ -79,6 +60,58 @@
     color: rgba(255, 255, 255, 0.55);
     text-transform: uppercase;
     letter-spacing: 0.04em;
+  }
+
+  .cart-gwp-triggers .cart-gwp-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow: visible;
+    padding: 0;
+  }
+
+  .cart-gwp-card--trigger {
+    flex: none;
+    width: 100%;
+    flex-direction: row;
+    align-items: stretch;
+  }
+
+  .cart-gwp-card--trigger .cart-gwp-card__link {
+    flex: 1;
+    flex-direction: row;
+    align-items: center;
+    min-width: 0;
+  }
+
+  .cart-gwp-card--trigger .cart-gwp-card__image {
+    width: 88px;
+    min-width: 88px;
+    aspect-ratio: 1;
+    flex-shrink: 0;
+  }
+
+  .cart-gwp-card--trigger .cart-gwp-card__info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 10px 12px;
+  }
+
+  .cart-gwp-card--trigger .cart-gwp-card__title {
+    font-size: 12px;
+    -webkit-line-clamp: 3;
+  }
+
+  .cart-gwp-card--trigger .cart-gwp-add {
+    width: 44px;
+    min-width: 44px;
+    height: auto;
+    min-height: 44px;
+    margin: 8px;
+    align-self: center;
+    flex-shrink: 0;
   }
 
   .cart-gwp-gifts__label {
@@ -227,14 +260,14 @@
 
   @media (max-width: 768px) {
     .cart-gwp-wrapper { padding: 0 16px; }
-    .cart-gwp-grid {
+    .cart-gwp-gifts .cart-gwp-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
       overflow: visible;
       padding: 0;
     }
-    .cart-gwp-card { flex: unset; width: auto; min-width: 0; }
+    .cart-gwp-gifts .cart-gwp-card { flex: unset; width: auto; min-width: 0; }
   }
 </style>
 
@@ -260,20 +293,6 @@
     endfor
   endif
 
-  assign prompt_text = section.settings.prompt_text
-  if prompt_text == blank
-    assign prompt_text = 'apgo_cart.gwp_prompt_default' | t
-  endif
-
-  capture trigger_product_links
-    for trigger in trigger_products
-      unless forloop.first
-        echo ', '
-      endunless
-      echo trigger.title | link_to: trigger.url
-    endfor
-  endcapture
-
   assign img_width = 400
   case section.settings.image_ratio
     when 'portrait'
@@ -295,15 +314,6 @@
   </div>
 
   {% if trigger_products != blank %}
-    <div class="cart-gwp-prompt" data-gwp-prompt>
-      {% if prompt_text contains '%%PRODUCT%%' %}
-        {{ prompt_text | replace: '%%PRODUCT%%', trigger_product_links }}
-      {% else %}
-        {{ prompt_text }}
-        {{ trigger_product_links }}
-      {% endif %}
-    </div>
-
     <div class="cart-gwp-triggers" data-gwp-triggers>
       <p class="cart-gwp-triggers__label">{{ 'apgo_cart.gwp_trigger_label' | t }}</p>
       <div class="cart-gwp-grid">
@@ -580,14 +590,7 @@
       "id": "trigger_product_list",
       "label": "觸發商品 (X)",
       "limit": 12,
-      "info": "可選多個商品；未解鎖時會顯示圖片、價格與加購按鈕。購物車含任一 X 即解鎖下方贈品價"
-    },
-    {
-      "type": "textarea",
-      "id": "prompt_text",
-      "label": "未解鎖提示文字",
-      "default": "Add %%PRODUCT%% to unlock special prices below",
-      "info": "使用 %%PRODUCT%% 插入多個商品連結（逗號分隔）；留空則使用預設翻譯"
+      "info": "可選多個商品，一列一個展示；購物車含任一 X 即解鎖下方贈品價"
     },
     {
       "type": "range",

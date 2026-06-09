@@ -113,7 +113,6 @@
       "name": "Gift with Purchase",
       "settings": {
         "section_title": "Gift with Purchase",
-        "prompt_text": "Add %%PRODUCT%% to unlock special prices below",
         "max_products": 8,
         "accent_color_start": "#f08418",
         "accent_color_end": "#f7931e",
