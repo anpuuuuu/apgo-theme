@@ -9,6 +9,16 @@
  */
 {
   "sections": {
+    "apgo_checkout_steps_x7K2pQ": {
+      "type": "apgo-cart-checkout-steps",
+      "name": "Almost There — Checkout Steps",
+      "settings": {
+        "lead_text": "ONE STEP LEFT.",
+        "body_text": "Click Checkout to finish in under a minute.",
+        "padding-block-start": 8,
+        "padding-block-end": 8
+      }
+    },
     "cart-section": {
       "type": "main-cart",
       "blocks": {
@@ -58,6 +68,59 @@
         "padding-block-end": 0
       }
     },
+    "cart_gift_with_purchase": {
+      "type": "cart-gift-with-purchase",
+      "blocks": {
+        "gift_item_Ya86Qz": {
+          "type": "gift_item",
+          "settings": {
+            "product": "",
+            "unlocked_price_label": "FREE"
+          }
+        },
+        "gift_item_yNgMbG": {
+          "type": "gift_item",
+          "settings": {
+            "product": "apgo-atomic-crystal-car-nano-coating-set-3-item",
+            "unlocked_price_label": "FREE"
+          }
+        },
+        "gift_item_gXDTVN": {
+          "type": "gift_item",
+          "settings": {
+            "product": "apgo-atomic-car-nano-coating-set-3-item",
+            "unlocked_price_label": "FREE"
+          }
+        },
+        "gift_item_qabcng": {
+          "type": "gift_item",
+          "settings": {
+            "product": "",
+            "unlocked_price_label": "FREE"
+          }
+        }
+      },
+      "block_order": [
+        "gift_item_Ya86Qz",
+        "gift_item_yNgMbG",
+        "gift_item_gXDTVN",
+        "gift_item_qabcng"
+      ],
+      "name": "Gift with Purchase",
+      "settings": {
+        "section_title": "Gift with Purchase",
+        "trigger_product_list": [
+          "apgo-atomic-car-nano-coating-standard"
+        ],
+        "max_products": 8,
+        "accent_color_start": "#f08418",
+        "accent_color_end": "#f7931e",
+        "text_color": "#ffffff",
+        "show_prices": true,
+        "enable_quick_add": true,
+        "image_ratio": "square"
+      }
+    },
     "apgo_coating_products_VU6az3": {
       "type": "apgo-coating-products",
       "name": "Spend More, Get More",
@@ -90,38 +153,16 @@
         "color_scheme": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26"
       }
     },
-    "apgo_checkout_steps_x7K2pQ": {
-      "type": "apgo-cart-checkout-steps",
-      "name": "Almost There — Checkout Steps",
-      "settings": {
-        "lead_text": "ONE STEP LEFT.",
-        "body_text": "Click Checkout to finish in under a minute.",
-        "padding-block-start": 8,
-        "padding-block-end": 8
-      }
-    },
     "cart_cta_aCdf4g": {
       "type": "cart-cta",
       "name": "Cart CTA (Standalone)",
       "settings": {
         "show_accelerated": true,
-        "color_scheme": "scheme-9a9df36f-52ae-4a86-948a-8b59a473eca0"
+        "color_scheme": "scheme-9a9df36f-52ae-4a86-948a-8b59a473eca0",
+        "show_sticky_mobile": true,
+        "show_free_shipping_progress": true,
+        "sticky_progress_title": "Free shipping"
       }
-    },
-    "cart_gift_with_purchase": {
-      "type": "cart-gift-with-purchase",
-      "name": "Gift with Purchase",
-      "settings": {
-        "section_title": "Gift with Purchase",
-        "max_products": 8,
-        "accent_color_start": "#f08418",
-        "accent_color_end": "#f7931e",
-        "text_color": "#ffffff",
-        "show_prices": true,
-        "enable_quick_add": true,
-        "image_ratio": "square"
-      },
-      "blocks": {}
     },
     "cart_upsell_recommendations_L4gQhn": {
       "type": "cart-upsell-recommendations",
