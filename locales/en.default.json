@@ -541,7 +541,7 @@
     "free_shipping_unlocked": "Unlocked",
     "free_shipping_locked_label": "Locked",
     "free_shipping_unlocked_label": "Unlocked",
-    "sticky_save_amount": "Save {{ amount }}",
+    "sticky_save_amount": "Saved {{ amount }}",
     "free_shipping_not_applicable": "For West Malaysia and Singapore only",
     "total_after_discount": "Estimated Total",
     "estimated_total_checkout_note": "Taxes, discounts and shipping calculated at checkout.",
