@@ -70,6 +70,13 @@
       assign sticky_remaining_formatted = sticky_remaining_minor | money | replace: cart.currency.iso_code, '' | strip
       assign sticky_total_formatted = cart.total_price | money | replace: cart.currency.iso_code, '' | strip
 
+      # Locale-aware templates so the sticky bar's JS can self-compute the
+      # free-shipping text from /cart.js without mirroring cart-totals DOM.
+      # %%AMT%% is a literal placeholder that JS substitutes with the
+      # JS-formatted remaining amount on each cart change.
+      assign sticky_fs_unlocked_text = 'apgo_cart.free_shipping_unlocked' | t
+      assign sticky_fs_remaining_template = 'apgo_cart.free_shipping_remaining' | t: amount: '%%AMT%%'
+
       assign loc = request.locale.iso_code | downcase
       if loc contains 'zh'
         assign label_subtotal_suffix = '件 · 小計'
@@ -92,6 +99,8 @@
     <div class="cart-sticky-cta {% if sticky_free_shipping_unlocked %}is-free-shipping-met{% endif %}"
          data-cart-sticky-cta
          data-threshold-minor="{{ sticky_threshold_minor }}"
+         data-fs-unlocked-text="{{ sticky_fs_unlocked_text | escape }}"
+         data-fs-remaining-template="{{ sticky_fs_remaining_template | escape }}"
          style="--progress: {{ sticky_progress_pct }}%;"
          {% if cart == empty %}hidden{% endif %}>
       {%- if section.settings.show_free_shipping_progress and sticky_threshold_minor > 0 -%}
@@ -570,8 +579,13 @@
   });
 
   /* ========================================
-     Mobile Sticky CTA — mirrors the cart-totals DOM (no client-side money math
-     → no drift from displayed total, correct symbol per market, locale-correct)
+     Mobile Sticky CTA — self-computes everything from /cart.js (authoritative
+     source). Previously the free-shipping text was mirrored from cart-totals
+     DOM (`.cart__shipping-goal .cart__value`); that element only exists when
+     `show_order_breakdown` is on, and races cart-totals' re-render so the
+     text could lag a beat behind the total. Computing directly here matches
+     the pattern used by apgo-coating-products and the just-fixed cart-totals
+     /cart.js patch path, and stays accurate independent of section settings.
      ======================================== */
   (function(){
     var bar = document.querySelector('[data-cart-sticky-cta]');
@@ -582,47 +596,56 @@
     var btnEl      = bar.querySelector('[data-sticky-checkout]');
     var textEl     = bar.querySelector('[data-sticky-progress-text]');
     var thresholdMinor = parseInt(bar.getAttribute('data-threshold-minor'), 10) || 0;
+    var fsUnlockedText      = bar.getAttribute('data-fs-unlocked-text') || '';
+    var fsRemainingTemplate = bar.getAttribute('data-fs-remaining-template') || '';
 
-    // Source-of-truth elements rendered by sections/cart-totals.liquid.
-    function readDisplayedTotal(){
-      var el = document.querySelector('[data-cart-subtotal]');
-      return el ? (el.textContent || '').trim() : null;
+    // Keep currency symbols in lock-step with apgo-coating-products and
+    // cart-totals.liquid (MYR → RM, SGD → S$).
+    function fmtMoney(minor, currency){
+      var amount = (Number(minor) || 0) / 100;
+      var fixed = amount.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      if (currency === 'MYR') return 'RM ' + fixed;
+      if (currency === 'SGD') return 'S$ ' + fixed;
+      try {
+        return new Intl.NumberFormat('en', { style: 'currency', currency: currency, currencyDisplay: 'narrowSymbol' }).format(amount);
+      } catch (_) {
+        return currency + ' ' + fixed;
+      }
     }
-    function readDisplayedFreeShippingLine(){
-      // .cart__shipping-goal .cart__value — already localized + already in shop currency symbol
-      var el = document.querySelector('.cart__shipping-goal .cart__value');
-      return el ? (el.textContent || '').trim() : null;
-    }
 
-    function refreshFromDom(cart){
-      // Mirror page-rendered total (zero drift)
-      var displayed = readDisplayedTotal();
-      if (displayed && totalEl) totalEl.textContent = displayed;
+    function refreshFromCart(cart){
+      if (!cart) return;
+      if (cart.item_count === 0) {
+        bar.setAttribute('hidden', '');
+        if (btnEl) btnEl.disabled = true;
+        return;
+      }
+      bar.removeAttribute('hidden');
+      if (btnEl) btnEl.disabled = false;
+      if (countEl) countEl.textContent = cart.item_count;
 
-      // Mirror page-rendered free-shipping line
-      var fsLine = readDisplayedFreeShippingLine();
-      if (fsLine && textEl) textEl.textContent = fsLine;
+      // CRITICAL: use the SAME field as apgo-coating-products and cart-totals
+      // (cart.original_total_price || cart.total_price) so all three bars
+      // agree on locked/unlocked. items_subtotal_price would desync them.
+      var basis = Number(cart.original_total_price || cart.total_price || 0);
+      var ccy = cart.currency;
 
-      // Count + progress from cart.js. CRITICAL: use the SAME field as
-      // apgo-coating-products (cart.original_total_price || cart.total_price) and
-      // cart-totals so all three bars agree on locked/unlocked. Using a different
-      // field (e.g. items_subtotal_price) makes the sticky show green "unlocked"
-      // while the other bars say "locked".
-      if (cart) {
-        if (cart.item_count === 0) {
-          bar.setAttribute('hidden', '');
-          if (btnEl) btnEl.disabled = true;
-          return;
-        }
-        bar.removeAttribute('hidden');
-        if (btnEl) btnEl.disabled = false;
-        if (countEl) countEl.textContent = cart.item_count;
+      if (totalEl) totalEl.textContent = fmtMoney(cart.total_price, ccy);
 
-        if (thresholdMinor > 0) {
-          var basis = Number(cart.original_total_price || cart.total_price || 0);
-          var pct = Math.min(100, Math.round((basis / thresholdMinor) * 100));
-          bar.style.setProperty('--progress', pct + '%');
-          bar.classList.toggle('is-free-shipping-met', basis >= thresholdMinor);
+      if (thresholdMinor > 0) {
+        var pct = Math.min(100, Math.round((basis / thresholdMinor) * 100));
+        bar.style.setProperty('--progress', pct + '%');
+        var unlocked = basis >= thresholdMinor;
+        bar.classList.toggle('is-free-shipping-met', unlocked);
+        if (textEl) {
+          if (unlocked) {
+            textEl.textContent = fsUnlockedText;
+          } else if (fsRemainingTemplate) {
+            textEl.textContent = fsRemainingTemplate.replace(
+              '%%AMT%%',
+              fmtMoney(thresholdMinor - basis, ccy)
+            );
+          }
         }
       }
     }
@@ -630,29 +653,25 @@
     var refreshTimer = null;
     function refreshSticky(){
       clearTimeout(refreshTimer);
-      // Wait a beat so cart-totals has re-rendered before we read its DOM.
       refreshTimer = setTimeout(function(){
-        // no-store: /cart.js is normally uncached, but be explicit so a stale
-        // value can never leak in (this is what kept totals stuck before).
         fetch('/cart.js', { credentials: 'same-origin', cache: 'no-store' })
           .then(function(r){ return r.json(); })
-          .then(refreshFromDom)
-          .catch(function(){ refreshFromDom(null); });
-      }, 250);
+          .then(refreshFromCart)
+          .catch(function(){});
+      }, 120);
     }
 
     ['cart:update', 'cart:updated', 'cart:refresh', 'quantity-selector:update'].forEach(function(ev){
       document.addEventListener(ev, refreshSticky);
     });
 
-    // Belt-and-suspenders: directly observe cart-totals DOM. The cart-totals
-    // section replaces its content node on refresh, so we observe the stable
-    // outer wrapper with subtree:true. Any change → sticky resyncs immediately,
-    // independent of event names or timing.
-    var cartTotalsWrap = document.querySelector('[data-section-type="cart-totals"]');
-    if (cartTotalsWrap && 'MutationObserver' in window) {
-      new MutationObserver(function(){ refreshSticky(); })
-        .observe(cartTotalsWrap, { childList: true, subtree: true, characterData: true });
+    // Belt-and-suspenders: observe cart-items-component for any DOM change
+    // (qty input edits, remove buttons, etc.) so we resync even when the
+    // theme doesn't emit one of the events above.
+    var cartItemsEl = document.querySelector('cart-items-component');
+    if (cartItemsEl && 'MutationObserver' in window) {
+      new MutationObserver(refreshSticky)
+        .observe(cartItemsEl, { childList: true, subtree: true, characterData: true });
     }
 
     // iOS / mobile keyboard: hide bar when keyboard opens so it doesn't cover inputs

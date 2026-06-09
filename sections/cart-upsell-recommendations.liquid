@@ -723,66 +723,43 @@
       button.classList.add('added');
       button.innerHTML = '<span>✓</span>';
       
-      // Savor/Horizon AI 主題專用更新方法
-      console.log('🔄 開始更新購物車...');
-      
+      // Savor/Horizon AI 主題：優先用 @theme/events 的 CartUpdateEvent；
+      // 載入失敗時退回 cart:refresh 自訂事件。
+
       import('@theme/events').then(({ CartUpdateEvent }) => {
-        console.log('✅ 成功載入 @theme/events');
         const cartDrawer = document.querySelector('cart-drawer-component');
-        
-        // 取得最新購物車資料
-        fetch('/cart.js')
+        fetch('/cart.js', { cache: 'no-store' })
           .then(res => res.json())
           .then(cart => {
-            console.log('📦 購物車資料:', cart);
-            
-            // 發送 CartUpdateEvent
             const event = new CartUpdateEvent(cart, 'manual-trigger', {
               itemCount: cart.item_count,
               source: 'upsell-block',
               sections: {}
             });
-            console.log('📤 發送 CartUpdateEvent');
             document.dispatchEvent(event);
-            
-            // 開啟購物車抽屜
+
             if (cartDrawer) {
-              console.log('🔍 找到購物車抽屜:', cartDrawer);
               if (cartDrawer.hasAttribute('auto-open')) {
-                console.log('🚪 嘗試開啟購物車抽屜 (auto-open)');
                 cartDrawer.open();
-              } else {
-                console.log('🚪 嘗試開啟購物車抽屜 (手動)');
-                if (typeof cartDrawer.open === 'function') {
-                  cartDrawer.open();
-                } else if (typeof cartDrawer.toggle === 'function') {
-                  cartDrawer.toggle(true);
-                }
+              } else if (typeof cartDrawer.open === 'function') {
+                cartDrawer.open();
+              } else if (typeof cartDrawer.toggle === 'function') {
+                cartDrawer.toggle(true);
               }
             }
           });
-      }).catch((error) => {
-        console.error('❌ 無法載入 @theme/events:', error);
-        console.log('🔄 使用備用方法更新購物車...');
-        
-        // 備用方法
+      }).catch(() => {
         const cartDrawer = document.querySelector('cart-drawer-component, cart-drawer, .cart-drawer');
-        
-        // 嘗試觸發購物車更新
-        fetch('/cart.js')
+        fetch('/cart.js', { cache: 'no-store' })
           .then(res => res.json())
           .then(cart => {
-            // 標準 cart:refresh 事件
             document.documentElement.dispatchEvent(new CustomEvent('cart:refresh', {
               bubbles: true,
               detail: { cart: cart }
             }));
-            
-            // 嘗試開啟購物車
             if (cartDrawer && typeof cartDrawer.open === 'function') {
               cartDrawer.open();
             } else {
-              // 嘗試點擊購物車按鈕
               const cartButton = document.querySelector('[data-cart-drawer-toggle], [data-cart-toggle], .cart-toggle');
               if (cartButton) cartButton.click();
             }
