@@ -155,7 +155,7 @@
         data-sticky-checkout
         {%- if cart == empty -%}disabled{%- endif -%}
       >
-        {{ label_checkout }}
+        <span class="cart-sticky-cta__checkout-label">{{ label_checkout }}</span><span class="cart-sticky-cta__checkout-count" data-sticky-items>{{ sticky_count_paren }}</span>
       </button>
     </div>
     <div class="cart-sticky-footer__tax">
@@ -472,10 +472,10 @@
       grid-column: 1;
       display: grid;
       grid-template-columns: 1fr auto;
-      grid-template-rows: auto auto;
+      grid-template-rows: auto;
       align-content: center;
+      align-items: center;
       column-gap: 10px;
-      row-gap: 1px;
       line-height: 1.25;
       min-width: 0;
       min-height: 52px;
@@ -489,6 +489,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      gap: 5px;
       min-width: 128px;
       padding: 0 18px;
       border: none;
@@ -531,23 +532,17 @@
     .cart-sticky-cta:not(:has(.cart-sticky-cta__zone--goal)) .cart-sticky-cta__zone--action {
       grid-row: 1;
     }
-    .cart-sticky-cta__items {
+    .cart-sticky-cta__label {
       grid-column: 1;
       grid-row: 1;
       font-size: 11px;
       color: #9a9a9a;
       letter-spacing: 0.02em;
-    }
-    .cart-sticky-cta__label {
-      grid-column: 1;
-      grid-row: 2;
-      font-size: 11px;
-      color: #9a9a9a;
-      letter-spacing: 0.02em;
+      align-self: center;
     }
     .cart-sticky-cta__prices {
       grid-column: 2;
-      grid-row: 1 / -1;
+      grid-row: 1;
       align-self: center;
       display: flex;
       flex-direction: column;
@@ -565,6 +560,15 @@
       line-height: 1.2;
     }
     .cart-sticky-cta__save[hidden] { display: none; }
+    .cart-sticky-cta__checkout-label {
+      white-space: nowrap;
+    }
+    .cart-sticky-cta__checkout-count {
+      font-size: 13px;
+      font-weight: 700;
+      opacity: 0.95;
+      white-space: nowrap;
+    }
     /* 电商促销红（淘宝/天猫 #FF0036） */
     .cart-sticky-cta__total {
       font-size: 22px;
@@ -874,8 +878,7 @@
       footer.removeAttribute('hidden');
       if (btnEl) btnEl.disabled = false;
       if (itemsEl) {
-        var tpl = cart.item_count === 1 ? itemsSingular : itemsPlural;
-        itemsEl.textContent = tpl.replace('%%COUNT%%', cart.item_count);
+        itemsEl.textContent = '(' + cart.item_count + ')';
       }
 
       // CRITICAL: use the SAME field as apgo-coating-products and cart-totals
