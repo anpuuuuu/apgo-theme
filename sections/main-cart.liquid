@@ -20,6 +20,10 @@
         {%- content_for 'block', id: 'cart-page-items', type: '_cart-products' %}
       </div>
 
+      <div class="cart-page__checkout-meta">
+        {% render 'apgo-cart-checkout-meta' %}
+      </div>
+
       <div class="cart-page__more-blocks">
         {%- content_for 'blocks' -%}
       </div>
@@ -73,9 +77,81 @@
 
   .cart-page__title,
   .cart-page__items,
+  .cart-page__checkout-meta,
   .cart-page__summary,
   .cart-page__more-blocks {
     padding-inline: var(--apgo-cart-inline-space);
+  }
+
+  /* Tax disclaimer + trust — sits directly under cart items */
+  .cart-page__checkout-meta {
+    margin-top: 14px;
+  }
+  .apgo-cart-checkout-meta {
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 12px;
+    font-family: 'Poppins', 'Microsoft JhengHei', Arial, sans-serif;
+  }
+  .apgo-cart-checkout-meta__tax {
+    margin: 0;
+    font-size: 11px;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.55);
+  }
+  .apgo-cart-checkout-meta__tax small {
+    font-size: inherit;
+    color: inherit;
+  }
+  .apgo-cart-checkout-meta__tax a {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .apgo-cart-checkout-meta__trust-title {
+    margin: 10px 0 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+    text-align: center;
+    line-height: 1.35;
+  }
+  .apgo-cart-checkout-meta__trust {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 4px 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.35;
+  }
+  .apgo-cart-checkout-meta__trust-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+  }
+  .apgo-cart-checkout-meta__trust-icon {
+    display: inline-flex;
+    align-items: center;
+    color: #f08418;
+    flex-shrink: 0;
+  }
+  .apgo-cart-checkout-meta__trust-sep {
+    color: rgba(255, 255, 255, 0.25);
+    user-select: none;
+  }
+  @media (max-width: 480px) {
+    .apgo-cart-checkout-meta__trust-sep { display: none; }
+    .apgo-cart-checkout-meta__trust-item {
+      flex-basis: 100%;
+      justify-content: center;
+    }
   }
 
   @media screen and (width >= 750px) {

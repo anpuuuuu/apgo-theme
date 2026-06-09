@@ -1,0 +1,35 @@
+{%- comment -%}
+  Compact tax disclaimer + trust signals for cart page.
+  Placed below main-cart items — replaces the need for duplicate
+  micro-copy inside cart-totals / cart-cta cards on scroll.
+{%- endcomment -%}
+{%- unless cart == empty -%}
+  <div class="apgo-cart-checkout-meta" aria-label="Checkout information">
+    <div class="apgo-cart-checkout-meta__tax">
+      {% render 'tax-info', has_discounts_enabled: settings.show_add_discount_code %}
+    </div>
+    <p class="apgo-cart-checkout-meta__trust-title">{{ 'content.checkout_redirect_notice' | t }}</p>
+    <ul class="apgo-cart-checkout-meta__trust" role="list">
+      <li class="apgo-cart-checkout-meta__trust-item">
+        <span class="apgo-cart-checkout-meta__trust-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </span>
+        <span>256-bit SSL encrypted</span>
+      </li>
+      <li class="apgo-cart-checkout-meta__trust-sep" aria-hidden="true">·</li>
+      <li class="apgo-cart-checkout-meta__trust-item">
+        <span class="apgo-cart-checkout-meta__trust-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+        </span>
+        <span>Secured by Shopify Payments</span>
+      </li>
+      <li class="apgo-cart-checkout-meta__trust-sep" aria-hidden="true">·</li>
+      <li class="apgo-cart-checkout-meta__trust-item">
+        <span class="apgo-cart-checkout-meta__trust-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </span>
+        <span>Buyer protection &amp; easy returns</span>
+      </li>
+    </ul>
+  </div>
+{%- endunless -%}
