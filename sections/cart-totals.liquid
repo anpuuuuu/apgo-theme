@@ -580,6 +580,10 @@
         || null;
     }
 
+    let lastEventAt = 0;
+    document.addEventListener('cart:update', () => { lastEventAt = Date.now(); });
+    document.addEventListener('cart:updated', () => { lastEventAt = Date.now(); });
+
     // —— A: 事件 —— //
     [
       'cart:update','cart:updated','cart:change','cart:refresh',
@@ -605,10 +609,6 @@
     // /cart?sections= 與 /cart.js 又觸發自己造成無限迴圈。 ——
     // fetch 攔截僅作兜底（無 cart:update 事件的舊路徑）；事件路徑已帶 resource 可略過重複 /cart.js
     const isCartWrite = (u) => /\/cart\/(change|add|update|clear)(\.js)?(\?|$)/.test(String(u || ''));
-    let lastEventAt = 0;
-    document.addEventListener('cart:update', () => { lastEventAt = Date.now(); });
-    document.addEventListener('cart:updated', () => { lastEventAt = Date.now(); });
-
     const _fetch = window.fetch;
     window.fetch = function(...args){
       return _fetch.apply(this, args).then(res => {
