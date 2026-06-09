@@ -638,6 +638,16 @@
       document.addEventListener(ev, refreshSticky);
     });
 
+    // Belt-and-suspenders: directly observe cart-totals DOM. The cart-totals
+    // section replaces its content node on refresh, so we observe the stable
+    // outer wrapper with subtree:true. Any change → sticky resyncs immediately,
+    // independent of event names or timing.
+    var cartTotalsWrap = document.querySelector('[data-section-type="cart-totals"]');
+    if (cartTotalsWrap && 'MutationObserver' in window) {
+      new MutationObserver(function(){ refreshSticky(); })
+        .observe(cartTotalsWrap, { childList: true, subtree: true, characterData: true });
+    }
+
     // iOS / mobile keyboard: hide bar when keyboard opens so it doesn't cover inputs
     if (window.visualViewport) {
       var baseHeight = window.innerHeight;

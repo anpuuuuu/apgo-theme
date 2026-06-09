@@ -507,8 +507,11 @@
     }
 
     // —— A: 主題/外掛可能丟的事件 —— //
+    // Horizon 主題使用 cart:update（單數）與 quantity-selector:update；
+    // 舊版/其他外掛則用 cart:updated（複數）等。兩套都要聽。
     [
-      'cart:updated','cart:change','cart:refresh','quantity:change',
+      'cart:update','cart:updated','cart:change','cart:refresh',
+      'quantity:change','quantity-selector:update',
       'product:added','cart:item:added','cart:item:updated','cart:item:removed'
     ].forEach(evt => document.addEventListener(evt, () => debounce(() => refreshTotals(), 240)));
 
