@@ -603,7 +603,10 @@
       var fsLine = readDisplayedFreeShippingLine();
       if (fsLine && textEl) textEl.textContent = fsLine;
 
-      // Count + progress need cart.js (count from raw data; progress from original_total_price)
+      // Count + progress need cart.js. Use items_subtotal_price (sum of line totals
+      // before order discounts) so the threshold check matches what the user sees as
+      // the "subtotal" in the page header / apgo_coating_products bar. Using
+      // original_total_price drifts when there are line-item discounts (BOGO etc).
       if (cart) {
         if (cart.item_count === 0) {
           bar.setAttribute('hidden', '');
@@ -615,9 +618,12 @@
         if (countEl) countEl.textContent = cart.item_count;
 
         if (thresholdMinor > 0) {
-          var pct = Math.min(100, Math.round((cart.original_total_price / thresholdMinor) * 100));
+          var basis = (typeof cart.items_subtotal_price === 'number')
+            ? cart.items_subtotal_price
+            : cart.original_total_price;
+          var pct = Math.min(100, Math.round((basis / thresholdMinor) * 100));
           bar.style.setProperty('--progress', pct + '%');
-          bar.classList.toggle('is-free-shipping-met', cart.original_total_price >= thresholdMinor);
+          bar.classList.toggle('is-free-shipping-met', basis >= thresholdMinor);
         }
       }
     }

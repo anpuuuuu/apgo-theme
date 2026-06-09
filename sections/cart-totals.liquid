@@ -515,6 +515,21 @@
       'product:added','cart:item:added','cart:item:updated','cart:item:removed'
     ].forEach(evt => document.addEventListener(evt, () => debounce(() => refreshTotals(), 240)));
 
+    // —— A2: Horizon 主題會 morph cart-items-component 的 DOM。直接觀察它
+    // 的子節點變動，是最可靠的「qty 改了」訊號 —— 不靠事件名稱、不靠 fetch
+    // 攔截。任何節點變化都觸發 refresh。
+    function attachCartItemsObserver() {
+      const cartItemsEl = document.querySelector('cart-items-component');
+      if (!cartItemsEl || cartItemsEl.__cartTotalsObserved) return;
+      cartItemsEl.__cartTotalsObserved = true;
+      new MutationObserver(() => debounce(() => refreshTotals(), 240))
+        .observe(cartItemsEl, { childList: true, subtree: true, characterData: true });
+    }
+    attachCartItemsObserver();
+    // 若 cart-items-component 被整顆替換（morphSection），重新掛 observer
+    new MutationObserver(attachCartItemsObserver)
+      .observe(document.body, { childList: true, subtree: true });
+
     // —— B: 攔截 cart 相關的 fetch / XHR —— //
     const _fetch = window.fetch;
     window.fetch = function(...args){
