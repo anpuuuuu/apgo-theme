@@ -603,10 +603,11 @@
       var fsLine = readDisplayedFreeShippingLine();
       if (fsLine && textEl) textEl.textContent = fsLine;
 
-      // Count + progress need cart.js. Use items_subtotal_price (sum of line totals
-      // before order discounts) so the threshold check matches what the user sees as
-      // the "subtotal" in the page header / apgo_coating_products bar. Using
-      // original_total_price drifts when there are line-item discounts (BOGO etc).
+      // Count + progress from cart.js. CRITICAL: use the SAME field as
+      // apgo-coating-products (cart.original_total_price || cart.total_price) and
+      // cart-totals so all three bars agree on locked/unlocked. Using a different
+      // field (e.g. items_subtotal_price) makes the sticky show green "unlocked"
+      // while the other bars say "locked".
       if (cart) {
         if (cart.item_count === 0) {
           bar.setAttribute('hidden', '');
@@ -618,9 +619,7 @@
         if (countEl) countEl.textContent = cart.item_count;
 
         if (thresholdMinor > 0) {
-          var basis = (typeof cart.items_subtotal_price === 'number')
-            ? cart.items_subtotal_price
-            : cart.original_total_price;
+          var basis = Number(cart.original_total_price || cart.total_price || 0);
           var pct = Math.min(100, Math.round((basis / thresholdMinor) * 100));
           bar.style.setProperty('--progress', pct + '%');
           bar.classList.toggle('is-free-shipping-met', basis >= thresholdMinor);
@@ -633,7 +632,9 @@
       clearTimeout(refreshTimer);
       // Wait a beat so cart-totals has re-rendered before we read its DOM.
       refreshTimer = setTimeout(function(){
-        fetch('/cart.js', { credentials: 'same-origin' })
+        // no-store: /cart.js is normally uncached, but be explicit so a stale
+        // value can never leak in (this is what kept totals stuck before).
+        fetch('/cart.js', { credentials: 'same-origin', cache: 'no-store' })
           .then(function(r){ return r.json(); })
           .then(refreshFromDom)
           .catch(function(){ refreshFromDom(null); });

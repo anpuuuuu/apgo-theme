@@ -468,13 +468,20 @@
       return dom.getElementById(contentId);
     }
 
+    // 關鍵：每次都加 cache-buster + no-store。否則 /cart?sections=<id> 是固定
+    // URL，瀏覽器會把第一次的回應快取起來，數量改變後 AJAX 仍拿到舊 HTML
+    //（就是「必須硬刷新才更新」的根因）。/cart.js（免運條用的）本來就 no-cache
+    // 所以一直是對的，但這個 section render 端點沒有，會被快取。
+    const NO_STORE = { headers: { 'X-Requested-With': 'XMLHttpRequest' }, cache: 'no-store' };
+
     function refreshTotals() {
       // 先試新版 ?sections=
       const u1 = new URL(window.location.href);
       u1.pathname = root.replace(/\/$/, '') + u1.pathname.replace(root.replace(/\/$/, ''), '');
       u1.searchParams.set('sections', sid);
+      u1.searchParams.set('_', Date.now());
 
-      fetch(u1.toString(), { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+      fetch(u1.toString(), NO_STORE)
         .then(r => r.ok ? r.json() : Promise.reject())
         .then(json => {
           const html = json && json[sid];
@@ -490,8 +497,9 @@
           const u2 = new URL(window.location.href);
           u2.pathname = root.replace(/\/$/, '') + u2.pathname.replace(root.replace(/\/$/, ''), '');
           u2.searchParams.set('section_id', sid);
+          u2.searchParams.set('_', Date.now());
 
-          fetch(u2.toString(), { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+          fetch(u2.toString(), NO_STORE)
             .then(r => r.text())
             .then(html => {
               const freshContent = htmlToNode(html);
