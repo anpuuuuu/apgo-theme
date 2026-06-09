@@ -450,13 +450,6 @@
     const sid = wrapper.dataset.sectionId;
     const contentId = wrapper.dataset.contentId;
 
-    // #region agent log
-    var __dbg = function(hyp, msg, data){
-      try { fetch('http://127.0.0.1:7664/ingest/6d6da4c4-6868-481c-8830-6f610c9dd71e',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'0c453c'},body:JSON.stringify({sessionId:'0c453c',runId:'init',hypothesisId:hyp,location:'cart-totals.liquid:'+msg,message:msg,data:data||{},timestamp:Date.now()})}).catch(function(){}); } catch(e){}
-    };
-    __dbg('H1','init',{sid:sid,contentId:contentId,sectionCount:document.querySelectorAll('[data-section-type="cart-totals"]').length});
-    // #endregion
-
     // 小工具：每次都取最新的 content 容器
     const getContentEl = () => document.getElementById(contentId);
 
@@ -495,17 +488,6 @@
           if (!html) throw new Error('Sections JSON missing');
           const freshContent = htmlToNode(html);
           const contentEl = getContentEl();
-          // #region agent log
-          var freshSub = freshContent ? freshContent.querySelector('.cart__original-total .cart__value') : null;
-          var freshTot = freshContent ? freshContent.querySelector('[data-cart-subtotal]') : null;
-          __dbg('H3','refreshTotals_landed',{
-            htmlLen: (html||'').length,
-            freshSubText: freshSub ? freshSub.textContent.trim() : null,
-            freshTotText: freshTot ? freshTot.textContent.trim() : null,
-            domSubBeforeReplace: contentEl && contentEl.querySelector('.cart__original-total .cart__value') ? contentEl.querySelector('.cart__original-total .cart__value').textContent.trim() : null,
-            domTotBeforeReplace: contentEl && contentEl.querySelector('[data-cart-subtotal]') ? contentEl.querySelector('[data-cart-subtotal]').textContent.trim() : null
-          });
-          // #endregion
           if (freshContent && contentEl) {
             contentEl.replaceWith(freshContent);
           }
@@ -552,52 +534,29 @@
       }
     }
 
-    function patchFromCartJs(tag) {
+    function patchFromCartJs() {
       return fetch('/cart.js?_=' + Date.now(), { headers: { Accept: 'application/json' }, cache: 'no-store' })
         .then(r => r.json())
         .then(cart => {
           const ccy = cart.currency;
           const subEl = document.querySelector('#' + contentId + ' .cart__original-total .cart__value');
           const totEl = document.querySelector('#' + contentId + ' [data-cart-subtotal]');
-          // #region agent log
-          __dbg('H2','patchFromCartJs',{
-            tag: tag||'',
-            item_count: cart.item_count,
-            qty0: cart.items && cart.items[0] && cart.items[0].quantity,
-            original_total_price: cart.original_total_price,
-            total_price: cart.total_price,
-            subElFound: !!subEl,
-            totElFound: !!totEl,
-            subElBefore: subEl ? subEl.textContent.trim() : null,
-            totElBefore: totEl ? totEl.textContent.trim() : null
-          });
-          // #endregion
           if (subEl) subEl.textContent = fmtMoney(cart.original_total_price, ccy);
           if (totEl) {
             const t = fmtMoney(cart.total_price, ccy);
             totEl.textContent = t;
             totEl.setAttribute('value', t);
           }
-          // #region agent log
-          __dbg('H4','patch_after',{
-            tag: tag||'',
-            subElAfter: subEl ? subEl.textContent.trim() : null,
-            totElAfter: totEl ? totEl.textContent.trim() : null
-          });
-          // #endregion
         })
         .catch(() => {});
     }
 
     // updateAll：先即時改數字（權威來源 /cart.js），再重渲染 section 補折扣列，
     // section 落地後再 patch 一次，確保不會被舊渲染蓋回去。
-    function updateAll(reason) {
-      // #region agent log
-      __dbg('H1','updateAll_called',{reason: reason||'?'});
-      // #endregion
-      patchFromCartJs('immediate');
+    function updateAll() {
+      patchFromCartJs();
       refreshTotals();
-      setTimeout(function(){ patchFromCartJs('after450'); }, 450);
+      setTimeout(patchFromCartJs, 450);
     }
 
     // —— A: 事件 —— //
@@ -605,17 +564,14 @@
       'cart:update','cart:updated','cart:change','cart:refresh',
       'quantity:change','quantity-selector:update',
       'product:added','cart:item:added','cart:item:updated','cart:item:removed'
-    ].forEach(evt => document.addEventListener(evt, () => { /* #region agent log */ __dbg('H1','event_'+evt,{}); /* #endregion */ debounce(() => updateAll('evt:'+evt), 200); }));
+    ].forEach(evt => document.addEventListener(evt, () => debounce(updateAll, 200)));
 
     // —— A2: 直接觀察 cart-items-component 的 DOM 變動（最可靠的「qty 改了」訊號）——
     function attachCartItemsObserver() {
       const cartItemsEl = document.querySelector('cart-items-component');
       if (!cartItemsEl || cartItemsEl.__cartTotalsObserved) return;
       cartItemsEl.__cartTotalsObserved = true;
-      // #region agent log
-      __dbg('H1','observer_attached',{tag:'cart-items-component'});
-      // #endregion
-      new MutationObserver(() => { /* #region agent log */ __dbg('H1','mutation_fired',{}); /* #endregion */ debounce(() => updateAll('mutation'), 200); })
+      new MutationObserver(() => debounce(updateAll, 200))
         .observe(cartItemsEl, { childList: true, subtree: true, characterData: true });
     }
     attachCartItemsObserver();
@@ -630,10 +586,7 @@
       return _fetch.apply(this, args).then(res => {
         try {
           if (isCartWrite(args[0])) {
-            // #region agent log
-            __dbg('H1','fetch_intercept',{url:String(args[0]).slice(0,200), status:res && res.status});
-            // #endregion
-            debounce(() => updateAll('fetchIntercept'), 200);
+            debounce(updateAll, 200);
           }
         } catch(e){}
         return res;
@@ -644,10 +597,7 @@
       this.addEventListener('load', function(){
         try {
           if (isCartWrite(u)) {
-            // #region agent log
-            __dbg('H1','xhr_intercept',{url:String(u).slice(0,200)});
-            // #endregion
-            debounce(() => updateAll('xhrIntercept'), 200);
+            debounce(updateAll, 200);
           }
         } catch(e){}
       });
