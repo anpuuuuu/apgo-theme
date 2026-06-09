@@ -42,8 +42,11 @@
      購物車加購區塊 - AKO 風格設計
      ======================================== */
   
-  /* 外層包裝器 */
+  /* 外層包裝器 — APGO 系統橙與結帳按鈕同款漸變 */
   .cart-upsell-wrapper {
+    --apgo-upsell-accent: {{ section.settings.accent_color_start | default: '#f08418' }};
+    --apgo-upsell-accent-end: {{ section.settings.accent_color_end | default: '#f7931e' }};
+    --apgo-upsell-grad: linear-gradient(135deg, #ff6b35 0%, #f7931e 55%, #ff9a3c 100%);
     width: 100%;
     max-width: 1240px;
     margin: 20px auto 0;
@@ -461,18 +464,22 @@
       min-width: 0;
       flex-direction: column;
       align-items: stretch;
-      gap: 8px;
-      padding: 10px 8px 8px;
+      gap: 0;
+      padding: 0;
+      border-color: rgba(240, 132, 24, 0.55) !important;
+      border-radius: 10px;
     }
 
     .upsell-product-card:hover {
       transform: translateY(-2px);
+      border-color: var(--apgo-upsell-accent) !important;
+      box-shadow: 0 8px 24px rgba(240, 132, 24, 0.28);
     }
 
     .upsell-product-link {
       flex-direction: column;
       align-items: stretch;
-      gap: 6px;
+      gap: 0;
     }
 
     .upsell-product-image,
@@ -481,6 +488,8 @@
       width: 100%;
       height: auto;
       aspect-ratio: 1;
+      border-radius: 9px 9px 0 0;
+      margin: 0;
     }
 
     .upsell-product-image.portrait {
@@ -491,8 +500,13 @@
       aspect-ratio: 4 / 3;
     }
 
+    .upsell-product-image img {
+      object-fit: cover;
+    }
+
     .upsell-product-info {
       gap: 2px;
+      padding: 8px 8px 6px;
     }
 
     .upsell-product-title {
@@ -503,12 +517,47 @@
 
     .upsell-product-price {
       font-size: 13px;
+      color: var(--apgo-upsell-accent) !important;
+      text-shadow: 0 0 8px rgba(240, 132, 24, 0.35);
     }
 
     .upsell-add-to-cart {
       width: 100%;
-      height: 32px;
-      font-size: 16px;
+      height: 34px;
+      margin: 0;
+      font-size: 18px;
+      border: none !important;
+      border-radius: 0 0 9px 9px;
+      background: var(--apgo-upsell-grad) !important;
+      color: #ffffff !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.22),
+        0 2px 10px rgba(255, 107, 53, 0.35);
+    }
+
+    .upsell-add-to-cart::before {
+      display: none;
+    }
+
+    .upsell-add-to-cart span {
+      color: #ffffff !important;
+      font-weight: 700;
+    }
+
+    .upsell-add-to-cart:hover,
+    .upsell-add-to-cart:active {
+      background: linear-gradient(135deg, #ff7a45 0%, #ffa030 55%, #ffb04a 100%) !important;
+      color: #ffffff !important;
+      border: none !important;
+    }
+
+    .upsell-add-to-cart.added {
+      background: var(--apgo-upsell-grad) !important;
+      color: #ffffff !important;
+    }
+
+    .upsell-add-to-cart.added span {
+      color: #ffffff !important;
     }
   }
 
