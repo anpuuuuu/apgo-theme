@@ -70,12 +70,9 @@
       assign sticky_remaining_formatted = sticky_remaining_minor | money | replace: cart.currency.iso_code, '' | strip
       assign sticky_total_formatted = cart.total_price | money | replace: cart.currency.iso_code, '' | strip
 
-      # Locale-aware templates for sticky goal bar (mirrors apgo-coating-products)
-      assign sticky_fs_locked_label = 'apgo_cart.free_shipping_locked_label' | t
+      # Locale-aware templates for sticky in-bar hint text
       assign sticky_fs_unlocked_label = 'apgo_cart.free_shipping_unlocked_label' | t
       assign sticky_fs_remaining_template = 'apgo_cart.free_shipping_remaining' | t: amount: '%%AMT%%'
-      assign sticky_basis_formatted = cart.original_total_price | money | replace: cart.currency.iso_code, '' | strip
-      assign sticky_target_formatted = sticky_threshold_minor | money | replace: cart.currency.iso_code, '' | strip
 
       assign loc = request.locale.iso_code | downcase
       if loc contains 'zh'
@@ -99,7 +96,6 @@
     <div class="cart-sticky-cta"
          data-cart-sticky-cta
          data-threshold-minor="{{ sticky_threshold_minor }}"
-         data-fs-locked-label="{{ sticky_fs_locked_label | escape }}"
          data-fs-unlocked-label="{{ sticky_fs_unlocked_label | escape }}"
          data-fs-remaining-template="{{ sticky_fs_remaining_template | escape }}"
          {% if cart == empty %}hidden{% endif %}>
@@ -107,23 +103,14 @@
         <div class="cart-sticky-cta__goal {% if sticky_free_shipping_unlocked %}is-unlocked{% else %}is-locked{% endif %}" data-sticky-goal>
           <div class="cart-sticky-cta__goal-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ sticky_progress_pct }}">
             <div class="cart-sticky-cta__goal-fill" data-sticky-goal-fill style="width: {{ sticky_progress_pct }}%;"></div>
+            <span class="cart-sticky-cta__goal-text" data-sticky-goal-text>
+              {%- if sticky_free_shipping_unlocked -%}
+                🔓 {{ sticky_fs_unlocked_label }}
+              {%- else -%}
+                {{- 'apgo_cart.free_shipping_remaining' | t: amount: sticky_remaining_formatted -}}
+              {%- endif -%}
+            </span>
           </div>
-          <div class="cart-sticky-cta__goal-amounts">
-            <span data-sticky-goal-current>{{ sticky_basis_formatted }}</span>
-            <span data-sticky-goal-target>{{ sticky_target_formatted }}</span>
-          </div>
-          <p class="cart-sticky-cta__goal-status" data-sticky-goal-status>
-            {%- if sticky_free_shipping_unlocked -%}
-              🔓 {{ sticky_fs_unlocked_label }}
-            {%- else -%}
-              🔒 {{ sticky_fs_locked_label }}
-            {%- endif -%}
-          </p>
-          <p class="cart-sticky-cta__goal-message" data-sticky-goal-message>
-            {%- unless sticky_free_shipping_unlocked -%}
-              {{- 'apgo_cart.free_shipping_remaining' | t: amount: sticky_remaining_formatted -}}
-            {%- endunless -%}
-          </p>
         </div>
       {%- endif -%}
       <div class="cart-sticky-cta__row">
@@ -479,17 +466,14 @@
       opacity: 0.5;
     }
 
-    /* Free shipping goal — mirrors apgo-coating-products red/green UI */
+    /* Free shipping — progress bar only, hint text centered inside the track */
     .cart-sticky-cta__goal {
       margin: 0 0 10px;
-      padding: 10px 12px;
-      background: rgba(255, 255, 255, 0.025);
-      border: 1px solid rgba(255, 255, 255, 0.07);
-      border-radius: 10px;
     }
     .cart-sticky-cta__goal-track {
+      position: relative;
       width: 100%;
-      height: 10px;
+      height: 26px;
       background: linear-gradient(180deg, #3a3a3a 0%, #2a2a2a 100%);
       border-radius: 999px;
       overflow: hidden;
@@ -498,36 +482,28 @@
         inset 0 2px 4px rgb(0 0 0 / 38%);
     }
     .cart-sticky-cta__goal-fill {
+      position: absolute;
+      inset: 0 auto 0 0;
       width: 0;
       height: 100%;
       border-radius: inherit;
       transition: width 0.35s ease, background 0.3s ease, box-shadow 0.3s ease;
     }
-    .cart-sticky-cta__goal-amounts {
-      margin-top: 6px;
-      display: flex;
-      justify-content: space-between;
+    .cart-sticky-cta__goal-text {
+      position: relative;
+      z-index: 1;
+      display: block;
+      padding: 0 10px;
       font-size: 11px;
-      color: #cccccc;
-    }
-    .cart-sticky-cta__goal-status {
-      margin: 6px 0 0;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.01em;
-    }
-    .cart-sticky-cta__goal-message {
-      margin: 4px 0 0;
-      font-size: 12px;
       font-weight: 600;
-    }
-    .cart-sticky-cta__goal.is-locked .cart-sticky-cta__goal-status,
-    .cart-sticky-cta__goal.is-locked .cart-sticky-cta__goal-message {
-      color: #DC3545;
-    }
-    .cart-sticky-cta__goal.is-unlocked .cart-sticky-cta__goal-status,
-    .cart-sticky-cta__goal.is-unlocked .cart-sticky-cta__goal-message {
-      color: #28A745;
+      line-height: 26px;
+      text-align: center;
+      color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+      pointer-events: none;
     }
     .cart-sticky-cta__goal.is-locked .cart-sticky-cta__goal-fill {
       background: linear-gradient(90deg, #DC3545, #DC3545);
@@ -542,7 +518,7 @@
     /* Push page content up so the last item is not covered by the bar */
     main,
     .shopify-section--main-cart,
-    body { padding-bottom: calc(var(--apgo-sticky-cta-h, 150px) + env(safe-area-inset-bottom)); }
+    body { padding-bottom: calc(var(--apgo-sticky-cta-h, 120px) + env(safe-area-inset-bottom)); }
   }
   {% endstylesheet %}
   
@@ -638,12 +614,8 @@
     var goalEl     = bar.querySelector('[data-sticky-goal]');
     var goalFill   = bar.querySelector('[data-sticky-goal-fill]');
     var goalTrack  = bar.querySelector('.cart-sticky-cta__goal-track');
-    var goalCurrent = bar.querySelector('[data-sticky-goal-current]');
-    var goalTarget = bar.querySelector('[data-sticky-goal-target]');
-    var goalStatus = bar.querySelector('[data-sticky-goal-status]');
-    var goalMessage = bar.querySelector('[data-sticky-goal-message]');
+    var goalText   = bar.querySelector('[data-sticky-goal-text]');
     var thresholdMinor = parseInt(bar.getAttribute('data-threshold-minor'), 10) || 0;
-    var fsLockedLabel       = bar.getAttribute('data-fs-locked-label') || 'Locked';
     var fsUnlockedLabel     = bar.getAttribute('data-fs-unlocked-label') || 'Unlocked';
     var fsRemainingTemplate = bar.getAttribute('data-fs-remaining-template') || '';
 
@@ -694,16 +666,9 @@
         goalEl.classList.toggle('is-unlocked', unlocked);
         if (goalFill) goalFill.style.width = pct + '%';
         if (goalTrack) goalTrack.setAttribute('aria-valuenow', String(pct));
-        if (goalCurrent) goalCurrent.textContent = fmtMoney(basis, ccy);
-        if (goalTarget) goalTarget.textContent = fmtMoney(thresholdMinor, ccy);
-        if (goalStatus) {
-          goalStatus.textContent = unlocked
+        if (goalText) {
+          goalText.textContent = unlocked
             ? ('🔓 ' + fsUnlockedLabel)
-            : ('🔒 ' + fsLockedLabel);
-        }
-        if (goalMessage) {
-          goalMessage.textContent = unlocked
-            ? ''
             : fsRemainingTemplate.replace('%%AMT%%', fmtMoney(remaining, ccy));
         }
       }
