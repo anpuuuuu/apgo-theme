@@ -101,19 +101,10 @@
       assign loc = request.locale.iso_code | downcase
       if loc contains 'zh'
         assign label_checkout = '前往結帳'
-        if cart.item_count == 1
-          assign sticky_items_label = '1 件'
-        else
-          assign sticky_items_label = cart.item_count | append: ' 件'
-        endif
       else
         assign label_checkout = 'Check out'
-        if cart.item_count == 1
-          assign sticky_items_label = '1 item'
-        else
-          assign sticky_items_label = cart.item_count | append: ' items'
-        endif
       endif
+      assign sticky_count_paren = '(' | append: cart.item_count | append: ')'
 
       assign sticky_progress_pct = 0
       if sticky_threshold_minor > 0
@@ -131,8 +122,6 @@
          data-threshold-minor="{{ sticky_threshold_minor }}"
          data-fs-unlocked-label="{{ sticky_fs_unlocked_label | escape }}"
          data-fs-remaining-template="{{ sticky_fs_remaining_template | escape }}"
-         data-items-singular="{% if loc contains 'zh' %}%%COUNT%% 件{% else %}%%COUNT%% item{% endif %}"
-         data-items-plural="{% if loc contains 'zh' %}%%COUNT%% 件{% else %}%%COUNT%% items{% endif %}"
          data-save-template="{{ 'apgo_cart.sticky_save_amount' | t: amount: '%%AMT%%' | escape }}">
       {%- if section.settings.show_free_shipping_progress and sticky_threshold_minor > 0 -%}
         <div class="cart-sticky-cta__zone cart-sticky-cta__zone--goal">
@@ -152,7 +141,6 @@
         </div>
       {%- endif -%}
       <div class="cart-sticky-cta__zone cart-sticky-cta__zone--price">
-        <span class="cart-sticky-cta__items" data-sticky-items>{{ sticky_items_label }}</span>
         <span class="cart-sticky-cta__label">{{ 'content.cart_estimated_total' | t }}</span>
         <div class="cart-sticky-cta__prices" data-sticky-prices>
           <span class="cart-sticky-cta__total" data-sticky-total><span class="cart-sticky-cta__price-main">{{ sticky_total_main }}</span><span class="cart-sticky-cta__price-dec">{{ sticky_total_dec }}</span></span>
