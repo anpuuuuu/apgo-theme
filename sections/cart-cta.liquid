@@ -100,29 +100,31 @@
          data-fs-remaining-template="{{ sticky_fs_remaining_template | escape }}"
          {% if cart == empty %}hidden{% endif %}>
       {%- if section.settings.show_free_shipping_progress and sticky_threshold_minor > 0 -%}
-        <div class="cart-sticky-cta__goal {% if sticky_free_shipping_unlocked %}is-unlocked{% else %}is-locked{% endif %}" data-sticky-goal>
-          <p class="cart-sticky-cta__goal-title">{{ section.settings.sticky_progress_title | default: 'Free shipping' }}</p>
-          <div class="cart-sticky-cta__goal-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ sticky_progress_pct }}">
-            <div class="cart-sticky-cta__goal-fill" data-sticky-goal-fill style="width: {{ sticky_progress_pct }}%;"></div>
-            <span class="cart-sticky-cta__goal-text" data-sticky-goal-text>
-              {%- if sticky_free_shipping_unlocked -%}
-                🔓 {{ sticky_fs_unlocked_label }}
-              {%- else -%}
-                {{- 'apgo_cart.free_shipping_remaining' | t: amount: sticky_remaining_formatted -}}
-              {%- endif -%}
-            </span>
+        <div class="cart-sticky-cta__zone cart-sticky-cta__zone--goal">
+          <div class="cart-sticky-cta__goal {% if sticky_free_shipping_unlocked %}is-unlocked{% else %}is-locked{% endif %}" data-sticky-goal>
+            <p class="cart-sticky-cta__goal-title">{{ section.settings.sticky_progress_title | default: 'Free shipping' }}</p>
+            <div class="cart-sticky-cta__goal-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ sticky_progress_pct }}">
+              <div class="cart-sticky-cta__goal-fill" data-sticky-goal-fill style="width: {{ sticky_progress_pct }}%;"></div>
+              <span class="cart-sticky-cta__goal-text" data-sticky-goal-text>
+                {%- if sticky_free_shipping_unlocked -%}
+                  🔓 {{ sticky_fs_unlocked_label }}
+                {%- else -%}
+                  {{- 'apgo_cart.free_shipping_remaining' | t: amount: sticky_remaining_formatted -}}
+                {%- endif -%}
+              </span>
+            </div>
           </div>
         </div>
       {%- endif -%}
-      <div class="cart-sticky-cta__row">
-        <div class="cart-sticky-cta__summary">
-          <span class="cart-sticky-cta__count">
-            <span data-sticky-count>{{ cart.item_count }}</span> {{ label_subtotal_suffix }}
-          </span>
-          <span class="cart-sticky-cta__total" data-sticky-total>
-            {{ sticky_total_formatted }}
-          </span>
-        </div>
+      <div class="cart-sticky-cta__zone cart-sticky-cta__zone--price">
+        <span class="cart-sticky-cta__count">
+          <span data-sticky-count>{{ cart.item_count }}</span> {{ label_subtotal_suffix }}
+        </span>
+        <span class="cart-sticky-cta__total" data-sticky-total>
+          {{ sticky_total_formatted }}
+        </span>
+      </div>
+      <div class="cart-sticky-cta__zone cart-sticky-cta__zone--action">
         <button
           type="submit"
           class="cart-sticky-cta__button button"
@@ -401,7 +403,9 @@
     }
 
     .cart-sticky-cta {
-      display: block;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      grid-template-rows: auto auto;
       position: fixed;
       inset: auto 0 0 0;
       z-index: 9999;
@@ -410,7 +414,7 @@
       background: linear-gradient(180deg, #0a0a0a 0%, #000 100%);
       border-top: 1px solid rgba(255, 107, 53, 0.3);
       box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.5);
-      padding: 10px 16px calc(10px + env(safe-area-inset-bottom)) 16px;
+      padding-bottom: env(safe-area-inset-bottom);
       transform: translateY(0);
       transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
       animation: fadeInUp 0.4s ease-out;
@@ -418,17 +422,36 @@
     .cart-sticky-cta[hidden] { display: none; }
     .cart-sticky-cta.is-keyboard-open { transform: translateY(120%); }
 
-    .cart-sticky-cta__row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
+    /* Three zones separated by divider lines */
+    .cart-sticky-cta__zone {
+      padding: 10px 16px;
     }
-    .cart-sticky-cta__summary {
-      flex: 1 1 auto;
-      min-width: 0;
+    .cart-sticky-cta__zone--goal {
+      grid-column: 1 / -1;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .cart-sticky-cta__zone--price {
+      grid-column: 1;
       display: flex;
       flex-direction: column;
+      justify-content: center;
       line-height: 1.2;
+      min-width: 0;
+      border-right: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .cart-sticky-cta__zone--action {
+      grid-column: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 14px;
+    }
+    /* No free-shipping row: price + button only, still two zones with vertical divider */
+    .cart-sticky-cta:not(:has(.cart-sticky-cta__zone--goal)) .cart-sticky-cta__zone--price {
+      grid-row: 1;
+    }
+    .cart-sticky-cta:not(:has(.cart-sticky-cta__zone--goal)) .cart-sticky-cta__zone--action {
+      grid-row: 1;
     }
     .cart-sticky-cta__count {
       font-size: 11px;
@@ -472,7 +495,7 @@
 
     /* Free shipping — title + progress bar, hint text centered inside the track */
     .cart-sticky-cta__goal {
-      margin: 0 0 8px;
+      margin: 0;
     }
     .cart-sticky-cta__goal-title {
       margin: 0 0 6px;
