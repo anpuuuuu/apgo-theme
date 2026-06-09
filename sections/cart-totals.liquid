@@ -429,9 +429,9 @@
     margin: 0 0 14px 0 !important;
   }
 
-  /* Mobile: totals + tax copy handled by sticky bar + main-cart meta — hide card */
+  /* Mobile: totals handled by sticky bar — hide entire section wrapper */
   @media (max-width: 749px) {
-    #shopify-section-{{ section.id }} {
+    [data-section-type="cart-totals"] {
       display: none !important;
     }
   }

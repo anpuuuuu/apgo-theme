@@ -83,6 +83,17 @@
     padding-inline: var(--apgo-cart-inline-space);
   }
 
+  /* Mobile: hide duplicate cart summary sections (sticky + meta replace them) */
+  @media (max-width: 749px) {
+    .shopify-section.section-cart-combined,
+    .shopify-section:has([data-section-type="cart-totals"]) {
+      display: none !important;
+    }
+    .shopify-section:has(.cart-sticky-cta) > .cart-cta {
+      display: none !important;
+    }
+  }
+
   /* Tax disclaimer + trust — mobile only, plain centered text under cart items */
   .cart-page__checkout-meta {
     display: none;
