@@ -70,12 +70,12 @@
       assign sticky_remaining_formatted = sticky_remaining_minor | money | replace: cart.currency.iso_code, '' | strip
       assign sticky_total_formatted = cart.total_price | money | replace: cart.currency.iso_code, '' | strip
 
-      # Locale-aware templates so the sticky bar's JS can self-compute the
-      # free-shipping text from /cart.js without mirroring cart-totals DOM.
-      # %%AMT%% is a literal placeholder that JS substitutes with the
-      # JS-formatted remaining amount on each cart change.
-      assign sticky_fs_unlocked_text = 'apgo_cart.free_shipping_unlocked' | t
+      # Locale-aware templates for sticky goal bar (mirrors apgo-coating-products)
+      assign sticky_fs_locked_label = 'apgo_cart.free_shipping_locked_label' | t
+      assign sticky_fs_unlocked_label = 'apgo_cart.free_shipping_unlocked_label' | t
       assign sticky_fs_remaining_template = 'apgo_cart.free_shipping_remaining' | t: amount: '%%AMT%%'
+      assign sticky_basis_formatted = cart.original_total_price | money | replace: cart.currency.iso_code, '' | strip
+      assign sticky_target_formatted = sticky_threshold_minor | money | replace: cart.currency.iso_code, '' | strip
 
       assign loc = request.locale.iso_code | downcase
       if loc contains 'zh'
@@ -96,23 +96,34 @@
         endif
       endif
     -%}
-    <div class="cart-sticky-cta {% if sticky_free_shipping_unlocked %}is-free-shipping-met{% endif %}"
+    <div class="cart-sticky-cta"
          data-cart-sticky-cta
          data-threshold-minor="{{ sticky_threshold_minor }}"
-         data-fs-unlocked-text="{{ sticky_fs_unlocked_text | escape }}"
+         data-fs-locked-label="{{ sticky_fs_locked_label | escape }}"
+         data-fs-unlocked-label="{{ sticky_fs_unlocked_label | escape }}"
          data-fs-remaining-template="{{ sticky_fs_remaining_template | escape }}"
-         style="--progress: {{ sticky_progress_pct }}%;"
          {% if cart == empty %}hidden{% endif %}>
       {%- if section.settings.show_free_shipping_progress and sticky_threshold_minor > 0 -%}
-        <div class="cart-sticky-cta__progress" data-sticky-progress>
-          <div class="cart-sticky-cta__progress-fill" data-sticky-progress-fill></div>
-          <span class="cart-sticky-cta__progress-text" data-sticky-progress-text>
+        <div class="cart-sticky-cta__goal {% if sticky_free_shipping_unlocked %}is-unlocked{% else %}is-locked{% endif %}" data-sticky-goal>
+          <div class="cart-sticky-cta__goal-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ sticky_progress_pct }}">
+            <div class="cart-sticky-cta__goal-fill" data-sticky-goal-fill style="width: {{ sticky_progress_pct }}%;"></div>
+          </div>
+          <div class="cart-sticky-cta__goal-amounts">
+            <span data-sticky-goal-current>{{ sticky_basis_formatted }}</span>
+            <span data-sticky-goal-target>{{ sticky_target_formatted }}</span>
+          </div>
+          <p class="cart-sticky-cta__goal-status" data-sticky-goal-status>
             {%- if sticky_free_shipping_unlocked -%}
-              {{- 'apgo_cart.free_shipping_unlocked' | t -}}
+              🔓 {{ sticky_fs_unlocked_label }}
             {%- else -%}
-              {{- 'apgo_cart.free_shipping_remaining' | t: amount: sticky_remaining_formatted -}}
+              🔒 {{ sticky_fs_locked_label }}
             {%- endif -%}
-          </span>
+          </p>
+          <p class="cart-sticky-cta__goal-message" data-sticky-goal-message>
+            {%- unless sticky_free_shipping_unlocked -%}
+              {{- 'apgo_cart.free_shipping_remaining' | t: amount: sticky_remaining_formatted -}}
+            {%- endunless -%}
+          </p>
         </div>
       {%- endif -%}
       <div class="cart-sticky-cta__row">
@@ -180,10 +191,8 @@
     position: relative !important;
     overflow: hidden !important;
     display: block !important;
-    z-index: 100 !important;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif !important;
     
-    /* 確保按鈕不會被覆蓋 */
     clear: both !important;
   }
   
@@ -395,11 +404,20 @@
   .cart-sticky-cta { display: none; }
 
   @media (max-width: 749px) {
+    /* Main checkout must stay below the fixed sticky bar when scrolling */
+    .cart-cta .cart__checkout-button,
+    .cart-cta .button,
+    #checkout-standalone.cart__checkout-button {
+      z-index: auto !important;
+      position: relative;
+    }
+
     .cart-sticky-cta {
       display: block;
       position: fixed;
       inset: auto 0 0 0;
-      z-index: 70;
+      z-index: 9999;
+      isolation: isolate;
       background: linear-gradient(180deg, #0a0a0a 0%, #000 100%);
       border-top: 1px solid rgba(255, 107, 53, 0.3);
       box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.5);
@@ -461,47 +479,70 @@
       opacity: 0.5;
     }
 
-    /* Free shipping progress micro-bar */
-    .cart-sticky-cta__progress {
-      position: relative;
-      height: 22px;
-      margin: 0 0 10px 0;
-      border-radius: 11px;
-      background: rgba(255, 255, 255, 0.06);
+    /* Free shipping goal — mirrors apgo-coating-products red/green UI */
+    .cart-sticky-cta__goal {
+      margin: 0 0 10px;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 10px;
+    }
+    .cart-sticky-cta__goal-track {
+      width: 100%;
+      height: 10px;
+      background: linear-gradient(180deg, #3a3a3a 0%, #2a2a2a 100%);
+      border-radius: 999px;
       overflow: hidden;
+      box-shadow:
+        inset 0 0 0 1px rgb(255 255 255 / 10%),
+        inset 0 2px 4px rgb(0 0 0 / 38%);
     }
-    .cart-sticky-cta__progress-fill {
-      position: absolute;
-      inset: 0 auto 0 0;
-      width: var(--progress, 0%);
-      background: linear-gradient(90deg, #ff6b35, #f7931e);
-      transition: width 0.4s ease, background 0.3s ease;
+    .cart-sticky-cta__goal-fill {
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      transition: width 0.35s ease, background 0.3s ease, box-shadow 0.3s ease;
     }
-    .cart-sticky-cta__progress-text {
-      position: relative;
-      z-index: 1;
-      display: block;
-      text-align: center;
+    .cart-sticky-cta__goal-amounts {
+      margin-top: 6px;
+      display: flex;
+      justify-content: space-between;
       font-size: 11px;
-      line-height: 22px;
-      color: #ffffff;
-      font-weight: 500;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+      color: #cccccc;
     }
-    /* Unlocked state: force full fill + green tint + checkmark */
-    .cart-sticky-cta.is-free-shipping-met .cart-sticky-cta__progress-fill {
-      width: 100% !important;
-      background: linear-gradient(90deg, #16a34a, #22c55e);
-    }
-    .cart-sticky-cta.is-free-shipping-met .cart-sticky-cta__progress-text::before {
-      content: '✓ ';
+    .cart-sticky-cta__goal-status {
+      margin: 6px 0 0;
+      font-size: 12px;
       font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+    .cart-sticky-cta__goal-message {
+      margin: 4px 0 0;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .cart-sticky-cta__goal.is-locked .cart-sticky-cta__goal-status,
+    .cart-sticky-cta__goal.is-locked .cart-sticky-cta__goal-message {
+      color: #DC3545;
+    }
+    .cart-sticky-cta__goal.is-unlocked .cart-sticky-cta__goal-status,
+    .cart-sticky-cta__goal.is-unlocked .cart-sticky-cta__goal-message {
+      color: #28A745;
+    }
+    .cart-sticky-cta__goal.is-locked .cart-sticky-cta__goal-fill {
+      background: linear-gradient(90deg, #DC3545, #DC3545);
+    }
+    .cart-sticky-cta__goal.is-unlocked .cart-sticky-cta__goal-fill {
+      background: linear-gradient(90deg, #34d399 0%, #22c55e 45%, #16a34a 100%);
+      box-shadow:
+        0 0 10px rgb(34 197 94 / 95%),
+        0 0 20px rgb(34 197 94 / 70%);
     }
 
     /* Push page content up so the last item is not covered by the bar */
     main,
     .shopify-section--main-cart,
-    body { padding-bottom: calc(var(--apgo-sticky-cta-h, 110px) + env(safe-area-inset-bottom)); }
+    body { padding-bottom: calc(var(--apgo-sticky-cta-h, 150px) + env(safe-area-inset-bottom)); }
   }
   {% endstylesheet %}
   
@@ -594,10 +635,22 @@
     var countEl    = bar.querySelector('[data-sticky-count]');
     var totalEl    = bar.querySelector('[data-sticky-total]');
     var btnEl      = bar.querySelector('[data-sticky-checkout]');
-    var textEl     = bar.querySelector('[data-sticky-progress-text]');
+    var goalEl     = bar.querySelector('[data-sticky-goal]');
+    var goalFill   = bar.querySelector('[data-sticky-goal-fill]');
+    var goalTrack  = bar.querySelector('.cart-sticky-cta__goal-track');
+    var goalCurrent = bar.querySelector('[data-sticky-goal-current]');
+    var goalTarget = bar.querySelector('[data-sticky-goal-target]');
+    var goalStatus = bar.querySelector('[data-sticky-goal-status]');
+    var goalMessage = bar.querySelector('[data-sticky-goal-message]');
     var thresholdMinor = parseInt(bar.getAttribute('data-threshold-minor'), 10) || 0;
-    var fsUnlockedText      = bar.getAttribute('data-fs-unlocked-text') || '';
+    var fsLockedLabel       = bar.getAttribute('data-fs-locked-label') || 'Locked';
+    var fsUnlockedLabel     = bar.getAttribute('data-fs-unlocked-label') || 'Unlocked';
     var fsRemainingTemplate = bar.getAttribute('data-fs-remaining-template') || '';
+
+    function syncStickyHeight(){
+      if (bar.hasAttribute('hidden')) return;
+      document.documentElement.style.setProperty('--apgo-sticky-cta-h', bar.offsetHeight + 'px');
+    }
 
     // Keep currency symbols in lock-step with apgo-coating-products and
     // cart-totals.liquid (MYR → RM, SGD → S$).
@@ -632,22 +685,30 @@
 
       if (totalEl) totalEl.textContent = fmtMoney(cart.total_price, ccy);
 
-      if (thresholdMinor > 0) {
+      if (thresholdMinor > 0 && goalEl) {
         var pct = Math.min(100, Math.round((basis / thresholdMinor) * 100));
-        bar.style.setProperty('--progress', pct + '%');
-        var unlocked = basis >= thresholdMinor;
-        bar.classList.toggle('is-free-shipping-met', unlocked);
-        if (textEl) {
-          if (unlocked) {
-            textEl.textContent = fsUnlockedText;
-          } else if (fsRemainingTemplate) {
-            textEl.textContent = fsRemainingTemplate.replace(
-              '%%AMT%%',
-              fmtMoney(thresholdMinor - basis, ccy)
-            );
-          }
+        var remaining = Math.max(thresholdMinor - basis, 0);
+        var unlocked = remaining <= 0;
+
+        goalEl.classList.toggle('is-locked', !unlocked);
+        goalEl.classList.toggle('is-unlocked', unlocked);
+        if (goalFill) goalFill.style.width = pct + '%';
+        if (goalTrack) goalTrack.setAttribute('aria-valuenow', String(pct));
+        if (goalCurrent) goalCurrent.textContent = fmtMoney(basis, ccy);
+        if (goalTarget) goalTarget.textContent = fmtMoney(thresholdMinor, ccy);
+        if (goalStatus) {
+          goalStatus.textContent = unlocked
+            ? ('🔓 ' + fsUnlockedLabel)
+            : ('🔒 ' + fsLockedLabel);
+        }
+        if (goalMessage) {
+          goalMessage.textContent = unlocked
+            ? ''
+            : fsRemainingTemplate.replace('%%AMT%%', fmtMoney(remaining, ccy));
         }
       }
+
+      syncStickyHeight();
     }
 
     var refreshTimer = null;
@@ -680,8 +741,15 @@
       window.visualViewport.addEventListener('resize', function(){
         var kbOpen = window.visualViewport.height < baseHeight - 100;
         bar.classList.toggle('is-keyboard-open', kbOpen);
+        syncStickyHeight();
       });
     }
+
+    if ('ResizeObserver' in window) {
+      new ResizeObserver(syncStickyHeight).observe(bar);
+    }
+    syncStickyHeight();
+    refreshSticky();
   })();
   </script>
   
