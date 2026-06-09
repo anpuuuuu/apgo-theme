@@ -35,21 +35,26 @@
 ></script>
 
 {% javascript %}
-  {% unless use_all_catalog_hub %}
-    const url = new URL(window.location.href);
-    if (url.hash) {
-      document.addEventListener(
-        'DOMContentLoaded',
-        () => {
-          const card = document.getElementById(url.hash.slice(1));
-          if (card) {
-            card.scrollIntoView({ behavior: 'instant' });
-          }
-        },
-        { once: true }
-      );
-    }
-  {% endunless %}
+  // NOTE: Shopify {% javascript %} blocks are concatenated raw into scripts.js
+  // and do NOT process Liquid. Any {% ... %} literal here breaks the whole
+  // bundle with "Unexpected token '%'", which silently kills ALL section JS
+  // (including cart-totals quantity updates). The previous {% unless %} guard
+  // for use_all_catalog_hub has been replaced with a pure JS guard.
+  (function () {
+    var url = new URL(window.location.href);
+    if (!url.hash) return;
+    document.addEventListener(
+      'DOMContentLoaded',
+      function () {
+        // On the All-Catalog hub page we skip auto-scroll to avoid hijacking
+        // intra-page anchor navigation.
+        if (document.querySelector('.apgo-all-catalog-root')) return;
+        var card = document.getElementById(url.hash.slice(1));
+        if (card) card.scrollIntoView({ behavior: 'instant' });
+      },
+      { once: true }
+    );
+  })();
 {% endjavascript %}
 
 {% comment %} We always render this full-width, as the child blocks have width: page/full settings {% endcomment %}
