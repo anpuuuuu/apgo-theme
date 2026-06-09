@@ -466,14 +466,14 @@
       align-items: stretch;
       gap: 0;
       padding: 0;
-      border-color: rgba(240, 132, 24, 0.55) !important;
+      border-color: #404040 !important;
       border-radius: 10px;
     }
 
     .upsell-product-card:hover {
       transform: translateY(-2px);
-      border-color: var(--apgo-upsell-accent) !important;
-      box-shadow: 0 8px 24px rgba(240, 132, 24, 0.28);
+      border-color: #404040 !important;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
     }
 
     .upsell-product-link {
@@ -522,12 +522,13 @@
     }
 
     .upsell-add-to-cart {
-      width: 100%;
-      height: 34px;
-      margin: 0;
+      width: calc(100% - 16px);
+      height: 32px;
+      margin: 4px 8px 8px;
+      align-self: center;
       font-size: 18px;
       border: none !important;
-      border-radius: 0 0 9px 9px;
+      border-radius: 6px;
       background: var(--apgo-upsell-grad) !important;
       color: #ffffff !important;
       box-shadow:
