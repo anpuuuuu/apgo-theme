@@ -514,83 +514,93 @@
         });
     }
 
-    // —— A: 主題/外掛可能丟的事件 —— //
-    // Horizon 主題使用 cart:update（單數）與 quantity-selector:update；
-    // 舊版/其他外掛則用 cart:updated（複數）等。兩套都要聽。
+    // —— 核心：直接從 /cart.js 改寫顯示金額 ——
+    // 這是免運條（apgo-coating-products）一直正確的原因：它不靠 section 重渲染，
+    // 直接讀 /cart.js（永遠新鮮）自己畫數字。cart-totals 之前靠 ?sections= 重抓
+    // HTML，那條路脆弱（被快取、跟 Horizon 搶、自己觸發自己），所以小計卡住。
+    // 現在 cart-totals 也改成直接從 /cart.js 改寫，section 重渲染只負責折扣明細列。
+
+    // 市場別貨幣符號（SGD → S$、MYR → RM），與 apgo-coating-products 一致，
+    // 順手修掉「小計顯示 $ 而免運條顯示 S$」的不一致。
+    function fmtMoney(minor, currency) {
+      const amount = (Number(minor) || 0) / 100;
+      const fixed = amount.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      if (currency === 'MYR') return `RM ${fixed}`;
+      if (currency === 'SGD') return `S$ ${fixed}`;
+      try {
+        return new Intl.NumberFormat('en', { style: 'currency', currency, currencyDisplay: 'narrowSymbol' }).format(amount);
+      } catch (_) {
+        return `${currency} ${fixed}`;
+      }
+    }
+
+    function patchFromCartJs() {
+      return fetch('/cart.js', { headers: { Accept: 'application/json' }, cache: 'no-store' })
+        .then(r => r.json())
+        .then(cart => {
+          const ccy = cart.currency;
+          // 小計 = original_total_price
+          const subEl = document.querySelector('#' + contentId + ' .cart__original-total .cart__value');
+          if (subEl) subEl.textContent = fmtMoney(cart.original_total_price, ccy);
+          // 估計總金額 = total_price（text-component 同時有 textContent 與 value 屬性）
+          const totEl = document.querySelector('#' + contentId + ' [data-cart-subtotal]');
+          if (totEl) {
+            const t = fmtMoney(cart.total_price, ccy);
+            totEl.textContent = t;
+            totEl.setAttribute('value', t);
+          }
+        })
+        .catch(() => {});
+    }
+
+    // updateAll：先即時改數字（權威來源 /cart.js），再重渲染 section 補折扣列，
+    // section 落地後再 patch 一次，確保不會被舊渲染蓋回去。
+    function updateAll() {
+      patchFromCartJs();
+      refreshTotals();
+      setTimeout(patchFromCartJs, 450);
+    }
+
+    // —— A: 事件 —— //
     [
       'cart:update','cart:updated','cart:change','cart:refresh',
       'quantity:change','quantity-selector:update',
       'product:added','cart:item:added','cart:item:updated','cart:item:removed'
-    ].forEach(evt => document.addEventListener(evt, () => debounce(() => refreshTotals(), 240)));
+    ].forEach(evt => document.addEventListener(evt, () => debounce(updateAll, 200)));
 
-    // —— A2: Horizon 主題會 morph cart-items-component 的 DOM。直接觀察它
-    // 的子節點變動，是最可靠的「qty 改了」訊號 —— 不靠事件名稱、不靠 fetch
-    // 攔截。任何節點變化都觸發 refresh。
+    // —— A2: 直接觀察 cart-items-component 的 DOM 變動（最可靠的「qty 改了」訊號）——
     function attachCartItemsObserver() {
       const cartItemsEl = document.querySelector('cart-items-component');
       if (!cartItemsEl || cartItemsEl.__cartTotalsObserved) return;
       cartItemsEl.__cartTotalsObserved = true;
-      new MutationObserver(() => debounce(() => refreshTotals(), 240))
+      new MutationObserver(() => debounce(updateAll, 200))
         .observe(cartItemsEl, { childList: true, subtree: true, characterData: true });
     }
     attachCartItemsObserver();
-    // 若 cart-items-component 被整顆替換（morphSection），重新掛 observer
     new MutationObserver(attachCartItemsObserver)
       .observe(document.body, { childList: true, subtree: true });
 
-    // —— B: 攔截 cart 相關的 fetch / XHR —— //
+    // —— B: 攔截 cart 寫入請求。只比對「寫入」端點，避免 refreshTotals 自己的
+    // /cart?sections= 與 /cart.js 又觸發自己造成無限迴圈。 ——
+    const isCartWrite = (u) => /\/cart\/(change|add|update|clear)(\.js)?(\?|$)/.test(String(u || ''));
     const _fetch = window.fetch;
     window.fetch = function(...args){
       return _fetch.apply(this, args).then(res => {
-        try {
-          const u = String(args[0]||'');
-          if (u.includes('/cart') || u.includes('/add') || u.includes('cart/add')) {
-            debounce(() => refreshTotals(), 260);
-          }
-        } catch(e){}
+        try { if (isCartWrite(args[0])) debounce(updateAll, 200); } catch(e){}
         return res;
       });
     };
-
     const _open = XMLHttpRequest.prototype.open;
     XMLHttpRequest.prototype.open = function(m, u, ...rest) {
       this.addEventListener('load', function(){
-        try {
-          const s = String(u||'');
-          if (s.includes('/cart') || s.includes('/add') || s.includes('cart/add')) {
-            debounce(() => refreshTotals(), 260);
-          }
-        } catch(e){}
+        try { if (isCartWrite(u)) debounce(updateAll, 200); } catch(e){}
       });
       return _open.apply(this, [m, u, ...rest]);
     };
 
-    // —— C: 鏡像原生 summary（你是隱藏不是移除） —— //
-    const nativeTotal = document.querySelector(
-      '.cart-page__summary [data-cart-subtotal], .cart-page__summary .cart__total .cart__total-value'
-    );
-    if (nativeTotal) {
-      const stripTrailingIso = (s) =>
-        String(s || '')
-          .trim()
-          .replace(/\s+MYR\s*$/i, '')
-          .trim();
-      const sync = () => {
-        const mine = document.querySelector('#' + contentId + ' [data-cart-subtotal]');
-        if (!mine) return;
-        const t = stripTrailingIso(nativeTotal.textContent || '');
-        if (t && t !== (mine.textContent || '').trim()) {
-          mine.textContent = t;
-          mine.setAttribute('value', t);
-        }
-      };
-      const mo = new MutationObserver(sync);
-      mo.observe(nativeTotal, { characterData:true, childList:true, subtree:true });
-      sync();
-    }
-
-    // 初始化先跑一次（給首次進頁或快取）
-    document.addEventListener('DOMContentLoaded', () => refreshTotals());
+    // 初始化先跑一次
+    document.addEventListener('DOMContentLoaded', updateAll);
+    updateAll();
   })();
   {% endjavascript %}
   
