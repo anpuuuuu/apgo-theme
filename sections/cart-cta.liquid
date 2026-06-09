@@ -473,13 +473,15 @@
     .cart-sticky-cta__goal-track {
       position: relative;
       width: 100%;
-      height: 26px;
+      height: 20px;
       background: linear-gradient(180deg, #3a3a3a 0%, #2a2a2a 100%);
       border-radius: 999px;
       overflow: hidden;
+      /* Match apgo-coating-products track: inner + outer shadow */
       box-shadow:
         inset 0 0 0 1px rgb(255 255 255 / 10%),
-        inset 0 2px 4px rgb(0 0 0 / 38%);
+        inset 0 2px 6px rgb(0 0 0 / 38%),
+        0 0 14px rgb(0 0 0 / 42%);
     }
     .cart-sticky-cta__goal-fill {
       position: absolute;
@@ -487,16 +489,21 @@
       width: 0;
       height: 100%;
       border-radius: inherit;
-      transition: width 0.35s ease, background 0.3s ease, box-shadow 0.3s ease;
+      transition: width 0.35s ease;
+      /* Default fill glow — same as apgo-coating-products before lock/unlock */
+      box-shadow:
+        0 0 12px rgb(255 255 255 / 25%),
+        0 0 24px rgb(255 255 255 / 16%),
+        0 0 36px rgb(255 255 255 / 10%);
     }
     .cart-sticky-cta__goal-text {
       position: relative;
       z-index: 1;
       display: block;
       padding: 0 10px;
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 600;
-      line-height: 26px;
+      line-height: 20px;
       text-align: center;
       color: #ffffff;
       white-space: nowrap;
@@ -505,14 +512,17 @@
       text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
       pointer-events: none;
     }
+    /* Locked — sync apgo-coating-products red fill */
     .cart-sticky-cta__goal.is-locked .cart-sticky-cta__goal-fill {
-      background: linear-gradient(90deg, #DC3545, #DC3545);
+      background: linear-gradient(90deg, #DC3545, #DC3545) !important;
     }
+    /* Unlocked — sync apgo-coating-products green fill + triple glow */
     .cart-sticky-cta__goal.is-unlocked .cart-sticky-cta__goal-fill {
-      background: linear-gradient(90deg, #34d399 0%, #22c55e 45%, #16a34a 100%);
+      background: linear-gradient(90deg, #34d399 0%, #22c55e 45%, #16a34a 100%) !important;
       box-shadow:
-        0 0 10px rgb(34 197 94 / 95%),
-        0 0 20px rgb(34 197 94 / 70%);
+        0 0 14px rgb(34 197 94 / 95%),
+        0 0 30px rgb(34 197 94 / 70%),
+        0 0 48px rgb(22 163 74 / 45%);
     }
 
     /* Push page content up so the last item is not covered by the bar */
