@@ -77,8 +77,18 @@
       assign loc = request.locale.iso_code | downcase
       if loc contains 'zh'
         assign label_checkout = '前往結帳'
+        if cart.item_count == 1
+          assign sticky_items_label = '1 件'
+        else
+          assign sticky_items_label = cart.item_count | append: ' 件'
+        endif
       else
         assign label_checkout = 'Check out'
+        if cart.item_count == 1
+          assign sticky_items_label = '1 item'
+        else
+          assign sticky_items_label = cart.item_count | append: ' items'
+        endif
       endif
 
       assign sticky_progress_pct = 0
@@ -94,6 +104,8 @@
          data-threshold-minor="{{ sticky_threshold_minor }}"
          data-fs-unlocked-label="{{ sticky_fs_unlocked_label | escape }}"
          data-fs-remaining-template="{{ sticky_fs_remaining_template | escape }}"
+         data-items-singular="{% if loc contains 'zh' %}%%COUNT%% 件{% else %}%%COUNT%% item{% endif %}"
+         data-items-plural="{% if loc contains 'zh' %}%%COUNT%% 件{% else %}%%COUNT%% items{% endif %}"
          {% if cart == empty %}hidden{% endif %}>
       {%- if section.settings.show_free_shipping_progress and sticky_threshold_minor > 0 -%}
         <div class="cart-sticky-cta__zone cart-sticky-cta__zone--goal">
@@ -113,10 +125,9 @@
         </div>
       {%- endif -%}
       <div class="cart-sticky-cta__zone cart-sticky-cta__zone--price">
+        <span class="cart-sticky-cta__items" data-sticky-items>{{ sticky_items_label }}</span>
         <span class="cart-sticky-cta__label">{{ 'content.cart_estimated_total' | t }}</span>
-        <span class="cart-sticky-cta__total" data-sticky-total>
-          {{ sticky_total_formatted }}
-        </span>
+        <span class="cart-sticky-cta__total" data-sticky-total>{{ sticky_total_formatted }}</span>
       </div>
       <button
         type="submit"
@@ -425,11 +436,15 @@
     }
     .cart-sticky-cta__zone--price {
       grid-column: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      line-height: 1.2;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      grid-template-rows: auto auto;
+      align-content: center;
+      column-gap: 10px;
+      row-gap: 1px;
+      line-height: 1.25;
       min-width: 0;
+      min-height: 52px;
       padding: 8px 14px;
       border-right: 1px solid rgba(255, 255, 255, 0.12);
     }
@@ -482,17 +497,30 @@
     .cart-sticky-cta:not(:has(.cart-sticky-cta__zone--goal)) .cart-sticky-cta__zone--action {
       grid-row: 1;
     }
+    .cart-sticky-cta__items {
+      grid-column: 1;
+      grid-row: 1;
+      font-size: 11px;
+      color: #9a9a9a;
+      letter-spacing: 0.02em;
+    }
     .cart-sticky-cta__label {
+      grid-column: 1;
+      grid-row: 2;
       font-size: 11px;
       color: #9a9a9a;
       letter-spacing: 0.02em;
     }
     .cart-sticky-cta__total {
+      grid-column: 2;
+      grid-row: 1 / -1;
+      align-self: center;
       font-size: 20px;
       font-weight: 700;
       color: #ffffff;
-      margin-top: 2px;
       letter-spacing: -0.01em;
+      text-align: right;
+      white-space: nowrap;
     }
 
     /* Free shipping — title + progress bar, hint text centered inside the track */
@@ -659,7 +687,10 @@
     if (!bar) return;
 
     var totalEl    = bar.querySelector('[data-sticky-total]');
+    var itemsEl    = bar.querySelector('[data-sticky-items]');
     var btnEl      = bar.querySelector('[data-sticky-checkout]');
+    var itemsSingular = bar.getAttribute('data-items-singular') || '%%COUNT%% item';
+    var itemsPlural   = bar.getAttribute('data-items-plural') || '%%COUNT%% items';
     var goalEl     = bar.querySelector('[data-sticky-goal]');
     var goalFill   = bar.querySelector('[data-sticky-goal-fill]');
     var goalTrack  = bar.querySelector('.cart-sticky-cta__goal-track');
@@ -696,6 +727,10 @@
       }
       bar.removeAttribute('hidden');
       if (btnEl) btnEl.disabled = false;
+      if (itemsEl) {
+        var tpl = cart.item_count === 1 ? itemsSingular : itemsPlural;
+        itemsEl.textContent = tpl.replace('%%COUNT%%', cart.item_count);
+      }
 
       // CRITICAL: use the SAME field as apgo-coating-products and cart-totals
       // (cart.original_total_price || cart.total_price) so all three bars
