@@ -114,7 +114,6 @@
           <span class="cart-sticky-cta__total" data-sticky-total>
             {{ sticky_total_formatted }}
           </span>
-          <span class="cart-sticky-cta__note">{{ label_tax_note }}</span>
         </div>
         <button
           type="submit"
@@ -124,7 +123,7 @@
           data-sticky-checkout
           {%- if cart == empty -%}disabled{%- endif -%}
         >
-          {{ label_checkout }} <span aria-hidden="true">→</span>
+          {{ label_checkout }}
         </button>
       </div>
     </div>
@@ -416,54 +415,48 @@
       line-height: 1.2;
     }
     .cart-sticky-cta__count {
-      font-size: 12px;
-      color: #cccccc;
+      font-size: 11px;
+      color: #9a9a9a;
       letter-spacing: 0.02em;
     }
     .cart-sticky-cta__total {
-      font-size: 20px;
+      font-size: 22px;
       font-weight: 700;
-      color: #f7931e;
+      color: #ffffff;
       margin-top: 2px;
-    }
-    .cart-sticky-cta__note {
-      font-size: 10px;
-      color: #888;
-      margin-top: 2px;
+      letter-spacing: -0.01em;
     }
 
     .cart-sticky-cta__button {
       flex: 0 0 auto;
-      min-width: 144px;
-      padding: 14px 22px;
+      min-width: 140px;
+      padding: 16px 24px;
       border: none;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #ff6b35, #f7931e);
+      border-radius: 10px;
+      background: #f7931e;
       color: #ffffff;
-      font-weight: 700;
-      font-size: 16px;
-      letter-spacing: 0.04em;
+      font-weight: 600;
+      font-size: 15px;
+      letter-spacing: 0.01em;
+      text-transform: none;
       cursor: pointer;
-      box-shadow: 0 8px 20px rgba(255, 107, 53, 0.45),
-                  inset 0 1px 0 rgba(255, 255, 255, 0.2);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 2px 8px rgba(247, 147, 30, 0.25);
+      transition: background 0.15s ease, transform 0.1s ease;
     }
-    .cart-sticky-cta__button:active {
-      transform: scale(0.97);
-      box-shadow: 0 4px 12px rgba(255, 107, 53, 0.35);
-    }
+    .cart-sticky-cta__button:hover { background: #ff6b35; }
+    .cart-sticky-cta__button:active { transform: scale(0.98); }
     .cart-sticky-cta__button:disabled {
-      background: linear-gradient(135deg, #666, #555);
+      background: #555;
       cursor: not-allowed;
       box-shadow: none;
-      opacity: 0.6;
+      opacity: 0.5;
     }
 
     /* Free shipping progress micro-bar */
     .cart-sticky-cta__progress {
       position: relative;
       height: 22px;
-      margin: 0 0 8px 0;
+      margin: 0 0 10px 0;
       border-radius: 11px;
       background: rgba(255, 255, 255, 0.06);
       overflow: hidden;
@@ -473,7 +466,7 @@
       inset: 0 auto 0 0;
       width: var(--progress, 0%);
       background: linear-gradient(90deg, #ff6b35, #f7931e);
-      transition: width 0.4s ease;
+      transition: width 0.4s ease, background 0.3s ease;
     }
     .cart-sticky-cta__progress-text {
       position: relative;
@@ -486,7 +479,15 @@
       font-weight: 500;
       text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
     }
-    .cart-sticky-cta.is-free-shipping-met .cart-sticky-cta__progress-fill { width: 100%; }
+    /* Unlocked state: force full fill + green tint + checkmark */
+    .cart-sticky-cta.is-free-shipping-met .cart-sticky-cta__progress-fill {
+      width: 100% !important;
+      background: linear-gradient(90deg, #16a34a, #22c55e);
+    }
+    .cart-sticky-cta.is-free-shipping-met .cart-sticky-cta__progress-text::before {
+      content: '✓ ';
+      font-weight: 700;
+    }
 
     /* Push page content up so the last item is not covered by the bar */
     main,
