@@ -88,6 +88,12 @@
         assign sticky_show_was = true
       endif
       assign sticky_was_formatted = sticky_was_minor | money | replace: cart.currency.iso_code, '' | strip
+      assign sticky_total_split = sticky_total_formatted | split: '.'
+      assign sticky_total_main = sticky_total_split[0]
+      assign sticky_total_dec = '.' | append: sticky_total_split[1]
+      assign sticky_was_split = sticky_was_formatted | split: '.'
+      assign sticky_was_main = sticky_was_split[0]
+      assign sticky_was_dec = '.' | append: sticky_was_split[1]
 
       # Locale-aware templates for sticky in-bar hint text
       assign sticky_fs_unlocked_label = 'apgo_cart.free_shipping_unlocked_label' | t
@@ -149,8 +155,8 @@
         <span class="cart-sticky-cta__items" data-sticky-items>{{ sticky_items_label }}</span>
         <span class="cart-sticky-cta__label">{{ 'content.cart_estimated_total' | t }}</span>
         <div class="cart-sticky-cta__prices" data-sticky-prices>
-          <span class="cart-sticky-cta__was" data-sticky-was {% unless sticky_show_was %}hidden{% endunless %}>{{ sticky_was_formatted }}</span>
-          <span class="cart-sticky-cta__total" data-sticky-total>{{ sticky_total_formatted }}</span>
+          <span class="cart-sticky-cta__was" data-sticky-was {% unless sticky_show_was %}hidden{% endunless %}><span class="cart-sticky-cta__price-main">{{ sticky_was_main }}</span><span class="cart-sticky-cta__price-dec">{{ sticky_was_dec }}</span></span>
+          <span class="cart-sticky-cta__total" data-sticky-total><span class="cart-sticky-cta__price-main">{{ sticky_total_main }}</span><span class="cart-sticky-cta__price-dec">{{ sticky_total_dec }}</span></span>
         </div>
       </div>
       <button
@@ -572,15 +578,37 @@
       line-height: 1.2;
     }
     .cart-sticky-cta__was[hidden] { display: none; }
+    /* 电商促销红（淘宝/天猫 #FF0036） */
     .cart-sticky-cta__total {
-      font-size: 20px;
+      font-size: 22px;
       font-weight: 700;
-      color: #ef4444;
+      color: #ff0036;
       letter-spacing: -0.01em;
       text-align: right;
       white-space: nowrap;
-      line-height: 1.15;
-      text-shadow: 0 0 12px rgba(239, 68, 68, 0.35);
+      line-height: 1.1;
+    }
+    .cart-sticky-cta__price-main {
+      font-size: inherit;
+      font-weight: inherit;
+      color: inherit;
+    }
+    .cart-sticky-cta__total .cart-sticky-cta__price-main {
+      text-shadow: 0 0 10px rgba(255, 0, 54, 0.28);
+    }
+    .cart-sticky-cta__price-dec {
+      font-size: 0.58em;
+      font-weight: 700;
+      vertical-align: baseline;
+      letter-spacing: 0;
+    }
+    .cart-sticky-cta__total .cart-sticky-cta__price-dec {
+      color: #ff0036;
+    }
+    .cart-sticky-cta__was .cart-sticky-cta__price-dec {
+      font-size: 0.82em;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.42);
     }
 
     .cart-sticky-footer__tax {
@@ -805,12 +833,35 @@
       return 0;
     }
 
+    function fmtMoneyParts(minor, currency) {
+      var amount = (Number(minor) || 0) / 100;
+      var fixed = amount.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      var dot = fixed.lastIndexOf('.');
+      var main = dot > -1 ? fixed.slice(0, dot) : fixed;
+      var dec = dot > -1 ? fixed.slice(dot) : '';
+      if (currency === 'MYR') return { main: 'RM ' + main, dec: dec };
+      if (currency === 'SGD') return { main: 'S$ ' + main, dec: dec };
+      try {
+        var full = new Intl.NumberFormat('en', { style: 'currency', currency: currency, currencyDisplay: 'narrowSymbol' }).format(amount);
+        var fullDot = full.lastIndexOf('.');
+        if (fullDot > -1) return { main: full.slice(0, fullDot), dec: full.slice(fullDot) };
+        return { main: full, dec: '' };
+      } catch (_) {
+        return { main: currency + ' ' + main, dec: dec };
+      }
+    }
+
+    function setSplitPrice(el, minor, currency) {
+      if (!el) return;
+      var p = fmtMoneyParts(minor, currency);
+      el.innerHTML = '<span class="cart-sticky-cta__price-main">' + p.main + '</span><span class="cart-sticky-cta__price-dec">' + p.dec + '</span>';
+    }
+
     function updateWasDisplay(cart) {
       if (!cart || !wasEl) return;
-      var ccy = cart.currency;
       var wasMinor = computeWasMinor(cart);
       if (wasMinor > Number(cart.total_price)) {
-        wasEl.textContent = fmtMoney(wasMinor, ccy);
+        setSplitPrice(wasEl, wasMinor, cart.currency);
         wasEl.removeAttribute('hidden');
       } else {
         wasEl.setAttribute('hidden', '');
@@ -820,15 +871,8 @@
     // Keep currency symbols in lock-step with apgo-coating-products and
     // cart-totals.liquid (MYR → RM, SGD → S$).
     function fmtMoney(minor, currency){
-      var amount = (Number(minor) || 0) / 100;
-      var fixed = amount.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      if (currency === 'MYR') return 'RM ' + fixed;
-      if (currency === 'SGD') return 'S$ ' + fixed;
-      try {
-        return new Intl.NumberFormat('en', { style: 'currency', currency: currency, currencyDisplay: 'narrowSymbol' }).format(amount);
-      } catch (_) {
-        return currency + ' ' + fixed;
-      }
+      var p = fmtMoneyParts(minor, currency);
+      return p.main + p.dec;
     }
 
     function refreshFromCart(cart){
@@ -853,7 +897,7 @@
       var ccy = cart.currency;
 
       updateWasDisplay(cart);
-      if (totalEl) totalEl.textContent = fmtMoney(cart.total_price, ccy);
+      if (totalEl) setSplitPrice(totalEl, cart.total_price, ccy);
 
       if (thresholdMinor > 0 && goalEl) {
         var pct = Math.min(100, Math.round((basis / thresholdMinor) * 100));
