@@ -143,6 +143,13 @@
   {%- endif -%}
 
   {% stylesheet %}
+  /* Mobile: inline checkout + trust handled by sticky bar + main-cart meta */
+  @media (max-width: 749px) {
+    #shopify-section-{{ section.id }} > .cart-cta {
+      display: none !important;
+    }
+  }
+
   /* ========================================
      購物車結帳按鈕樣式設計
      ======================================== */

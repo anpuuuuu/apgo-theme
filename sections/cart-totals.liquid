@@ -429,10 +429,10 @@
     margin: 0 0 14px 0 !important;
   }
 
-  /* Edge alignment with cart items + free-shipping bar above */
+  /* Mobile: totals + tax copy handled by sticky bar + main-cart meta — hide card */
   @media (max-width: 749px) {
-    .cart-totals--standalone {
-      padding-inline: 0 !important;
+    #shopify-section-{{ section.id }} {
+      display: none !important;
     }
   }
   {% endstylesheet %}

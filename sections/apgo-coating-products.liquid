@@ -124,11 +124,9 @@
   }
 
 @media (max-width: 749px) {
-    /* Match the cart-items + cart-totals edge — they zero padding-inline
-       on mobile and live inside the section wrapper's own padding. */
-    .apgo-combined-goal {
-      padding: 0 !important;
-      margin-top: 14px;
+    /* Mobile: free-shipping progress lives in sticky bar — hide duplicate card */
+    .section-cart-combined {
+      display: none !important;
     }
   }
 
