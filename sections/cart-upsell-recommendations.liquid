@@ -407,25 +407,25 @@
     color: {{ section.settings.accent_color_start }} !important;
   }
 
-  /* 響應式設計 */
+  /* 響應式設計 — 手機兩列並排網格 */
   @media (max-width: 768px) {
     .cart-upsell-wrapper {
       padding: 0 16px;
     }
-    
+
     .upsell-header-outside {
       margin-bottom: 12px;
     }
 
     .cart-upsell-section {
-      padding: 16px;
-      border-radius: 16px;
+      padding: 12px;
+      border-radius: 12px;
     }
 
     .upsell-title-outside {
       font-size: 16px;
     }
-    
+
     .view-popular-btn-wrapper {
       bottom: -50px;
       right: 16px;
@@ -437,17 +437,78 @@
     }
 
     .upsell-slider-container {
-      margin: 0 -16px;
-      padding: 0 16px;
+      margin: 0;
+      padding: 0;
+      overflow: visible;
+    }
+
+    .upsell-slider {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      overflow: visible;
+      padding: 0;
+      scrollbar-width: none;
+    }
+
+    .upsell-slider::-webkit-scrollbar {
+      display: none;
     }
 
     .upsell-product-card {
-      flex: 0 0 280px;
+      flex: unset;
+      width: auto;
+      min-width: 0;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+      padding: 10px 8px 8px;
     }
 
-    .upsell-product-image {
-      width: 70px;
-      height: 70px;
+    .upsell-product-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .upsell-product-link {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 6px;
+    }
+
+    .upsell-product-image,
+    .upsell-product-image.portrait,
+    .upsell-product-image.landscape {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1;
+    }
+
+    .upsell-product-image.portrait {
+      aspect-ratio: 4 / 5;
+    }
+
+    .upsell-product-image.landscape {
+      aspect-ratio: 4 / 3;
+    }
+
+    .upsell-product-info {
+      gap: 2px;
+    }
+
+    .upsell-product-title {
+      font-size: 11px;
+      line-height: 1.35;
+      -webkit-line-clamp: 2;
+    }
+
+    .upsell-product-price {
+      font-size: 13px;
+    }
+
+    .upsell-add-to-cart {
+      width: 100%;
+      height: 32px;
+      font-size: 16px;
     }
   }
 
@@ -458,78 +519,12 @@
       text-align: right;
       padding-right: 4px;
     }
-    
-    .upsell-product-card {
-      flex: 0 0 240px;
-    }
-
-    .upsell-product-title {
-      font-size: 13px;
-    }
-
-    .upsell-product-price {
-      font-size: 14px;
-    }
-
-    .upsell-add-to-cart {
-      height: 36px;
-      font-size: 14px;
-    }
-  }
-
-  /* 手機版直式佈局選項 */
-  @media (max-width: 480px) {
-    .cart-upsell-wrapper[data-mobile-layout="vertical"] .upsell-product-card {
-      flex-direction: column;
-      width: 140px;
-      flex: 0 0 140px;
-      padding: 12px;
-    }
-
-    .cart-upsell-wrapper[data-mobile-layout="vertical"] .upsell-product-link {
-      flex-direction: column;
-      text-align: center;
-    }
-
-    .cart-upsell-wrapper[data-mobile-layout="vertical"] .upsell-product-image {
-      width: 100%;
-      height: 116px;
-      margin-bottom: 8px;
-    }
-
-    .cart-upsell-wrapper[data-mobile-layout="vertical"] .upsell-product-info {
-      text-align: center;
-      margin-bottom: 8px;
-    }
-
-    .cart-upsell-wrapper[data-mobile-layout="vertical"] .upsell-add-to-cart {
-      width: 100%;
-    }
   }
 
   /* 手機版隱藏價格選項 */
-  @media (max-width: 480px) {
+  @media (max-width: 768px) {
     .cart-upsell-wrapper[data-hide-price-mobile="true"] .upsell-product-price {
       display: none;
-    }
-  }
-
-  /* 手機版可見商品數控制 */
-  @media (max-width: 480px) {
-    .upsell-slider {
-      gap: 12px;
-    }
-    
-    .cart-upsell-wrapper[data-products-visible="1.2"] .upsell-product-card {
-      flex: 0 0 calc((100vw - 48px) / 1.2);
-    }
-    
-    .cart-upsell-wrapper[data-products-visible="1.5"] .upsell-product-card {
-      flex: 0 0 calc((100vw - 48px) / 1.5);
-    }
-    
-    .cart-upsell-wrapper[data-products-visible="2"] .upsell-product-card {
-      flex: 0 0 calc((100vw - 60px) / 2);
     }
   }
 
