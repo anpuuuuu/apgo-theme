@@ -155,8 +155,8 @@
         <span class="cart-sticky-cta__items" data-sticky-items>{{ sticky_items_label }}</span>
         <span class="cart-sticky-cta__label">{{ 'content.cart_estimated_total' | t }}</span>
         <div class="cart-sticky-cta__prices" data-sticky-prices>
-          <span class="cart-sticky-cta__save" data-sticky-save {% unless sticky_show_save %}hidden{% endunless %}>{{ sticky_save_label }}</span>
           <span class="cart-sticky-cta__total" data-sticky-total><span class="cart-sticky-cta__price-main">{{ sticky_total_main }}</span><span class="cart-sticky-cta__price-dec">{{ sticky_total_dec }}</span></span>
+          <span class="cart-sticky-cta__save" data-sticky-save {% unless sticky_show_save %}hidden{% endunless %}>{{ sticky_save_label }}</span>
         </div>
       </div>
       <button
