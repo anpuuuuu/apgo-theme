@@ -7,39 +7,64 @@
   <head>
     {{ 'base.css' | asset_url | stylesheet_tag }}
 
-    {%- comment -%} #region agent log — cart flow instrumentation (debug 0c453c) {%- endcomment -%}
+    {%- comment -%} #region agent log — cart flow instrumentation + /cart.js dedupe (debug 0c453c) {%- endcomment -%}
     <script>
     (function(){
       try {
         var EP = 'http://127.0.0.1:7664/ingest/6d6da4c4-6868-481c-8830-6f610c9dd71e';
         function emit(message, data){
           try {
-            fetch(EP,{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'0c453c'},
+            _fetch.call(window, EP,{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'0c453c'},
               body:JSON.stringify({sessionId:'0c453c',location:'theme.liquid:cart-flow',message:message,
                 data:data,timestamp:Date.now()})}).catch(function(){});
           } catch(e){}
         }
-        var NOISE=/shop_events_listener|\/cdn\/wpm\/|shopifyChatV1Widget|compiled_assets\/scripts|theme\.liquid:cart-flow|at window\.fetch \(\/(cart|collections|products)|at window2\.fetch/i;
-        function topFrames(){
-          try {
-            var all=(new Error().stack||'').split('\n').slice(1).map(function(l){
-              return l.replace(/https?:\/\/[^\/]+/g,'').replace(/\?[^ )]*/g,'').trim();
-            });
-            var real=all.filter(function(l){ return l && !NOISE.test(l); });
-            return real.slice(0,4);
-          } catch(e){ return []; }
-        }
-        var CART_RE=/\/cart(\.js|\/(add|change|update|clear)(\.js)?|\?sections=|\?[^ ]*sections=)/i;
+        var CART_JS_GET=/\/cart\.js(\?|$)/i;
+        var CART_WRITE=/\/cart\/(add|change|update|clear)(\.js)?(\?|$)/i;
         var SECT_RE=/[?&]sections=/i;
+        var TTL=400;
+        var snap={ at:0, body:null, inflight:null };
+        function jsonResponse(body){
+          return new Response(body,{status:200,headers:{'Content-Type':'application/json'}});
+        }
         var _fetch=window.fetch;
-        window.fetch=function(){
-          var url=String((arguments[0]&&arguments[0].url)||arguments[0]||'');
-          var method=(arguments[1]&&arguments[1].method)||'GET';
-          if(CART_RE.test(url)||SECT_RE.test(url)){
-            emit('cart-fetch',{url:url.slice(0,160),method:method,path:location.pathname,frames:topFrames()});
+        window.fetch=function(input, init){
+          var url=String((input&&input.url)||input||'');
+          var method=((init&&init.method)||(input&&input.method)||'GET').toUpperCase();
+
+          // Any cart write invalidates the shared snapshot (correctness first).
+          if(CART_WRITE.test(url) && method==='POST'){
+            snap.at=0; snap.body=null; snap.inflight=null;
+            emit('cart-fetch',{url:url.slice(0,120),method:method,served:'write'});
+            return _fetch.apply(this,arguments);
+          }
+
+          // Coalesce + short-TTL cache the many concurrent /cart.js GETs that
+          // independent cart components each fire on every cart:update.
+          if(CART_JS_GET.test(url) && method==='GET'){
+            var now=Date.now();
+            if(snap.body && (now-snap.at)<TTL){
+              emit('cart-fetch',{url:url.slice(0,120),method:method,served:'cache'});
+              return Promise.resolve(jsonResponse(snap.body));
+            }
+            if(snap.inflight){
+              emit('cart-fetch',{url:url.slice(0,120),method:method,served:'coalesced'});
+              return snap.inflight.then(function(b){ return jsonResponse(b); });
+            }
+            emit('cart-fetch',{url:url.slice(0,120),method:method,served:'network'});
+            snap.inflight=_fetch.call(window,'/cart.js',{headers:{Accept:'application/json'},cache:'no-store'})
+              .then(function(r){ return r.text(); })
+              .then(function(t){ snap.body=t; snap.at=Date.now(); snap.inflight=null; return t; })
+              .catch(function(e){ snap.inflight=null; throw e; });
+            return snap.inflight.then(function(b){ return jsonResponse(b); });
+          }
+
+          if(SECT_RE.test(url)){
+            emit('cart-fetch',{url:url.slice(0,120),method:method,served:'passthrough'});
           }
           return _fetch.apply(this,arguments);
         };
+
         ['cart:update','cart:updated','cart:refresh'].forEach(function(t){
           document.addEventListener(t,function(ev){
             var d=ev&&ev.detail||{};
