@@ -46,8 +46,134 @@
       </li>
     </ul>
   </div>
-  
+
+  {%- if section.settings.show_sticky_mobile -%}
+    {%- liquid
+      # Per-market threshold — mirrors sections/cart-totals.liquid (SG/MY only)
+      assign sticky_threshold_minor = 0
+      if localization.country.iso_code == 'SG'
+        assign sticky_threshold_minor = 5500
+      elsif localization.country.iso_code == 'MY'
+        assign sticky_threshold_minor = 9900
+      endif
+
+      assign sticky_free_shipping_unlocked = false
+      assign sticky_remaining_minor = 0
+      if sticky_threshold_minor > 0
+        if cart.original_total_price >= sticky_threshold_minor
+          assign sticky_free_shipping_unlocked = true
+        else
+          assign sticky_remaining_minor = sticky_threshold_minor | minus: cart.original_total_price
+        endif
+      endif
+      # Use the same money path as cart-totals so the symbol matches (RM not MYR, NT$ not TWD)
+      assign sticky_remaining_formatted = sticky_remaining_minor | money | replace: cart.currency.iso_code, '' | strip
+      assign sticky_total_formatted = cart.total_price | money | replace: cart.currency.iso_code, '' | strip
+
+      # Save badge: reference total (compare-at or pre-discount subtotal) minus current total
+      assign sticky_reference_minor = 0
+      for item in cart.items
+        assign compare_line_minor = item.variant.compare_at_price | default: 0 | times: item.quantity
+        if compare_line_minor > item.original_line_price
+          assign sticky_reference_minor = sticky_reference_minor | plus: compare_line_minor
+        else
+          assign sticky_reference_minor = sticky_reference_minor | plus: item.original_line_price
+        endif
+      endfor
+      if sticky_reference_minor < cart.original_total_price
+        assign sticky_reference_minor = cart.original_total_price
+      endif
+      assign sticky_save_minor = sticky_reference_minor | minus: cart.total_price
+      assign sticky_show_save = false
+      if sticky_save_minor > 0
+        assign sticky_show_save = true
+      endif
+      assign sticky_save_formatted = sticky_save_minor | money | replace: cart.currency.iso_code, '' | strip
+      assign sticky_save_label = 'apgo_cart.sticky_save_amount' | t: amount: sticky_save_formatted
+      assign sticky_total_split = sticky_total_formatted | split: '.'
+      assign sticky_total_main = sticky_total_split[0]
+      assign sticky_total_dec = '.' | append: sticky_total_split[1]
+
+      # Locale-aware templates for sticky in-bar hint text
+      assign sticky_fs_unlocked_label = 'apgo_cart.free_shipping_unlocked_label' | t
+      assign sticky_fs_remaining_template = 'apgo_cart.free_shipping_remaining' | t: amount: '%%AMT%%'
+
+      assign loc = request.locale.iso_code | downcase
+      if loc contains 'zh'
+        assign label_checkout = '前往結帳'
+      else
+        assign label_checkout = 'Check out'
+      endif
+      assign sticky_count_paren = '(' | append: cart.item_count | append: ')'
+
+      assign sticky_progress_pct = 0
+      if sticky_threshold_minor > 0
+        assign sticky_progress_pct = cart.original_total_price | times: 100 | divided_by: sticky_threshold_minor
+        if sticky_progress_pct > 100
+          assign sticky_progress_pct = 100
+        endif
+      endif
+    -%}
+    <div class="cart-sticky-footer"
+         data-cart-sticky-footer
+         {% if cart == empty %}hidden{% endif %}>
+    <div class="cart-sticky-cta"
+         data-cart-sticky-cta
+         data-threshold-minor="{{ sticky_threshold_minor }}"
+         data-fs-unlocked-label="{{ sticky_fs_unlocked_label | escape }}"
+         data-fs-remaining-template="{{ sticky_fs_remaining_template | escape }}"
+         data-save-template="{{ 'apgo_cart.sticky_save_amount' | t: amount: '%%AMT%%' | escape }}">
+      {%- if section.settings.show_free_shipping_progress and sticky_threshold_minor > 0 -%}
+        <div class="cart-sticky-cta__zone cart-sticky-cta__zone--goal">
+          <div class="cart-sticky-cta__goal {% if sticky_free_shipping_unlocked %}is-unlocked{% else %}is-locked{% endif %}" data-sticky-goal>
+            <p class="cart-sticky-cta__goal-title">{{ section.settings.sticky_progress_title | default: 'Free shipping' }}</p>
+            <div class="cart-sticky-cta__goal-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ sticky_progress_pct }}">
+              <div class="cart-sticky-cta__goal-fill" data-sticky-goal-fill style="width: {{ sticky_progress_pct }}%;"></div>
+              <span class="cart-sticky-cta__goal-text" data-sticky-goal-text>
+                {%- if sticky_free_shipping_unlocked -%}
+                  🔓 {{ sticky_fs_unlocked_label }}
+                {%- else -%}
+                  {{- 'apgo_cart.free_shipping_remaining' | t: amount: sticky_remaining_formatted -}}
+                {%- endif -%}
+              </span>
+            </div>
+          </div>
+        </div>
+      {%- endif -%}
+      <div class="cart-sticky-cta__zone cart-sticky-cta__zone--price">
+        <div class="cart-sticky-cta__prices" data-sticky-prices>
+          <span class="cart-sticky-cta__total" data-sticky-total><span class="cart-sticky-cta__price-main">{{ sticky_total_main }}</span><span class="cart-sticky-cta__price-dec">{{ sticky_total_dec }}</span></span>
+          <span class="cart-sticky-cta__save" data-sticky-save {% unless sticky_show_save %}hidden{% endunless %}>{{ sticky_save_label }}</span>
+        </div>
+      </div>
+      <button
+        type="submit"
+        class="cart-sticky-cta__zone cart-sticky-cta__zone--action"
+        form="cart-form"
+        name="checkout"
+        data-sticky-checkout
+        {%- if cart == empty -%}disabled{%- endif -%}
+      >
+        <span class="cart-sticky-cta__checkout-inner">
+          <span class="cart-sticky-cta__checkout-label">{{ label_checkout }}</span>
+          <span class="cart-sticky-cta__checkout-count" data-sticky-items>{{ sticky_count_paren }}</span>
+        </span>
+      </button>
+    </div>
+    <div class="cart-sticky-footer__tax">
+      {% render 'tax-info', has_discounts_enabled: settings.show_add_discount_code %}
+    </div>
+    </div>
+  {%- endif -%}
+
   {% stylesheet %}
+  /* Mobile: inline checkout + trust handled by sticky bar + main-cart meta */
+  @media (max-width: 749px) {
+    div.cart-cta {
+      display: none !important;
+    }
+  }
+
   /* ========================================
      購物車結帳按鈕樣式設計
      ======================================== */
@@ -89,10 +215,8 @@
     position: relative !important;
     overflow: hidden !important;
     display: block !important;
-    z-index: 100 !important;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif !important;
     
-    /* 確保按鈕不會被覆蓋 */
     clear: both !important;
   }
   
@@ -297,6 +421,276 @@
   .cart-cta {
     animation: fadeInUp 0.6s ease-out !important;
   }
+
+  /* ========================================
+     Mobile Sticky Checkout Bar + tax disclaimer
+     ======================================== */
+  .cart-sticky-footer { display: none; }
+
+  @media (max-width: 749px) {
+    /* Main checkout must stay below the fixed sticky bar when scrolling */
+    .cart-cta .cart__checkout-button,
+    .cart-cta .button,
+    #checkout-standalone.cart__checkout-button {
+      z-index: auto !important;
+      position: relative;
+    }
+
+    .cart-sticky-footer {
+      display: block;
+      position: fixed;
+      inset: auto 0 0 0;
+      z-index: 9999;
+      isolation: isolate;
+      font-family: 'Poppins', 'Microsoft JhengHei', Arial, sans-serif;
+      background: #000;
+      border-top: 1px solid rgba(255, 107, 53, 0.3);
+      box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.5);
+      padding-bottom: env(safe-area-inset-bottom);
+      transform: translateY(0);
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      animation: fadeInUp 0.4s ease-out;
+    }
+    .cart-sticky-footer[hidden] { display: none; }
+    .cart-sticky-footer.is-keyboard-open { transform: translateY(120%); }
+
+    .cart-sticky-cta {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      grid-template-rows: auto auto;
+      background: linear-gradient(180deg, #0a0a0a 0%, #000 100%);
+    }
+
+    /* Three zones separated by divider lines */
+    .cart-sticky-cta__zone {
+      padding: 10px 16px;
+    }
+    .cart-sticky-cta__zone--goal {
+      grid-column: 1 / -1;
+      padding: 6px 14px 7px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .cart-sticky-cta__zone--price {
+      grid-column: 1;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      line-height: 1.25;
+      min-width: 0;
+      min-height: 52px;
+      padding: 8px 14px;
+      border-right: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    /* Entire zone is the checkout CTA — orange gradient + glow */
+    .cart-sticky-cta__zone--action {
+      grid-column: 2;
+      align-self: stretch;
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+      min-width: 132px;
+      padding: 0 14px;
+      border: none;
+      border-radius: 0;
+      appearance: none;
+      -webkit-appearance: none;
+      background: linear-gradient(135deg, #ff6b35 0%, #f7931e 55%, #ff9a3c 100%);
+      color: #ffffff;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.02em;
+      text-transform: none;
+      cursor: pointer;
+      width: auto;
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.25),
+        0 0 18px rgba(255, 107, 53, 0.5),
+        0 0 36px rgba(247, 147, 30, 0.28);
+      transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .cart-sticky-cta__zone--action:hover {
+      background: linear-gradient(135deg, #ff7a45 0%, #ffa030 55%, #ffb04a 100%);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.3),
+        0 0 24px rgba(255, 107, 53, 0.65),
+        0 0 48px rgba(247, 147, 30, 0.38);
+    }
+    .cart-sticky-cta__zone--action:active {
+      transform: scale(0.99);
+    }
+    .cart-sticky-cta__zone--action:disabled {
+      background: linear-gradient(135deg, #555555, #444444);
+      cursor: not-allowed;
+      box-shadow: none;
+      opacity: 0.55;
+    }
+    /* No free-shipping row: price + button only, still two zones with vertical divider */
+    .cart-sticky-cta:not(:has(.cart-sticky-cta__zone--goal)) .cart-sticky-cta__zone--price {
+      grid-row: 1;
+    }
+    .cart-sticky-cta:not(:has(.cart-sticky-cta__zone--goal)) .cart-sticky-cta__zone--action {
+      grid-row: 1;
+    }
+    .cart-sticky-cta__prices {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 1px;
+      min-width: 0;
+    }
+    .cart-sticky-cta__save {
+      font-size: 11px;
+      font-weight: 600;
+      color: #f08418;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+      line-height: 1.2;
+    }
+    .cart-sticky-cta__save[hidden] { display: none; }
+    .cart-sticky-cta__checkout-inner {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      white-space: nowrap;
+      line-height: 1.2;
+    }
+    .cart-sticky-cta__checkout-label {
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .cart-sticky-cta__checkout-count {
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 700;
+      opacity: 1;
+    }
+    /* 电商促销红（淘宝/天猫 #FF0036） */
+    .cart-sticky-cta__total {
+      font-size: 22px;
+      font-weight: 700;
+      color: #ff0036;
+      letter-spacing: -0.01em;
+      text-align: right;
+      white-space: nowrap;
+      line-height: 1.1;
+    }
+    .cart-sticky-cta__price-main {
+      font-size: inherit;
+      font-weight: inherit;
+      color: inherit;
+    }
+    .cart-sticky-cta__total .cart-sticky-cta__price-main {
+      text-shadow: 0 0 10px rgba(255, 0, 54, 0.28);
+    }
+    .cart-sticky-cta__price-dec {
+      font-size: 0.58em;
+      font-weight: 700;
+      vertical-align: baseline;
+      letter-spacing: 0;
+    }
+    .cart-sticky-cta__total .cart-sticky-cta__price-dec {
+      color: #ff0036;
+    }
+
+    .cart-sticky-footer__tax {
+      padding: 7px 14px 6px;
+      text-align: center;
+      font-size: 10px;
+      line-height: 1.4;
+      color: rgba(255, 255, 255, 0.5);
+      background: #000;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .cart-sticky-footer__tax small {
+      font-size: inherit;
+      color: inherit;
+    }
+    .cart-sticky-footer__tax a {
+      color: rgba(255, 255, 255, 0.65);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    /* Free shipping — title + progress bar, hint text centered inside the track */
+    .cart-sticky-cta__goal {
+      margin: 0;
+    }
+    .cart-sticky-cta__goal-title {
+      margin: 0 0 3px;
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #ffffff;
+      font-family: 'Poppins', 'Microsoft JhengHei', Arial, sans-serif;
+    }
+    .cart-sticky-cta__goal-track {
+      position: relative;
+      width: 100%;
+      height: 18px;
+      background: linear-gradient(180deg, #3a3a3a 0%, #2a2a2a 100%);
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid rgba(0, 0, 0, 0.5);
+      box-shadow:
+        inset 0 0 0 1px rgb(255 255 255 / 22%),
+        inset 0 2px 8px rgb(0 0 0 / 58%),
+        inset 0 -1px 0 rgb(0 0 0 / 42%),
+        0 0 16px rgb(0 0 0 / 58%);
+    }
+    .cart-sticky-cta__goal-fill {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      transition: width 0.35s ease;
+      /* Default fill glow — same as apgo-coating-products before lock/unlock */
+      box-shadow:
+        0 0 12px rgb(255 255 255 / 25%),
+        0 0 24px rgb(255 255 255 / 16%),
+        0 0 36px rgb(255 255 255 / 10%);
+    }
+    .cart-sticky-cta__goal-text {
+      position: relative;
+      z-index: 1;
+      display: block;
+      padding: 0 10px;
+      font-size: 9px;
+      font-weight: 600;
+      line-height: 18px;
+      text-align: center;
+      color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+      pointer-events: none;
+    }
+    /* Locked — sync apgo-coating-products red fill */
+    .cart-sticky-cta__goal.is-locked .cart-sticky-cta__goal-fill {
+      background: linear-gradient(90deg, #DC3545, #DC3545) !important;
+    }
+    /* Unlocked — sync apgo-coating-products green fill + triple glow */
+    .cart-sticky-cta__goal.is-unlocked .cart-sticky-cta__goal-fill {
+      background: linear-gradient(90deg, #34d399 0%, #22c55e 45%, #16a34a 100%) !important;
+      box-shadow:
+        0 0 14px rgb(34 197 94 / 95%),
+        0 0 30px rgb(34 197 94 / 70%),
+        0 0 48px rgb(22 163 74 / 45%);
+    }
+
+    /* Push page content up so the last item is not covered by the bar */
+    main,
+    .shopify-section--main-cart,
+    body { padding-bottom: calc(var(--apgo-sticky-cta-h, 120px) + env(safe-area-inset-bottom)); }
+  }
   {% endstylesheet %}
   
   <script>
@@ -307,10 +701,11 @@
     var REDIRECT_MODE = true;
     var CART_CHECKOUT_URL = {{ routes.cart_url | append: '/checkout' | json }};
 
-    var btn  = document.getElementById('checkout-standalone');
-    if (!btn) return;
+    var btns = document.querySelectorAll('#checkout-standalone, [data-sticky-checkout]');
+    if (!btns.length) return;
+    var primaryBtn = btns[0];
 
-    var formId = btn.getAttribute('form') || 'cart-form';
+    var formId = primaryBtn.getAttribute('form') || 'cart-form';
     var form   = document.getElementById(formId);
 
     // 取目前 query（先嘗試把最新輸入寫進網址）
@@ -336,10 +731,10 @@
     // 初始化同步一次（特別是 POST 模式要先設好 action）
     syncEntrancesNow();
 
-    // 主要行為：點擊 CTA
-    btn.addEventListener('click', function(ev){
-      // 若按鈕 disabled（空購物車），就不處理
-      if (btn.disabled || btn.getAttribute('aria-disabled') === 'true') return;
+    // 主要行為：點擊 CTA（同時綁定頁尾主按鈕與 sticky bar 按鈕）
+    function onCheckoutClick(ev){
+      var b = ev.currentTarget;
+      if (b.disabled || b.getAttribute('aria-disabled') === 'true') return;
 
       var validated = { valid: true, query: '' };
       if (typeof window.apgoValidateCheckoutAddress === 'function') {
@@ -353,15 +748,13 @@
       var qs = validated.query ? ('?' + validated.query) : getCurrentQuery();
 
       if (REDIRECT_MODE) {
-        // 攔截提交，經 cart/checkout 帶 query（email/phone 與 prefill 一致）
         ev.preventDefault();
         window.location.assign(CART_CHECKOUT_URL + qs);
       } else {
-        // 保留原本 POST：只把 action 改成 cart/checkout + query
         if (form) form.action = CART_CHECKOUT_URL + qs;
-        // 不 preventDefault，照常提交
       }
-    }, true);
+    }
+    btns.forEach(function(b){ b.addEventListener('click', onCheckoutClick, true); });
 
     // 若你的收件欄位用 history.replaceState 即時改網址，這裡再保險補一次
     window.addEventListener('popstate', syncEntrancesNow);
@@ -372,6 +765,211 @@
       if (++tries > 10) clearInterval(iv);
     }, 500);
   });
+
+  /* ========================================
+     Mobile Sticky CTA — self-computes everything from /cart.js (authoritative
+     source). Previously the free-shipping text was mirrored from cart-totals
+     DOM (`.cart__shipping-goal .cart__value`); that element only exists when
+     `show_order_breakdown` is on, and races cart-totals' re-render so the
+     text could lag a beat behind the total. Computing directly here matches
+     the pattern used by apgo-coating-products and the just-fixed cart-totals
+     /cart.js patch path, and stays accurate independent of section settings.
+     ======================================== */
+  (function(){
+    var footer = document.querySelector('[data-cart-sticky-footer]');
+    if (!footer) return;
+    var bar = footer.querySelector('[data-cart-sticky-cta]');
+    if (!bar) return;
+
+    var totalEl    = bar.querySelector('[data-sticky-total]');
+    var saveEl     = bar.querySelector('[data-sticky-save]');
+    var saveTemplate = bar.getAttribute('data-save-template') || 'Save %%AMT%%';
+    var itemsEl    = bar.querySelector('[data-sticky-items]');
+    var btnEl      = bar.querySelector('[data-sticky-checkout]');
+    var itemsSingular = bar.getAttribute('data-items-singular') || '%%COUNT%% item';
+    var itemsPlural   = bar.getAttribute('data-items-plural') || '%%COUNT%% items';
+    var goalEl     = bar.querySelector('[data-sticky-goal]');
+    var goalFill   = bar.querySelector('[data-sticky-goal-fill]');
+    var goalTrack  = bar.querySelector('.cart-sticky-cta__goal-track');
+    var goalText   = bar.querySelector('[data-sticky-goal-text]');
+    var thresholdMinor = parseInt(bar.getAttribute('data-threshold-minor'), 10) || 0;
+    var fsUnlockedLabel     = bar.getAttribute('data-fs-unlocked-label') || 'Unlocked';
+    var fsRemainingTemplate = bar.getAttribute('data-fs-remaining-template') || '';
+
+    function syncStickyHeight(){
+      if (footer.hasAttribute('hidden')) return;
+      document.documentElement.style.setProperty('--apgo-sticky-cta-h', footer.offsetHeight + 'px');
+    }
+
+    var lastCartSnapshot = null;
+
+    function computeReferenceMinor(cart) {
+      var reference = 0;
+      var rows = document.querySelectorAll('cart-items-component tr.cart-items__table-row[data-line-original-cents]');
+      if (rows.length) {
+        rows.forEach(function (row) {
+          var compare = parseInt(row.getAttribute('data-compare-at-cents'), 10) || 0;
+          var orig = parseInt(row.getAttribute('data-line-original-cents'), 10) || 0;
+          reference += compare > orig ? compare : orig;
+        });
+      }
+      var origTotal = Number(cart.original_total_price) || 0;
+      if (reference < origTotal) reference = origTotal;
+      return reference;
+    }
+
+    function computeSaveMinor(cart) {
+      var reference = computeReferenceMinor(cart);
+      var total = Number(cart.total_price) || 0;
+      var save = reference - total;
+      return save > 0 ? save : 0;
+    }
+
+    function fmtMoneyParts(minor, currency) {
+      var amount = (Number(minor) || 0) / 100;
+      var fixed = amount.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      var dot = fixed.lastIndexOf('.');
+      var main = dot > -1 ? fixed.slice(0, dot) : fixed;
+      var dec = dot > -1 ? fixed.slice(dot) : '';
+      if (currency === 'MYR') return { main: 'RM ' + main, dec: dec };
+      if (currency === 'SGD') return { main: 'S$ ' + main, dec: dec };
+      try {
+        var full = new Intl.NumberFormat('en', { style: 'currency', currency: currency, currencyDisplay: 'narrowSymbol' }).format(amount);
+        var fullDot = full.lastIndexOf('.');
+        if (fullDot > -1) return { main: full.slice(0, fullDot), dec: full.slice(fullDot) };
+        return { main: full, dec: '' };
+      } catch (_) {
+        return { main: currency + ' ' + main, dec: dec };
+      }
+    }
+
+    function setSplitPrice(el, minor, currency) {
+      if (!el) return;
+      var p = fmtMoneyParts(minor, currency);
+      el.innerHTML = '<span class="cart-sticky-cta__price-main">' + p.main + '</span><span class="cart-sticky-cta__price-dec">' + p.dec + '</span>';
+    }
+
+    function updateSaveDisplay(cart) {
+      if (!cart || !saveEl) return;
+      var saveMinor = computeSaveMinor(cart);
+      if (saveMinor > 0) {
+        saveEl.textContent = saveTemplate.replace('%%AMT%%', fmtMoney(saveMinor, cart.currency));
+        saveEl.removeAttribute('hidden');
+      } else {
+        saveEl.setAttribute('hidden', '');
+      }
+    }
+
+    // Keep currency symbols in lock-step with apgo-coating-products and
+    // cart-totals.liquid (MYR → RM, SGD → S$).
+    function fmtMoney(minor, currency){
+      var p = fmtMoneyParts(minor, currency);
+      return p.main + p.dec;
+    }
+
+    function refreshFromCart(cart){
+      if (!cart) return;
+      lastCartSnapshot = cart;
+      if (cart.item_count === 0) {
+        footer.setAttribute('hidden', '');
+        if (btnEl) btnEl.disabled = true;
+        return;
+      }
+      footer.removeAttribute('hidden');
+      if (btnEl) btnEl.disabled = false;
+      if (itemsEl) {
+        itemsEl.textContent = '(' + cart.item_count + ')';
+      }
+
+      // CRITICAL: use the SAME field as apgo-coating-products and cart-totals
+      // (cart.original_total_price || cart.total_price) so all three bars
+      // agree on locked/unlocked. items_subtotal_price would desync them.
+      var basis = Number(cart.original_total_price || cart.total_price || 0);
+      var ccy = cart.currency;
+
+      updateSaveDisplay(cart);
+      if (totalEl) setSplitPrice(totalEl, cart.total_price, ccy);
+
+      if (thresholdMinor > 0 && goalEl) {
+        var pct = Math.min(100, Math.round((basis / thresholdMinor) * 100));
+        var remaining = Math.max(thresholdMinor - basis, 0);
+        var unlocked = remaining <= 0;
+
+        goalEl.classList.toggle('is-locked', !unlocked);
+        goalEl.classList.toggle('is-unlocked', unlocked);
+        if (goalFill) goalFill.style.width = pct + '%';
+        if (goalTrack) goalTrack.setAttribute('aria-valuenow', String(pct));
+        if (goalText) {
+          goalText.textContent = unlocked
+            ? ('🔓 ' + fsUnlockedLabel)
+            : fsRemainingTemplate.replace('%%AMT%%', fmtMoney(remaining, ccy));
+        }
+      }
+
+      syncStickyHeight();
+    }
+
+    var refreshTimer = null;
+    var lastInlineUpdate = 0;
+
+    function cartFromEvent(ev) {
+      if (!ev || !ev.detail) return null;
+      return ev.detail.resource
+        || (ev.detail.data && ev.detail.data.cart)
+        || ev.detail.cart
+        || null;
+    }
+
+    function refreshSticky(){
+      clearTimeout(refreshTimer);
+      refreshTimer = setTimeout(function(){
+        fetch('/cart.js', { credentials: 'same-origin', cache: 'no-store' })
+          .then(function(r){ return r.json(); })
+          .then(refreshFromCart)
+          .catch(function(){});
+      }, 80);
+    }
+
+    function handleCartSignal(ev) {
+      var cart = cartFromEvent(ev);
+      if (cart && cart.items) {
+        lastInlineUpdate = Date.now();
+        refreshFromCart(cart);
+        return;
+      }
+      refreshSticky();
+    }
+
+    ['cart:update', 'cart:updated', 'cart:refresh', 'quantity-selector:update'].forEach(function(ev){
+      document.addEventListener(ev, handleCartSignal);
+    });
+
+    // DOM 變動兜底：若剛從事件拿到 cart 就略過，避免 morph 後又多打一次 /cart.js
+    var cartItemsEl = document.querySelector('cart-items-component');
+    if (cartItemsEl && 'MutationObserver' in window) {
+      new MutationObserver(function(){
+        if (lastCartSnapshot) updateSaveDisplay(lastCartSnapshot);
+        if (Date.now() - lastInlineUpdate < 900) return;
+        refreshSticky();
+      }).observe(cartItemsEl, { childList: true, subtree: true, characterData: true });
+    }
+
+    // iOS / mobile keyboard: hide bar when keyboard opens so it doesn't cover inputs
+    if (window.visualViewport) {
+      var baseHeight = window.innerHeight;
+      window.visualViewport.addEventListener('resize', function(){
+        var kbOpen = window.visualViewport.height < baseHeight - 100;
+        footer.classList.toggle('is-keyboard-open', kbOpen);
+        syncStickyHeight();
+      });
+    }
+
+    if ('ResizeObserver' in window) {
+      new ResizeObserver(syncStickyHeight).observe(footer);
+    }
+    syncStickyHeight();
+    refreshSticky();
+  })();
   </script>
   
   {% schema %}
@@ -379,7 +977,11 @@
     "name": "Cart CTA (Standalone)",
     "settings": [
       { "type": "checkbox", "id": "show_accelerated", "label": "Show accelerated checkout buttons (uses theme settings)", "default": true },
-      { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-3" }
+      { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-3" },
+      { "type": "header", "content": "Mobile Sticky CTA" },
+      { "type": "checkbox", "id": "show_sticky_mobile", "label": "手機顯示底部 sticky 結帳列", "default": true },
+      { "type": "checkbox", "id": "show_free_shipping_progress", "label": "Sticky 列顯示免運進度 (SG/MY)", "default": true },
+      { "type": "text", "id": "sticky_progress_title", "label": "Sticky 免運標題", "default": "Free shipping" }
     ],
     "blocks": [],
     "presets": [{ "name": "Cart CTA (Standalone)"}]

@@ -20,6 +20,10 @@
         {%- content_for 'block', id: 'cart-page-items', type: '_cart-products' %}
       </div>
 
+      <div class="cart-page__checkout-meta">
+        {% render 'apgo-cart-checkout-meta' %}
+      </div>
+
       <div class="cart-page__more-blocks">
         {%- content_for 'blocks' -%}
       </div>
@@ -73,9 +77,75 @@
 
   .cart-page__title,
   .cart-page__items,
+  .cart-page__checkout-meta,
   .cart-page__summary,
   .cart-page__more-blocks {
     padding-inline: var(--apgo-cart-inline-space);
+  }
+
+  /* Mobile: hide duplicate cart summary sections (sticky + meta replace them) */
+  @media (max-width: 749px) {
+    .shopify-section.section-cart-combined,
+    .shopify-section:has([data-section-type="cart-totals"]) {
+      display: none !important;
+    }
+    .shopify-section:has(.cart-sticky-cta) > .cart-cta {
+      display: none !important;
+    }
+  }
+
+  /* Tax disclaimer + trust — mobile only, plain centered text under cart items */
+  .cart-page__checkout-meta {
+    display: none;
+  }
+  @media (max-width: 749px) {
+    .cart-page__checkout-meta {
+      display: block;
+      margin-top: 12px;
+      text-align: center;
+    }
+    .apgo-cart-checkout-meta {
+      font-family: 'Poppins', 'Microsoft JhengHei', Arial, sans-serif;
+      text-align: center;
+    }
+    .apgo-cart-checkout-meta__trust-title {
+      margin: 10px 0 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.85);
+      text-align: center;
+      line-height: 1.35;
+    }
+    .apgo-cart-checkout-meta__trust {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 4px 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.6);
+      line-height: 1.35;
+      text-align: center;
+    }
+    .apgo-cart-checkout-meta__trust-item {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+    .apgo-cart-checkout-meta__trust-icon {
+      display: inline-flex;
+      align-items: center;
+      color: #f08418;
+      flex-shrink: 0;
+    }
+    .apgo-cart-checkout-meta__trust-sep {
+      color: rgba(255, 255, 255, 0.25);
+      user-select: none;
+    }
   }
 
   @media screen and (width >= 750px) {

@@ -429,10 +429,10 @@
     margin: 0 0 14px 0 !important;
   }
 
-  /* Edge alignment with cart items + free-shipping bar above */
+  /* Mobile: totals handled by sticky bar — hide entire section wrapper */
   @media (max-width: 749px) {
-    .cart-totals--standalone {
-      padding-inline: 0 !important;
+    [data-section-type="cart-totals"] {
+      display: none !important;
     }
   }
   {% endstylesheet %}
@@ -468,13 +468,20 @@
       return dom.getElementById(contentId);
     }
 
+    // 關鍵：每次都加 cache-buster + no-store。否則 /cart?sections=<id> 是固定
+    // URL，瀏覽器會把第一次的回應快取起來，數量改變後 AJAX 仍拿到舊 HTML
+    //（就是「必須硬刷新才更新」的根因）。/cart.js（免運條用的）本來就 no-cache
+    // 所以一直是對的，但這個 section render 端點沒有，會被快取。
+    const NO_STORE = { headers: { 'X-Requested-With': 'XMLHttpRequest' }, cache: 'no-store' };
+
     function refreshTotals() {
       // 先試新版 ?sections=
       const u1 = new URL(window.location.href);
       u1.pathname = root.replace(/\/$/, '') + u1.pathname.replace(root.replace(/\/$/, ''), '');
       u1.searchParams.set('sections', sid);
+      u1.searchParams.set('_', Date.now());
 
-      fetch(u1.toString(), { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+      fetch(u1.toString(), NO_STORE)
         .then(r => r.ok ? r.json() : Promise.reject())
         .then(json => {
           const html = json && json[sid];
@@ -490,8 +497,9 @@
           const u2 = new URL(window.location.href);
           u2.pathname = root.replace(/\/$/, '') + u2.pathname.replace(root.replace(/\/$/, ''), '');
           u2.searchParams.set('section_id', sid);
+          u2.searchParams.set('_', Date.now());
 
-          fetch(u2.toString(), { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+          fetch(u2.toString(), NO_STORE)
             .then(r => r.text())
             .then(html => {
               const freshContent = htmlToNode(html);
@@ -506,65 +514,116 @@
         });
     }
 
-    // —— A: 主題/外掛可能丟的事件 —— //
-    [
-      'cart:updated','cart:change','cart:refresh','quantity:change',
-      'product:added','cart:item:added','cart:item:updated','cart:item:removed'
-    ].forEach(evt => document.addEventListener(evt, () => debounce(() => refreshTotals(), 240)));
+    // —— 核心：直接從 /cart.js 改寫顯示金額 ——
+    // 這是免運條（apgo-coating-products）一直正確的原因：它不靠 section 重渲染，
+    // 直接讀 /cart.js（永遠新鮮）自己畫數字。cart-totals 之前靠 ?sections= 重抓
+    // HTML，那條路脆弱（被快取、跟 Horizon 搶、自己觸發自己），所以小計卡住。
+    // 現在 cart-totals 也改成直接從 /cart.js 改寫，section 重渲染只負責折扣明細列。
 
-    // —— B: 攔截 cart 相關的 fetch / XHR —— //
+    // 市場別貨幣符號（SGD → S$、MYR → RM），與 apgo-coating-products 一致，
+    // 順手修掉「小計顯示 $ 而免運條顯示 S$」的不一致。
+    function fmtMoney(minor, currency) {
+      const amount = (Number(minor) || 0) / 100;
+      const fixed = amount.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      if (currency === 'MYR') return `RM ${fixed}`;
+      if (currency === 'SGD') return `S$ ${fixed}`;
+      try {
+        return new Intl.NumberFormat('en', { style: 'currency', currency, currencyDisplay: 'narrowSymbol' }).format(amount);
+      } catch (_) {
+        return `${currency} ${fixed}`;
+      }
+    }
+
+    function patchFromCart(cart) {
+      if (!cart) return;
+      const ccy = cart.currency;
+      const subEl = document.querySelector('#' + contentId + ' .cart__original-total .cart__value');
+      const totEl = document.querySelector('#' + contentId + ' [data-cart-subtotal]');
+      if (subEl) subEl.textContent = fmtMoney(cart.original_total_price, ccy);
+      if (totEl) {
+        const t = fmtMoney(cart.total_price, ccy);
+        totEl.textContent = t;
+        totEl.setAttribute('value', t);
+      }
+    }
+
+    function patchFromCartJs() {
+      return fetch('/cart.js?_=' + Date.now(), { headers: { Accept: 'application/json' }, cache: 'no-store' })
+        .then(r => r.json())
+        .then(patchFromCart)
+        .catch(() => {});
+    }
+
+    const isMobileTotalsHidden = () => window.matchMedia('(max-width: 749px)').matches;
+    let refreshTotalsTimer;
+    function scheduleRefreshTotals() {
+      if (isMobileTotalsHidden()) return;
+      clearTimeout(refreshTotalsTimer);
+      refreshTotalsTimer = setTimeout(refreshTotals, 350);
+    }
+
+    // 有 event 內 cart 就同步改數字；section 重渲染僅桌面、且去抖避免連打
+    function updateAll(eventCart) {
+      if (eventCart && eventCart.items) {
+        patchFromCart(eventCart);
+      } else {
+        patchFromCartJs();
+      }
+      scheduleRefreshTotals();
+    }
+
+    function cartFromEvent(ev) {
+      if (!ev || !ev.detail) return null;
+      return ev.detail.resource
+        || (ev.detail.data && ev.detail.data.cart)
+        || ev.detail.cart
+        || null;
+    }
+
+    let lastEventAt = 0;
+    document.addEventListener('cart:update', () => { lastEventAt = Date.now(); });
+    document.addEventListener('cart:updated', () => { lastEventAt = Date.now(); });
+
+    // —— A: 事件 —— //
+    [
+      'cart:update','cart:updated','cart:change','cart:refresh',
+      'quantity:change','quantity-selector:update',
+      'product:added','cart:item:added','cart:item:updated','cart:item:removed'
+    ].forEach(evt => document.addEventListener(evt, (ev) => debounce(() => updateAll(cartFromEvent(ev)), 120)));
+
+    // —— A2: 直接觀察 cart-items-component 的 DOM 變動（最可靠的「qty 改了」訊號）——
+    function attachCartItemsObserver() {
+      const cartItemsEl = document.querySelector('cart-items-component');
+      if (!cartItemsEl || cartItemsEl.__cartTotalsObserved) return;
+      cartItemsEl.__cartTotalsObserved = true;
+      new MutationObserver(() => {
+        if (Date.now() - lastEventAt < 900) return;
+        debounce(() => updateAll(null), 150);
+      }).observe(cartItemsEl, { childList: true, subtree: true, characterData: true });
+    }
+    attachCartItemsObserver();
+    new MutationObserver(attachCartItemsObserver)
+      .observe(document.body, { childList: true, subtree: true });
+
+    // —— B: 攔截 cart 寫入請求。只比對「寫入」端點，避免 refreshTotals 自己的
+    // /cart?sections= 與 /cart.js 又觸發自己造成無限迴圈。 ——
+    // fetch 攔截僅作兜底（無 cart:update 事件的舊路徑）；事件路徑已帶 resource 可略過重複 /cart.js
+    const isCartWrite = (u) => /\/cart\/(change|add|update|clear)(\.js)?(\?|$)/.test(String(u || ''));
     const _fetch = window.fetch;
     window.fetch = function(...args){
       return _fetch.apply(this, args).then(res => {
         try {
-          const u = String(args[0]||'');
-          if (u.includes('/cart') || u.includes('/add') || u.includes('cart/add')) {
-            debounce(() => refreshTotals(), 260);
+          if (isCartWrite(args[0]) && Date.now() - lastEventAt > 400) {
+            debounce(() => updateAll(null), 150);
           }
         } catch(e){}
         return res;
       });
     };
 
-    const _open = XMLHttpRequest.prototype.open;
-    XMLHttpRequest.prototype.open = function(m, u, ...rest) {
-      this.addEventListener('load', function(){
-        try {
-          const s = String(u||'');
-          if (s.includes('/cart') || s.includes('/add') || s.includes('cart/add')) {
-            debounce(() => refreshTotals(), 260);
-          }
-        } catch(e){}
-      });
-      return _open.apply(this, [m, u, ...rest]);
-    };
-
-    // —— C: 鏡像原生 summary（你是隱藏不是移除） —— //
-    const nativeTotal = document.querySelector(
-      '.cart-page__summary [data-cart-subtotal], .cart-page__summary .cart__total .cart__total-value'
-    );
-    if (nativeTotal) {
-      const stripTrailingIso = (s) =>
-        String(s || '')
-          .trim()
-          .replace(/\s+MYR\s*$/i, '')
-          .trim();
-      const sync = () => {
-        const mine = document.querySelector('#' + contentId + ' [data-cart-subtotal]');
-        if (!mine) return;
-        const t = stripTrailingIso(nativeTotal.textContent || '');
-        if (t && t !== (mine.textContent || '').trim()) {
-          mine.textContent = t;
-          mine.setAttribute('value', t);
-        }
-      };
-      const mo = new MutationObserver(sync);
-      mo.observe(nativeTotal, { characterData:true, childList:true, subtree:true });
-      sync();
-    }
-
-    // 初始化先跑一次（給首次進頁或快取）
-    document.addEventListener('DOMContentLoaded', () => refreshTotals());
+    // 初始化先跑一次
+    document.addEventListener('DOMContentLoaded', updateAll);
+    updateAll();
   })();
   {% endjavascript %}
   

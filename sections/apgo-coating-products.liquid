@@ -124,11 +124,9 @@
   }
 
 @media (max-width: 749px) {
-    /* Match the cart-items + cart-totals edge — they zero padding-inline
-       on mobile and live inside the section wrapper's own padding. */
-    .apgo-combined-goal {
-      padding: 0 !important;
-      margin-top: 14px;
+    /* Mobile: free-shipping progress lives in sticky bar — hide duplicate card */
+    .section-cart-combined {
+      display: none !important;
     }
   }
 
@@ -212,18 +210,35 @@
       }
     };
 
+    let refreshTmr;
     const refresh = async () => {
       try {
-        const res = await fetch('/cart.js', { headers: { Accept: 'application/json' } });
+        const res = await fetch('/cart.js', { headers: { Accept: 'application/json' }, cache: 'no-store' });
         const cart = await res.json();
         const subtotalMinor = Number(cart?.original_total_price || cart?.total_price || 0);
         render(subtotalMinor);
       } catch (_) {}
     };
+    const refreshDebounced = () => { clearTimeout(refreshTmr); refreshTmr = setTimeout(refresh, 240); };
 
-    ['cart:refresh', 'cart:updated', 'cart:update', 'cart:change', 'product:added', 'ajaxProduct:added'].forEach((eventName) => {
-      document.addEventListener(eventName, refresh, { passive: true });
+    ['cart:refresh', 'cart:updated', 'cart:update', 'cart:change', 'quantity-selector:update', 'product:added', 'ajaxProduct:added'].forEach((eventName) => {
+      document.addEventListener(eventName, refreshDebounced, { passive: true });
     });
+
+    // Most reliable trigger: Horizon morphs <cart-items-component> on every qty
+    // change. Observe its DOM directly instead of trusting event names — this is
+    // what makes the bar refresh without a hard reload. Re-attach if the element
+    // is section-replaced.
+    const attachCartItemsObserver = () => {
+      const el = document.querySelector('cart-items-component');
+      if (!el || el.__apgoGoalObserved) return;
+      el.__apgoGoalObserved = true;
+      new MutationObserver(refreshDebounced)
+        .observe(el, { childList: true, subtree: true, characterData: true });
+    };
+    attachCartItemsObserver();
+    new MutationObserver(attachCartItemsObserver)
+      .observe(document.body, { childList: true, subtree: true });
 
     refresh();
   })();

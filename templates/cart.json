@@ -9,6 +9,16 @@
  */
 {
   "sections": {
+    "apgo_checkout_steps_x7K2pQ": {
+      "type": "apgo-cart-checkout-steps",
+      "name": "Almost There — Checkout Steps",
+      "settings": {
+        "lead_text": "ONE STEP LEFT.",
+        "body_text": "Click Checkout to finish in under a minute.",
+        "padding-block-start": 8,
+        "padding-block-end": 8
+      }
+    },
     "cart-section": {
       "type": "main-cart",
       "blocks": {
@@ -58,6 +68,60 @@
         "padding-block-end": 0
       }
     },
+    "cart_gift_with_purchase": {
+      "type": "cart-gift-with-purchase",
+      "blocks": {
+        "gift_item_D8Y939": {
+          "type": "gift_item",
+          "settings": {
+            "product": "apgo-car-wash-shampoo-special-formula-refill-pack",
+            "unlocked_price_label": "FREE"
+          }
+        },
+        "gift_item_YX9HMc": {
+          "type": "gift_item",
+          "settings": {
+            "product": "",
+            "unlocked_price_label": "FREE"
+          }
+        },
+        "gift_item_Ya86Qz": {
+          "type": "gift_item",
+          "settings": {
+            "product": "apgo-car-paint-polish-cream-white-restorer",
+            "unlocked_price_label": "FREE"
+          }
+        },
+        "gift_item_qabcng": {
+          "type": "gift_item",
+          "settings": {
+            "product": "apgo-car-exterior-plastic-protectant",
+            "unlocked_price_label": "RM 10"
+          }
+        }
+      },
+      "block_order": [
+        "gift_item_D8Y939",
+        "gift_item_YX9HMc",
+        "gift_item_Ya86Qz",
+        "gift_item_qabcng"
+      ],
+      "disabled": true,
+      "name": "Gift with Purchase",
+      "settings": {
+        "section_title": "Purchase with Purchase",
+        "trigger_product_list": [
+          "🎉👔-fathers-day-aurora-coating-special-buy-1-free-1-👔🎉"
+        ],
+        "max_products": 8,
+        "accent_color_start": "#f08418",
+        "accent_color_end": "#f7931e",
+        "text_color": "#ffffff",
+        "show_prices": true,
+        "enable_quick_add": true,
+        "image_ratio": "square"
+      }
+    },
     "apgo_coating_products_VU6az3": {
       "type": "apgo-coating-products",
       "name": "Spend More, Get More",
@@ -90,22 +154,15 @@
         "color_scheme": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26"
       }
     },
-    "apgo_checkout_steps_x7K2pQ": {
-      "type": "apgo-cart-checkout-steps",
-      "name": "Almost There — Checkout Steps",
-      "settings": {
-        "lead_text": "ONE STEP LEFT.",
-        "body_text": "Click Checkout to finish in under a minute.",
-        "padding-block-start": 8,
-        "padding-block-end": 8
-      }
-    },
     "cart_cta_aCdf4g": {
       "type": "cart-cta",
       "name": "Cart CTA (Standalone)",
       "settings": {
         "show_accelerated": true,
-        "color_scheme": "scheme-9a9df36f-52ae-4a86-948a-8b59a473eca0"
+        "color_scheme": "scheme-9a9df36f-52ae-4a86-948a-8b59a473eca0",
+        "show_sticky_mobile": true,
+        "show_free_shipping_progress": true,
+        "sticky_progress_title": "Free shipping"
       }
     },
     "cart_upsell_recommendations_L4gQhn": {
@@ -116,11 +173,11 @@
         "show_popular_button": false,
         "button_text": "Click to see popular products",
         "popular_items_url": "",
-        "loading_bg_color": "#1a1a1a",
+        "loading_bg_color": "#000000",
         "use_gradient": true,
-        "bg_color_start": "#1a1a1a",
-        "bg_color_end": "#2d2d2d",
-        "border_color": "#333333",
+        "bg_color_start": "#000000",
+        "bg_color_end": "#000000",
+        "border_color": "#000000",
         "use_accent_gradient": true,
         "accent_color_start": "#f08418",
         "accent_color_end": "#f08418",
@@ -153,6 +210,7 @@
   "order": [
     "apgo_checkout_steps_x7K2pQ",
     "cart-section",
+    "cart_gift_with_purchase",
     "apgo_coating_products_VU6az3",
     "custom_liquid_QNhCUK",
     "cart_totals_Cya3eE",
