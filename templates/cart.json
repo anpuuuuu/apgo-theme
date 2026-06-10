@@ -78,6 +78,13 @@
             "unlocked_price_label": "FREE"
           }
         },
+        "gift_item_YX9HMc": {
+          "type": "gift_item",
+          "settings": {
+            "product": "",
+            "unlocked_price_label": "FREE"
+          }
+        },
         "gift_item_Ya86Qz": {
           "type": "gift_item",
           "settings": {
@@ -95,6 +102,7 @@
       },
       "block_order": [
         "gift_item_D8Y939",
+        "gift_item_YX9HMc",
         "gift_item_Ya86Qz",
         "gift_item_qabcng"
       ],
@@ -103,7 +111,7 @@
       "settings": {
         "section_title": "Purchase with Purchase",
         "trigger_product_list": [
-          "apgo-atomic-car-nano-coating-standard"
+          "🎉👔-fathers-day-aurora-coating-special-buy-1-free-1-👔🎉"
         ],
         "max_products": 8,
         "accent_color_start": "#f08418",
