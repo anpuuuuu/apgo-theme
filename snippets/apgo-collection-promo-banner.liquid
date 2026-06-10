@@ -15,11 +15,14 @@
 {%- enddoc -%}
 
 {%- comment -%} ============ EDIT THESE TO CHANGE THE PROMO ============ {%- endcomment -%}
-{%- assign promo_handle    = 'atomic-glaze-coating-hari-raya-haji-bundle' -%}
+{%- assign promo_handle    = 'fathers-day-aurora-coating-special-buy-1-free-1' -%}
 {%- assign promo_headline  = 'GRAB THIS DEAL NOW!' -%}
 {%- assign promo_body      = 'and receive an additional FREE 300ml shampoo from us!' -%}
 {%- assign promo_cta       = 'View deal' -%}
 {%- assign promo_timer_label = 'Ends in' -%}
+{%- comment -%} promo_daily_end is the fallback only — actual deadline now uses
+   the product's `custom.deal_timer_ends_at` metafield (2026-06-13 11:59).
+   The countdown JS reads that in priority. {%- endcomment -%}
 {%- assign promo_daily_end = '23:59' -%}
 {%- comment -%} ========================================================== {%- endcomment -%}
 
@@ -34,10 +37,21 @@
   {%- assign on_promo_pdp = true -%}
 {%- endif -%}
 {%- if promo_product != blank and promo_product.handle != blank -%}
+  {%- comment -%}
+    Read the per-product `custom.deal_timer_ends_at` metafield. If set,
+    emit it as both a Unix epoch (data-promo-end-ts) and ISO string. The
+    countdown JS prefers the fixed timestamp (one-shot, hides on expiry).
+    Falls back to the daily-recurring mode if the metafield isn't set.
+  {%- endcomment -%}
+  {%- assign promo_fixed_end = promo_product.metafields.custom.deal_timer_ends_at.value -%}
   <a class="apgo-promo-banner"
      href="{{ promo_product.url }}"
      aria-label="{{ promo_headline | escape }} — {{ promo_body | escape }}"
      data-apgo-promo-banner
+     {%- if promo_fixed_end != blank %}
+     data-promo-end-ts="{{ promo_fixed_end | date: '%s' }}"
+     data-promo-end-iso="{{ promo_fixed_end | date: '%Y-%m-%dT%H:%M:%S%z' }}"
+     {%- endif %}
      data-daily-end="{{ promo_daily_end }}"
      data-tz-offset="+08:00">
     {%- if promo_product.featured_image != blank -%}
@@ -253,6 +267,13 @@
     var timerEl = root.querySelector('[data-apgo-promo-timer]');
     if (!timerEl) return;
 
+    /* Mode 1 (preferred) — fixed one-shot end timestamp from the
+       product's deal_timer_ends_at metafield. Counts down once; hides
+       the whole banner when it expires.
+       Mode 2 (fallback) — daily-recurring countdown to dailyEnd MY. */
+    var fixedTs   = parseInt(root.getAttribute('data-promo-end-ts') || '', 10);
+    var fixedMode = !isNaN(fixedTs) && fixedTs > 0;
+
     var dailyEnd = root.getAttribute('data-daily-end') || '23:59';
     var tz       = root.getAttribute('data-tz-offset') || '+08:00';
 
@@ -268,23 +289,40 @@
       if (t <= Date.now()) t += 24 * 3600 * 1000;
       return t;
     }
-    var today = myTodayStr();
-    var endMs = endOfDayMs(today);
+
+    var endMs;
+    if (fixedMode) {
+      endMs = fixedTs * 1000;
+      /* Already expired → hide the whole banner immediately */
+      if (endMs - Date.now() <= 0) { root.style.display = 'none'; return; }
+    } else {
+      endMs = endOfDayMs(myTodayStr());
+    }
+
     function pad(n) { return n < 10 ? '0' + n : '' + n; }
     function tick() {
       var diff = endMs - Date.now();
       if (diff <= 0) {
-        today = myTodayStr();
-        endMs = endOfDayMs(today);
+        if (fixedMode) {
+          /* Promo really ended — hide the banner and stop ticking */
+          root.style.display = 'none';
+          clearInterval(timerId);
+          return;
+        }
+        /* Daily mode: roll to next day */
+        endMs = endOfDayMs(myTodayStr());
         diff = endMs - Date.now();
       }
-      var h = Math.floor(diff / 3600000);
-      var m = Math.floor((diff % 3600000) / 60000);
-      var s = Math.floor((diff % 60000) / 1000);
-      timerEl.textContent = pad(h) + ':' + pad(m) + ':' + pad(s);
+      /* Render up to "Dd HH:MM:SS" when more than 24h, else HH:MM:SS */
+      var totalSec = Math.floor(diff / 1000);
+      var days  = Math.floor(totalSec / 86400);
+      var h     = Math.floor((totalSec % 86400) / 3600);
+      var m     = Math.floor((totalSec % 3600) / 60);
+      var s     = totalSec % 60;
+      timerEl.textContent = (days > 0 ? days + 'd ' : '') + pad(h) + ':' + pad(m) + ':' + pad(s);
     }
     tick();
-    setInterval(tick, 1000);
+    var timerId = setInterval(tick, 1000);
   })();
   </script>
 {%- endif -%}

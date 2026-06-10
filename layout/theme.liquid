@@ -97,7 +97,7 @@
       {%- endcomment -%}
       {% if settings.apgo_gwp_enabled
          and template.name == 'product'
-         and product.handle == 'atomic-glaze-coating-hari-raya-haji-bundle' %}
+         and product.handle == 'fathers-day-aurora-coating-special-buy-1-free-1' %}
         {% render 'apgo-collection-promo-banner' %}
       {% endif %}
       {{ content_for_layout }}
@@ -181,9 +181,9 @@
       <script>
         window.APGO_GIFT_MAP = window.APGO_GIFT_MAP || {};
         window.APGO_GIFT_PRODUCT_TITLES = window.APGO_GIFT_PRODUCT_TITLES || {};
-        /* Hari Raya Haji Bundle → Car Wash Shampoo */
-        window.APGO_GIFT_MAP[48112452010138] = 46516355006618;
-        window.APGO_GIFT_PRODUCT_TITLES[48112452010138] = 'Atomic Glaze Coating Hari Raya Haji Bundle';
+        /* Father's Day Aurora Coating Special → Car Wash Shampoo */
+        window.APGO_GIFT_MAP[48219767505050] = 46516355006618;
+        window.APGO_GIFT_PRODUCT_TITLES[48219767505050] = "Father's Day Aurora Coating Special";
       </script>
       <script src="{{ 'apgo-gift-reconciler.js' | asset_url }}" defer></script>
     {% endif %}
@@ -201,7 +201,7 @@
     {%- endcomment -%}
     {% if settings.apgo_gwp_enabled
        and template.name == 'product'
-       and product.handle == 'atomic-glaze-coating-hari-raya-haji-bundle' %}
+       and product.handle == 'fathers-day-aurora-coating-special-buy-1-free-1' %}
       {% render 'apgo-gwp-buybar-hint' %}
     {% endif %}
 
