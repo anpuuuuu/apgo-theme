@@ -57,13 +57,18 @@
         assign sticky_threshold_minor = 9900
       endif
 
+      capture sticky_fs_basis_raw
+        render 'apgo-cart-free-shipping-basis', cart: cart
+      endcapture
+      assign sticky_fs_basis = sticky_fs_basis_raw | plus: 0
+
       assign sticky_free_shipping_unlocked = false
       assign sticky_remaining_minor = 0
       if sticky_threshold_minor > 0
-        if cart.original_total_price >= sticky_threshold_minor
+        if sticky_fs_basis >= sticky_threshold_minor
           assign sticky_free_shipping_unlocked = true
         else
-          assign sticky_remaining_minor = sticky_threshold_minor | minus: cart.original_total_price
+          assign sticky_remaining_minor = sticky_threshold_minor | minus: sticky_fs_basis
         endif
       endif
       # Use the same money path as cart-totals so the symbol matches (RM not MYR, NT$ not TWD)
@@ -108,7 +113,7 @@
 
       assign sticky_progress_pct = 0
       if sticky_threshold_minor > 0
-        assign sticky_progress_pct = cart.original_total_price | times: 100 | divided_by: sticky_threshold_minor
+        assign sticky_progress_pct = sticky_fs_basis | times: 100 | divided_by: sticky_threshold_minor
         if sticky_progress_pct > 100
           assign sticky_progress_pct = 100
         endif
@@ -881,10 +886,10 @@
         itemsEl.textContent = '(' + cart.item_count + ')';
       }
 
-      // CRITICAL: use the SAME field as apgo-coating-products and cart-totals
-      // (cart.original_total_price || cart.total_price) so all three bars
-      // agree on locked/unlocked. items_subtotal_price would desync them.
-      var basis = Number(cart.original_total_price || cart.total_price || 0);
+      // Match apgo-coating-products: exclude _free_gift lines from the bar.
+      var basis = window.apgoCartFreeShippingBasis
+        ? window.apgoCartFreeShippingBasis(cart)
+        : Number(cart.total_price || 0);
       var ccy = cart.currency;
 
       updateSaveDisplay(cart);

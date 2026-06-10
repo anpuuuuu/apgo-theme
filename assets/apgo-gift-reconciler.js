@@ -411,4 +411,22 @@
     var resourceCart = ev && ev.detail && (ev.detail.resource || ev.detail.cart);
     schedule(resourceCart);
   });
+
+  /* Free-shipping progress basis — exclude mandatory gift lines so a RM0
+     _free_gift row does not inflate the bar (original_total_price counts
+     the gift's list price). Shared by apgo-coating-products, cart-cta, etc. */
+  window.apgoCartFreeShippingBasis = function (cart) {
+    if (!cart || !cart.items || !cart.items.length) {
+      return Number(cart && cart.total_price) || 0;
+    }
+    var sum = 0;
+    var hasPaying = false;
+    cart.items.forEach(function (item) {
+      if (item.properties && item.properties._free_gift === 'true') return;
+      hasPaying = true;
+      var line = item.final_line_price != null ? item.final_line_price : item.line_price;
+      sum += Number(line) || 0;
+    });
+    return hasPaying ? sum : (Number(cart.total_price) || 0);
+  };
 })();

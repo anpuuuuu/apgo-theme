@@ -1,0 +1,22 @@
+{%- comment -%}
+  Free-shipping progress basis: sum final_line_price for paying lines only.
+  Gift lines (properties._free_gift == 'true') are excluded so a RM0 gift
+  does not inflate the bar toward the threshold.
+  Output: integer minor units (cents).
+{%- endcomment -%}
+{%- liquid
+  assign apgo_fs_basis = 0
+  for item in cart.items
+    assign apgo_is_gift = false
+    if item.properties._free_gift == 'true'
+      assign apgo_is_gift = true
+    endif
+    unless apgo_is_gift
+      assign apgo_fs_basis = apgo_fs_basis | plus: item.final_line_price
+    endunless
+  endfor
+  if apgo_fs_basis == 0
+    assign apgo_fs_basis = cart.total_price
+  endif
+-%}
+{{- apgo_fs_basis -}}

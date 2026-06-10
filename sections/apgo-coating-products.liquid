@@ -215,7 +215,9 @@
       try {
         const res = await fetch('/cart.js', { headers: { Accept: 'application/json' }, cache: 'no-store' });
         const cart = await res.json();
-        const subtotalMinor = Number(cart?.original_total_price || cart?.total_price || 0);
+        const subtotalMinor = window.apgoCartFreeShippingBasis
+          ? window.apgoCartFreeShippingBasis(cart)
+          : Number(cart?.total_price || 0);
         render(subtotalMinor);
       } catch (_) {}
     };

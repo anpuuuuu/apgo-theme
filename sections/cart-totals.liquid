@@ -21,15 +21,20 @@
         assign market_threshold_minor = 9900
       endif
 
+      capture apgo_fs_basis_raw
+        render 'apgo-cart-free-shipping-basis', cart: cart
+      endcapture
+      assign apgo_free_shipping_basis = apgo_fs_basis_raw | plus: 0
+
       assign discount_total_minor = cart.total_discount
       assign remaining_for_free_shipping_minor = 0
       assign free_shipping_remaining_formatted = remaining_for_free_shipping_minor | money
       assign free_shipping_unlocked = false
       if market_threshold_minor > 0
-        if cart.original_total_price >= market_threshold_minor
+        if apgo_free_shipping_basis >= market_threshold_minor
           assign free_shipping_unlocked = true
         else
-          assign remaining_for_free_shipping_minor = market_threshold_minor | minus: cart.original_total_price
+          assign remaining_for_free_shipping_minor = market_threshold_minor | minus: apgo_free_shipping_basis
           assign free_shipping_remaining_formatted = remaining_for_free_shipping_minor | money
         endif
       endif
