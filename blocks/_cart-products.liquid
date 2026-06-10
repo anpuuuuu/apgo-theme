@@ -565,6 +565,11 @@
     pointer-events: none !important;
     color: rgba(255, 255, 255, 0.55) !important;
   }
+  /* Gift is mandatory — hide the remove/trash button so it can't be deleted */
+  .apgo-cart-item--gift .cart-items__remove,
+  .apgo-cart-item--gift button[on\:click^="/onLineItemRemove"] {
+    display: none !important;
+  }
   /* Price column → show "FREE" in green-ish accent */
   .apgo-cart-item--gift .cart-items__price {
     color: #34d399 !important;
@@ -659,28 +664,10 @@
               if (existingBadge) existingBadge.insertAdjacentElement('afterend', sub);
               else details.appendChild(sub);
             }
-            /* When user clicks the remove (trash) button, record the
-               dismiss so the gift doesn't re-add on next reconcile.
-               IMPORTANT: must use sessionStorage to match the global
-               reconciler (assets/apgo-gift-reconciler.js). Previously
-               used localStorage which the reconciler never read → the
-               dismiss flag never "stuck" and Y immediately came back. */
-            var removeBtn = row.querySelector('.cart-items__remove');
-            if (removeBtn && !removeBtn.dataset.apgoGiftDismissBound) {
-              removeBtn.dataset.apgoGiftDismissBound = '1';
-              removeBtn.addEventListener('click', function () {
-                var xId = item.properties._gift_for;
-                if (xId) {
-                  try { sessionStorage.setItem('apgo_gift_dismissed_' + xId, '1'); } catch (_) {}
-                  /* Also call the exposed helper if available — it goes
-                     through the same sessionStorage path but stays robust
-                     if the storage key prefix ever changes. */
-                  if (typeof window.apgoDismissGift === 'function') {
-                    try { window.apgoDismissGift(xId); } catch (_) {}
-                  }
-                }
-              }, true);
-            }
+            /* Gift is mandatory: the remove button is hidden via CSS and we
+               deliberately do NOT bind any "dismiss" handler, so the gift can
+               never be turned off by the customer. When the triggering X is
+               removed entirely, pruneStaleGifts() still drops the orphan Y. */
           }
         });
       })
