@@ -953,7 +953,13 @@
     var cartItemsEl = document.querySelector('cart-items-component');
     if (cartItemsEl && 'MutationObserver' in window) {
       new MutationObserver(function(){
-        if (lastCartSnapshot) updateSaveDisplay(lastCartSnapshot, 'mutation-stale');
+        // NOTE: do NOT recompute "Saved" from lastCartSnapshot here. After a
+        // morph the DOM rows are already the NEW state (so computeReferenceMinor
+        // returns the new reference) while the snapshot total is still the OLD
+        // value — pairing them produced a wrong "Saved" amount that flashed for
+        // ~0.7s until the fresh /cart.js arrived. We now only update from an
+        // authoritative cart (refreshFromCart), keeping reference and total in
+        // lock-step.
         if (Date.now() - lastInlineUpdate < 900) return;
         refreshSticky();
       }).observe(cartItemsEl, { childList: true, subtree: true, characterData: true });
