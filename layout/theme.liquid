@@ -19,12 +19,14 @@
                 data:data,timestamp:Date.now()})}).catch(function(){});
           } catch(e){}
         }
+        var NOISE=/shop_events_listener|\/cdn\/wpm\/|shopifyChatV1Widget|compiled_assets\/scripts|theme\.liquid:cart-flow|at window\.fetch \(\/(cart|collections|products)|at window2\.fetch/i;
         function topFrames(){
           try {
-            var s=(new Error().stack||'').split('\n').slice(2,6).map(function(l){
+            var all=(new Error().stack||'').split('\n').slice(1).map(function(l){
               return l.replace(/https?:\/\/[^\/]+/g,'').replace(/\?[^ )]*/g,'').trim();
             });
-            return s;
+            var real=all.filter(function(l){ return l && !NOISE.test(l); });
+            return real.slice(0,4);
           } catch(e){ return []; }
         }
         var CART_RE=/\/cart(\.js|\/(add|change|update|clear)(\.js)?|\?sections=|\?[^ ]*sections=)/i;
