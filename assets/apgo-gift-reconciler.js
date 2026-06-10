@@ -338,6 +338,104 @@
     return reconcile();
   };
 
+  /* ------------------------------------------------------------------
+     Atomic gift merge — eliminates the two-stage render flicker.
+
+     Horizon's <cart-items-component> changes an X line with a single
+     POST /cart/change ({line, quantity, sections, sections_url}) and then
+     morphs the returned section HTML. Because the free gift Y lives on a
+     SEPARATE line, the gift only gets corrected by the async reconcile that
+     runs AFTER that render — so the user briefly sees X updated but Y stale
+     (wrong qty / wrong BXGY price) and, on decrease, a transient duplicate
+     gift row before dedupe.
+
+     Fix: intercept that /cart/change for an X line and rewrite it into ONE
+     /cart/update.js that sets BOTH the X line and its gift line(s) at once
+     (forwarding `sections` so the native morph still works). The cart then
+     renders a single time already in sync; the later reconcile sees nothing
+     to do and never triggers a second render.
+
+     Only the common case (gift line already present, not dismissed) is
+     merged; first-time gift creation still falls through to the reconciler's
+     /cart/add.js path. */
+  (function installAtomicGiftMerge() {
+    var CHANGE_RE = /\/cart\/change(\.js)?(\?|$)/i;
+    var UPDATE_URL = (window.Theme && Theme.routes && Theme.routes.cart_update_url) || '/cart/update.js';
+    var _origFetch = window.fetch;
+
+    function planMergedUpdate(parsed) {
+      return _origFetch.call(window, '/cart.js', { headers: { Accept: 'application/json' } })
+        .then(function (r) { return r.json(); })
+        .then(function (cart) {
+          var items = cart.items || [];
+          var changed = items[parsed.line - 1];
+          if (!changed) return null;
+          if (changed.properties && changed.properties._free_gift === 'true') return null;
+          if (!window.APGO_GIFT_MAP[changed.variant_id]) return null; /* not an X line */
+          var giftId = parseInt(window.APGO_GIFT_MAP[changed.variant_id], 10);
+
+          /* qty going up re-arms a dismissed gift (matches reconcile logic) */
+          if (parsed.quantity > changed.quantity) clearGiftDismissed(changed.variant_id);
+          if (isGiftDismissed(changed.variant_id)) return null; /* let normal flow handle */
+
+          /* desired Y = total qty of all non-gift lines mapping to this gift,
+             using the NEW quantity for the changed line (1:1 X→Y). */
+          var desiredY = 0;
+          items.forEach(function (it, i) {
+            if (it.properties && it.properties._free_gift === 'true') return;
+            if (parseInt(window.APGO_GIFT_MAP[it.variant_id], 10) !== giftId) return;
+            desiredY += (i === parsed.line - 1) ? parsed.quantity : it.quantity;
+          });
+
+          var giftLines = items.filter(function (it) {
+            return it.properties && it.properties._free_gift === 'true' && it.variant_id === giftId;
+          });
+          if (giftLines.length === 0) return null; /* need ADD → reconciler handles it */
+
+          var updates = {};
+          updates[changed.key] = parsed.quantity;
+          updates[giftLines[0].key] = desiredY;
+          for (var j = 1; j < giftLines.length; j++) updates[giftLines[j].key] = 0; /* dedupe dups */
+
+          // #region agent log
+          __dbg('atomic-merge', { hyp: 'FIX', line: parsed.line, newX: parsed.quantity, desiredY: desiredY, updates: updates });
+          // #endregion
+
+          return {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify({
+              updates: updates,
+              sections: parsed.sections,
+              sections_url: parsed.sections_url
+            })
+          };
+        })
+        .catch(function () { return null; });
+    }
+
+    window.fetch = function (input, init) {
+      try {
+        var url = String((input && input.url) || input || '');
+        var method = ((init && init.method) || (input && input.method) || 'GET').toUpperCase();
+        if (method === 'POST' && CHANGE_RE.test(url) &&
+            window.APGO_GIFT_MAP && Object.keys(window.APGO_GIFT_MAP).length &&
+            init && typeof init.body === 'string') {
+          var parsed = null;
+          try { parsed = JSON.parse(init.body); } catch (_) {}
+          if (parsed && typeof parsed.line === 'number' && typeof parsed.quantity === 'number') {
+            var self = this;
+            return planMergedUpdate(parsed).then(function (mergedInit) {
+              if (!mergedInit) return _origFetch.call(self, input, init);
+              return _origFetch.call(self, UPDATE_URL, mergedInit);
+            });
+          }
+        }
+      } catch (e) {}
+      return _origFetch.apply(this, arguments);
+    };
+  })();
+
   /* Listen for cart updates from anywhere (quick-add, cart drawer, PDP,
      apps that dispatch the standard event). Skip our own events. */
   document.addEventListener('cart:update', function (ev) {
