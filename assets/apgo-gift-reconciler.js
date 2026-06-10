@@ -70,6 +70,18 @@
   var selfDispatching = false; /* skip our own cart:update events */
   var pendingCart = null; /* cart from latest event, reused to skip a fetch */
 
+  // #region agent log
+  function __dbg(message, data) {
+    try {
+      fetch('http://127.0.0.1:7664/ingest/6d6da4c4-6868-481c-8830-6f610c9dd71e', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '0c453c' },
+        body: JSON.stringify({ sessionId: '0c453c', location: 'apgo-gift-reconciler.js', message: message, data: data, timestamp: Date.now() })
+      }).catch(function () {});
+    } catch (e) {}
+  }
+  // #endregion
+
   function reconcile(eventCart) {
     if (running) return Promise.resolve();
     if (!window.APGO_GIFT_MAP || Object.keys(window.APGO_GIFT_MAP).length === 0) {
@@ -186,9 +198,23 @@
 
         var hasUpdates = Object.keys(updates).length > 0;
         var hasAdds = newAdds.length > 0;
+        // #region agent log
+        __dbg('reconcile-plan', {
+          hyp: 'H-A/H-B',
+          xQty: currentXQty,
+          desiredY: Object.keys(desired).reduce(function (a, k) { a[k] = desired[k].qty; return a; }, {}),
+          existingYLines: existingGifts.map(function (g) { return { vid: g.variant_id, qty: g.quantity, key: g.key }; }),
+          updates: updates,
+          newAdds: newAdds.map(function (a) { return { giftId: a.giftId, qty: a.spec.qty }; }),
+          willActUpdate: hasUpdates, willActAdd: hasAdds, itemCount: cart.item_count
+        });
+        // #endregion
         if (!hasUpdates && !hasAdds) {
           return cart; /* nothing to do — cart already in sync */
         }
+        // #region agent log
+        var __t0 = Date.now();
+        // #endregion
 
         /* Step 1: batch updates in single /cart/update.js call. */
         var batchUpdate = hasUpdates
@@ -276,6 +302,16 @@
           } finally {
             setTimeout(function () { selfDispatching = false; }, 50);
           }
+          // #region agent log
+          __dbg('reconcile-done', {
+            hyp: 'H-A/H-D',
+            finalItemCount: newCart && newCart.item_count,
+            finalGiftLines: (newCart && newCart.items || []).filter(function (i) {
+              return i.properties && i.properties._free_gift === 'true';
+            }).map(function (i) { return { vid: i.variant_id, qty: i.quantity }; }),
+            msSincePlan: Date.now() - __t0
+          });
+          // #endregion
           return newCart;
         });
       })
