@@ -849,14 +849,9 @@
       el.innerHTML = '<span class="cart-sticky-cta__price-main">' + p.main + '</span><span class="cart-sticky-cta__price-dec">' + p.dec + '</span>';
     }
 
-    function updateSaveDisplay(cart, src) {
+    function updateSaveDisplay(cart) {
       if (!cart || !saveEl) return;
       var saveMinor = computeSaveMinor(cart);
-      // #region agent log
-      try {
-        fetch('http://127.0.0.1:7664/ingest/6d6da4c4-6868-481c-8830-6f610c9dd71e',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'0c453c'},body:JSON.stringify({sessionId:'0c453c',location:'cart-cta.liquid:updateSaveDisplay',message:'save-calc',data:{hyp:'H-S1',src:src||'?',reference:computeReferenceMinor(cart),total:Number(cart.total_price)||0,saveMinor:saveMinor,itemCount:cart.item_count},timestamp:Date.now()})}).catch(function(){});
-      } catch(e){}
-      // #endregion
       if (saveMinor > 0) {
         saveEl.textContent = saveTemplate.replace('%%AMT%%', fmtMoney(saveMinor, cart.currency));
         saveEl.removeAttribute('hidden');
@@ -892,7 +887,7 @@
       var basis = Number(cart.original_total_price || cart.total_price || 0);
       var ccy = cart.currency;
 
-      updateSaveDisplay(cart, 'refreshFromCart');
+      updateSaveDisplay(cart);
       if (totalEl) setSplitPrice(totalEl, cart.total_price, ccy);
 
       if (thresholdMinor > 0 && goalEl) {
