@@ -83,10 +83,13 @@
     padding-inline: var(--apgo-cart-inline-space);
   }
 
-  /* Mobile: hide duplicate cart summary sections (sticky + meta replace them) */
+  /* Mobile: hide duplicate cart summary sections (sticky + meta replace them).
+     NOTE: cart-totals 在手机端會渲染「Shopee 風格 accordion」（Subtotal/Discount/
+     Shipping/Estimated total），故 *不* 再隱藏 cart-totals section。只有舊版
+     section-cart-combined（Spend More 卡）需隱藏，免運與總計改由 cart-totals 的
+     mobile accordion + cart-cta 的 sticky bar 共同承擔。 */
   @media (max-width: 749px) {
-    .shopify-section.section-cart-combined,
-    .shopify-section:has([data-section-type="cart-totals"]) {
+    .shopify-section.section-cart-combined {
       display: none !important;
     }
     .shopify-section:has(.cart-sticky-cta) > .cart-cta {
