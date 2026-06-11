@@ -101,11 +101,9 @@
       "disabled": true,
       "name": "Gift with Purchase",
       "settings": {
-        "section_title": "Purchase with Purchase",
-        "trigger_product_list": [
-          "fathers-day-aurora-coating-special-buy-1-free-1"
-        ],
-        "max_products": 8,
+        "section_title": "Special add on",
+        "trigger_product_list": [],
+        "max_products": 3,
         "accent_color_start": "#f08418",
         "accent_color_end": "#f7931e",
         "text_color": "#ffffff",
