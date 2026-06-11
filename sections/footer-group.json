@@ -366,6 +366,7 @@
         "about_link_KXzidM",
         "service_link_FeatVL"
       ],
+      "disabled": true,
       "name": "Homepage F2 Eng",
       "settings": {
         "export_strip_to_header_drawer": true,
