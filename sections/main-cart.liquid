@@ -92,6 +92,17 @@
     .shopify-section:has(.cart-sticky-cta) > .cart-cta {
       display: none !important;
     }
+    /* AKO custom-liquid on cart is styles-only — no visible markup on this page */
+    main[data-template="cart"] .shopify-section:has(.section.spacing-style):not(.section-cart-gwp):not(.shopify-section--main-cart):not(.section-apgo-checkout-steps):not(.section-cart-combined):not(:has([data-cart-sticky-footer])):not(:has([data-section-type="cart-totals"])) {
+      display: none !important;
+    }
+    /* Checkout flow: footer below main adds a large black void above the sticky bar */
+    main[data-template="cart"] ~ .shopify-section-group-footer-group {
+      display: none !important;
+    }
+    .shopify-section--main-cart .cart-page {
+      padding-block-end: 12px;
+    }
   }
 
   /* Tax disclaimer + trust — mobile only, plain centered text under cart items */

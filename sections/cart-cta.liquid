@@ -691,10 +691,15 @@
         0 0 48px rgb(22 163 74 / 45%);
     }
 
-    /* Push page content up so the last item is not covered by the bar */
-    main,
-    .shopify-section--main-cart,
-    body { padding-bottom: calc(var(--apgo-sticky-cta-h, 120px) + env(safe-area-inset-bottom)); }
+    /* Reserve exactly one strip for the fixed bar — avoid stacking on main + section + body */
+    main[data-template="cart"] {
+      padding-bottom: calc(var(--apgo-sticky-cta-h, 100px) + env(safe-area-inset-bottom, 0px));
+    }
+    .shopify-section:has([data-cart-sticky-footer]) {
+      margin: 0 !important;
+      padding: 0 !important;
+      min-height: 0 !important;
+    }
   }
   {% endstylesheet %}
   
