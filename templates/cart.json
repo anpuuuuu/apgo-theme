@@ -120,6 +120,18 @@
         "text_secondary_color": "#cccccc"
       }
     },
+    "cart_totals_Cya3eE": {
+      "type": "cart-totals",
+      "name": "Cart Totals (Standalone)",
+      "settings": {
+        "show_note_or_code": true,
+        "show_order_breakdown": true,
+        "show_installments": true,
+        "color_scheme": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26",
+        "flat_shipping_my_cents": 490,
+        "flat_shipping_sg_cents": 450
+      }
+    },
     "custom_liquid_QNhCUK": {
       "type": "custom-liquid",
       "name": "新美化",
@@ -129,16 +141,6 @@
         "section_width": "page-width",
         "padding-block-start": 0,
         "padding-block-end": 0
-      }
-    },
-    "cart_totals_Cya3eE": {
-      "type": "cart-totals",
-      "name": "Cart Totals (Standalone)",
-      "settings": {
-        "show_note_or_code": true,
-        "show_order_breakdown": true,
-        "show_installments": true,
-        "color_scheme": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26"
       }
     },
     "cart_cta_aCdf4g": {
@@ -199,8 +201,8 @@
     "apgo_checkout_steps_x7K2pQ",
     "cart-section",
     "cart_gift_with_purchase",
-    "cart_totals_Cya3eE",
     "apgo_coating_products_VU6az3",
+    "cart_totals_Cya3eE",
     "custom_liquid_QNhCUK",
     "cart_cta_aCdf4g",
     "cart_upsell_recommendations_L4gQhn"
