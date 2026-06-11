@@ -548,7 +548,7 @@
     "gwp_unlocked_toast": "已解鎖 ✓",
     "gwp_locked_badge": "待解鎖",
     "gwp_gifts_label": "贈品",
-    "gwp_editor_empty": "請選擇觸發商品 (X) 並新增 Gift product 區塊。",
+    "gwp_editor_empty": "請設定觸發商品 (X)，並新增含 MY/SG 顯示價的 Gift product 區塊。",
     "free_shipping_not_applicable": "僅適用西馬及新加坡",
     "total_after_discount": "预估总计",
     "estimated_total_checkout_note": "結帳時計算稅額、折扣和運費。",
