@@ -124,6 +124,14 @@
     letter-spacing: 0.04em;
   }
 
+  .cart-gwp-gifts .cart-gwp-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow: visible;
+    padding: 0;
+  }
+
   .cart-gwp-section {
     padding: 0;
   }
@@ -317,29 +325,33 @@
   .cart-gwp-add.loading { opacity: 0.7; pointer-events: none; }
   .cart-gwp-add.added { opacity: 1; }
 
-  /* Trigger (X) rows — must come after .cart-gwp-card column defaults */
-  .cart-gwp-card.cart-gwp-card--trigger {
+  /* Trigger (X) + gift (Y) rows — horizontal, one per row */
+  .cart-gwp-card.cart-gwp-card--trigger,
+  .cart-gwp-gifts .cart-gwp-card {
     flex: none;
     width: 100%;
     flex-direction: row;
     align-items: center;
   }
 
-  .cart-gwp-card.cart-gwp-card--trigger .cart-gwp-card__link {
+  .cart-gwp-card.cart-gwp-card--trigger .cart-gwp-card__link,
+  .cart-gwp-gifts .cart-gwp-card .cart-gwp-card__link {
     flex: 1;
     flex-direction: row;
     align-items: center;
     min-width: 0;
   }
 
-  .cart-gwp-card.cart-gwp-card--trigger .cart-gwp-card__image {
+  .cart-gwp-card.cart-gwp-card--trigger .cart-gwp-card__image,
+  .cart-gwp-gifts .cart-gwp-card .cart-gwp-card__image {
     width: 88px;
     min-width: 88px;
     aspect-ratio: 1;
     flex-shrink: 0;
   }
 
-  .cart-gwp-card.cart-gwp-card--trigger .cart-gwp-card__info {
+  .cart-gwp-card.cart-gwp-card--trigger .cart-gwp-card__info,
+  .cart-gwp-gifts .cart-gwp-card .cart-gwp-card__info {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -347,12 +359,14 @@
     padding: 10px 12px;
   }
 
-  .cart-gwp-card.cart-gwp-card--trigger .cart-gwp-card__title {
+  .cart-gwp-card.cart-gwp-card--trigger .cart-gwp-card__title,
+  .cart-gwp-gifts .cart-gwp-card .cart-gwp-card__title {
     font-size: 12px;
     -webkit-line-clamp: 2;
   }
 
-  .cart-gwp-card.cart-gwp-card--trigger .cart-gwp-add {
+  .cart-gwp-card.cart-gwp-card--trigger .cart-gwp-add,
+  .cart-gwp-gifts .cart-gwp-card .cart-gwp-add {
     width: 44px;
     min-width: 44px;
     height: 44px;
@@ -372,14 +386,6 @@
 
   @media (max-width: 768px) {
     .cart-gwp-wrapper { padding: 0 16px; }
-    .cart-gwp-gifts .cart-gwp-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-      overflow: visible;
-      padding: 0;
-    }
-    .cart-gwp-gifts .cart-gwp-card { flex: unset; width: auto; min-width: 0; }
   }
 </style>
 
