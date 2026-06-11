@@ -47,6 +47,16 @@
     border-radius: 2px;
   }
 
+  .cart-gwp-subtitle {
+    font-family: 'Poppins', 'Microsoft JhengHei', Arial, sans-serif !important;
+    margin: 6px 0 0;
+    padding-left: 12px;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.72) !important;
+    line-height: 1.45;
+  }
+
   .cart-gwp-gifts__label {
     margin: 0 4px 8px;
     font-family: 'Poppins', 'Microsoft JhengHei', Arial, sans-serif !important;
@@ -308,6 +318,15 @@
     assign show_gwp_section = true
   endif
 
+  assign section_subtitle = ''
+  if is_sg_market
+    assign section_subtitle = section.settings.section_subtitle_sg | default: section.settings.section_subtitle_my
+  elsif is_my_market
+    assign section_subtitle = section.settings.section_subtitle_my | default: section.settings.section_subtitle_sg
+  else
+    assign section_subtitle = section.settings.section_subtitle_my | default: section.settings.section_subtitle_sg
+  endif
+
   assign img_width = 400
   case section.settings.image_ratio
     when 'portrait'
@@ -328,6 +347,9 @@
 
   <div class="cart-gwp-header">
     <h3 class="cart-gwp-title">{{ section.settings.section_title }}</h3>
+    {% if section_subtitle != blank %}
+      <p class="cart-gwp-subtitle">{{ section_subtitle }}</p>
+    {% endif %}
   </div>
 
   <div class="cart-gwp-section cart-gwp-gifts">
@@ -581,6 +603,18 @@
       "id": "section_title",
       "label": "區塊標題",
       "default": "Gift with Purchase"
+    },
+    {
+      "type": "text",
+      "id": "section_subtitle_my",
+      "label": "區域副標題（馬來西亞）",
+      "info": "顯示在主標題下方，僅馬來西亞市場顧客可見。留空則不顯示"
+    },
+    {
+      "type": "text",
+      "id": "section_subtitle_sg",
+      "label": "區域副標題（新加坡）",
+      "info": "顯示在主標題下方，僅新加坡市場顧客可見。留空則不顯示"
     },
     {
       "type": "product_list",
