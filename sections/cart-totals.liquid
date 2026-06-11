@@ -274,6 +274,7 @@
         <span class="cart-summary__label cart-summary__label--total">{{ 'apgo_cart.summary_estimated_total' | t }}</span>
         <span class="cart-summary__value cart-summary__value--total" data-summary-total>{{ apgo_summary_total_fmt }}</span>
       </div>
+      <p class="cart-summary__total-note">{{ 'apgo_cart.estimated_total_checkout_note' | t }}</p>
     </div>
   </div>
 </div>
@@ -757,9 +758,17 @@
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    padding: 14px;
+    padding: 14px 14px 6px;
     border-top: 1px solid rgba(255, 255, 255, 0.12);
     background: #000;
+  }
+  .cart-summary__total-note {
+    margin: 0;
+    padding: 0 14px 12px;
+    background: #000;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+    line-height: 1.45;
   }
   .cart-summary__label--total {
     font-size: 15px;
@@ -788,9 +797,10 @@
     .cart-summary__line-qty { font-size: 12.5px; }
     .cart-summary__line-badge { font-size: 11px; }
     .cart-summary__note { font-size: 13px; }
-    .cart-summary__total { padding: 18px; }
+    .cart-summary__total { padding: 18px 18px 6px; }
     .cart-summary__label--total { font-size: 17px; }
     .cart-summary__value--total { font-size: 24px; }
+    .cart-summary__total-note { padding: 0 18px 14px; font-size: 12px; }
   }
   {% endstylesheet %}
   

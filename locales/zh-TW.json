@@ -551,7 +551,7 @@
     "gwp_editor_empty": "請設定觸發商品 (X)，並新增含 MY/SG 顯示價的 Gift product 區塊。",
     "free_shipping_not_applicable": "僅適用西馬及新加坡",
     "total_after_discount": "预估总计",
-    "estimated_total_checkout_note": "結帳時計算稅額、折扣和運費。",
+    "estimated_total_checkout_note": "实际运费以结帐页为准。",
     "summary_subtotal": "小计",
     "summary_discount": "折扣",
     "summary_shipping": "运费",
