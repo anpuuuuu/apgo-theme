@@ -557,7 +557,7 @@
     "summary_shipping": "运费",
     "summary_shipping_free": "免运",
     "summary_estimated_total": "预估总计",
-    "summary_shipping_note_my": "西马 · 满 RM 99 免运",
+    "summary_shipping_note_my": "西马满 RM 99 免运；东马运费于结帐页计算。",
     "summary_shipping_note_sg": "新加坡 · 满 S$ 55 免运",
     "summary_shipping_note_other": "运费于结帐页计算",
     "summary_shipping_estimated_note": "为预估值，实际运费以结帐页为准。",

@@ -178,9 +178,6 @@
         </span>
       </button>
     </div>
-    <div class="cart-sticky-footer__tax">
-      {% render 'tax-info', has_discounts_enabled: settings.show_add_discount_code %}
-    </div>
     </div>
   {%- endif -%}
 
@@ -613,25 +610,6 @@
     }
     .cart-sticky-cta__total .cart-sticky-cta__price-dec {
       color: #ff0036;
-    }
-
-    .cart-sticky-footer__tax {
-      padding: 7px 14px 6px;
-      text-align: center;
-      font-size: 10px;
-      line-height: 1.4;
-      color: rgba(255, 255, 255, 0.5);
-      background: #000;
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-    }
-    .cart-sticky-footer__tax small {
-      font-size: inherit;
-      color: inherit;
-    }
-    .cart-sticky-footer__tax a {
-      color: rgba(255, 255, 255, 0.65);
-      text-decoration: underline;
-      text-underline-offset: 2px;
     }
 
     /* Free shipping — title + progress bar, hint text centered inside the track */
