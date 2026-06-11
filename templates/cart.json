@@ -71,37 +71,27 @@
     "cart_gift_with_purchase": {
       "type": "cart-gift-with-purchase",
       "blocks": {
-        "gift_item_YX9HMc": {
-          "type": "gift_item",
-          "settings": {
-            "product": "",
-            "unlocked_price_label_my": "FREE",
-            "unlocked_price_label_sg": "FREE"
-          }
-        },
         "gift_item_Ya86Qz": {
           "type": "gift_item",
           "settings": {
-            "product": "apgo-car-paint-polish-cream-white-restorer",
-            "unlocked_price_label_my": "RM39",
-            "unlocked_price_label_sg": "S$12"
+            "product": "agpo-car-wiper-fluid-new-formula",
+            "unlocked_price_label_my": "RM6.6",
+            "unlocked_price_label_sg": "$ 2.9"
           }
         },
         "gift_item_qabcng": {
           "type": "gift_item",
           "settings": {
-            "product": "apgo-car-exterior-plastic-protectant",
-            "unlocked_price_label_my": "RM49",
-            "unlocked_price_label_sg": "S$15"
+            "product": "apgo-car-windshield-oil-film-remover-perfect-glass-restorer",
+            "unlocked_price_label_my": "RM 29",
+            "unlocked_price_label_sg": "$ 12.9"
           }
         }
       },
       "block_order": [
-        "gift_item_YX9HMc",
         "gift_item_Ya86Qz",
         "gift_item_qabcng"
       ],
-      "disabled": true,
       "name": "Gift with Purchase",
       "settings": {
         "section_title": "Special add on",
