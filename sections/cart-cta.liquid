@@ -75,12 +75,20 @@
       assign sticky_remaining_formatted = sticky_remaining_minor | money | replace: cart.currency.iso_code, '' | strip
       assign sticky_total_formatted = cart.total_price | money | replace: cart.currency.iso_code, '' | strip
 
-      # Save badge: reference = sum of each line's current price (final_line_price)
-      assign sticky_reference_minor = 0
-      for item in cart.items
-        assign sticky_reference_minor = sticky_reference_minor | plus: item.final_line_price
-      endfor
-      assign sticky_save_minor = sticky_reference_minor | minus: cart.total_price
+      # Save badge: Shopify discount total (BXGY / automatic / code) — not Compare-at MSRP
+      assign sticky_save_minor = cart.total_discount
+      if sticky_save_minor <= 0
+        assign sticky_save_minor = cart.original_total_price | minus: cart.total_price
+      endif
+      if sticky_save_minor <= 0
+        assign sticky_save_minor = 0
+        for item in cart.items
+          assign item_save = item.original_line_price | minus: item.final_line_price
+          if item_save > 0
+            assign sticky_save_minor = sticky_save_minor | plus: item_save
+          endif
+        endfor
+      endif
       assign sticky_show_save = false
       if sticky_save_minor > 0
         assign sticky_show_save = true
@@ -800,25 +808,28 @@
 
     var lastCartSnapshot = null;
 
-    function computeReferenceMinor(cart) {
-      if (cart && cart.items && cart.items.length) {
+    function computeSaveMinor(cart) {
+      if (!cart) return 0;
+      var discount = Number(cart.total_discount);
+      if (!isNaN(discount) && discount > 0) return discount;
+      var before = Number(cart.original_total_price) || 0;
+      var after = Number(cart.total_price) || 0;
+      var save = before - after;
+      if (save > 0) return save;
+      if (cart.items && cart.items.length) {
         return cart.items.reduce(function (sum, item) {
-          var line = item.final_line_price != null ? item.final_line_price : item.line_price;
-          return sum + (Number(line) || 0);
+          var orig = Number(item.original_line_price) || 0;
+          var fin = Number(item.final_line_price != null ? item.final_line_price : item.line_price) || 0;
+          return sum + Math.max(0, orig - fin);
         }, 0);
       }
-      var reference = 0;
+      var lineSave = 0;
       document.querySelectorAll('cart-items-component tr.cart-items__table-row[data-line-final-cents]').forEach(function (row) {
-        reference += parseInt(row.getAttribute('data-line-final-cents'), 10) || 0;
+        var orig = parseInt(row.getAttribute('data-line-original-cents'), 10) || 0;
+        var fin = parseInt(row.getAttribute('data-line-final-cents'), 10) || 0;
+        lineSave += Math.max(0, orig - fin);
       });
-      return reference;
-    }
-
-    function computeSaveMinor(cart) {
-      var reference = computeReferenceMinor(cart);
-      var total = Number(cart.total_price) || 0;
-      var save = reference - total;
-      return save > 0 ? save : 0;
+      return lineSave;
     }
 
     function fmtMoneyParts(minor, currency) {
@@ -945,8 +956,8 @@
     if (cartItemsEl && 'MutationObserver' in window) {
       new MutationObserver(function(){
         // NOTE: do NOT recompute "Saved" from lastCartSnapshot here. After a
-        // morph the DOM rows are already the NEW state (so computeReferenceMinor
-        // returns the new reference) while the snapshot total is still the OLD
+        // morph the DOM rows are already the NEW state while the snapshot total
+        // is still the OLD value — do not recompute Saved from stale snapshot
         // value — pairing them produced a wrong "Saved" amount that flashed for
         // ~0.7s until the fresh /cart.js arrived. We now only update from an
         // authoritative cart (refreshFromCart), keeping reference and total in
