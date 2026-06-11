@@ -71,13 +71,6 @@
     "cart_gift_with_purchase": {
       "type": "cart-gift-with-purchase",
       "blocks": {
-        "gift_item_D8Y939": {
-          "type": "gift_item",
-          "settings": {
-            "product": "apgo-car-wash-shampoo-special-formula-refill-pack",
-            "unlocked_price_label": "FREE"
-          }
-        },
         "gift_item_YX9HMc": {
           "type": "gift_item",
           "settings": {
@@ -89,19 +82,18 @@
           "type": "gift_item",
           "settings": {
             "product": "apgo-car-paint-polish-cream-white-restorer",
-            "unlocked_price_label": "FREE"
+            "unlocked_price_label": "RM39"
           }
         },
         "gift_item_qabcng": {
           "type": "gift_item",
           "settings": {
             "product": "apgo-car-exterior-plastic-protectant",
-            "unlocked_price_label": "RM 10"
+            "unlocked_price_label": "RM 49"
           }
         }
       },
       "block_order": [
-        "gift_item_D8Y939",
         "gift_item_YX9HMc",
         "gift_item_Ya86Qz",
         "gift_item_qabcng"
