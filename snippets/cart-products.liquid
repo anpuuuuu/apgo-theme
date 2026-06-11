@@ -99,6 +99,7 @@
                 class="cart-items__table-row"
                 ref="cartItemRows[]"
                 data-line-original-cents="{{ item.original_line_price }}"
+                data-line-final-cents="{{ item.final_line_price }}"
                 data-compare-at-cents="{% if item.variant.compare_at_price > item.original_price %}{{ item.variant.compare_at_price | times: item.quantity }}{% else %}0{% endif %}"
               >
                 <td

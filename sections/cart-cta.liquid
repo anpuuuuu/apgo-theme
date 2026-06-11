@@ -75,19 +75,11 @@
       assign sticky_remaining_formatted = sticky_remaining_minor | money | replace: cart.currency.iso_code, '' | strip
       assign sticky_total_formatted = cart.total_price | money | replace: cart.currency.iso_code, '' | strip
 
-      # Save badge: reference total (compare-at or pre-discount subtotal) minus current total
+      # Save badge: reference = sum of each line's current price (final_line_price)
       assign sticky_reference_minor = 0
       for item in cart.items
-        assign compare_line_minor = item.variant.compare_at_price | default: 0 | times: item.quantity
-        if compare_line_minor > item.original_line_price
-          assign sticky_reference_minor = sticky_reference_minor | plus: compare_line_minor
-        else
-          assign sticky_reference_minor = sticky_reference_minor | plus: item.original_line_price
-        endif
+        assign sticky_reference_minor = sticky_reference_minor | plus: item.final_line_price
       endfor
-      if sticky_reference_minor < cart.original_total_price
-        assign sticky_reference_minor = cart.original_total_price
-      endif
       assign sticky_save_minor = sticky_reference_minor | minus: cart.total_price
       assign sticky_show_save = false
       if sticky_save_minor > 0
@@ -809,17 +801,16 @@
     var lastCartSnapshot = null;
 
     function computeReferenceMinor(cart) {
-      var reference = 0;
-      var rows = document.querySelectorAll('cart-items-component tr.cart-items__table-row[data-line-original-cents]');
-      if (rows.length) {
-        rows.forEach(function (row) {
-          var compare = parseInt(row.getAttribute('data-compare-at-cents'), 10) || 0;
-          var orig = parseInt(row.getAttribute('data-line-original-cents'), 10) || 0;
-          reference += compare > orig ? compare : orig;
-        });
+      if (cart && cart.items && cart.items.length) {
+        return cart.items.reduce(function (sum, item) {
+          var line = item.final_line_price != null ? item.final_line_price : item.line_price;
+          return sum + (Number(line) || 0);
+        }, 0);
       }
-      var origTotal = Number(cart.original_total_price) || 0;
-      if (reference < origTotal) reference = origTotal;
+      var reference = 0;
+      document.querySelectorAll('cart-items-component tr.cart-items__table-row[data-line-final-cents]').forEach(function (row) {
+        reference += parseInt(row.getAttribute('data-line-final-cents'), 10) || 0;
+      });
       return reference;
     }
 
