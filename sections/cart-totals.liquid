@@ -40,8 +40,8 @@
       endif
 
       # Mobile summary — flat shipping estimate (must mirror sections/cart-cta.liquid)
-      assign apgo_flat_my_minor = section.settings.flat_shipping_my_cents | default: 490
-      assign apgo_flat_sg_minor = section.settings.flat_shipping_sg_cents | default: 450
+      assign apgo_flat_my_minor = section.settings.flat_shipping_my_cents | default: 290
+      assign apgo_flat_sg_minor = section.settings.flat_shipping_sg_cents | default: 290
       assign apgo_shipping_estimate_minor = 0
       if market_threshold_minor > 0 and free_shipping_unlocked == false
         if is_my_market
@@ -898,8 +898,8 @@
       const basis = (typeof window.apgoCartFreeShippingBasis === 'function')
         ? window.apgoCartFreeShippingBasis(cart)
         : Number(cart.total_price || 0);
-      if (ccy === 'MYR') return basis >= 9900 ? 0 : 490;
-      if (ccy === 'SGD') return basis >= 5500 ? 0 : 450;
+      if (ccy === 'MYR') return basis >= 9900 ? 0 : 290;
+      if (ccy === 'SGD') return basis >= 5500 ? 0 : 290;
       return 0;
     }
     // Exposed so cart-cta sticky bar can compute the same estimated total.
@@ -1032,8 +1032,8 @@
       { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-3" },
       { "type": "header", "content": "手機運費估算 (Shipping estimate)" },
       { "type": "paragraph", "content": "用於手機購物車明細的 Shipping 行；達免運門檻顯示 FREE，否則顯示此固定金額。Sticky 結帳列上的 Estimated total 也會加上此運費。" },
-      { "type": "number", "id": "flat_shipping_my_cents", "label": "MY 固定運費 (cents — 490 = RM 4.90)", "default": 490 },
-      { "type": "number", "id": "flat_shipping_sg_cents", "label": "SG 固定運費 (cents — 450 = S$ 4.50)", "default": 450 }
+      { "type": "number", "id": "flat_shipping_my_cents", "label": "MY 固定運費 (cents — 290 = RM 2.90)", "default": 290 },
+      { "type": "number", "id": "flat_shipping_sg_cents", "label": "SG 固定運費 (cents — 290 = S$ 2.90)", "default": 290 }
     ],
     "blocks": [],
     "presets": [{ "name": "Cart Totals (Standalone)"}]
