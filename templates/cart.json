@@ -157,7 +157,6 @@
     },
     "cart_upsell_recommendations_L4gQhn": {
       "type": "cart-upsell-recommendations",
-      "disabled": true,
       "name": "Recommended Items",
       "settings": {
         "section_title": "Frequently bought together",
