@@ -95,7 +95,7 @@
       "name": "Gift with Purchase",
       "settings": {
         "section_title": "Special add on",
-        "section_subtitle_my": "Each add-on item is limited to one per order.",
+        "section_subtitle_my": "Special price: 1 per order only",
         "section_subtitle_sg": "",
         "trigger_product_list": [
           "fathers-day-aurora-coating-special-buy-1-free-1"
