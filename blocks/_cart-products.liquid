@@ -524,22 +524,34 @@
       margin-top: 6px !important;
     }
 
-    /* Swipe-to-delete (see assets/apgo-cart-swipe-delete.js) */
-    .apgo-cart-swipe-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+    /* Swipe-to-delete — assets/apgo-cart-swipe-delete.js */
+    .cart-items__table-row.apgo-cart-swipe-row {
+      position: relative !important;
+      overflow: hidden !important;
+      touch-action: auto;
     }
-    .apgo-cart-swipe-item {
-      position: relative;
-      overflow: hidden;
-      border-radius: 12px;
-      touch-action: pan-y;
+    .apgo-cart-swipe-delete {
+      position: absolute !important;
+      right: 0 !important;
+      top: 0 !important;
+      bottom: 0 !important;
+      width: 76px !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      border: 0 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      grid-area: unset !important;
+      grid-column: unset !important;
+      grid-row: unset !important;
+      z-index: 0 !important;
+      pointer-events: auto !important;
+      background: transparent !important;
     }
-    .apgo-cart-swipe-item__delete {
-      position: absolute;
-      inset: 0 0 0 auto;
-      width: 76px;
+    .apgo-cart-swipe-delete__btn {
+      width: 100%;
+      height: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -547,6 +559,7 @@
       gap: 4px;
       padding: 0;
       border: 0;
+      border-radius: 0 12px 12px 0;
       background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
       color: #fff;
       font-family: 'Poppins', 'Microsoft JhengHei', Arial, sans-serif;
@@ -555,25 +568,21 @@
       letter-spacing: 0.02em;
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
-      z-index: 0;
     }
-    .apgo-cart-swipe-item__delete svg {
+    .apgo-cart-swipe-delete__btn svg {
       flex-shrink: 0;
     }
-    .apgo-cart-swipe-item__surface {
+    .apgo-cart-swipe-row .cart-items__media,
+    .apgo-cart-swipe-row .cart-items__details,
+    .apgo-cart-swipe-row .cart-items__quantity {
       position: relative;
       z-index: 1;
       transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
       will-change: transform;
-      background: rgba(255, 255, 255, 0.025) !important;
-      border: 1px solid rgba(255, 255, 255, 0.07) !important;
-      border-radius: 12px !important;
+      background: #0a0a0a;
     }
-    .apgo-cart-swipe-item__surface .cart-items__remove {
+    .apgo-cart-swipe-row .cart-items__remove {
       display: none !important;
-    }
-    .apgo-cart-swipe-item--gift .apgo-cart-swipe-item__surface {
-      touch-action: auto;
     }
   }
 
@@ -667,11 +676,6 @@
 <!-- 原始購物車商品內容 -->
 {% render 'cart-products' %}
 
-<script>
-  window.apgoCartSwipe = { removeLabel: {{ 'actions.remove' | t | json }} };
-</script>
-<script src="{{ 'apgo-cart-swipe-delete.js' | asset_url }}" defer></script>
-
 {%- comment -%}
   Free-gift line-item decorator. Reads /cart.js, marks rows whose
   line-item properties include `_free_gift === 'true'` with:
@@ -737,6 +741,7 @@
                removed entirely, pruneStaleGifts() still drops the orphan Y. */
           }
         });
+        if (typeof window.apgoCartSwipeInit === 'function') window.apgoCartSwipeInit();
       })
       .catch(function () {});
   }
@@ -805,6 +810,7 @@
     pruneStaleGifts();
     decorateGifts();
     installCartMutationObserver();
+    if (typeof window.apgoCartSwipeInit === 'function') window.apgoCartSwipeInit();
   });
   /* event-driven retries — useful when no DOM mutation happens but cart
      properties changed (e.g. _gift_for set after add) */
@@ -840,6 +846,7 @@
       pending = setTimeout(function () {
         pending = null;
         decorateGifts();
+        if (typeof window.apgoCartSwipeInit === 'function') window.apgoCartSwipeInit();
       }, 80);
     });
     cartMutationObserver.observe(target, { childList: true, subtree: true });

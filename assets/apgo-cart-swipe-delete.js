@@ -1,6 +1,7 @@
 /**
- * Mobile cart page — swipe-left on a line item to reveal Delete (Shopee/Taobao style).
- * Converts table rows to swipe surfaces on ≤749px; re-inits after Horizon section morph.
+ * Mobile cart page — swipe-left on a line item to reveal Delete.
+ * Works on native <tr> rows (no table→div conversion) so Horizon section
+ * morphs stay compatible.
  */
 (function () {
   'use strict';
@@ -8,10 +9,14 @@
   var MQ = '(max-width: 749px)';
   var DELETE_W = 76;
   var OPEN_THRESHOLD = 38;
-  var openItem = null;
+  var openRow = null;
+  var INITED = 'data-apgo-swipe-inited';
 
-  function isActive() {
-    return window.matchMedia(MQ).matches && !!document.querySelector('.cart-page .cart-items__table');
+  function isMobileCart() {
+    return (
+      window.matchMedia(MQ).matches &&
+      !!document.querySelector('cart-items-component .cart-page .cart-items__table tbody')
+    );
   }
 
   function getLine(row) {
@@ -28,6 +33,10 @@
     return 0;
   }
 
+  function swipeCells(row) {
+    return row.querySelectorAll('.cart-items__media, .cart-items__details, .cart-items__quantity');
+  }
+
   function triggerRemove(line) {
     if (!line) return;
     var comp = document.querySelector('cart-items-component');
@@ -41,168 +50,143 @@
     if (hidden) hidden.click();
   }
 
-  function cellToDiv(td) {
-    var div = document.createElement('div');
-    Array.prototype.forEach.call(td.attributes, function (attr) {
-      div.setAttribute(attr.name, attr.value);
+  function setTranslate(row, px) {
+    var cells = swipeCells(row);
+    var val = px ? 'translateX(' + px + 'px)' : '';
+    cells.forEach(function (cell) {
+      cell.style.transform = val;
     });
-    div.innerHTML = td.innerHTML;
-    return div;
   }
 
-  function buildSwipeItem(row) {
+  function closeRow(row) {
+    if (!row) return;
+    setTranslate(row, 0);
+    row.classList.remove('is-swipe-open');
+    if (openRow === row) openRow = null;
+  }
+
+  function openRowSwipe(row) {
+    if (openRow && openRow !== row) closeRow(openRow);
+    setTranslate(row, -DELETE_W);
+    row.classList.add('is-swipe-open');
+    openRow = row;
+  }
+
+  function bindRow(row) {
+    if (row.getAttribute(INITED) === 'true') return;
+    if (row.classList.contains('apgo-cart-item--gift')) return;
+
     var line = getLine(row);
-    var isGift = row.classList.contains('apgo-cart-item--gift');
+    if (!line) return;
+
+    row.setAttribute(INITED, 'true');
+    row.classList.add('apgo-cart-swipe-row');
+
     var label = (window.apgoCartSwipe && window.apgoCartSwipe.removeLabel) || 'Remove';
+    var del = document.createElement('td');
+    del.className = 'apgo-cart-swipe-delete';
+    del.setAttribute('role', 'cell');
+    del.innerHTML =
+      '<button type="button" class="apgo-cart-swipe-delete__btn" aria-label="' + label + '">' +
+      '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">' +
+      '<path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/>' +
+      '<path d="M10 11v6M14 11v6"/>' +
+      '</svg><span>' + label + '</span></button>';
+    row.appendChild(del);
 
-    var wrap = document.createElement('div');
-    wrap.className = 'apgo-cart-swipe-item' + (isGift ? ' apgo-cart-swipe-item--gift' : '');
-    wrap.setAttribute('role', 'listitem');
-    if (line) wrap.dataset.line = String(line);
+    del.querySelector('.apgo-cart-swipe-delete__btn').addEventListener('click', function () {
+      triggerRemove(line);
+    });
 
-    var deleteBtn = null;
-    if (!isGift) {
-      deleteBtn = document.createElement('button');
-      deleteBtn.type = 'button';
-      deleteBtn.className = 'apgo-cart-swipe-item__delete';
-      deleteBtn.setAttribute('aria-label', label);
-      deleteBtn.innerHTML =
-        '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">' +
-        '<path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/>' +
-        '<path d="M10 11v6M14 11v6"/>' +
-        '</svg><span>' + label + '</span>';
-      wrap.appendChild(deleteBtn);
-    }
-
-    var surface = document.createElement('div');
-    surface.className = row.className + ' apgo-cart-swipe-item__surface';
-    while (row.firstChild) {
-      surface.appendChild(cellToDiv(row.firstChild));
-    }
-    wrap.appendChild(surface);
-    row.remove();
-
-    if (!isGift && deleteBtn) {
-      bindSwipe(wrap, surface, deleteBtn, line);
-    }
-    return wrap;
-  }
-
-  function closeItem(wrap, surface) {
-    if (!surface) surface = wrap.querySelector('.apgo-cart-swipe-item__surface');
-    surface.style.transform = '';
-    wrap.classList.remove('is-open');
-    if (openItem === wrap) openItem = null;
-  }
-
-  function openItemRow(wrap, surface) {
-    if (openItem && openItem !== wrap) {
-      closeItem(openItem);
-    }
-    surface.style.transform = 'translateX(-' + DELETE_W + 'px)';
-    wrap.classList.add('is-open');
-    openItem = wrap;
-  }
-
-  function bindSwipe(wrap, surface, deleteBtn, line) {
     var startX = 0;
     var baseX = 0;
     var dragging = false;
 
-    deleteBtn.addEventListener('click', function () {
-      triggerRemove(line);
-    });
-
-    surface.addEventListener('touchstart', function (e) {
+    function onTouchStart(e) {
+      if (!isMobileCart()) return;
       if (e.target.closest('button, input, a, quantity-selector-component')) return;
       dragging = true;
       startX = e.touches[0].clientX;
-      baseX = wrap.classList.contains('is-open') ? -DELETE_W : 0;
-      surface.style.transition = 'none';
-    }, { passive: true });
+      baseX = row.classList.contains('is-swipe-open') ? -DELETE_W : 0;
+      swipeCells(row).forEach(function (c) {
+        c.style.transition = 'none';
+      });
+    }
 
-    surface.addEventListener('touchmove', function (e) {
+    function onTouchMove(e) {
       if (!dragging) return;
       var dx = e.touches[0].clientX - startX;
       var tx = baseX + dx;
       if (tx > 0) tx = 0;
       if (tx < -DELETE_W) tx = -DELETE_W;
-      surface.style.transform = 'translateX(' + tx + 'px)';
-    }, { passive: true });
-
-    function endSwipe() {
-      if (!dragging) return;
-      dragging = false;
-      surface.style.transition = '';
-      var match = surface.style.transform.match(/translateX\((-?\d+(?:\.\d+)?)px\)/);
-      var tx = match ? parseFloat(match[1]) : 0;
-      if (tx <= -OPEN_THRESHOLD) {
-        openItemRow(wrap, surface);
-      } else {
-        closeItem(wrap, surface);
-      }
+      setTranslate(row, tx);
     }
 
-    surface.addEventListener('touchend', endSwipe);
-    surface.addEventListener('touchcancel', endSwipe);
+    function onTouchEnd() {
+      if (!dragging) return;
+      dragging = false;
+      swipeCells(row).forEach(function (c) {
+        c.style.transition = '';
+      });
+      var first = row.querySelector('.cart-items__media');
+      var tx = 0;
+      if (first && first.style.transform) {
+        var m = first.style.transform.match(/translateX\((-?\d+(?:\.\d+)?)px\)/);
+        if (m) tx = parseFloat(m[1]);
+      }
+      if (tx <= -OPEN_THRESHOLD) openRowSwipe(row);
+      else closeRow(row);
+    }
 
-    /* Tap elsewhere closes an open row */
-    document.addEventListener(
-      'touchstart',
-      function (e) {
-        if (!wrap.classList.contains('is-open')) return;
-        if (wrap.contains(e.target)) return;
-        closeItem(wrap, surface);
-      },
-      { passive: true }
-    );
+    row.addEventListener('touchstart', onTouchStart, { passive: true });
+    row.addEventListener('touchmove', onTouchMove, { passive: true });
+    row.addEventListener('touchend', onTouchEnd);
+    row.addEventListener('touchcancel', onTouchEnd);
+  }
+
+  function resetRow(row) {
+    row.removeAttribute(INITED);
+    row.classList.remove('apgo-cart-swipe-row', 'is-swipe-open');
+    var del = row.querySelector('.apgo-cart-swipe-delete');
+    if (del) del.remove();
+    setTranslate(row, 0);
+    swipeCells(row).forEach(function (c) {
+      c.style.transition = '';
+      c.style.transform = '';
+    });
   }
 
   function teardown() {
-    document.querySelectorAll('.apgo-cart-swipe-list').forEach(function (el) {
-      el.remove();
-    });
-    var table = document.querySelector('.cart-page .cart-items__table[data-swipe-hidden]');
-    if (table) {
-      table.style.display = '';
-      delete table.dataset.swipeHidden;
-    }
-    openItem = null;
+    document
+      .querySelectorAll('cart-items-component .cart-page .cart-items__table tbody tr.cart-items__table-row')
+      .forEach(resetRow);
+    openRow = null;
   }
 
   function init() {
-    if (!isActive()) {
+    if (!isMobileCart()) {
       teardown();
       return;
     }
-    if (document.querySelector('.apgo-cart-swipe-list')) return;
 
-    var table = document.querySelector('.cart-page .cart-items__table');
-    var tbody = table && table.querySelector('tbody');
-    if (!tbody) return;
-
-    var rows = Array.prototype.slice.call(
-      tbody.querySelectorAll(':scope > tr.cart-items__table-row')
+    var rows = document.querySelectorAll(
+      'cart-items-component .cart-page .cart-items__table tbody tr.cart-items__table-row'
     );
-    if (!rows.length) return;
-
-    var list = document.createElement('div');
-    list.className = 'apgo-cart-swipe-list';
-    list.setAttribute('role', 'list');
-
-    rows.forEach(function (row) {
-      list.appendChild(buildSwipeItem(row));
-    });
-
-    table.parentNode.insertBefore(list, table);
-    table.style.display = 'none';
-    table.dataset.swipeHidden = '1';
+    rows.forEach(bindRow);
   }
 
   function scheduleInit() {
     teardown();
-    setTimeout(init, 60);
+    setTimeout(init, 80);
   }
+
+  window.apgoCartSwipeInit = scheduleInit;
+
+  document.addEventListener('touchstart', function (e) {
+    if (!openRow) return;
+    if (openRow.contains(e.target)) return;
+    closeRow(openRow);
+  }, { passive: true });
 
   document.addEventListener('DOMContentLoaded', init);
   if (document.readyState !== 'loading') init();
@@ -210,23 +194,6 @@
   ['cart:update', 'cart:updated', 'cart:refresh', 'quantity-selector:update'].forEach(function (ev) {
     document.addEventListener(ev, scheduleInit);
   });
-
-  var target = document.querySelector('.cart-items__wrapper, cart-items-component');
-  if (target && 'MutationObserver' in window) {
-    var pending = null;
-    new MutationObserver(function () {
-      if (!isActive()) return;
-      if (pending) clearTimeout(pending);
-      pending = setTimeout(function () {
-        pending = null;
-        if (document.querySelector('.apgo-cart-swipe-list') && !document.querySelector('.cart-page .cart-items__table[data-swipe-hidden]')) {
-          scheduleInit();
-        } else if (!document.querySelector('.apgo-cart-swipe-list') && document.querySelector('.cart-page .cart-items__table tbody tr.cart-items__table-row')) {
-          init();
-        }
-      }, 90);
-    }).observe(target, { childList: true, subtree: true });
-  }
 
   window.addEventListener('resize', function () {
     if (!window.matchMedia(MQ).matches) teardown();
