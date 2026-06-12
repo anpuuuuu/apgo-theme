@@ -396,8 +396,15 @@
         <div class="cart-gwp-card" {{ block.shopify_attributes }}>
           <a href="{{ gift_product.url }}" class="cart-gwp-card__link">
             <div class="cart-gwp-card__image {{ section.settings.image_ratio }}">
-              {% if gift_product.featured_image %}
-                <img src="{{ gift_product.featured_image | image_url: width: img_width }}"
+              {%- comment -%}
+                Prefer the selected/first variant's own image so multi-variant
+                products show the correct picture per variant. Fall back to
+                the product's featured image when the variant has no
+                dedicated image.
+              {%- endcomment -%}
+              {% assign gift_img = gift_variant.image | default: gift_product.featured_image %}
+              {% if gift_img %}
+                <img src="{{ gift_img | image_url: width: img_width }}"
                      alt="{{ gift_product.title | escape }}"
                      width="{{ img_width }}"
                      height="{{ img_height }}"
