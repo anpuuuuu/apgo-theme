@@ -570,7 +570,7 @@
   .apgo-cart-item--gift button[on\:click^="/onLineItemRemove"] {
     display: none !important;
   }
-  /* Price column → show "FREE" in green-ish accent */
+  /* Price column → show "FREE" in green-ish accent (desktop) */
   .apgo-cart-item--gift .cart-items__price {
     color: #34d399 !important;
     font-weight: 700 !important;
@@ -580,6 +580,16 @@
   }
   .apgo-cart-item--gift .cart-items__details .compare-at-price {
     display: none !important;
+  }
+  /* Mobile (≤749px): inline price lives inside .cart-items__details > div:last-child
+     because the right-hand .cart-items__price column is hidden. Mirror the green accent. */
+  @media (max-width: 749px) {
+    .apgo-cart-item--gift .cart-items__details > div:last-child,
+    .apgo-cart-item--gift .cart-items__details > div:last-child span,
+    .apgo-cart-item--gift .cart-items__details > div:last-child text-component {
+      color: #34d399 !important;
+      -webkit-text-fill-color: #34d399 !important;
+    }
   }
 </style>
 

@@ -38,11 +38,39 @@
           assign free_shipping_remaining_formatted = remaining_for_free_shipping_minor | money
         endif
       endif
-      assign final_total_with_shipping_minor = cart.total_price
+
+      # Mobile summary — flat shipping estimate (must mirror sections/cart-cta.liquid)
+      assign apgo_flat_my_minor = section.settings.flat_shipping_my_cents | default: 290
+      assign apgo_flat_sg_minor = section.settings.flat_shipping_sg_cents | default: 290
+      assign apgo_shipping_estimate_minor = 0
+      if market_threshold_minor > 0 and free_shipping_unlocked == false
+        if is_my_market
+          assign apgo_shipping_estimate_minor = apgo_flat_my_minor
+        elsif is_sg_market
+          assign apgo_shipping_estimate_minor = apgo_flat_sg_minor
+        endif
+      endif
+
+      assign apgo_estimated_total_minor = cart.total_price | plus: apgo_shipping_estimate_minor
+      assign final_total_with_shipping_minor = apgo_estimated_total_minor
       # Standalone estimated row: symbol only (e.g. RM…) — strip trailing
       # currency iso code (… MYR / … SGD) when the shop's money format includes it.
       assign total_price_formatted = final_total_with_shipping_minor | money | replace: cart.currency.iso_code, '' | strip
       assign free_shipping_remaining_formatted = free_shipping_remaining_formatted | replace: cart.currency.iso_code, '' | strip
+
+      # Pre-format strings used by the mobile accordion
+      assign apgo_summary_subtotal_fmt = cart.original_total_price | money | replace: cart.currency.iso_code, '' | strip
+      assign apgo_summary_discount_fmt = discount_total_minor | money | replace: cart.currency.iso_code, '' | strip
+      assign apgo_summary_shipping_fmt = apgo_shipping_estimate_minor | money | replace: cart.currency.iso_code, '' | strip
+      assign apgo_summary_total_fmt = total_price_formatted
+      assign apgo_show_discount_row = false
+      if discount_total_minor > 0
+        assign apgo_show_discount_row = true
+      endif
+      assign apgo_show_shipping_row = false
+      if market_threshold_minor > 0
+        assign apgo_show_shipping_row = true
+      endif
     -%}
 
     {%- if section.settings.show_note_or_code -%}
@@ -128,6 +156,122 @@
           {% form 'cart', cart %}{{ form | payment_terms }}{% endform %}
         </div>
       {%- endif -%}
+    </div>
+
+    {%- comment -%}
+      Mobile-only Shopee/Taobao-style order summary.
+      Lives inside the section content so `?sections=` re-render keeps it fresh.
+      Hidden on desktop via CSS; the existing breakdown + estimated card above
+      remain the desktop UI.
+    {%- endcomment -%}
+    <div class="cart-summary--mobile" data-cart-summary-mobile>
+      <details class="cart-summary__row" data-summary-row="subtotal">
+        <summary class="cart-summary__head">
+          <span class="cart-summary__label">{{ 'apgo_cart.summary_subtotal' | t }}</span>
+          <span class="cart-summary__right">
+            <span class="cart-summary__value" data-summary-subtotal>{{ apgo_summary_subtotal_fmt }}</span>
+            <span class="cart-summary__chevron" aria-hidden="true">
+              <svg viewBox="0 0 12 12" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4.5l3 3 3-3"/></svg>
+            </span>
+          </span>
+        </summary>
+        <ul class="cart-summary__list cart-summary__list--items">
+          {%- for item in cart.items -%}
+            {%- assign apgo_is_gift = false -%}
+            {%- if item.properties._free_gift == 'true' -%}{%- assign apgo_is_gift = true -%}{%- endif -%}
+            <li class="cart-summary__line">
+              <span class="cart-summary__line-title">
+                {{ item.product.title | escape }}
+                {%- if item.variant.title != 'Default Title' -%}
+                  <span class="cart-summary__line-variant">{{ item.variant.title | escape }}</span>
+                {%- endif -%}
+                {%- if apgo_is_gift -%}
+                  <span class="cart-summary__line-badge">{{ 'apgo_cart.summary_gift_badge' | t }}</span>
+                {%- endif -%}
+                <span class="cart-summary__line-qty">{{ 'apgo_cart.summary_qty_prefix' | t }} {{ item.quantity }}</span>
+              </span>
+              <span class="cart-summary__line-amount">{{ item.original_line_price | money | replace: cart.currency.iso_code, '' | strip }}</span>
+            </li>
+          {%- endfor -%}
+        </ul>
+      </details>
+
+      {%- if apgo_show_discount_row -%}
+        <details class="cart-summary__row cart-summary__row--discount" data-summary-row="discount">
+          <summary class="cart-summary__head">
+            <span class="cart-summary__label">{{ 'apgo_cart.summary_discount' | t }}</span>
+            <span class="cart-summary__right">
+              <span class="cart-summary__value cart-summary__value--neg" data-summary-discount>-{{ apgo_summary_discount_fmt }}</span>
+              <span class="cart-summary__chevron" aria-hidden="true">
+                <svg viewBox="0 0 12 12" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4.5l3 3 3-3"/></svg>
+              </span>
+            </span>
+          </summary>
+          <ul class="cart-summary__list cart-summary__list--discounts">
+            {%- for app in cart.cart_level_discount_applications -%}
+              <li class="cart-summary__line">
+                <span class="cart-summary__line-title">{{ app.title | escape }}</span>
+                <span class="cart-summary__line-amount cart-summary__value--neg">-{{ app.total_allocated_amount | money | replace: cart.currency.iso_code, '' | strip }}</span>
+              </li>
+            {%- endfor -%}
+            {%- for item in cart.items -%}
+              {%- for allocation in item.line_level_discount_allocations -%}
+                {%- if allocation.amount > 0 -%}
+                  <li class="cart-summary__line">
+                    <span class="cart-summary__line-title">
+                      {{ allocation.discount_application.title | escape }}
+                      <span class="cart-summary__line-variant">{{ item.product.title | escape }}</span>
+                    </span>
+                    <span class="cart-summary__line-amount cart-summary__value--neg">-{{ allocation.amount | money | replace: cart.currency.iso_code, '' | strip }}</span>
+                  </li>
+                {%- endif -%}
+              {%- endfor -%}
+            {%- endfor -%}
+          </ul>
+        </details>
+      {%- endif -%}
+
+      {%- if apgo_show_shipping_row -%}
+        <details class="cart-summary__row cart-summary__row--shipping" data-summary-row="shipping">
+          <summary class="cart-summary__head">
+            <span class="cart-summary__label">{{ 'apgo_cart.summary_shipping' | t }}</span>
+            <span class="cart-summary__right">
+              <span class="cart-summary__value{% if free_shipping_unlocked %} cart-summary__value--free{% endif %}" data-summary-shipping>
+                {%- if free_shipping_unlocked -%}
+                  {{- 'apgo_cart.summary_shipping_free' | t -}}
+                {%- else -%}
+                  ~{{ apgo_summary_shipping_fmt }}
+                {%- endif -%}
+              </span>
+              <span class="cart-summary__chevron" aria-hidden="true">
+                <svg viewBox="0 0 12 12" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4.5l3 3 3-3"/></svg>
+              </span>
+            </span>
+          </summary>
+          <div class="cart-summary__body">
+            <p class="cart-summary__note">
+              {%- if is_my_market -%}
+                {{- 'apgo_cart.summary_shipping_note_my' | t -}}
+              {%- elsif is_sg_market -%}
+                {{- 'apgo_cart.summary_shipping_note_sg' | t -}}
+              {%- else -%}
+                {{- 'apgo_cart.summary_shipping_note_other' | t -}}
+              {%- endif -%}
+            </p>
+            {%- unless free_shipping_unlocked -%}
+              <p class="cart-summary__note cart-summary__note--remaining">
+                {{- 'apgo_cart.free_shipping_remaining' | t: amount: free_shipping_remaining_formatted -}}
+              </p>
+            {%- endunless -%}
+          </div>
+        </details>
+      {%- endif -%}
+
+      <div class="cart-summary__total" role="status">
+        <span class="cart-summary__label cart-summary__label--total">{{ 'apgo_cart.summary_estimated_total' | t }}</span>
+        <span class="cart-summary__value cart-summary__value--total" data-summary-total>{{ apgo_summary_total_fmt }}</span>
+      </div>
+      <p class="cart-summary__total-note">{{ 'apgo_cart.estimated_total_checkout_note' | t }}</p>
     </div>
   </div>
 </div>
@@ -434,11 +578,226 @@
     margin: 0 0 14px 0 !important;
   }
 
-  /* Mobile: totals handled by sticky bar — hide entire section wrapper */
-  @media (max-width: 749px) {
-    [data-section-type="cart-totals"] {
-      display: none !important;
-    }
+  /* =========================================================
+     Shopee/Taobao-style accordion order summary
+     Used on BOTH mobile and desktop — replaces the previous
+     breakdown + estimated-card layout entirely. Desktop sizing
+     is bumped slightly via @media min-width 750px below.
+     (Class name kept as `--mobile` for backward compat; in
+     reality it's rendered at every breakpoint now.)
+     ========================================================= */
+
+  /* Neutralize the legacy desktop card chrome — accordion is its own card */
+  .cart-totals--standalone .cart-totals__breakdown,
+  .cart-totals--standalone .cart-totals__estimated-card {
+    display: none !important;
+  }
+  .cart-totals--standalone .cart__total-container {
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+  }
+  .cart-totals--standalone .cart__total-container::before {
+    display: none !important;
+  }
+  .cart-totals--standalone .cart-totals__actions {
+    margin: 0 0 14px !important;
+    padding: 14px 16px !important;
+  }
+  .cart-totals--standalone .cart__installments {
+    margin-top: 10px !important;
+    padding: 8px 14px 0 !important;
+    border-top: 0 !important;
+  }
+
+  .cart-summary--mobile {
+    display: block;
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    overflow: hidden;
+    position: relative;
+    font-family: 'Poppins', 'Microsoft JhengHei', Arial, sans-serif;
+    color: #fff;
+  }
+  .cart-summary--mobile::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #f08418, #ff9a3c);
+    z-index: 1;
+  }
+
+  .cart-summary__row { border-bottom: 1px solid rgba(255, 255, 255, 0.06); }
+  .cart-summary__row[open] { background: rgba(255, 255, 255, 0.018); }
+  .cart-summary__row:last-of-type { border-bottom: 0; }
+
+  .cart-summary__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+    -webkit-tap-highlight-color: rgba(240, 132, 24, 0.2);
+  }
+  .cart-summary__head::-webkit-details-marker { display: none; }
+  .cart-summary__head::marker { content: ''; }
+  .cart-summary__head:hover { background: rgba(240, 132, 24, 0.04); }
+
+  .cart-summary__label {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.85);
+  }
+  .cart-summary__right {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .cart-summary__value {
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+  }
+  .cart-summary__value--neg { color: #ff8a3c; }
+  .cart-summary__value--free { color: #34d399; font-weight: 700; }
+  .cart-summary__chevron {
+    display: inline-flex;
+    width: 16px;
+    height: 16px;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.55);
+    transition: transform 0.22s ease;
+  }
+  .cart-summary__row[open] .cart-summary__chevron { transform: rotate(180deg); }
+
+  .cart-summary__list {
+    list-style: none;
+    margin: 0;
+    padding: 0 14px 12px;
+  }
+  .cart-summary__line {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 6px 0;
+    font-size: 12.5px;
+    color: rgba(255, 255, 255, 0.72);
+    border-top: 1px dashed rgba(255, 255, 255, 0.05);
+  }
+  .cart-summary__line:first-child { border-top: 0; }
+  .cart-summary__line-title {
+    flex: 1;
+    min-width: 0;
+    line-height: 1.4;
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 4px 6px;
+  }
+  .cart-summary__line-variant {
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 11.5px;
+  }
+  .cart-summary__line-qty {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 11.5px;
+    flex-shrink: 0;
+  }
+  .cart-summary__line-badge {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 999px;
+    background: rgba(240, 132, 24, 0.18);
+    color: #f08418;
+    font-size: 10.5px;
+    font-weight: 600;
+    line-height: 1.4;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .cart-summary__line-amount {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.88);
+    white-space: nowrap;
+    text-align: right;
+  }
+  .cart-summary__line-amount.cart-summary__value--neg { color: #ff8a3c; }
+
+  .cart-summary__body {
+    padding: 0 14px 12px;
+  }
+  .cart-summary__note {
+    margin: 4px 0;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.65);
+    line-height: 1.5;
+  }
+  .cart-summary__note--remaining {
+    color: #f08418;
+    font-weight: 600;
+  }
+  .cart-summary__note--tiny {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.45);
+  }
+
+  .cart-summary__total {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 14px 14px 6px;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    background: #000;
+  }
+  .cart-summary__total-note {
+    margin: 0;
+    padding: 0 14px 12px;
+    background: #000;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+    line-height: 1.45;
+  }
+  .cart-summary__label--total {
+    font-size: 15px;
+    font-weight: 700;
+    color: #f08418;
+    letter-spacing: 0.01em;
+  }
+  .cart-summary__value--total {
+    font-size: 20px;
+    font-weight: 800;
+    color: #f08418;
+    letter-spacing: 0.01em;
+  }
+
+  /* Desktop polish — slightly larger type & padding for a wider canvas */
+  @media (min-width: 750px) {
+    .cart-summary--mobile { border-radius: 16px; }
+    .cart-summary__head { padding: 14px 18px; }
+    .cart-summary__label { font-size: 15px; }
+    .cart-summary__value { font-size: 15px; }
+    .cart-summary__list,
+    .cart-summary__body { padding-left: 18px; padding-right: 18px; padding-bottom: 14px; }
+    .cart-summary__line { font-size: 13.5px; padding: 7px 0; }
+    .cart-summary__line-amount { font-size: 13.5px; }
+    .cart-summary__line-variant,
+    .cart-summary__line-qty { font-size: 12.5px; }
+    .cart-summary__line-badge { font-size: 11px; }
+    .cart-summary__note { font-size: 13px; }
+    .cart-summary__total { padding: 18px 18px 6px; }
+    .cart-summary__label--total { font-size: 17px; }
+    .cart-summary__value--total { font-size: 24px; }
+    .cart-summary__total-note { padding: 0 18px 14px; font-size: 12px; }
   }
   {% endstylesheet %}
   
@@ -539,17 +898,55 @@
       }
     }
 
+    // Flat shipping estimate — must mirror Liquid SSR + sections/cart-cta.liquid
+    function shippingEstimateMinor(cart) {
+      if (!cart) return 0;
+      const ccy = cart.currency;
+      const basis = (typeof window.apgoCartFreeShippingBasis === 'function')
+        ? window.apgoCartFreeShippingBasis(cart)
+        : Number(cart.total_price || 0);
+      if (ccy === 'MYR') return basis >= 9900 ? 0 : 290;
+      if (ccy === 'SGD') return basis >= 5500 ? 0 : 290;
+      return 0;
+    }
+    // Exposed so cart-cta sticky bar can compute the same estimated total.
+    window.apgoEstimatedShippingMinor = shippingEstimateMinor;
+
     function patchFromCart(cart) {
       if (!cart) return;
       const ccy = cart.currency;
+      const ship = shippingEstimateMinor(cart);
+      const estimatedTotal = Number(cart.total_price || 0) + ship;
+
       const subEl = document.querySelector('#' + contentId + ' .cart__original-total .cart__value');
       const totEl = document.querySelector('#' + contentId + ' [data-cart-subtotal]');
       if (subEl) subEl.textContent = fmtMoney(cart.original_total_price, ccy);
       if (totEl) {
-        const t = fmtMoney(cart.total_price, ccy);
+        const t = fmtMoney(estimatedTotal, ccy);
         totEl.textContent = t;
         totEl.setAttribute('value', t);
       }
+
+      // Mobile accordion fast-patch (full re-render arrives via ?sections= later).
+      const mobileSub = document.querySelector('#' + contentId + ' [data-summary-subtotal]');
+      const mobileDis = document.querySelector('#' + contentId + ' [data-summary-discount]');
+      const mobileShip = document.querySelector('#' + contentId + ' [data-summary-shipping]');
+      const mobileTot = document.querySelector('#' + contentId + ' [data-summary-total]');
+      if (mobileSub) mobileSub.textContent = fmtMoney(cart.original_total_price, ccy);
+      if (mobileDis) {
+        const dis = Number(cart.total_discount || 0);
+        mobileDis.textContent = dis > 0 ? '-' + fmtMoney(dis, ccy) : fmtMoney(0, ccy);
+      }
+      if (mobileShip) {
+        if (ship === 0) {
+          mobileShip.textContent = mobileShip.getAttribute('data-free-label') || 'FREE';
+          mobileShip.classList.add('cart-summary__value--free');
+        } else {
+          mobileShip.textContent = '~' + fmtMoney(ship, ccy);
+          mobileShip.classList.remove('cart-summary__value--free');
+        }
+      }
+      if (mobileTot) mobileTot.textContent = fmtMoney(estimatedTotal, ccy);
     }
 
     function patchFromCartJs() {
@@ -559,10 +956,10 @@
         .catch(() => {});
     }
 
-    const isMobileTotalsHidden = () => window.matchMedia('(max-width: 749px)').matches;
+    // Mobile accordion now lives inside this section, so we always refresh
+    // the section HTML to rebuild the per-item / per-discount lists.
     let refreshTotalsTimer;
     function scheduleRefreshTotals() {
-      if (isMobileTotalsHidden()) return;
       clearTimeout(refreshTotalsTimer);
       refreshTotalsTimer = setTimeout(refreshTotals, 350);
     }
@@ -639,7 +1036,11 @@
       { "type": "checkbox", "id": "show_note_or_code", "label": "Show cart note / discount code (uses theme settings)", "default": true },
       { "type": "checkbox", "id": "show_order_breakdown", "label": "Show breakdown (subtotal, discounts, SG ship) above total", "default": true },
       { "type": "checkbox", "id": "show_installments", "label": "Show installments (uses theme settings)", "default": true },
-      { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-3" }
+      { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-3" },
+      { "type": "header", "content": "手機運費估算 (Shipping estimate)" },
+      { "type": "paragraph", "content": "用於手機購物車明細的 Shipping 行；達免運門檻顯示 FREE，否則顯示此固定金額。Sticky 結帳列上的 Estimated total 也會加上此運費。" },
+      { "type": "number", "id": "flat_shipping_my_cents", "label": "MY 固定運費 (cents — 290 = RM 2.90)", "default": 290 },
+      { "type": "number", "id": "flat_shipping_sg_cents", "label": "SG 固定運費 (cents — 290 = S$ 2.90)", "default": 290 }
     ],
     "blocks": [],
     "presets": [{ "name": "Cart Totals (Standalone)"}]

@@ -71,41 +71,36 @@
     "cart_gift_with_purchase": {
       "type": "cart-gift-with-purchase",
       "blocks": {
-        "gift_item_YX9HMc": {
-          "type": "gift_item",
-          "settings": {
-            "product": "",
-            "unlocked_price_label": "FREE"
-          }
-        },
         "gift_item_Ya86Qz": {
           "type": "gift_item",
           "settings": {
-            "product": "apgo-car-paint-polish-cream-white-restorer",
-            "unlocked_price_label": "RM39"
+            "product": "apgo-car-wiper-fluid-refill-pack",
+            "unlocked_price_label_my": "RM6.6",
+            "unlocked_price_label_sg": "$ 2.9"
           }
         },
         "gift_item_qabcng": {
           "type": "gift_item",
           "settings": {
-            "product": "apgo-car-exterior-plastic-protectant",
-            "unlocked_price_label": "RM 49"
+            "product": "apgo-car-windshield-oil-film-remover-perfect-glass-restorer",
+            "unlocked_price_label_my": "RM 29",
+            "unlocked_price_label_sg": "$ 12.9"
           }
         }
       },
       "block_order": [
-        "gift_item_YX9HMc",
         "gift_item_Ya86Qz",
         "gift_item_qabcng"
       ],
-      "disabled": true,
       "name": "Gift with Purchase",
       "settings": {
-        "section_title": "Purchase with Purchase",
+        "section_title": "Special add on",
+        "section_subtitle_my": "Special price for fatherday : 1 per order only",
+        "section_subtitle_sg": "Special price for fatherday : 1 per order only",
         "trigger_product_list": [
           "fathers-day-aurora-coating-special-buy-1-free-1"
         ],
-        "max_products": 8,
+        "max_products": 3,
         "accent_color_start": "#f08418",
         "accent_color_end": "#f7931e",
         "text_color": "#ffffff",
@@ -125,6 +120,18 @@
         "text_secondary_color": "#cccccc"
       }
     },
+    "cart_totals_Cya3eE": {
+      "type": "cart-totals",
+      "name": "Cart Totals (Standalone)",
+      "settings": {
+        "show_note_or_code": true,
+        "show_order_breakdown": true,
+        "show_installments": true,
+        "color_scheme": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26",
+        "flat_shipping_my_cents": 290,
+        "flat_shipping_sg_cents": 290
+      }
+    },
     "custom_liquid_QNhCUK": {
       "type": "custom-liquid",
       "name": "新美化",
@@ -134,16 +141,6 @@
         "section_width": "page-width",
         "padding-block-start": 0,
         "padding-block-end": 0
-      }
-    },
-    "cart_totals_Cya3eE": {
-      "type": "cart-totals",
-      "name": "Cart Totals (Standalone)",
-      "settings": {
-        "show_note_or_code": true,
-        "show_order_breakdown": true,
-        "show_installments": true,
-        "color_scheme": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26"
       }
     },
     "cart_cta_aCdf4g": {
@@ -205,8 +202,8 @@
     "cart-section",
     "cart_gift_with_purchase",
     "apgo_coating_products_VU6az3",
-    "custom_liquid_QNhCUK",
     "cart_totals_Cya3eE",
+    "custom_liquid_QNhCUK",
     "cart_cta_aCdf4g",
     "cart_upsell_recommendations_L4gQhn"
   ]
