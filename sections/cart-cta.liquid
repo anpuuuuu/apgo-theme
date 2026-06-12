@@ -682,11 +682,11 @@
         0 0 48px rgb(22 163 74 / 45%);
     }
 
-    /* Reserve one strip for the fixed bar PLUS 240px breathing space below
-       the last visible section (Estimated total accordion). The 240px is
+    /* Reserve one strip for the fixed bar PLUS 80px breathing space below
+       the last visible section (Estimated total accordion). The 80px is
        scrollable empty area between content and the sticky bar. */
     main[data-template="cart"] {
-      padding-bottom: calc(var(--apgo-sticky-cta-h, 100px) + env(safe-area-inset-bottom, 0px) + 240px);
+      padding-bottom: calc(var(--apgo-sticky-cta-h, 100px) + env(safe-area-inset-bottom, 0px) + 80px);
     }
     .shopify-section:has([data-cart-sticky-footer]) {
       margin: 0 !important;
