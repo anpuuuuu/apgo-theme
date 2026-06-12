@@ -523,58 +523,6 @@
       grid-column: 1 / -1 !important;
       margin-top: 6px !important;
     }
-
-    /* Swipe-to-delete (see assets/apgo-cart-swipe-delete.js) */
-    .apgo-cart-swipe-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .apgo-cart-swipe-item {
-      position: relative;
-      overflow: hidden;
-      border-radius: 12px;
-      touch-action: pan-y;
-    }
-    .apgo-cart-swipe-item__delete {
-      position: absolute;
-      inset: 0 0 0 auto;
-      width: 76px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      padding: 0;
-      border: 0;
-      background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
-      color: #fff;
-      font-family: 'Poppins', 'Microsoft JhengHei', Arial, sans-serif;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.02em;
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-      z-index: 0;
-    }
-    .apgo-cart-swipe-item__delete svg {
-      flex-shrink: 0;
-    }
-    .apgo-cart-swipe-item__surface {
-      position: relative;
-      z-index: 1;
-      transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
-      will-change: transform;
-      background: rgba(255, 255, 255, 0.025) !important;
-      border: 1px solid rgba(255, 255, 255, 0.07) !important;
-      border-radius: 12px !important;
-    }
-    .apgo-cart-swipe-item__surface .cart-items__remove {
-      display: none !important;
-    }
-    .apgo-cart-swipe-item--gift .apgo-cart-swipe-item__surface {
-      touch-action: auto;
-    }
   }
 
   /* =========================================================
@@ -666,11 +614,6 @@
 
 <!-- 原始購物車商品內容 -->
 {% render 'cart-products' %}
-
-<script>
-  window.apgoCartSwipe = { removeLabel: {{ 'actions.remove' | t | json }} };
-</script>
-<script src="{{ 'apgo-cart-swipe-delete.js' | asset_url }}" defer></script>
 
 {%- comment -%}
   Free-gift line-item decorator. Reads /cart.js, marks rows whose
