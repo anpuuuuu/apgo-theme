@@ -190,12 +190,6 @@
 
     {% render 'search-modal' %}
     {% render 'apgo-cart-toast' %}
-    {% if template.name == 'cart' %}
-      <script>
-        window.apgoCartSwipe = { removeLabel: {{ 'actions.remove' | t | json }} };
-      </script>
-      <script src="{{ 'apgo-cart-swipe-delete.js' | asset_url }}" defer></script>
-    {% endif %}
     {% if template.name == 'collection' %}
       {% render 'apgo-collection-variant-drawer' %}
     {% endif %}
