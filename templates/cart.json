@@ -75,6 +75,7 @@
           "type": "gift_item",
           "settings": {
             "product": "apgo-car-wiper-fluid-refill-pack",
+            "variant_id": "",
             "unlocked_price_label_my": "RM6.6",
             "unlocked_price_label_sg": "$ 2.9"
           }
@@ -83,24 +84,25 @@
           "type": "gift_item",
           "settings": {
             "product": "apgo-car-windshield-oil-film-remover-perfect-glass-restorer",
+            "variant_id": "",
             "unlocked_price_label_my": "RM 29",
             "unlocked_price_label_sg": "$ 12.9"
           }
         },
         "gift_item_HHYCbB": {
           "type": "gift_item",
-          "disabled": true,
           "settings": {
             "product": "apgo-car-interior-eco-friendly-cleaner",
+            "variant_id": "46971435679898",
             "unlocked_price_label_my": "RM23",
             "unlocked_price_label_sg": "$9.5"
           }
         },
         "gift_item_NbMFJA": {
           "type": "gift_item",
-          "disabled": true,
           "settings": {
             "product": "apgo-car-interior-eco-friendly-coating",
+            "variant_id": "46971425259674",
             "unlocked_price_label_my": "RM25",
             "unlocked_price_label_sg": "$9.9"
           }
