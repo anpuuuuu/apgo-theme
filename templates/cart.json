@@ -89,6 +89,7 @@
         },
         "gift_item_HHYCbB": {
           "type": "gift_item",
+          "disabled": true,
           "settings": {
             "product": "apgo-car-interior-eco-friendly-cleaner",
             "unlocked_price_label_my": "RM23",
@@ -97,6 +98,7 @@
         },
         "gift_item_NbMFJA": {
           "type": "gift_item",
+          "disabled": true,
           "settings": {
             "product": "apgo-car-interior-eco-friendly-coating",
             "unlocked_price_label_my": "RM25",
