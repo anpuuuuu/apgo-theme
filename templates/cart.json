@@ -100,7 +100,6 @@
         },
         "gift_item_NbMFJA": {
           "type": "gift_item",
-          "disabled": true,
           "settings": {
             "product": "apgo-car-interior-eco-friendly-coating",
             "variant_id": "46971425259674",
