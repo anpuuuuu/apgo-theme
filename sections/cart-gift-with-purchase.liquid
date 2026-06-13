@@ -142,6 +142,15 @@
     overflow: hidden;
   }
 
+  .cart-gwp-card__variant {
+    display: block;
+    margin-top: 2px;
+    font-size: 10px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.65) !important;
+    -webkit-line-clamp: 1;
+  }
+
   .cart-gwp-card__prices {
     display: flex;
     flex-direction: column;
@@ -283,6 +292,14 @@
     border-radius: 8px;
   }
 
+  .cart-gwp-editor-variant-note {
+    margin: 0;
+    padding: 6px 10px 8px;
+    font-size: 11px;
+    color: #888;
+    border-top: 1px dashed #333;
+  }
+
   @media (max-width: 768px) {
     .cart-gwp-wrapper {
       padding: 0 16px;
@@ -372,7 +389,60 @@
         {% endif %}
         {% assign gift_count = gift_count | plus: 1 %}
 
-        {% assign gift_variant = gift_product.selected_or_first_available_variant %}
+        {%- comment -%}
+          Resolve gift variant: variant_id → option1/2/3 match → first available.
+        {%- endcomment -%}
+        {% assign gift_variant = blank %}
+        {% assign variant_id_setting = block.settings.variant_id | strip %}
+        {% if variant_id_setting != blank %}
+          {% for v in gift_product.variants %}
+            {% assign v_id_str = v.id | append: '' %}
+            {% if v_id_str == variant_id_setting %}
+              {% assign gift_variant = v %}
+              {% break %}
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+
+        {% if gift_variant == blank %}
+          {% assign opt1 = block.settings.variant_option1 | strip %}
+          {% assign opt2 = block.settings.variant_option2 | strip %}
+          {% assign opt3 = block.settings.variant_option3 | strip %}
+          {% if opt1 != blank or opt2 != blank or opt3 != blank %}
+            {% for v in gift_product.variants %}
+              {% assign variant_match = true %}
+              {% if opt1 != blank %}
+                {% assign opt1_cmp = opt1 | downcase %}
+                {% assign v_opt1_cmp = v.option1 | downcase %}
+                {% if v_opt1_cmp != opt1_cmp %}
+                  {% assign variant_match = false %}
+                {% endif %}
+              {% endif %}
+              {% if variant_match and opt2 != blank %}
+                {% assign opt2_cmp = opt2 | downcase %}
+                {% assign v_opt2_cmp = v.option2 | downcase %}
+                {% if v_opt2_cmp != opt2_cmp %}
+                  {% assign variant_match = false %}
+                {% endif %}
+              {% endif %}
+              {% if variant_match and opt3 != blank %}
+                {% assign opt3_cmp = opt3 | downcase %}
+                {% assign v_opt3_cmp = v.option3 | downcase %}
+                {% if v_opt3_cmp != opt3_cmp %}
+                  {% assign variant_match = false %}
+                {% endif %}
+              {% endif %}
+              {% if variant_match %}
+                {% assign gift_variant = v %}
+                {% break %}
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        {% endif %}
+
+        {% if gift_variant == blank %}
+          {% assign gift_variant = gift_product.selected_or_first_available_variant %}
+        {% endif %}
         {% assign original_cents = gift_variant.compare_at_price %}
         {% if original_cents == blank or original_cents == 0 %}
           {% assign original_cents = gift_product.compare_at_price %}
@@ -394,7 +464,7 @@
         {% endif %}
 
         <div class="cart-gwp-card" {{ block.shopify_attributes }}>
-          <a href="{{ gift_product.url }}" class="cart-gwp-card__link">
+          <a href="{{ gift_variant.url | default: gift_product.url }}" class="cart-gwp-card__link">
             <div class="cart-gwp-card__image {{ section.settings.image_ratio }}">
               {%- comment -%}
                 Prefer the selected/first variant's own image so multi-variant
@@ -414,7 +484,12 @@
               {% endif %}
             </div>
             <div class="cart-gwp-card__info">
-              <h4 class="cart-gwp-card__title">{{ gift_product.title }}</h4>
+              <h4 class="cart-gwp-card__title">
+                {{ gift_product.title }}
+                {% unless gift_variant.title == 'Default Title' or gift_variant.title == blank %}
+                  <span class="cart-gwp-card__variant">{{ gift_variant.title }}</span>
+                {% endunless %}
+              </h4>
               {% if section.settings.show_prices %}
                 <div class="cart-gwp-card__prices">
                   <div class="cart-gwp-card__price-deal">
@@ -429,10 +504,15 @@
           {% if section.settings.enable_quick_add %}
             <button type="button"
                     class="cart-gwp-add"
-                    data-variant-id="{{ gift_product.selected_or_first_available_variant.id }}"
+                    data-variant-id="{{ gift_variant.id }}"
                     data-gwp-add>
               <span>+</span>
             </button>
+          {% endif %}
+          {% if request.design_mode %}
+            <p class="cart-gwp-editor-variant-note">
+              目前子類：{{ gift_variant.title }} · ID {{ gift_variant.id }}
+            </p>
           {% endif %}
         </div>
       {% endfor %}
@@ -705,6 +785,30 @@
           "type": "product",
           "id": "product",
           "label": "Gift product (Y)"
+        },
+        {
+          "type": "text",
+          "id": "variant_id",
+          "label": "指定子類 ID",
+          "info": "選填。Shopify 後台 → 商品 → 子類，網址列數字即 ID。優先於下方選項文字。"
+        },
+        {
+          "type": "text",
+          "id": "variant_option1",
+          "label": "子類選項 1",
+          "info": "選填。須與商品第一個 Option 的值完全一致（如 500ml）。未填 ID 時依序比對。"
+        },
+        {
+          "type": "text",
+          "id": "variant_option2",
+          "label": "子類選項 2",
+          "info": "選填。對應商品第二個 Option。"
+        },
+        {
+          "type": "text",
+          "id": "variant_option3",
+          "label": "子類選項 3",
+          "info": "選填。對應商品第三個 Option。"
         },
         {
           "type": "text",
