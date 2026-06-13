@@ -292,14 +292,6 @@
     border-radius: 8px;
   }
 
-  .cart-gwp-editor-variant-note {
-    margin: 0;
-    padding: 6px 10px 8px;
-    font-size: 11px;
-    color: #888;
-    border-top: 1px dashed #333;
-  }
-
   @media (max-width: 768px) {
     .cart-gwp-wrapper {
       padding: 0 16px;
@@ -389,9 +381,6 @@
         {% endif %}
         {% assign gift_count = gift_count | plus: 1 %}
 
-        {%- comment -%}
-          Resolve gift variant: variant_id → option1/2/3 match → first available.
-        {%- endcomment -%}
         {% assign gift_variant = blank %}
         {% assign variant_id_setting = block.settings.variant_id | strip %}
         {% if variant_id_setting != blank %}
@@ -403,43 +392,6 @@
             {% endif %}
           {% endfor %}
         {% endif %}
-
-        {% if gift_variant == blank %}
-          {% assign opt1 = block.settings.variant_option1 | strip %}
-          {% assign opt2 = block.settings.variant_option2 | strip %}
-          {% assign opt3 = block.settings.variant_option3 | strip %}
-          {% if opt1 != blank or opt2 != blank or opt3 != blank %}
-            {% for v in gift_product.variants %}
-              {% assign variant_match = true %}
-              {% if opt1 != blank %}
-                {% assign opt1_cmp = opt1 | downcase %}
-                {% assign v_opt1_cmp = v.option1 | downcase %}
-                {% if v_opt1_cmp != opt1_cmp %}
-                  {% assign variant_match = false %}
-                {% endif %}
-              {% endif %}
-              {% if variant_match and opt2 != blank %}
-                {% assign opt2_cmp = opt2 | downcase %}
-                {% assign v_opt2_cmp = v.option2 | downcase %}
-                {% if v_opt2_cmp != opt2_cmp %}
-                  {% assign variant_match = false %}
-                {% endif %}
-              {% endif %}
-              {% if variant_match and opt3 != blank %}
-                {% assign opt3_cmp = opt3 | downcase %}
-                {% assign v_opt3_cmp = v.option3 | downcase %}
-                {% if v_opt3_cmp != opt3_cmp %}
-                  {% assign variant_match = false %}
-                {% endif %}
-              {% endif %}
-              {% if variant_match %}
-                {% assign gift_variant = v %}
-                {% break %}
-              {% endif %}
-            {% endfor %}
-          {% endif %}
-        {% endif %}
-
         {% if gift_variant == blank %}
           {% assign gift_variant = gift_product.selected_or_first_available_variant %}
         {% endif %}
@@ -508,11 +460,6 @@
                     data-gwp-add>
               <span>+</span>
             </button>
-          {% endif %}
-          {% if request.design_mode %}
-            <p class="cart-gwp-editor-variant-note">
-              目前子類：{{ gift_variant.title }} · ID {{ gift_variant.id }}
-            </p>
           {% endif %}
         </div>
       {% endfor %}
@@ -787,28 +734,27 @@
           "label": "Gift product (Y)"
         },
         {
-          "type": "text",
+          "type": "select",
           "id": "variant_id",
-          "label": "指定子類 ID",
-          "info": "選填。Shopify 後台 → 商品 → 子類，網址列數字即 ID。優先於下方選項文字。"
-        },
-        {
-          "type": "text",
-          "id": "variant_option1",
-          "label": "子類選項 1",
-          "info": "選填。須與商品第一個 Option 的值完全一致（如 500ml）。未填 ID 時依序比對。"
-        },
-        {
-          "type": "text",
-          "id": "variant_option2",
-          "label": "子類選項 2",
-          "info": "選填。對應商品第二個 Option。"
-        },
-        {
-          "type": "text",
-          "id": "variant_option3",
-          "label": "子類選項 3",
-          "info": "選填。對應商品第三個 Option。"
+          "label": "子類 (Variant)",
+          "default": "",
+          "info": "先選上方商品後，從此下拉選子類。僅多子類商品顯示。",
+          "visible_if": "{{ block.settings.product != blank and block.settings.product.variants.size > 1 }}",
+          "options": [
+            {
+              "value": "",
+              "label": "First available"
+            }
+            {%- assign gwp_pick_product = block.settings.product -%}
+            {%- if gwp_pick_product != blank -%}
+              {%- for variant in gwp_pick_product.variants -%}
+                ,{
+                  "value": "{{ variant.id }}",
+                  "label": {{ variant.title | json }}
+                }
+              {%- endfor -%}
+            {%- endif -%}
+          ]
         },
         {
           "type": "text",
