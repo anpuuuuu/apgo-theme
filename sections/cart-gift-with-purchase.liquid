@@ -734,27 +734,10 @@
           "label": "Gift product (Y)"
         },
         {
-          "type": "select",
+          "type": "text",
           "id": "variant_id",
-          "label": "子類 (Variant)",
-          "default": "",
-          "info": "先選上方商品後，從此下拉選子類。僅多子類商品顯示。",
-          "visible_if": "{{ block.settings.product != blank and block.settings.product.variants.size > 1 }}",
-          "options": [
-            {
-              "value": "",
-              "label": "First available"
-            }
-            {%- assign gwp_pick_product = block.settings.product -%}
-            {%- if gwp_pick_product != blank -%}
-              {%- for variant in gwp_pick_product.variants -%}
-                ,{
-                  "value": "{{ variant.id }}",
-                  "label": {{ variant.title | json }}
-                }
-              {%- endfor -%}
-            {%- endif -%}
-          ]
+          "label": "子類 ID",
+          "info": "選填。後台 → 商品 → 點該子類，網址列末段數字即 ID（例：48219767505050）。留空則用第一個可用子類。"
         },
         {
           "type": "text",
