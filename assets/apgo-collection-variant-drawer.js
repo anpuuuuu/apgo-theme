@@ -305,13 +305,23 @@ function closeDrawer() {
   shell.setAttribute('aria-hidden', 'true');
   document.body.classList.remove('apgo-collection-variant-open');
 
-  /* 還原 iOS scroll 鎖（記得在移除 position:fixed 之後 scrollTo 還原 Y） */
+  /* 還原 iOS scroll 鎖（記得在移除 position:fixed 之後 scrollTo 還原 Y）。
+     base.css 對 <html> 設了 scroll-behavior: smooth，全域 scrollTo 會被瀏覽器
+     用 ~0.5s 動畫滑回去——關閉彈窗的場景需要瞬間定位，因此暫時改成 'auto'
+     做一次跳轉，再還原使用者原本的捲動模式。 */
   if (document.body.classList.contains('apgo-collection-variant-ios-lock')) {
     document.body.classList.remove('apgo-collection-variant-ios-lock');
     document.body.style.top = '';
     const restoreY = state._lockedScrollY || 0;
     state._lockedScrollY = null;
-    requestAnimationFrame(() => window.scrollTo(0, restoreY));
+
+    const htmlEl = document.documentElement;
+    const prevBehavior = htmlEl.style.scrollBehavior;
+    htmlEl.style.scrollBehavior = 'auto';
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: restoreY, left: 0, behavior: 'instant' });
+      htmlEl.style.scrollBehavior = prevBehavior;
+    });
   }
 
   window.setTimeout(() => {
