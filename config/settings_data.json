@@ -55,6 +55,7 @@
     "currency_code_enabled_cart_items": true,
     "mobile_quick_add": true,
     "quick_add_color_scheme": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26",
+    "product_card_carousel": false,
     "variant_swatch_radius": 0,
     "variant_button_radius": 0,
     "variant_button_width": "equal-width-buttons",
