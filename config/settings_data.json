@@ -9,6 +9,7 @@
  */
 {
   "current": {
+    "apgo_gwp_enabled": true,
     "logo": "shopify://shop_images/Untitled-1_4ef42425-f5e2-4f58-866d-c58ceb4f3268.png",
     "favicon": "shopify://shop_images/apgo-logo-bg-transparent.png",
     "type_body_font": "inter_n4",
@@ -34,8 +35,10 @@
     "page_width": "wide",
     "card_hover_effect": "subtle-zoom",
     "badge_position": "top-right",
+    "badge_corner_radius": 40,
     "badge_hot_icon_mode": "tag_only",
     "badge_hot_icon_tag": "hot",
+    "badge_font_family": "body",
     "button_border_radius_primary": 0,
     "type_font_button_primary": "accent",
     "button_font_weight_primary": "700",
@@ -50,6 +53,7 @@
     "popover_border_radius": 0,
     "popover_border": "none",
     "currency_code_enabled_cart_items": true,
+    "mobile_quick_add": true,
     "quick_add_color_scheme": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26",
     "variant_swatch_radius": 0,
     "variant_button_radius": 0,
