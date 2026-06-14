@@ -96,6 +96,7 @@
         so it no-ops if the product is removed.
       {%- endcomment -%}
       {% if settings.apgo_gwp_enabled
+         and settings.apgo_promo_banner_enabled
          and template.name == 'product'
          and product.handle == 'fathers-day-aurora-coating-special-buy-1-free-1' %}
         {% render 'apgo-collection-promo-banner' %}

@@ -23,6 +23,13 @@
         "id": "apgo_gwp_enabled",
         "label": "Enable Free Gift promo (all UI + auto-add behavior)",
         "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "apgo_promo_banner_enabled",
+        "label": "Show promo banner on top of PDP",
+        "info": "顯示「FATHER'S DAY EXCLUSIVE DEAL」橫幅。關閉即立刻隱藏，倒數不再因日期過期自動消失。",
+        "default": true
       }
     ]
   },
