@@ -95,10 +95,32 @@
         framing. The snippet itself guards on `all_products[promo_handle]`
         so it no-ops if the product is removed.
       {%- endcomment -%}
-      {% if settings.apgo_gwp_enabled
-         and settings.apgo_promo_banner_enabled
-         and template.name == 'product'
-         and product.handle == 'fathers-day-aurora-coating-special-buy-1-free-1' %}
+      {%- liquid
+        # Decide whether the PDP promo banner should render on this product.
+        # Priority:
+        #   1. Theme Settings → "Show promo banner on these PDPs" (product_list,
+        #      merchant-editable; supports multiple PDPs).
+        #   2. Fallback hardcoded handle for the original Father's Day bundle so
+        #      the banner keeps working even if the merchant hasn't configured
+        #      the list yet.
+        assign show_pdp_promo_banner = false
+        if settings.apgo_gwp_enabled and settings.apgo_promo_banner_enabled and template.name == 'product'
+          assign promo_pdp_list = settings.apgo_promo_banner_pdp_products
+          if promo_pdp_list != blank and promo_pdp_list.size > 0
+            for p in promo_pdp_list
+              if p.id == product.id
+                assign show_pdp_promo_banner = true
+                break
+              endif
+            endfor
+          else
+            if product.handle == 'fathers-day-aurora-coating-special-buy-1-free-1'
+              assign show_pdp_promo_banner = true
+            endif
+          endif
+        endif
+      -%}
+      {% if show_pdp_promo_banner %}
         {% render 'apgo-collection-promo-banner' %}
       {% endif %}
       {{ content_for_layout }}
