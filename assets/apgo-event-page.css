@@ -514,20 +514,30 @@ body.apgo-special-event-page {
   --apgo-event-page-bg: #1f100a;
   --apgo-event-card-price-color: #f08418;
 
-  /* Panel goes from deep brown at the top to the banner-cream at the
-     bottom so it visually melts into the carnival banner sitting below.
-     Most of the height stays brown so the cards still feel "framed in
-     a luxury display"; the cream wash only kicks in over the last ~25%. */
+  /* Panel background = layered:
+       1. Spotlight (radial) at top-center — warm light #3d2820 fading
+          to transparent by ~70%, so the lower half lets the linear
+          gradient underneath show through.
+       2. Brown → cream linear (180deg) underneath — handles the
+          smooth melt into the carnival banner below.
+     Cream end matches the user-specified banner color #fdf5ec. */
   --apgo-event-panel-bg: #2a1810;
   --apgo-event-heading-bg: #2a1810;
-  --apgo-event-panel-bg-gradient: linear-gradient(
-    180deg,
-    #2a1810 0%,
-    #2a1810 55%,
-    #5a3a22 78%,
-    #c69a6a 92%,
-    #fcead8 100%
-  );
+  --apgo-event-panel-bg-gradient:
+    radial-gradient(
+      ellipse 85% 50% at 50% 12%,
+      #3d2820 0%,
+      #2a1810 55%,
+      transparent 100%
+    ),
+    linear-gradient(
+      180deg,
+      #2a1810 0%,
+      #2a1810 55%,
+      #5a3a22 78%,
+      #c69a6a 92%,
+      #fdf5ec 100%
+    );
 
   /* Heading text is now a champagne-gold gradient (color fallback for
      browsers that don't support background-clip:text). */
