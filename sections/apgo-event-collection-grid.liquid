@@ -35,11 +35,12 @@
         </svg>
       </div>
     {% endif %}
-    <div class="apgo-event-collection-grid__panel-body">
-      {% if section.settings.heading != blank %}
+    {% if section.settings.heading != blank %}
+      <header class="apgo-event-collection-grid__header">
         <h2 class="apgo-event-collection-grid__heading">{{ section.settings.heading }}</h2>
-      {% endif %}
-
+      </header>
+    {% endif %}
+    <div class="apgo-event-collection-grid__panel-body">
       {% render 'apgo-event-product-grid',
         section: section,
         collection: event_collection,
