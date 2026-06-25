@@ -506,6 +506,13 @@ body.apgo-special-event-page .apgo-event-banner__frame {
 body.apgo-special-event-page .apgo-event-collection-grid {
   position: relative;
 }
+/* Override the panel radius and strip height in one place — larger,
+   more sweeping curve at the top of the panel that "spills further
+   down" into the panel body. */
+body.apgo-special-event-page .apgo-event-collection-grid__panel {
+  border-top-left-radius: clamp(48px, 7vw, 72px) !important;
+  border-top-right-radius: clamp(48px, 7vw, 72px) !important;
+}
 body.apgo-special-event-page .apgo-event-collection-grid::before {
   content: '';
   position: absolute;
@@ -513,7 +520,9 @@ body.apgo-special-event-page .apgo-event-collection-grid::before {
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
-  height: var(--apgo-event-panel-radius, 32px);
+  /* Match the larger radius so the orange peek-through fills the
+     entire curved cut-out. */
+  height: clamp(48px, 7vw, 72px);
   background: var(--apgo-event-banner-orange, #f56a01);
   z-index: 0;
   pointer-events: none;
@@ -544,6 +553,10 @@ body.apgo-special-event-page .apgo-event-collection-grid__panel-body {
   background: transparent;
   position: relative;
   z-index: 1;
+  /* No top padding — the stage heading inside should sit flush against
+     the section heading above (any gap is owned by the lockup's bottom
+     padding, currently 0). */
+  padding-top: 0 !important;
   /* Buffer between the last card row and the cream shelf at section bottom.
      Generous but restrained — mobile gets ~56px, desktop tops out at 110px. */
   padding-bottom: clamp(56px, 8vw, 110px) !important;
@@ -582,9 +595,10 @@ body.apgo-special-event-page .apgo-event-collection-grid__curve path {
   align-items: center;
   justify-content: center;
   gap: clamp(10px, 2.6vw, 28px);
-  /* Tight vertical rhythm — small bottom pad so the stage heading
-     below it doesn't feel disconnected. */
-  padding-block: clamp(6px, 1.4vw, 16px) clamp(2px, 0.6vw, 8px);
+  /* Heading-text and the stage heading underneath should touch — no
+     bottom padding here. The breathing room is moved entirely to the
+     top so the section title gets some air above it. */
+  padding-block: clamp(16px, 3vw, 36px) 0;
   position: relative;
 }
 .apgo-event-heading-stack {
@@ -611,7 +625,9 @@ body.apgo-special-event-page .apgo-event-collection-grid__curve path {
 .apgo-event-heading-text {
   display: block;
   margin: 0;
-  font-size: clamp(20px, 4.4vw, 38px);
+  /* Smaller than before so it doesn't dominate the stack — clamp
+     15-28px instead of 20-38px. */
+  font-size: clamp(15px, 3.2vw, 28px);
   font-weight: 900;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -774,9 +790,11 @@ body.apgo-special-event-page .apgo-event-featured-stage {
 }
 
 body.apgo-special-event-page .apgo-event-featured-stage__heading {
-  /* Trim top margin so the "STAR PRODUCT" heading sits close to the
-     section's "APGO BIRTHDAY PARTY" lockup above. */
-  margin: 0 0 clamp(10px, 2vw, 18px);
+  /* Top margin trimmed (the "STAR PRODUCT" stage heading sits right
+     under "APGO BIRTHDAY PARTY" with no gap); the breathing room
+     that used to be between them now lives below this heading, before
+     the pedestal duo. */
+  margin: clamp(4px, 1vw, 10px) 0 clamp(20px, 3.5vw, 36px);
   font-size: clamp(13px, 2vw, 17px);
   font-weight: 800;
   letter-spacing: 0.18em;
