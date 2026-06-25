@@ -1,0 +1,22 @@
+{%- doc -%}
+  Single Featured-Stage banner — a bare 1280:680 clickable image that
+  links to a product's PDP. The image is treated as required (admin
+  must upload a designed promo banner via the image_picker); if it's
+  missing the banner doesn't render so we never fall back to a square
+  product thumbnail that would crop awkwardly into the wide frame.
+
+  @param {object} product - Product object that this banner links to
+  @param {image}  image   - Admin-uploaded banner image (1280×680)
+{%- enddoc -%}
+
+{%- if image != blank and product != blank and product.url != blank -%}
+  <a class="apgo-event-featured-banner" href="{{ product.url }}" aria-label="{{ product.title | escape }}">
+    <img
+      class="apgo-event-featured-banner__img"
+      src="{{ image | image_url: width: 1600 }}"
+      alt="{{ product.title | escape }}"
+      loading="lazy"
+      width="1280"
+      height="680">
+  </a>
+{%- endif -%}

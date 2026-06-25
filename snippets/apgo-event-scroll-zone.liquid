@@ -1,0 +1,34 @@
+{%- doc -%}
+  Horizontal-scroll zone — used by Discount and Buy-1-Free-1 zones on
+  the APGO Birthday page. Renders an optional heading and a snap-scroll
+  track of product cards (~2.5 cards visible at rest).
+
+  @param {string} heading    - Zone heading text (e.g. "DISCOUNT DEALS")
+  @param {array}  products   - Array of products (from a product_list setting)
+  @param {string} zone_class - Modifier suffix added to the wrapper
+                               (used for analytics / per-zone CSS hooks)
+  @param {string} section_id - Parent section id, used for unique card ids
+{%- enddoc -%}
+
+{%- if products != blank and products.size > 0 -%}
+  <section class="apgo-event-scroll-zone apgo-event-scroll-zone--{{ zone_class }}">
+    {%- if heading != blank -%}
+      <h3 class="apgo-event-scroll-zone__heading">
+        <span class="apgo-event-scroll-zone__heading-star" aria-hidden="true">★</span>
+        {{ heading }}
+        <span class="apgo-event-scroll-zone__heading-star" aria-hidden="true">★</span>
+      </h3>
+    {%- endif -%}
+    <div class="apgo-event-scroll-zone__track" role="list">
+      {%- for product in products -%}
+        {%- assign apgo_event_card_uid = section_id | append: '-' | append: zone_class | append: '-' | append: product.id -%}
+        <div class="apgo-event-scroll-zone__card" role="listitem">
+          {% render 'apgo-event-listing-card',
+            product: product,
+            section_id: section_id,
+            card_uid: apgo_event_card_uid %}
+        </div>
+      {%- endfor -%}
+    </div>
+  </section>
+{%- endif -%}

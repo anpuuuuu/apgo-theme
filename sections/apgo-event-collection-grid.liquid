@@ -1,14 +1,13 @@
 {% comment %}
-  APGO Special Event — collection product grid with optional overlap panel.
-  Uses apgo-event-listing-card (same UI as Limited Time Deals). No Theme Editor product-card blocks.
+  APGO Special Event — 3-zone curated content panel.
+    Zone 1: Discount Zone (horizontal-scroll, admin-picked products)
+    Zone 2: Buy 1 Free 1 Zone (horizontal-scroll, admin-picked products)
+    Zone 3: Featured Stage (two stacked 1280:680 banners at the bottom)
+  Cards in zones 1 + 2 reuse apgo-event-listing-card for visual consistency
+  with the rest of the page.
 {% endcomment %}
 
 {{ 'apgo-event-page.css' | asset_url | stylesheet_tag }}
-
-{% liquid
-  assign event_collection = section.settings.collection
-  assign product_limit = section.settings.product_limit | default: 24
-%}
 
 <div
   id="apgo-event-grid-{{ section.id }}"
@@ -34,6 +33,7 @@
         </svg>
       </div>
     {% endif %}
+
     {% if section.settings.heading != blank %}
       <header class="apgo-event-collection-grid__header">
         {%- comment -%}
@@ -64,16 +64,38 @@
         {% endif %}
       </header>
     {% endif %}
+
     <div class="apgo-event-collection-grid__panel-body">
+      {%- comment -%} ZONE 1 — Discount horizontal scroll {%- endcomment -%}
+      {%- if section.settings.show_discount_zone and section.settings.discount_zone_products.size > 0 -%}
+        {% render 'apgo-event-scroll-zone',
+          heading: section.settings.discount_zone_heading,
+          products: section.settings.discount_zone_products,
+          zone_class: 'discount',
+          section_id: section.id %}
+      {%- endif -%}
+
+      {%- comment -%} ZONE 2 — Buy 1 Free 1 horizontal scroll {%- endcomment -%}
+      {%- if section.settings.show_b1f1_zone and section.settings.b1f1_zone_products.size > 0 -%}
+        {% render 'apgo-event-scroll-zone',
+          heading: section.settings.b1f1_zone_heading,
+          products: section.settings.b1f1_zone_products,
+          zone_class: 'b1f1',
+          section_id: section.id %}
+      {%- endif -%}
+
       {%- comment -%}
-        Featured Stage — two admin-picked hero products shown as a
-        single conjoined "display pedestal". Hides entirely if the
-        toggle is off OR if either product slot is empty (so the
-        pedestal is never half-empty).
+        ZONE 3 — Featured Stage banner stack.
+        Both an image AND a product must be set per slot, otherwise the
+        whole stage hides (never a half-empty pedestal).
       {%- endcomment -%}
-      {%- assign fp1 = all_products[section.settings.featured_product_1] -%}
-      {%- assign fp2 = all_products[section.settings.featured_product_2] -%}
-      {%- if section.settings.show_featured_stage and fp1 != blank and fp1.handle != blank and fp2 != blank and fp2.handle != blank -%}
+      {%- assign fp1 = section.settings.featured_product_1 -%}
+      {%- assign fp2 = section.settings.featured_product_2 -%}
+      {%- assign fi1 = section.settings.featured_image_1 -%}
+      {%- assign fi2 = section.settings.featured_image_2 -%}
+      {%- if section.settings.show_featured_stage
+            and fp1 != blank and fp2 != blank
+            and fi1 != blank and fi2 != blank -%}
         <div class="apgo-event-featured-stage">
           {%- if section.settings.featured_heading != blank -%}
             <h3 class="apgo-event-featured-stage__heading">
@@ -82,39 +104,16 @@
               <span class="apgo-event-featured-stage__heading-star" aria-hidden="true">★</span>
             </h3>
           {%- endif -%}
-          <div class="apgo-event-featured-stage__duo">
-            {% render 'apgo-event-featured-card',
+          <div class="apgo-event-featured-stage__stack">
+            {% render 'apgo-event-featured-banner',
               product: fp1,
-              rank: '01',
-              badge: section.settings.featured_badge_text,
-              cta: section.settings.featured_cta_label %}
-            <span class="apgo-event-featured-stage__divider" aria-hidden="true">
-              <span class="apgo-event-featured-stage__divider-orb">
-                {% render 'apgo-icon-star', unique: 'stage-divider' %}
-              </span>
-            </span>
-            {% render 'apgo-event-featured-card',
+              image: fi1 %}
+            {% render 'apgo-event-featured-banner',
               product: fp2,
-              rank: '02',
-              badge: section.settings.featured_badge_text,
-              cta: section.settings.featured_cta_label %}
+              image: fi2 %}
           </div>
         </div>
       {%- endif -%}
-
-      {%- if section.settings.grid_heading != blank -%}
-        <h3 class="apgo-event-grid-heading">
-          <span class="apgo-event-grid-heading__star" aria-hidden="true">★</span>
-          {{ section.settings.grid_heading }}
-          <span class="apgo-event-grid-heading__star" aria-hidden="true">★</span>
-        </h3>
-      {%- endif -%}
-
-      {% render 'apgo-event-product-grid',
-        section: section,
-        collection: event_collection,
-        product_limit: product_limit
-      %}
     </div>
   </div>
 </div>
@@ -130,58 +129,7 @@
   "settings": [
     {
       "type": "header",
-      "content": "Featured Stage (2 hero products)"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_featured_stage",
-      "label": "Show featured stage",
-      "info": "Two hero products in a joined gold-rimmed pedestal at the top of the panel. Hides automatically if either product slot is empty.",
-      "default": true
-    },
-    {
-      "type": "text",
-      "id": "featured_heading",
-      "label": "Stage heading",
-      "default": "BIRTHDAY HIGHLIGHTS"
-    },
-    {
-      "type": "text",
-      "id": "featured_badge_text",
-      "label": "Pill badge on each card",
-      "default": "STAR PICK"
-    },
-    {
-      "type": "text",
-      "id": "featured_cta_label",
-      "label": "CTA button label",
-      "default": "View deal"
-    },
-    {
-      "type": "product",
-      "id": "featured_product_1",
-      "label": "Hero product 01"
-    },
-    {
-      "type": "product",
-      "id": "featured_product_2",
-      "label": "Hero product 02"
-    },
-    {
-      "type": "text",
-      "id": "grid_heading",
-      "label": "Product grid heading (below the hero stage)",
-      "info": "Gold pill-style heading shown above the 12-product grid. Leave blank to hide.",
-      "default": "ALL BIRTHDAY DEALS"
-    },
-    {
-      "type": "header",
-      "content": "Content"
-    },
-    {
-      "type": "collection",
-      "id": "collection",
-      "label": "Collection"
+      "content": "Section heading lockup"
     },
     {
       "type": "textarea",
@@ -204,23 +152,95 @@
       "visible_if": "{{ section.settings.show_festive_lockup }}"
     },
     {
-      "type": "range",
-      "id": "product_limit",
-      "label": "Max products",
-      "min": 4,
-      "max": 50,
-      "step": 1,
-      "default": 24
+      "type": "header",
+      "content": "Discount Zone"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_discount_zone",
+      "label": "Show discount zone",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "discount_zone_heading",
+      "label": "Zone heading",
+      "default": "DISCOUNT DEALS"
+    },
+    {
+      "type": "product_list",
+      "id": "discount_zone_products",
+      "label": "Discount products",
+      "limit": 12
     },
     {
       "type": "header",
-      "content": "Overlap (over banner above)"
+      "content": "Buy 1 Free 1 Zone"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_b1f1_zone",
+      "label": "Show Buy 1 Free 1 zone",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "b1f1_zone_heading",
+      "label": "Zone heading",
+      "default": "BUY 1 FREE 1"
+    },
+    {
+      "type": "product_list",
+      "id": "b1f1_zone_products",
+      "label": "B1F1 products",
+      "limit": 12
+    },
+    {
+      "type": "header",
+      "content": "Featured Stage (banner stack at bottom)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_featured_stage",
+      "label": "Show featured stage",
+      "info": "Hides automatically if any banner image OR product slot is empty.",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "featured_heading",
+      "label": "Stage heading",
+      "default": "BIRTHDAY HIGHLIGHTS"
+    },
+    {
+      "type": "product",
+      "id": "featured_product_1",
+      "label": "Hero product 01"
+    },
+    {
+      "type": "image_picker",
+      "id": "featured_image_1",
+      "label": "Banner image 01 (1280×680 recommended)"
+    },
+    {
+      "type": "product",
+      "id": "featured_product_2",
+      "label": "Hero product 02"
+    },
+    {
+      "type": "image_picker",
+      "id": "featured_image_2",
+      "label": "Banner image 02 (1280×680 recommended)"
+    },
+    {
+      "type": "header",
+      "content": "Panel chrome"
     },
     {
       "type": "checkbox",
       "id": "overlap_enabled",
       "label": "Lift card panel over banner",
-      "default": true
+      "default": false
     },
     {
       "type": "range",
@@ -242,79 +262,6 @@
       "step": 2,
       "unit": "px",
       "default": 32
-    },
-    {
-      "type": "header",
-      "content": "Product grid"
-    },
-    {
-      "type": "select",
-      "id": "layout_type",
-      "label": "Layout",
-      "options": [
-        { "value": "grid", "label": "Grid" },
-        { "value": "organic", "label": "Editorial" }
-      ],
-      "default": "grid"
-    },
-    {
-      "type": "select",
-      "id": "product_card_size",
-      "label": "Card size",
-      "options": [
-        { "value": "small", "label": "Small" },
-        { "value": "medium", "label": "Medium" },
-        { "value": "large", "label": "Large" },
-        { "value": "extra-large", "label": "Extra large" }
-      ],
-      "default": "large",
-      "visible_if": "{{ section.settings.layout_type == 'grid' }}"
-    },
-    {
-      "type": "select",
-      "id": "mobile_product_card_size",
-      "label": "Mobile card size",
-      "options": [
-        { "value": "small", "label": "Small" },
-        { "value": "large", "label": "Large" }
-      ],
-      "default": "small"
-    },
-    {
-      "type": "select",
-      "id": "product_grid_width",
-      "label": "Grid width",
-      "options": [
-        { "value": "centered", "label": "Page" },
-        { "value": "full-width", "label": "Full" }
-      ],
-      "default": "full-width"
-    },
-    {
-      "type": "checkbox",
-      "id": "full_width_on_mobile",
-      "label": "Full width on mobile",
-      "default": true
-    },
-    {
-      "type": "range",
-      "id": "columns_gap_horizontal",
-      "label": "Horizontal gap",
-      "min": 0,
-      "max": 50,
-      "step": 1,
-      "unit": "px",
-      "default": 20
-    },
-    {
-      "type": "range",
-      "id": "columns_gap_vertical",
-      "label": "Vertical gap",
-      "min": 0,
-      "max": 50,
-      "step": 1,
-      "unit": "px",
-      "default": 20
     },
     {
       "type": "color_scheme",
