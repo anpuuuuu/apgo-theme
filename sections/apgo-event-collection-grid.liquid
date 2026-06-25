@@ -10,38 +10,42 @@
   assign product_limit = section.settings.product_limit | default: 24
 %}
 
-<div class="section-background color-{{ section.settings.color_scheme }}"></div>
-
 <div
   id="apgo-event-grid-{{ section.id }}"
   class="
-    apgo-event-collection-grid section color-{{ section.settings.color_scheme }}
+    apgo-event-collection-grid section section--full-width
+    color-{{ section.settings.color_scheme }}
     {% if section.settings.overlap_enabled %}apgo-event-collection-grid--overlap{% endif %}
   "
   style="
-    {% if section.settings.overlap_enabled %}--apgo-event-overlap: {{ section.settings.overlap_offset }}px;{% endif %}
+    {% if section.settings.overlap_enabled %}
+      --apgo-event-overlap: {{ section.settings.overlap_offset }}px;
+      --apgo-event-curve-height: {{ section.settings.overlap_offset | times: 2 | at_most: 80 }}px;
+    {% endif %}
     --apgo-event-panel-radius: {{ section.settings.panel_radius }}px;
     --padding-block-start: {{ section.settings.padding-block-start }}px;
     --padding-block-end: {{ section.settings.padding-block-end }}px;
   "
 >
-  <div class="apgo-event-collection-grid__panel">
+  <div class="apgo-event-collection-grid__panel color-{{ section.settings.color_scheme }}">
     {% if section.settings.overlap_enabled %}
       <div class="apgo-event-collection-grid__curve" aria-hidden="true">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 64" preserveAspectRatio="none" role="presentation">
-          <path fill="currentColor" d="M0,64 C320,12 1120,12 1440,64 H0 Z"/>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 80" preserveAspectRatio="none" role="presentation">
+          <path d="M0,80 C360,8 1080,8 1440,80 L1440,80 L0,80 Z"/>
         </svg>
       </div>
     {% endif %}
-    {% if section.settings.heading != blank %}
-      <h2 class="apgo-event-collection-grid__heading">{{ section.settings.heading }}</h2>
-    {% endif %}
+    <div class="apgo-event-collection-grid__panel-body">
+      {% if section.settings.heading != blank %}
+        <h2 class="apgo-event-collection-grid__heading">{{ section.settings.heading }}</h2>
+      {% endif %}
 
-    {% render 'apgo-event-product-grid',
-      section: section,
-      collection: event_collection,
-      product_limit: product_limit
-    %}
+      {% render 'apgo-event-product-grid',
+        section: section,
+        collection: event_collection,
+        product_limit: product_limit
+      %}
+    </div>
   </div>
 </div>
 

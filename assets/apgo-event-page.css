@@ -49,14 +49,24 @@
   opacity: 0.4;
 }
 
-/* Collection grid — full-bleed curved overlap panel */
+/* Event Collection Grid — full bleed, no section-background side gutters */
+.shopify-section.apgo-event-collection-grid-wrapper {
+  overflow: visible;
+}
+
 .apgo-event-collection-grid {
   position: relative;
   width: 100%;
   max-width: 100%;
   padding-inline: 0;
   margin-inline: 0;
+  background: transparent !important;
   --apgo-event-content-desktop-width: 67%;
+}
+
+.apgo-event-collection-grid.section--full-width > .apgo-event-collection-grid__panel {
+  grid-column: 1 / -1;
+  width: 100%;
 }
 
 .apgo-event-collection-grid--overlap {
@@ -73,44 +83,43 @@
   max-width: 100%;
   margin-inline: 0;
   box-sizing: border-box;
-  background: rgb(var(--color-background-rgb, 0 0 0));
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-bottom-left-radius: 16px;
-  border-bottom-right-radius: 16px;
-  border-top-left-radius: var(--apgo-event-panel-radius, 32px);
-  border-top-right-radius: var(--apgo-event-panel-radius, 32px);
-  border-left: none;
-  border-right: none;
-  padding-block: clamp(16px, 3vw, 28px);
-  padding-inline: 0;
-  box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.45);
-  overflow: hidden;
+  background: var(--color-background);
+  color: var(--color-foreground);
+  border: none;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  overflow: visible;
+  box-shadow: 0 -10px 36px rgba(0, 0, 0, 0.35);
 }
 
-.apgo-event-collection-grid--overlap .apgo-event-collection-grid__panel {
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-  padding-block-start: clamp(8px, 2vw, 16px);
+.apgo-event-collection-grid:not(.apgo-event-collection-grid--overlap) .apgo-event-collection-grid__panel {
+  border-top-left-radius: var(--apgo-event-panel-radius, 32px);
+  border-top-right-radius: var(--apgo-event-panel-radius, 32px);
 }
 
 .apgo-event-collection-grid__curve {
-  position: absolute;
-  top: 0;
-  left: 0;
+  position: relative;
   width: 100%;
-  height: clamp(32px, 6vw, 56px);
-  transform: translateY(calc(-100% + 2px));
-  color: rgb(var(--color-background-rgb, 0 0 0));
+  height: var(--apgo-event-curve-height, clamp(36px, 9vw, 72px));
+  margin-top: calc(-1 * var(--apgo-event-curve-height, clamp(36px, 9vw, 72px)));
   line-height: 0;
   pointer-events: none;
-  z-index: 3;
+  z-index: 4;
 }
 
 .apgo-event-collection-grid__curve svg {
   width: 100%;
   height: 100%;
   display: block;
-  filter: drop-shadow(0 -4px 12px rgba(0, 0, 0, 0.25));
+}
+
+.apgo-event-collection-grid__curve path {
+  fill: var(--color-background);
+}
+
+.apgo-event-collection-grid__panel-body {
+  padding-block: clamp(12px, 2.5vw, 24px) clamp(16px, 3vw, 28px);
+  padding-inline: 0;
 }
 
 .apgo-event-collection-grid__heading {
@@ -123,7 +132,7 @@
   letter-spacing: 0.04em;
 }
 
-/* Grid inside panel — cards flush to panel edges */
+/* Grid inside panel — cards flush to screen / panel edges */
 .apgo-event-collection-grid__panel .apgo-event-product-grid,
 .apgo-event-collection-grid__panel .collection-wrapper,
 .apgo-event-collection-grid__panel .main-collection-grid,
@@ -136,8 +145,16 @@
 
 .apgo-event-collection-grid__panel .main-collection-grid {
   --grid--margin--mobile: 0;
+  --grid-column--mobile: var(--full-width);
+  --grid-column--desktop: var(--full-width);
   --padding-inline-start: 0px;
   --padding-inline-end: 0px;
+  width: 100%;
+}
+
+.apgo-event-collection-grid__panel .collection-wrapper--full-width-on-mobile,
+.apgo-event-collection-grid__panel .main-collection-grid {
+  grid-column: 1 / -1 !important;
 }
 
 .apgo-event-collection-grid__empty {
@@ -189,8 +206,6 @@
     width: var(--apgo-event-content-desktop-width, 67%);
     max-width: var(--apgo-event-content-desktop-width, 67%);
     margin-inline: auto;
-    border-left: 1px solid rgba(255, 255, 255, 0.12);
-    border-right: 1px solid rgba(255, 255, 255, 0.12);
   }
 
   .apgo-event-promo__inner {
@@ -205,8 +220,6 @@
     max-width: 100%;
     margin-inline: auto;
   }
-
-  /* Responsive auto-fill from product-grid snippet — no fixed 5-column cap */
 }
 
 @media screen and (width < 750px) {
@@ -217,9 +230,9 @@
     padding-inline: 0;
   }
 
-  .apgo-event-collection-grid:not(.apgo-event-collection-grid--overlap) .apgo-event-collection-grid__panel {
-    border-top-left-radius: var(--apgo-event-panel-radius, 28px);
-    border-top-right-radius: var(--apgo-event-panel-radius, 28px);
+  .apgo-event-collection-grid__panel {
+    width: 100%;
+    max-width: 100%;
   }
 }
 
@@ -236,13 +249,14 @@
   width: 100%;
   max-width: 100%;
   margin-inline: auto;
-  padding-inline: clamp(10px, 2.5vw, 16px);
+  padding-inline: 0;
   box-sizing: border-box;
 }
 
 .apgo-event-promo__header {
   text-align: center;
-  margin-bottom: clamp(20px, 4vw, 28px);
+  margin-bottom: clamp(20px, 4vw, 32px);
+  padding-inline: clamp(12px, 3vw, 20px);
 }
 
 .apgo-event-promo__heading {
