@@ -718,21 +718,46 @@ body.apgo-special-event-page .apgo-event-heading-wrap ~ .apgo-event-promo__sub {
   margin-top: 4px;
 }
 
-/* ── Product cards: hover lift + image zoom only.
-   Card background + title color come from the section's color scheme
-   (editor controls #fcead8 / etc. via Customizer → scheme-3 →
-   Background / Foreground), so we don't try to fight that here. ── */
+/* ── Product cards: hard-coded deep brown gradient body + champagne-gold
+   title, regardless of what the editor's color scheme is set to. Uses
+   !important to outweigh the scheme's --color-background / foreground
+   tokens (since the scheme rules sit at the same specificity). ── */
 body.apgo-special-event-page .apgo-event-listing-card {
   border-radius: 14px;
   overflow: hidden;
+  background: linear-gradient(135deg, #3a2418 0%, #2a1810 40%, #1f100a 100%) !important;
+  color: #f4d28a !important;
   transition: transform .25s ease, box-shadow .25s ease;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.32);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.42);
 }
 body.apgo-special-event-page .apgo-event-listing-card:hover {
   transform: translateY(-4px);
   box-shadow:
-    0 12px 28px rgba(244, 168, 73, 0.35),
-    0 8px 18px rgba(0, 0, 0, 0.42);
+    0 12px 28px rgba(244, 168, 73, 0.38),
+    0 8px 18px rgba(0, 0, 0, 0.5);
+}
+/* The text/info wrapper inherits the card's gradient — keep it transparent
+   so the gradient shows through, otherwise the section color scheme paints
+   a flat cream rectangle on top of our gradient. */
+body.apgo-special-event-page .apgo-event-listing-card .product-card__content,
+body.apgo-special-event-page .apgo-event-listing-card__body,
+body.apgo-special-event-page .apgo-event-listing-card__footer {
+  background: transparent !important;
+  color: #f4d28a !important;
+}
+/* Title in champagne gold for high contrast against the dark gradient */
+body.apgo-special-event-page .apgo-event-listing-card__title,
+body.apgo-special-event-page .apgo-event-listing-card__title a,
+body.apgo-special-event-page .apgo-event-listing-card__title a:hover,
+body.apgo-special-event-page .apgo-event-listing-card .product-card__title,
+body.apgo-special-event-page .apgo-event-listing-card .product-card__title a {
+  color: #f4d28a !important;
+}
+/* Image area stays a clean white plate so product photos pop against
+   the dark card body */
+body.apgo-special-event-page .apgo-event-listing-card__gallery {
+  background: #ffffff !important;
+  overflow: hidden;
 }
 body.apgo-special-event-page .apgo-event-listing-card__gallery .product-media__image,
 body.apgo-special-event-page .apgo-event-listing-card__gallery img {
