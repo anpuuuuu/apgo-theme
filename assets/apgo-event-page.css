@@ -526,10 +526,9 @@ body.apgo-special-event-page {
   --apgo-event-heading-color: #f8a849;
   --apgo-event-heading-gradient: linear-gradient(135deg, #f4d28a 0%, #f8a849 45%, #c8961f 100%);
 
-  /* Card now matches the panel — deep brown with champagne-gold text
-     so the products feel like they're set into the same display case. */
-  --apgo-event-card-footer-bg: #2a1810;
-  --apgo-event-card-title-color: #f4d28a;
+  /* Card background + title color come from the editor color scheme
+     (Customizer → Colors → scheme-3 → Background / Foreground).
+     We only own the gold discount badge styling here. */
   --apgo-event-card-discount-bg: linear-gradient(135deg, #f4d28a, #f8a849);
   --apgo-event-card-discount-color: #2a1810;
 
@@ -680,19 +679,13 @@ body.apgo-special-event-page .apgo-event-heading-wrap ~ .apgo-event-promo__sub {
   margin-top: 4px;
 }
 
-/* ── Product cards: deep-brown card body + gold title + hover lift.
-   Overrides the color-scheme cream the theme editor was applying
-   (color-scheme background-color and color tokens get force-set here
-   via the card-level selectors so the cream never bleeds through). ── */
-body.apgo-special-event-page .apgo-event-listing-card,
-body.apgo-special-event-page .apgo-event-listing-card.product-card,
-body.apgo-special-event-page .product-grid__item .apgo-event-listing-card {
+/* ── Product cards: hover lift + image zoom only.
+   Card background + title color come from the section's color scheme
+   (editor controls #fcead8 / etc. via Customizer → scheme-3 →
+   Background / Foreground), so we don't try to fight that here. ── */
+body.apgo-special-event-page .apgo-event-listing-card {
   border-radius: 14px;
   overflow: hidden;
-  background: var(--apgo-event-card-footer-bg) !important;
-  color: var(--apgo-event-card-title-color);
-  --color-background: var(--apgo-event-card-footer-bg);
-  --color-foreground: var(--apgo-event-card-title-color);
   transition: transform .25s ease, box-shadow .25s ease;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.32);
 }
@@ -702,12 +695,6 @@ body.apgo-special-event-page .apgo-event-listing-card:hover {
     0 12px 28px rgba(244, 168, 73, 0.35),
     0 8px 18px rgba(0, 0, 0, 0.42);
 }
-/* Image area keeps a soft white inside so product photos shine, but
-   the surrounding card chrome is the deep brown */
-body.apgo-special-event-page .apgo-event-listing-card__gallery {
-  background: #ffffff;
-  overflow: hidden;
-}
 body.apgo-special-event-page .apgo-event-listing-card__gallery .product-media__image,
 body.apgo-special-event-page .apgo-event-listing-card__gallery img {
   transition: transform .35s ease;
@@ -715,22 +702,6 @@ body.apgo-special-event-page .apgo-event-listing-card__gallery img {
 body.apgo-special-event-page .apgo-event-listing-card:hover .apgo-event-listing-card__gallery img,
 body.apgo-special-event-page .apgo-event-listing-card:hover .apgo-event-listing-card__gallery .product-media__image {
   transform: scale(1.04);
-}
-body.apgo-special-event-page .apgo-event-listing-card .product-card__content {
-  background: var(--apgo-event-card-footer-bg) !important;
-  color: var(--apgo-event-card-title-color);
-  border: none;
-  border-top: 1px solid rgba(244, 168, 73, 0.18);
-  border-radius: 0;
-  box-shadow: none;
-}
-/* Title: champagne-gold for high contrast against the deep-brown card */
-body.apgo-special-event-page .apgo-event-listing-card__title,
-body.apgo-special-event-page .apgo-event-listing-card__title a,
-body.apgo-special-event-page .apgo-event-listing-card__title a:hover,
-body.apgo-special-event-page .apgo-event-listing-card .product-card__title,
-body.apgo-special-event-page .apgo-event-listing-card .product-card__title a {
-  color: var(--apgo-event-card-title-color) !important;
 }
 /* Discount % badge: champagne-gold gradient pill */
 body.apgo-special-event-page .apgo-event-listing-card .price--listing-discount .price-discount-pct {
