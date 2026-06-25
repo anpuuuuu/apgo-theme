@@ -56,6 +56,7 @@
   max-width: 100%;
   padding-inline: 0;
   margin-inline: 0;
+  --apgo-event-content-desktop-width: 67%;
 }
 
 .apgo-event-collection-grid--overlap {
@@ -139,6 +140,21 @@
 }
 
 @media screen and (min-width: 750px) {
+  .apgo-event-collection-grid__panel {
+    width: var(--apgo-event-content-desktop-width, 67%);
+    max-width: var(--apgo-event-content-desktop-width, 67%);
+    margin-inline: auto;
+    border-left: 1px solid rgba(255, 255, 255, 0.12);
+    border-right: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .apgo-event-promo__inner {
+    width: var(--apgo-event-content-desktop-width, 67%);
+    max-width: var(--apgo-event-content-desktop-width, 67%);
+    margin-inline: auto;
+    padding-inline: 0;
+  }
+
   .apgo-event-collection-grid .collection-wrapper,
   .apgo-event-promo__grid-wrap .collection-wrapper {
     max-width: 100%;
@@ -171,6 +187,7 @@
   background: #000;
   color: #fff;
   width: 100%;
+  --apgo-event-content-desktop-width: 67%;
 }
 
 .apgo-event-promo__inner {
