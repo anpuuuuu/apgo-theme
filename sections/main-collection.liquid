@@ -429,6 +429,87 @@
     flex: 0 0 auto;
   }
 
+  /* 下信息区：标题最多两行；价格左、橙色 ＋ 右（与活动页一致） */
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card > .group-block > .group-block-content {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 6px;
+  }
+
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card > .group-block > .group-block-content > .group-block:not(:has(product-price)) {
+    display: none;
+  }
+
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card > .group-block .group-block:has(product-price) {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .text-block.h5,
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .text-block.h5 > * {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin: 0;
+  }
+
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .apgo-listing-card__footer.apgo-card-price-row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+    margin-top: auto;
+  }
+
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .apgo-listing-card__price {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .apgo-listing-card__footer product-price {
+    margin-top: 0 !important;
+    width: 100%;
+    align-self: auto;
+  }
+
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .apgo-listing-card__footer .apgo-coll-drawer-pack {
+    flex: 0 0 auto;
+    margin-left: auto;
+  }
+
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .apgo-listing-card__footer .apgo-coll-drawer-open {
+    width: auto;
+    height: auto;
+    min-width: 0;
+    min-height: 0;
+    padding: 0;
+    border-radius: 0;
+    background: none;
+    color: #f08418;
+    opacity: 1;
+  }
+
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .apgo-listing-card__footer .apgo-coll-drawer-open:hover,
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .apgo-listing-card__footer .apgo-coll-drawer-open:focus-visible {
+    background: none;
+    color: #f08418;
+    opacity: 0.75;
+  }
+
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .apgo-listing-card__footer .apgo-coll-drawer-open__icon,
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .apgo-listing-card__footer .apgo-coll-drawer-open__icon svg {
+    width: 0.9rem;
+    height: 0.9rem;
+  }
+
+  .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .apgo-listing-card__footer .apgo-coll-drawer-open__icon svg {
+    --icon-stroke-width: 2px;
+  }
+
   /* 字級：品名見下方 @media（對齊 paragraph 價錢字級，寫在 > *） */
   .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .h4,
   .main-collection-zgrid .product-grid__item:not(.product-grid__item--z-spacer) .product-grid__card .text-block:is(.h4, .h5) {
