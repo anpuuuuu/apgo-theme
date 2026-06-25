@@ -239,7 +239,7 @@
 /* Promo / deals section */
 .apgo-event-promo {
   padding: clamp(32px, 5vw, 56px) 0;
-  background: #000;
+  background: transparent;
   color: #fff;
   width: 100%;
   --apgo-event-content-desktop-width: 67%;
@@ -296,4 +296,141 @@
 
 .apgo-event-promo__grid-wrap .apgo-event-collection-grid__results {
   padding-block: 0 !important;
+}
+
+/* ── Special Event page scope (body.apgo-special-event-page) ── */
+body.apgo-special-event-page {
+  --apgo-event-brand: #f08418;
+  --apgo-event-page-bg: #f08418;
+  --apgo-event-panel-bg: #2b2f36;
+  --apgo-event-card-footer-bg: #1a1a1a;
+  --apgo-event-card-title-color: #ffffff;
+  --apgo-event-card-title-size: clamp(0.7rem, 2.75vw, 0.875rem);
+  --apgo-event-card-price-color: #f08418;
+  --apgo-event-card-price-size: clamp(0.875rem, 3.1vw, 1.0625rem);
+  --apgo-event-card-discount-bg: rgba(240, 132, 24, 0.22);
+  --apgo-event-card-plus-bg: rgba(255, 255, 255, 0.14);
+  --apgo-event-card-plus-color: #ffffff;
+  background-color: var(--apgo-event-page-bg);
+}
+
+body.apgo-special-event-page #MainContent,
+body.apgo-special-event-page #MainContent > .shopify-section,
+body.apgo-special-event-page .apgo-event-banner,
+body.apgo-special-event-page .apgo-event-collection-grid,
+body.apgo-special-event-page .apgo-event-promo {
+  background: transparent;
+}
+
+body.apgo-special-event-page .shopify-section.apgo-event-collection-grid-wrapper .section-background,
+body.apgo-special-event-page .shopify-section:has(.apgo-event-promo) .section-background {
+  display: none;
+}
+
+/* Product cards — only on special-event page (snippet is exclusive to this template) */
+body.apgo-special-event-page .apgo-event-listing-card .product-card__content {
+  background: var(--apgo-event-card-footer-bg);
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+}
+
+body.apgo-special-event-page .apgo-event-listing-card__gallery {
+  background: #ffffff;
+  border-radius: 0;
+}
+
+body.apgo-special-event-page .apgo-event-listing-card__body {
+  padding: 10px 10px 12px;
+  gap: 6px;
+}
+
+body.apgo-special-event-page .apgo-event-listing-card__title {
+  font-size: var(--apgo-event-card-title-size);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+  color: var(--apgo-event-card-title-color);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+body.apgo-special-event-page .apgo-event-listing-card__title a {
+  color: inherit;
+}
+
+body.apgo-special-event-page .apgo-event-listing-card .apgo-card-price-row {
+  align-items: center;
+  gap: 8px;
+}
+
+body.apgo-special-event-page .apgo-event-listing-card .price {
+  font-size: var(--apgo-event-card-price-size);
+  font-weight: 700;
+  color: var(--apgo-event-card-price-color);
+  letter-spacing: -0.01em;
+}
+
+body.apgo-special-event-page .apgo-event-listing-card .price--listing-discount .price-discount-pct {
+  font-size: 0.72em;
+  font-weight: 700;
+  color: var(--apgo-event-brand);
+  background: var(--apgo-event-card-discount-bg);
+  padding: 0.15em 0.45em;
+  border-radius: 4px;
+}
+
+body.apgo-special-event-page .apgo-event-listing-card .apgo-coll-drawer-open {
+  width: 2rem;
+  height: 2rem;
+  min-width: 2rem;
+  min-height: 2rem;
+  border-radius: 50%;
+  background: var(--apgo-event-card-plus-bg);
+  color: var(--apgo-event-card-plus-color);
+  opacity: 1;
+  flex-shrink: 0;
+}
+
+body.apgo-special-event-page .apgo-event-listing-card .apgo-coll-drawer-open:hover,
+body.apgo-special-event-page .apgo-event-listing-card .apgo-coll-drawer-open:focus-visible {
+  background: var(--apgo-event-brand);
+  color: #ffffff;
+  opacity: 1;
+}
+
+body.apgo-special-event-page .apgo-event-listing-card .apgo-coll-drawer-open__icon,
+body.apgo-special-event-page .apgo-event-listing-card .apgo-coll-drawer-open__icon svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+body.apgo-special-event-page .apgo-event-collection-grid__panel {
+  background: var(--apgo-event-panel-bg);
+}
+
+body.apgo-special-event-page .apgo-event-collection-grid__curve path {
+  fill: var(--apgo-event-panel-bg);
+}
+
+body.apgo-special-event-page .apgo-event-collection-grid__heading {
+  color: #ffffff;
+}
+
+body.apgo-special-event-page .apgo-event-promo__heading {
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+body.apgo-special-event-page .apgo-event-promo__badge {
+  background: rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.35);
+  color: #ffffff;
+}
+
+body.apgo-special-event-page .apgo-event-promo__sub {
+  color: rgba(255, 255, 255, 0.92);
 }

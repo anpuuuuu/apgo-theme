@@ -69,6 +69,8 @@
     assign apgo_body_page_class = ''
     if request.page_type == 'collection' and collection.handle == 'all'
       assign apgo_body_page_class = ' apgo-all-products-collection'
+    elsif template.name == 'page' and template.suffix == 'special-event'
+      assign apgo_body_page_class = ' apgo-special-event-page'
     endif
   %}
 
