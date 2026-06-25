@@ -120,7 +120,7 @@
 
 .apgo-event-collection-grid__panel-body {
   padding-block: clamp(12px, 2.5vw, 20px) clamp(16px, 3vw, 28px);
-  padding-inline: 0;
+  padding-inline: var(--apgo-event-grid-gutter, 10px);
   background: var(--apgo-event-panel-bg, #fcead8);
 }
 
@@ -147,7 +147,7 @@
   line-height: 1.25;
 }
 
-/* Grid inside panel — cards flush to screen / panel edges (Collection Grid + Promo) */
+/* Grid inside panel — side inset matches column gap (Collection Grid + Promo) */
 .apgo-event-collection-grid__panel .apgo-event-product-grid,
 .apgo-event-collection-grid__panel .collection-wrapper,
 .apgo-event-collection-grid__panel .main-collection-grid,
@@ -161,6 +161,8 @@
   padding-inline: 0 !important;
   margin-inline: 0 !important;
   max-width: 100%;
+  --product-grid-gap: var(--apgo-event-grid-gutter, 10px) var(--apgo-event-grid-gutter, 10px);
+  gap: var(--apgo-event-grid-gutter, 10px);
 }
 
 .apgo-event-collection-grid__panel .main-collection-grid,
@@ -240,13 +242,6 @@
 }
 
 @media screen and (width < 750px) {
-  .apgo-event-collection-grid .main-collection-zgrid ul.product-grid[product-grid-view='default'],
-  .apgo-event-promo .main-collection-zgrid ul.product-grid[product-grid-view='default'] {
-    --product-grid-gap: 10px 10px;
-    gap: 10px 10px;
-    padding-inline: 0;
-  }
-
   .apgo-event-collection-grid__panel,
   .apgo-event-promo .apgo-event-collection-grid__panel {
     width: 100%;
