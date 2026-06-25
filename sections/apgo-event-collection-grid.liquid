@@ -70,6 +70,7 @@
       {%- if section.settings.show_discount_zone and section.settings.discount_zone_products.size > 0 -%}
         {% render 'apgo-event-scroll-zone',
           heading: section.settings.discount_zone_heading,
+          banner_image: section.settings.discount_zone_banner,
           products: section.settings.discount_zone_products,
           zone_class: 'discount',
           section_id: section.id %}
@@ -79,6 +80,7 @@
       {%- if section.settings.show_b1f1_zone and section.settings.b1f1_zone_products.size > 0 -%}
         {% render 'apgo-event-scroll-zone',
           heading: section.settings.b1f1_zone_heading,
+          banner_image: section.settings.b1f1_zone_banner,
           products: section.settings.b1f1_zone_products,
           zone_class: 'b1f1',
           section_id: section.id %}
@@ -172,6 +174,12 @@
       "default": "DISCOUNT DEALS"
     },
     {
+      "type": "image_picker",
+      "id": "discount_zone_banner",
+      "label": "Banner image (above products)",
+      "info": "Decorative image shown between the heading and the product list. Not clickable. Leave blank to hide."
+    },
+    {
       "type": "product_list",
       "id": "discount_zone_products",
       "label": "Discount products",
@@ -192,6 +200,12 @@
       "id": "b1f1_zone_heading",
       "label": "Zone heading",
       "default": "BUY 1 FREE 1"
+    },
+    {
+      "type": "image_picker",
+      "id": "b1f1_zone_banner",
+      "label": "Banner image (above products)",
+      "info": "Decorative image shown between the heading and the product list. Not clickable. Leave blank to hide."
     },
     {
       "type": "product_list",

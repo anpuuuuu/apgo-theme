@@ -1,13 +1,16 @@
 {%- doc -%}
   Horizontal-scroll zone — used by Discount and Buy-1-Free-1 zones on
-  the APGO Birthday page. Renders an optional heading and a snap-scroll
-  track of product cards (~2.5 cards visible at rest).
+  the APGO Birthday page. Renders heading → optional decorative banner
+  image → a snap-scroll track of product cards (~2.5 cards visible at
+  rest). The banner is a flat image (not clickable) sourced from an
+  image_picker setting in the parent section.
 
-  @param {string} heading    - Zone heading text (e.g. "DISCOUNT DEALS")
-  @param {array}  products   - Array of products (from a product_list setting)
-  @param {string} zone_class - Modifier suffix added to the wrapper
-                               (used for analytics / per-zone CSS hooks)
-  @param {string} section_id - Parent section id, used for unique card ids
+  @param {string} heading      - Zone heading text (e.g. "DISCOUNT DEALS")
+  @param {image}  banner_image - Optional decorative banner image
+  @param {array}  products     - Array of products (from a product_list setting)
+  @param {string} zone_class   - Modifier suffix added to the wrapper
+                                 (used for analytics / per-zone CSS hooks)
+  @param {string} section_id   - Parent section id, used for unique card ids
 {%- enddoc -%}
 
 {%- if products != blank and products.size > 0 -%}
@@ -18,6 +21,17 @@
         {{ heading }}
         <span class="apgo-event-scroll-zone__heading-star" aria-hidden="true">★</span>
       </h3>
+    {%- endif -%}
+    {%- if banner_image != blank -%}
+      <div class="apgo-event-scroll-zone__banner">
+        <img
+          class="apgo-event-scroll-zone__banner-img"
+          src="{{ banner_image | image_url: width: 1600 }}"
+          alt=""
+          loading="lazy"
+          width="{{ banner_image.width }}"
+          height="{{ banner_image.height }}">
+      </div>
     {%- endif -%}
     <div class="apgo-event-scroll-zone__track" role="list">
       {%- for product in products -%}

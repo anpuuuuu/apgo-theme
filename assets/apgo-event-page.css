@@ -855,6 +855,20 @@ body.apgo-special-event-page .apgo-event-scroll-zone__heading-star {
   filter: drop-shadow(0 2px 6px rgba(244, 168, 73, 0.5));
 }
 
+/* Optional decorative banner above the product track — bare image,
+   not clickable. Adapts to whatever aspect ratio the admin uploaded. */
+body.apgo-special-event-page .apgo-event-scroll-zone__banner {
+  margin: 0 0 clamp(10px, 2vw, 18px);
+  line-height: 0; /* kill inline-image baseline gap */
+  border-radius: clamp(10px, 1.6vw, 16px);
+  overflow: hidden;
+}
+body.apgo-special-event-page .apgo-event-scroll-zone__banner-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 /* Scroll track — flex row with snap; webkit smooth scrolling on touch */
 body.apgo-special-event-page .apgo-event-scroll-zone__track {
   display: flex;
