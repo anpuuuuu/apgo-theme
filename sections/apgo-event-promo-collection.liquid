@@ -33,10 +33,7 @@
       </header>
     {% endif %}
 
-    <div
-      class="apgo-event-collection-grid__panel-body apgo-event-promo__grid-wrap main-collection-zgrid"
-      style="--apgo-event-grid-gutter: {{ section.settings.columns_gap_horizontal | at_least: 10 }}px;"
-    >
+    <div class="apgo-event-collection-grid__panel-body apgo-event-promo__grid-wrap main-collection-zgrid">
       {% render 'apgo-event-product-grid',
         section: section,
         collection: promo_collection,

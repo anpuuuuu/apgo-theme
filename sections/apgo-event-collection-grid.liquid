@@ -40,10 +40,7 @@
         <h2 class="apgo-event-collection-grid__heading">{{ section.settings.heading | escape | newline_to_br }}</h2>
       </header>
     {% endif %}
-    <div
-      class="apgo-event-collection-grid__panel-body"
-      style="--apgo-event-grid-gutter: {{ section.settings.columns_gap_horizontal | at_least: 10 }}px;"
-    >
+    <div class="apgo-event-collection-grid__panel-body">
       {% render 'apgo-event-product-grid',
         section: section,
         collection: event_collection,
