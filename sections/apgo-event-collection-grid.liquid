@@ -102,6 +102,14 @@
         </div>
       {%- endif -%}
 
+      {%- if section.settings.grid_heading != blank -%}
+        <h3 class="apgo-event-grid-heading">
+          <span class="apgo-event-grid-heading__star" aria-hidden="true">★</span>
+          {{ section.settings.grid_heading }}
+          <span class="apgo-event-grid-heading__star" aria-hidden="true">★</span>
+        </h3>
+      {%- endif -%}
+
       {% render 'apgo-event-product-grid',
         section: section,
         collection: event_collection,
@@ -158,6 +166,13 @@
       "type": "product",
       "id": "featured_product_2",
       "label": "Hero product 02"
+    },
+    {
+      "type": "text",
+      "id": "grid_heading",
+      "label": "Product grid heading (below the hero stage)",
+      "info": "Gold pill-style heading shown above the 12-product grid. Leave blank to hide.",
+      "default": "ALL BIRTHDAY DEALS"
     },
     {
       "type": "header",

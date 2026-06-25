@@ -799,6 +799,33 @@ body.apgo-special-event-page .apgo-event-featured-stage__heading-star {
   filter: drop-shadow(0 2px 6px rgba(244, 168, 73, 0.5));
 }
 
+/* Stage-2 heading — sits above the regular 12-product grid below the
+   featured pedestal. Same gold gradient + star ornament treatment as
+   the featured stage heading so the two read as a matching pair. */
+body.apgo-special-event-page .apgo-event-grid-heading {
+  margin: clamp(8px, 1.6vw, 18px) clamp(12px, 3vw, 32px) clamp(12px, 2.2vw, 20px);
+  font-size: clamp(13px, 2vw, 17px);
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-align: center;
+  background: var(--apgo-event-heading-gradient);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: var(--apgo-event-gold-bright);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6em;
+}
+body.apgo-special-event-page .apgo-event-grid-heading__star {
+  font-size: 0.85em;
+  -webkit-text-fill-color: #f8a849;
+  color: #f8a849;
+  filter: drop-shadow(0 2px 6px rgba(244, 168, 73, 0.5));
+}
+
 /* The conjoined frame — one wrapper for both cards + the divider */
 body.apgo-special-event-page .apgo-event-featured-stage__duo {
   display: grid;
