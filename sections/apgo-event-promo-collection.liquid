@@ -21,14 +21,40 @@
   <div class="apgo-event-collection-grid__panel">
     {% if section.settings.badge != blank or section.settings.heading != blank or section.settings.subheading != blank %}
       <header class="apgo-event-collection-grid__header apgo-event-promo__header">
-        {% if section.settings.badge != blank %}
-          <span class="apgo-event-promo__badge">{{ section.settings.badge }}</span>
-        {% endif %}
-        {% if section.settings.heading != blank %}
-          <h2 class="apgo-event-collection-grid__heading apgo-event-promo__heading">{{ section.settings.heading | escape | newline_to_br }}</h2>
-        {% endif %}
-        {% if section.settings.subheading != blank %}
-          <div class="apgo-event-promo__sub">{{ section.settings.subheading }}</div>
+        {% if section.settings.show_festive_lockup and section.settings.heading != blank %}
+          {%- comment -%}
+            Same gold-star + badge treatment as the Event Collection Grid
+            heading. Keeps both sections of the page visually consistent.
+          {%- endcomment -%}
+          <div class="apgo-event-heading-wrap">
+            <span class="apgo-event-heading-star apgo-event-heading-star--left">
+              {% render 'apgo-icon-star', unique: 'evt-promo-l' %}
+            </span>
+            <div class="apgo-event-heading-stack">
+              {% if section.settings.badge != blank %}
+                <span class="apgo-event-heading-badge">{{ section.settings.badge }}</span>
+              {% endif %}
+              <h2 class="apgo-event-collection-grid__heading apgo-event-promo__heading apgo-event-heading-text">
+                {{ section.settings.heading | escape | newline_to_br }}
+              </h2>
+            </div>
+            <span class="apgo-event-heading-star apgo-event-heading-star--right">
+              {% render 'apgo-icon-star', unique: 'evt-promo-r' %}
+            </span>
+          </div>
+          {% if section.settings.subheading != blank %}
+            <div class="apgo-event-promo__sub">{{ section.settings.subheading }}</div>
+          {% endif %}
+        {% else %}
+          {% if section.settings.badge != blank %}
+            <span class="apgo-event-promo__badge">{{ section.settings.badge }}</span>
+          {% endif %}
+          {% if section.settings.heading != blank %}
+            <h2 class="apgo-event-collection-grid__heading apgo-event-promo__heading">{{ section.settings.heading | escape | newline_to_br }}</h2>
+          {% endif %}
+          {% if section.settings.subheading != blank %}
+            <div class="apgo-event-promo__sub">{{ section.settings.subheading }}</div>
+          {% endif %}
         {% endif %}
       </header>
     {% endif %}
@@ -78,6 +104,13 @@
       "type": "richtext",
       "id": "subheading",
       "label": "Subheading (optional)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_festive_lockup",
+      "label": "Show festive heading lockup",
+      "info": "Adds gold star icons either side of the heading + uses the badge as a glowing gold pill.",
+      "default": true
     },
     {
       "type": "range",

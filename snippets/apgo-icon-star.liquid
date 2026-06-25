@@ -1,0 +1,28 @@
+{%- doc -%}
+  Champagne-gold 5-point star used by the APGO Birthday / Special Event
+  page headings. Inline SVG (no asset HTTP request, scalable, color and
+  size controlled by the parent .apgo-event-heading-star CSS rules).
+
+  Each instance carries its own gradient defs with a unique id so multiple
+  stars on the same page don't collide. Pass `unique` as a string token
+  (defaults to a random integer) to suffix the gradient id.
+{%- enddoc -%}
+
+{%- assign apgo_star_uid = unique | default: 'a' -%}
+<svg class="apgo-icon-star"
+     viewBox="0 0 24 24"
+     xmlns="http://www.w3.org/2000/svg"
+     aria-hidden="true"
+     focusable="false">
+  <defs>
+    <linearGradient id="apgoStarGold-{{ apgo_star_uid }}" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"  stop-color="#f4d28a"/>
+      <stop offset="50%" stop-color="#f8a849"/>
+      <stop offset="100%" stop-color="#c8961f"/>
+    </linearGradient>
+  </defs>
+  <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"
+           fill="url(#apgoStarGold-{{ apgo_star_uid }})"
+           stroke="rgba(0,0,0,0.18)"
+           stroke-width="0.4"/>
+</svg>

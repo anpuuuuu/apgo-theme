@@ -500,3 +500,255 @@ body.apgo-special-event-page .apgo-event-collection-grid__heading,
 body.apgo-special-event-page .apgo-event-promo__heading {
   color: var(--apgo-event-heading-color);
 }
+
+/* ════════════════════════════════════════════════════════════════════
+   ORANGE LUXURY GALA — 10th anniversary birthday palette + festive
+   decorations. Loads last so these rules override the cream/black
+   defaults declared earlier in this file.
+   ════════════════════════════════════════════════════════════════════ */
+body.apgo-special-event-page {
+  /* Brand orange + page bg unchanged (品牌识别保留) */
+  --apgo-event-brand: #f08418;
+  --apgo-event-page-bg: #f56a01;
+  --apgo-event-card-price-color: #f08418;
+
+  /* Cream → deep luxurious brown panels */
+  --apgo-event-panel-bg: #2a1810;
+  --apgo-event-heading-bg: #2a1810;
+  --apgo-event-panel-bg-gradient:
+    radial-gradient(120% 80% at 50% 0%, rgba(244, 210, 138, 0.10) 0%, transparent 60%),
+    #2a1810;
+
+  /* Heading text is now a champagne-gold gradient (color fallback for
+     browsers that don't support background-clip:text). */
+  --apgo-event-heading-color: #f8a849;
+  --apgo-event-heading-gradient: linear-gradient(135deg, #f4d28a 0%, #f8a849 45%, #c8961f 100%);
+
+  /* Card footer flips to warm cream so product images bleed in smoothly */
+  --apgo-event-card-footer-bg: #fff8eb;
+  --apgo-event-card-title-color: #2a1810;
+  --apgo-event-card-discount-bg: linear-gradient(135deg, #f4d28a, #f8a849);
+  --apgo-event-card-discount-color: #2a1810;
+
+  /* Champagne-gold accent shades */
+  --apgo-event-gold-light:  #f4d28a;
+  --apgo-event-gold-bright: #f8a849;
+  --apgo-event-gold-deep:   #c8961f;
+}
+
+/* Section gutter so the three event sections breathe a little */
+body.apgo-special-event-page #MainContent > .shopify-section + .shopify-section {
+  margin-top: clamp(20px, 3.5vw, 48px);
+}
+
+/* ── Panel background: deep brown + soft gold radial halo + confetti dots ── */
+body.apgo-special-event-page .apgo-event-collection-grid__panel,
+body.apgo-special-event-page .apgo-event-promo .apgo-event-collection-grid__panel {
+  background: var(--apgo-event-panel-bg-gradient);
+  position: relative;
+  overflow: hidden;
+  color: var(--apgo-event-gold-light);
+}
+body.apgo-special-event-page .apgo-event-collection-grid__panel-body,
+body.apgo-special-event-page .apgo-event-promo .apgo-event-collection-grid__panel-body {
+  background: transparent;
+  position: relative;
+  z-index: 1;
+}
+body.apgo-special-event-page .apgo-event-collection-grid__header {
+  background: transparent;
+  position: relative;
+  z-index: 1;
+}
+/* Scattered gold confetti dot pattern, low-opacity so it doesn't shout */
+body.apgo-special-event-page .apgo-event-collection-grid__panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 8% 12%,  rgba(244, 210, 138, 0.22) 0%, transparent 1.4%),
+    radial-gradient(circle at 26% 38%, rgba(248, 168, 73, 0.20) 0%, transparent 1.0%),
+    radial-gradient(circle at 78% 22%, rgba(244, 210, 138, 0.22) 0%, transparent 1.3%),
+    radial-gradient(circle at 88% 60%, rgba(244, 210, 138, 0.18) 0%, transparent 1.1%),
+    radial-gradient(circle at 42% 76%, rgba(248, 168, 73, 0.22) 0%, transparent 1.2%),
+    radial-gradient(circle at 18% 88%, rgba(244, 210, 138, 0.20) 0%, transparent 1.1%);
+  background-size: 540px 540px;
+  pointer-events: none;
+  z-index: 0;
+}
+/* Curve overlay color follows the deep brown so the silhouette stays seamless */
+body.apgo-special-event-page .apgo-event-collection-grid__curve path {
+  fill: var(--apgo-event-panel-bg);
+}
+
+/* ── Festive heading lockup (star + badge + gradient title) ── */
+.apgo-event-heading-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(10px, 2.6vw, 28px);
+  padding-block: clamp(20px, 4vw, 36px);
+  position: relative;
+}
+.apgo-event-heading-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex: 0 1 auto;
+  min-width: 0;
+}
+.apgo-event-heading-badge {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #f4d28a, #c8961f);
+  color: #2a1810;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  box-shadow: 0 4px 14px rgba(200, 150, 31, 0.35);
+  animation: apgoBadgeShine 3s ease-in-out infinite;
+}
+.apgo-event-heading-text {
+  display: block;
+  margin: 0;
+  font-size: clamp(20px, 4.4vw, 38px);
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  line-height: 1.15;
+  text-align: center;
+  background: var(--apgo-event-heading-gradient);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: var(--apgo-event-gold-bright); /* fallback for non-WebKit */
+  animation: apgoHeadingSparkle 4s ease-in-out infinite;
+}
+.apgo-event-heading-star {
+  display: inline-flex;
+  flex: 0 0 auto;
+  width: clamp(28px, 5vw, 52px);
+  height: clamp(28px, 5vw, 52px);
+  filter: drop-shadow(0 4px 12px rgba(244, 168, 73, 0.55));
+  animation: apgoStarSpin 6s ease-in-out infinite;
+}
+.apgo-event-heading-star .apgo-icon-star {
+  width: 100%;
+  height: 100%;
+}
+.apgo-event-heading-star--left  { animation-direction: normal; }
+.apgo-event-heading-star--right { animation-direction: reverse; }
+
+@keyframes apgoStarSpin {
+  0%, 100% { transform: rotate(-8deg) scale(1);    }
+  50%      { transform: rotate(12deg)  scale(1.10); }
+}
+@keyframes apgoHeadingSparkle {
+  0%, 100% { filter: brightness(1)    drop-shadow(0 0 0 transparent); }
+  50%      { filter: brightness(1.15) drop-shadow(0 0 18px rgba(244, 168, 73, 0.45)); }
+}
+@keyframes apgoBadgeShine {
+  0%, 100% { box-shadow: 0 4px 14px rgba(200, 150, 31, 0.35); }
+  50%      { box-shadow: 0 4px 22px rgba(244, 168, 73, 0.75); }
+}
+
+/* Hide the legacy promo badge (the small bordered "Limited Time" chip)
+   when the new lockup is in use — the gold pill above the heading
+   serves the same purpose with much more flair. */
+body.apgo-special-event-page .apgo-event-heading-wrap + .apgo-event-promo__sub,
+body.apgo-special-event-page .apgo-event-heading-wrap ~ .apgo-event-promo__sub {
+  color: rgba(244, 210, 138, 0.85);
+  text-align: center;
+  margin-top: 4px;
+}
+
+/* ── Product cards: light footer flip + gold hover lift ── */
+body.apgo-special-event-page .apgo-event-listing-card {
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--apgo-event-card-footer-bg);
+  transition: transform .25s ease, box-shadow .25s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
+}
+body.apgo-special-event-page .apgo-event-listing-card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 12px 28px rgba(244, 168, 73, 0.35),
+    0 8px 18px rgba(0, 0, 0, 0.32);
+}
+body.apgo-special-event-page .apgo-event-listing-card__gallery {
+  background: #ffffff;
+  overflow: hidden;
+}
+body.apgo-special-event-page .apgo-event-listing-card__gallery .product-media__image,
+body.apgo-special-event-page .apgo-event-listing-card__gallery img {
+  transition: transform .35s ease;
+}
+body.apgo-special-event-page .apgo-event-listing-card:hover .apgo-event-listing-card__gallery img,
+body.apgo-special-event-page .apgo-event-listing-card:hover .apgo-event-listing-card__gallery .product-media__image {
+  transform: scale(1.04);
+}
+body.apgo-special-event-page .apgo-event-listing-card .product-card__content {
+  background: var(--apgo-event-card-footer-bg);
+  border: none;
+  border-top: 1px solid rgba(244, 168, 73, 0.18);
+  border-radius: 0;
+  box-shadow: none;
+}
+body.apgo-special-event-page .apgo-event-listing-card__title,
+body.apgo-special-event-page .apgo-event-listing-card__title a {
+  color: var(--apgo-event-card-title-color);
+}
+/* Discount % badge: champagne-gold gradient pill */
+body.apgo-special-event-page .apgo-event-listing-card .price--listing-discount .price-discount-pct {
+  background: var(--apgo-event-card-discount-bg);
+  color: var(--apgo-event-card-discount-color);
+  font-weight: 800;
+  padding: 3px 9px;
+  border-radius: 999px;
+  box-shadow: 0 2px 6px rgba(200, 150, 31, 0.32);
+}
+/* "+" add button — gold gradient on the light card footer */
+body.apgo-special-event-page .apgo-event-listing-card .apgo-coll-drawer-open {
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  min-height: 30px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #f4d28a, #f8a849, #c8961f);
+  color: #2a1810;
+  opacity: 1;
+  box-shadow: 0 3px 10px rgba(200, 150, 31, 0.4);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+body.apgo-special-event-page .apgo-event-listing-card .apgo-coll-drawer-open:hover,
+body.apgo-special-event-page .apgo-event-listing-card .apgo-coll-drawer-open:focus-visible {
+  background: linear-gradient(135deg, #f8a849, #c8961f);
+  color: #2a1810;
+  opacity: 1;
+  transform: scale(1.06);
+  box-shadow: 0 4px 14px rgba(200, 150, 31, 0.55);
+}
+body.apgo-special-event-page .apgo-event-listing-card .apgo-coll-drawer-open__icon svg {
+  stroke: #2a1810;
+  --icon-stroke-width: 2.4px;
+}
+
+/* ── Respect users who prefer reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .apgo-event-heading-star,
+  .apgo-event-heading-text,
+  .apgo-event-heading-badge,
+  body.apgo-special-event-page .apgo-event-listing-card,
+  body.apgo-special-event-page .apgo-event-listing-card__gallery img {
+    animation: none !important;
+    transition: none !important;
+  }
+}

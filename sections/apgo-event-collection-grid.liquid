@@ -37,7 +37,32 @@
     {% endif %}
     {% if section.settings.heading != blank %}
       <header class="apgo-event-collection-grid__header">
-        <h2 class="apgo-event-collection-grid__heading">{{ section.settings.heading | escape | newline_to_br }}</h2>
+        {%- comment -%}
+          Festive heading lockup — gold star icons flank the title, with an
+          optional anniversary badge stacked above. The decorative pieces
+          render only when section.settings.show_festive_lockup is on so
+          editors can fall back to the plain h2 if desired.
+        {%- endcomment -%}
+        {% if section.settings.show_festive_lockup %}
+          <div class="apgo-event-heading-wrap">
+            <span class="apgo-event-heading-star apgo-event-heading-star--left">
+              {% render 'apgo-icon-star', unique: 'evt-grid-l' %}
+            </span>
+            <div class="apgo-event-heading-stack">
+              {% if section.settings.anniversary_badge != blank %}
+                <span class="apgo-event-heading-badge">{{ section.settings.anniversary_badge }}</span>
+              {% endif %}
+              <h2 class="apgo-event-collection-grid__heading apgo-event-heading-text">
+                {{ section.settings.heading | escape | newline_to_br }}
+              </h2>
+            </div>
+            <span class="apgo-event-heading-star apgo-event-heading-star--right">
+              {% render 'apgo-icon-star', unique: 'evt-grid-r' %}
+            </span>
+          </div>
+        {% else %}
+          <h2 class="apgo-event-collection-grid__heading">{{ section.settings.heading | escape | newline_to_br }}</h2>
+        {% endif %}
       </header>
     {% endif %}
     <div class="apgo-event-collection-grid__panel-body">
@@ -73,6 +98,21 @@
       "id": "heading",
       "label": "Section heading (optional)",
       "info": "Press Enter for a second line."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_festive_lockup",
+      "label": "Show festive heading lockup",
+      "info": "Adds gold star icons either side of the heading + optional anniversary badge above.",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "anniversary_badge",
+      "label": "Anniversary badge text",
+      "info": "Small gold pill above the heading. Leave blank to hide.",
+      "default": "✨ 10 YEARS ✨",
+      "visible_if": "{{ section.settings.show_festive_lockup }}"
     },
     {
       "type": "range",
