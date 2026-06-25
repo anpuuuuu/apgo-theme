@@ -553,8 +553,10 @@ body.apgo-special-event-page .apgo-event-banner__frame {
 }
 
 /* Banner-orange peek-through strip behind the panel's rounded top corners.
-   Creates a visual "the panel is pressing into the banner" depth effect
-   — the orange shows in the cut-out area created by border-top-radius. */
+   Visible ONLY where the panel's border-radius carves out the corners
+   (so it reads as the panel "pressing into" the banner). Strip width
+   is pinned to the panel width so it never extends beyond the panel
+   and looks like a horizontal bar across the page. */
 body.apgo-special-event-page .apgo-event-collection-grid,
 body.apgo-special-event-page .apgo-event-promo {
   position: relative;
@@ -564,12 +566,22 @@ body.apgo-special-event-page .apgo-event-promo::before {
   content: '';
   position: absolute;
   top: 0;
-  left: 0;
-  right: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
   height: var(--apgo-event-panel-radius, 32px);
   background: var(--apgo-event-banner-orange, #f56a01);
   z-index: 0;
   pointer-events: none;
+}
+/* Desktop: panel is 67% centered → strip matches that exact width so the
+   page bg (deep brown) shows on either side, only the panel-width orange
+   is visible underneath, and the rounded corners cut into it cleanly. */
+@media screen and (min-width: 750px) {
+  body.apgo-special-event-page .apgo-event-collection-grid::before,
+  body.apgo-special-event-page .apgo-event-promo::before {
+    width: var(--apgo-event-content-desktop-width, 67%);
+  }
 }
 /* Pin the panel above the orange strip so the rounded corners cut into
    it (revealing the orange) instead of being covered by it. */
