@@ -1,15 +1,14 @@
 {%- doc -%}
-  Featured-Stage "spotlight card" — one unified card that pairs a
-  hero banner image (top) with the product's actionable info bar
-  (badge, title, price, CTA) below. The two halves share one gold
-  rim so they read as a single card per product.
+  Featured-Stage "spotlight card" — one unified card per featured
+  product. Banner image on top, condensed info bar below (title +
+  trailing badge, two-line price stack with CTA on the right).
 
-  The image is treated as required (admin must upload a designed
-  promo banner). If it's missing, nothing renders.
+  The image is required (admin uploads a designed promo banner); the
+  card hides entirely if either image or product is missing.
 
   @param {object} product - Product object the card links to
   @param {image}  image   - Admin-uploaded banner image (any ratio)
-  @param {string} badge   - Optional pill text above the title
+  @param {string} badge   - Optional pill text trailing the title
   @param {string} cta     - CTA pill label (e.g. "View deal")
 {%- enddoc -%}
 
@@ -31,12 +30,14 @@
         height="{{ image.height }}">
     </div>
     <div class="apgo-event-featured-banner__info">
-      {%- if badge != blank -%}
-        <span class="apgo-event-featured-banner__badge">{{ badge }}</span>
-      {%- endif -%}
-      <h4 class="apgo-event-featured-banner__title">{{ product.title }}</h4>
-      <div class="apgo-event-featured-banner__bottom">
-        <div class="apgo-event-featured-banner__price-row">
+      <div class="apgo-event-featured-banner__top-row">
+        <h4 class="apgo-event-featured-banner__title">{{ product.title }}</h4>
+        {%- if badge != blank -%}
+          <span class="apgo-event-featured-banner__badge">{{ badge }}</span>
+        {%- endif -%}
+      </div>
+      <div class="apgo-event-featured-banner__bottom-row">
+        <div class="apgo-event-featured-banner__prices">
           <span class="apgo-event-featured-banner__price">{{ product.price | money }}</span>
           {%- if on_sale -%}
             <span class="apgo-event-featured-banner__price-compare">{{ product.compare_at_price | money }}</span>
@@ -44,7 +45,7 @@
         </div>
         <span class="apgo-event-featured-banner__cta">
           {{ cta | default: 'View deal' }}
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/>
           </svg>
         </span>

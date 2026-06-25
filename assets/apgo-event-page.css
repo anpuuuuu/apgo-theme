@@ -953,79 +953,99 @@ body.apgo-special-event-page .apgo-event-featured-banner:hover .apgo-event-featu
   transform: scale(1.03);
 }
 
-/* Bottom half — product info bar */
+/* Bottom half — condensed product info bar. Slimmer so the banner
+   image carries the visual weight; everything in here is smaller
+   than a regular card.
+   Layout:
+     Row 1: title (flex-grow) + badge (trailing, right-aligned at end)
+     Row 2: price stack (current price stacked above compare-at) on
+            the left + CTA pill on the right */
 body.apgo-special-event-page .apgo-event-featured-banner__info {
   display: flex;
   flex-direction: column;
   gap: clamp(8px, 1.4vw, 12px);
-  padding: clamp(16px, 2.5vw, 24px) clamp(18px, 3vw, 28px);
+  padding: clamp(10px, 1.8vw, 16px) clamp(12px, 2vw, 18px);
   border-top: 1px solid rgba(244, 168, 73, 0.18);
 }
-body.apgo-special-event-page .apgo-event-featured-banner__badge {
-  display: inline-flex;
-  align-self: flex-start;
-  padding: 4px 12px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #f4d28a, #c8961f);
-  color: #2a1810;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  box-shadow: 0 2px 8px rgba(200, 150, 31, 0.35);
+/* Row 1 — title + trailing badge */
+body.apgo-special-event-page .apgo-event-featured-banner__top-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: clamp(8px, 1.4vw, 14px);
 }
 body.apgo-special-event-page .apgo-event-featured-banner__title {
   margin: 0;
-  font-size: clamp(16px, 2.4vw, 24px);
+  font-size: clamp(13px, 1.7vw, 17px);
   font-weight: 800;
-  line-height: 1.2;
+  line-height: 1.25;
   color: #f4d28a;
+  flex: 1 1 auto;
+  min-width: 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-body.apgo-special-event-page .apgo-event-featured-banner__bottom {
+body.apgo-special-event-page .apgo-event-featured-banner__badge {
+  display: inline-flex;
+  flex: 0 0 auto;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #f4d28a, #c8961f);
+  color: #2a1810;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(200, 150, 31, 0.35);
+  align-self: flex-start; /* top-align with first line of title */
+}
+/* Row 2 — price stack on the left + CTA on the right */
+body.apgo-special-event-page .apgo-event-featured-banner__bottom-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: clamp(10px, 2vw, 20px);
+  gap: clamp(10px, 2vw, 18px);
   flex-wrap: wrap;
-  margin-top: clamp(2px, 0.6vw, 6px);
 }
-body.apgo-special-event-page .apgo-event-featured-banner__price-row {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 8px;
-  flex-wrap: wrap;
+body.apgo-special-event-page .apgo-event-featured-banner__prices {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
 }
 body.apgo-special-event-page .apgo-event-featured-banner__price {
-  font-size: clamp(18px, 2.8vw, 26px);
+  font-size: clamp(15px, 2.1vw, 19px);
   font-weight: 800;
   color: #f08418;
+  line-height: 1.1;
   letter-spacing: -0.01em;
 }
 body.apgo-special-event-page .apgo-event-featured-banner__price-compare {
-  font-size: clamp(12px, 1.8vw, 14px);
-  color: rgba(244, 210, 138, 0.55);
+  font-size: clamp(10px, 1.3vw, 12px);
+  color: rgba(244, 210, 138, 0.5);
   text-decoration: line-through;
+  line-height: 1.2;
 }
 body.apgo-special-event-page .apgo-event-featured-banner__cta {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 9px 18px;
+  gap: 5px;
+  padding: 7px 14px;
   border-radius: 999px;
   background: linear-gradient(135deg, #f4d28a, #f08418);
   color: #2a1810;
-  font-size: 12.5px;
+  font-size: 10.5px;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   box-shadow: 0 3px 10px rgba(240, 132, 24, 0.32);
   transition: box-shadow .2s ease, transform .2s ease;
   white-space: nowrap;
+  flex: 0 0 auto;
 }
 body.apgo-special-event-page .apgo-event-featured-banner__cta svg {
   transition: transform .2s ease;
