@@ -790,11 +790,11 @@ body.apgo-special-event-page .apgo-event-featured-stage {
 }
 
 body.apgo-special-event-page .apgo-event-featured-stage__heading {
-  /* Top margin trimmed (the "STAR PRODUCT" stage heading sits right
-     under "APGO BIRTHDAY PARTY" with no gap); the breathing room
-     that used to be between them now lives below this heading, before
-     the pedestal duo. */
-  margin: clamp(4px, 1vw, 10px) 0 clamp(20px, 3.5vw, 36px);
+  /* Pull the "STAR PRODUCT" stage heading up so it sits TIGHT against
+     "APGO BIRTHDAY PARTY" above — slight negative top margin offsets
+     the font's natural line-box leading. All the breathing room lives
+     below this heading, before the pedestal duo. */
+  margin: clamp(-6px, -0.6vw, -2px) 0 clamp(20px, 3.5vw, 36px);
   font-size: clamp(13px, 2vw, 17px);
   font-weight: 800;
   letter-spacing: 0.18em;
