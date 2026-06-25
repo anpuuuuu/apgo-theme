@@ -107,29 +107,12 @@
           <div class="apgo-event-featured-stage__stack">
             {% render 'apgo-event-featured-banner',
               product: fp1,
-              image: fi1 %}
-            {% render 'apgo-event-featured-banner',
-              product: fp2,
-              image: fi2 %}
-          </div>
-
-          {%- comment -%}
-            Pedestal duo — gold-rimmed pair of product cards under the
-            banner stack. Provides the actionable info (title, price,
-            CTA pill) that the bare banners deliberately don't show.
-          {%- endcomment -%}
-          <div class="apgo-event-featured-stage__duo">
-            {% render 'apgo-event-featured-card',
-              product: fp1,
+              image: fi1,
               badge: section.settings.featured_badge_text,
               cta: section.settings.featured_cta_label %}
-            <span class="apgo-event-featured-stage__divider" aria-hidden="true">
-              <span class="apgo-event-featured-stage__divider-orb">
-                {% render 'apgo-icon-star', unique: 'stage-divider' %}
-              </span>
-            </span>
-            {% render 'apgo-event-featured-card',
+            {% render 'apgo-event-featured-banner',
               product: fp2,
+              image: fi2,
               badge: section.settings.featured_badge_text,
               cta: section.settings.featured_cta_label %}
           </div>

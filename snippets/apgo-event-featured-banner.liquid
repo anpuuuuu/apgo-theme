@@ -1,27 +1,54 @@
 {%- doc -%}
-  Single Featured-Stage banner — a bare 1280:680 clickable image that
-  links to a product's PDP. The image is treated as required (admin
-  must upload a designed promo banner via the image_picker); if it's
-  missing the banner doesn't render so we never fall back to a square
-  product thumbnail that would crop awkwardly into the wide frame.
+  Featured-Stage "spotlight card" — one unified card that pairs a
+  hero banner image (top) with the product's actionable info bar
+  (badge, title, price, CTA) below. The two halves share one gold
+  rim so they read as a single card per product.
 
-  @param {object} product - Product object that this banner links to
-  @param {image}  image   - Admin-uploaded banner image (1280×680)
+  The image is treated as required (admin must upload a designed
+  promo banner). If it's missing, nothing renders.
+
+  @param {object} product - Product object the card links to
+  @param {image}  image   - Admin-uploaded banner image (any ratio)
+  @param {string} badge   - Optional pill text above the title
+  @param {string} cta     - CTA pill label (e.g. "View deal")
 {%- enddoc -%}
 
 {%- if image != blank and product != blank and product.url != blank -%}
-  {%- comment -%}
-    Width/height come from the uploaded image's natural dimensions so
-    the browser reserves the correct space (no CLS) regardless of the
-    aspect ratio the admin uploads.
-  {%- endcomment -%}
+  {%- liquid
+    assign on_sale = false
+    if product.compare_at_price > product.price
+      assign on_sale = true
+    endif
+  -%}
   <a class="apgo-event-featured-banner" href="{{ product.url }}" aria-label="{{ product.title | escape }}">
-    <img
-      class="apgo-event-featured-banner__img"
-      src="{{ image | image_url: width: 1600 }}"
-      alt="{{ product.title | escape }}"
-      loading="lazy"
-      width="{{ image.width }}"
-      height="{{ image.height }}">
+    <div class="apgo-event-featured-banner__media">
+      <img
+        class="apgo-event-featured-banner__img"
+        src="{{ image | image_url: width: 1600 }}"
+        alt="{{ product.title | escape }}"
+        loading="lazy"
+        width="{{ image.width }}"
+        height="{{ image.height }}">
+    </div>
+    <div class="apgo-event-featured-banner__info">
+      {%- if badge != blank -%}
+        <span class="apgo-event-featured-banner__badge">{{ badge }}</span>
+      {%- endif -%}
+      <h4 class="apgo-event-featured-banner__title">{{ product.title }}</h4>
+      <div class="apgo-event-featured-banner__bottom">
+        <div class="apgo-event-featured-banner__price-row">
+          <span class="apgo-event-featured-banner__price">{{ product.price | money }}</span>
+          {%- if on_sale -%}
+            <span class="apgo-event-featured-banner__price-compare">{{ product.compare_at_price | money }}</span>
+          {%- endif -%}
+        </div>
+        <span class="apgo-event-featured-banner__cta">
+          {{ cta | default: 'View deal' }}
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/>
+          </svg>
+        </span>
+      </div>
+    </div>
   </a>
 {%- endif -%}
