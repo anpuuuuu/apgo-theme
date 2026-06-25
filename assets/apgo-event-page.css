@@ -60,6 +60,7 @@
   max-width: 100%;
   padding-inline: 0;
   margin-inline: 0;
+  padding-block: var(--padding-block-start, 0) var(--padding-block-end, 0);
   background: transparent !important;
   --apgo-event-content-desktop-width: 67%;
 }
@@ -143,7 +144,7 @@
   color: var(--apgo-event-heading-color, #f08418);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
 /* Grid inside panel — cards flush to screen / panel edges (Collection Grid + Promo) */
@@ -262,11 +263,21 @@
   position: relative;
   width: 100%;
   max-width: 100%;
-  padding-block: var(--padding-block-start, 24px) var(--padding-block-end, 48px);
+  padding-block: var(--padding-block-start, 0) var(--padding-block-end, 0);
   padding-inline: 0;
   margin-inline: 0;
   background: transparent !important;
   --apgo-event-content-desktop-width: 67%;
+}
+
+body.apgo-special-event-page .shopify-section.apgo-event-promo-wrapper,
+body.apgo-special-event-page .shopify-section.apgo-event-collection-grid-wrapper {
+  padding-block: 0 !important;
+}
+
+body.apgo-special-event-page .apgo-event-promo,
+body.apgo-special-event-page .apgo-event-collection-grid {
+  padding-block: 0 !important;
 }
 
 .apgo-event-promo.section--full-width > .apgo-event-collection-grid__panel {

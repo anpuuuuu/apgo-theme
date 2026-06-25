@@ -25,7 +25,7 @@
           <span class="apgo-event-promo__badge">{{ section.settings.badge }}</span>
         {% endif %}
         {% if section.settings.heading != blank %}
-          <h2 class="apgo-event-collection-grid__heading apgo-event-promo__heading">{{ section.settings.heading }}</h2>
+          <h2 class="apgo-event-collection-grid__heading apgo-event-promo__heading">{{ section.settings.heading | escape | newline_to_br }}</h2>
         {% endif %}
         {% if section.settings.subheading != blank %}
           <div class="apgo-event-promo__sub">{{ section.settings.subheading }}</div>
@@ -68,10 +68,11 @@
       "default": "Limited Time"
     },
     {
-      "type": "text",
+      "type": "textarea",
       "id": "heading",
       "label": "Heading",
-      "default": "Limited Time Deals"
+      "default": "Limited Time Deals",
+      "info": "Press Enter for a second line."
     },
     {
       "type": "richtext",
@@ -177,7 +178,7 @@
       "max": 100,
       "step": 1,
       "unit": "px",
-      "default": 24
+      "default": 0
     },
     {
       "type": "range",
@@ -187,7 +188,7 @@
       "max": 100,
       "step": 1,
       "unit": "px",
-      "default": 48
+      "default": 0
     }
   ],
   "presets": [
