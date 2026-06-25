@@ -506,12 +506,15 @@ body.apgo-special-event-page .apgo-event-banner__frame {
 body.apgo-special-event-page .apgo-event-collection-grid {
   position: relative;
 }
-/* Override the panel radius and strip height in one place — larger,
-   more sweeping curve at the top of the panel that "spills further
-   down" into the panel body. */
+/* Proscenium arch — the two top corners share one continuous elliptical
+   curve from left edge to right edge (50% horizontal radius means each
+   corner reaches the panel's centre, where they meet). Reads like a
+   theatre stage proscenium framing the products below. The orange
+   peek-through strip height matches the arch's vertical depth so the
+   whole curved cut-out is filled with banner orange. */
 body.apgo-special-event-page .apgo-event-collection-grid__panel {
-  border-top-left-radius: clamp(48px, 7vw, 72px) !important;
-  border-top-right-radius: clamp(48px, 7vw, 72px) !important;
+  border-top-left-radius:  50% clamp(60px, 9vw, 110px) !important;
+  border-top-right-radius: 50% clamp(60px, 9vw, 110px) !important;
 }
 body.apgo-special-event-page .apgo-event-collection-grid::before {
   content: '';
@@ -520,9 +523,7 @@ body.apgo-special-event-page .apgo-event-collection-grid::before {
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
-  /* Match the larger radius so the orange peek-through fills the
-     entire curved cut-out. */
-  height: clamp(48px, 7vw, 72px);
+  height: clamp(60px, 9vw, 110px);
   background: var(--apgo-event-banner-orange, #f56a01);
   z-index: 0;
   pointer-events: none;
