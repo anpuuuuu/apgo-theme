@@ -1,0 +1,140 @@
+{% comment %}
+  APGO Special Event — promo collection listing (Phase 1 placeholder UI).
+  Phase 2: replace card markup with dedicated promo design.
+{% endcomment %}
+
+{{ 'apgo-event-page.css' | asset_url | stylesheet_tag }}
+
+{% liquid
+  assign promo_collection = section.settings.collection
+  assign product_limit = section.settings.product_limit | default: 12
+%}
+
+<section
+  id="apgo-event-promo-{{ section.id }}"
+  class="apgo-event-promo"
+  data-layout-variant="{{ section.settings.layout_variant }}"
+>
+  <div class="apgo-event-promo__inner">
+    <header class="apgo-event-promo__header">
+      {% if section.settings.layout_variant == 'promo' %}
+        <span class="apgo-event-promo__badge">特惠專區</span>
+      {% endif %}
+      {% if section.settings.heading != blank %}
+        <h2 class="apgo-event-promo__heading">{{ section.settings.heading }}</h2>
+      {% endif %}
+      {% if section.settings.subheading != blank %}
+        <div class="apgo-event-promo__sub">{{ section.settings.subheading }}</div>
+      {% endif %}
+    </header>
+
+    {% if promo_collection != blank and promo_collection.products_count > 0 %}
+      <div class="apgo-event-promo__grid">
+        {% for product in promo_collection.products limit: product_limit %}
+          {% assign first_variant = product.selected_or_first_available_variant %}
+          {% assign has_compare = false %}
+          {% if first_variant.compare_at_price %}
+            {% assign cap = first_variant.compare_at_price | plus: 0 %}
+            {% assign prc = first_variant.price | plus: 0 %}
+            {% if cap > prc %}
+              {% assign has_compare = true %}
+            {% endif %}
+          {% endif %}
+
+          <article class="apgo-event-promo-card">
+            <a href="{{ product.url }}" class="apgo-event-promo-card__media">
+              {% if product.featured_image %}
+                <img
+                  src="{{ product.featured_image | image_url: width: 600 }}"
+                  alt="{{ product.title | escape }}"
+                  loading="lazy"
+                  width="600"
+                  height="600"
+                >
+              {% else %}
+                {{ 'product-1' | placeholder_svg_tag }}
+              {% endif %}
+            </a>
+            <div class="apgo-event-promo-card__info">
+              <h3 class="apgo-event-promo-card__title">{{ product.title }}</h3>
+              <div class="apgo-event-promo-card__price">
+                <span class="apgo-event-promo-card__now">{{ first_variant.price | money }}</span>
+                {% if has_compare %}
+                  <s class="apgo-event-promo-card__was">{{ first_variant.compare_at_price | money }}</s>
+                {% endif %}
+              </div>
+              <div class="apgo-event-promo-card__cta">
+                <a class="apgo-event-promo-card__btn" href="{{ product.url }}">查看詳情</a>
+              </div>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% elsif request.design_mode %}
+      <p class="apgo-event-promo__empty">請在設定中選擇特惠商品集合（Collection）</p>
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "APGO Event Promo Collection",
+  "tag": "section",
+  "class": "apgo-event-promo-wrapper",
+  "enabled_on": {
+    "templates": ["page"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "內容"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "特惠商品集合"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "主標題",
+      "default": "限時特惠"
+    },
+    {
+      "type": "richtext",
+      "id": "subheading",
+      "label": "副標／說明"
+    },
+    {
+      "type": "range",
+      "id": "product_limit",
+      "label": "最多顯示商品數",
+      "min": 2,
+      "max": 24,
+      "step": 1,
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "版面（Phase 2 擴充）"
+    },
+    {
+      "type": "select",
+      "id": "layout_variant",
+      "label": "Listing 樣式",
+      "options": [
+        { "value": "promo", "label": "特惠（目前佔位樣式）" },
+        { "value": "standard", "label": "標準（預留）" }
+      ],
+      "default": "promo",
+      "info": "特惠專用 UI 將在後續版本補上；目前使用橘框佔位卡片。"
+    }
+  ],
+  "presets": [
+    {
+      "name": "APGO Event Promo Collection",
+      "category": "APGO"
+    }
+  ]
+}
+{% endschema %}

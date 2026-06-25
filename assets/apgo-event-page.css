@@ -1,0 +1,255 @@
+/* APGO Special Event page — shared banner, overlap panel, grid spacing */
+
+.apgo-event-banner {
+  padding-block: 0;
+  margin-block-end: 0;
+}
+
+.apgo-event-banner__frame {
+  width: 100%;
+  margin-inline: auto;
+  line-height: 0;
+}
+
+@media screen and (min-width: 750px) {
+  .apgo-event-banner__frame {
+    width: var(--apgo-event-banner-desktop-width, 67%);
+  }
+}
+
+.apgo-event-banner__link {
+  display: block;
+  text-decoration: none;
+}
+
+.apgo-event-banner__img {
+  width: 100%;
+  height: auto;
+  display: block;
+  max-width: 100%;
+}
+
+.apgo-event-banner__placeholder {
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 14px;
+  padding: 24px;
+  text-align: center;
+}
+
+.apgo-event-banner__placeholder svg {
+  width: 48px;
+  height: auto;
+  opacity: 0.4;
+}
+
+/* Collection grid — overlap panel */
+.apgo-event-collection-grid {
+  position: relative;
+  padding-inline: clamp(8px, 2vw, 16px);
+}
+
+.apgo-event-collection-grid--overlap {
+  z-index: 2;
+  margin-top: calc(-1 * var(--apgo-event-overlap, 56px));
+  padding-block-start: 0;
+}
+
+.apgo-event-collection-grid__panel {
+  position: relative;
+  z-index: 2;
+  background: rgb(var(--color-background-rgb, 0 0 0));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: clamp(16px, 3vw, 28px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+}
+
+.apgo-event-collection-grid__heading {
+  margin: 0 0 1rem;
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+  font-weight: 700;
+  color: var(--color-foreground);
+}
+
+.apgo-event-collection-grid__empty {
+  margin: 0;
+  padding: 2rem;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
+}
+
+.apgo-event-collection-grid__results {
+  padding-block-start: 0 !important;
+}
+
+@media screen and (min-width: 750px) {
+  .apgo-event-collection-grid .collection-wrapper {
+    max-width: 100%;
+    margin-inline: auto;
+  }
+
+  .apgo-event-collection-grid .main-collection-zgrid ul.product-grid.product-grid--grid[product-grid-view='default'] {
+    --product-grid-columns-desktop: repeat(5, minmax(0, 1fr));
+  }
+}
+
+@media screen and (width < 750px) {
+  .apgo-event-collection-grid .main-collection-zgrid ul.product-grid[product-grid-view='default'] {
+    --product-grid-gap: 10px 10px;
+    gap: 10px 10px;
+    padding-inline: 4px;
+  }
+}
+
+/* Promo collection — Phase 1 placeholder cards */
+.apgo-event-promo {
+  padding: clamp(32px, 5vw, 64px) clamp(12px, 3vw, 24px);
+  background: #000;
+  color: #fff;
+}
+
+.apgo-event-promo__inner {
+  max-width: var(--page-width, 120rem);
+  margin-inline: auto;
+}
+
+.apgo-event-promo__header {
+  text-align: center;
+  margin-bottom: clamp(20px, 4vw, 32px);
+}
+
+.apgo-event-promo__heading {
+  margin: 0 0 8px;
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
+  font-weight: 800;
+  color: #f08418;
+}
+
+.apgo-event-promo__sub {
+  margin: 0;
+  color: #eaeaea;
+  font-size: clamp(14px, 2vw, 16px);
+  max-width: 720px;
+  margin-inline: auto;
+}
+
+.apgo-event-promo__badge {
+  display: inline-block;
+  margin-bottom: 12px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(240, 132, 24, 0.15);
+  border: 1px solid rgba(240, 132, 24, 0.4);
+  color: #f08418;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.apgo-event-promo__grid {
+  --cols: 2;
+  display: grid;
+  grid-template-columns: repeat(var(--cols), 1fr);
+  gap: 16px;
+}
+
+@media (min-width: 740px) {
+  .apgo-event-promo__grid {
+    --cols: 3;
+  }
+}
+
+@media (min-width: 1100px) {
+  .apgo-event-promo__grid {
+    --cols: 4;
+  }
+}
+
+.apgo-event-promo-card {
+  background: #121212;
+  border: 1px solid rgba(240, 132, 24, 0.25);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.apgo-event-promo-card__media {
+  display: block;
+  aspect-ratio: 1 / 1;
+  background: #0f0f0f;
+}
+
+.apgo-event-promo-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.apgo-event-promo-card__info {
+  padding: 12px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.apgo-event-promo-card__title {
+  font-size: 14px;
+  margin: 0 0 6px;
+  color: #fff;
+}
+
+.apgo-event-promo-card__price {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+
+.apgo-event-promo-card__now {
+  color: #f08418;
+  font-weight: 700;
+}
+
+.apgo-event-promo-card__was {
+  color: #aaa;
+  text-decoration: line-through;
+  font-size: 0.9em;
+}
+
+.apgo-event-promo-card__cta {
+  margin-top: auto;
+  padding-top: 10px;
+}
+
+.apgo-event-promo-card__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #f08418;
+  color: #fff;
+  font-weight: 800;
+  text-decoration: none;
+  text-align: center;
+  font-size: 13px;
+}
+
+.apgo-event-promo__empty {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.45);
+  padding: 2rem;
+  margin: 0;
+}

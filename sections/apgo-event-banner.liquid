@@ -1,0 +1,89 @@
+{% comment %}
+  APGO Special Event — full-width banner image (no crop).
+  Mobile: edge-to-edge. Desktop: configurable width (default 2/3).
+{% endcomment %}
+
+{{ 'apgo-event-page.css' | asset_url | stylesheet_tag }}
+
+<section
+  id="apgo-event-banner-{{ section.id }}"
+  class="apgo-event-banner section section--full-width color-{{ section.settings.color_scheme }}"
+  style="--apgo-event-banner-desktop-width: {{ section.settings.desktop_width_percent }}%;"
+>
+  {% if section.settings.image != blank %}
+    <div class="apgo-event-banner__frame">
+      {% if section.settings.link != blank %}
+        <a href="{{ section.settings.link }}" class="apgo-event-banner__link">
+      {% endif %}
+      <img
+        class="apgo-event-banner__img"
+        src="{{ section.settings.image | image_url: width: 2400 }}"
+        alt="{{ section.settings.image_alt | default: section.settings.image.alt | escape }}"
+        width="{{ section.settings.image.width }}"
+        height="{{ section.settings.image.height }}"
+        loading="{% if section.index == 1 %}eager{% else %}lazy{% endif %}"
+      >
+      {% if section.settings.link != blank %}
+        </a>
+      {% endif %}
+    </div>
+  {% elsif request.design_mode %}
+    <div class="apgo-event-banner__frame">
+      <div class="apgo-event-banner__placeholder">
+        {{ 'image' | placeholder_svg_tag }}
+        <span>在設定中上傳 Banner 圖片</span>
+      </div>
+    </div>
+  {% endif %}
+</section>
+
+{% schema %}
+{
+  "name": "APGO Event Banner",
+  "tag": "section",
+  "class": "apgo-event-banner-wrapper",
+  "enabled_on": {
+    "templates": ["page"]
+  },
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Banner 圖片"
+    },
+    {
+      "type": "text",
+      "id": "image_alt",
+      "label": "圖片替代文字（選填）"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "點擊連結（選填）"
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "電腦版寬度（%）",
+      "min": 50,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 67,
+      "info": "手機版一律全寬貼邊；電腦版預設約 2/3 寬並置中。"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26"
+    }
+  ],
+  "presets": [
+    {
+      "name": "APGO Event Banner",
+      "category": "APGO"
+    }
+  ]
+}
+{% endschema %}

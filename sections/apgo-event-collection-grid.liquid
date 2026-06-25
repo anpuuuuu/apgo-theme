@@ -1,0 +1,229 @@
+{% comment %}
+  APGO Special Event — collection product grid with optional overlap panel.
+  Reuses collection page product-card blocks + product-grid snippet + quick add drawer.
+{% endcomment %}
+
+<script src="{{ 'results-list.js' | asset_url }}" type="module"></script>
+{{ 'apgo-event-page.css' | asset_url | stylesheet_tag }}
+
+{% liquid
+  assign event_collection = section.settings.collection
+  assign product_limit = section.settings.product_limit | default: 24
+%}
+
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+
+<div
+  id="apgo-event-grid-{{ section.id }}"
+  class="
+    apgo-event-collection-grid section color-{{ section.settings.color_scheme }}
+    {% if section.settings.overlap_enabled %}apgo-event-collection-grid--overlap{% endif %}
+  "
+  style="
+    {% if section.settings.overlap_enabled %}--apgo-event-overlap: {{ section.settings.overlap_offset }}px;{% endif %}
+    --padding-block-start: {{ section.settings.padding-block-start }}px;
+    --padding-block-end: {{ section.settings.padding-block-end }}px;
+  "
+>
+  <div class="apgo-event-collection-grid__panel">
+    {% if section.settings.heading != blank %}
+      <h2 class="apgo-event-collection-grid__heading">{{ section.settings.heading }}</h2>
+    {% endif %}
+
+    {% if event_collection != blank and event_collection.products_count > 0 %}
+      <results-list
+        class="section product-grid-container color-{{ section.settings.color_scheme }} main-collection-zgrid apgo-event-collection-grid__results"
+        style="--padding-block-start: 0px; --padding-block-end: 0px;"
+        section-id="{{ section.id }}"
+      >
+        <div class="collection-wrapper grid gap-style">
+          {% capture children %}
+            {% for product in event_collection.products limit: product_limit %}
+              <li
+                id="{{ section.id }}-{{ product.id }}"
+                class="product-grid__item product-grid__item--{{ forloop.index0 }}"
+                data-page="1"
+                data-product-id="{{ product.id }}"
+                ref="cards[]"
+              >
+                {% content_for 'block', type: 'product-card', id: 'product-card', closest.product: product %}
+              </li>
+            {% endfor %}
+          {% endcapture %}
+          {% render 'product-grid',
+            section: section,
+            children: children,
+            products: event_collection.products,
+            grid_wrapper_id: false,
+            skip_session_script: true
+          %}
+        </div>
+      </results-list>
+    {% elsif request.design_mode %}
+      <p class="apgo-event-collection-grid__empty">請在設定中選擇商品集合（Collection）</p>
+    {% endif %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "APGO Event Collection Grid",
+  "tag": "section",
+  "class": "apgo-event-collection-grid-wrapper",
+  "enabled_on": {
+    "templates": ["page"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "內容"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "商品集合"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "區塊標題（選填）"
+    },
+    {
+      "type": "range",
+      "id": "product_limit",
+      "label": "最多顯示商品數",
+      "min": 4,
+      "max": 50,
+      "step": 1,
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "壓層效果（疊在上方 Banner）"
+    },
+    {
+      "type": "checkbox",
+      "id": "overlap_enabled",
+      "label": "啟用卡片區塊壓過 Banner",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "overlap_offset",
+      "label": "向上壓過距離",
+      "min": 16,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 56,
+      "visible_if": "{{ section.settings.overlap_enabled }}"
+    },
+    {
+      "type": "header",
+      "content": "商品網格"
+    },
+    {
+      "type": "select",
+      "id": "layout_type",
+      "label": "版面類型",
+      "options": [
+        { "value": "grid", "label": "Grid" },
+        { "value": "organic", "label": "Editorial" }
+      ],
+      "default": "grid"
+    },
+    {
+      "type": "select",
+      "id": "product_card_size",
+      "label": "商品卡大小",
+      "options": [
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" },
+        { "value": "extra-large", "label": "Extra large" }
+      ],
+      "default": "large",
+      "visible_if": "{{ section.settings.layout_type == 'grid' }}"
+    },
+    {
+      "type": "select",
+      "id": "mobile_product_card_size",
+      "label": "手機商品卡大小",
+      "options": [
+        { "value": "small", "label": "Small" },
+        { "value": "large", "label": "Large" }
+      ],
+      "default": "small"
+    },
+    {
+      "type": "select",
+      "id": "product_grid_width",
+      "label": "網格寬度",
+      "options": [
+        { "value": "centered", "label": "Page" },
+        { "value": "full-width", "label": "Full" }
+      ],
+      "default": "centered"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width_on_mobile",
+      "label": "手機全寬",
+      "default": true,
+      "visible_if": "{{ section.settings.product_grid_width != 'full-width' }}"
+    },
+    {
+      "type": "range",
+      "id": "columns_gap_horizontal",
+      "label": "橫向間距",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "columns_gap_vertical",
+      "label": "縱向間距",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-5"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "區塊上方間距",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "區塊下方間距",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "presets": [
+    {
+      "name": "APGO Event Collection Grid",
+      "category": "APGO"
+    }
+  ]
+}
+{% endschema %}
