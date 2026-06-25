@@ -836,7 +836,7 @@ body.apgo-special-event-page .apgo-event-featured-stage__heading-star {
    ════════════════════════════════════════════════════════════════════ */
 body.apgo-special-event-page .apgo-event-scroll-zone {
   --apgo-zone-gap: 14px;
-  margin-block: clamp(8px, 2vw, 24px) clamp(20px, 4vw, 40px);
+  margin-block: clamp(24px, 5vw, 48px) clamp(20px, 4vw, 40px);
   padding-inline: clamp(12px, 3vw, 32px);
   position: relative;
   z-index: 1;
