@@ -65,6 +65,43 @@
       </header>
     {% endif %}
     <div class="apgo-event-collection-grid__panel-body">
+      {%- comment -%}
+        Featured Stage — two admin-picked hero products shown as a
+        single conjoined "display pedestal". Hides entirely if the
+        toggle is off OR if either product slot is empty (so the
+        pedestal is never half-empty).
+      {%- endcomment -%}
+      {%- assign fp1 = all_products[section.settings.featured_product_1] -%}
+      {%- assign fp2 = all_products[section.settings.featured_product_2] -%}
+      {%- if section.settings.show_featured_stage and fp1 != blank and fp1.handle != blank and fp2 != blank and fp2.handle != blank -%}
+        <div class="apgo-event-featured-stage">
+          {%- if section.settings.featured_heading != blank -%}
+            <h3 class="apgo-event-featured-stage__heading">
+              <span class="apgo-event-featured-stage__heading-star" aria-hidden="true">★</span>
+              {{ section.settings.featured_heading }}
+              <span class="apgo-event-featured-stage__heading-star" aria-hidden="true">★</span>
+            </h3>
+          {%- endif -%}
+          <div class="apgo-event-featured-stage__duo">
+            {% render 'apgo-event-featured-card',
+              product: fp1,
+              rank: '01',
+              badge: section.settings.featured_badge_text,
+              cta: section.settings.featured_cta_label %}
+            <span class="apgo-event-featured-stage__divider" aria-hidden="true">
+              <span class="apgo-event-featured-stage__divider-orb">
+                {% render 'apgo-icon-star', unique: 'stage-divider' %}
+              </span>
+            </span>
+            {% render 'apgo-event-featured-card',
+              product: fp2,
+              rank: '02',
+              badge: section.settings.featured_badge_text,
+              cta: section.settings.featured_cta_label %}
+          </div>
+        </div>
+      {%- endif -%}
+
       {% render 'apgo-event-product-grid',
         section: section,
         collection: event_collection,
@@ -83,6 +120,45 @@
     "templates": ["page"]
   },
   "settings": [
+    {
+      "type": "header",
+      "content": "Featured Stage (2 hero products)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_featured_stage",
+      "label": "Show featured stage",
+      "info": "Two hero products in a joined gold-rimmed pedestal at the top of the panel. Hides automatically if either product slot is empty.",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "featured_heading",
+      "label": "Stage heading",
+      "default": "BIRTHDAY HIGHLIGHTS"
+    },
+    {
+      "type": "text",
+      "id": "featured_badge_text",
+      "label": "Pill badge on each card",
+      "default": "STAR PICK"
+    },
+    {
+      "type": "text",
+      "id": "featured_cta_label",
+      "label": "CTA button label",
+      "default": "View deal"
+    },
+    {
+      "type": "product",
+      "id": "featured_product_1",
+      "label": "Hero product 01"
+    },
+    {
+      "type": "product",
+      "id": "featured_product_2",
+      "label": "Hero product 02"
+    },
     {
       "type": "header",
       "content": "Content"

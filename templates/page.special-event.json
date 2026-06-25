@@ -102,35 +102,12 @@
         "desktop_width_percent": 67,
         "color_scheme": ""
       }
-    },
-    "apgo_event_promo_collection_k39Czk": {
-      "type": "apgo-event-promo-collection",
-      "name": "Event Promo Collection",
-      "settings": {
-        "collection": "collections-limited-time-deals",
-        "badge": "Limited Time",
-        "heading": "Limited Time Deals",
-        "subheading": "",
-        "show_festive_lockup": true,
-        "product_limit": 24,
-        "layout_type": "grid",
-        "product_card_size": "large",
-        "mobile_product_card_size": "small",
-        "product_grid_width": "full-width",
-        "full_width_on_mobile": true,
-        "columns_gap_horizontal": 20,
-        "columns_gap_vertical": 20,
-        "color_scheme": "scheme-3",
-        "padding-block-start": 0,
-        "padding-block-end": 0
-      }
     }
   },
   "order": [
     "main",
     "apgo_event_banner_jRgaPP",
     "apgo_event_collection_grid_n3e6dm",
-    "apgo_event_banner_kfy6Kb",
-    "apgo_event_promo_collection_k39Czk"
+    "apgo_event_banner_kfy6Kb"
   ]
 }
