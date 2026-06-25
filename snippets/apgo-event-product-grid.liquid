@@ -8,8 +8,14 @@
 {%- enddoc -%}
 
 {% if collection != blank and collection.products_count > 0 %}
+  {%- comment -%}
+    Color scheme class intentionally NOT applied — the special-event
+    page paints panel + card chrome via its own CSS. Adding the scheme
+    here would re-inject --color-background / --color-foreground
+    tokens onto every card descendant and override our gradient.
+  {%- endcomment -%}
   <div
-    class="apgo-event-product-grid product-grid-container color-{{ section.settings.color_scheme }} main-collection-zgrid apgo-event-collection-grid__results"
+    class="apgo-event-product-grid product-grid-container main-collection-zgrid apgo-event-collection-grid__results"
     style="--padding-block-start: 0px; --padding-block-end: 0px;"
   >
     <div class="collection-wrapper grid gap-style">
