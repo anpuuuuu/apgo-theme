@@ -626,9 +626,9 @@ body.apgo-special-event-page .apgo-event-collection-grid__curve path {
 .apgo-event-heading-text {
   display: block;
   margin: 0;
-  /* Smaller than before so it doesn't dominate the stack — clamp
-     15-28px instead of 20-38px. */
-  font-size: clamp(15px, 3.2vw, 28px);
+  /* Bumped mobile min so the section heading reads as the primary
+     title on phones — clamp 20-32px. */
+  font-size: clamp(20px, 3.6vw, 32px);
   font-weight: 900;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -791,12 +791,12 @@ body.apgo-special-event-page .apgo-event-featured-stage {
 }
 
 body.apgo-special-event-page .apgo-event-featured-stage__heading {
-  /* Pull the "STAR PRODUCT" stage heading up so it sits TIGHT against
-     "APGO BIRTHDAY PARTY" above — slight negative top margin offsets
-     the font's natural line-box leading. All the breathing room lives
-     below this heading, before the pedestal duo. */
+  /* Negative top margin on desktop keeps the "STAR PRODUCT" stage
+     heading visually tight against the section heading above. Mobile
+     gets a positive top margin via the breakpoint below so there's
+     a bit more breathing room on phones. */
   margin: clamp(-6px, -0.6vw, -2px) 0 clamp(20px, 3.5vw, 36px);
-  font-size: clamp(13px, 2vw, 17px);
+  font-size: clamp(16px, 2.4vw, 20px);
   font-weight: 800;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -818,6 +818,16 @@ body.apgo-special-event-page .apgo-event-featured-stage__heading-star {
   filter: drop-shadow(0 2px 6px rgba(244, 168, 73, 0.5));
 }
 
+/* Mobile: give the STAR PRODUCT stage heading positive top margin so
+   there's a bit more breathing room above it (per user feedback —
+   the negative pull-up that desktop uses to keep things tight looked
+   cramped on phones). */
+@media (max-width: 749px) {
+  body.apgo-special-event-page .apgo-event-featured-stage__heading {
+    margin-top: clamp(10px, 3vw, 18px) !important;
+  }
+}
+
 /* ════════════════════════════════════════════════════════════════════
    ZONE 1 + ZONE 2 — Horizontal scroll lists (Discount / Buy 1 Free 1)
    Two cards visible + a peek of the third (≈2.5 cards) on every
@@ -833,7 +843,7 @@ body.apgo-special-event-page .apgo-event-scroll-zone {
 }
 body.apgo-special-event-page .apgo-event-scroll-zone__heading {
   margin: 0 0 clamp(10px, 2vw, 18px);
-  font-size: clamp(13px, 2vw, 17px);
+  font-size: clamp(16px, 2.4vw, 22px);
   font-weight: 800;
   letter-spacing: 0.18em;
   text-transform: uppercase;
