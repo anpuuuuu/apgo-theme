@@ -146,18 +146,24 @@
   line-height: 1.2;
 }
 
-/* Grid inside panel — cards flush to screen / panel edges */
+/* Grid inside panel — cards flush to screen / panel edges (Collection Grid + Promo) */
 .apgo-event-collection-grid__panel .apgo-event-product-grid,
 .apgo-event-collection-grid__panel .collection-wrapper,
 .apgo-event-collection-grid__panel .main-collection-grid,
 .apgo-event-collection-grid__panel .main-collection-grid > div,
-.apgo-event-collection-grid__panel ul.product-grid {
+.apgo-event-collection-grid__panel ul.product-grid,
+.apgo-event-promo .apgo-event-collection-grid__panel .apgo-event-product-grid,
+.apgo-event-promo .apgo-event-collection-grid__panel .collection-wrapper,
+.apgo-event-promo .apgo-event-collection-grid__panel .main-collection-grid,
+.apgo-event-promo .apgo-event-collection-grid__panel .main-collection-grid > div,
+.apgo-event-promo .apgo-event-collection-grid__panel ul.product-grid {
   padding-inline: 0 !important;
   margin-inline: 0 !important;
   max-width: 100%;
 }
 
-.apgo-event-collection-grid__panel .main-collection-grid {
+.apgo-event-collection-grid__panel .main-collection-grid,
+.apgo-event-promo .apgo-event-collection-grid__panel .main-collection-grid {
   --grid--margin--mobile: 0;
   --grid-column--mobile: var(--full-width);
   --grid-column--desktop: var(--full-width);
@@ -167,7 +173,9 @@
 }
 
 .apgo-event-collection-grid__panel .collection-wrapper--full-width-on-mobile,
-.apgo-event-collection-grid__panel .main-collection-grid {
+.apgo-event-collection-grid__panel .main-collection-grid,
+.apgo-event-promo .apgo-event-collection-grid__panel .collection-wrapper--full-width-on-mobile,
+.apgo-event-promo .apgo-event-collection-grid__panel .main-collection-grid {
   grid-column: 1 / -1 !important;
 }
 
@@ -216,21 +224,15 @@
 }
 
 @media screen and (min-width: 750px) {
-  .apgo-event-collection-grid__panel {
+  .apgo-event-collection-grid__panel,
+  .apgo-event-promo .apgo-event-collection-grid__panel {
     width: var(--apgo-event-content-desktop-width, 67%);
     max-width: var(--apgo-event-content-desktop-width, 67%);
     margin-inline: auto;
-  }
-
-  .apgo-event-promo__inner {
-    width: var(--apgo-event-content-desktop-width, 67%);
-    max-width: var(--apgo-event-content-desktop-width, 67%);
-    margin-inline: auto;
-    padding-inline: 0;
   }
 
   .apgo-event-collection-grid .collection-wrapper,
-  .apgo-event-promo__grid-wrap .collection-wrapper {
+  .apgo-event-promo .apgo-event-collection-grid__panel .collection-wrapper {
     max-width: 100%;
     margin-inline: auto;
   }
@@ -238,70 +240,76 @@
 
 @media screen and (width < 750px) {
   .apgo-event-collection-grid .main-collection-zgrid ul.product-grid[product-grid-view='default'],
-  .apgo-event-promo__grid-wrap .main-collection-zgrid ul.product-grid[product-grid-view='default'] {
+  .apgo-event-promo .main-collection-zgrid ul.product-grid[product-grid-view='default'] {
     --product-grid-gap: 10px 10px;
     gap: 10px 10px;
     padding-inline: 0;
   }
 
-  .apgo-event-collection-grid__panel {
+  .apgo-event-collection-grid__panel,
+  .apgo-event-promo .apgo-event-collection-grid__panel {
     width: 100%;
     max-width: 100%;
   }
 }
 
-/* Promo / deals section */
+/* Promo — same content ribbon as Collection Grid (方案 A) */
+.shopify-section.apgo-event-promo-wrapper {
+  overflow: visible;
+}
+
 .apgo-event-promo {
-  padding: clamp(32px, 5vw, 56px) 0;
-  background: transparent;
-  color: #fff;
+  position: relative;
   width: 100%;
+  max-width: 100%;
+  padding-block: var(--padding-block-start, 24px) var(--padding-block-end, 48px);
+  padding-inline: 0;
+  margin-inline: 0;
+  background: transparent !important;
   --apgo-event-content-desktop-width: 67%;
 }
 
-.apgo-event-promo__inner {
+.apgo-event-promo.section--full-width > .apgo-event-collection-grid__panel {
+  grid-column: 1 / -1;
   width: 100%;
-  max-width: 100%;
-  margin-inline: auto;
-  padding-inline: 0;
-  box-sizing: border-box;
 }
 
 .apgo-event-promo__header {
-  text-align: center;
-  margin-bottom: clamp(20px, 4vw, 32px);
-  padding-inline: clamp(12px, 3vw, 20px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
 }
 
 .apgo-event-promo__heading {
-  margin: 0 0 8px;
-  font-size: clamp(1.5rem, 4vw, 2rem);
-  font-weight: 800;
-  color: #f08418;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  margin: 0;
 }
 
 .apgo-event-promo__sub {
   margin: 0;
-  color: #eaeaea;
-  font-size: clamp(14px, 2vw, 16px);
+  color: rgba(61, 46, 36, 0.78);
+  font-size: clamp(13px, 2vw, 15px);
+  line-height: 1.45;
   max-width: 720px;
-  margin-inline: auto;
+  text-align: center;
+}
+
+.apgo-event-promo__sub p {
+  margin: 0;
 }
 
 .apgo-event-promo__badge {
   display: inline-block;
-  margin-bottom: 12px;
+  margin: 0;
   padding: 4px 10px;
   border-radius: 6px;
-  background: rgba(240, 132, 24, 0.15);
-  border: 1px solid rgba(240, 132, 24, 0.4);
+  background: rgba(240, 132, 24, 0.12);
+  border: 1px solid rgba(240, 132, 24, 0.45);
   color: #f08418;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
 }
 
 .apgo-event-promo__grid-wrap {
@@ -339,7 +347,7 @@ body.apgo-special-event-page .apgo-event-promo {
 }
 
 body.apgo-special-event-page .shopify-section.apgo-event-collection-grid-wrapper .section-background,
-body.apgo-special-event-page .shopify-section:has(.apgo-event-promo) .section-background {
+body.apgo-special-event-page .shopify-section.apgo-event-promo-wrapper .section-background {
   display: none;
 }
 
@@ -349,7 +357,7 @@ body.apgo-special-event-page .apgo-event-listing-card .product-card__content {
   border: none;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 4px 14px rgba(180, 90, 20, 0.14);
 }
 
 body.apgo-special-event-page .apgo-event-listing-card__gallery {
@@ -424,12 +432,14 @@ body.apgo-special-event-page .apgo-event-listing-card .apgo-coll-drawer-open__ic
   height: 1rem;
 }
 
-body.apgo-special-event-page .apgo-event-collection-grid__panel {
+body.apgo-special-event-page .apgo-event-collection-grid__panel,
+body.apgo-special-event-page .apgo-event-promo .apgo-event-collection-grid__panel {
   background: transparent;
   box-shadow: none;
 }
 
-body.apgo-special-event-page .apgo-event-collection-grid__panel-body {
+body.apgo-special-event-page .apgo-event-collection-grid__panel-body,
+body.apgo-special-event-page .apgo-event-promo .apgo-event-collection-grid__panel-body {
   background: var(--apgo-event-panel-bg);
 }
 
@@ -437,21 +447,7 @@ body.apgo-special-event-page .apgo-event-collection-grid__curve path {
   fill: var(--apgo-event-heading-bg);
 }
 
-body.apgo-special-event-page .apgo-event-collection-grid__heading {
-  color: var(--apgo-event-heading-color);
-}
-
+body.apgo-special-event-page .apgo-event-collection-grid__heading,
 body.apgo-special-event-page .apgo-event-promo__heading {
-  color: #ffffff;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-body.apgo-special-event-page .apgo-event-promo__badge {
-  background: rgba(0, 0, 0, 0.2);
-  border-color: rgba(255, 255, 255, 0.35);
-  color: #ffffff;
-}
-
-body.apgo-special-event-page .apgo-event-promo__sub {
-  color: rgba(255, 255, 255, 0.92);
+  color: var(--apgo-event-heading-color);
 }

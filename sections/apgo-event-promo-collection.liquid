@@ -1,6 +1,6 @@
 {% comment %}
   APGO Special Event — promo / deals collection listing.
-  Uses the same product card UI as Limited Time Deals (collection page).
+  Shares panel layout with Event Collection Grid (方案 A：连续肉色内容带).
 {% endcomment %}
 
 {{ 'apgo-event-page.css' | asset_url | stylesheet_tag }}
@@ -10,26 +10,30 @@
   assign product_limit = section.settings.product_limit | default: 24
 %}
 
-<div class="section-background color-{{ section.settings.color_scheme }} apgo-event-promo__bg"></div>
-
-<section
+<div
   id="apgo-event-promo-{{ section.id }}"
-  class="apgo-event-promo section color-{{ section.settings.color_scheme }}"
+  class="apgo-event-promo section section--full-width"
+  style="
+    --padding-block-start: {{ section.settings.padding-block-start }}px;
+    --padding-block-end: {{ section.settings.padding-block-end }}px;
+  "
 >
-  <div class="apgo-event-promo__inner">
-    <header class="apgo-event-promo__header">
-      {% if section.settings.badge != blank %}
-        <span class="apgo-event-promo__badge">{{ section.settings.badge }}</span>
-      {% endif %}
-      {% if section.settings.heading != blank %}
-        <h2 class="apgo-event-promo__heading">{{ section.settings.heading }}</h2>
-      {% endif %}
-      {% if section.settings.subheading != blank %}
-        <div class="apgo-event-promo__sub">{{ section.settings.subheading }}</div>
-      {% endif %}
-    </header>
+  <div class="apgo-event-collection-grid__panel">
+    {% if section.settings.badge != blank or section.settings.heading != blank or section.settings.subheading != blank %}
+      <header class="apgo-event-collection-grid__header apgo-event-promo__header">
+        {% if section.settings.badge != blank %}
+          <span class="apgo-event-promo__badge">{{ section.settings.badge }}</span>
+        {% endif %}
+        {% if section.settings.heading != blank %}
+          <h2 class="apgo-event-collection-grid__heading apgo-event-promo__heading">{{ section.settings.heading }}</h2>
+        {% endif %}
+        {% if section.settings.subheading != blank %}
+          <div class="apgo-event-promo__sub">{{ section.settings.subheading }}</div>
+        {% endif %}
+      </header>
+    {% endif %}
 
-    <div class="apgo-event-promo__grid-wrap main-collection-zgrid">
+    <div class="apgo-event-collection-grid__panel-body apgo-event-promo__grid-wrap main-collection-zgrid">
       {% render 'apgo-event-product-grid',
         section: section,
         collection: promo_collection,
@@ -37,7 +41,7 @@
       %}
     </div>
   </div>
-</section>
+</div>
 
 {% schema %}
 {
@@ -156,9 +160,13 @@
       "default": 20
     },
     {
+      "type": "paragraph",
+      "content": "Colors are controlled by the Special Event page stylesheet (#fcead8 panel on #f08418 background). Color scheme below does not apply on this template."
+    },
+    {
       "type": "color_scheme",
       "id": "color_scheme",
-      "label": "Color scheme",
+      "label": "Color scheme (unused on event page)",
       "default": "scheme-5"
     },
     {
@@ -169,7 +177,7 @@
       "max": 100,
       "step": 1,
       "unit": "px",
-      "default": 32
+      "default": 24
     },
     {
       "type": "range",
