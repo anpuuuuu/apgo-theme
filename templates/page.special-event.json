@@ -79,7 +79,7 @@
         "overlap_offset": 16,
         "panel_radius": 32,
         "layout_type": "grid",
-        "product_card_size": "large",
+        "product_card_size": "small",
         "mobile_product_card_size": "small",
         "product_grid_width": "full-width",
         "full_width_on_mobile": true,
