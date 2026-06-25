@@ -506,15 +506,15 @@ body.apgo-special-event-page .apgo-event-banner__frame {
 body.apgo-special-event-page .apgo-event-collection-grid {
   position: relative;
 }
-/* Proscenium arch — the two top corners share one continuous elliptical
-   curve from left edge to right edge (50% horizontal radius means each
-   corner reaches the panel's centre, where they meet). Reads like a
-   theatre stage proscenium framing the products below. The orange
-   peek-through strip height matches the arch's vertical depth so the
-   whole curved cut-out is filled with banner orange. */
+/* Sweeping ellipse top — each corner is a wide elliptical sweep
+   (35% of panel width × ~70px tall) with a flat segment between them
+   in the middle. Reads softer than the full proscenium arch:
+   "medal-podium / luxury display tray" instead of "theatre dome".
+   The orange strip behind matches the vertical depth so the curved
+   cut-outs are filled with banner orange. */
 body.apgo-special-event-page .apgo-event-collection-grid__panel {
-  border-top-left-radius:  50% clamp(60px, 9vw, 110px) !important;
-  border-top-right-radius: 50% clamp(60px, 9vw, 110px) !important;
+  border-top-left-radius:  35% clamp(48px, 7vw, 80px) !important;
+  border-top-right-radius: 35% clamp(48px, 7vw, 80px) !important;
 }
 body.apgo-special-event-page .apgo-event-collection-grid::before {
   content: '';
@@ -523,7 +523,7 @@ body.apgo-special-event-page .apgo-event-collection-grid::before {
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
-  height: clamp(60px, 9vw, 110px);
+  height: clamp(48px, 7vw, 80px);
   background: var(--apgo-event-banner-orange, #f56a01);
   z-index: 0;
   pointer-events: none;
