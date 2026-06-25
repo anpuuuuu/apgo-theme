@@ -72,6 +72,12 @@
       "type": "apgo-event-collection-grid",
       "name": "Event Collection Grid",
       "settings": {
+        "show_featured_stage": true,
+        "featured_heading": "BIRTHDAY HIGHLIGHTS",
+        "featured_badge_text": "STAR PICK",
+        "featured_cta_label": "View deal",
+        "featured_product_1": "apgo-atomic-car-nano-coating-standard",
+        "featured_product_2": "apgo-atomic-crystal-car-nano-coating",
         "collection": "atomic-coating-series",
         "heading": "star product for\napgo birthday party",
         "show_festive_lockup": true,
