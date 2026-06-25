@@ -514,12 +514,20 @@ body.apgo-special-event-page {
   --apgo-event-page-bg: #1f100a;
   --apgo-event-card-price-color: #f08418;
 
-  /* Cream → deep luxurious brown panels */
+  /* Panel goes from deep brown at the top to the banner-cream at the
+     bottom so it visually melts into the carnival banner sitting below.
+     Most of the height stays brown so the cards still feel "framed in
+     a luxury display"; the cream wash only kicks in over the last ~25%. */
   --apgo-event-panel-bg: #2a1810;
   --apgo-event-heading-bg: #2a1810;
-  --apgo-event-panel-bg-gradient:
-    radial-gradient(120% 80% at 50% 0%, rgba(244, 210, 138, 0.10) 0%, transparent 60%),
-    #2a1810;
+  --apgo-event-panel-bg-gradient: linear-gradient(
+    180deg,
+    #2a1810 0%,
+    #2a1810 55%,
+    #5a3a22 78%,
+    #c69a6a 92%,
+    #fcead8 100%
+  );
 
   /* Heading text is now a champagne-gold gradient (color fallback for
      browsers that don't support background-clip:text). */
@@ -718,14 +726,15 @@ body.apgo-special-event-page .apgo-event-heading-wrap ~ .apgo-event-promo__sub {
   margin-top: 4px;
 }
 
-/* ── Product cards: hard-coded deep brown gradient body + champagne-gold
-   title, regardless of what the editor's color scheme is set to. Uses
-   !important to outweigh the scheme's --color-background / foreground
-   tokens (since the scheme rules sit at the same specificity). ── */
+/* ── Product cards: solid deep-brown so they stay readable against the
+   panel's brown-to-cream gradient (a per-card gradient on top of a
+   panel gradient would clash). Champagne-gold title for high contrast.
+   !important + the bare element selector to outweigh any leaking
+   color-scheme rules. ── */
 body.apgo-special-event-page .apgo-event-listing-card {
   border-radius: 14px;
   overflow: hidden;
-  background: linear-gradient(135deg, #3a2418 0%, #2a1810 40%, #1f100a 100%) !important;
+  background: #2a1810 !important;
   color: #f4d28a !important;
   transition: transform .25s ease, box-shadow .25s ease;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.42);
