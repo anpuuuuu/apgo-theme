@@ -636,6 +636,9 @@ body.apgo-special-event-page .apgo-event-promo .apgo-event-collection-grid__pane
   background: transparent;
   position: relative;
   z-index: 1;
+  /* Buffer so the last card row sits well above the cream shelf — any
+     remaining card shadows fall on the brown, not on the cream. */
+  padding-bottom: clamp(28px, 5vw, 56px) !important;
 }
 body.apgo-special-event-page .apgo-event-collection-grid__header {
   background: transparent;
@@ -761,7 +764,10 @@ body.apgo-special-event-page .apgo-event-listing-card {
   background: #2a1810 !important;
   color: #f4d28a !important;
   transition: transform .25s ease, box-shadow .25s ease;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.42);
+  /* Lighter shadow — heavier 0.42 cast dark smudges onto the cream
+     section of the panel's bottom gradient, breaking the seamless
+     melt into the carnival banner. */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
 }
 body.apgo-special-event-page .apgo-event-listing-card:hover {
   transform: translateY(-4px);
