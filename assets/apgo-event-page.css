@@ -566,8 +566,9 @@ body.apgo-special-event-page .apgo-event-collection-grid__header {
   background: transparent;
   position: relative;
   z-index: 1;
-  /* Slim down the header gutter — mobile minimal, desktop ~12px each side */
-  padding: clamp(4px, 1vw, 12px) clamp(12px, 3vw, 20px);
+  /* Header gutter: generous top space so 'APGO BIRTHDAY PARTY' isn't
+     squashed against the panel's rounded top edge; trim sides + bottom. */
+  padding: clamp(24px, 5vw, 44px) clamp(12px, 3vw, 20px) clamp(4px, 1vw, 12px);
 }
 /* Scattered gold confetti dot pattern, low-opacity so it doesn't shout */
 body.apgo-special-event-page .apgo-event-collection-grid__panel::before {
