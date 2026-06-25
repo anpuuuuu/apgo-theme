@@ -764,10 +764,10 @@ body.apgo-special-event-page .apgo-event-listing-card {
   background: #2a1810 !important;
   color: #f4d28a !important;
   transition: transform .25s ease, box-shadow .25s ease;
-  /* Lighter shadow — heavier 0.42 cast dark smudges onto the cream
-     section of the panel's bottom gradient, breaking the seamless
-     melt into the carnival banner. */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
+  /* No drop shadow — even the lighter shadow was leaving a faint dark
+     smear on the cream shelf at the panel bottom. Hover state below
+     still lifts the card with a gold glow for interactivity. */
+  box-shadow: none;
 }
 body.apgo-special-event-page .apgo-event-listing-card:hover {
   transform: translateY(-4px);
