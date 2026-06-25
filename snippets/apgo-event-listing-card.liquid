@@ -46,6 +46,11 @@
   >
     <span class="visually-hidden">{{ product.title }}</span>
   </a>
+  {%- comment -%}
+    Color scheme class intentionally removed — the special-event page
+    paints card chrome via CSS (deep-brown gradient + gold title) so we
+    don't want the theme's color scheme palette overriding it here.
+  {%- endcomment -%}
   <div
     class="
       product-card__content
@@ -55,7 +60,6 @@
       spacing-style
       border-style
       gap-style
-      color-scheme-9a9df36f-52ae-4a86-948a-8b59a473eca0
     "
     style="
       --border-width: 0px;

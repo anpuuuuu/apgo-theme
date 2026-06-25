@@ -14,7 +14,6 @@
   id="apgo-event-grid-{{ section.id }}"
   class="
     apgo-event-collection-grid section section--full-width
-    color-{{ section.settings.color_scheme }}
     {% if section.settings.overlap_enabled %}apgo-event-collection-grid--overlap{% endif %}
   "
   style="
@@ -27,7 +26,7 @@
     --padding-block-end: {{ section.settings.padding-block-end }}px;
   "
 >
-  <div class="apgo-event-collection-grid__panel color-{{ section.settings.color_scheme }}">
+  <div class="apgo-event-collection-grid__panel">
     {% if section.settings.overlap_enabled %}
       <div class="apgo-event-collection-grid__curve" aria-hidden="true">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 80" preserveAspectRatio="none" role="presentation">
