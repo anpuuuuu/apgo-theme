@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const root = path.join(__dirname, '..');
+const root = path.join(__dirname, '..', '..');
 const stripComments = (s) => s.replace(/\/\*[\s\S]*?\*\//, '').trim();
 const collection = JSON.parse(
   stripComments(fs.readFileSync(path.join(root, 'templates/collection.json'), 'utf8'))
