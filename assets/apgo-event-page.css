@@ -894,41 +894,26 @@ body.apgo-special-event-page .apgo-event-scroll-zone__card {
 body.apgo-special-event-page .apgo-event-featured-stage__stack {
   display: flex;
   flex-direction: column;
-  gap: clamp(20px, 4vw, 40px);
-  padding-inline: clamp(12px, 3vw, 32px);
+  gap: clamp(16px, 3vw, 32px);
+  /* Cards hug the panel edges — no horizontal padding here. */
+  padding-inline: 0;
 }
 
 /* Spotlight card — one unified card per featured product. Banner image
-   on top, info bar (badge + title + price + CTA) below, both wrapped
-   inside a single gold-rimmed gradient container. */
+   on top, info bar (badge + title + price + CTA) below. Single subtle
+   gold hairline border (the dramatic gradient rim was too loud). */
 body.apgo-special-event-page .apgo-event-featured-banner {
   display: flex;
   flex-direction: column;
   position: relative;
   background: linear-gradient(135deg, #3a2418 0%, #2a1810 50%, #1f100a 100%);
-  border-radius: clamp(14px, 2vw, 22px);
+  border-radius: 0;
   overflow: hidden;
-  border: 1px solid rgba(244, 168, 73, 0.22);
+  border: 1px solid rgba(244, 168, 73, 0.14);
   box-shadow: 0 8px 26px rgba(0, 0, 0, 0.45);
   transition: transform .25s ease, box-shadow .25s ease;
   text-decoration: none;
   color: var(--apgo-event-gold-light);
-}
-/* Gold border-image rim via a pseudo so the rim hugs the whole card */
-body.apgo-special-event-page .apgo-event-featured-banner::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1.5px;
-  background: linear-gradient(135deg, #f4d28a 0%, #f8a849 50%, #c8961f 100%);
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-          mask-composite: exclude;
-  pointer-events: none;
-  z-index: 2;
 }
 body.apgo-special-event-page .apgo-event-featured-banner:hover {
   transform: translateY(-2px);
