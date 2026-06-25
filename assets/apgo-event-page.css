@@ -552,6 +552,33 @@ body.apgo-special-event-page .apgo-event-banner__frame {
   margin-block: 0 !important;
 }
 
+/* Banner-orange peek-through strip behind the panel's rounded top corners.
+   Creates a visual "the panel is pressing into the banner" depth effect
+   — the orange shows in the cut-out area created by border-top-radius. */
+body.apgo-special-event-page .apgo-event-collection-grid,
+body.apgo-special-event-page .apgo-event-promo {
+  position: relative;
+}
+body.apgo-special-event-page .apgo-event-collection-grid::before,
+body.apgo-special-event-page .apgo-event-promo::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--apgo-event-panel-radius, 32px);
+  background: var(--apgo-event-banner-orange, #f56a01);
+  z-index: 0;
+  pointer-events: none;
+}
+/* Pin the panel above the orange strip so the rounded corners cut into
+   it (revealing the orange) instead of being covered by it. */
+body.apgo-special-event-page .apgo-event-collection-grid__panel,
+body.apgo-special-event-page .apgo-event-promo .apgo-event-collection-grid__panel {
+  position: relative;
+  z-index: 2;
+}
+
 /* ── Panel background: deep brown + soft gold radial halo + confetti dots ── */
 body.apgo-special-event-page .apgo-event-collection-grid__panel,
 body.apgo-special-event-page .apgo-event-promo .apgo-event-collection-grid__panel {
