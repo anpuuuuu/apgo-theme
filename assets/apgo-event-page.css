@@ -582,8 +582,9 @@ body.apgo-special-event-page .apgo-event-collection-grid__curve path {
   align-items: center;
   justify-content: center;
   gap: clamp(10px, 2.6vw, 28px);
-  /* Tighter vertical rhythm — mobile gets the smallest pad (8px), desktop ~24px */
-  padding-block: clamp(8px, 1.8vw, 24px);
+  /* Tight vertical rhythm — small bottom pad so the stage heading
+     below it doesn't feel disconnected. */
+  padding-block: clamp(6px, 1.4vw, 16px) clamp(2px, 0.6vw, 8px);
   position: relative;
 }
 .apgo-event-heading-stack {
@@ -764,13 +765,18 @@ body.apgo-special-event-page .apgo-event-listing-card .apgo-coll-drawer-open__ic
    ════════════════════════════════════════════════════════════════════ */
 body.apgo-special-event-page .apgo-event-featured-stage {
   margin-inline: clamp(12px, 3vw, 32px);
-  margin-block: clamp(8px, 2vw, 24px) clamp(32px, 6vw, 72px);
+  /* Top margin trimmed so the stage sits right under the section
+     heading lockup. Bottom still keeps a clear separator from the
+     12-card grid below. */
+  margin-block: 0 clamp(32px, 6vw, 72px);
   position: relative;
   z-index: 1;
 }
 
 body.apgo-special-event-page .apgo-event-featured-stage__heading {
-  margin: 0 0 clamp(14px, 2.5vw, 22px);
+  /* Trim top margin so the "STAR PRODUCT" heading sits close to the
+     section's "APGO BIRTHDAY PARTY" lockup above. */
+  margin: 0 0 clamp(10px, 2vw, 18px);
   font-size: clamp(13px, 2vw, 17px);
   font-weight: 800;
   letter-spacing: 0.18em;
@@ -901,26 +907,6 @@ body.apgo-special-event-page .apgo-event-featured-card:hover .apgo-event-feature
   transform: scale(1.04);
 }
 
-/* Serif italic rank numeral (01 / 02) overlaid on each image */
-body.apgo-special-event-page .apgo-event-featured-card__rank {
-  position: absolute;
-  top: 6px;
-  left: 10px;
-  font-family: 'Cormorant Garamond', 'Times New Roman', serif;
-  font-style: italic;
-  font-weight: 700;
-  font-size: clamp(28px, 5vw, 48px);
-  line-height: 1;
-  background: linear-gradient(135deg, #f4d28a 0%, #c8961f 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: #c8961f;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
-  letter-spacing: -0.02em;
-  pointer-events: none;
-}
-
 body.apgo-special-event-page .apgo-event-featured-card__body {
   display: flex;
   flex-direction: column;
@@ -1020,9 +1006,6 @@ body.apgo-special-event-page .apgo-event-featured-card:hover .apgo-event-feature
   }
   body.apgo-special-event-page .apgo-event-featured-card {
     grid-template-columns: 88px 1fr;
-  }
-  body.apgo-special-event-page .apgo-event-featured-card__rank {
-    font-size: 24px;
   }
 }
 
