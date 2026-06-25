@@ -75,8 +75,8 @@
         "collection": "atomic-coating-series",
         "heading": "Special Alacart Promo",
         "product_limit": 24,
-        "overlap_enabled": true,
-        "overlap_offset": 48,
+        "overlap_enabled": false,
+        "overlap_offset": 16,
         "panel_radius": 32,
         "layout_type": "grid",
         "product_card_size": "large",
@@ -85,7 +85,7 @@
         "full_width_on_mobile": true,
         "columns_gap_horizontal": 20,
         "columns_gap_vertical": 20,
-        "color_scheme": "scheme-5",
+        "color_scheme": "scheme-3",
         "padding-block-start": 0,
         "padding-block-end": 32
       }
@@ -117,7 +117,7 @@
         "full_width_on_mobile": true,
         "columns_gap_horizontal": 20,
         "columns_gap_vertical": 20,
-        "color_scheme": "scheme-5",
+        "color_scheme": "",
         "padding-block-start": 32,
         "padding-block-end": 48
       }
