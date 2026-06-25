@@ -452,28 +452,33 @@ body.apgo-special-event-page .apgo-event-listing-card .price--listing-discount .
 }
 
 body.apgo-special-event-page .apgo-event-listing-card .apgo-coll-drawer-open {
-  width: 2rem;
-  height: 2rem;
-  min-width: 2rem;
-  min-height: 2rem;
-  border-radius: 50%;
-  background: var(--apgo-event-card-plus-bg);
-  color: var(--apgo-event-card-plus-color);
+  width: auto;
+  height: auto;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--apgo-event-brand);
   opacity: 1;
   flex-shrink: 0;
 }
 
 body.apgo-special-event-page .apgo-event-listing-card .apgo-coll-drawer-open:hover,
 body.apgo-special-event-page .apgo-event-listing-card .apgo-coll-drawer-open:focus-visible {
-  background: var(--apgo-event-brand);
-  color: #ffffff;
-  opacity: 1;
+  background: none;
+  color: var(--apgo-event-brand);
+  opacity: 0.75;
 }
 
 body.apgo-special-event-page .apgo-event-listing-card .apgo-coll-drawer-open__icon,
 body.apgo-special-event-page .apgo-event-listing-card .apgo-coll-drawer-open__icon svg {
-  width: 1rem;
-  height: 1rem;
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+body.apgo-special-event-page .apgo-event-listing-card .apgo-coll-drawer-open__icon svg {
+  --icon-stroke-width: 2px;
 }
 
 body.apgo-special-event-page .apgo-event-collection-grid__panel,
