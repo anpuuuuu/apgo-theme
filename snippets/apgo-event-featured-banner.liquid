@@ -10,13 +10,18 @@
 {%- enddoc -%}
 
 {%- if image != blank and product != blank and product.url != blank -%}
+  {%- comment -%}
+    Width/height come from the uploaded image's natural dimensions so
+    the browser reserves the correct space (no CLS) regardless of the
+    aspect ratio the admin uploads.
+  {%- endcomment -%}
   <a class="apgo-event-featured-banner" href="{{ product.url }}" aria-label="{{ product.title | escape }}">
     <img
       class="apgo-event-featured-banner__img"
       src="{{ image | image_url: width: 1600 }}"
       alt="{{ product.title | escape }}"
       loading="lazy"
-      width="1280"
-      height="680">
+      width="{{ image.width }}"
+      height="{{ image.height }}">
   </a>
 {%- endif -%}

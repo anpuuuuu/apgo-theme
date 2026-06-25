@@ -899,9 +899,10 @@ body.apgo-special-event-page .apgo-event-featured-stage__stack {
 }
 
 body.apgo-special-event-page .apgo-event-featured-banner {
+  /* Adaptive ratio — banner frame hugs the uploaded image's natural
+     aspect ratio (no fixed aspect-ratio lock, no object-fit cropping). */
   display: block;
   position: relative;
-  aspect-ratio: 1280 / 680;
   background: #2a1810;
   border-radius: clamp(14px, 2vw, 22px);
   overflow: hidden;
@@ -909,6 +910,7 @@ body.apgo-special-event-page .apgo-event-featured-banner {
   box-shadow: 0 8px 26px rgba(0, 0, 0, 0.45);
   transition: transform .25s ease, box-shadow .25s ease;
   text-decoration: none;
+  line-height: 0; /* kill the inline-image baseline gap so the border hugs the img */
 }
 body.apgo-special-event-page .apgo-event-featured-banner:hover {
   transform: translateY(-2px);
@@ -918,8 +920,7 @@ body.apgo-special-event-page .apgo-event-featured-banner:hover {
 }
 body.apgo-special-event-page .apgo-event-featured-banner__img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;          /* preserve the image's natural ratio */
   display: block;
   transition: transform .35s ease;
 }
