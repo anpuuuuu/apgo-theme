@@ -836,7 +836,10 @@ body.apgo-special-event-page .apgo-event-featured-stage__heading-star {
    ════════════════════════════════════════════════════════════════════ */
 body.apgo-special-event-page .apgo-event-scroll-zone {
   --apgo-zone-gap: 14px;
-  margin-block: clamp(24px, 5vw, 48px) clamp(20px, 4vw, 40px);
+  /* padding-top (not margin-top) so the gap can't collapse into the
+     parent panel-body, which sets padding-top: 0 !important. */
+  margin-block: 0 clamp(20px, 4vw, 40px);
+  padding-block: clamp(28px, 5.5vw, 52px) 0;
   padding-inline: clamp(12px, 3vw, 32px);
   position: relative;
   z-index: 1;
