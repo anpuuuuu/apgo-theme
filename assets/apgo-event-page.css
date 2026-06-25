@@ -83,13 +83,13 @@
   max-width: 100%;
   margin-inline: 0;
   box-sizing: border-box;
-  background: var(--color-background);
+  background: var(--apgo-event-panel-bg, #fcead8);
   color: var(--color-foreground);
   border: none;
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
   overflow: visible;
-  box-shadow: 0 -10px 36px rgba(0, 0, 0, 0.35);
+  box-shadow: none;
 }
 
 .apgo-event-collection-grid:not(.apgo-event-collection-grid--overlap) .apgo-event-collection-grid__panel {
@@ -120,7 +120,7 @@
 .apgo-event-collection-grid__panel-body {
   padding-block: clamp(12px, 2.5vw, 20px) clamp(16px, 3vw, 28px);
   padding-inline: 0;
-  background: var(--apgo-event-panel-bg, var(--color-background));
+  background: var(--apgo-event-panel-bg, #fcead8);
 }
 
 .apgo-event-collection-grid__header {
@@ -175,7 +175,7 @@
   margin: 0;
   padding: 2rem;
   text-align: center;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(0, 0, 0, 0.45);
   font-size: 14px;
 }
 
@@ -318,7 +318,7 @@ body.apgo-special-event-page {
   --apgo-event-page-bg: #f08418;
   --apgo-event-heading-bg: #fcead8;
   --apgo-event-heading-color: #f08418;
-  --apgo-event-panel-bg: #2b2f36;
+  --apgo-event-panel-bg: #fcead8;
   --apgo-event-card-footer-bg: #1a1a1a;
   --apgo-event-card-title-color: #ffffff;
   --apgo-event-card-title-size: clamp(0.7rem, 2.75vw, 0.875rem);
