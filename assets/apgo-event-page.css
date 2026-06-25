@@ -378,7 +378,9 @@ body.apgo-special-event-page .apgo-event-listing-card__gallery {
 
 body.apgo-special-event-page .apgo-event-listing-card__body {
   padding: 10px 10px 12px;
-  gap: 6px;
+  gap: 8px;
+  display: flex;
+  flex-direction: column;
 }
 
 body.apgo-special-event-page .apgo-event-listing-card__title {
@@ -391,15 +393,46 @@ body.apgo-special-event-page .apgo-event-listing-card__title {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  flex: 0 0 auto;
 }
 
 body.apgo-special-event-page .apgo-event-listing-card__title a {
   color: inherit;
 }
 
-body.apgo-special-event-page .apgo-event-listing-card .apgo-card-price-row {
+/* 下信息区：价格左、＋ 按钮右，同一行 */
+body.apgo-special-event-page .apgo-event-listing-card__footer.apgo-card-price-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
   align-items: center;
+  justify-content: space-between;
   gap: 8px;
+  width: 100%;
+  margin-top: auto;
+}
+
+body.apgo-special-event-page .apgo-event-listing-card__price {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+body.apgo-special-event-page .apgo-event-listing-card__price product-price {
+  display: block;
+  width: 100%;
+}
+
+body.apgo-special-event-page .apgo-event-listing-card .apgo-coll-drawer-pack {
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+
+body.apgo-special-event-page .apgo-event-listing-card .price--listing-discount .price-sale-row {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35em 0.45em;
+  max-width: 100%;
 }
 
 body.apgo-special-event-page .apgo-event-listing-card .price {

@@ -88,8 +88,8 @@
       <h3 class="h5 apgo-event-listing-card__title">
         <a href="{{ apgo_listing_variant.url }}">{{ product.title }}</a>
       </h3>
-      <div class="apgo-card-price-row">
-        <div class="apgo-card-price-row__price">
+      <div class="apgo-event-listing-card__footer apgo-card-price-row">
+        <div class="apgo-card-price-row__price apgo-event-listing-card__price">
           <product-price data-product-id="{{ product.id }}">
             {% render 'price',
               product_resource: product,
