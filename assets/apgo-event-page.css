@@ -636,9 +636,9 @@ body.apgo-special-event-page .apgo-event-promo .apgo-event-collection-grid__pane
   background: transparent;
   position: relative;
   z-index: 1;
-  /* Buffer so the last card row sits well above the cream shelf — any
-     remaining card shadows fall on the brown, not on the cream. */
-  padding-bottom: clamp(28px, 5vw, 56px) !important;
+  /* Buffer between the last card row and the cream shelf at section bottom.
+     Generous but restrained — mobile gets ~56px, desktop tops out at 110px. */
+  padding-bottom: clamp(56px, 8vw, 110px) !important;
 }
 body.apgo-special-event-page .apgo-event-collection-grid__header {
   background: transparent;
