@@ -1,0 +1,112 @@
+{%- doc -%}
+  Collection-style product card for Special Event page sections.
+  Matches Limited Time Deals listing UI (+ drawer, discount badge) without Theme Editor product-card blocks.
+
+  @param {object} product - Product object
+  @param {string} section_id - Parent section id
+  @param {string} card_uid - Unique id suffix for this card
+{%- enddoc -%}
+
+{% liquid
+  assign apgo_listing_variant = product.selected_or_first_available_variant
+  capture apgo_lv_id_raw
+    render 'apgo-collection-listing-variant-id', product: product
+  endcapture
+  assign apgo_lv_id = apgo_lv_id_raw | strip | plus: 0
+  if apgo_lv_id != 0
+    for v in product.variants
+      if v.id == apgo_lv_id
+        assign apgo_listing_variant = v
+        break
+      endif
+    endfor
+  endif
+
+  assign apgo_card_image = apgo_listing_variant.featured_image
+  if apgo_card_image == blank
+    assign apgo_card_image = apgo_listing_variant.image
+  endif
+  if apgo_card_image == blank and product.featured_media != blank
+    assign apgo_card_image = product.featured_media.preview_image
+  endif
+
+  assign apgo_card_link_id = 'apgo-event-card-' | append: card_uid | append: '-' | append: product.id
+%}
+
+<product-card
+  class="product-card apgo-event-listing-card"
+  data-product-id="{{ product.id }}"
+  data-product-variants-size="{{ product.variants.size }}"
+  id="product-card-{{ card_uid }}"
+>
+  <a
+    id="{{ apgo_card_link_id | md5 }}"
+    href="{{ apgo_listing_variant.url }}"
+    class="product-card__link"
+  >
+    <span class="visually-hidden">{{ product.title }}</span>
+  </a>
+  <div
+    class="
+      product-card__content
+      layout-panel-flex
+      layout-panel-flex--column
+      product-grid__card
+      spacing-style
+      border-style
+      gap-style
+      color-scheme-9a9df36f-52ae-4a86-948a-8b59a473eca0
+    "
+    style="
+      --border-width: 5px;
+      --border-style: solid;
+      --border-opacity: 100%;
+      --border-radius: 16px;
+      --quick-add-display: none;
+      --quick-add-mobile-display: none;
+    "
+  >
+    <div class="card-gallery card-gallery--square apgo-event-listing-card__gallery">
+      <a href="{{ apgo_listing_variant.url }}" class="card-gallery__link">
+        {% if apgo_card_image != blank %}
+          <img
+            src="{{ apgo_card_image | image_url: width: 600 }}"
+            alt="{{ product.title | escape }}"
+            loading="lazy"
+            width="600"
+            height="600"
+            class="product-media__image"
+          >
+        {% else %}
+          {{ 'product-1' | placeholder_svg_tag: 'product-card__placeholder-image' }}
+        {% endif %}
+      </a>
+      {% render 'product-card-badges', product: product %}
+    </div>
+
+    <div class="apgo-event-listing-card__body group-block">
+      <h3 class="h5 apgo-event-listing-card__title">
+        <a href="{{ apgo_listing_variant.url }}">{{ product.title }}</a>
+      </h3>
+      <div class="apgo-card-price-row">
+        <div class="apgo-card-price-row__price">
+          <product-price data-product-id="{{ product.id }}">
+            {% render 'price',
+              product_resource: product,
+              listing_variant: apgo_listing_variant,
+              listing_card_discount: true,
+              show_sale_price_first: true,
+              show_unit_price: false
+            %}
+          </product-price>
+        </div>
+        {% if product.available %}
+          {% render 'apgo-collection-variant-trigger',
+            product: product,
+            selected_variant: apgo_listing_variant
+          %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</product-card>

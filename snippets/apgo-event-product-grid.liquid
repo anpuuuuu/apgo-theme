@@ -1,0 +1,45 @@
+{%- doc -%}
+  Shared product grid loop for Special Event sections (collection-page card UI).
+
+  @param {object} section - Section object (grid settings)
+  @param {object} collection - Collection object
+  @param {number} product_limit - Max products to show
+{%- enddoc -%}
+
+{% if collection != blank and collection.products_count > 0 %}
+  <results-list
+    class="section product-grid-container color-{{ section.settings.color_scheme }} main-collection-zgrid apgo-event-collection-grid__results"
+    style="--padding-block-start: 0px; --padding-block-end: 0px;"
+    section-id="{{ section.id }}"
+  >
+    <div class="collection-wrapper grid gap-style">
+      {% capture children %}
+        {% for product in collection.products limit: product_limit %}
+          <li
+            id="{{ section.id }}-{{ product.id }}"
+            class="product-grid__item product-grid__item--{{ forloop.index0 }}"
+            data-page="1"
+            data-product-id="{{ product.id }}"
+            ref="cards[]"
+          >
+        {% assign apgo_event_card_uid = section.id | append: '-' | append: product.id %}
+            {% render 'apgo-event-listing-card',
+              product: product,
+              section_id: section.id,
+              card_uid: apgo_event_card_uid
+            %}
+          </li>
+        {% endfor %}
+      {% endcapture %}
+      {% render 'product-grid',
+        section: section,
+        children: children,
+        products: collection.products,
+        grid_wrapper_id: false,
+        skip_session_script: true
+      %}
+    </div>
+  </results-list>
+{% elsif request.design_mode %}
+  <p class="apgo-event-collection-grid__empty">Select a collection with products in section settings.</p>
+{% endif %}

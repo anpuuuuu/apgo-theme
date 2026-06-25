@@ -1,24 +1,26 @@
 {% comment %}
-  APGO Special Event — promo collection listing (Phase 1 placeholder UI).
-  Phase 2: replace card markup with dedicated promo design.
+  APGO Special Event — promo / deals collection listing.
+  Uses the same product card UI as Limited Time Deals (collection page).
 {% endcomment %}
 
+<script src="{{ 'results-list.js' | asset_url }}" type="module"></script>
 {{ 'apgo-event-page.css' | asset_url | stylesheet_tag }}
 
 {% liquid
   assign promo_collection = section.settings.collection
-  assign product_limit = section.settings.product_limit | default: 12
+  assign product_limit = section.settings.product_limit | default: 24
 %}
+
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
 
 <section
   id="apgo-event-promo-{{ section.id }}"
-  class="apgo-event-promo"
-  data-layout-variant="{{ section.settings.layout_variant }}"
+  class="apgo-event-promo section color-{{ section.settings.color_scheme }}"
 >
   <div class="apgo-event-promo__inner">
     <header class="apgo-event-promo__header">
-      {% if section.settings.layout_variant == 'promo' %}
-        <span class="apgo-event-promo__badge">特惠專區</span>
+      {% if section.settings.badge != blank %}
+        <span class="apgo-event-promo__badge">{{ section.settings.badge }}</span>
       {% endif %}
       {% if section.settings.heading != blank %}
         <h2 class="apgo-event-promo__heading">{{ section.settings.heading }}</h2>
@@ -28,51 +30,13 @@
       {% endif %}
     </header>
 
-    {% if promo_collection != blank and promo_collection.products_count > 0 %}
-      <div class="apgo-event-promo__grid">
-        {% for product in promo_collection.products limit: product_limit %}
-          {% assign first_variant = product.selected_or_first_available_variant %}
-          {% assign has_compare = false %}
-          {% if first_variant.compare_at_price %}
-            {% assign cap = first_variant.compare_at_price | plus: 0 %}
-            {% assign prc = first_variant.price | plus: 0 %}
-            {% if cap > prc %}
-              {% assign has_compare = true %}
-            {% endif %}
-          {% endif %}
-
-          <article class="apgo-event-promo-card">
-            <a href="{{ product.url }}" class="apgo-event-promo-card__media">
-              {% if product.featured_image %}
-                <img
-                  src="{{ product.featured_image | image_url: width: 600 }}"
-                  alt="{{ product.title | escape }}"
-                  loading="lazy"
-                  width="600"
-                  height="600"
-                >
-              {% else %}
-                {{ 'product-1' | placeholder_svg_tag }}
-              {% endif %}
-            </a>
-            <div class="apgo-event-promo-card__info">
-              <h3 class="apgo-event-promo-card__title">{{ product.title }}</h3>
-              <div class="apgo-event-promo-card__price">
-                <span class="apgo-event-promo-card__now">{{ first_variant.price | money }}</span>
-                {% if has_compare %}
-                  <s class="apgo-event-promo-card__was">{{ first_variant.compare_at_price | money }}</s>
-                {% endif %}
-              </div>
-              <div class="apgo-event-promo-card__cta">
-                <a class="apgo-event-promo-card__btn" href="{{ product.url }}">查看詳情</a>
-              </div>
-            </div>
-          </article>
-        {% endfor %}
-      </div>
-    {% elsif request.design_mode %}
-      <p class="apgo-event-promo__empty">請在設定中選擇特惠商品集合（Collection）</p>
-    {% endif %}
+    <div class="apgo-event-promo__grid-wrap main-collection-zgrid">
+      {% render 'apgo-event-product-grid',
+        section: section,
+        collection: promo_collection,
+        product_limit: product_limit
+      %}
+    </div>
   </div>
 </section>
 
@@ -87,47 +51,136 @@
   "settings": [
     {
       "type": "header",
-      "content": "內容"
+      "content": "Content"
     },
     {
       "type": "collection",
       "id": "collection",
-      "label": "特惠商品集合"
+      "label": "Deals collection"
+    },
+    {
+      "type": "text",
+      "id": "badge",
+      "label": "Badge label (optional)",
+      "default": "Limited Time"
     },
     {
       "type": "text",
       "id": "heading",
-      "label": "主標題",
-      "default": "限時特惠"
+      "label": "Heading",
+      "default": "Limited Time Deals"
     },
     {
       "type": "richtext",
       "id": "subheading",
-      "label": "副標／說明"
+      "label": "Subheading (optional)"
     },
     {
       "type": "range",
       "id": "product_limit",
-      "label": "最多顯示商品數",
+      "label": "Max products",
       "min": 2,
-      "max": 24,
+      "max": 50,
       "step": 1,
-      "default": 12
+      "default": 24
     },
     {
       "type": "header",
-      "content": "版面（Phase 2 擴充）"
+      "content": "Product grid"
     },
     {
       "type": "select",
-      "id": "layout_variant",
-      "label": "Listing 樣式",
+      "id": "layout_type",
+      "label": "Layout",
       "options": [
-        { "value": "promo", "label": "特惠（目前佔位樣式）" },
-        { "value": "standard", "label": "標準（預留）" }
+        { "value": "grid", "label": "Grid" },
+        { "value": "organic", "label": "Editorial" }
       ],
-      "default": "promo",
-      "info": "特惠專用 UI 將在後續版本補上；目前使用橘框佔位卡片。"
+      "default": "grid"
+    },
+    {
+      "type": "select",
+      "id": "product_card_size",
+      "label": "Card size",
+      "options": [
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" },
+        { "value": "extra-large", "label": "Extra large" }
+      ],
+      "default": "large"
+    },
+    {
+      "type": "select",
+      "id": "mobile_product_card_size",
+      "label": "Mobile card size",
+      "options": [
+        { "value": "small", "label": "Small" },
+        { "value": "large", "label": "Large" }
+      ],
+      "default": "small"
+    },
+    {
+      "type": "select",
+      "id": "product_grid_width",
+      "label": "Grid width",
+      "options": [
+        { "value": "centered", "label": "Page" },
+        { "value": "full-width", "label": "Full" }
+      ],
+      "default": "full-width"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width_on_mobile",
+      "label": "Full width on mobile",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "columns_gap_horizontal",
+      "label": "Horizontal gap",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "columns_gap_vertical",
+      "label": "Vertical gap",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-5"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Section top padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Section bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 48
     }
   ],
   "presets": [
