@@ -117,7 +117,7 @@
         "full_width_on_mobile": true,
         "columns_gap_horizontal": 20,
         "columns_gap_vertical": 20,
-        "color_scheme": "",
+        "color_scheme": "scheme-3",
         "padding-block-start": 32,
         "padding-block-end": 48
       }
