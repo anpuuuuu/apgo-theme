@@ -524,30 +524,32 @@ body.apgo-special-event-page {
   --apgo-event-panel-bg: #2a1810;
   --apgo-event-heading-bg: #2a1810;
   --apgo-event-panel-bg-gradient:
-    /* Layer 1 — gold spotlight halo at top-center (now visibly bright
-       so the "stage light" effect actually reads). Uses rgba over the
-       linear so the warm light tints rather than replaces. */
+    /* Layer 1 — gold spotlight halo at top-center, now 48% opacity at
+       the center so the "stage light" actually reads. */
     radial-gradient(
       ellipse 80% 55% at 50% 0%,
-      rgba(248, 168, 73, 0.28) 0%,
-      rgba(244, 210, 138, 0.12) 30%,
+      rgba(248, 168, 73, 0.48) 0%,
+      rgba(244, 210, 138, 0.18) 30%,
       transparent 65%
     ),
-    /* Layer 2 — subtle warm-brown lift in the upper-center, makes the
-       brown around the spotlight look "lit from above" not flat */
+    /* Layer 2 — warm-brown lift around the spotlight makes the brown
+       look "lit from above" not flat */
     radial-gradient(
       ellipse 70% 45% at 50% 10%,
       #4a2c1c 0%,
       #2a1810 55%,
       transparent 100%
     ),
-    /* Layer 3 — brown → cream linear that melts into the banner below */
+    /* Layer 3 — brown → cream linear with a longer solid cream "shelf"
+       at the bottom so the panel-to-banner seam is invisible. The
+       cream hits #fdf5ec by 92% and stays solid through 100%. */
     linear-gradient(
       180deg,
       #2a1810 0%,
-      #2a1810 55%,
-      #5a3a22 78%,
-      #c69a6a 92%,
+      #2a1810 50%,
+      #5a3a22 70%,
+      #c69a6a 84%,
+      #fdf5ec 92%,
       #fdf5ec 100%
     );
 
