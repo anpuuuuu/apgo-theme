@@ -71,6 +71,13 @@
     "apgo_event_collection_grid_n3e6dm": {
       "type": "apgo-event-collection-grid",
       "blocks": {
+        "b1f1_card_9gyjB9": {
+          "type": "b1f1_card",
+          "settings": {
+            "product": "apgo-atomic-glaze-car-nano-coating-refill-pack-new-version",
+            "variant_id": ""
+          }
+        },
         "b1f1_card_wgMyHg": {
           "type": "b1f1_card",
           "settings": {
@@ -150,6 +157,7 @@
         }
       },
       "block_order": [
+        "b1f1_card_9gyjB9",
         "b1f1_card_wgMyHg",
         "b1f1_card_fyGQBM",
         "b1f1_card_bBeNyX",
