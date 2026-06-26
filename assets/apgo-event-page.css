@@ -1136,18 +1136,18 @@ body.apgo-special-event-page .apgo-event-featured-banner__prices {
   line-height: 1.15;
 }
 body.apgo-special-event-page .apgo-event-featured-banner__price-compare {
-  font-size: clamp(10px, 1.3vw, 12px);
-  color: rgba(244, 210, 138, 0.5);
+  font-size: clamp(12px, 1.6vw, 15px);
+  color: rgba(244, 210, 138, 0.55);
   text-decoration: line-through;
   line-height: 1.2;
   font-weight: 500;
 }
 body.apgo-special-event-page .apgo-event-featured-banner__price {
-  font-size: clamp(16px, 2.2vw, 20px);
+  font-size: clamp(22px, 3.4vw, 30px);
   font-weight: 800;
   color: #f08418;
-  line-height: 1.1;
-  letter-spacing: -0.01em;
+  line-height: 1.05;
+  letter-spacing: -0.015em;
 }
 
 /* Featured banner action buttons — same visual language as the
@@ -1193,21 +1193,29 @@ body.apgo-special-event-page .apgo-event-featured-banner__btn:active {
   transform: translateY(1px);
 }
 
-/* Mobile: stack the two buttons vertically and let them fill width
-   so they're easy to tap. The bottom-row already wraps, so the
-   buttons column drops below the price stack naturally. */
+/* Mobile: keep prices on the LEFT, buttons stacked on the RIGHT —
+   bottom-row stays horizontal. Buttons go vertical inside the
+   actions column so each button stays tappable without competing
+   with the bigger price for horizontal real estate. */
 @media (max-width: 749px) {
   body.apgo-special-event-page .apgo-event-featured-banner__bottom-row {
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 10px;
+  }
+  body.apgo-special-event-page .apgo-event-featured-banner__prices {
+    flex: 1 1 auto;
+    min-width: 0;
   }
   body.apgo-special-event-page .apgo-event-featured-banner__actions {
     flex-direction: column;
-    width: 100%;
     gap: 6px;
+    flex: 0 0 auto;
   }
   body.apgo-special-event-page .apgo-event-featured-banner__btn {
-    width: 100%;
+    padding: 7px 14px;
+    font-size: 10.5px;
   }
 }
 
