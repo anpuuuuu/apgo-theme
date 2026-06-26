@@ -1172,6 +1172,10 @@ body.apgo-special-event-page .apgo-event-featured-banner__btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  /* Both buttons share equal width (flex-basis: 0 + grow) so the
+     pill is symmetric — 'Buy now' doesn't look squished next to
+     the longer 'Add to cart' label. */
+  flex: 1 1 0;
   padding: 9px clamp(14px, 2vw, 20px);
   font-size: clamp(10.5px, 1.3vw, 12px);
   font-weight: 800;
