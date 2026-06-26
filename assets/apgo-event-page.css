@@ -630,30 +630,15 @@ body.apgo-special-event-page .apgo-event-banner__frame {
 body.apgo-special-event-page .apgo-event-collection-grid {
   position: relative;
 }
-/* TENT-CORNER top — replaces the elliptical sweeps with two triangular
-   peaks at each corner (like a circus tent's tip), with a flat dip in
-   between. The orange peek-strip below shows through wherever the
-   clip-path carves the panel away. */
+/* Sweeping ellipse top — each corner is a wide elliptical sweep
+   (35% of panel width × ~70px tall) with a flat segment between them
+   in the middle. Reads softer than the full proscenium arch:
+   "medal-podium / luxury display tray" instead of "theatre dome".
+   The orange strip behind matches the vertical depth so the curved
+   cut-outs are filled with banner orange. */
 body.apgo-special-event-page .apgo-event-collection-grid__panel {
-  border-top-left-radius: 0 !important;
-  border-top-right-radius: 0 !important;
-  --apgo-tent-peak-w: clamp(48px, 8vw, 90px);  /* half-width of one peak */
-  --apgo-tent-peak-h: clamp(48px, 7vw, 80px);  /* peak height */
-  clip-path: polygon(
-    /* — Top edge, walking left → right —
-       Start at left edge baseline → up to left peak tip → down into
-       the dip → flat across the middle → up to right peak tip → down
-       to right edge baseline. */
-    0                                      var(--apgo-tent-peak-h),
-    var(--apgo-tent-peak-w)                0,
-    calc(var(--apgo-tent-peak-w) * 2)      var(--apgo-tent-peak-h),
-    calc(100% - var(--apgo-tent-peak-w) * 2) var(--apgo-tent-peak-h),
-    calc(100% - var(--apgo-tent-peak-w))   0,
-    100%                                   var(--apgo-tent-peak-h),
-    /* — Right + bottom + left edges (rectangular) — */
-    100% 100%,
-    0    100%
-  );
+  border-top-left-radius:  35% clamp(48px, 7vw, 80px) !important;
+  border-top-right-radius: 35% clamp(48px, 7vw, 80px) !important;
 }
 body.apgo-special-event-page .apgo-event-collection-grid::before {
   content: '';
