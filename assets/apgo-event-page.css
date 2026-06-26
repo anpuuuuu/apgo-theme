@@ -1193,10 +1193,9 @@ body.apgo-special-event-page .apgo-event-featured-banner__btn:active {
   transform: translateY(1px);
 }
 
-/* Mobile: keep prices on the LEFT, buttons stacked on the RIGHT —
-   bottom-row stays horizontal. Buttons go vertical inside the
-   actions column so each button stays tappable without competing
-   with the bigger price for horizontal real estate. */
+/* Mobile: prices on the LEFT, two buttons side-by-side on the RIGHT.
+   Tight fit (~210px shared between two pills), so pad/font are
+   trimmed a touch so neither button wraps. */
 @media (max-width: 749px) {
   body.apgo-special-event-page .apgo-event-featured-banner__bottom-row {
     flex-direction: row;
@@ -1205,17 +1204,20 @@ body.apgo-special-event-page .apgo-event-featured-banner__btn:active {
     gap: 10px;
   }
   body.apgo-special-event-page .apgo-event-featured-banner__prices {
-    flex: 1 1 auto;
+    flex: 0 0 auto;
     min-width: 0;
   }
   body.apgo-special-event-page .apgo-event-featured-banner__actions {
-    flex-direction: column;
+    flex-direction: row;
     gap: 6px;
-    flex: 0 0 auto;
+    flex: 1 1 auto;
+    justify-content: flex-end;
   }
   body.apgo-special-event-page .apgo-event-featured-banner__btn {
-    padding: 7px 14px;
-    font-size: 10.5px;
+    padding: 8px 12px;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    flex: 0 1 auto;
   }
 }
 
