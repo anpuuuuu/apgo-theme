@@ -1150,44 +1150,57 @@ body.apgo-special-event-page .apgo-event-featured-banner__price {
   letter-spacing: -0.015em;
 }
 
-/* Featured banner action buttons — same visual language as the
-   scroll-zone card buttons (outlined gold + solid gold) but a bit
-   bigger because the banner has more room. */
+/* Segmented action pair — the two buttons sit edge-to-edge inside a
+   single rounded pill, separated by a hairline divider. The OUTER
+   actions container owns the border + radius + overflow:hidden so
+   the inner buttons can be borderless and have square inner edges. */
 body.apgo-special-event-page .apgo-event-featured-banner__actions {
-  display: flex;
+  display: inline-flex;
   flex-direction: row;
-  gap: 8px;
   flex: 0 0 auto;
+  border-radius: 999px;
+  border: 1.5px solid var(--apgo-event-gold-bright, #f8a849);
+  overflow: hidden;
+  background: transparent;
+  box-shadow: 0 3px 10px rgba(240, 132, 24, 0.18);
+  transition: box-shadow 0.15s ease;
+}
+body.apgo-special-event-page .apgo-event-featured-banner__actions:hover {
+  box-shadow: 0 6px 18px rgba(240, 132, 24, 0.32);
 }
 body.apgo-special-event-page .apgo-event-featured-banner__btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 9px clamp(12px, 1.8vw, 18px);
+  padding: 9px clamp(14px, 2vw, 20px);
   font-size: clamp(10.5px, 1.3vw, 12px);
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  border-radius: 999px;
-  border: 1.5px solid var(--apgo-event-gold-bright, #f8a849);
+  border: 0;
+  border-radius: 0;
   cursor: pointer;
   white-space: nowrap;
-  transition: transform 0.15s ease, background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+  transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
 }
+/* Left half — outlined "Add to cart". Carries the divider on its
+   right edge so the seam reads as one hairline regardless of which
+   button is hovered. */
 body.apgo-special-event-page .apgo-event-featured-banner__btn--add {
   background: transparent;
   color: var(--apgo-event-gold-bright, #f8a849);
+  border-right: 1.5px solid var(--apgo-event-gold-bright, #f8a849);
 }
 body.apgo-special-event-page .apgo-event-featured-banner__btn--add:hover {
   background: rgba(248, 168, 73, 0.14);
 }
+/* Right half — solid gold "Buy now" (primary). */
 body.apgo-special-event-page .apgo-event-featured-banner__btn--buy {
   background: linear-gradient(135deg, #f4d28a, #f08418);
   color: #2a1810;
-  box-shadow: 0 3px 10px rgba(240, 132, 24, 0.32);
 }
 body.apgo-special-event-page .apgo-event-featured-banner__btn--buy:hover {
-  box-shadow: 0 6px 18px rgba(240, 132, 24, 0.5);
+  background: linear-gradient(135deg, #f8dfa0, #ff9430);
 }
 body.apgo-special-event-page .apgo-event-featured-banner__btn:active {
   transform: translateY(1px);
@@ -1209,15 +1222,14 @@ body.apgo-special-event-page .apgo-event-featured-banner__btn:active {
   }
   body.apgo-special-event-page .apgo-event-featured-banner__actions {
     flex-direction: row;
-    gap: 6px;
-    flex: 1 1 auto;
-    justify-content: flex-end;
+    flex: 0 0 auto;
+    align-self: center;
+    /* gap stays 0 — buttons are fused as a single segmented pill */
   }
   body.apgo-special-event-page .apgo-event-featured-banner__btn {
-    padding: 10px 18px;
-    font-size: 11.5px;
-    letter-spacing: 0.08em;
-    flex: 0 1 auto;
+    padding: 9px 14px;
+    font-size: 11px;
+    letter-spacing: 0.06em;
   }
 }
 

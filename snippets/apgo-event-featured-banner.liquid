@@ -59,7 +59,20 @@
           </span>
         </div>
         {%- if product.available -%}
-          <div class="apgo-event-featured-banner__actions">
+          {%- comment -%}
+            Segmented action pair — two buttons fused into one
+            rounded pill, split by a single divider line. Outer
+            shell carries the border + radius so the buttons can
+            sit edge-to-edge with sharp inner corners.
+          {%- endcomment -%}
+          <div class="apgo-event-featured-banner__actions apgo-event-featured-banner__actions--split">
+            <button
+              type="button"
+              class="apgo-event-featured-banner__btn apgo-event-featured-banner__btn--add"
+              data-variant-id="{{ featured_variant.id }}"
+              aria-label="Add {{ product.title | escape }} to cart">
+              Add to cart
+            </button>
             <button
               type="button"
               class="apgo-event-featured-banner__btn apgo-event-featured-banner__btn--buy"
