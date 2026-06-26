@@ -2,25 +2,45 @@
   Collection-style product card for Special Event page sections.
   Matches Limited Time Deals listing UI (+ drawer, discount badge) without Theme Editor product-card blocks.
 
-  @param {object} product - Product object
+  @param {object} product    - Product object
   @param {string} section_id - Parent section id
-  @param {string} card_uid - Unique id suffix for this card
+  @param {string} card_uid   - Unique id suffix for this card
+  @param {string} variant_id - Optional. Editor-picked variant ID (from
+                               the block setting). If set + matches a
+                               real variant on this product, overrides
+                               the default variant-resolution logic so
+                               the card links / prices that variant.
 {%- enddoc -%}
 
 {% liquid
   assign apgo_listing_variant = product.selected_or_first_available_variant
-  capture apgo_lv_id_raw
-    render 'apgo-collection-listing-variant-id', product: product
-  endcapture
-  assign apgo_lv_id = apgo_lv_id_raw | strip | plus: 0
-  if apgo_lv_id != 0
+
+  assign apgo_block_vid = variant_id | default: '' | strip | plus: 0
+  assign apgo_resolved_from_block = false
+  if apgo_block_vid != 0
     for v in product.variants
-      if v.id == apgo_lv_id
+      if v.id == apgo_block_vid
         assign apgo_listing_variant = v
+        assign apgo_resolved_from_block = true
         break
       endif
     endfor
   endif
+
+  unless apgo_resolved_from_block
+    capture apgo_lv_id_raw
+      render 'apgo-collection-listing-variant-id', product: product
+    endcapture
+    assign apgo_lv_id = apgo_lv_id_raw | strip | plus: 0
+    if apgo_lv_id != 0
+      for v in product.variants
+        if v.id == apgo_lv_id
+          assign apgo_listing_variant = v
+          break
+        endif
+      endfor
+    endif
+  endunless
 
   assign apgo_card_image = apgo_listing_variant.featured_image
   if apgo_card_image == blank

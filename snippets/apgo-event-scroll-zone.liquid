@@ -2,18 +2,47 @@
   Horizontal-scroll zone — used by Discount and Buy-1-Free-1 zones on
   the APGO Birthday page. Renders heading → optional decorative banner
   image → a snap-scroll track of product cards (~2.5 cards visible at
-  rest). The banner is a flat image (not clickable) sourced from an
-  image_picker setting in the parent section.
+  rest).
+
+  Variant-aware data path. Pass card_blocks for fine-grained control
+  (each block carries its own product + variant_id picked by the
+  editor). Falls back to the legacy `products` array for backwards
+  compatibility with pages still using the old product_list setting.
 
   @param {string} heading      - Zone heading text (e.g. "DISCOUNT DEALS")
   @param {image}  banner_image - Optional decorative banner image
-  @param {array}  products     - Array of products (from a product_list setting)
+  @param {array}  card_blocks  - Section blocks for this zone (preferred).
+                                 Each block has settings.product +
+                                 settings.variant_id.
+  @param {array}  products     - Legacy fallback: a flat product array.
+                                 Used only when card_blocks is blank.
   @param {string} zone_class   - Modifier suffix added to the wrapper
                                  (used for analytics / per-zone CSS hooks)
   @param {string} section_id   - Parent section id, used for unique card ids
 {%- enddoc -%}
 
-{%- if products != blank and products.size > 0 -%}
+{%- liquid
+  assign apgo_use_blocks = false
+  if card_blocks != blank and card_blocks.size > 0
+    assign apgo_use_blocks = true
+  endif
+
+  assign apgo_has_items = false
+  if apgo_use_blocks
+    for b in card_blocks
+      if b.settings.product != blank
+        assign apgo_has_items = true
+        break
+      endif
+    endfor
+  else
+    if products != blank and products.size > 0
+      assign apgo_has_items = true
+    endif
+  endif
+-%}
+
+{%- if apgo_has_items -%}
   <section class="apgo-event-scroll-zone apgo-event-scroll-zone--{{ zone_class }}">
     {%- if heading != blank -%}
       <h3 class="apgo-event-scroll-zone__heading">
@@ -34,15 +63,31 @@
       </div>
     {%- endif -%}
     <div class="apgo-event-scroll-zone__track" role="list">
-      {%- for product in products -%}
-        {%- assign apgo_event_card_uid = section_id | append: '-' | append: zone_class | append: '-' | append: product.id -%}
-        <div class="apgo-event-scroll-zone__card" role="listitem">
-          {% render 'apgo-event-listing-card',
-            product: product,
-            section_id: section_id,
-            card_uid: apgo_event_card_uid %}
-        </div>
-      {%- endfor -%}
+      {%- if apgo_use_blocks -%}
+        {%- for block in card_blocks -%}
+          {%- assign apgo_block_product = block.settings.product -%}
+          {%- if apgo_block_product != blank -%}
+            {%- assign apgo_event_card_uid = section_id | append: '-' | append: zone_class | append: '-' | append: block.id -%}
+            <div class="apgo-event-scroll-zone__card" role="listitem" {{ block.shopify_attributes }}>
+              {% render 'apgo-event-listing-card',
+                product: apgo_block_product,
+                variant_id: block.settings.variant_id,
+                section_id: section_id,
+                card_uid: apgo_event_card_uid %}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      {%- else -%}
+        {%- for product in products -%}
+          {%- assign apgo_event_card_uid = section_id | append: '-' | append: zone_class | append: '-' | append: product.id -%}
+          <div class="apgo-event-scroll-zone__card" role="listitem">
+            {% render 'apgo-event-listing-card',
+              product: product,
+              section_id: section_id,
+              card_uid: apgo_event_card_uid %}
+          </div>
+        {%- endfor -%}
+      {%- endif -%}
     </div>
   </section>
 {%- endif -%}

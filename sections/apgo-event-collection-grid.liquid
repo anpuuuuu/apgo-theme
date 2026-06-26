@@ -66,21 +66,31 @@
     {% endif %}
 
     <div class="apgo-event-collection-grid__panel-body">
+      {%- comment -%}
+        Build per-zone block arrays. Blocks are flat in Shopify, so we
+        partition by block.type. Each card block carries one product +
+        an optional variant_id (admin pastes from product admin URL).
+      {%- endcomment -%}
+      {%- assign discount_card_blocks = section.blocks | where: 'type', 'discount_card' -%}
+      {%- assign b1f1_card_blocks     = section.blocks | where: 'type', 'b1f1_card' -%}
+
       {%- comment -%} ZONE 1 — Discount horizontal scroll {%- endcomment -%}
-      {%- if section.settings.show_discount_zone and section.settings.discount_zone_products.size > 0 -%}
+      {%- if section.settings.show_discount_zone -%}
         {% render 'apgo-event-scroll-zone',
           heading: section.settings.discount_zone_heading,
           banner_image: section.settings.discount_zone_banner,
+          card_blocks: discount_card_blocks,
           products: section.settings.discount_zone_products,
           zone_class: 'discount',
           section_id: section.id %}
       {%- endif -%}
 
       {%- comment -%} ZONE 2 — Buy 1 Free 1 horizontal scroll {%- endcomment -%}
-      {%- if section.settings.show_b1f1_zone and section.settings.b1f1_zone_products.size > 0 -%}
+      {%- if section.settings.show_b1f1_zone -%}
         {% render 'apgo-event-scroll-zone',
           heading: section.settings.b1f1_zone_heading,
           banner_image: section.settings.b1f1_zone_banner,
+          card_blocks: b1f1_card_blocks,
           products: section.settings.b1f1_zone_products,
           zone_class: 'b1f1',
           section_id: section.id %}
@@ -182,7 +192,8 @@
     {
       "type": "product_list",
       "id": "discount_zone_products",
-      "label": "Discount products",
+      "label": "Discount products (LEGACY — use blocks below)",
+      "info": "Only used when no 'Discount card' blocks are added. Add discount cards via 'Add block' for per-variant control.",
       "limit": 12
     },
     {
@@ -210,7 +221,8 @@
     {
       "type": "product_list",
       "id": "b1f1_zone_products",
-      "label": "B1F1 products",
+      "label": "B1F1 products (LEGACY — use blocks below)",
+      "info": "Only used when no 'Buy 1 Free 1 card' blocks are added. Add B1F1 cards via 'Add block' for per-variant control.",
       "limit": 12
     },
     {
@@ -320,6 +332,52 @@
       "step": 1,
       "unit": "px",
       "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "discount_card",
+      "name": "Discount card",
+      "limit": 12,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "One card in the Discount Zone scroll. Pick the product, then (optional) paste the specific variant ID you want the card to link to and price. Variant ID is the long number at the end of a variant's admin URL: /admin/products/.../variants/[THIS NUMBER]."
+        },
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "type": "text",
+          "id": "variant_id",
+          "label": "Variant ID (optional)",
+          "info": "Leave blank to use the product's default variant."
+        }
+      ]
+    },
+    {
+      "type": "b1f1_card",
+      "name": "Buy 1 Free 1 card",
+      "limit": 12,
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "One card in the Buy 1 Free 1 Zone scroll. Pick the product, then (optional) paste the specific variant ID you want the card to link to and price. Variant ID is the long number at the end of a variant's admin URL: /admin/products/.../variants/[THIS NUMBER]."
+        },
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "type": "text",
+          "id": "variant_id",
+          "label": "Variant ID (optional)",
+          "info": "Leave blank to use the product's default variant."
+        }
+      ]
     }
   ],
   "presets": [
