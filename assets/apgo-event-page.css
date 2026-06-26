@@ -622,24 +622,40 @@ body.apgo-special-event-page .apgo-event-banner__frame {
   margin-block: 0 !important;
 }
 
-/* Banner-orange peek-through strip behind the panel's rounded top corners.
-   Visible ONLY where the panel's border-radius carves out the corners
-   (so it reads as the panel "pressing into" the banner). Strip width
-   is pinned to the panel width so it never extends beyond the panel
-   and looks like a horizontal bar across the page. */
+/* ════════════════════════════════════════════════════════════════════
+   ROUNDED TOP CORNERS + ORANGE PEEK-THROUGH STRIP
+   ────────────────────────────────────────────────────────────────────
+   The panel sits on top of an orange "stage strip" that's the same
+   width as the panel. The panel's rounded top corners "cut into" the
+   strip — wherever the corner curve carves the panel away, the strip
+   shows through and frames the panel in carnival orange.
+
+   Two CSS variables drive the whole effect so future tweaks don't
+   require hunting through multiple rules:
+     --apgo-corner-h   how tall the curve / strip is
+     --apgo-corner-w   how wide each corner curve sweeps inward
+   ════════════════════════════════════════════════════════════════════ */
 body.apgo-special-event-page .apgo-event-collection-grid {
+  /* Single source of truth for corner geometry. */
+  --apgo-corner-h: clamp(56px, 8vw, 96px);
+  --apgo-corner-w: 40%;
+  --apgo-corner-orange: var(--apgo-event-banner-orange, #d84101);
   position: relative;
 }
-/* Sweeping ellipse top — each corner is a wide elliptical sweep
-   (35% of panel width × ~70px tall) with a flat segment between them
-   in the middle. Reads softer than the full proscenium arch:
-   "medal-podium / luxury display tray" instead of "theatre dome".
-   The orange strip behind matches the vertical depth so the curved
-   cut-outs are filled with banner orange. */
+
+/* Panel — rounded top corners only. Elliptical so wide screens still
+   get a graceful sweep instead of a tight circle. */
 body.apgo-special-event-page .apgo-event-collection-grid__panel {
-  border-top-left-radius:  35% clamp(48px, 7vw, 80px) !important;
-  border-top-right-radius: 35% clamp(48px, 7vw, 80px) !important;
+  position: relative;
+  z-index: 2;
+  border-top-left-radius:  var(--apgo-corner-w) var(--apgo-corner-h) !important;
+  border-top-right-radius: var(--apgo-corner-w) var(--apgo-corner-h) !important;
 }
+
+/* Orange peek-through strip behind the corners. Same height as the
+   corner curve so the entire carved-out area is filled with orange.
+   Width pinned to the panel width on each breakpoint so the strip
+   never leaks outside the panel and reads as one solid bar. */
 body.apgo-special-event-page .apgo-event-collection-grid::before {
   content: '';
   position: absolute;
@@ -647,24 +663,15 @@ body.apgo-special-event-page .apgo-event-collection-grid::before {
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
-  height: clamp(48px, 7vw, 80px);
-  background: var(--apgo-event-banner-orange, #d84101);
+  height: var(--apgo-corner-h);
+  background: var(--apgo-corner-orange);
   z-index: 0;
   pointer-events: none;
 }
-/* Desktop: panel is 67% centered → strip matches that exact width so the
-   page bg (deep brown) shows on either side, only the panel-width orange
-   is visible underneath, and the rounded corners cut into it cleanly. */
 @media screen and (min-width: 750px) {
   body.apgo-special-event-page .apgo-event-collection-grid::before {
     width: var(--apgo-event-content-desktop-width, 67%);
   }
-}
-/* Pin the panel above the orange strip so the rounded corners cut into
-   it (revealing the orange) instead of being covered by it. */
-body.apgo-special-event-page .apgo-event-collection-grid__panel {
-  position: relative;
-  z-index: 2;
 }
 
 /* ── Panel background: deep brown + soft gold radial halo + confetti dots ── */
