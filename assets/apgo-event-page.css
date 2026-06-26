@@ -1094,6 +1094,13 @@ body.apgo-special-event-page .apgo-event-featured-banner__title {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+body.apgo-special-event-page .apgo-event-featured-banner__title a {
+  color: inherit;
+  text-decoration: none;
+}
+body.apgo-special-event-page .apgo-event-featured-banner__title a:hover {
+  color: var(--apgo-event-gold-bright, #f8a849);
+}
 body.apgo-special-event-page .apgo-event-featured-banner__badge {
   display: inline-flex;
   flex: 0 0 auto;
@@ -1109,7 +1116,11 @@ body.apgo-special-event-page .apgo-event-featured-banner__badge {
   box-shadow: 0 2px 6px rgba(200, 150, 31, 0.35);
   align-self: flex-start; /* top-align with first line of title */
 }
-/* Row 2 — price stack on the left + CTA on the right */
+/* Row 2 — price stack on the left + action buttons on the right.
+   Price order is now compare-at (strikethrough) on top, current price
+   bold-orange below — matches the scroll-zone card convention. The
+   old single "View deal" CTA pill has been replaced by two buttons
+   (Add to cart + Buy now), wired in a follow-up. */
 body.apgo-special-event-page .apgo-event-featured-banner__bottom-row {
   display: flex;
   align-items: center;
@@ -1121,46 +1132,83 @@ body.apgo-special-event-page .apgo-event-featured-banner__prices {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 1px;
-}
-body.apgo-special-event-page .apgo-event-featured-banner__price {
-  font-size: clamp(15px, 2.1vw, 19px);
-  font-weight: 800;
-  color: #f08418;
-  line-height: 1.1;
-  letter-spacing: -0.01em;
+  gap: 2px;
+  line-height: 1.15;
 }
 body.apgo-special-event-page .apgo-event-featured-banner__price-compare {
   font-size: clamp(10px, 1.3vw, 12px);
   color: rgba(244, 210, 138, 0.5);
   text-decoration: line-through;
   line-height: 1.2;
+  font-weight: 500;
 }
-body.apgo-special-event-page .apgo-event-featured-banner__cta {
+body.apgo-special-event-page .apgo-event-featured-banner__price {
+  font-size: clamp(16px, 2.2vw, 20px);
+  font-weight: 800;
+  color: #f08418;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+/* Featured banner action buttons — same visual language as the
+   scroll-zone card buttons (outlined gold + solid gold) but a bit
+   bigger because the banner has more room. */
+body.apgo-special-event-page .apgo-event-featured-banner__actions {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+body.apgo-special-event-page .apgo-event-featured-banner__btn {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 7px 14px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #f4d28a, #f08418);
-  color: #2a1810;
-  font-size: 10.5px;
+  justify-content: center;
+  padding: 9px clamp(12px, 1.8vw, 18px);
+  font-size: clamp(10.5px, 1.3vw, 12px);
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  box-shadow: 0 3px 10px rgba(240, 132, 24, 0.32);
-  transition: box-shadow .2s ease, transform .2s ease;
+  border-radius: 999px;
+  border: 1.5px solid var(--apgo-event-gold-bright, #f8a849);
+  cursor: pointer;
   white-space: nowrap;
-  flex: 0 0 auto;
+  transition: transform 0.15s ease, background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
 }
-body.apgo-special-event-page .apgo-event-featured-banner__cta svg {
-  transition: transform .2s ease;
+body.apgo-special-event-page .apgo-event-featured-banner__btn--add {
+  background: transparent;
+  color: var(--apgo-event-gold-bright, #f8a849);
 }
-body.apgo-special-event-page .apgo-event-featured-banner:hover .apgo-event-featured-banner__cta {
+body.apgo-special-event-page .apgo-event-featured-banner__btn--add:hover {
+  background: rgba(248, 168, 73, 0.14);
+}
+body.apgo-special-event-page .apgo-event-featured-banner__btn--buy {
+  background: linear-gradient(135deg, #f4d28a, #f08418);
+  color: #2a1810;
+  box-shadow: 0 3px 10px rgba(240, 132, 24, 0.32);
+}
+body.apgo-special-event-page .apgo-event-featured-banner__btn--buy:hover {
   box-shadow: 0 6px 18px rgba(240, 132, 24, 0.5);
 }
-body.apgo-special-event-page .apgo-event-featured-banner:hover .apgo-event-featured-banner__cta svg {
-  transform: translateX(3px);
+body.apgo-special-event-page .apgo-event-featured-banner__btn:active {
+  transform: translateY(1px);
+}
+
+/* Mobile: stack the two buttons vertically and let them fill width
+   so they're easy to tap. The bottom-row already wraps, so the
+   buttons column drops below the price stack naturally. */
+@media (max-width: 749px) {
+  body.apgo-special-event-page .apgo-event-featured-banner__bottom-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  body.apgo-special-event-page .apgo-event-featured-banner__actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 6px;
+  }
+  body.apgo-special-event-page .apgo-event-featured-banner__btn {
+    width: 100%;
+  }
 }
 
 /* Reduced motion: kill hover transforms on banner + image */

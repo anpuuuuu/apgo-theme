@@ -1,26 +1,38 @@
 {%- doc -%}
   Featured-Stage "spotlight card" — one unified card per featured
-  product. Banner image on top, condensed info bar below (title +
-  trailing badge, two-line price stack with CTA on the right).
+  product. Banner image on top, condensed info bar below:
+    - Compare-at price (strikethrough, faded, on top)
+    - Current price (bold orange, below)
+    - Two action buttons: Add to cart + Buy now (UI only for now)
 
   The image is required (admin uploads a designed promo banner); the
-  card hides entirely if either image or product is missing.
+  card hides entirely if either image or product is missing. The
+  `badge` and `cta` params are still accepted for backwards-compat
+  with the section schema but are intentionally not rendered — the
+  card relies on the buttons as the only CTAs now.
 
   @param {object} product - Product object the card links to
   @param {image}  image   - Admin-uploaded banner image (any ratio)
-  @param {string} badge   - Optional pill text trailing the title
-  @param {string} cta     - CTA pill label (e.g. "View deal")
+  @param {string} badge   - Ignored (legacy schema setting).
+  @param {string} cta     - Ignored (legacy schema setting).
 {%- enddoc -%}
 
 {%- if image != blank and product != blank and product.url != blank -%}
   {%- liquid
+    assign featured_variant = product.selected_or_first_available_variant
     assign on_sale = false
-    if product.compare_at_price > product.price
+    if featured_variant.compare_at_price > featured_variant.price
       assign on_sale = true
     endif
   -%}
-  <a class="apgo-event-featured-banner" href="{{ product.url }}" aria-label="{{ product.title | escape }}">
-    <div class="apgo-event-featured-banner__media">
+  {%- comment -%}
+    Outer wrapper switched from <a> to <div> because we now have
+    interactive <button> elements inside; nested <a><button></a> is
+    invalid HTML. Banner image + title each get their own <a> so the
+    visual click-targets stay obvious.
+  {%- endcomment -%}
+  <div class="apgo-event-featured-banner">
+    <a class="apgo-event-featured-banner__media" href="{{ product.url }}" aria-label="{{ product.title | escape }}">
       <img
         class="apgo-event-featured-banner__img"
         src="{{ image | image_url: width: 1600 }}"
@@ -28,28 +40,43 @@
         loading="lazy"
         width="{{ image.width }}"
         height="{{ image.height }}">
-    </div>
+    </a>
     <div class="apgo-event-featured-banner__info">
       <div class="apgo-event-featured-banner__top-row">
-        <h4 class="apgo-event-featured-banner__title">{{ product.title }}</h4>
-        {%- if badge != blank -%}
-          <span class="apgo-event-featured-banner__badge">{{ badge }}</span>
-        {%- endif -%}
+        <h4 class="apgo-event-featured-banner__title">
+          <a href="{{ product.url }}">{{ product.title }}</a>
+        </h4>
       </div>
       <div class="apgo-event-featured-banner__bottom-row">
         <div class="apgo-event-featured-banner__prices">
-          <span class="apgo-event-featured-banner__price">{{ product.price | money }}</span>
           {%- if on_sale -%}
-            <span class="apgo-event-featured-banner__price-compare">{{ product.compare_at_price | money }}</span>
+            <span class="apgo-event-featured-banner__price-compare">
+              {{ featured_variant.compare_at_price | money | replace: ' MYR', '' | replace: 'MYR', '' }}
+            </span>
           {%- endif -%}
+          <span class="apgo-event-featured-banner__price">
+            {{ featured_variant.price | money | replace: ' MYR', '' | replace: 'MYR', '' }}
+          </span>
         </div>
-        <span class="apgo-event-featured-banner__cta">
-          {{ cta | default: 'View deal' }}
-          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/>
-          </svg>
-        </span>
+        {%- if product.available -%}
+          <div class="apgo-event-featured-banner__actions">
+            <button
+              type="button"
+              class="apgo-event-featured-banner__btn apgo-event-featured-banner__btn--add"
+              data-variant-id="{{ featured_variant.id }}"
+              aria-label="Add {{ product.title | escape }} to cart">
+              Add to cart
+            </button>
+            <button
+              type="button"
+              class="apgo-event-featured-banner__btn apgo-event-featured-banner__btn--buy"
+              data-variant-id="{{ featured_variant.id }}"
+              aria-label="Buy {{ product.title | escape }} now">
+              Buy now
+            </button>
+          </div>
+        {%- endif -%}
       </div>
     </div>
-  </a>
+  </div>
 {%- endif -%}
