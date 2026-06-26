@@ -112,24 +112,51 @@
       <h3 class="h5 apgo-event-listing-card__title">
         <a href="{{ apgo_listing_variant.url }}">{{ product.title }}</a>
       </h3>
-      <div class="apgo-event-listing-card__footer apgo-card-price-row">
-        <div class="apgo-card-price-row__price apgo-event-listing-card__price">
-          <product-price data-product-id="{{ product.id }}">
-            {% render 'price',
-              product_resource: product,
-              listing_variant: apgo_listing_variant,
-              listing_card_discount: true,
-              show_sale_price_first: true,
-              show_unit_price: false
-            %}
-          </product-price>
+      {%- comment -%}
+        Footer layout:
+          ┌─────────────────────────────────────────┐
+          │ RM388.00  (compare-at, strikethrough)   │
+          │ RM179.00  (current price)               │
+          │ [ Add to cart ]  [ Buy now ]            │
+          └─────────────────────────────────────────┘
+        Buttons are UI-only stubs for now; cart / checkout wiring
+        gets bolted on in a follow-up.
+      {%- endcomment -%}
+      {%- liquid
+        assign apgo_card_on_sale = false
+        if apgo_listing_variant.compare_at_price > apgo_listing_variant.price
+          assign apgo_card_on_sale = true
+        endif
+      -%}
+      <div class="apgo-event-listing-card__footer">
+        <div class="apgo-event-listing-card__price-stack">
+          {%- if apgo_card_on_sale -%}
+            <span class="apgo-event-listing-card__price-compare">
+              {{ apgo_listing_variant.compare_at_price | money }}
+            </span>
+          {%- endif -%}
+          <span class="apgo-event-listing-card__price-current">
+            {{ apgo_listing_variant.price | money }}
+          </span>
         </div>
-        {% if product.available %}
-          {% render 'apgo-collection-variant-trigger',
-            product: product,
-            selected_variant: apgo_listing_variant
-          %}
-        {% endif %}
+        {%- if product.available -%}
+          <div class="apgo-event-listing-card__actions">
+            <button
+              type="button"
+              class="apgo-event-listing-card__btn apgo-event-listing-card__btn--add"
+              data-variant-id="{{ apgo_listing_variant.id }}"
+              aria-label="Add {{ product.title | escape }} to cart">
+              Add to cart
+            </button>
+            <button
+              type="button"
+              class="apgo-event-listing-card__btn apgo-event-listing-card__btn--buy"
+              data-variant-id="{{ apgo_listing_variant.id }}"
+              aria-label="Buy {{ product.title | escape }} now">
+              Buy now
+            </button>
+          </div>
+        {%- endif -%}
       </div>
     </div>
   </div>

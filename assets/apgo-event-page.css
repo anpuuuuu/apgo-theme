@@ -317,7 +317,100 @@ body.apgo-special-event-page .apgo-event-listing-card__title a {
   color: inherit;
 }
 
-/* 下信息区：价格左、＋ 按钮右，同一行 */
+/* Card footer (NEW layout): price stack on top (compare-at strikethrough
+   above current), two action buttons below. Stacks vertically on mobile,
+   buttons go side-by-side on desktop where the card is wider. */
+body.apgo-special-event-page .apgo-event-listing-card__footer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin-top: auto;
+}
+
+body.apgo-special-event-page .apgo-event-listing-card__price-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  line-height: 1.15;
+}
+
+body.apgo-special-event-page .apgo-event-listing-card__price-compare {
+  font-size: 0.78em;
+  font-weight: 500;
+  color: rgba(244, 210, 138, 0.55); /* faded gold so it reads as a secondary anchor */
+  text-decoration: line-through;
+  letter-spacing: 0.01em;
+}
+
+body.apgo-special-event-page .apgo-event-listing-card__price-current {
+  font-size: var(--apgo-event-card-price-size);
+  font-weight: 800;
+  color: var(--apgo-event-card-price-color);
+  letter-spacing: -0.01em;
+}
+
+body.apgo-special-event-page .apgo-event-listing-card__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+body.apgo-special-event-page .apgo-event-listing-card__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 0.74em;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 8px;
+  border: 1.5px solid var(--apgo-event-gold-bright, #f8a849);
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+body.apgo-special-event-page .apgo-event-listing-card__btn--add {
+  background: transparent;
+  color: var(--apgo-event-gold-bright, #f8a849);
+}
+
+body.apgo-special-event-page .apgo-event-listing-card__btn--add:hover {
+  background: rgba(248, 168, 73, 0.14);
+}
+
+body.apgo-special-event-page .apgo-event-listing-card__btn--buy {
+  background: var(--apgo-event-gold-bright, #f8a849);
+  color: #1a0f08;
+}
+
+body.apgo-special-event-page .apgo-event-listing-card__btn--buy:hover {
+  background: #ffba5c;
+}
+
+body.apgo-special-event-page .apgo-event-listing-card__btn:active {
+  transform: translateY(1px);
+}
+
+/* Desktop: cards are wider — buttons can sit side-by-side */
+@media screen and (min-width: 1024px) {
+  body.apgo-special-event-page .apgo-event-listing-card__actions {
+    flex-direction: row;
+    gap: 6px;
+  }
+  body.apgo-special-event-page .apgo-event-listing-card__btn {
+    flex: 1 1 0;
+    padding: 9px 6px;
+  }
+}
+
+/* Keep the LEGACY one-line footer rule too (in case some pages still
+   use the old layout while migrating) — same selector, suffixed with
+   the old companion class so it only matches that old DOM. */
 body.apgo-special-event-page .apgo-event-listing-card__footer.apgo-card-price-row {
   display: flex;
   flex-direction: row;
