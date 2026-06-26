@@ -326,6 +326,37 @@ body.apgo-special-event-page .apgo-event-listing-card__footer {
   gap: 10px;
   width: 100%;
   margin-top: auto;
+  /* z-index above the product-card__link overlay so button clicks
+     reach the button instead of the full-card link wrapper. */
+  position: relative;
+  z-index: 3;
+}
+body.apgo-special-event-page .apgo-event-featured-banner__actions {
+  /* Same reasoning — keep the featured banner's segmented action
+     pill clickable in front of any sibling banner-wide <a>. */
+  position: relative;
+  z-index: 3;
+}
+
+/* Header cart icon pulse — fires once the flying gift "lands". */
+@keyframes apgo-event-cart-pulse {
+  0%   { transform: scale(1); }
+  35%  { transform: scale(1.22); }
+  100% { transform: scale(1); }
+}
+cart-icon.apgo-event-cart-pulse,
+[data-testid="cart-icon"].apgo-event-cart-pulse {
+  animation: apgo-event-cart-pulse 0.55s cubic-bezier(.5, 1.5, .6, 1);
+  transform-origin: center;
+}
+@media (prefers-reduced-motion: reduce) {
+  cart-icon.apgo-event-cart-pulse,
+  [data-testid="cart-icon"].apgo-event-cart-pulse {
+    animation: none;
+  }
+  .apgo-event-fly-gift {
+    transition: opacity 0.2s ease !important;
+  }
 }
 
 body.apgo-special-event-page .apgo-event-listing-card__price-stack {
