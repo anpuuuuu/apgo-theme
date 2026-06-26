@@ -428,20 +428,35 @@ body.apgo-special-event-page {
   --apgo-event-page-bg: #1f100a;
   --apgo-event-card-price-color: #f08418;
 
-  /* SCHEME 5 — Pure cream + orange/gold accents only.
-     Flat cream panel, no halo, no spotlight. The page leans on the
-     gold gradient headings and the orange CTA pills for festivity.
-     Reads like a clean editorial / Apple-event landing — minimal
-     visual weight on mobile. */
+  /* SCHEME 1 — Champagne gold + cream white.
+     Light cream panel with a soft gold halo at top-center; melts into
+     a pure cream shelf at the bottom so the seam to the orange banner
+     below stays seamless (same #fdf5ec hand-off color). */
   --apgo-event-panel-bg: #fff8ed;
   --apgo-event-heading-bg: #fff8ed;
   --apgo-event-panel-bg-gradient:
-    /* Single flat cream layer with the gentlest possible melt at the
-       bottom into the banner color #fdf5ec for a seamless seam. */
+    /* Layer 1 — soft champagne-gold halo at top-center for the
+       "festive stage" feel without dominating the panel. */
+    radial-gradient(
+      ellipse 80% 55% at 50% 0%,
+      rgba(248, 168, 73, 0.28) 0%,
+      rgba(244, 210, 138, 0.14) 35%,
+      transparent 70%
+    ),
+    /* Layer 2 — subtle warm lift around the halo so the cream
+       doesn't read as flat paper. */
+    radial-gradient(
+      ellipse 70% 45% at 50% 10%,
+      #fef0d8 0%,
+      #fff8ed 60%,
+      transparent 100%
+    ),
+    /* Layer 3 — solid cream base that melts to the banner color
+       #fdf5ec by the bottom. */
     linear-gradient(
       180deg,
       #fff8ed 0%,
-      #fff8ed 88%,
+      #fff8ed 70%,
       #fdf5ec 100%
     );
 
@@ -555,15 +570,16 @@ body.apgo-special-event-page .apgo-event-collection-grid__panel::before {
   content: '';
   position: absolute;
   inset: 0;
-  /* Whisper-level confetti — kept for a hint of festivity but dropped
-     to ~14% opacity so the cream stays the dominant visual. */
+  /* Confetti dots — switched to warm gold #c8961f at higher opacity so
+     they stay visible on the cream panel (the old pale-gold values
+     vanished against the light background). */
   background-image:
-    radial-gradient(circle at 8% 12%,  rgba(200, 150, 31, 0.14) 0%, transparent 1.4%),
-    radial-gradient(circle at 26% 38%, rgba(248, 168, 73, 0.12) 0%, transparent 1.0%),
-    radial-gradient(circle at 78% 22%, rgba(200, 150, 31, 0.14) 0%, transparent 1.3%),
-    radial-gradient(circle at 88% 60%, rgba(200, 150, 31, 0.12) 0%, transparent 1.1%),
-    radial-gradient(circle at 42% 76%, rgba(248, 168, 73, 0.14) 0%, transparent 1.2%),
-    radial-gradient(circle at 18% 88%, rgba(200, 150, 31, 0.12) 0%, transparent 1.1%);
+    radial-gradient(circle at 8% 12%,  rgba(200, 150, 31, 0.32) 0%, transparent 1.4%),
+    radial-gradient(circle at 26% 38%, rgba(248, 168, 73, 0.30) 0%, transparent 1.0%),
+    radial-gradient(circle at 78% 22%, rgba(200, 150, 31, 0.32) 0%, transparent 1.3%),
+    radial-gradient(circle at 88% 60%, rgba(200, 150, 31, 0.28) 0%, transparent 1.1%),
+    radial-gradient(circle at 42% 76%, rgba(248, 168, 73, 0.32) 0%, transparent 1.2%),
+    radial-gradient(circle at 18% 88%, rgba(200, 150, 31, 0.30) 0%, transparent 1.1%);
   background-size: 540px 540px;
   pointer-events: none;
   z-index: 0;
