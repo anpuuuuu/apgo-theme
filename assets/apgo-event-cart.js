@@ -96,6 +96,12 @@
       '<circle cx="24" cy="12" r="3" fill="#c8961f"/>' +
     '</svg>';
 
+  /* Feature-detect CSS offset-path. Supported in every evergreen
+     browser since ~2022 (Chrome, Edge, Firefox, Safari 16+); the
+     fallback further down handles the rare ancient WebView. */
+  var SUPPORTS_OFFSET_PATH =
+    (window.CSS && CSS.supports && CSS.supports('offset-path', 'path("M0 0")'));
+
   function flyGiftBox(fromEl) {
     var target = findCartIcon();
     if (!target || !fromEl) return;
@@ -111,44 +117,83 @@
     var gift = document.createElement('div');
     gift.className = 'apgo-event-fly-gift';
     gift.innerHTML = GIFT_SVG;
-
-    /* Position the gift element at the button center using fixed +
-       translate(-50%, -50%) so its center sits on the start point.
-       The center-anchored transform also makes the end scale shrink
-       toward the cart icon rather than collapsing toward the
-       top-left of its bounding box. */
     var styles = gift.style;
     styles.position = 'fixed';
-    styles.left = startX + 'px';
-    styles.top = startY + 'px';
     styles.width = '52px';
     styles.height = '52px';
     styles.zIndex = '99999';
     styles.pointerEvents = 'none';
-    styles.transform = 'translate(-50%, -50%) scale(1) rotate(-10deg)';
-    styles.transformOrigin = 'center';
     styles.filter = 'drop-shadow(0 10px 22px rgba(248, 168, 73, 0.55))';
-    styles.transition =
-      'left 0.75s cubic-bezier(.22,.61,.36,1),' +
-      'top 0.75s cubic-bezier(.55,.06,.68,.19),' +
-      'transform 0.75s cubic-bezier(.22,.61,.36,1),' +
-      'opacity 0.3s ease 0.5s';
-    styles.willChange = 'left, top, transform, opacity';
+    styles.willChange = 'transform, opacity, offset-distance';
 
-    document.body.appendChild(gift);
+    if (SUPPORTS_OFFSET_PATH) {
+      /* True bezier path. The control point is placed ABOVE the line
+         between start and end (lower Y in viewport coords = higher
+         on screen) so the gift arcs upward over its trip. Peak
+         height scales with horizontal distance — long trips peak
+         higher, short trips stay flatter so the curve always reads
+         as graceful. */
+      var midX = (startX + endX) / 2;
+      var midY = (startY + endY) / 2;
+      var distX = Math.abs(endX - startX);
+      var distY = Math.abs(endY - startY);
+      var dist = Math.sqrt(distX * distX + distY * distY);
+      /* Peak height: ~25% of trip distance, clamped 60-220px so even
+         tiny trips look like an arc and giant trips don't fly off
+         the top of the viewport. */
+      var peakLift = Math.min(220, Math.max(60, dist * 0.25));
+      var ctrlX = midX;
+      var ctrlY = midY - peakLift;
 
-    /* Double rAF — first paints the gift at the start point, second
-       triggers the transition to the cart icon. Without the double,
-       browsers sometimes batch the styles and we get a jump. */
-    requestAnimationFrame(function () {
-      requestAnimationFrame(function () {
-        gift.style.left = endX + 'px';
-        gift.style.top = endY + 'px';
-        gift.style.transform =
-          'translate(-50%, -50%) scale(0.22) rotate(25deg)';
-        gift.style.opacity = '0';
+      /* offset-anchor: center makes the path position the element's
+         CENTER (not top-left), so we don't need translate(-50%, -50%)
+         in the transform. The transform is then free for scale +
+         rotate effects layered on top of the path motion. */
+      styles.offsetPath =
+        'path("M ' + startX + ' ' + startY +
+        ' Q ' + ctrlX + ' ' + ctrlY + ' ' +
+        endX + ' ' + endY + '")';
+      styles.offsetAnchor = 'center';
+      styles.offsetRotate = '0deg'; /* don't auto-rotate with path tangent — we handle rotation in transform */
+      styles.offsetDistance = '0%';
+
+      document.body.appendChild(gift);
+
+      /* Web Animations API: 4 keyframes — start, peak (smaller arc
+         feel), late descent, landing. Combined motion: rotates
+         playfully through the flight and shrinks into the cart. */
+      gift.animate([
+        { offsetDistance: '0%',   transform: 'scale(1) rotate(-12deg)',  opacity: 1, offset: 0 },
+        { offsetDistance: '45%',  transform: 'scale(0.85) rotate(8deg)', opacity: 1, offset: 0.45 },
+        { offsetDistance: '85%',  transform: 'scale(0.45) rotate(28deg)', opacity: 0.92, offset: 0.85 },
+        { offsetDistance: '100%', transform: 'scale(0.18) rotate(48deg)', opacity: 0, offset: 1 }
+      ], {
+        duration: 900,
+        easing: 'cubic-bezier(.42, 0, .58, 1)',
+        fill: 'forwards'
       });
-    });
+    } else {
+      /* Fallback for ancient browsers without offset-path. Two-axis
+         CSS transition — not a real arc but graceful enough. */
+      styles.left = startX + 'px';
+      styles.top = startY + 'px';
+      styles.transform = 'translate(-50%, -50%) scale(1) rotate(-10deg)';
+      styles.transition =
+        'left 0.75s cubic-bezier(.22,.61,.36,1),' +
+        'top 0.75s cubic-bezier(.55,.06,.68,.19),' +
+        'transform 0.75s cubic-bezier(.22,.61,.36,1),' +
+        'opacity 0.3s ease 0.5s';
+      document.body.appendChild(gift);
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          gift.style.left = endX + 'px';
+          gift.style.top = endY + 'px';
+          gift.style.transform =
+            'translate(-50%, -50%) scale(0.22) rotate(25deg)';
+          gift.style.opacity = '0';
+        });
+      });
+    }
 
     /* Tear down + pulse the cart icon once the gift has "landed". */
     setTimeout(function () {
@@ -157,7 +202,7 @@
       setTimeout(function () {
         target.classList.remove('apgo-event-cart-pulse');
       }, 600);
-    }, 850);
+    }, 920);
   }
 
   function setBusy(btn, busy) {
