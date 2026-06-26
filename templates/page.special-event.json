@@ -70,6 +70,98 @@
     },
     "apgo_event_collection_grid_n3e6dm": {
       "type": "apgo-event-collection-grid",
+      "blocks": {
+        "b1f1_card_wgMyHg": {
+          "type": "b1f1_card",
+          "settings": {
+            "product": "apgo-pro-car-wash-towel-l-160cm-x-60cm",
+            "variant_id": ""
+          }
+        },
+        "b1f1_card_fyGQBM": {
+          "type": "b1f1_card",
+          "settings": {
+            "product": "apgo-pro-car-wash-towel-l-160cm-x-60cm",
+            "variant_id": ""
+          }
+        },
+        "b1f1_card_bBeNyX": {
+          "type": "b1f1_card",
+          "settings": {
+            "product": "apgo-car-wheel-rim-cleaner",
+            "variant_id": ""
+          }
+        },
+        "b1f1_card_8nYVxK": {
+          "type": "b1f1_card",
+          "settings": {
+            "product": "apgo-car-tire-gloss-dressing-and-protectant",
+            "variant_id": ""
+          }
+        },
+        "b1f1_card_LDxjM9": {
+          "type": "b1f1_card",
+          "settings": {
+            "product": "apgo-car-exterior-plastic-protectant",
+            "variant_id": ""
+          }
+        },
+        "b1f1_card_h8Uejm": {
+          "type": "b1f1_card",
+          "settings": {
+            "product": "apgo-car-bug-tar-remover",
+            "variant_id": ""
+          }
+        },
+        "b1f1_card_aLtxDy": {
+          "type": "b1f1_card",
+          "settings": {
+            "product": "apgo-car-extreme-iron-remover",
+            "variant_id": ""
+          }
+        },
+        "discount_card_yA8wkF": {
+          "type": "discount_card",
+          "settings": {
+            "product": "apgo-atomic-titanium-crystal-car-nano-coating-premium",
+            "variant_id": ""
+          }
+        },
+        "discount_card_yhwfpF": {
+          "type": "discount_card",
+          "settings": {
+            "product": "apgo-aurora-car-nano-coating-premium",
+            "variant_id": ""
+          }
+        },
+        "discount_card_m8Gek8": {
+          "type": "discount_card",
+          "settings": {
+            "product": "plastic-hard-coating",
+            "variant_id": ""
+          }
+        },
+        "discount_card_9YLDex": {
+          "type": "discount_card",
+          "settings": {
+            "product": "apgo-windshield-oil-film-remover-perfect-glass-restorer-quartz-glass-coating",
+            "variant_id": ""
+          }
+        }
+      },
+      "block_order": [
+        "b1f1_card_wgMyHg",
+        "b1f1_card_fyGQBM",
+        "b1f1_card_bBeNyX",
+        "b1f1_card_8nYVxK",
+        "b1f1_card_LDxjM9",
+        "b1f1_card_h8Uejm",
+        "b1f1_card_aLtxDy",
+        "discount_card_yA8wkF",
+        "discount_card_yhwfpF",
+        "discount_card_m8Gek8",
+        "discount_card_9YLDex"
+      ],
       "name": "Event Collection Grid",
       "settings": {
         "heading": "apgo birthday party",
@@ -78,23 +170,11 @@
         "show_discount_zone": true,
         "discount_zone_heading": "special DISCOUNT",
         "discount_zone_banner": "shopify://shop_images/photo_2026-06-25_23-20-22.jpg",
-        "discount_zone_products": [
-          "apgo-car-bug-tar-remover",
-          "apgo-car-engine-oil-grease-cleaning-agent",
-          "apgo-atomic-car-nano-coating-standard",
-          "apgo-atomic-sealing-car-nano-coating-set-4-item",
-          "apgo-atomic-highlight-car-nano-coating"
-        ],
+        "discount_zone_products": [],
         "show_b1f1_zone": true,
         "b1f1_zone_heading": "BUY 1 FREE 1",
         "b1f1_zone_banner": "shopify://shop_images/photo_2026-06-25_23-20-15.jpg",
-        "b1f1_zone_products": [
-          "apgo-car-interior-eco-friendly-coating",
-          "apgo-car-headlight-repair-polish-cream",
-          "apgo-car-magnetic-clay-spray-solution-with-clay-bar",
-          "apgo-car-paint-polish-cream-white-restorer",
-          "apgo-car-swift-coating-2-in-1-shampoo-and-coating-boss-limited-edition"
-        ],
+        "b1f1_zone_products": [],
         "show_featured_stage": true,
         "featured_heading": "star product",
         "featured_product_1": "atomic-coloured-glaze",
