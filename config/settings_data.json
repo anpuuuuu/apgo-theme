@@ -9,8 +9,8 @@
  */
 {
   "current": {
-    "apgo_gwp_enabled": true,
-    "apgo_promo_banner_enabled": true,
+    "apgo_gwp_enabled": false,
+    "apgo_promo_banner_enabled": false,
     "apgo_promo_banner_pdp_products": [],
     "logo": "shopify://shop_images/Untitled-1_4ef42425-f5e2-4f58-866d-c58ceb4f3268.png",
     "favicon": "shopify://shop_images/apgo-logo-bg-transparent.png",
