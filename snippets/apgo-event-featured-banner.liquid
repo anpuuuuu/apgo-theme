@@ -48,12 +48,12 @@
         </h4>
       </div>
       <div class="apgo-event-featured-banner__bottom-row">
+        {%- comment -%}
+          Compare-at price intentionally NOT rendered — editorial
+          wants the campaign price to read as the anchor, not as a
+          discount.
+        {%- endcomment -%}
         <div class="apgo-event-featured-banner__prices">
-          {%- if on_sale -%}
-            <span class="apgo-event-featured-banner__price-compare">
-              {{ featured_variant.compare_at_price | money | replace: ' MYR', '' | replace: 'MYR', '' }}
-            </span>
-          {%- endif -%}
           <span class="apgo-event-featured-banner__price">
             {{ featured_variant.price | money | replace: ' MYR', '' | replace: 'MYR', '' }}
           </span>

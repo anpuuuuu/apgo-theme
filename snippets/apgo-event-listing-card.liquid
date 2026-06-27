@@ -122,19 +122,13 @@
         Buttons are UI-only stubs for now; cart / checkout wiring
         gets bolted on in a follow-up.
       {%- endcomment -%}
-      {%- liquid
-        assign apgo_card_on_sale = false
-        if apgo_listing_variant.compare_at_price > apgo_listing_variant.price
-          assign apgo_card_on_sale = true
-        endif
-      -%}
+      {%- comment -%}
+        Compare-at price intentionally NOT rendered on the birthday
+        page — editorial wants the campaign price to read as the
+        anchor, not as a discount.
+      {%- endcomment -%}
       <div class="apgo-event-listing-card__footer">
         <div class="apgo-event-listing-card__price-stack">
-          {%- if apgo_card_on_sale -%}
-            <span class="apgo-event-listing-card__price-compare">
-              {{ apgo_listing_variant.compare_at_price | money }}
-            </span>
-          {%- endif -%}
           <span class="apgo-event-listing-card__price-current">
             {{ apgo_listing_variant.price | money }}
           </span>
