@@ -4400,8 +4400,17 @@
         {%- if section.settings.show_shipping -%}
           {%- assign initial_variant = product.selected_or_first_available_variant -%}
           {%- assign initial_available = initial_variant.available -%}
+          {%- comment -%}
+            Per-market shipping label. SG storefront shows the SG copy
+            when set; otherwise falls through to the MY copy (kept as
+            the global default so legacy stores aren't affected).
+          {%- endcomment -%}
+          {%- assign apgo_shipping_label = section.settings.shipping_label | default: '2–3 business days' -%}
+          {%- if localization.country.iso_code == 'SG' and section.settings.shipping_label_sg != blank -%}
+            {%- assign apgo_shipping_label = section.settings.shipping_label_sg -%}
+          {%- endif -%}
           <div class="apgo-cc-pdp__shipping">
-            <span class="apgo-cc-pdp__shipping-label">{{ section.settings.shipping_label | default: '2–3 business days' }}</span>
+            <span class="apgo-cc-pdp__shipping-label">{{ apgo_shipping_label }}</span>
             <span class="apgo-cc-pdp__shipping-sep" aria-hidden="true">·</span>
             <span
               class="apgo-cc-pdp__shipping-stock{% unless initial_available %} apgo-cc-pdp__shipping-stock--out{% endunless %}"
@@ -6899,8 +6908,16 @@ document.addEventListener('DOMContentLoaded', function() {
     {
       "type": "text",
       "id": "shipping_label",
-      "label": "運送說明文字",
+      "label": "運送說明文字（馬來西亞 MY）",
+      "info": "Storefront country = MY 時顯示。",
       "default": "2–3 business days"
+    },
+    {
+      "type": "text",
+      "id": "shipping_label_sg",
+      "label": "運送說明文字（新加坡 SG）",
+      "info": "Storefront country = SG 時顯示。留空則退回到 MY 版本。",
+      "default": "3–4 business days"
     },
     {
       "type": "header",
