@@ -9,6 +9,54 @@
  */
 {
   "sections": {
+    "apgo_cc_badge_carousel_rmwWa6": {
+      "type": "apgo-cc-badge-carousel",
+      "blocks": {
+        "banner_UzGTTj": {
+          "type": "banner",
+          "settings": {
+            "image": "shopify://shop_images/buy_1_free_1.png",
+            "link": "shopify://pages/apgo-birthday-page",
+            "alt": ""
+          }
+        },
+        "banner_DQJFfb": {
+          "type": "banner",
+          "settings": {
+            "image": "shopify://shop_images/1_4.png",
+            "link": "shopify://pages/apgo-birthday-page",
+            "alt": ""
+          }
+        },
+        "banner_fCxet7": {
+          "type": "banner",
+          "settings": {
+            "image": "shopify://shop_images/big_discount.png",
+            "link": "shopify://pages/apgo-birthday-page",
+            "alt": ""
+          }
+        }
+      },
+      "block_order": [
+        "banner_UzGTTj",
+        "banner_DQJFfb",
+        "banner_fCxet7"
+      ],
+      "name": "APGO · Badge 輪播",
+      "settings": {
+        "autoplay": true,
+        "interval": 4,
+        "show_dots": true,
+        "max_width": 0,
+        "side_padding": 0,
+        "radius": 12,
+        "border_width": 1,
+        "border_color": "#3d4148",
+        "gap_top": 0,
+        "gap_bottom": 0,
+        "aria_label": "優惠輪播"
+      }
+    },
     "section_NcGDMK": {
       "type": "section",
       "blocks": {
@@ -224,6 +272,7 @@
     }
   },
   "order": [
+    "apgo_cc_badge_carousel_rmwWa6",
     "section_NcGDMK",
     "custom_liquid_jMHpAt",
     "custom_liquid_afAH4y",
