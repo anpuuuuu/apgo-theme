@@ -403,6 +403,10 @@ body.apgo-special-event-page .apgo-event-listing-card__price-current {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   color: var(--apgo-event-card-price-color); /* fallback */
+  /* Warm orange-gold glow — text-shadow shows through the
+     background-clip:text fill, giving the gradient a soft halo. */
+  filter: drop-shadow(0 0 6px rgba(248, 168, 73, 0.45))
+          drop-shadow(0 0 14px rgba(240, 132, 24, 0.22));
 }
 body.apgo-special-event-page .apgo-event-listing-card__price-int {
   /* No special rules — inherits the gradient + font-size from parent. */
@@ -1241,6 +1245,10 @@ body.apgo-special-event-page .apgo-event-featured-banner__price {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   color: #f08418; /* fallback */
+  /* Slightly stronger glow on the featured cards since the price
+     is bigger and sits on darker chrome. */
+  filter: drop-shadow(0 0 8px rgba(248, 168, 73, 0.5))
+          drop-shadow(0 0 18px rgba(240, 132, 24, 0.28));
 }
 body.apgo-special-event-page .apgo-event-featured-banner__price-frac {
   font-size: 0.5em;

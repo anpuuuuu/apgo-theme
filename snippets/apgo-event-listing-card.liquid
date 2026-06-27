@@ -134,7 +134,6 @@
       {%- assign apgo_card_price_parts = apgo_card_price_str | split: '.' -%}
       <div class="apgo-event-listing-card__footer">
         <div class="apgo-event-listing-card__price-stack">
-          <span class="apgo-event-listing-card__price-caption">★ Birthday Price</span>
           <span class="apgo-event-listing-card__price-current">
             <span class="apgo-event-listing-card__price-int">{{ apgo_card_price_parts[0] }}</span>{%- if apgo_card_price_parts[1] -%}<sup class="apgo-event-listing-card__price-frac">{{ apgo_card_price_parts[1] }}</sup>{%- endif -%}
           </span>

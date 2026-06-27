@@ -59,7 +59,6 @@
         {%- assign apgo_fb_price_str = featured_variant.price | money | replace: ' MYR', '' | replace: 'MYR', '' -%}
         {%- assign apgo_fb_price_parts = apgo_fb_price_str | split: '.' -%}
         <div class="apgo-event-featured-banner__prices">
-          <span class="apgo-event-featured-banner__price-caption">★ Birthday Price</span>
           <span class="apgo-event-featured-banner__price">
             <span class="apgo-event-featured-banner__price-int">{{ apgo_fb_price_parts[0] }}</span>{%- if apgo_fb_price_parts[1] -%}<sup class="apgo-event-featured-banner__price-frac">{{ apgo_fb_price_parts[1] }}</sup>{%- endif -%}
           </span>
