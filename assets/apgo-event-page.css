@@ -738,9 +738,10 @@ body.apgo-special-event-page .apgo-event-collection-grid__header {
   background: transparent;
   position: relative;
   z-index: 1;
-  /* Header gutter: generous top space so 'APGO BIRTHDAY PARTY' isn't
-     squashed against the panel's rounded top edge; trim sides + bottom. */
-  padding: clamp(12px, 2.5vw, 22px) clamp(12px, 3vw, 20px) clamp(4px, 1vw, 12px);
+  /* Header gutter: more breathing room above 'APGO BIRTHDAY PARTY'
+     per editorial; trim sides + bottom stays slim so the countdown
+     below stays tight against the title. */
+  padding: clamp(22px, 4.5vw, 40px) clamp(12px, 3vw, 20px) clamp(4px, 1vw, 12px);
 }
 /* Scattered gold confetti dot pattern, low-opacity so it doesn't shout */
 body.apgo-special-event-page .apgo-event-collection-grid__panel::before {
