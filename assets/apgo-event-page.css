@@ -375,11 +375,45 @@ body.apgo-special-event-page .apgo-event-listing-card__price-compare {
   letter-spacing: 0.01em;
 }
 
+/* Birthday-price caption — small uppercase gold-gradient label above
+   the price. Mutes the "single-line price feels flat" problem. */
+body.apgo-special-event-page .apgo-event-listing-card__price-caption {
+  display: block;
+  font-size: 0.62em;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  line-height: 1.1;
+  margin-bottom: 2px;
+  background: var(--apgo-event-heading-gradient, linear-gradient(135deg, #f4d28a, #f8a849, #c8961f));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: var(--apgo-event-gold-bright, #f8a849); /* fallback for non-webkit */
+}
+
 body.apgo-special-event-page .apgo-event-listing-card__price-current {
   font-size: var(--apgo-event-card-price-size);
   font-weight: 800;
-  color: var(--apgo-event-card-price-color);
   letter-spacing: -0.01em;
+  display: inline-flex;
+  align-items: baseline;
+  background: var(--apgo-event-heading-gradient, linear-gradient(135deg, #f4d28a, #f8a849, #c8961f));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: var(--apgo-event-card-price-color); /* fallback */
+}
+body.apgo-special-event-page .apgo-event-listing-card__price-int {
+  /* No special rules — inherits the gradient + font-size from parent. */
+}
+body.apgo-special-event-page .apgo-event-listing-card__price-frac {
+  font-size: 0.55em;
+  font-weight: 700;
+  margin-left: 1px;
+  top: -0.55em; /* override default sup baseline so it sits flush with the integer top */
+  vertical-align: super;
+  letter-spacing: 0.02em;
 }
 
 body.apgo-special-event-page .apgo-event-listing-card__actions {
@@ -1180,12 +1214,41 @@ body.apgo-special-event-page .apgo-event-featured-banner__price-compare {
   line-height: 1.2;
   font-weight: 500;
 }
+/* Birthday-price caption above the featured banner price. */
+body.apgo-special-event-page .apgo-event-featured-banner__price-caption {
+  display: block;
+  font-size: clamp(9px, 1.1vw, 11px);
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  line-height: 1.1;
+  margin-bottom: 4px;
+  background: var(--apgo-event-heading-gradient, linear-gradient(135deg, #f4d28a, #f8a849, #c8961f));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: var(--apgo-event-gold-bright, #f8a849); /* fallback for non-webkit */
+}
 body.apgo-special-event-page .apgo-event-featured-banner__price {
   font-size: clamp(22px, 3.4vw, 30px);
   font-weight: 800;
-  color: #f08418;
   line-height: 1.05;
   letter-spacing: -0.015em;
+  display: inline-flex;
+  align-items: baseline;
+  background: var(--apgo-event-heading-gradient, linear-gradient(135deg, #f4d28a, #f8a849, #c8961f));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: #f08418; /* fallback */
+}
+body.apgo-special-event-page .apgo-event-featured-banner__price-frac {
+  font-size: 0.5em;
+  font-weight: 700;
+  margin-left: 2px;
+  top: -0.6em;
+  vertical-align: super;
+  letter-spacing: 0.02em;
 }
 
 /* Segmented action pair — the two buttons sit edge-to-edge inside a

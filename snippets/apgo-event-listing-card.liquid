@@ -123,14 +123,20 @@
         gets bolted on in a follow-up.
       {%- endcomment -%}
       {%- comment -%}
-        Compare-at price intentionally NOT rendered on the birthday
-        page — editorial wants the campaign price to read as the
-        anchor, not as a discount.
+        Compare-at price intentionally NOT rendered — campaign price
+        is the anchor. Decorations layered to keep the lone price
+        from reading as flat:
+          - 'BIRTHDAY PRICE' caption in gold gradient (B)
+          - integer part big, decimal as small sup (C)
+          - gold gradient text fill on the whole price (D)
       {%- endcomment -%}
+      {%- assign apgo_card_price_str = apgo_listing_variant.price | money -%}
+      {%- assign apgo_card_price_parts = apgo_card_price_str | split: '.' -%}
       <div class="apgo-event-listing-card__footer">
         <div class="apgo-event-listing-card__price-stack">
+          <span class="apgo-event-listing-card__price-caption">★ Birthday Price</span>
           <span class="apgo-event-listing-card__price-current">
-            {{ apgo_listing_variant.price | money }}
+            <span class="apgo-event-listing-card__price-int">{{ apgo_card_price_parts[0] }}</span>{%- if apgo_card_price_parts[1] -%}<sup class="apgo-event-listing-card__price-frac">{{ apgo_card_price_parts[1] }}</sup>{%- endif -%}
           </span>
         </div>
         {%- if product.available -%}

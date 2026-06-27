@@ -49,13 +49,19 @@
       </div>
       <div class="apgo-event-featured-banner__bottom-row">
         {%- comment -%}
-          Compare-at price intentionally NOT rendered — editorial
-          wants the campaign price to read as the anchor, not as a
-          discount.
+          Compare-at price intentionally NOT rendered — campaign
+          price is the anchor. Decorations layered to keep the lone
+          price from reading as flat:
+            - 'BIRTHDAY PRICE' caption in gold gradient (B)
+            - integer part big, decimal as small sup (C)
+            - gold gradient text fill on the whole price (D)
         {%- endcomment -%}
+        {%- assign apgo_fb_price_str = featured_variant.price | money | replace: ' MYR', '' | replace: 'MYR', '' -%}
+        {%- assign apgo_fb_price_parts = apgo_fb_price_str | split: '.' -%}
         <div class="apgo-event-featured-banner__prices">
+          <span class="apgo-event-featured-banner__price-caption">★ Birthday Price</span>
           <span class="apgo-event-featured-banner__price">
-            {{ featured_variant.price | money | replace: ' MYR', '' | replace: 'MYR', '' }}
+            <span class="apgo-event-featured-banner__price-int">{{ apgo_fb_price_parts[0] }}</span>{%- if apgo_fb_price_parts[1] -%}<sup class="apgo-event-featured-banner__price-frac">{{ apgo_fb_price_parts[1] }}</sup>{%- endif -%}
           </span>
         </div>
         {%- if product.available -%}
