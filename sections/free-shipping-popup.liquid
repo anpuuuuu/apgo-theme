@@ -5,32 +5,24 @@
 {%- endcomment -%}
 
 {% liquid
+  # MY/SG marquee promo. Text is driven by Customizer settings only
+  # (sg_promo_text / my_promo_text). Country code picks the line and
+  # the flag icon; if the matching setting is blank the marquee just
+  # renders no text — admins must fill the Customizer field.
   assign show_market_promo = false
-  assign market_promo_key = ''
   assign market_promo_flag = ''
+  assign market_promo_text = ''
   if section.settings.show_mysg_discount_promo
     if localization.country.iso_code == 'SG'
-      assign show_market_promo = true
-      assign market_promo_key = 'apgo_promotions.sg_free_shipping_banner'
       assign market_promo_flag = 'sg'
+      assign market_promo_text = section.settings.sg_promo_text | default: ''
     elsif localization.country.iso_code == 'MY'
-      assign show_market_promo = true
-      assign market_promo_key = 'apgo_promotions.my_free_shipping_banner'
       assign market_promo_flag = 'my'
+      assign market_promo_text = section.settings.my_promo_text | default: ''
     endif
-  endif
-
-  # Override text — Customizer settings win over locale strings when set.
-  # Falls back to the locale value (apgo_promotions.*) so the page never
-  # shows an empty marquee just because the field is blank.
-  assign market_promo_text = ''
-  if market_promo_flag == 'sg'
-    assign market_promo_text = section.settings.sg_promo_text | default: ''
-  elsif market_promo_flag == 'my'
-    assign market_promo_text = section.settings.my_promo_text | default: ''
-  endif
-  if market_promo_text == blank and market_promo_key != ''
-    assign market_promo_text = market_promo_key | t
+    if market_promo_flag != ''
+      assign show_market_promo = true
+    endif
   endif
 
   # 顯示：MY/SG 促銷、或有掛 blocks、或編輯器
@@ -376,19 +368,19 @@
     {
       "type": "header",
       "content": "MY / SG promo text",
-      "info": "Live, per-market promo lines. Leave blank to fall back to the default locale string (Online Store → Languages → Edit default theme content → apgo_promotions.*)."
+      "info": "Per-market promo lines shown alongside the country flag in the marquee. Blank = no text (flag still shows)."
     },
     {
       "type": "text",
       "id": "my_promo_text",
       "label": "Malaysia (MY) promo text",
-      "info": "Shown when the storefront country is MY. Leave blank to use the locale default."
+      "info": "Shown when the storefront country is MY."
     },
     {
       "type": "text",
       "id": "sg_promo_text",
       "label": "Singapore (SG) promo text",
-      "info": "Shown when the storefront country is SG. Leave blank to use the locale default."
+      "info": "Shown when the storefront country is SG."
     }
   ],
   "presets": [

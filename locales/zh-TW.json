@@ -415,10 +415,6 @@
   "apgo_live": {
     "host": "主持人"
   },
-  "apgo_promotions": {
-    "my_free_shipping_banner": "西马滿 MYR 99 免運 · 配送時效 2–3 個工作天",
-    "sg_free_shipping_banner": "滿 SGD 55 免運 · 配送時效 3–4 個工作天"
-  },
   "cart": {
     "exclusive_coupon": "專屬優惠券",
     "progress_title": "距離目標還差",
