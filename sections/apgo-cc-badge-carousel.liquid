@@ -1,0 +1,225 @@
+{%- comment -%}
+  APGO · Badge 輪播
+  内容區頂部的自動輪播 banner 帶。1-5 張圖，橫向 slide 自動輪播。
+  尺寸由圖片決定（width:100%; height:auto）——後台請確保各張圖尺寸/比例一致。
+  單張時退化成靜態 banner（不輪播、無圓點）。0 張時整個 section 不顯示。
+{%- endcomment -%}
+
+{%- liquid
+  assign banners = section.blocks | where: 'type', 'banner'
+  assign shown = 0
+  for b in banners
+    if b.settings.image != blank
+      assign shown = shown | plus: 1
+    endif
+  endfor
+-%}
+
+{%- if shown > 0 -%}
+  <section
+    class="apgo-cc-badge"
+    data-apgo-cc-badge
+    data-autoplay="{{ section.settings.autoplay }}"
+    data-interval="{{ section.settings.interval | times: 1000 }}"
+    aria-label="{{ section.settings.aria_label | default: '優惠輪播' | escape }}"
+    style="--badge-pad: {{ section.settings.side_padding }}px; --badge-radius: {{ section.settings.radius }}px; --badge-maxw: {% if section.settings.max_width > 0 %}{{ section.settings.max_width }}px{% else %}100%{% endif %}; --badge-gap-top: {{ section.settings.gap_top }}px; --badge-gap-bottom: {{ section.settings.gap_bottom }}px; --badge-border-w: {{ section.settings.border_width }}px; --badge-border-color: {{ section.settings.border_color }};"
+  >
+    <div class="apgo-cc-badge__track" data-apgo-cc-badge-track>
+      {%- for block in banners -%}
+        {%- if block.settings.image == blank -%}{%- continue -%}{%- endif -%}
+        {%- capture img -%}
+          <img
+            class="apgo-cc-badge__img"
+            src="{{ block.settings.image | image_url: width: 1600 }}"
+            srcset="{{ block.settings.image | image_url: width: 800 }} 800w, {{ block.settings.image | image_url: width: 1200 }} 1200w, {{ block.settings.image | image_url: width: 1600 }} 1600w"
+            sizes="100vw"
+            alt="{{ block.settings.alt | escape }}"
+            loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+            width="{{ block.settings.image.width }}"
+            height="{{ block.settings.image.height }}"
+            draggable="false"
+          >
+        {%- endcapture -%}
+        {%- if block.settings.link != blank -%}
+          <a class="apgo-cc-badge__slide" href="{{ block.settings.link }}" data-badge-slide {{ block.shopify_attributes }}>{{ img }}</a>
+        {%- else -%}
+          <div class="apgo-cc-badge__slide" data-badge-slide {{ block.shopify_attributes }}>{{ img }}</div>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+
+    {%- if shown > 1 and section.settings.show_dots -%}
+      <div class="apgo-cc-badge__dots" data-apgo-cc-badge-dots>
+        {%- for i in (1..shown) -%}
+          <button type="button" class="apgo-cc-badge__dot{% if forloop.first %} is-active{% endif %}" data-badge-dot="{{ forloop.index0 }}" aria-label="第 {{ forloop.index }} 張"></button>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </section>
+
+  <script>
+  (function () {
+    function initBadge(root) {
+      if (!root || root.dataset.badgeReady) return;
+      root.dataset.badgeReady = '1';
+      var track = root.querySelector('[data-apgo-cc-badge-track]');
+      var slides = root.querySelectorAll('[data-badge-slide]');
+      var dots = root.querySelectorAll('[data-badge-dot]');
+      if (!track) return;
+      var raf = 0;
+      function current() { return track.clientWidth ? Math.round(track.scrollLeft / track.clientWidth) : 0; }
+      function goTo(i) { track.scrollTo({ left: i * track.clientWidth, behavior: 'smooth' }); }
+      function updateDots() {
+        var i = current();
+        for (var d = 0; d < dots.length; d++) dots[d].classList.toggle('is-active', d === i);
+      }
+      track.addEventListener('scroll', function () {
+        if (!raf) raf = requestAnimationFrame(function () { raf = 0; updateDots(); });
+      }, { passive: true });
+      for (var d = 0; d < dots.length; d++) {
+        (function (dot) {
+          dot.addEventListener('click', function () {
+            goTo(parseInt(dot.getAttribute('data-badge-dot'), 10) || 0);
+            restart();
+          });
+        })(dots[d]);
+      }
+      window.addEventListener('resize', function () { goTo(current()); });
+
+      var autoplay = root.getAttribute('data-autoplay') === 'true';
+      var interval = parseInt(root.getAttribute('data-interval') || '4000', 10);
+      if (interval < 1500) interval = 1500;
+      var timer = null, paused = false;
+      function next() {
+        if (slides.length < 2) return;
+        var i = current();
+        goTo((i + 1) % slides.length);
+      }
+      function start() { if (autoplay && slides.length > 1 && !timer) timer = setInterval(function () { if (!paused) next(); }, interval); }
+      function stop() { if (timer) { clearInterval(timer); timer = null; } }
+      function restart() { stop(); start(); }
+      root.addEventListener('pointerenter', function () { paused = true; });
+      root.addEventListener('pointerleave', function () { paused = false; });
+      root.addEventListener('touchstart', function () { paused = true; }, { passive: true });
+      root.addEventListener('touchend', function () { paused = false; }, { passive: true });
+      start();
+    }
+    function initAll(r) { (r || document).querySelectorAll('[data-apgo-cc-badge]').forEach(initBadge); }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function () { initAll(); });
+    } else { initAll(); }
+    if (window.Shopify && Shopify.designMode) {
+      document.addEventListener('shopify:section:load', function (e) { initAll(e.target); });
+    }
+  })();
+  </script>
+{%- endif -%}
+
+{% stylesheet %}
+    .apgo-cc-badge {
+      position: relative;
+      width: 100%;
+      max-width: var(--badge-maxw, 100%);
+      margin-top: var(--badge-gap-top, 0px);
+      margin-bottom: var(--badge-gap-bottom, 0px);
+      margin-left: auto;
+      margin-right: auto;
+      padding-left: var(--badge-pad, 0px);
+      padding-right: var(--badge-pad, 0px);
+      box-sizing: border-box;
+    }
+    .apgo-cc-badge__track {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+      overscroll-behavior-x: contain;
+      border-radius: var(--badge-radius, 0px);
+      border: var(--badge-border-w, 0px) solid var(--badge-border-color, transparent);
+      overflow-y: hidden;
+    }
+    .apgo-cc-badge__track::-webkit-scrollbar { display: none; }
+    .apgo-cc-badge__slide {
+      flex: 0 0 100%;
+      scroll-snap-align: center;
+      scroll-snap-stop: always;
+      display: block;
+      line-height: 0;
+    }
+    .apgo-cc-badge__img {
+      width: 100%;
+      height: auto;
+      display: block;
+      user-select: none;
+      -webkit-user-drag: none;
+      pointer-events: none;
+    }
+    .apgo-cc-badge__dots {
+      position: absolute;
+      left: 0; right: 0; bottom: 10px;
+      display: flex; justify-content: center; align-items: center; gap: 7px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .apgo-cc-badge__dot {
+      pointer-events: auto;
+      width: 7px; height: 7px;
+      padding: 0; border: 0;
+      border-radius: 999px;
+      background: rgba(255,255,255,.55);
+      box-shadow: 0 1px 3px rgba(0,0,0,.35);
+      cursor: pointer;
+      transition: width .25s ease, background .2s ease;
+    }
+    .apgo-cc-badge__dot.is-active {
+      width: 18px;
+      background: #fff;
+    }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "APGO · Badge 輪播",
+  "tag": "section",
+  "class": "apgo-cc-badge-section",
+  "settings": [
+    { "type": "paragraph", "content": "新增 1–5 個「Banner」block，每個上傳一張圖。Banner 高度由圖片原始比例決定，請後台確保各張圖尺寸／比例一致。單張時不輪播。" },
+    { "type": "checkbox", "id": "autoplay", "label": "自動輪播", "default": true },
+    { "type": "range", "id": "interval", "label": "輪播間隔（秒）", "min": 2, "max": 8, "step": 1, "default": 4 },
+    { "type": "checkbox", "id": "show_dots", "label": "顯示圓點指示器", "default": true },
+    { "type": "header", "content": "版面" },
+    { "type": "range", "id": "max_width", "label": "最大寬度（px，0 = 滿版）", "min": 0, "max": 1600, "step": 20, "default": 0 },
+    { "type": "range", "id": "side_padding", "label": "左右邊距（px）", "min": 0, "max": 40, "step": 2, "default": 0 },
+    { "type": "range", "id": "radius", "label": "圓角（px）", "min": 0, "max": 24, "step": 2, "default": 12 },
+    { "type": "range", "id": "border_width", "label": "邊框寬度（px，0 = 無邊框）", "min": 0, "max": 6, "step": 1, "default": 1 },
+    { "type": "color", "id": "border_color", "label": "邊框顏色", "default": "#3d4148" },
+    { "type": "range", "id": "gap_top", "label": "上方間距（px）", "min": 0, "max": 40, "step": 2, "default": 0 },
+    { "type": "range", "id": "gap_bottom", "label": "下方間距（px）", "min": 0, "max": 40, "step": 2, "default": 0 },
+    { "type": "text", "id": "aria_label", "label": "無障礙標籤", "default": "優惠輪播" }
+  ],
+  "blocks": [
+    {
+      "type": "banner",
+      "name": "Banner",
+      "limit": 5,
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "圖片" },
+        { "type": "url", "id": "link", "label": "連結（選填，點擊跳轉）" },
+        { "type": "text", "id": "alt", "label": "替代文字（選填，無障礙用）" }
+      ]
+    }
+  ],
+  "max_blocks": 5,
+  "presets": [
+    {
+      "name": "APGO · Badge 輪播",
+      "blocks": [ { "type": "banner" }, { "type": "banner" } ]
+    }
+  ],
+  "enabled_on": {
+    "templates": ["index"]
+  }
+}
+{% endschema %}
