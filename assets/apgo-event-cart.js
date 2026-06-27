@@ -53,17 +53,39 @@
     });
   }
 
-  /* Best-effort cart UI refresh. The theme listens on several event
-     names depending on which component (drawer, header bubble, sticky
-     buy bar) is mounted; firing all of them is cheap and keeps each
-     component in sync without us knowing which is present. */
+  /* Cart UI refresh. Horizon's <cart-icon> listens on 'cart:update'
+     and REQUIRES event.detail.data.itemCount to repaint the bubble
+     count — without it the badge stays frozen. So we fetch /cart.js
+     once after the add, read the authoritative item_count, then fire
+     the event with that payload. Also fires the legacy event names
+     for any custom drawer/sidebar components that might be present. */
   function refreshCartUi() {
-    var events = ['cart:updated', 'cart:update', 'cart:refresh', 'cart:added'];
-    events.forEach(function (name) {
-      try {
-        document.dispatchEvent(new CustomEvent(name, { bubbles: true }));
-      } catch (e) { /* IE-safe no-op */ }
-    });
+    return fetch('/cart.js', {
+      headers: { Accept: 'application/json' },
+      cache: 'no-store'
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (cart) {
+        var itemCount = (cart && typeof cart.item_count === 'number') ? cart.item_count : 0;
+        var detail = {
+          data: {
+            itemCount: itemCount,
+            source: 'apgo-event-cart'
+          },
+          resource: cart
+        };
+        ['cart:update', 'cart:updated', 'cart:refresh', 'cart:added'].forEach(function (name) {
+          try {
+            document.dispatchEvent(new CustomEvent(name, {
+              bubbles: true,
+              detail: detail
+            }));
+          } catch (e) { /* IE-safe no-op */ }
+        });
+      })
+      .catch(function (err) {
+        console.warn('[apgo-event] cart refresh fetch failed', err);
+      });
   }
 
   /* The flying gift box itself. Inline SVG kept small + recolored to
