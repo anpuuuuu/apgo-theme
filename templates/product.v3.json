@@ -20,6 +20,7 @@
         "show_buy_now": true,
         "show_shipping": true,
         "shipping_label": "2–3 business days",
+        "shipping_label_sg": "5–7 business days",
         "default_variant_label": "Standard",
         "deal_label": "Limited time deal",
         "deal_end_weekday": "5",
