@@ -775,59 +775,6 @@ body.apgo-special-event-page .apgo-event-collection-grid__curve path {
   padding-block: clamp(16px, 3vw, 36px) 0;
   position: relative;
 }
-
-/* Birthday page — wrap the section heading lockup in the SAME
-   octagon ribbon frame as the countdown chip so the two elements
-   read as members of the same visual family. Two pseudo-elements:
-   ::before paints the gold gradient ring (clip-path octagon),
-   ::after sits 1.5px inside with a dark fill to carve out the ring
-   shape. Heading-wrap's flex children stay above both via z-index. */
-body.apgo-special-event-page .apgo-event-heading-wrap {
-  --apgo-heading-frame-cut: 14px;
-  padding-block: clamp(10px, 2vw, 18px);
-  padding-inline: clamp(20px, 4vw, 44px);
-  margin-block: clamp(10px, 2vw, 16px) 0;
-  max-width: fit-content;
-  margin-inline: auto;
-  isolation: isolate;
-}
-body.apgo-special-event-page .apgo-event-heading-wrap::before,
-body.apgo-special-event-page .apgo-event-heading-wrap::after {
-  content: '';
-  position: absolute;
-  pointer-events: none;
-  clip-path: polygon(
-    var(--apgo-heading-frame-cut) 0,
-    calc(100% - var(--apgo-heading-frame-cut)) 0,
-    100% var(--apgo-heading-frame-cut),
-    100% calc(100% - var(--apgo-heading-frame-cut)),
-    calc(100% - var(--apgo-heading-frame-cut)) 100%,
-    var(--apgo-heading-frame-cut) 100%,
-    0 calc(100% - var(--apgo-heading-frame-cut)),
-    0 var(--apgo-heading-frame-cut)
-  );
-}
-body.apgo-special-event-page .apgo-event-heading-wrap::before {
-  /* Outer gold ring */
-  inset: 0;
-  background: var(--apgo-event-heading-gradient, linear-gradient(135deg, #f4d28a, #f8a849, #c8961f));
-  z-index: -2;
-}
-body.apgo-special-event-page .apgo-event-heading-wrap::after {
-  /* Inner dark fill — sits 1.5px inside so the gold ring reads as
-     a rim around the heading content. */
-  inset: 1.5px;
-  background: rgba(0, 0, 0, 0.55);
-  z-index: -1;
-}
-/* Mobile: shrink the cut so the frame doesn't dominate when the
-   heading wraps to two lines. */
-@media (max-width: 480px) {
-  body.apgo-special-event-page .apgo-event-heading-wrap {
-    --apgo-heading-frame-cut: 10px;
-    padding-inline: clamp(14px, 3vw, 24px);
-  }
-}
 .apgo-event-heading-stack {
   display: flex;
   flex-direction: column;
