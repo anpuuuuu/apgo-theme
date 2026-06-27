@@ -22,8 +22,8 @@
         "shipping_label": "2–3 business days",
         "default_variant_label": "Standard",
         "deal_label": "Limited time deal",
-        "deal_end_weekday": "1",
-        "deal_end_time": "",
+        "deal_end_weekday": "5",
+        "deal_end_time": "00:00",
         "deal_loading_text": "Ends soon",
         "deal_aria_label": "Deal countdown"
       }
