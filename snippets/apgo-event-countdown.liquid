@@ -28,23 +28,19 @@
     {%- endif -%}
     <div class="apgo-event-countdown__boxes" role="timer">
       <span class="apgo-event-countdown__box">
-        <span class="apgo-event-countdown__digit" data-apgo-event-countdown-days>--</span>
-        <span class="apgo-event-countdown__unit">d</span>
+        <span class="apgo-event-countdown__digit" data-apgo-event-countdown-days>--</span><span class="apgo-event-countdown__unit">d</span>
       </span>
       <span class="apgo-event-countdown__sep" aria-hidden="true">:</span>
       <span class="apgo-event-countdown__box">
-        <span class="apgo-event-countdown__digit" data-apgo-event-countdown-hours>--</span>
-        <span class="apgo-event-countdown__unit">h</span>
+        <span class="apgo-event-countdown__digit" data-apgo-event-countdown-hours>--</span><span class="apgo-event-countdown__unit">h</span>
       </span>
       <span class="apgo-event-countdown__sep" aria-hidden="true">:</span>
       <span class="apgo-event-countdown__box">
-        <span class="apgo-event-countdown__digit" data-apgo-event-countdown-minutes>--</span>
-        <span class="apgo-event-countdown__unit">m</span>
+        <span class="apgo-event-countdown__digit" data-apgo-event-countdown-minutes>--</span><span class="apgo-event-countdown__unit">m</span>
       </span>
       <span class="apgo-event-countdown__sep" aria-hidden="true">:</span>
       <span class="apgo-event-countdown__box">
-        <span class="apgo-event-countdown__digit" data-apgo-event-countdown-seconds>--</span>
-        <span class="apgo-event-countdown__unit">s</span>
+        <span class="apgo-event-countdown__digit" data-apgo-event-countdown-seconds>--</span><span class="apgo-event-countdown__unit">s</span>
       </span>
     </div>
   </div>
@@ -52,27 +48,28 @@
   <style>
     /* All scoped under body.apgo-special-event-page so the gold tokens
        defined in apgo-event-page.css are in cascade. */
+    /* Slim pill chip — label + inline "05d : 23h : 12m : 33s" all on
+       one row, single-line typography (no stacked unit), tight padding.
+       Replaces the earlier boxy version per editorial. */
     body.apgo-special-event-page .apgo-event-countdown {
-      display: flex;
+      display: inline-flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: center;
       gap: clamp(8px, 1.6vw, 14px);
-      margin: 0 auto clamp(10px, 2.2vw, 18px);
-      padding: clamp(6px, 1.4vw, 10px) clamp(12px, 2.4vw, 18px);
+      margin: clamp(6px, 1.4vw, 10px) auto 0;
+      padding: clamp(5px, 1vw, 7px) clamp(12px, 2vw, 18px);
       max-width: fit-content;
       border-radius: 999px;
-      background: rgba(0, 0, 0, 0.28);
-      backdrop-filter: blur(2px);
-      -webkit-backdrop-filter: blur(2px);
-      border: 1px solid rgba(244, 210, 138, 0.28);
+      background: rgba(0, 0, 0, 0.32);
+      border: 1px solid rgba(244, 210, 138, 0.32);
     }
     body.apgo-special-event-page .apgo-event-countdown__label {
-      font-size: clamp(10px, 1.5vw, 13px);
+      font-size: clamp(10px, 1.4vw, 12px);
       font-weight: 800;
       letter-spacing: 0.14em;
       text-transform: uppercase;
-      line-height: 1.1;
+      line-height: 1;
       background: var(--apgo-event-heading-gradient, linear-gradient(135deg, #f4d28a, #f8a849, #c8961f));
       background-clip: text;
       -webkit-background-clip: text;
@@ -82,25 +79,22 @@
     }
     body.apgo-special-event-page .apgo-event-countdown__boxes {
       display: inline-flex;
-      align-items: center;
+      align-items: baseline;
       gap: clamp(4px, 0.9vw, 8px);
+      line-height: 1;
     }
+    /* No background / border on the box wrapper anymore — the unit
+       sits inline right next to the digit, no padding around it. */
     body.apgo-special-event-page .apgo-event-countdown__box {
       display: inline-flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-width: clamp(34px, 5.5vw, 46px);
-      padding: clamp(4px, 0.9vw, 7px) clamp(6px, 1.1vw, 10px);
-      background: rgba(0, 0, 0, 0.42);
-      border: 1px solid rgba(244, 210, 138, 0.4);
-      border-radius: 8px;
+      align-items: baseline;
+      gap: 1px;
       line-height: 1;
     }
     body.apgo-special-event-page .apgo-event-countdown__digit {
-      font-size: clamp(16px, 2.6vw, 22px);
+      font-size: clamp(14px, 2vw, 18px);
       font-weight: 800;
-      font-variant-numeric: tabular-nums; /* keep digits from jittering as values change */
+      font-variant-numeric: tabular-nums; /* fixed-width digits → no jitter */
       letter-spacing: -0.01em;
       background: var(--apgo-event-heading-gradient, linear-gradient(135deg, #f4d28a, #f8a849, #c8961f));
       background-clip: text;
@@ -109,28 +103,25 @@
       color: var(--apgo-event-gold-bright, #f8a849);
     }
     body.apgo-special-event-page .apgo-event-countdown__unit {
-      margin-top: 2px;
-      font-size: clamp(8px, 1.1vw, 10px);
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: rgba(244, 210, 138, 0.7);
+      font-size: clamp(10px, 1.3vw, 12px);
+      font-weight: 600;
+      letter-spacing: 0;
+      text-transform: lowercase;
+      color: rgba(244, 210, 138, 0.75);
     }
     body.apgo-special-event-page .apgo-event-countdown__sep {
-      font-size: clamp(14px, 2vw, 18px);
-      font-weight: 800;
-      color: var(--apgo-event-gold-bright, #f8a849);
-      opacity: 0.6;
+      font-size: clamp(12px, 1.6vw, 14px);
+      font-weight: 600;
+      color: rgba(244, 210, 138, 0.45);
       line-height: 1;
-      padding-bottom: 14px; /* nudge so the colon aligns with the digit, not the unit */
     }
     @media (max-width: 480px) {
-      /* On the narrowest viewports the label can sit on its own row
-         above the boxes so the chip doesn't squeeze. */
+      /* On the narrowest viewports allow wrap so the chip doesn't push
+         past the panel's side padding. */
       body.apgo-special-event-page .apgo-event-countdown {
         flex-direction: column;
-        gap: 6px;
-        padding: 8px 14px;
+        gap: 4px;
+        padding: 6px 14px;
       }
     }
   </style>

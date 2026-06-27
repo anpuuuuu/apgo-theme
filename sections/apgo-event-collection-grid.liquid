@@ -45,12 +45,6 @@
     {%- endif -%}
     {% if section.settings.heading != blank or apgo_show_countdown %}
       <header class="apgo-event-collection-grid__header">
-        {%- if apgo_show_countdown -%}
-          {% render 'apgo-event-countdown',
-            end_iso: section.settings.countdown_end_at,
-            label: section.settings.countdown_label %}
-        {%- endif -%}
-
         {% if section.settings.heading != blank %}
           {%- comment -%}
             Festive heading lockup — gold star icons flank the title, with an
@@ -79,6 +73,12 @@
             <h2 class="apgo-event-collection-grid__heading">{{ section.settings.heading | escape | newline_to_br }}</h2>
           {% endif %}
         {% endif %}
+
+        {%- if apgo_show_countdown -%}
+          {% render 'apgo-event-countdown',
+            end_iso: section.settings.countdown_end_at,
+            label: section.settings.countdown_label %}
+        {%- endif -%}
       </header>
     {% endif %}
 
