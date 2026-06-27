@@ -150,18 +150,18 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-width: clamp(32px, 5vw, 42px);
-      padding: clamp(3px, 0.7vw, 5px) clamp(5px, 1vw, 8px);
+      min-width: clamp(48px, 8vw, 68px);
+      padding: clamp(5px, 1vw, 8px) clamp(8px, 1.4vw, 12px);
       background: rgba(0, 0, 0, 0.42);
       border: 1px solid rgba(244, 210, 138, 0.42);
-      border-radius: 6px;
+      border-radius: 8px;
       line-height: 1;
     }
     body.apgo-special-event-page .apgo-event-countdown__digit {
-      font-size: clamp(15px, 2.3vw, 19px);
+      font-size: clamp(24px, 4.6vw, 36px);
       font-weight: 800;
       font-variant-numeric: tabular-nums; /* fixed-width digits → no jitter */
-      letter-spacing: -0.01em;
+      letter-spacing: -0.015em;
       background: var(--apgo-event-heading-gradient, linear-gradient(135deg, #f4d28a, #f8a849, #c8961f));
       background-clip: text;
       -webkit-background-clip: text;
@@ -169,20 +169,20 @@
       color: var(--apgo-event-gold-bright, #f8a849);
     }
     body.apgo-special-event-page .apgo-event-countdown__unit {
-      margin-top: 2px;
-      font-size: clamp(7px, 0.95vw, 9px);
+      margin-top: 3px;
+      font-size: clamp(8px, 1.1vw, 10px);
       font-weight: 700;
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: rgba(244, 210, 138, 0.7);
     }
     body.apgo-special-event-page .apgo-event-countdown__sep {
-      font-size: clamp(11px, 1.4vw, 14px);
+      font-size: clamp(16px, 2.6vw, 22px);
       font-weight: 800;
       color: var(--apgo-event-gold-bright, #f8a849);
       opacity: 0.55;
       line-height: 1;
-      padding-bottom: clamp(8px, 1.2vw, 11px); /* nudge upward so colon aligns with digit, not unit */
+      padding-bottom: clamp(12px, 1.8vw, 16px); /* nudge upward so colon aligns with digit, not unit */
     }
     @media (max-width: 480px) {
       /* Narrow viewports: let the chip's inner contents wrap so the
