@@ -12,14 +12,6 @@
     "apgo_cc_badge_carousel_rmwWa6": {
       "type": "apgo-cc-badge-carousel",
       "blocks": {
-        "banner_UzGTTj": {
-          "type": "banner",
-          "settings": {
-            "image": "shopify://shop_images/buy_1_free_1.png",
-            "link": "shopify://pages/apgo-birthday-page",
-            "alt": ""
-          }
-        },
         "banner_DQJFfb": {
           "type": "banner",
           "settings": {
@@ -28,8 +20,18 @@
             "alt": ""
           }
         },
+        "banner_UzGTTj": {
+          "type": "banner",
+          "disabled": true,
+          "settings": {
+            "image": "shopify://shop_images/buy_1_free_1.png",
+            "link": "shopify://pages/apgo-birthday-page",
+            "alt": ""
+          }
+        },
         "banner_fCxet7": {
           "type": "banner",
+          "disabled": true,
           "settings": {
             "image": "shopify://shop_images/big_discount.png",
             "link": "shopify://pages/apgo-birthday-page",
@@ -38,8 +40,8 @@
         }
       },
       "block_order": [
-        "banner_UzGTTj",
         "banner_DQJFfb",
+        "banner_UzGTTj",
         "banner_fCxet7"
       ],
       "name": "APGO · Badge 輪播",
