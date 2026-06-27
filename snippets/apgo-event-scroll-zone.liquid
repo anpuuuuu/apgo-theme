@@ -27,11 +27,12 @@
     assign apgo_use_blocks = true
   endif
 
-  # Hide compare-at strikethrough in the B1F1 zone — "buy one free one"
-  # framing already implies the discount, an original price next to it
-  # reads as a second deal.
+  # Per-zone compare-at toggle — driven by the section setting passed
+  # in via the `hide_compare_at` param (mapped from
+  # discount_zone_hide_compare_at / b1f1_zone_hide_compare_at). Default
+  # to false so a missing param shows compare-at like before.
   assign apgo_hide_compare = false
-  if zone_class == 'b1f1'
+  if hide_compare_at == true
     assign apgo_hide_compare = true
   endif
 

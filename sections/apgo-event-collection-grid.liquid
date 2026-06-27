@@ -83,6 +83,7 @@
           card_blocks: discount_card_blocks,
           products: section.settings.discount_zone_products,
           zone_class: 'discount',
+          hide_compare_at: section.settings.discount_zone_hide_compare_at,
           section_id: section.id %}
       {%- endif -%}
 
@@ -94,6 +95,7 @@
           card_blocks: b1f1_card_blocks,
           products: section.settings.b1f1_zone_products,
           zone_class: 'b1f1',
+          hide_compare_at: section.settings.b1f1_zone_hide_compare_at,
           section_id: section.id %}
       {%- endif -%}
 
@@ -122,12 +124,14 @@
               product: fp1,
               image: fi1,
               badge: section.settings.featured_badge_text,
-              cta: section.settings.featured_cta_label %}
+              cta: section.settings.featured_cta_label,
+              hide_compare_at: section.settings.featured_stage_hide_compare_at %}
             {% render 'apgo-event-featured-banner',
               product: fp2,
               image: fi2,
               badge: section.settings.featured_badge_text,
-              cta: section.settings.featured_cta_label %}
+              cta: section.settings.featured_cta_label,
+              hide_compare_at: section.settings.featured_stage_hide_compare_at %}
           </div>
         </div>
       {%- endif -%}
@@ -198,6 +202,13 @@
       "limit": 12
     },
     {
+      "type": "checkbox",
+      "id": "discount_zone_hide_compare_at",
+      "label": "Hide original (strikethrough) price",
+      "info": "Tick to show only the current price on Discount-zone cards.",
+      "default": false
+    },
+    {
       "type": "header",
       "content": "Buy 1 Free 1 Zone"
     },
@@ -225,6 +236,13 @@
       "label": "B1F1 products (LEGACY — use blocks below)",
       "info": "Only used when no 'Buy 1 Free 1 card' blocks are added. Add B1F1 cards via 'Add block' for per-variant control.",
       "limit": 12
+    },
+    {
+      "type": "checkbox",
+      "id": "b1f1_zone_hide_compare_at",
+      "label": "Hide original (strikethrough) price",
+      "info": "Tick to show only the current price on B1F1-zone cards (recommended — original price next to 'Buy 1 Free 1' framing can read as a double-deal).",
+      "default": true
     },
     {
       "type": "header",
@@ -276,6 +294,13 @@
       "id": "featured_cta_label",
       "label": "Card CTA button label",
       "default": "View deal"
+    },
+    {
+      "type": "checkbox",
+      "id": "featured_stage_hide_compare_at",
+      "label": "Hide original (strikethrough) price",
+      "info": "Tick to show only the current price on Featured Stage banner cards.",
+      "default": false
     },
     {
       "type": "header",
