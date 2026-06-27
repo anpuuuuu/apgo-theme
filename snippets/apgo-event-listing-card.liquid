@@ -130,7 +130,7 @@
           - integer part big, decimal as small sup (C)
           - gold gradient text fill on the whole price (D)
       {%- endcomment -%}
-      {%- assign apgo_card_price_str = apgo_listing_variant.price | money -%}
+      {%- assign apgo_card_price_str = apgo_listing_variant.price | money | replace: ' MYR', '' | replace: 'MYR', '' -%}
       {%- assign apgo_card_price_parts = apgo_card_price_str | split: '.' -%}
       <div class="apgo-event-listing-card__footer">
         <div class="apgo-event-listing-card__price-stack">

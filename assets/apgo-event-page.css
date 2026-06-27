@@ -393,9 +393,12 @@ body.apgo-special-event-page .apgo-event-listing-card__price-caption {
 }
 
 body.apgo-special-event-page .apgo-event-listing-card__price-current {
-  font-size: var(--apgo-event-card-price-size);
+  /* Bumped from var(--apgo-event-card-price-size) (~14-17px) to
+     a bigger range so the lone price has more presence. */
+  font-size: clamp(18px, 4.6vw, 24px);
   font-weight: 800;
   letter-spacing: -0.01em;
+  line-height: 1.05;
   display: inline-flex;
   align-items: baseline;
   background: var(--apgo-event-heading-gradient, linear-gradient(135deg, #f4d28a, #f8a849, #c8961f));
