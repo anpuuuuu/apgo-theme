@@ -27,6 +27,14 @@
     assign apgo_use_blocks = true
   endif
 
+  # Hide compare-at strikethrough in the B1F1 zone — "buy one free one"
+  # framing already implies the discount, an original price next to it
+  # reads as a second deal.
+  assign apgo_hide_compare = false
+  if zone_class == 'b1f1'
+    assign apgo_hide_compare = true
+  endif
+
   assign apgo_has_items = false
   if apgo_use_blocks
     for b in card_blocks
@@ -73,7 +81,8 @@
                 product: apgo_block_product,
                 variant_id: block.settings.variant_id,
                 section_id: section_id,
-                card_uid: apgo_event_card_uid %}
+                card_uid: apgo_event_card_uid,
+                hide_compare_at: apgo_hide_compare %}
             </div>
           {%- endif -%}
         {%- endfor -%}
@@ -84,7 +93,8 @@
             {% render 'apgo-event-listing-card',
               product: product,
               section_id: section_id,
-              card_uid: apgo_event_card_uid %}
+              card_uid: apgo_event_card_uid,
+              hide_compare_at: apgo_hide_compare %}
           </div>
         {%- endfor -%}
       {%- endif -%}

@@ -5,11 +5,17 @@
   @param {object} product    - Product object
   @param {string} section_id - Parent section id
   @param {string} card_uid   - Unique id suffix for this card
-  @param {string} variant_id - Optional. Editor-picked variant ID (from
-                               the block setting). If set + matches a
-                               real variant on this product, overrides
-                               the default variant-resolution logic so
-                               the card links / prices that variant.
+  @param {string}  variant_id        - Optional. Editor-picked variant ID
+                                       (from the block setting). If set +
+                                       matches a real variant on this product,
+                                       overrides the default variant-
+                                       resolution logic so the card links /
+                                       prices that variant.
+  @param {boolean} hide_compare_at    - Optional. When true, never render
+                                       the strikethrough compare-at price.
+                                       Used by the B1F1 scroll zone where
+                                       showing an original price under a
+                                       'Buy 1 Free 1' framing is confusing.
 {%- enddoc -%}
 
 {% liquid
@@ -123,17 +129,27 @@
         gets bolted on in a follow-up.
       {%- endcomment -%}
       {%- comment -%}
-        Compare-at price intentionally NOT rendered — campaign price
-        is the anchor. Decorations layered to keep the lone price
-        from reading as flat:
-          - 'BIRTHDAY PRICE' caption in gold gradient (B)
-          - integer part big, decimal as small sup (C)
-          - gold gradient text fill on the whole price (D)
+        Price stack:
+          1. compare-at (faded strikethrough) — shown when on sale,
+             EXCEPT when the parent scroll zone passes
+             hide_compare_at=true (currently: B1F1 zone, where the
+             original price would only confuse the 'buy one free one'
+             framing)
+          2. current price — integer + sup decimal + gold gradient + glow
       {%- endcomment -%}
       {%- assign apgo_card_price_str = apgo_listing_variant.price | money | replace: ' MYR', '' | replace: 'MYR', '' -%}
       {%- assign apgo_card_price_parts = apgo_card_price_str | split: '.' -%}
+      {%- assign apgo_card_on_sale = false -%}
+      {%- if apgo_listing_variant.compare_at_price > apgo_listing_variant.price and hide_compare_at != true -%}
+        {%- assign apgo_card_on_sale = true -%}
+      {%- endif -%}
       <div class="apgo-event-listing-card__footer">
         <div class="apgo-event-listing-card__price-stack">
+          {%- if apgo_card_on_sale -%}
+            <span class="apgo-event-listing-card__price-compare">
+              {{ apgo_listing_variant.compare_at_price | money | replace: ' MYR', '' | replace: 'MYR', '' }}
+            </span>
+          {%- endif -%}
           <span class="apgo-event-listing-card__price-current">
             <span class="apgo-event-listing-card__price-int">{{ apgo_card_price_parts[0] }}</span>{%- if apgo_card_price_parts[1] -%}<sup class="apgo-event-listing-card__price-frac">{{ apgo_card_price_parts[1] }}</sup>{%- endif -%}
           </span>
