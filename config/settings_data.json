@@ -104,7 +104,9 @@
           "padding-block-start": 0,
           "padding-block-end": 0,
           "gap_between_elements": 96,
-          "show_mysg_discount_promo": true
+          "show_mysg_discount_promo": true,
+          "my_promo_text": "Free shipping over MYR 99 to West Malaysia only · Estimated Shipping: 2–3 Business Days",
+          "sg_promo_text": "Free shipping over SGD 55 · Estimated Shipping: 5–7 Business Days"
         }
       }
     },
@@ -114,14 +116,14 @@
         "type": "shopify://apps/inbox/blocks/chat/841fc607-4181-4ad1-842d-e24d7f8bad6b",
         "disabled": false,
         "settings": {
+          "greeting_message": "",
           "button_color": "#000000",
           "secondary_color": "#ffffff",
           "ternary_color": "#6a6a6a",
           "button_icon": "chat_bubble",
           "button_text": "chat_with_us",
           "button_horizontal_position": "bottom_right",
-          "button_vertical_position": "highest",
-          "greeting_message": ""
+          "button_vertical_position": "highest"
         }
       },
       "9022822286719573313": {
@@ -211,7 +213,7 @@
       },
       "scheme-3": {
         "settings": {
-          "background": "#2A1810",
+          "background": "#2a1810",
           "foreground_heading": "#000000",
           "foreground": "#000000",
           "primary": "#780406e8",
