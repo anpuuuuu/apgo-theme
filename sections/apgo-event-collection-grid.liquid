@@ -35,33 +35,49 @@
       </div>
     {% endif %}
 
-    {% if section.settings.heading != blank %}
+    {%- comment -%}
+      Header now renders when EITHER the heading OR the countdown is on,
+      so the countdown can show even on pages with no section heading.
+    {%- endcomment -%}
+    {%- assign apgo_show_countdown = false -%}
+    {%- if section.settings.show_countdown and section.settings.countdown_end_at != blank -%}
+      {%- assign apgo_show_countdown = true -%}
+    {%- endif -%}
+    {% if section.settings.heading != blank or apgo_show_countdown %}
       <header class="apgo-event-collection-grid__header">
-        {%- comment -%}
-          Festive heading lockup — gold star icons flank the title, with an
-          optional anniversary badge stacked above. The decorative pieces
-          render only when section.settings.show_festive_lockup is on so
-          editors can fall back to the plain h2 if desired.
-        {%- endcomment -%}
-        {% if section.settings.show_festive_lockup %}
-          <div class="apgo-event-heading-wrap">
-            <span class="apgo-event-heading-star apgo-event-heading-star--left">
-              {% render 'apgo-icon-star', unique: 'evt-grid-l' %}
-            </span>
-            <div class="apgo-event-heading-stack">
-              {% if section.settings.anniversary_badge != blank %}
-                <span class="apgo-event-heading-badge">{{ section.settings.anniversary_badge }}</span>
-              {% endif %}
-              <h2 class="apgo-event-collection-grid__heading apgo-event-heading-text">
-                {{ section.settings.heading | escape | newline_to_br }}
-              </h2>
+        {%- if apgo_show_countdown -%}
+          {% render 'apgo-event-countdown',
+            end_iso: section.settings.countdown_end_at,
+            label: section.settings.countdown_label %}
+        {%- endif -%}
+
+        {% if section.settings.heading != blank %}
+          {%- comment -%}
+            Festive heading lockup — gold star icons flank the title, with an
+            optional anniversary badge stacked above. The decorative pieces
+            render only when section.settings.show_festive_lockup is on so
+            editors can fall back to the plain h2 if desired.
+          {%- endcomment -%}
+          {% if section.settings.show_festive_lockup %}
+            <div class="apgo-event-heading-wrap">
+              <span class="apgo-event-heading-star apgo-event-heading-star--left">
+                {% render 'apgo-icon-star', unique: 'evt-grid-l' %}
+              </span>
+              <div class="apgo-event-heading-stack">
+                {% if section.settings.anniversary_badge != blank %}
+                  <span class="apgo-event-heading-badge">{{ section.settings.anniversary_badge }}</span>
+                {% endif %}
+                <h2 class="apgo-event-collection-grid__heading apgo-event-heading-text">
+                  {{ section.settings.heading | escape | newline_to_br }}
+                </h2>
+              </div>
+              <span class="apgo-event-heading-star apgo-event-heading-star--right">
+                {% render 'apgo-icon-star', unique: 'evt-grid-r' %}
+              </span>
             </div>
-            <span class="apgo-event-heading-star apgo-event-heading-star--right">
-              {% render 'apgo-icon-star', unique: 'evt-grid-r' %}
-            </span>
-          </div>
-        {% else %}
-          <h2 class="apgo-event-collection-grid__heading">{{ section.settings.heading | escape | newline_to_br }}</h2>
+          {% else %}
+            <h2 class="apgo-event-collection-grid__heading">{{ section.settings.heading | escape | newline_to_br }}</h2>
+          {% endif %}
         {% endif %}
       </header>
     {% endif %}
@@ -148,6 +164,31 @@
     "templates": ["page"]
   },
   "settings": [
+    {
+      "type": "header",
+      "content": "Countdown"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_countdown",
+      "label": "Show countdown timer",
+      "info": "Renders a gold countdown chip at the top of the panel header. Hides itself automatically when the end time has passed.",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "countdown_label",
+      "label": "Countdown label",
+      "info": "Leading text shown beside the day / hour / minute / second boxes.",
+      "default": "🎉 BIRTHDAY SALE ENDS IN"
+    },
+    {
+      "type": "text",
+      "id": "countdown_end_at",
+      "label": "Countdown ends at (ISO 8601, GMT+8)",
+      "info": "Format: YYYY-MM-DDTHH:MM:SS+08:00. Example: 2026-07-03T00:00:00+08:00",
+      "default": "2026-07-03T00:00:00+08:00"
+    },
     {
       "type": "header",
       "content": "Section heading lockup"
