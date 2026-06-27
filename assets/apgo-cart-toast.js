@@ -1,12 +1,13 @@
-import { ThemeEvents } from '@theme/events';
-
-function toastMessage() {
-  if (typeof Theme !== 'undefined' && Theme.translations?.added) {
-    return Theme.translations.added;
-  }
-  return 'Added to cart';
-}
-
+/*
+ * Quick-add 'Added to cart' toast — disabled.
+ *
+ * The auto-toast on quick-add success has been replaced by the
+ * fly-to-cart animation in apgo-quick-add-fly.js (matches the
+ * product page UX). This file is kept as a no-op so the buybar
+ * + any other component that creates the global #apgo-cart-toast
+ * element on demand (via getElementById / its own helpers) still
+ * has the element available.
+ */
 function ensureToastEl() {
   let el = document.getElementById('apgo-cart-toast');
   if (!el) {
@@ -19,26 +20,6 @@ function ensureToastEl() {
   }
   return el;
 }
-
-document.addEventListener(ThemeEvents.cartUpdate, (/** @type {CustomEvent} */ event) => {
-  const data = event.detail?.data;
-  if (!data || data.didError) return;
-  if (data.source !== 'product-form-component') return;
-
-  const origin = event.target;
-  if (
-    !(origin instanceof HTMLElement) ||
-    (!origin.closest('quick-add-component') && !origin.closest('quick-add-dialog'))
-  ) {
-    return;
-  }
-
-  const el = ensureToastEl();
-  const toastEl = /** @type {HTMLElement & { _apgoCartToastHide?: ReturnType<typeof setTimeout> }} */ (el);
-  toastEl.textContent = toastMessage();
-  toastEl.dataset.visible = 'true';
-  window.clearTimeout(toastEl._apgoCartToastHide);
-  toastEl._apgoCartToastHide = window.setTimeout(() => {
-    delete toastEl.dataset.visible;
-  }, 2800);
-});
+/* Expose so legacy callers (buybar etc.) that previously imported
+   this module still get the DOM helper. No global listener. */
+window.apgoCartToastEnsure = ensureToastEl;
