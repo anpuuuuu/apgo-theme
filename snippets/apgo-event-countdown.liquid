@@ -17,53 +17,112 @@
 {%- enddoc -%}
 
 {%- if end_iso != blank -%}
+  {%- comment -%}
+    Octagonal cut-corner "ribbon" chip — outer wrapper carries the
+    gold gradient + clip-path; inner wrapper carries the dark fill
+    + same clip-path. The 1.5px padding gap between the two creates
+    the visible gold rim. SVG hourglass replaces the emoji prefix.
+  {%- endcomment -%}
   <div
     class="apgo-event-countdown"
     data-apgo-event-countdown
     data-end-iso="{{ end_iso | escape }}"
     aria-live="polite"
   >
-    {%- if label != blank -%}
-      <span class="apgo-event-countdown__label">{{ label }}</span>
-    {%- endif -%}
-    <div class="apgo-event-countdown__boxes" role="timer">
-      <span class="apgo-event-countdown__box">
-        <span class="apgo-event-countdown__digit" data-apgo-event-countdown-days>--</span><span class="apgo-event-countdown__unit">d</span>
+    <div class="apgo-event-countdown__inner">
+      <span class="apgo-event-countdown__icon" aria-hidden="true">
+        <svg viewBox="0 0 16 20" width="14" height="17" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round">
+          <line x1="2.5" y1="1.5" x2="13.5" y2="1.5"/>
+          <line x1="2.5" y1="18.5" x2="13.5" y2="18.5"/>
+          <path d="M 3 1.5 L 13 1.5 L 8 10 L 13 18.5 L 3 18.5 L 8 10 Z"/>
+          <path d="M 4.4 3 L 11.6 3 L 8 9 Z" fill="currentColor" stroke="none"/>
+          <path d="M 6.4 17 L 9.6 17 L 8.6 15 L 7.4 15 Z" fill="currentColor" stroke="none"/>
+        </svg>
       </span>
-      <span class="apgo-event-countdown__sep" aria-hidden="true">:</span>
-      <span class="apgo-event-countdown__box">
-        <span class="apgo-event-countdown__digit" data-apgo-event-countdown-hours>--</span><span class="apgo-event-countdown__unit">h</span>
-      </span>
-      <span class="apgo-event-countdown__sep" aria-hidden="true">:</span>
-      <span class="apgo-event-countdown__box">
-        <span class="apgo-event-countdown__digit" data-apgo-event-countdown-minutes>--</span><span class="apgo-event-countdown__unit">m</span>
-      </span>
-      <span class="apgo-event-countdown__sep" aria-hidden="true">:</span>
-      <span class="apgo-event-countdown__box">
-        <span class="apgo-event-countdown__digit" data-apgo-event-countdown-seconds>--</span><span class="apgo-event-countdown__unit">s</span>
-      </span>
+      {%- if label != blank -%}
+        <span class="apgo-event-countdown__label">{{ label }}</span>
+      {%- endif -%}
+      <div class="apgo-event-countdown__boxes" role="timer">
+        <span class="apgo-event-countdown__box">
+          <span class="apgo-event-countdown__digit" data-apgo-event-countdown-days>--</span>
+          <span class="apgo-event-countdown__unit">d</span>
+        </span>
+        <span class="apgo-event-countdown__sep" aria-hidden="true">:</span>
+        <span class="apgo-event-countdown__box">
+          <span class="apgo-event-countdown__digit" data-apgo-event-countdown-hours>--</span>
+          <span class="apgo-event-countdown__unit">h</span>
+        </span>
+        <span class="apgo-event-countdown__sep" aria-hidden="true">:</span>
+        <span class="apgo-event-countdown__box">
+          <span class="apgo-event-countdown__digit" data-apgo-event-countdown-minutes>--</span>
+          <span class="apgo-event-countdown__unit">m</span>
+        </span>
+        <span class="apgo-event-countdown__sep" aria-hidden="true">:</span>
+        <span class="apgo-event-countdown__box">
+          <span class="apgo-event-countdown__digit" data-apgo-event-countdown-seconds>--</span>
+          <span class="apgo-event-countdown__unit">s</span>
+        </span>
+      </div>
     </div>
   </div>
 
   <style>
     /* All scoped under body.apgo-special-event-page so the gold tokens
        defined in apgo-event-page.css are in cascade. */
-    /* Slim pill chip — label + inline "05d : 23h : 12m : 33s" all on
-       one row, single-line typography (no stacked unit), tight padding.
-       Replaces the earlier boxy version per editorial. */
+    /* Octagonal ribbon chip — two layers (outer = gold gradient,
+       inner = dark fill). Both share the same clip-path; the 1.5px
+       padding between them is what renders as the visible gold rim.
+       Cut size driven by a CSS var so the shape is easy to tweak. */
     body.apgo-special-event-page .apgo-event-countdown {
+      --apgo-countdown-cut: 14px;            /* corner cut depth */
+      display: inline-block;
+      margin: clamp(6px, 1.4vw, 10px) auto 0;
+      padding: 1.5px;
+      max-width: fit-content;
+      background: var(--apgo-event-heading-gradient, linear-gradient(135deg, #f4d28a, #f8a849, #c8961f));
+      clip-path: polygon(
+        var(--apgo-countdown-cut) 0,
+        calc(100% - var(--apgo-countdown-cut)) 0,
+        100% var(--apgo-countdown-cut),
+        100% calc(100% - var(--apgo-countdown-cut)),
+        calc(100% - var(--apgo-countdown-cut)) 100%,
+        var(--apgo-countdown-cut) 100%,
+        0 calc(100% - var(--apgo-countdown-cut)),
+        0 var(--apgo-countdown-cut)
+      );
+    }
+    body.apgo-special-event-page .apgo-event-countdown__inner {
       display: inline-flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: center;
-      gap: clamp(8px, 1.6vw, 14px);
-      margin: clamp(6px, 1.4vw, 10px) auto 0;
-      padding: clamp(5px, 1vw, 7px) clamp(12px, 2vw, 18px);
-      max-width: fit-content;
-      border-radius: 999px;
-      background: rgba(0, 0, 0, 0.32);
-      border: 1px solid rgba(244, 210, 138, 0.32);
+      gap: clamp(8px, 1.6vw, 12px);
+      padding: clamp(7px, 1.5vw, 10px) clamp(14px, 2.4vw, 22px);
+      background: rgba(0, 0, 0, 0.55);
+      clip-path: polygon(
+        var(--apgo-countdown-cut) 0,
+        calc(100% - var(--apgo-countdown-cut)) 0,
+        100% var(--apgo-countdown-cut),
+        100% calc(100% - var(--apgo-countdown-cut)),
+        calc(100% - var(--apgo-countdown-cut)) 100%,
+        var(--apgo-countdown-cut) 100%,
+        0 calc(100% - var(--apgo-countdown-cut)),
+        0 var(--apgo-countdown-cut)
+      );
     }
+
+    /* Hourglass icon — uses currentColor so it inherits the label's
+       gold gradient by setting color on this span. */
+    body.apgo-special-event-page .apgo-event-countdown__icon {
+      display: inline-flex;
+      align-items: center;
+      color: var(--apgo-event-gold-bright, #f8a849);
+      filter: drop-shadow(0 0 4px rgba(248, 168, 73, 0.45));
+    }
+    body.apgo-special-event-page .apgo-event-countdown__icon svg {
+      display: block;
+    }
+
     body.apgo-special-event-page .apgo-event-countdown__label {
       font-size: clamp(10px, 1.4vw, 12px);
       font-weight: 800;
@@ -77,22 +136,29 @@
       color: var(--apgo-event-gold-bright, #f8a849);
       white-space: nowrap;
     }
+
+    /* Boxed digits — dark inner squares with thin gold rim, digit
+       large on top + unit letter small below (the original layout
+       editorial preferred). */
     body.apgo-special-event-page .apgo-event-countdown__boxes {
       display: inline-flex;
-      align-items: baseline;
-      gap: clamp(4px, 0.9vw, 8px);
-      line-height: 1;
+      align-items: center;
+      gap: clamp(4px, 0.9vw, 6px);
     }
-    /* No background / border on the box wrapper anymore — the unit
-       sits inline right next to the digit, no padding around it. */
     body.apgo-special-event-page .apgo-event-countdown__box {
       display: inline-flex;
-      align-items: baseline;
-      gap: 1px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-width: clamp(32px, 5vw, 42px);
+      padding: clamp(3px, 0.7vw, 5px) clamp(5px, 1vw, 8px);
+      background: rgba(0, 0, 0, 0.42);
+      border: 1px solid rgba(244, 210, 138, 0.42);
+      border-radius: 6px;
       line-height: 1;
     }
     body.apgo-special-event-page .apgo-event-countdown__digit {
-      font-size: clamp(14px, 2vw, 18px);
+      font-size: clamp(15px, 2.3vw, 19px);
       font-weight: 800;
       font-variant-numeric: tabular-nums; /* fixed-width digits → no jitter */
       letter-spacing: -0.01em;
@@ -103,25 +169,28 @@
       color: var(--apgo-event-gold-bright, #f8a849);
     }
     body.apgo-special-event-page .apgo-event-countdown__unit {
-      font-size: clamp(10px, 1.3vw, 12px);
-      font-weight: 600;
-      letter-spacing: 0;
-      text-transform: lowercase;
-      color: rgba(244, 210, 138, 0.75);
+      margin-top: 2px;
+      font-size: clamp(7px, 0.95vw, 9px);
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(244, 210, 138, 0.7);
     }
     body.apgo-special-event-page .apgo-event-countdown__sep {
-      font-size: clamp(12px, 1.6vw, 14px);
-      font-weight: 600;
-      color: rgba(244, 210, 138, 0.45);
+      font-size: clamp(11px, 1.4vw, 14px);
+      font-weight: 800;
+      color: var(--apgo-event-gold-bright, #f8a849);
+      opacity: 0.55;
       line-height: 1;
+      padding-bottom: clamp(8px, 1.2vw, 11px); /* nudge upward so colon aligns with digit, not unit */
     }
     @media (max-width: 480px) {
-      /* On the narrowest viewports allow wrap so the chip doesn't push
-         past the panel's side padding. */
-      body.apgo-special-event-page .apgo-event-countdown {
+      /* Narrow viewports: let the chip's inner contents wrap so the
+         ribbon doesn't push past the panel's side padding. */
+      body.apgo-special-event-page .apgo-event-countdown__inner {
         flex-direction: column;
-        gap: 4px;
-        padding: 6px 14px;
+        gap: 6px;
+        padding: 8px 16px;
       }
     }
   </style>
