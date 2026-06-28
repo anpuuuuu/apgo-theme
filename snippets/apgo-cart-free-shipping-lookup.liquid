@@ -1,0 +1,24 @@
+{%- doc -%}
+  Emits a small <script> tag that populates
+  window.APGO_FREE_SHIPPING_LINE_LOOKUP with a {product_id: title} map
+  of all currently-in-cart products carrying the 'free-shipping' tag.
+
+  Idempotent — calling it from multiple cart sections is fine; the
+  last one to run wins and the result is identical regardless. Each
+  cart section that needs the dynamic tag-unlock check renders this
+  so the global is guaranteed to exist on any cart-page layout
+  (different stores include different cart sections).
+
+  Inline script keeps the SSR + dynamic update layers in lockstep:
+  whenever Shopify re-renders any cart section after an AJAX cart
+  change, the new HTML carries an updated script tag, and the JS-side
+  threshold logic picks up the fresh lookup on its next tick.
+{%- enddoc -%}
+<script data-apgo-free-shipping-lookup>
+  window.APGO_FREE_SHIPPING_LINE_LOOKUP = {};
+  {%- for line in cart.items -%}
+    {%- if line.product.tags contains 'free-shipping' -%}
+      window.APGO_FREE_SHIPPING_LINE_LOOKUP["{{ line.product.id }}"] = {{ line.product.title | json }};
+    {%- endif -%}
+  {%- endfor -%}
+</script>

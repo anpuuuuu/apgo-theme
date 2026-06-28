@@ -1,4 +1,11 @@
 {%- comment -%} Cart Totals (standalone section) {%- endcomment -%}
+{%- comment -%}
+  Cart-totals is on every cart page in this theme, so it carries the
+  free-shipping tag lookup so sibling cart sections (cart-cta sticky
+  bar, cart-conditional-offer) can always read the global even when
+  the optional cart-free-shipping-goal section isn't mounted.
+{%- endcomment -%}
+{%- render 'apgo-cart-free-shipping-lookup' -%}
 <div
   id="CartTotals-{{ section.id }}"
   class="cart-totals cart-totals--standalone color-{{ section.settings.color_scheme }}"

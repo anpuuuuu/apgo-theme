@@ -29,23 +29,7 @@
   </div>
 </section>
 
-{%- comment -%}
-  Lookup of currently-in-cart product IDs that carry the
-  'free-shipping' tag, with their titles. Read by the JS in this
-  section to keep the unlocked state in sync as the cart updates
-  (e.g. user removes the qualifying product). When a brand-new
-  tagged product gets added to the cart via AJAX, Shopify's cart
-  section render API re-runs this Liquid → the script tag below
-  rewrites the global with the fresh product ID.
-{%- endcomment -%}
-<script>
-  window.APGO_FREE_SHIPPING_LINE_LOOKUP = {};
-  {%- for line in cart.items -%}
-    {%- if line.product.tags contains 'free-shipping' -%}
-      window.APGO_FREE_SHIPPING_LINE_LOOKUP["{{ line.product.id }}"] = {{ line.product.title | json }};
-    {%- endif -%}
-  {%- endfor -%}
-</script>
+{%- render 'apgo-cart-free-shipping-lookup' -%}
 
 <style>
   .cart-free-shipping-goal {
