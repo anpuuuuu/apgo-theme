@@ -907,23 +907,29 @@
         : Number(cart.total_price || 0);
       var ccy = cart.currency;
 
+      // Walk cart lines once and look up tag-unlocked product title.
+      // Used both by the shipping estimate fallback (zeroes shipping)
+      // and by the sticky goal bar render (full bar + custom copy).
+      var freeShipTagTitle = null;
+      var fsLookup = window.APGO_FREE_SHIPPING_LINE_LOOKUP || {};
+      if (cart && Array.isArray(cart.items)) {
+        for (var i = 0; i < cart.items.length; i++) {
+          var maybeTitle = fsLookup[cart.items[i].product_id];
+          if (maybeTitle) { freeShipTagTitle = maybeTitle; break; }
+        }
+      }
+
       // Estimated total = paying total + flat shipping (mirrors cart-totals).
       // Falls back to local hardcoded rates if cart-totals JS hasn't loaded yet.
       var shipMinor = 0;
       if (typeof window.apgoEstimatedShippingMinor === 'function') {
         shipMinor = window.apgoEstimatedShippingMinor(cart) || 0;
-      } else {
-        // Tag-unlock: any qualifying line zeroes shipping regardless of subtotal.
-        var fsLookup = window.APGO_FREE_SHIPPING_LINE_LOOKUP || {};
-        var tagUnlocked = false;
-        if (cart && Array.isArray(cart.items)) {
-          for (var i = 0; i < cart.items.length; i++) {
-            if (fsLookup[cart.items[i].product_id]) { tagUnlocked = true; break; }
-          }
-        }
-        if (tagUnlocked) shipMinor = 0;
-        else if (ccy === 'MYR') shipMinor = basis >= 15500 ? 0 : 290;
-        else if (ccy === 'SGD') shipMinor = basis >= 7000 ? 0 : 290;
+      } else if (freeShipTagTitle) {
+        shipMinor = 0;
+      } else if (ccy === 'MYR') {
+        shipMinor = basis >= 15500 ? 0 : 290;
+      } else if (ccy === 'SGD') {
+        shipMinor = basis >= 7000 ? 0 : 290;
       }
       var estimatedTotal = Number(cart.total_price || 0) + shipMinor;
 
@@ -931,18 +937,27 @@
       if (totalEl) setSplitPrice(totalEl, estimatedTotal, ccy);
 
       if (thresholdMinor > 0 && goalEl) {
-        var pct = Math.min(100, Math.round((basis / thresholdMinor) * 100));
-        var remaining = Math.max(thresholdMinor - basis, 0);
-        var unlocked = remaining <= 0;
+        if (freeShipTagTitle) {
+          // Tag-unlock wins over threshold math — full bar + custom copy.
+          goalEl.classList.add('is-unlocked');
+          goalEl.classList.remove('is-locked');
+          if (goalFill) goalFill.style.width = '100%';
+          if (goalTrack) goalTrack.setAttribute('aria-valuenow', '100');
+          if (goalText) goalText.textContent = '🎁 You got free shipping with ' + freeShipTagTitle;
+        } else {
+          var pct = Math.min(100, Math.round((basis / thresholdMinor) * 100));
+          var remaining = Math.max(thresholdMinor - basis, 0);
+          var unlocked = remaining <= 0;
 
-        goalEl.classList.toggle('is-locked', !unlocked);
-        goalEl.classList.toggle('is-unlocked', unlocked);
-        if (goalFill) goalFill.style.width = pct + '%';
-        if (goalTrack) goalTrack.setAttribute('aria-valuenow', String(pct));
-        if (goalText) {
-          goalText.textContent = unlocked
-            ? ('🔓 ' + fsUnlockedLabel)
-            : fsRemainingTemplate.replace('%%AMT%%', fmtMoney(remaining, ccy));
+          goalEl.classList.toggle('is-locked', !unlocked);
+          goalEl.classList.toggle('is-unlocked', unlocked);
+          if (goalFill) goalFill.style.width = pct + '%';
+          if (goalTrack) goalTrack.setAttribute('aria-valuenow', String(pct));
+          if (goalText) {
+            goalText.textContent = unlocked
+              ? ('🔓 ' + fsUnlockedLabel)
+              : fsRemainingTemplate.replace('%%AMT%%', fmtMoney(remaining, ccy));
+          }
         }
       }
 
