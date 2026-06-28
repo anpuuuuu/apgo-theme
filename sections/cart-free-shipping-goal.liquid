@@ -1,20 +1,51 @@
 {% comment %}
   Cart free shipping goal section: MY (West Malaysia MYR 155) / SG (SGD 70)
+
+  Tag override: any cart line whose product carries the 'free-shipping'
+  tag unlocks the whole order. UI fills the progress bar to 100% and
+  swaps the remaining-amount copy for "🎁 You got free shipping with X".
 {% endcomment %}
+
+{%- capture apgo_fs_title -%}{%- render 'apgo-cart-free-shipping-product-title' -%}{%- endcapture -%}
+{%- assign apgo_fs_title = apgo_fs_title | strip -%}
+{%- assign apgo_fs_unlocked = false -%}
+{%- if apgo_fs_title != blank -%}
+  {%- assign apgo_fs_unlocked = true -%}
+{%- endif -%}
 
 <section class="cart-free-shipping-goal" data-free-shipping-goal data-country="{{ localization.country.iso_code | escape }}">
   <div class="cart-free-shipping-goal__inner">
     <h3 class="cart-free-shipping-goal__title">{{ section.settings.title | default: 'Free shipping progress' }}</h3>
-    <div class="cart-free-shipping-goal__bar-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-      <div class="cart-free-shipping-goal__bar-fill" data-goal-fill></div>
+    <div class="cart-free-shipping-goal__bar-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{% if apgo_fs_unlocked %}100{% else %}0{% endif %}">
+      <div class="cart-free-shipping-goal__bar-fill" data-goal-fill {% if apgo_fs_unlocked %}style="width: 100%"{% endif %}></div>
     </div>
-    <div class="cart-free-shipping-goal__amounts">
+    <div class="cart-free-shipping-goal__amounts"{% if apgo_fs_unlocked %} hidden{% endif %}>
       <span data-goal-current>--</span>
       <span data-goal-target>--</span>
     </div>
-    <p class="cart-free-shipping-goal__message" data-goal-message></p>
+    <p class="cart-free-shipping-goal__message" data-goal-message>
+      {%- if apgo_fs_unlocked -%}🎁 You got free shipping with {{ apgo_fs_title }}{%- endif -%}
+    </p>
   </div>
 </section>
+
+{%- comment -%}
+  Lookup of currently-in-cart product IDs that carry the
+  'free-shipping' tag, with their titles. Read by the JS in this
+  section to keep the unlocked state in sync as the cart updates
+  (e.g. user removes the qualifying product). When a brand-new
+  tagged product gets added to the cart via AJAX, Shopify's cart
+  section render API re-runs this Liquid → the script tag below
+  rewrites the global with the fresh product ID.
+{%- endcomment -%}
+<script>
+  window.APGO_FREE_SHIPPING_LINE_LOOKUP = {};
+  {%- for line in cart.items -%}
+    {%- if line.product.tags contains 'free-shipping' -%}
+      window.APGO_FREE_SHIPPING_LINE_LOOKUP["{{ line.product.id }}"] = {{ line.product.title | json }};
+    {%- endif -%}
+  {%- endfor -%}
+</script>
 
 <style>
   .cart-free-shipping-goal {
@@ -103,7 +134,22 @@
     const formatMoney = (minor, currency) =>
       new Intl.NumberFormat(document.documentElement.lang || 'en', { style: 'currency', currency }).format((minor || 0) / 100);
 
-    const render = (subtotalMinor) => {
+    /* Find a tag-unlocked product in the live cart. Uses the
+       per-section global APGO_FREE_SHIPPING_LINE_LOOKUP (populated by
+       the Liquid <script> at the top of this section). Returns the
+       title to surface in the "🎁 You got free shipping with X"
+       message, or null if no qualifying line is present. */
+    const findTagUnlock = (cart) => {
+      const lookup = window.APGO_FREE_SHIPPING_LINE_LOOKUP || {};
+      if (!cart || !Array.isArray(cart.items)) return null;
+      for (const line of cart.items) {
+        const title = lookup[line.product_id];
+        if (title) return title;
+      }
+      return null;
+    };
+
+    const render = (subtotalMinor, cart) => {
       const rule = getRule(country);
       if (!rule) {
         root.style.display = 'none';
@@ -111,6 +157,21 @@
       }
 
       root.style.display = '';
+
+      /* Tag-unlock wins regardless of subtotal — show 100% bar + the
+         "You got free shipping with X" copy. The amounts row is
+         hidden because the threshold no longer applies. */
+      const tagTitle = findTagUnlock(cart);
+      const amountsRow = root.querySelector('.cart-free-shipping-goal__amounts');
+      if (tagTitle) {
+        fill.style.width = '100%';
+        bar?.setAttribute('aria-valuenow', '100');
+        if (amountsRow) amountsRow.setAttribute('hidden', '');
+        msg.textContent = `🎁 You got free shipping with ${tagTitle}`;
+        return;
+      }
+      if (amountsRow) amountsRow.removeAttribute('hidden');
+
       const progress = Math.min((subtotalMinor / rule.thresholdMinor) * 100, 100);
       const remaining = Math.max(rule.thresholdMinor - subtotalMinor, 0);
 
@@ -135,7 +196,7 @@
         const subtotalMinor = window.apgoCartFreeShippingBasis
           ? window.apgoCartFreeShippingBasis(cart)
           : Number(cart?.total_price || 0);
-        render(subtotalMinor);
+        render(subtotalMinor, cart);
       } catch (_) {}
     };
 

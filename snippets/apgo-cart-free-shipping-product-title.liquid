@@ -1,0 +1,23 @@
+{%- doc -%}
+  Walk the cart line items; if ANY line's product carries the
+  'free-shipping' tag the order qualifies for free shipping
+  regardless of the per-market threshold.
+
+  Outputs the title of the FIRST qualifying product (so the cart UI
+  can render "🎁 You got free shipping with X" copy). Outputs blank
+  if no line qualifies.
+
+  Usage:
+    {%- capture apgo_fs_title -%}{%- render 'apgo-cart-free-shipping-product-title' -%}{%- endcapture -%}
+    {%- assign apgo_fs_title = apgo_fs_title | strip -%}
+    {%- if apgo_fs_title != blank -%} ... unlocked ... {%- endif -%}
+
+  Tag is hardcoded so admins can drop it on any product / variant
+  from the Shopify Products page without touching theme code.
+{%- enddoc -%}
+{%- for line in cart.items -%}
+  {%- if line.product.tags contains 'free-shipping' -%}
+    {{- line.product.title -}}
+    {%- break -%}
+  {%- endif -%}
+{%- endfor -%}

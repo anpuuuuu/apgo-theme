@@ -29,8 +29,22 @@
       assign discount_total_minor = cart.total_discount
       assign remaining_for_free_shipping_minor = 0
       assign free_shipping_remaining_formatted = remaining_for_free_shipping_minor | money
+
+      # Tag-based override: any cart line whose product carries
+      # 'free-shipping' unlocks the entire order regardless of subtotal.
+      capture apgo_fs_tag_title_raw
+        render 'apgo-cart-free-shipping-product-title'
+      endcapture
+      assign apgo_fs_tag_title = apgo_fs_tag_title_raw | strip
+      assign apgo_fs_tag_unlocked = false
+      if apgo_fs_tag_title != blank
+        assign apgo_fs_tag_unlocked = true
+      endif
+
       assign free_shipping_unlocked = false
-      if market_threshold_minor > 0
+      if apgo_fs_tag_unlocked
+        assign free_shipping_unlocked = true
+      elsif market_threshold_minor > 0
         if apgo_free_shipping_basis >= market_threshold_minor
           assign free_shipping_unlocked = true
         else
@@ -901,6 +915,14 @@
     // Flat shipping estimate — must mirror Liquid SSR + sections/cart-cta.liquid
     function shippingEstimateMinor(cart) {
       if (!cart) return 0;
+      // Tag-unlock: any line in cart whose product_id matches the
+      // free-shipping lookup zeroes shipping regardless of subtotal.
+      const lookup = window.APGO_FREE_SHIPPING_LINE_LOOKUP || {};
+      if (Array.isArray(cart.items)) {
+        for (const line of cart.items) {
+          if (lookup[line.product_id]) return 0;
+        }
+      }
       const ccy = cart.currency;
       const basis = (typeof window.apgoCartFreeShippingBasis === 'function')
         ? window.apgoCartFreeShippingBasis(cart)

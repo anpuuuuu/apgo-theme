@@ -62,9 +62,18 @@
       endcapture
       assign sticky_fs_basis = sticky_fs_basis_raw | plus: 0
 
+      # Tag-based override: any 'free-shipping' tagged product in
+      # cart unlocks the bar regardless of subtotal.
+      capture sticky_fs_tag_title_raw
+        render 'apgo-cart-free-shipping-product-title'
+      endcapture
+      assign sticky_fs_tag_title = sticky_fs_tag_title_raw | strip
+
       assign sticky_free_shipping_unlocked = false
       assign sticky_remaining_minor = 0
-      if sticky_threshold_minor > 0
+      if sticky_fs_tag_title != blank
+        assign sticky_free_shipping_unlocked = true
+      elsif sticky_threshold_minor > 0
         if sticky_fs_basis >= sticky_threshold_minor
           assign sticky_free_shipping_unlocked = true
         else
@@ -125,7 +134,10 @@
       assign sticky_count_paren = '(' | append: cart.item_count | append: ')'
 
       assign sticky_progress_pct = 0
-      if sticky_threshold_minor > 0
+      if sticky_fs_tag_title != blank
+        # Tag-unlock: bar is full + custom label, threshold not used.
+        assign sticky_progress_pct = 100
+      elsif sticky_threshold_minor > 0
         assign sticky_progress_pct = sticky_fs_basis | times: 100 | divided_by: sticky_threshold_minor
         if sticky_progress_pct > 100
           assign sticky_progress_pct = 100
@@ -148,7 +160,9 @@
             <div class="cart-sticky-cta__goal-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ sticky_progress_pct }}">
               <div class="cart-sticky-cta__goal-fill" data-sticky-goal-fill style="width: {{ sticky_progress_pct }}%;"></div>
               <span class="cart-sticky-cta__goal-text" data-sticky-goal-text>
-                {%- if sticky_free_shipping_unlocked -%}
+                {%- if sticky_fs_tag_title != blank -%}
+                  🎁 You got free shipping with {{ sticky_fs_tag_title }}
+                {%- elsif sticky_free_shipping_unlocked -%}
                   🔓 {{ sticky_fs_unlocked_label }}
                 {%- else -%}
                   {{- 'apgo_cart.free_shipping_remaining' | t: amount: sticky_remaining_formatted -}}
@@ -898,7 +912,16 @@
       if (typeof window.apgoEstimatedShippingMinor === 'function') {
         shipMinor = window.apgoEstimatedShippingMinor(cart) || 0;
       } else {
-        if (ccy === 'MYR') shipMinor = basis >= 15500 ? 0 : 290;
+        // Tag-unlock: any qualifying line zeroes shipping regardless of subtotal.
+        var fsLookup = window.APGO_FREE_SHIPPING_LINE_LOOKUP || {};
+        var tagUnlocked = false;
+        if (cart && Array.isArray(cart.items)) {
+          for (var i = 0; i < cart.items.length; i++) {
+            if (fsLookup[cart.items[i].product_id]) { tagUnlocked = true; break; }
+          }
+        }
+        if (tagUnlocked) shipMinor = 0;
+        else if (ccy === 'MYR') shipMinor = basis >= 15500 ? 0 : 290;
         else if (ccy === 'SGD') shipMinor = basis >= 7000 ? 0 : 290;
       }
       var estimatedTotal = Number(cart.total_price || 0) + shipMinor;

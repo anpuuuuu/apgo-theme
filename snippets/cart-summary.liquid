@@ -18,8 +18,17 @@
     assign discount_total_minor = cart.total_discount
     assign remaining_for_free_shipping_minor = 0
     assign free_shipping_remaining_formatted = remaining_for_free_shipping_minor | money
+
+    # Tag-based override — see snippets/apgo-cart-free-shipping-product-title.
+    capture cart_summary_fs_tag_title_raw
+      render 'apgo-cart-free-shipping-product-title'
+    endcapture
+    assign cart_summary_fs_tag_title = cart_summary_fs_tag_title_raw | strip
+
     assign free_shipping_unlocked = false
-    if market_threshold_minor > 0
+    if cart_summary_fs_tag_title != blank
+      assign free_shipping_unlocked = true
+    elsif market_threshold_minor > 0
       if cart.original_total_price >= market_threshold_minor
         assign free_shipping_unlocked = true
       else
@@ -46,7 +55,9 @@
         <span class="cart__summary-item cart__shipping-goal">
           <span class="cart__shipping-goal-label">{{ 'apgo_cart.free_shipping_goal_label' | t }}</span>
           <span class="cart__shipping-goal-value cart-secondary-typography">
-            {%- if free_shipping_unlocked -%}
+            {%- if cart_summary_fs_tag_title != blank -%}
+              🎁 You got free shipping with {{ cart_summary_fs_tag_title }}
+            {%- elsif free_shipping_unlocked -%}
               {{- 'apgo_cart.free_shipping_unlocked' | t -}}
             {%- else -%}
               {{- 'apgo_cart.free_shipping_remaining' | t: amount: free_shipping_remaining_formatted -}}

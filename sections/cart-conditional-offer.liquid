@@ -337,7 +337,20 @@
       return template.replace('__AMOUNT__', amountText);
     };
 
-    const render = (subtotalMinor) => {
+    /* Same tag-unlock helper as cart-free-shipping-goal: any line in
+       the live cart whose product_id is in the per-section lookup
+       wins, regardless of subtotal vs threshold. */
+    const findTagUnlock = (cart) => {
+      const lookup = window.APGO_FREE_SHIPPING_LINE_LOOKUP || {};
+      if (!cart || !Array.isArray(cart.items)) return null;
+      for (const line of cart.items) {
+        const title = lookup[line.product_id];
+        if (title) return title;
+      }
+      return null;
+    };
+
+    const render = (subtotalMinor, cart) => {
       const marketCountry = (wrapper.dataset.marketCountry || '').toUpperCase();
       const rule = getRule(marketCountry);
 
@@ -348,6 +361,18 @@
 
       wrapper.style.display = '';
       if (progressTitleEl) progressTitleEl.textContent = `{{ 'apgo_cart.free_shipping_goal_label' | t | escape }}`;
+
+      const tagTitle = findTagUnlock(cart);
+      if (tagTitle) {
+        if (progressFill) progressFill.style.width = '100%';
+        if (currentAmountEl) currentAmountEl.textContent = '';
+        if (targetAmountEl) targetAmountEl.textContent = '';
+        if (offerMessage && offerText) {
+          offerMessage.classList.add('achieved');
+          offerText.textContent = `🎁 You got free shipping with ${tagTitle}`;
+        }
+        return;
+      }
 
       const remainingMinor = Math.max(rule.thresholdMinor - subtotalMinor, 0);
       const progress = Math.min((subtotalMinor / rule.thresholdMinor) * 100, 100);
@@ -375,7 +400,7 @@
         const subtotalMinor = window.apgoCartFreeShippingBasis
           ? window.apgoCartFreeShippingBasis(cart)
           : Number(cart?.total_price || 0);
-        render(subtotalMinor);
+        render(subtotalMinor, cart);
       } catch (_) {}
     };
 
