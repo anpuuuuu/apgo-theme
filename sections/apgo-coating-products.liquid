@@ -2,6 +2,7 @@
   Reused "Spend More, Get More" section
   Simplified to one free-shipping goal (MY/SG market-aware)
 {% endcomment %}
+{%- render 'apgo-cart-free-shipping-lookup' -%}
 
 <section class="apgo-combined-goal" data-combined-goal data-country="{{ localization.country.iso_code | escape }}">
   <div class="apgo-combined-goal__inner">
@@ -178,7 +179,21 @@
       }
     };
 
-    const render = (subtotalMinor) => {
+    /* Tag-unlock detector — any cart line whose product_id matches
+       APGO_FREE_SHIPPING_LINE_LOOKUP wins regardless of subtotal.
+       Lookup is populated by the apgo-cart-free-shipping-lookup
+       snippet rendered from sibling cart sections. */
+    const findTagUnlock = (cart) => {
+      const lookup = window.APGO_FREE_SHIPPING_LINE_LOOKUP || {};
+      if (!cart || !Array.isArray(cart.items)) return null;
+      for (const line of cart.items) {
+        const title = lookup[line.product_id];
+        if (title) return title;
+      }
+      return null;
+    };
+
+    const render = (subtotalMinor, cart) => {
       const rule = getRule(country);
       if (!rule) {
         root.style.display = 'none';
@@ -186,6 +201,20 @@
       }
 
       root.style.display = '';
+
+      const tagTitle = findTagUnlock(cart);
+      if (tagTitle) {
+        fill.style.width = '100%';
+        bar?.setAttribute('aria-valuenow', '100');
+        current.textContent = '';
+        target.textContent = '';
+        root.classList.remove('is-locked');
+        root.classList.add('is-unlocked');
+        if (status) status.textContent = '🎁 Free shipping unlocked';
+        msg.textContent = `🎁 You got free shipping with ${tagTitle}`;
+        return;
+      }
+
       const progress = Math.min((subtotalMinor / rule.thresholdMinor) * 100, 100);
       const remaining = Math.max(rule.thresholdMinor - subtotalMinor, 0);
 
@@ -218,7 +247,7 @@
         const subtotalMinor = window.apgoCartFreeShippingBasis
           ? window.apgoCartFreeShippingBasis(cart)
           : Number(cart?.total_price || 0);
-        render(subtotalMinor);
+        render(subtotalMinor, cart);
       } catch (_) {}
     };
     const refreshDebounced = () => { clearTimeout(refreshTmr); refreshTmr = setTimeout(refresh, 240); };
