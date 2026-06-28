@@ -15,10 +15,10 @@
       assign is_my_market = false
       if localization.country.iso_code == 'SG'
         assign is_sg_market = true
-        assign market_threshold_minor = 5500
+        assign market_threshold_minor = 7000
       elsif localization.country.iso_code == 'MY'
         assign is_my_market = true
-        assign market_threshold_minor = 9900
+        assign market_threshold_minor = 15500
       endif
 
       capture apgo_fs_basis_raw
@@ -905,8 +905,8 @@
       const basis = (typeof window.apgoCartFreeShippingBasis === 'function')
         ? window.apgoCartFreeShippingBasis(cart)
         : Number(cart.total_price || 0);
-      if (ccy === 'MYR') return basis >= 9900 ? 0 : 290;
-      if (ccy === 'SGD') return basis >= 5500 ? 0 : 290;
+      if (ccy === 'MYR') return basis >= 15500 ? 0 : 290;
+      if (ccy === 'SGD') return basis >= 7000 ? 0 : 290;
       return 0;
     }
     // Exposed so cart-cta sticky bar can compute the same estimated total.
