@@ -59,15 +59,15 @@
         "type": "text",
         "id": "apgo_promo_banner_headline",
         "label": "Headline",
-        "info": "Banner 上方大字。",
-        "default": "APGO BIRTHDAY EXCLUSIVE"
+        "info": "Banner 上方大字。例：BUY SPRAYER GET FREE SHAMPOO",
+        "default": "EXCLUSIVE DEAL"
       },
       {
         "type": "textarea",
         "id": "apgo_promo_banner_body",
         "label": "Body text",
         "info": "Banner 下方小字。",
-        "default": "Get a FREE 300ml shampoo when you grab the Sprayer Special."
+        "default": "Grab this deal now and receive an additional FREE 300ml Car Wash Shampoo."
       },
       {
         "type": "text",
