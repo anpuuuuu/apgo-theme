@@ -105,8 +105,11 @@
         #   2. Fallback hardcoded handle for the original Father's Day bundle so
         #      the banner keeps working even if the merchant hasn't configured
         #      the list yet.
+        # Promo banner gates ONLY on apgo_promo_banner_enabled now, so the
+        # banner can be shown alongside a third-party gift app (e.g. AIOD)
+        # without having to enable the APGO reconciler.
         assign show_pdp_promo_banner = false
-        if settings.apgo_gwp_enabled and settings.apgo_promo_banner_enabled and template.name == 'product'
+        if settings.apgo_promo_banner_enabled and template.name == 'product'
           assign promo_pdp_list = settings.apgo_promo_banner_pdp_products
           if promo_pdp_list != blank and promo_pdp_list.size > 0
             for p in promo_pdp_list
@@ -115,10 +118,6 @@
                 break
               endif
             endfor
-          else
-            if product.handle == 'fathers-day-aurora-coating-special-buy-1-free-1'
-              assign show_pdp_promo_banner = true
-            endif
           endif
         endif
       -%}

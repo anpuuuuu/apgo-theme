@@ -67,12 +67,14 @@
   inside snippets/apgo-collection-promo-banner.liquid.
 {%- endcomment -%}
 {%- liquid
-  # Shopify Liquid does not support parentheses in `if` conditions and has
-  # no operator precedence (strict right-to-left). Flatten the GWP banner
-  # gate into nested ifs to keep the semantics identical.
+  # Collection-level promo banner now gated by its own setting so editors
+  # can keep the PDP banner on without the banner spilling onto
+  # /collections/all and /collections/limited-time-deals. Default OFF —
+  # admin opts in via Theme settings → APGO — Free Gift Promo →
+  # "Show promo banner on these collections".
   assign show_gwp_banner = false
-  if collection.handle == 'all' or collection.handle == 'collections-limited-time-deals'
-    if settings.apgo_gwp_enabled
+  if settings.apgo_promo_banner_show_on_collections
+    if collection.handle == 'all' or collection.handle == 'collections-limited-time-deals'
       assign show_gwp_banner = true
     endif
   endif

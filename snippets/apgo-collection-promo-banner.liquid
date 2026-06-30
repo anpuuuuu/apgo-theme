@@ -14,20 +14,28 @@
   (GMT+8) and rolls over to the next day automatically.
 {%- enddoc -%}
 
-{%- comment -%} ============ EDIT THESE TO CHANGE THE PROMO ============ {%- endcomment -%}
-{%- assign promo_handle    = 'fathers-day-aurora-coating-special-buy-1-free-1' -%}
-{%- assign promo_headline  = "FATHER'S DAY EXCLUSIVE DEAL" -%}
-{%- assign promo_body      = 'FREE 300ml shampoo included. Only 100 sets — grab yours now.' -%}
-{%- assign promo_cta       = 'View deal' -%}
+{%- comment -%}
+  Content now driven by Theme Settings → APGO — Free Gift Promo →
+  Banner content. Falls back to the original Father's Day promo when
+  settings are blank (so existing stores don't break on upgrade).
+{%- endcomment -%}
+{%- assign promo_product   = settings.apgo_promo_banner_product -%}
+{%- assign promo_handle    = '' -%}
+{%- if promo_product != blank and promo_product.handle != blank -%}
+  {%- assign promo_handle  = promo_product.handle -%}
+{%- else -%}
+  {%- assign promo_handle  = 'fathers-day-aurora-coating-special-buy-1-free-1' -%}
+  {%- assign promo_product = all_products[promo_handle] -%}
+{%- endif -%}
+{%- assign promo_headline  = settings.apgo_promo_banner_headline | default: "FATHER'S DAY EXCLUSIVE DEAL" -%}
+{%- assign promo_body      = settings.apgo_promo_banner_body     | default: 'FREE 300ml shampoo included. Only 100 sets — grab yours now.' -%}
+{%- assign promo_cta       = settings.apgo_promo_banner_cta      | default: 'View deal' -%}
 {%- assign promo_timer_label = 'Ends in' -%}
 {%- comment -%} Banner uses a daily-recurring 24h countdown that rolls
    forward every midnight (MY GMT+8). Visibility is controlled solely by
    the Theme Settings toggle `apgo_promo_banner_enabled` — no metafield
    expiry, no fixed end date. {%- endcomment -%}
 {%- assign promo_daily_end = '00:00' -%}
-{%- comment -%} ========================================================== {%- endcomment -%}
-
-{%- assign promo_product = all_products[promo_handle] -%}
 {%- comment -%}
   On the promo product's own PDP we hide the CTA button — clicking
   "View deal" to land on the same page is pointless. The countdown +

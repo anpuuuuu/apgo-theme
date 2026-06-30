@@ -35,8 +35,45 @@
         "type": "product_list",
         "id": "apgo_promo_banner_pdp_products",
         "label": "Show promo banner on these PDPs",
-        "info": "選擇要顯示橫幅的商品頁。若未選任何商品，則只在主 promo 商品頁顯示（fallback）。",
+        "info": "選擇要顯示橫幅的商品頁。",
         "limit": 20
+      },
+      {
+        "type": "checkbox",
+        "id": "apgo_promo_banner_show_on_collections",
+        "label": "Also show banner on /collections/all + Limited Time Deals",
+        "info": "默認關閉。打開後 banner 會在 collection 列表頁頂部出現（連結到下方選的 promo 商品）。",
+        "default": false
+      },
+      {
+        "type": "header",
+        "content": "Banner content"
+      },
+      {
+        "type": "product",
+        "id": "apgo_promo_banner_product",
+        "label": "Banner promo product",
+        "info": "Banner 點擊跳轉這個商品，並使用此商品的圖片做縮圖。"
+      },
+      {
+        "type": "text",
+        "id": "apgo_promo_banner_headline",
+        "label": "Headline",
+        "info": "Banner 上方大字。例：BUY SPRAYER GET FREE SHAMPOO",
+        "default": "EXCLUSIVE DEAL"
+      },
+      {
+        "type": "textarea",
+        "id": "apgo_promo_banner_body",
+        "label": "Body text",
+        "info": "Banner 下方小字。",
+        "default": "Grab this deal now and receive an additional FREE 300ml Car Wash Shampoo."
+      },
+      {
+        "type": "text",
+        "id": "apgo_promo_banner_cta",
+        "label": "CTA label",
+        "default": "View deal"
       }
     ]
   },
