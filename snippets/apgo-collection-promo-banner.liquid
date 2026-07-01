@@ -15,21 +15,61 @@
 {%- enddoc -%}
 
 {%- comment -%}
-  Content now driven by Theme Settings → APGO — Free Gift Promo →
-  Banner content. Falls back to the original Father's Day promo when
-  settings are blank (so existing stores don't break on upgrade).
+  Banner content resolution — priority order:
+    1. If we're on a PDP AND that product is in the promo list, use
+       the CURRENT product (its own image + URL) so the banner shows
+       the right thumbnail on every promo PDP. Headline / body may
+       be overridden by product metafields.
+    2. Otherwise (rendered from a collection page), use the global
+       Customizer settings → apgo_promo_banner_product.
+    3. Final fallback — the original Father's Day handle so nothing
+       renders blank if the merchant hasn't configured anything yet.
+
+  Per-product metafield overrides for headline / body / cta (set via
+  Shopify Admin → Products → [product] → Metafields):
+    custom.promo_banner_headline
+    custom.promo_banner_body
+    custom.promo_banner_cta
 {%- endcomment -%}
-{%- assign promo_product   = settings.apgo_promo_banner_product -%}
-{%- assign promo_handle    = '' -%}
-{%- if promo_product != blank and promo_product.handle != blank -%}
-  {%- assign promo_handle  = promo_product.handle -%}
-{%- else -%}
-  {%- assign promo_handle  = 'fathers-day-aurora-coating-special-buy-1-free-1' -%}
-  {%- assign promo_product = all_products[promo_handle] -%}
-{%- endif -%}
-{%- assign promo_headline  = settings.apgo_promo_banner_headline | default: "FATHER'S DAY EXCLUSIVE DEAL" -%}
-{%- assign promo_body      = settings.apgo_promo_banner_body     | default: 'FREE 300ml shampoo included. Only 100 sets — grab yours now.' -%}
-{%- assign promo_cta       = settings.apgo_promo_banner_cta      | default: 'View deal' -%}
+
+{%- liquid
+  assign promo_product = blank
+
+  # 1. On a PDP: use the current product if the promo banner list contains it.
+  if template.name == 'product' and product != blank
+    assign promo_pdp_list = settings.apgo_promo_banner_pdp_products
+    if promo_pdp_list != blank and promo_pdp_list.size > 0
+      for p in promo_pdp_list
+        if p.id == product.id
+          assign promo_product = product
+          break
+        endif
+      endfor
+    endif
+  endif
+
+  # 2. Fallback to global Customizer product picker.
+  if promo_product == blank
+    assign promo_product = settings.apgo_promo_banner_product
+  endif
+
+  # 3. Final legacy fallback so nothing renders blank if merchant
+  #    hasn't configured anything yet.
+  if promo_product == blank or promo_product.handle == blank
+    assign promo_product = all_products['fathers-day-aurora-coating-special-buy-1-free-1']
+  endif
+
+  assign promo_handle = promo_product.handle
+
+  # Per-product metafield override for the text fields — falls through
+  # to global Customizer settings, then hardcoded default.
+  assign meta_headline = promo_product.metafields.custom.promo_banner_headline
+  assign meta_body     = promo_product.metafields.custom.promo_banner_body
+  assign meta_cta      = promo_product.metafields.custom.promo_banner_cta
+  assign promo_headline = meta_headline | default: settings.apgo_promo_banner_headline | default: 'APGO BIRTHDAY EXCLUSIVE'
+  assign promo_body     = meta_body     | default: settings.apgo_promo_banner_body     | default: 'Get a FREE 300ml shampoo when you grab this promo bundle.'
+  assign promo_cta      = meta_cta      | default: settings.apgo_promo_banner_cta      | default: 'View deal'
+-%}
 {%- assign promo_timer_label = 'Ends in' -%}
 {%- comment -%} Banner uses a daily-recurring 24h countdown that rolls
    forward every midnight (MY GMT+8). Visibility is controlled solely by

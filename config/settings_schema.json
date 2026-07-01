@@ -50,24 +50,28 @@
         "content": "Banner content"
       },
       {
+        "type": "paragraph",
+        "content": "在 PDP 上顯示 banner 時會自動使用當前商品的圖片和連結。下面這幾格是 fallback（僅當 banner 在 collection 頁顯示、或者用戶還沒選 PDP 商品時才使用）。想給某個商品獨立文案，去 Products → 該商品 → Metafields → 填 custom.promo_banner_headline / body / cta。"
+      },
+      {
         "type": "product",
         "id": "apgo_promo_banner_product",
-        "label": "Banner promo product",
-        "info": "Banner 點擊跳轉這個商品，並使用此商品的圖片做縮圖。"
+        "label": "Banner promo product (fallback)",
+        "info": "只在 collection 頁顯示時用。PDP 上會用當前商品自己的圖。"
       },
       {
         "type": "text",
         "id": "apgo_promo_banner_headline",
-        "label": "Headline",
-        "info": "Banner 上方大字。例：BUY SPRAYER GET FREE SHAMPOO",
-        "default": "EXCLUSIVE DEAL"
+        "label": "Headline (default)",
+        "info": "所有 PDP 共用的預設大字。想給單一商品獨立文案，填該商品的 metafield custom.promo_banner_headline。",
+        "default": "APGO BIRTHDAY EXCLUSIVE"
       },
       {
         "type": "textarea",
         "id": "apgo_promo_banner_body",
-        "label": "Body text",
-        "info": "Banner 下方小字。",
-        "default": "Grab this deal now and receive an additional FREE 300ml Car Wash Shampoo."
+        "label": "Body text (default)",
+        "info": "所有 PDP 共用的預設小字。同上，可用 metafield custom.promo_banner_body 覆蓋。",
+        "default": "Get a FREE 300ml Car Wash Shampoo with this promo bundle."
       },
       {
         "type": "text",
