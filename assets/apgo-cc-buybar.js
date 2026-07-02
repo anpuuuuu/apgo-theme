@@ -296,7 +296,7 @@
      the PDP (window.apgoOpenConfirmModal) so the customer re-confirms variant,
      quantity, and sees the active variation contents before final commit. The
      modal handles the actual /cart/add.js call, toast, redirect, etc. */
-  function openConfirm(intent) {
+  function openConfirm(intent, sourceBtn) {
     if (typeof window.apgoOpenConfirmModal === 'function') {
       window.apgoOpenConfirmModal(intent);
       return;
@@ -305,6 +305,10 @@
        on PDP, but be defensive), fall back to the legacy direct-add path. */
     var fd = buildAddPayload();
     if (!fd) { showToast('Please select a variant first', false); return; }
+    /* Button-level lock so a fast double-click on the buybar Add/Buy
+       button in this fallback path can't fire two /cart/add.js POSTs
+       in parallel. Matches the pattern used by apgo-cc-pdp-picker. */
+    if (sourceBtn) sourceBtn.disabled = true;
     fetch('/cart/add.js', { method: 'POST', headers: { 'Accept': 'application/json' }, body: fd })
       .then(function (r) { return r.json(); })
       .then(function () {
@@ -318,19 +322,25 @@
       })
       .catch(function (err) {
         showToast((err && err.description) || 'Failed to add. Please try again.', false);
+      })
+      .finally(function () {
+        /* Buy-now navigates away in the .then() above, so this .finally()
+           only meaningfully runs for the 'add' path — but calling it in
+           both cases is harmless. */
+        if (sourceBtn) sourceBtn.disabled = false;
       });
   }
 
   if (addBtn) {
     addBtn.addEventListener('click', function () {
       if (addBtn.disabled) return;
-      openConfirm('add');
+      openConfirm('add', addBtn);
     });
   }
   if (checkoutBtn) {
     checkoutBtn.addEventListener('click', function () {
       if (checkoutBtn.disabled) return;
-      openConfirm('buy');
+      openConfirm('buy', checkoutBtn);
     });
   }
 })();

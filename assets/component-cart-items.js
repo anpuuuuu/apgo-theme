@@ -25,6 +25,19 @@ import { cartPerformance } from '@theme/performance';
 class CartItemsComponent extends Component {
   #debouncedOnChange = debounce(this.#onQuantityChange, 300).bind(this);
 
+  /*
+   * Per-line update queue. Allows optimistic UI (user can click +/-
+   * multiple times and the DOM qty updates immediately) but only ONE
+   * /cart/change.js in flight per line at a time. If a newer target
+   * quantity arrives while a request is in flight, we stash it in
+   * `pending` and flush ONCE MORE on completion — so the final server
+   * quantity always matches the last click ("last-wins").
+   *
+   * Key: line number (1-indexed, as Shopify's Ajax API expects).
+   * Value: { pending: number|null, pendingAction: string|null, inflight: boolean }
+   */
+  #lineState = new Map();
+
   connectedCallback() {
     super.connectedCallback();
 
@@ -101,11 +114,43 @@ class CartItemsComponent extends Component {
    * @param {string} config.action - The action.
    */
   updateQuantity(config) {
-    const cartPerformaceUpdateMarker = cartPerformance.createStartingMarker(`${config.action}:user-action`);
+    const { line, quantity, action } = config;
+    if (line == null) return;
+
+    /* Register the target — last write wins. */
+    const state = this.#lineState.get(line) || { pending: null, pendingAction: null, inflight: false };
+    state.pending = quantity;
+    state.pendingAction = action;
+    this.#lineState.set(line, state);
+
+    /* If a request for this line is already in flight, the .finally()
+       block will pick up the newer pending value and re-flush; nothing
+       more to do here. */
+    if (state.inflight) return;
+
+    this.#flushLine(line);
+  }
+
+  /*
+   * Fires the actual /cart/change.js POST for a single line. Reads
+   * (and clears) the pending target from #lineState, marks the line
+   * as in-flight, and on completion re-fires itself if a newer
+   * target has arrived in the meantime.
+   */
+  #flushLine(line) {
+    const state = this.#lineState.get(line);
+    if (!state || state.pending == null) return;
+
+    const quantity = state.pending;
+    const action = state.pendingAction;
+    state.pending = null;
+    state.pendingAction = null;
+    state.inflight = true;
+
+    const cartPerformaceUpdateMarker = cartPerformance.createStartingMarker(`${action}:user-action`);
 
     this.#disableCartItems();
 
-    const { line, quantity } = config;
     const { cartTotal } = this.refs;
 
     const cartItemsComponents = document.querySelectorAll('cart-items-component');
@@ -164,6 +209,10 @@ class CartItemsComponent extends Component {
       .finally(() => {
         this.#enableCartItems();
         cartPerformance.measureFromMarker(cartPerformaceUpdateMarker);
+        state.inflight = false;
+        /* If a newer target arrived while this request was in flight,
+           flush again with the latest value. */
+        if (state.pending != null) this.#flushLine(line);
       });
   }
 

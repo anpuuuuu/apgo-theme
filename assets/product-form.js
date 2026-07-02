@@ -162,6 +162,20 @@ class ProductFormComponent extends Component {
     // Check if the add to cart button is disabled and do an early return if it is
     if (this.refs.addToCartButtonContainer?.refs.addToCartButton?.getAttribute('disabled') === 'true') return;
 
+    /* Re-entry guard: a fast double-click on the Add to cart button
+       used to fire /cart/add.js twice. Block a second submit while the
+       first request is still in flight. Cleared in the .finally()
+       branch below. */
+    if (this.isSubmitting) return;
+    this.isSubmitting = true;
+
+    /* Physically disable the submit button so the user gets visual
+       feedback and native form re-submits (Enter key) can't reach
+       us during the flight either. Mirrors the pattern used by every
+       other add-to-cart surface in the theme. */
+    const submitButton = this.refs.addToCartButtonContainer?.refs.addToCartButton;
+    if (submitButton) submitButton.disabled = true;
+
     // Send the add to cart information to the cart
     const form = this.querySelector('form');
 
@@ -266,6 +280,10 @@ class ProductFormComponent extends Component {
       .finally(() => {
         // add more thing to do in here if needed.
         cartPerformance.measureFromEvent('add:user-action', event);
+        /* Release the single-instance lock + re-enable the button so
+           the customer can add again once this request has resolved. */
+        this.isSubmitting = false;
+        if (submitButton) submitButton.disabled = false;
       });
   }
 
