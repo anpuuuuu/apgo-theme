@@ -94,9 +94,29 @@
 
           <tbody role="rowgroup">
             {% for item in cart.items %}
+              {%- comment -%}
+                Free-gift lockdown detection — a line is treated as an
+                un-editable gift when EITHER:
+                  1. APGO reconciler / PDP GWP add — sets
+                     properties._free_gift = 'true'
+                  2. AIOD (or any Shopify-discount-based free-gift app) —
+                     line resolves to $0 AND has at least one line-level
+                     discount allocation (the discount is what made it
+                     free, distinguishing from legitimately $0-priced items)
+                Emitting the class server-side means the greyed-out UI
+                appears on the first paint with no flicker; emitting the
+                data attribute gives the JS a clean guard hook.
+              {%- endcomment -%}
+              {%- assign apgo_line_locked = false -%}
+              {%- if item.properties._free_gift == 'true' -%}
+                {%- assign apgo_line_locked = true -%}
+              {%- elsif item.final_price == 0 and item.line_level_discount_allocations.size > 0 -%}
+                {%- assign apgo_line_locked = true -%}
+              {%- endif -%}
               <tr
                 role="row"
-                class="cart-items__table-row"
+                class="cart-items__table-row{% if apgo_line_locked %} apgo-cart-item--gift{% endif %}"
+                {% if apgo_line_locked %}data-apgo-gift-line{% endif %}
                 ref="cartItemRows[]"
                 data-line-original-cents="{{ item.original_line_price }}"
                 data-line-final-cents="{{ item.final_line_price }}"

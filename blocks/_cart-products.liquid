@@ -629,17 +629,30 @@
 (function () {
   'use strict';
 
+  /*
+    "Gift" is now a broader concept than just APGO's _free_gift lines:
+      A. APGO reconciler / PDP GWP  → item.properties._free_gift === 'true'
+      B. AIOD or any Shopify discount-based free-gift app → final_price=0
+         with at least one line_level_discount_allocations entry
+    Both should get the lockdown class + 🎁 badge on the cart row.
+    Class + data-apgo-gift-line are ALSO emitted server-side by
+    snippets/cart-products.liquid (no first-paint flicker); this JS
+    layer re-applies after cart events fire on the current DOM (in
+    case a section morph or drawer render drops the server class).
+    The gift-from-product sub-label stays keyed on _gift_from_product
+    since AIOD lines don't carry that.
+  */
   function decorateGifts() {
     fetch('/cart.js?_=' + Date.now(), { cache: 'no-store' })
       .then(function (r) { return r.json(); })
       .then(function (cart) {
-        var giftLines = (cart.items || []).filter(function (i) {
-          return i.properties && i.properties._free_gift === 'true';
-        });
-        /* Build map of line-key → gift props so we can match against
-           rendered rows that carry a line key in their ref or attr. */
-        var giftByVariant = {};
-        giftLines.forEach(function (l) { giftByVariant[l.variant_id] = l; });
+        function isGiftLine(item) {
+          if (item.properties && item.properties._free_gift === 'true') return true;
+          if (Number(item.final_price) === 0 &&
+              Array.isArray(item.line_level_discount_allocations) &&
+              item.line_level_discount_allocations.length > 0) return true;
+          return false;
+        }
 
         document.querySelectorAll('.cart-items__table-row').forEach(function (row) {
           /* Find which variant this row represents. The remove button has
@@ -652,8 +665,13 @@
           var item = cart.items[lineIdx - 1];
           if (!item) return;
 
-          var isGift = item.properties && item.properties._free_gift === 'true';
+          var isGift = isGiftLine(item);
           row.classList.toggle('apgo-cart-item--gift', isGift);
+          /* Mirror the server-side data attribute so the JS entry-point
+             guards in component-cart-items.js keep working even if this
+             layer had to re-decorate a row that lost its attribute. */
+          if (isGift) row.setAttribute('data-apgo-gift-line', '');
+          else row.removeAttribute('data-apgo-gift-line');
 
           if (isGift) {
             var details = row.querySelector('.cart-items__details');
@@ -666,7 +684,12 @@
               if (titleP) titleP.insertAdjacentElement('afterend', badge);
               else details.prepend(badge);
             }
-            if (details && !details.querySelector('.apgo-cart-gift-sub') && item.properties._gift_from_product) {
+            /* Sub-label only fires for APGO gifts (they carry the
+               _gift_from_product property). AIOD lines just show the
+               plain 🎁 badge — AIOD doesn't tell us which trigger
+               product the shampoo came from. */
+            if (details && !details.querySelector('.apgo-cart-gift-sub') &&
+                item.properties && item.properties._gift_from_product) {
               var sub = document.createElement('span');
               sub.className = 'apgo-cart-gift-sub';
               sub.textContent = 'Free with ' + item.properties._gift_from_product;

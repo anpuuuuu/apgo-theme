@@ -62,6 +62,15 @@ class CartItemsComponent extends Component {
 
     if (!line) return;
 
+    /* Cart-page gift lock (belt-and-braces): CSS pointer-events: none
+       already blocks the +/- buttons and qty input, but a keyboard
+       tab + type or a DOM-tamper can still fire a QuantitySelector
+       change event. Refuse to route those into the network layer.
+       Server-rendered `data-apgo-gift-line` covers both APGO and
+       AIOD gift lines. */
+    const guardRow = this.refs.cartItemRows[line - 1];
+    if (guardRow?.hasAttribute('data-apgo-gift-line')) return;
+
     if (quantity === 0) {
       return this.onLineItemRemove(line);
     }
@@ -84,6 +93,12 @@ class CartItemsComponent extends Component {
    * @param {number} line - The line item index.
    */
   onLineItemRemove(line) {
+    /* Same gift lock as #onQuantityChange — refuse to delete a locked
+       gift line even if something bypassed the CSS `display: none` on
+       the trash button. */
+    const guardRow = this.refs.cartItemRows[line - 1];
+    if (guardRow?.hasAttribute('data-apgo-gift-line')) return;
+
     this.updateQuantity({
       line,
       quantity: 0,
