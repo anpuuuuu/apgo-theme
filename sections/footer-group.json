@@ -192,7 +192,7 @@
         "show_contact_section": true,
         "contact_title": "Contact Information",
         "show_phone": true,
-        "phone_label": "Customer Service messenger",
+        "phone_label": "Customer Service Whatsapp",
         "phone_number": "https://m.me/103731955885379",
         "show_email": true,
         "email_label": "Customer Service Mailbox",
