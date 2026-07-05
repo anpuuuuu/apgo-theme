@@ -72,6 +72,18 @@
     "social_media_GBjLwC": {
       "type": "social-media",
       "blocks": {
+        "singapore_social_CYRaWa": {
+          "type": "singapore_social",
+          "settings": {
+            "platform": "facebook",
+            "platform_title": "Facebook",
+            "name": "",
+            "description": "",
+            "followers_count": "30K+",
+            "followers_label": "粉絲",
+            "url": ""
+          }
+        },
         "singapore_social_4fnyCn": {
           "type": "singapore_social",
           "settings": {
@@ -158,6 +170,7 @@
         }
       },
       "block_order": [
+        "singapore_social_CYRaWa",
         "singapore_social_4fnyCn",
         "singapore_social_L4KzAm",
         "singapore_social_tV79w7",
