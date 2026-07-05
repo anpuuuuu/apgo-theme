@@ -173,6 +173,7 @@
     },
     "apgo_whatsapp_contact_VYNWpt": {
       "type": "apgo-whatsapp-contact",
+      "disabled": true,
       "name": "APGO WhatsApp Contact",
       "settings": {
         "heading": "Chat with us on WhatsApp",
@@ -187,6 +188,23 @@
         "padding-block-start": 40,
         "padding-block-end": 40
       }
+    },
+    "apgo_messenger_contact_VPQLaD": {
+      "type": "apgo-messenger-contact",
+      "name": "APGO Messenger Contact",
+      "settings": {
+        "heading": "Chat with us on Messenger",
+        "subtitle": "Messenger",
+        "intro": "Prefer Facebook Messenger? Tap the button and send us a message — we usually reply within an hour.",
+        "messenger_page_id": "103731955885379",
+        "messenger_display": "@APGO MY",
+        "ref_param": "",
+        "cta_label": "Chat on Messenger",
+        "hours": "",
+        "qr_caption": "Scan to chat",
+        "padding-block-start": 40,
+        "padding-block-end": 40
+      }
     }
   },
   "order": [
@@ -194,6 +212,7 @@
     "main",
     "shogun-optimizer",
     "social_media_GBjLwC",
-    "apgo_whatsapp_contact_VYNWpt"
+    "apgo_whatsapp_contact_VYNWpt",
+    "apgo_messenger_contact_VPQLaD"
   ]
 }
