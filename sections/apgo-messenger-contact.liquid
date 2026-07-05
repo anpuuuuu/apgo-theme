@@ -1,0 +1,374 @@
+{%- comment -%}
+  APGO Messenger Contact section.
+  Mirror of apgo-whatsapp-contact.liquid but wired for Facebook
+  Messenger (m.me deep link). Drop into /pages/contact (or any page)
+  alongside — or in place of — the WhatsApp section while a WA number
+  is offline. Themed to match the rest of the storefront (dark card,
+  orange accents) with Messenger-blue icon for brand recognition.
+{%- endcomment -%}
+
+{%- assign msgr_page_id = section.settings.messenger_page_id | default: '' | strip -%}
+{%- assign msgr_display = section.settings.messenger_display | default: msgr_page_id -%}
+{%- assign msgr_ref = section.settings.ref_param | default: '' | url_encode -%}
+
+<section
+  class="apgo-msgr-contact spacing-style"
+  style="
+    --padding-block-start: {{ section.settings.padding-block-start }}px;
+    --padding-block-end: {{ section.settings.padding-block-end }}px;
+  "
+>
+  <div class="apgo-msgr-contact__inner">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="apgo-msgr-contact__heading">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+
+    {%- if section.settings.intro != blank -%}
+      <p class="apgo-msgr-contact__intro">{{ section.settings.intro }}</p>
+    {%- endif -%}
+
+    <div class="apgo-msgr-contact__card">
+      <div class="apgo-msgr-contact__main">
+        {%- comment -%} Messenger icon — rounded speech bubble + lightning bolt. {%- endcomment -%}
+        <div class="apgo-msgr-contact__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C6.36 2 2 6.13 2 11.7c0 2.91 1.19 5.44 3.14 7.17.16.14.26.34.27.56l.05 1.78c.02.57.6.94 1.13.71l1.99-.88c.17-.07.36-.09.54-.04.91.25 1.88.39 2.88.39 5.64 0 10-4.13 10-9.69C22 6.13 17.64 2 12 2Zm6 7.6-2.94 4.66a1.5 1.5 0 0 1-2.17.4l-2.34-1.76a.6.6 0 0 0-.72 0l-3.16 2.4c-.42.32-.97-.18-.69-.62l2.94-4.66a1.5 1.5 0 0 1 2.17-.4l2.34 1.76a.6.6 0 0 0 .72 0l3.16-2.4c.42-.32.97.18.69.62Z"/>
+          </svg>
+        </div>
+
+        <div class="apgo-msgr-contact__body">
+          {%- if section.settings.subtitle != blank -%}
+            <span class="apgo-msgr-contact__label">{{ section.settings.subtitle }}</span>
+          {%- endif -%}
+          {%- if msgr_display != blank and msgr_page_id != blank -%}
+            <a class="apgo-msgr-contact__handle" href="https://m.me/{{ msgr_page_id }}{% if msgr_ref != blank %}?ref={{ msgr_ref }}{% endif %}" target="_blank" rel="noopener">
+              {{ msgr_display }}
+            </a>
+          {%- endif -%}
+          {%- if section.settings.hours != blank -%}
+            <span class="apgo-msgr-contact__hours">{{ section.settings.hours }}</span>
+          {%- endif -%}
+        </div>
+
+        {%- if msgr_page_id != blank -%}
+          <a
+            class="apgo-msgr-contact__cta"
+            href="https://m.me/{{ msgr_page_id }}{% if msgr_ref != blank %}?ref={{ msgr_ref }}{% endif %}"
+            target="_blank"
+            rel="noopener"
+          >
+            {{ section.settings.cta_label | default: 'Chat on Messenger' }}
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/>
+            </svg>
+          </a>
+        {%- endif -%}
+      </div>
+
+      {%- if section.settings.qr_image != blank -%}
+        <div class="apgo-msgr-contact__qr">
+          <img
+            src="{{ section.settings.qr_image | image_url: width: 400 }}"
+            alt="Messenger QR — {{ msgr_display | escape }}"
+            loading="lazy"
+            width="160"
+            height="160"
+          >
+          {%- if section.settings.qr_caption != blank -%}
+            <span class="apgo-msgr-contact__qr-caption">{{ section.settings.qr_caption }}</span>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% stylesheet %}
+  .apgo-msgr-contact {
+    padding-block: var(--padding-block-start, 32px) var(--padding-block-end, 32px);
+    padding-inline: clamp(12px, 2.2vw, 28px);
+    color: #fff;
+  }
+  .apgo-msgr-contact__inner {
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+  .apgo-msgr-contact__heading {
+    position: relative;
+    margin: 0 0 8px;
+    padding-left: 16px;
+    font-size: clamp(20px, 3.4vw, 28px);
+    font-weight: 700;
+    color: #fff;
+  }
+  .apgo-msgr-contact__heading::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 65%;
+    border-radius: 2px;
+    background: linear-gradient(180deg, #f08418, #ff9a3c);
+  }
+  .apgo-msgr-contact__intro {
+    margin: 0 0 16px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  /* Card */
+  .apgo-msgr-contact__card {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 24px;
+    padding: 22px 24px;
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .apgo-msgr-contact__card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #f08418, #ff9a3c);
+  }
+
+  .apgo-msgr-contact__main {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  /* Icon uses Messenger's blue→purple brand gradient so the tile is
+     recognizable at a glance, while the CTA below keeps APGO orange. */
+  .apgo-msgr-contact__icon {
+    flex: 0 0 auto;
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(135deg, #00B2FF 0%, #006AFF 50%, #7B00FF 100%);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(0, 106, 255, 0.35);
+  }
+  .apgo-msgr-contact__body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .apgo-msgr-contact__label {
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+  }
+  .apgo-msgr-contact__handle {
+    color: #fff;
+    font-size: clamp(18px, 3vw, 22px);
+    font-weight: 700;
+    text-decoration: none;
+    word-break: break-all;
+  }
+  .apgo-msgr-contact__handle:hover { color: #f08418; }
+  .apgo-msgr-contact__hours {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 13px;
+    margin-top: 2px;
+  }
+
+  .apgo-msgr-contact__cta {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 18px;
+    border-radius: 999px;
+    background: linear-gradient(45deg, #f08418, #ff9a3c);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+    white-space: nowrap;
+  }
+  .apgo-msgr-contact__cta:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 22px rgba(240, 132, 24, 0.35);
+    filter: brightness(1.05);
+  }
+
+  /* QR */
+  .apgo-msgr-contact__qr {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 10px;
+    background: #fff;
+    border-radius: 12px;
+  }
+  .apgo-msgr-contact__qr img {
+    display: block;
+    width: 140px;
+    height: 140px;
+    object-fit: contain;
+  }
+  .apgo-msgr-contact__qr-caption {
+    color: #111;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  @media (max-width: 749px) {
+    .apgo-msgr-contact { padding-inline: 16px; }
+    .apgo-msgr-contact__card {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 16px;
+      padding: 18px;
+      border-radius: 12px;
+    }
+    .apgo-msgr-contact__main {
+      flex-direction: row;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+    .apgo-msgr-contact__body {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+    .apgo-msgr-contact__cta {
+      flex-basis: 100%;
+      width: 100%;
+      justify-content: center;
+    }
+    .apgo-msgr-contact__qr {
+      align-self: center;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "APGO Messenger Contact",
+  "tag": "section",
+  "class": "section-apgo-msgr-contact",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Chat with us on Messenger"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle (above handle)",
+      "default": "Messenger"
+    },
+    {
+      "type": "textarea",
+      "id": "intro",
+      "label": "Intro line",
+      "default": "Prefer Facebook Messenger? Tap the button and send us a message — we usually reply within an hour."
+    },
+    {
+      "type": "header",
+      "content": "Messenger link"
+    },
+    {
+      "type": "text",
+      "id": "messenger_page_id",
+      "label": "Facebook Page ID or username",
+      "info": "Used in the m.me link. Example: 103731955885379 (numeric ID) or apgomy (vanity username).",
+      "default": "103731955885379"
+    },
+    {
+      "type": "text",
+      "id": "messenger_display",
+      "label": "Display label",
+      "info": "How the handle shows on the page, e.g. @apgomy or APGO MY. Leave blank to show the raw Page ID.",
+      "default": "@APGO MY"
+    },
+    {
+      "type": "text",
+      "id": "ref_param",
+      "label": "Ref tag (optional)",
+      "info": "Optional ?ref=... tag appended to the m.me link. Useful for tracking which page/section drove the click in Meta analytics."
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "CTA button label",
+      "default": "Chat on Messenger"
+    },
+    {
+      "type": "text",
+      "id": "hours",
+      "label": "Business hours (optional)",
+      "default": "Mon–Fri · 9:00–18:00 (GMT+8)"
+    },
+    {
+      "type": "header",
+      "content": "QR code (optional)"
+    },
+    {
+      "type": "image_picker",
+      "id": "qr_image",
+      "label": "QR code image",
+      "info": "Facebook can generate a Messenger QR from your Page settings — download it and upload here."
+    },
+    {
+      "type": "text",
+      "id": "qr_caption",
+      "label": "QR caption",
+      "default": "Scan to chat"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "presets": [
+    {
+      "name": "APGO Messenger Contact"
+    }
+  ]
+}
+{% endschema %}
