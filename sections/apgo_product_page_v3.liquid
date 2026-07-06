@@ -6967,9 +6967,9 @@ document.addEventListener('DOMContentLoaded', function() {
     {
       "type": "text",
       "id": "deal_end_time",
-      "label": "到期時間（24h，HH:MM，MY 時間）",
+      "label": "到期時間（格式必須為 HH:MM）",
       "default": "23:59",
-      "info": "例：23:59 = 當日午夜前 · 12:00 = 中午 12 點"
+      "info": "24 小時制，中間用冒號分隔（時:分）。\n✅ 常用範例：\n  · 23:59 → 當日晚上 11:59（最推薦，撐到接近午夜）\n  · 20:00 → 當日晚上 8:00\n  · 12:00 → 中午 12:00\n  · 00:00 → 當日凌晨（隔天午夜 12 點）\n❌ 錯誤格式：只填「00」、「23」、「6pm」都會導致倒數失效。"
     },
     {
       "type": "text",

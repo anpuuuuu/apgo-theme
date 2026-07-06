@@ -1082,9 +1082,30 @@
     return 0;
   }
 
+  /* Normalize a merchant-typed HH:MM value.
+     Accepts:  "23:59" | "23" (hour only, defaults minutes to 00) |
+               "0"    | "00" | "6" (single-digit hours, padded)
+     Rejects:  anything with letters or out-of-range hours/mins →
+               falls back to a safe default so the timer never dies
+               silently. */
+  function normalizeHHMM(raw) {
+    if (!raw) return '23:59';
+    var s = String(raw).trim();
+    if (!s) return '23:59';
+    /* If there's no colon, treat the whole string as an hour and
+       pad :00 for minutes. */
+    if (s.indexOf(':') === -1) s = s + ':00';
+    var parts = s.split(':');
+    var h = parseInt(parts[0], 10);
+    var m = parseInt(parts[1], 10);
+    if (isNaN(h) || h < 0 || h > 23) return '23:59';
+    if (isNaN(m) || m < 0 || m > 59) m = 0;
+    return (h < 10 ? '0' + h : String(h)) + ':' + (m < 10 ? '0' + m : String(m));
+  }
+
   function resolveWeeklyMs() {
     var tz = timerEl.getAttribute('data-deal-tz-offset') || '+08:00';
-    var time = timerEl.getAttribute('data-deal-end-time') || '12:00';
+    var time = normalizeHHMM(timerEl.getAttribute('data-deal-end-time'));
     var weekdayAttr = timerEl.getAttribute('data-deal-weekday');
     if (weekdayAttr === null || weekdayAttr === '') return 0;
     var targetDow = parseInt(weekdayAttr, 10);
