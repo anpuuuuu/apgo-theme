@@ -46,6 +46,13 @@
         "default": false
       },
       {
+        "type": "checkbox",
+        "id": "apgo_promo_banner_show_countdown",
+        "label": "Show countdown timer inside banner",
+        "info": "默認關閉。打開後 banner 內會顯示每日重置的倒數計時（🔴 ENDS IN 02:14:37）。想給單一商品獨立覆蓋，填該商品的 metafield custom.promo_banner_show_countdown（true / false）。",
+        "default": false
+      },
+      {
         "type": "header",
         "content": "Banner content"
       },

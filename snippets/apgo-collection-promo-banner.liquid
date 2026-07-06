@@ -69,6 +69,20 @@
   assign promo_headline = meta_headline | default: settings.apgo_promo_banner_headline | default: 'APGO BIRTHDAY EXCLUSIVE'
   assign promo_body     = meta_body     | default: settings.apgo_promo_banner_body     | default: 'Get a FREE 300ml shampoo when you grab this promo bundle.'
   assign promo_cta      = meta_cta      | default: settings.apgo_promo_banner_cta      | default: 'View deal'
+
+  # Countdown gate — global Customizer toggle, then optional per-product
+  # metafield override (custom.promo_banner_show_countdown, boolean OR
+  # 'true'/'false' string). Handles both metafield definitions so admins
+  # can pick whichever is easier.
+  assign promo_show_countdown = settings.apgo_promo_banner_show_countdown
+  assign meta_countdown = promo_product.metafields.custom.promo_banner_show_countdown
+  if meta_countdown != blank
+    if meta_countdown == true or meta_countdown == 'true'
+      assign promo_show_countdown = true
+    else
+      assign promo_show_countdown = false
+    endif
+  endif
 -%}
 {%- assign promo_timer_label = 'Ends in' -%}
 {%- comment -%} Banner uses a daily-recurring 24h countdown that rolls
@@ -103,11 +117,13 @@
     <span class="apgo-promo-banner__body">
       <span class="apgo-promo-banner__headline">{{ promo_headline }}</span>
       <span class="apgo-promo-banner__sub">{{ promo_body }}</span>
-      <span class="apgo-promo-banner__action-row">
-        <span class="apgo-promo-banner__pulse-dot" aria-hidden="true"></span>
-        <span class="apgo-promo-banner__timer-label">{{ promo_timer_label }}</span>
-        <span class="apgo-promo-banner__timer" data-apgo-promo-timer>--:--:--</span>
-      </span>
+      {%- if promo_show_countdown -%}
+        <span class="apgo-promo-banner__action-row">
+          <span class="apgo-promo-banner__pulse-dot" aria-hidden="true"></span>
+          <span class="apgo-promo-banner__timer-label">{{ promo_timer_label }}</span>
+          <span class="apgo-promo-banner__timer" data-apgo-promo-timer>--:--:--</span>
+        </span>
+      {%- endif -%}
     </span>
     {%- unless on_promo_pdp -%}
       <span class="apgo-promo-banner__cta-col">
