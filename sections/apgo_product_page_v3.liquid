@@ -4159,10 +4159,38 @@
             {%- endif -%}
           {%- endif -%}
 
-          {%- comment -%} Per-product fixed-date (optional override) {%- endcomment -%}
+          {%- comment -%}
+            Fixed-date resolution — two sources, product wins over
+            section. Both are section-wide "one-shot" countdowns that
+            override the weekly recurring behaviour.
+
+            Priority (highest → lowest):
+              1. Per-product metafield custom.deal_timer_ends_at
+                 (individual product override, existing behaviour)
+              2. Section setting deal_end_fixed_at
+                 (new: site-wide fixed end for the current campaign)
+              3. Weekly recurring (deal_end_weekday + deal_end_time)
+
+            Section input format: "YYYY-MM-DD HH:MM" (MY local time).
+            Missing time defaults to 23:59.
+          {%- endcomment -%}
           {%- assign has_fixed = false -%}
+          {%- assign fixed_end_iso = '' -%}
           {%- if product_timer_end_at != blank -%}
             {%- assign has_fixed = true -%}
+            {%- assign fixed_end_iso = product_timer_end_at | date: '%Y-%m-%dT%H:%M:%S%z' -%}
+          {%- else -%}
+            {%- assign section_fixed_input = section.settings.deal_end_fixed_at | default: '' | strip -%}
+            {%- if section_fixed_input != blank -%}
+              {%- assign fixed_parts = section_fixed_input | split: ' ' -%}
+              {%- assign fixed_date_part = fixed_parts[0] -%}
+              {%- assign fixed_time_part = fixed_parts[1] | default: '23:59' -%}
+              {%- unless fixed_time_part contains ':' -%}
+                {%- assign fixed_time_part = fixed_time_part | append: ':00' -%}
+              {%- endunless -%}
+              {%- assign fixed_end_iso = fixed_date_part | append: 'T' | append: fixed_time_part | append: ':00+08:00' -%}
+              {%- assign has_fixed = true -%}
+            {%- endif -%}
           {%- endif -%}
 
           <div class="apgo-cc-pdp__price-top">
@@ -4177,8 +4205,7 @@
                 class="apgo-cc-pdp__deal-timer"
                 data-apgo-deal-timer
                 {%- if has_fixed %}
-                data-deal-end-ts="{{ product_timer_end_at | date: '%s' }}"
-                data-deal-end-iso="{{ product_timer_end_at | date: '%Y-%m-%dT%H:%M:%S%z' }}"
+                data-deal-end-iso="{{ fixed_end_iso | escape }}"
                 {%- endif %}
                 {%- if has_weekly %}
                 data-deal-weekday="{{ deal_weekday }}"
@@ -6940,13 +6967,19 @@ document.addEventListener('DOMContentLoaded', function() {
     },
     {
       "type": "paragraph",
-      "content": "倒數至每週指定星期的 HH:MM（馬來西亞 GMT+8）。到了之後自動滾到下一週，永不過期。\n例：選 Sunday + 23:59 → 永遠倒數到下個週日午夜。"
+      "content": "兩種模式二選一（優先級：🎯 指定日期 → 🔁 每週重複）：\n1️⃣ 一次性活動 → 填「指定結束日期時間」（下方紫色標記那格），倒數到那天那時就停。\n2️⃣ 每週重複促銷 → 留空指定日期那格，改設「每週到期星期 + 到期時間」，倒數到當週指定時間後自動滾到下一週。"
     },
     {
       "type": "text",
       "id": "deal_label",
       "label": "標籤文字",
       "default": "Limited time deal"
+    },
+    {
+      "type": "text",
+      "id": "deal_end_fixed_at",
+      "label": "🎯 指定結束日期時間（最高優先，會覆蓋下面的每週設定）",
+      "info": "格式：YYYY-MM-DD HH:MM（馬來西亞時間，24 小時制）。\n\n✅ 直接複製下面這行改日期就好：\n  2026-07-31 23:59\n\n更多範例：\n  · 2026-07-31 23:59 → 7 月 31 日晚上 11:59\n  · 2026-08-15 12:00 → 8 月 15 日中午 12 點\n  · 2026-12-31 23:59 → 12 月 31 日跨年前 1 分鐘\n\n只填日期不填時間（如「2026-07-31」）→ 自動用 23:59。\n這格留空 → 使用下方的每週重複設定。"
     },
     {
       "type": "select",
