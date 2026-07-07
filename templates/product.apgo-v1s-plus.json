@@ -16,24 +16,24 @@
           "type": "ship_row",
           "settings": {
             "numeral": "i",
-            "title": "$999 免運＊訂單滿６包（含）以上享無效退費",
-            "subtitle": "宅配 · 24 小時內出貨\n可拆一包無償使用，如需退貨其餘數量需完好退回！"
+            "title": "$999 free shipping* Orders of 6 packs or more qualify for a money-back guarantee",
+            "subtitle": "Home delivery · Ships within 24 hours\nYou may open one pack and use it for free; for returns, the remaining packs must be returned undamaged!"
           }
         },
         "ship_row_iXAbnM": {
           "type": "ship_row",
           "settings": {
             "numeral": "ii",
-            "title": "🚚 配送提醒",
-            "subtitle": "．7-11／全家：單筆訂單最多 8 包（請勿加購其他商品），多包請分開下單，避免超重，恕無法出貨。\n．新竹物流宅配：單筆訂單可超過 8 包以上"
+            "title": "🚚 Delivery notice",
+            "subtitle": "· 7-11 / FamilyMart: Up to 8 packs per order (please do not add other products). For more packs, place separate orders to avoid exceeding the weight limit, otherwise we cannot ship.\n· HCT home delivery: Orders can exceed 8 packs"
           }
         },
         "ship_row_7LqLWC": {
           "type": "ship_row",
           "settings": {
             "numeral": "iii",
-            "title": "SGS 國家級檢驗 ／ 八大零添加",
-            "subtitle": "八大零添加（不含磷、甲醛、含氯漂白劑、甲醛、螢光劑、人工色素、壬基苯酚、EDTA/NTA）"
+            "title": "SGS national-grade testing / Eight zero-additives",
+            "subtitle": "Eight zero-additives (no phosphates, formaldehyde, chlorine bleach, formaldehyde, optical brighteners, artificial colorants, nonylphenol, EDTA/NTA)"
           }
         },
         "ugc_a6ehf8": {
@@ -74,7 +74,7 @@
       ],
       "settings": {
         "video_url": "",
-        "video_label": "產品實測影片 · 60s",
+        "video_label": "Product test video · 60s",
         "show_thumb_rail": true,
         "kicker": "",
         "show_rating": false,
@@ -82,22 +82,22 @@
         "rating_count": "",
         "show_installment": false,
         "show_buy_now": true,
-        "pain_heading": "日常痛點 · 專屬科學解方",
+        "pain_heading": "Everyday pain points · A dedicated scientific solution",
         "cmp_kicker": "THE DIFFERENCE",
-        "cmp_title": "為什麼選 APGO？",
-        "cmp_col_feature": "比較項目",
-        "cmp_col_apgo": "APGO 超級洗衣精",
-        "cmp_col_competitor": "一般市售洗衣精",
-        "ugc_kicker": "APGO 用戶實拍",
+        "cmp_title": "Why choose APGO?",
+        "cmp_col_feature": "Comparison",
+        "cmp_col_apgo": "APGO Super Laundry Detergent",
+        "cmp_col_competitor": "Ordinary store-bought laundry detergent",
+        "ugc_kicker": "Real photos from APGO users",
         "ugc_title": "@apgo_official · Instagram",
-        "related_collection": "所有產品"
+        "related_collection": "All products"
       }
     },
     "apgo_related_qqpb6W": {
       "type": "apgo-related",
       "settings": {
-        "heading": "您可能也喜歡",
-        "collection": "所有產品",
+        "heading": "You may also like",
+        "collection": "All products",
         "columns": 5,
         "limit": 5
       }

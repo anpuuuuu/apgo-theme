@@ -1,4 +1,4 @@
-{% comment %} Section: Related Products · 立即可用（綁 collection） {% endcomment %}
+{% comment %} Section: Related Products · Ready to use (bound to a collection) {% endcomment %}
 
 <section class="apgo-section apgo-related apgo-desktop-only" data-section-id="{{ section.id }}">
   <div class="apgo-container" style="padding:60px 32px; border-top:1px solid var(--apgo-line);">
@@ -21,7 +21,7 @@
         {% endfor %}
       </div>
     {% else %}
-      {% render 'apgo-placeholder', name: '相關商品', hint: '請在此 Section 設定選擇一個 Collection' %}
+      {% render 'apgo-placeholder', name: 'Related products', hint: 'Please choose a Collection in this section settings' %}
     {% endif %}
   </div>
 </section>
@@ -31,10 +31,10 @@
   "name": "APGO · Related Products",
   "tag": "section",
   "settings": [
-    { "type": "text", "id": "heading", "label": "標題", "default": "您可能也喜歡" },
-    { "type": "collection", "id": "collection", "label": "商品集合" },
-    { "type": "range", "id": "columns", "label": "欄數", "min": 2, "max": 5, "step": 1, "default": 4 },
-    { "type": "range", "id": "limit", "label": "最多顯示", "min": 2, "max": 12, "step": 1, "default": 4 }
+    { "type": "text", "id": "heading", "label": "Heading", "default": "You may also like" },
+    { "type": "collection", "id": "collection", "label": "Product collection" },
+    { "type": "range", "id": "columns", "label": "Columns", "min": 2, "max": 5, "step": 1, "default": 4 },
+    { "type": "range", "id": "limit", "label": "Max to show", "min": 2, "max": 12, "step": 1, "default": 4 }
   ],
   "presets": [{ "name": "APGO · Related Products" }]
 }

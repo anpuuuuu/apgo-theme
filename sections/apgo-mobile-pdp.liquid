@@ -1,5 +1,5 @@
 {% comment %}
-  APGO · PDP 內容 (single section, mobile + desktop)
+  APGO · PDP content (single section, mobile + desktop)
 
   This is the only PDP section on the apgo-v1s-plus product template.
   It owns BOTH the desktop hero (3-col grid: thumb rail + main image + sidebar)
@@ -40,7 +40,7 @@
 
         {%- comment -%} Breadcrumb {%- endcomment -%}
         <nav class="apgo-breadcrumb">
-          <a href="{{ routes.root_url }}">首頁</a>
+          <a href="{{ routes.root_url }}">Home</a>
           <span class="apgo-sep">/</span>
           {%- if collection -%}
             <a href="{{ collection.url }}">{{ collection.title }}</a>
@@ -65,13 +65,13 @@
               {%- endif -%}
 
               {%- if has_compare -%}
-                <div class="apgo-discount-badge">限時 {{ discount_pct }}% OFF</div>
+                <div class="apgo-discount-badge">Limited time {{ discount_pct }}% OFF</div>
               {%- endif -%}
             </div>
 
             {%- if section.settings.show_thumb_rail -%}
               <div class="apgo-thumb-rail-wrap">
-                <button type="button" class="apgo-thumb-nav apgo-thumb-nav--prev" data-apgo-thumb-nav="prev" aria-label="上一張">
+                <button type="button" class="apgo-thumb-nav apgo-thumb-nav--prev" data-apgo-thumb-nav="prev" aria-label="Previous">
                   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
                 </button>
                 <div class="apgo-thumb-rail" data-apgo-thumb-rail>
@@ -81,7 +81,7 @@
                               class="apgo-thumb {% if forloop.first %}active{% endif %}"
                               data-apgo-thumb-idx="{{ forloop.index0 }}"
                               data-apgo-image-id="{{ m.preview_image.id | default: m.id }}"
-                              aria-label="顯示第 {{ forloop.index }} 張圖">
+                              aria-label="Show image {{ forloop.index }}">
                         <img src="{{ m | image_url: width: 200 }}"
                              alt="{{ m.alt | default: product.title }}"
                              loading="lazy" width="80" height="80">
@@ -89,7 +89,7 @@
                     {%- endfor -%}
                   {%- endif -%}
                 </div>
-                <button type="button" class="apgo-thumb-nav apgo-thumb-nav--next" data-apgo-thumb-nav="next" aria-label="下一張">
+                <button type="button" class="apgo-thumb-nav apgo-thumb-nav--next" data-apgo-thumb-nav="next" aria-label="Next">
                   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
                 </button>
               </div>
@@ -113,7 +113,7 @@
               <div class="apgo-rating">
                 <span class="apgo-stars">★★★★★</span>
                 <span class="apgo-rating-num">{{ section.settings.rating_score }}</span>
-                <span class="apgo-muted">· {{ section.settings.rating_count }} 則評價</span>
+                <span class="apgo-muted">· {{ section.settings.rating_count }} reviews</span>
               </div>
             {%- endif -%}
 
@@ -127,12 +127,12 @@
 
             {%- if section.settings.show_installment -%}
               <div class="apgo-installment apgo-muted" data-apgo-installment>
-                分 3 期 0 利率 · 每期 {{ v.price | divided_by: 3 | money }}
+                3 interest-free installments · {{ v.price | divided_by: 3 | money }} each
               </div>
             {%- endif -%}
 
             {%- comment -%}
-              Bundle picker (限時優惠組合) replaces variant + qty + CTAs when
+              Bundle picker (limited-time bundle) replaces variant + qty + CTAs when
               product.metafields.apgo.bundle_enabled is true. Set per-product
               in admin metafield. See docs/V1S_PLUS_BUNDLE_PLAN.md.
             {%- endcomment -%}
@@ -204,11 +204,11 @@
 
             {%- comment -%} Quantity stepper {%- endcomment -%}
             <div class="apgo-option-group">
-              <div class="apgo-kicker-small" style="margin-bottom:10px;">購買數量</div>
+              <div class="apgo-kicker-small" style="margin-bottom:10px;">Quantity</div>
               <div class="apgo-qty">
-                <button type="button" data-apgo-qty="down" aria-label="減少">−</button>
+                <button type="button" data-apgo-qty="down" aria-label="Decrease">−</button>
                 <input type="number" name="quantity" value="1" min="1" data-apgo-qty-input>
-                <button type="button" data-apgo-qty="up" aria-label="增加">+</button>
+                <button type="button" data-apgo-qty="up" aria-label="Increase">+</button>
               </div>
             </div>
 
@@ -219,15 +219,15 @@
                       data-apgo-add
                       {% unless v.available %}disabled{% endunless %}>
                 {%- if v.available -%}
-                  加入購物車 · <span data-apgo-total>{{ v.price | money }}</span>
+                  Add to cart · <span data-apgo-total>{{ v.price | money }}</span>
                 {%- else -%}
-                  補貨中
+                  Restocking
                 {%- endif -%}
               </button>
 
               {%- if section.settings.show_buy_now -%}
                 <button type="button" class="apgo-cta-secondary" data-apgo-buy-now>
-                  立即購買 · 快速結帳
+                  Buy now · Express checkout
                 </button>
               {%- endif -%}
             </div>
@@ -284,7 +284,7 @@
           <div class="apgo-mpdp-slide apgo-mpdp-slide-video">
             <div class="apgo-mpdp-video-poster" style="background-image:url('{{ section.settings.video_poster | image_url: width: 800 }}');">
               <div class="apgo-mpdp-play"><span></span></div>
-              <div class="apgo-mpdp-video-label">▶ {{ section.settings.video_label | default: '產品實測影片 · 60s' }}</div>
+              <div class="apgo-mpdp-video-label">▶ {{ section.settings.video_label | default: 'Product test video · 60s' }}</div>
             </div>
           </div>
         {%- endif -%}
@@ -297,7 +297,7 @@
         {%- endif -%}
       </div>
       {%- if has_compare -%}
-        <div class="apgo-mpdp-discount">限時 {{ discount_pct }}% OFF</div>
+        <div class="apgo-mpdp-discount">Limited time {{ discount_pct }}% OFF</div>
       {%- endif -%}
       <div class="apgo-mpdp-counter"><span data-apgo-carousel-idx>1</span> / <span data-apgo-carousel-total></span></div>
     </div>
@@ -305,7 +305,7 @@
     {%- comment -%} Mobile thumbnail rail — click to jump carousel; swipeable; ◀ ▶ to step {%- endcomment -%}
     {%- if section.settings.show_thumb_rail and product.media.size > 1 -%}
       <div class="apgo-mpdp-thumb-rail-wrap">
-        <button type="button" class="apgo-mpdp-thumb-nav apgo-mpdp-thumb-nav--prev" data-apgo-mthumb-nav="prev" aria-label="上一張">
+        <button type="button" class="apgo-mpdp-thumb-nav apgo-mpdp-thumb-nav--prev" data-apgo-mthumb-nav="prev" aria-label="Previous">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
         </button>
         <div class="apgo-mpdp-thumb-rail" data-apgo-mthumb-rail>
@@ -313,12 +313,12 @@
             <button type="button"
                     class="apgo-mpdp-thumb {% if forloop.first %}active{% endif %}"
                     data-apgo-mthumb-idx="{{ forloop.index0 }}"
-                    aria-label="顯示第 {{ forloop.index }} 張圖">
+                    aria-label="Show image {{ forloop.index }}">
               <img src="{{ m | image_url: width: 160 }}" alt="" loading="lazy">
             </button>
           {%- endfor -%}
         </div>
-        <button type="button" class="apgo-mpdp-thumb-nav apgo-mpdp-thumb-nav--next" data-apgo-mthumb-nav="next" aria-label="下一張">
+        <button type="button" class="apgo-mpdp-thumb-nav apgo-mpdp-thumb-nav--next" data-apgo-mthumb-nav="next" aria-label="Next">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
       </div>
@@ -338,7 +338,7 @@
         <div class="apgo-mpdp-rating">
           <span class="apgo-stars">★★★★★</span>
           <strong>{{ section.settings.rating_score }}</strong>
-          <span class="apgo-muted">· {{ section.settings.rating_count }} 則評價</span>
+          <span class="apgo-muted">· {{ section.settings.rating_count }} reviews</span>
         </div>
       {%- endif -%}
 
@@ -350,11 +350,11 @@
         {%- endif -%}
       </div>
       {%- if section.settings.show_installment -%}
-        <div class="apgo-mpdp-installment" data-apgo-installment>分 3 期 0 利率 · 每期 {{ v.price | divided_by: 3 | money }}</div>
+        <div class="apgo-mpdp-installment" data-apgo-installment>3 interest-free installments · {{ v.price | divided_by: 3 | money }} each</div>
       {%- endif -%}
 
       {%- comment -%}
-        Bundle picker (limit時優惠組合) — mobile shell. Mirrors the desktop
+        Bundle picker (limited-time bundle) — mobile shell. Mirrors the desktop
         path above; gated on the same product.metafields.apgo.bundle_enabled.
       {%- endcomment -%}
       {%- if product.metafields.apgo.bundle_enabled -%}
@@ -415,11 +415,11 @@
 
       {%- comment -%} Qty (inline) {%- endcomment -%}
       <div class="apgo-mpdp-qty-row">
-        <span class="apgo-mpdp-qty-label">數量</span>
+        <span class="apgo-mpdp-qty-label">Quantity</span>
         <div class="apgo-mpdp-qty">
-          <button type="button" data-apgo-qty="down" aria-label="減少">−</button>
+          <button type="button" data-apgo-qty="down" aria-label="Decrease">−</button>
           <input type="number" name="quantity" value="1" min="1" data-apgo-qty-input>
-          <button type="button" data-apgo-qty="up" aria-label="增加">+</button>
+          <button type="button" data-apgo-qty="up" aria-label="Increase">+</button>
         </div>
       </div>
 
@@ -477,7 +477,7 @@
       <div class="apgo-mpdp-feature-card">
         <div class="apgo-mpdp-feature-head">
           <span class="apgo-mpdp-feature-kicker">— FEATURES —</span>
-          <h3 class="apgo-mpdp-feature-title apgo-serif">商品特色</h3>
+          <h3 class="apgo-mpdp-feature-title apgo-serif">Product Features</h3>
         </div>
         <div class="apgo-mpdp-feature-body rte">
           {{ feature_text }}
@@ -487,22 +487,22 @@
 
     {%- comment -%} Tabs {%- endcomment -%}
     <div class="apgo-mpdp-tabs" role="tablist" data-apgo-mtabs>
-      <button type="button" class="apgo-mpdp-tab active" data-apgo-mtab="desc" role="tab">商品特色</button>
+      <button type="button" class="apgo-mpdp-tab active" data-apgo-mtab="desc" role="tab">Product Features</button>
       <button type="button" class="apgo-mpdp-tab" data-apgo-mtab="sgs" role="tab">SGS</button>
-      <button type="button" class="apgo-mpdp-tab" data-apgo-mtab="spec" role="tab">詳細資訊與安心成分</button>
-      <button type="button" class="apgo-mpdp-tab" data-apgo-mtab="warranty" role="tab">不滿意全額退<span class="apgo-mpdp-tab-line2">活動詳情</span></button>
-      <button type="button" class="apgo-mpdp-tab" data-apgo-mtab="review" role="tab">顧客評價</button>
-      <button type="button" class="apgo-mpdp-tab" data-apgo-mtab="faq" role="tab">商品 FAQ</button>
+      <button type="button" class="apgo-mpdp-tab" data-apgo-mtab="spec" role="tab">Details & Safe Ingredients</button>
+      <button type="button" class="apgo-mpdp-tab" data-apgo-mtab="warranty" role="tab">Money-Back Guarantee<span class="apgo-mpdp-tab-line2">Details</span></button>
+      <button type="button" class="apgo-mpdp-tab" data-apgo-mtab="review" role="tab">Customer Reviews</button>
+      <button type="button" class="apgo-mpdp-tab" data-apgo-mtab="faq" role="tab">Product FAQ</button>
     </div>
 
     {%- comment -%}
-      Tab panel: 商品說明
+      Tab panel: Product description
       ----------------------------------------------------------------
       STRICT MODE: this entire panel is driven by Shopify admin →
       Product → Description (rich-text editor, HTML mode capable).
 
-      To reproduce the original UI (Ritual hero / 痛點 × 解方 / 比較表 /
-      UGC / 長圖) the user pastes structured HTML using the existing
+      To reproduce the original UI (Ritual hero / pain point × solution / comparison table /
+      UGC / long image) the user pastes structured HTML using the existing
       class hooks (.apgo-mpdp-ritual-wrap, .apgo-mpdp-pain-wrap,
       .apgo-mpdp-cmp-wrap, .apgo-mpdp-ugc-wrap, .apgo-mpdp-longimg-wrap).
       A reference snippet is kept in the team handbook.
@@ -529,7 +529,7 @@
         <div class="apgo-mpdp-feature-gallery">
           {%- for img in feature_imgs -%}
             <img src="{{ img | image_url: width: 1200 }}"
-                 alt="{{ product.title }} 商品說明圖 {{ forloop.index }}"
+                 alt="{{ product.title }} product description image {{ forloop.index }}"
                  loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
                  class="apgo-mpdp-feature-gallery-img">
           {%- endfor -%}
@@ -575,9 +575,9 @@
           {%- endif -%}
           <div class="apgo-mpdp-cmp">
             <div class="apgo-mpdp-cmp-head">
-              <div>{{ section.settings.cmp_col_feature | default: '比較項目' }}</div>
-              <div>{{ section.settings.cmp_col_apgo | default: 'APGO 超級洗衣精' }}</div>
-              <div>{{ section.settings.cmp_col_competitor | default: '一般市售洗衣精' }}</div>
+              <div>{{ section.settings.cmp_col_feature | default: 'Comparison' }}</div>
+              <div>{{ section.settings.cmp_col_apgo | default: 'APGO Super Laundry Detergent' }}</div>
+              <div>{{ section.settings.cmp_col_competitor | default: 'Typical retail detergent' }}</div>
             </div>
             {%- for entry in mf_cmp -%}
               <div class="apgo-mpdp-cmp-row">
@@ -594,7 +594,7 @@
         UGC grid — kept editable in theme editor (blocks of type "ugc") so
         non-technical admin can add/remove IG cells without touching HTML.
         Renders right after description; expects the description to already
-        contain the heading wrap (kicker + 用戶實拍 · Instagram).
+        contain the heading wrap (kicker + user photos · Instagram).
       {%- endcomment -%}
       {%- assign ugc_blocks = section.blocks | where: 'type', 'ugc' -%}
       {%- if ugc_blocks.size > 0 -%}
@@ -627,50 +627,50 @@
     {%- assign sgs_reports = product.metafields.custom.sgs_reports.value -%}
     <div class="apgo-mpdp-panel" data-apgo-mpanel="sgs">
       {%- if sgs_reports == blank or sgs_reports.size == 0 -%}
-        <div class="apgo-sgs-empty apgo-muted">尚未上架 SGS 檢驗報告</div>
+        <div class="apgo-sgs-empty apgo-muted">SGS test reports not yet available</div>
       {%- else -%}
       <div class="apgo-sgs">
         <div class="apgo-sgs-header">
           <div class="apgo-sgs-kicker">— CERTIFIED BY SGS —</div>
-          <h2 class="apgo-sgs-title apgo-serif">SGS 國家級檢驗認證</h2>
-          <div class="apgo-sgs-meta">委託單位：光世代科技有限公司</div>
-          <div class="apgo-sgs-meta">共五份完整 SGS 檢驗報告</div>
+          <h2 class="apgo-sgs-title apgo-serif">SGS National-Level Testing Certification</h2>
+          <div class="apgo-sgs-meta">Commissioned by: Guangshidai Technology Co., Ltd.</div>
+          <div class="apgo-sgs-meta">Five complete SGS test reports in total</div>
         </div>
 
         <div class="apgo-sgs-defs">
           <div class="apgo-sgs-def">
             <div class="apgo-sgs-def-head">
               <span class="apgo-display apgo-sgs-def-abbr">N.D.</span>
-              <span class="apgo-sgs-def-name">Not Detected · 未檢出</span>
+              <span class="apgo-sgs-def-name">Not Detected</span>
             </div>
-            <p class="apgo-sgs-def-body">濃度低於儀器準確量化下限，視同「未含有」。</p>
+            <p class="apgo-sgs-def-body">Concentration below the instrument's accurate quantification limit, treated as "not present".</p>
           </div>
           <div class="apgo-sgs-def">
             <div class="apgo-sgs-def-head">
               <span class="apgo-display apgo-sgs-def-abbr">LOQ</span>
-              <span class="apgo-sgs-def-name">定量極限</span>
+              <span class="apgo-sgs-def-name">Limit of Quantification</span>
             </div>
-            <p class="apgo-sgs-def-body">儀器能準確量化的最低濃度。SGS 的 LOQ 通常比法規嚴格 10–100 倍。</p>
+            <p class="apgo-sgs-def-body">The lowest concentration the instrument can accurately quantify. SGS's LOQ is typically 10–100 times stricter than regulations.</p>
           </div>
         </div>
 
-        <div class="apgo-sgs-cta-line">點擊查看為什麼要檢驗</div>
+        <div class="apgo-sgs-cta-line">Tap to see why we test</div>
 
         <div class="apgo-sgs-cards">
           {%- for r in sgs_reports -%}
             <article class="apgo-sgs-card" data-sgs-card>
               <div class="apgo-sgs-card-head">
                 {%- if r.report_pdf != blank -%}
-                  <a class="apgo-sgs-thumb" href="{{ r.report_pdf }}" target="_blank" rel="noopener" aria-label="開啟 SGS 報告 PDF">
+                  <a class="apgo-sgs-thumb" href="{{ r.report_pdf }}" target="_blank" rel="noopener" aria-label="Open SGS report PDF">
                     {%- if r.report_image != blank -%}
-                      <img src="{{ r.report_image | image_url: width: 240 }}" alt="SGS 報告 {{ r.report_no }}" loading="lazy">
+                      <img src="{{ r.report_image | image_url: width: 240 }}" alt="SGS report {{ r.report_no }}" loading="lazy">
                     {%- endif -%}
                     <span class="apgo-sgs-thumb-badge">PDF</span>
                   </a>
                 {%- else -%}
                   <div class="apgo-sgs-thumb apgo-sgs-thumb--static">
                     {%- if r.report_image != blank -%}
-                      <img src="{{ r.report_image | image_url: width: 240 }}" alt="SGS 報告 {{ r.report_no }}" loading="lazy">
+                      <img src="{{ r.report_image | image_url: width: 240 }}" alt="SGS report {{ r.report_no }}" loading="lazy">
                     {%- endif -%}
                   </div>
                 {%- endif -%}
@@ -697,19 +697,19 @@
               <div class="apgo-sgs-card-body" hidden>
                 {%- if r.what_is_it != blank -%}
                   <div class="apgo-sgs-card-row">
-                    <div class="apgo-sgs-card-row-label apgo-display">WHAT IS IT · 這是什麼</div>
+                    <div class="apgo-sgs-card-row-label apgo-display">WHAT IS IT</div>
                     <div class="apgo-sgs-card-row-text">{% render 'apgo-richtext', content: r.what_is_it %}</div>
                   </div>
                 {%- endif -%}
                 {%- if r.impact != blank -%}
                   <div class="apgo-sgs-card-row">
-                    <div class="apgo-sgs-card-row-label apgo-display">IMPACT · 對人體的影響</div>
+                    <div class="apgo-sgs-card-row-label apgo-display">IMPACT · Effect on the body</div>
                     <div class="apgo-sgs-card-row-text">{% render 'apgo-richtext', content: r.impact %}</div>
                   </div>
                 {%- endif -%}
                 {%- if r.why_we_test != blank -%}
                   <div class="apgo-sgs-card-row">
-                    <div class="apgo-sgs-card-row-label apgo-display">WHY WE TEST · 為什麼檢驗</div>
+                    <div class="apgo-sgs-card-row-label apgo-display">WHY WE TEST</div>
                     <div class="apgo-sgs-card-row-text">{% render 'apgo-richtext', content: r.why_we_test %}</div>
                   </div>
                 {%- endif -%}
@@ -719,14 +719,14 @@
         </div>
 
         <div class="apgo-sgs-overview">
-          <h3 class="apgo-sgs-overview-title apgo-serif">檢驗結果總覽</h3>
-          <p class="apgo-sgs-overview-sub">有害物質皆 N.D.，pH 6.4 弱酸親膚</p>
+          <h3 class="apgo-sgs-overview-title apgo-serif">Test Results Overview</h3>
+          <p class="apgo-sgs-overview-sub">All harmful substances N.D., pH 6.4 mildly acidic and skin-friendly</p>
           <div class="apgo-sgs-chips">
-            <div class="apgo-sgs-chip"><span class="apgo-sgs-chip-val apgo-display">N.D.</span><span class="apgo-sgs-chip-label">壬基苯酚</span></div>
-            <div class="apgo-sgs-chip"><span class="apgo-sgs-chip-val apgo-display">N.D.</span><span class="apgo-sgs-chip-label">甲醛</span></div>
+            <div class="apgo-sgs-chip"><span class="apgo-sgs-chip-val apgo-display">N.D.</span><span class="apgo-sgs-chip-label">Nonylphenol</span></div>
+            <div class="apgo-sgs-chip"><span class="apgo-sgs-chip-val apgo-display">N.D.</span><span class="apgo-sgs-chip-label">Formaldehyde</span></div>
             <div class="apgo-sgs-chip"><span class="apgo-sgs-chip-val apgo-display">6.4</span><span class="apgo-sgs-chip-label">pH</span></div>
-            <div class="apgo-sgs-chip"><span class="apgo-sgs-chip-val apgo-display">陰性</span><span class="apgo-sgs-chip-label">螢光劑</span></div>
-            <div class="apgo-sgs-chip"><span class="apgo-sgs-chip-val apgo-display">陰性</span><span class="apgo-sgs-chip-label">大腸菌</span></div>
+            <div class="apgo-sgs-chip"><span class="apgo-sgs-chip-val apgo-display">Negative</span><span class="apgo-sgs-chip-label">Fluorescent agent</span></div>
+            <div class="apgo-sgs-chip"><span class="apgo-sgs-chip-val apgo-display">Negative</span><span class="apgo-sgs-chip-label">Coliform bacteria</span></div>
           </div>
         </div>
       </div>
@@ -752,7 +752,7 @@
       {%- endif -%}
     </div>
 
-    {%- comment -%} Tab panel: 規格 — prefer metafield, fallback to blocks {%- endcomment -%}
+    {%- comment -%} Tab panel: specifications — prefer metafield, fallback to blocks {%- endcomment -%}
     {%- assign mf_spec_rows = product.metafields.apgo.spec_rows.value -%}
     <div class="apgo-mpdp-panel" data-apgo-mpanel="spec">
       {%- if mf_spec_rows != blank and mf_spec_rows.size > 0 -%}
@@ -774,13 +774,13 @@
       {%- endif -%}
     </div>
 
-    {%- comment -%} Tab panel: 評價 — prefer metafield, fallback to blocks {%- endcomment -%}
+    {%- comment -%} Tab panel: reviews — prefer metafield, fallback to blocks {%- endcomment -%}
     {%- assign mf_reviews = product.metafields.apgo.reviews.value -%}
     <div class="apgo-mpdp-panel" data-apgo-mpanel="review">
       <div class="apgo-mpdp-rev-summary">
         <div class="apgo-serif apgo-mpdp-rev-score">{{ section.settings.rating_score }}</div>
         <div class="apgo-stars">★★★★★</div>
-        <div class="apgo-muted">基於 {{ section.settings.rating_count }} 則真實評價</div>
+        <div class="apgo-muted">Based on {{ section.settings.rating_count }} genuine reviews</div>
       </div>
       {%- if mf_reviews != blank and mf_reviews.size > 0 -%}
         {%- for entry in mf_reviews -%}
@@ -790,7 +790,7 @@
               <span class="apgo-stars">★★★★★</span>
             </div>
             {%- assign rev_date = entry.date | default: entry.data -%}
-            <div class="apgo-mpdp-rev-meta">{{ rev_date }} · 已購買：{{ entry.scent }}</div>
+            <div class="apgo-mpdp-rev-meta">{{ rev_date }} · Purchased:{{ entry.scent }}</div>
             <p>{{ entry.body }}</p>
           </div>
         {%- endfor -%}
@@ -802,7 +802,7 @@
                 <strong>{{ block.settings.name }}</strong>
                 <span class="apgo-stars">★★★★★</span>
               </div>
-              <div class="apgo-mpdp-rev-meta">{{ block.settings.date }} · 已購買：{{ block.settings.scent }}</div>
+              <div class="apgo-mpdp-rev-meta">{{ block.settings.date }} · Purchased:{{ block.settings.scent }}</div>
               <p>{{ block.settings.body }}</p>
             </div>
           {%- endif -%}
@@ -810,7 +810,7 @@
       {%- endif -%}
     </div>
 
-    {%- comment -%} Tab panel: 問答 — prefer metafield, fallback to blocks {%- endcomment -%}
+    {%- comment -%} Tab panel: FAQ — prefer metafield, fallback to blocks {%- endcomment -%}
     {%- assign mf_faqs = product.metafields.apgo.faqs.value -%}
     <div class="apgo-mpdp-panel" data-apgo-mpanel="faq">
       {%- if mf_faqs != blank and mf_faqs.size > 0 -%}
@@ -839,7 +839,7 @@
     </div>
 
     {%- comment -%}
-      Tab panel: 不滿意全額退 活動詳情
+      Tab panel: Money-back guarantee campaign details
       ----------------------------------------------------------------
       Driven by metafield `custom.warranty_images` (List of File references — images).
       Falls back to single-image metafield `custom.warranty_image` if list isn't set.
@@ -856,7 +856,7 @@
               src="{{ img | image_url: width: 1200 }}"
               srcset="{{ img | image_url: width: 480 }} 480w, {{ img | image_url: width: 800 }} 800w, {{ img | image_url: width: 1200 }} 1200w"
               sizes="(max-width: 749px) 100vw, 800px"
-              alt="不滿意全額退 活動詳情 {{ forloop.index }}"
+              alt="Money-back guarantee campaign details {{ forloop.index }}"
               loading="lazy"
             >
           {%- endfor -%}
@@ -868,12 +868,12 @@
             src="{{ warranty_single | image_url: width: 1200 }}"
             srcset="{{ warranty_single | image_url: width: 480 }} 480w, {{ warranty_single | image_url: width: 800 }} 800w, {{ warranty_single | image_url: width: 1200 }} 1200w"
             sizes="(max-width: 749px) 100vw, 800px"
-            alt="不滿意全額退 活動詳情"
+            alt="Money-back guarantee campaign details"
             loading="lazy"
           >
         </div>
       {%- else -%}
-        <div class="apgo-sgs-empty apgo-muted">活動詳情即將上線</div>
+        <div class="apgo-sgs-empty apgo-muted">Campaign details coming soon</div>
       {%- endif -%}
     </div>
 
@@ -882,7 +882,7 @@
       {%- assign rcol = collections[section.settings.related_collection] -%}
       {%- if rcol and rcol.products.size > 0 -%}
         <div class="apgo-mpdp-related">
-          <h3 class="apgo-serif">您可能也喜歡</h3>
+          <h3 class="apgo-serif">You may also like</h3>
           <div class="apgo-mpdp-related-scroll">
             {%- for p in rcol.products limit: 8 -%}
               {%- unless p.id == product.id -%}
@@ -910,24 +910,24 @@
                 class="apgo-mpdp-cta-bundle-disabled"
                 data-apgo-bundle-cta-disabled
                 disabled>
-          請先選滿香氛 · 還差 <span data-apgo-bundle-remaining>3</span> 包
+          Please select all scents · <span data-apgo-bundle-remaining>3</span> more to go
         </button>
         <div class="apgo-mpdp-cta-bundle-enabled"
              data-apgo-bundle-cta-enabled
              style="display:none;">
-          <button type="button" class="apgo-mpdp-cta-secondary" data-apgo-bundle-add>加入購物車</button>
+          <button type="button" class="apgo-mpdp-cta-secondary" data-apgo-bundle-add>Add to cart</button>
           <button type="button" class="apgo-mpdp-cta-primary" data-apgo-bundle-buy-now>
-            立即購買 <span data-apgo-bundle-total>{{ 0 | money }}</span>
+            Buy now <span data-apgo-bundle-total>{{ 0 | money }}</span>
           </button>
         </div>
       </div>
     {%- else -%}
       <div class="apgo-mpdp-sticky">
         <button type="submit" name="add" class="apgo-mpdp-cta-secondary" data-apgo-add {% unless v.available %}disabled{% endunless %}>
-          {% if v.available %}加入購物車{% else %}補貨中{% endif %}
+          {% if v.available %}Add to cart{% else %}Restocking{% endif %}
         </button>
         <button type="button" class="apgo-mpdp-cta-primary" data-apgo-buy-now {% unless v.available %}disabled{% endunless %}>
-          立即購買 <span data-apgo-total>{{ v.price | money }}</span>
+          Buy now <span data-apgo-total>{{ v.price | money }}</span>
         </button>
       </div>
     {%- endif -%}
@@ -938,93 +938,93 @@
 
 {% schema %}
 {
-  "name": "APGO · PDP 內容（共用）",
+  "name": "APGO · PDP Content (Shared)",
   "tag": "section",
   "class": "apgo-section apgo-section-pdp-content",
   "settings": [
-    { "type": "header", "content": "顶部 Carousel" },
-    { "type": "url",          "id": "video_url",      "label": "影片連結（選填）" },
-    { "type": "image_picker", "id": "video_poster",   "label": "影片封面（選填）" },
-    { "type": "text",         "id": "video_label",    "label": "影片標籤", "default": "產品實測影片 · 60s" },
-    { "type": "checkbox",     "id": "show_thumb_rail", "label": "顯示主圖下方縮圖列", "default": true },
+    { "type": "header", "content": "Top Carousel" },
+    { "type": "url",          "id": "video_url",      "label": "Video link (optional)" },
+    { "type": "image_picker", "id": "video_poster",   "label": "Video cover (optional)" },
+    { "type": "text",         "id": "video_label",    "label": "Video label", "default": "Product test video · 60s" },
+    { "type": "checkbox",     "id": "show_thumb_rail", "label": "Show thumbnail rail below main image", "default": true },
 
-    { "type": "header", "content": "基本資訊" },
-    { "type": "text",     "id": "kicker",       "label": "英文副標", "default": "AROMA AESTHETICS" },
-    { "type": "checkbox", "id": "show_rating",  "label": "顯示評分", "default": true },
-    { "type": "text",     "id": "rating_score", "label": "評分", "default": "4.9" },
-    { "type": "text",     "id": "rating_count", "label": "評價數", "default": "2,847" },
-    { "type": "checkbox", "id": "show_installment", "label": "顯示 3 期 0 利率", "default": true },
-    { "type": "checkbox", "id": "show_buy_now",  "label": "顯示「立即購買」按鈕（桌面）", "default": true },
+    { "type": "header", "content": "Basic Info" },
+    { "type": "text",     "id": "kicker",       "label": "English subtitle", "default": "AROMA AESTHETICS" },
+    { "type": "checkbox", "id": "show_rating",  "label": "Show rating", "default": true },
+    { "type": "text",     "id": "rating_score", "label": "Rating", "default": "4.9" },
+    { "type": "text",     "id": "rating_count", "label": "Review count", "default": "2,847" },
+    { "type": "checkbox", "id": "show_installment", "label": "Show 3 interest-free installments", "default": true },
+    { "type": "checkbox", "id": "show_buy_now",  "label": "Show \"Buy now\" button (desktop)", "default": true },
 
-    { "type": "header", "content": "商品說明 tab" },
-    { "type": "paragraph", "content": "「Ritual 視覺」「長圖」由 Description 提供（HTML 模式貼入 .apgo-mpdp-ritual-wrap / .apgo-mpdp-longimg-wrap）。「痛點 × 解方」「比較表」由產品 metafield 驅動（apgo.pain_solutions / apgo.comparison_rows）。在 Description 中插入 <!-- apgo:sections --> 這行 HTML 註解，pain + cmp 兩段就會渲染在那個位置。" },
+    { "type": "header", "content": "Product Description tab" },
+    { "type": "paragraph", "content": "The \"Ritual visual\" and \"long image\" come from the Description (paste into .apgo-mpdp-ritual-wrap / .apgo-mpdp-longimg-wrap in HTML mode). \"Pain point × solution\" and \"comparison table\" are driven by product metafields (apgo.pain_solutions / apgo.comparison_rows). Insert the HTML comment <!-- apgo:sections --> in the Description and the pain + cmp sections will render at that position." },
 
-    { "type": "header", "content": "痛點 × 解方標題" },
-    { "type": "text", "id": "pain_heading", "label": "區塊主標", "default": "日常痛點 · 專屬科學解方" },
+    { "type": "header", "content": "Pain Point × Solution Heading" },
+    { "type": "text", "id": "pain_heading", "label": "Section heading", "default": "Everyday pain points · Tailored scientific solutions" },
 
-    { "type": "header", "content": "比較表標題與欄位" },
-    { "type": "text", "id": "cmp_kicker",          "label": "上方小字（kicker）", "default": "THE DIFFERENCE" },
-    { "type": "text", "id": "cmp_title",           "label": "區塊主標", "default": "為什麼選 APGO？" },
-    { "type": "text", "id": "cmp_col_feature",     "label": "欄位 1 標籤", "default": "比較項目" },
-    { "type": "text", "id": "cmp_col_apgo",        "label": "欄位 2 標籤", "default": "APGO 超級洗衣精" },
-    { "type": "text", "id": "cmp_col_competitor",  "label": "欄位 3 標籤", "default": "一般市售洗衣精" },
+    { "type": "header", "content": "Comparison Table Heading & Columns" },
+    { "type": "text", "id": "cmp_kicker",          "label": "Kicker (small text above)", "default": "THE DIFFERENCE" },
+    { "type": "text", "id": "cmp_title",           "label": "Section heading", "default": "Why choose APGO?" },
+    { "type": "text", "id": "cmp_col_feature",     "label": "Column 1 label", "default": "Comparison" },
+    { "type": "text", "id": "cmp_col_apgo",        "label": "Column 2 label", "default": "APGO Super Laundry Detergent" },
+    { "type": "text", "id": "cmp_col_competitor",  "label": "Column 3 label", "default": "Typical retail detergent" },
 
-    { "type": "header", "content": "UGC 區標題（描述下方）" },
-    { "type": "text", "id": "ugc_kicker", "label": "上方小字（kicker）", "default": "APGO 用戶實拍" },
-    { "type": "text", "id": "ugc_title",  "label": "主標題", "default": "@apgo_official · Instagram" },
+    { "type": "header", "content": "UGC Section Heading (below description)" },
+    { "type": "text", "id": "ugc_kicker", "label": "Kicker (small text above)", "default": "APGO User Photos" },
+    { "type": "text", "id": "ugc_title",  "label": "Heading", "default": "@apgo_official · Instagram" },
 
-    { "type": "header", "content": "相關商品" },
-    { "type": "collection", "id": "related_collection", "label": "相關商品集合" }
+    { "type": "header", "content": "Related Products" },
+    { "type": "collection", "id": "related_collection", "label": "Related products collection" }
   ],
   "blocks": [
     {
       "type": "ship_row",
-      "name": "運送/保障資訊列",
+      "name": "Shipping/Guarantee Info Row",
       "limit": 6,
       "settings": [
-        { "type": "text", "id": "numeral", "label": "編號標記", "default": "i", "info": "顯示在最左邊的小符號（如 i / ii / iii）" },
-        { "type": "text", "id": "title", "label": "主標", "default": "滿 NT$ 799 免運" },
-        { "type": "textarea", "id": "subtitle", "label": "副標", "default": "黑貓宅配 · 24 小時內出貨", "info": "支持多行，每行會顯示成一段" }
+        { "type": "text", "id": "numeral", "label": "Number marker", "default": "i", "info": "Small symbol shown at the far left (e.g. i / ii / iii)" },
+        { "type": "text", "id": "title", "label": "Title", "default": "Free shipping over NT$ 799" },
+        { "type": "textarea", "id": "subtitle", "label": "Subtitle", "default": "T-Cat delivery · Ships within 24 hours", "info": "Supports multiple lines; each line displays as its own paragraph" }
       ]
     },
     {
       "type": "ugc",
-      "name": "UGC IG 貼文",
+      "name": "UGC IG Post",
       "limit": 9,
       "settings": [
-        { "type": "image_picker", "id": "image", "label": "圖片" },
-        { "type": "text", "id": "handle", "label": "IG handle（顯示在 alt）" },
-        { "type": "number", "id": "likes", "label": "讚數", "default": 100 },
-        { "type": "url", "id": "url", "label": "IG 貼文連結（選填）" }
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "text", "id": "handle", "label": "IG handle (shown in alt)" },
+        { "type": "number", "id": "likes", "label": "Like count", "default": 100 },
+        { "type": "url", "id": "url", "label": "IG post link (optional)" }
       ]
     },
     {
       "type": "spec",
-      "name": "規格列",
+      "name": "Specification Row",
       "limit": 12,
       "settings": [
-        { "type": "text", "id": "key", "label": "欄位", "default": "商品名稱" },
-        { "type": "text", "id": "value", "label": "內容", "default": "APGO 超級濃縮洗衣精" }
+        { "type": "text", "id": "key", "label": "Field", "default": "Product name" },
+        { "type": "text", "id": "value", "label": "Content", "default": "APGO Super Concentrated Laundry Detergent" }
       ]
     },
     {
       "type": "review",
-      "name": "評價",
+      "name": "Review",
       "limit": 6,
       "settings": [
-        { "type": "text", "id": "name", "label": "姓名", "default": "黃小姐" },
-        { "type": "text", "id": "date", "label": "日期", "default": "2026.03.12" },
-        { "type": "text", "id": "scent", "label": "購買香氛", "default": "淨心棉花" },
-        { "type": "textarea", "id": "body", "label": "評價內容", "default": "香味非常柔和不刺鼻，寶寶衣服洗起來也很放心。" }
+        { "type": "text", "id": "name", "label": "Name", "default": "Ms. Huang" },
+        { "type": "text", "id": "date", "label": "Date", "default": "2026.03.12" },
+        { "type": "text", "id": "scent", "label": "Scent purchased", "default": "Pure Cotton" },
+        { "type": "textarea", "id": "body", "label": "Review content", "default": "The scent is very gentle and not harsh; I feel completely at ease washing my baby's clothes with it." }
       ]
     },
     {
       "type": "faq",
-      "name": "常見問題",
+      "name": "FAQ",
       "limit": 8,
       "settings": [
-        { "type": "text", "id": "q", "label": "問題", "default": "可以洗嬰幼兒衣服嗎？" },
-        { "type": "textarea", "id": "a", "label": "回答", "default": "可以。通過 SGS 檢驗、8 大零添加、pH 中性，專為敏感肌與嬰幼兒設計。" }
+        { "type": "text", "id": "q", "label": "Question", "default": "Can it be used to wash infant and toddler clothes?" },
+        { "type": "textarea", "id": "a", "label": "Answer", "default": "Yes. SGS tested, 8 major zero-additives, pH neutral, designed for sensitive skin and infants." }
       ]
     }
   ],
@@ -1032,29 +1032,29 @@
     {
       "name": "APGO · Mobile PDP",
       "blocks": [
-        { "type": "ship_row", "settings": { "numeral": "i",   "title": "滿 NT$ 799 免運",   "subtitle": "黑貓宅配 · 24 小時內出貨" }},
-        { "type": "ship_row", "settings": { "numeral": "ii",  "title": "30 天鑑賞期",       "subtitle": "未拆封可無條件退換貨" }},
-        { "type": "ship_row", "settings": { "numeral": "iii", "title": "SGS 國家級檢驗",    "subtitle": "99.9% 抗菌 · 八大零添加" }},
+        { "type": "ship_row", "settings": { "numeral": "i",   "title": "Free shipping over NT$ 799",   "subtitle": "T-Cat delivery · Ships within 24 hours" }},
+        { "type": "ship_row", "settings": { "numeral": "ii",  "title": "30-day trial period",       "subtitle": "Unconditional returns/exchanges if unopened" }},
+        { "type": "ship_row", "settings": { "numeral": "iii", "title": "SGS national-level testing",    "subtitle": "99.9% antibacterial · 8 major zero-additives" }},
         { "type": "ugc", "settings": { "handle": "", "likes": 100, "url": "" }},
         { "type": "ugc", "settings": { "handle": "", "likes": 100, "url": "" }},
         { "type": "ugc", "settings": { "handle": "", "likes": 100, "url": "" }},
-        { "type": "spec", "settings": { "key": "商品名稱", "value": "APGO 超級濃縮洗衣精" }},
-        { "type": "spec", "settings": { "key": "容量",     "value": "1L / 2L / 4L 補充包" }},
-        { "type": "spec", "settings": { "key": "產地",     "value": "台灣製造" }},
-        { "type": "spec", "settings": { "key": "主要成分", "value": "濃縮酵素、護色因子、植萃香氛" }},
-        { "type": "spec", "settings": { "key": "香氛選擇", "value": "6 款香氛可選" }},
-        { "type": "spec", "settings": { "key": "適用",     "value": "各式衣物、嬰幼兒、寵物用品" }},
-        { "type": "spec", "settings": { "key": "pH 值",    "value": "中性（pH 7.0 ± 0.5）" }},
-        { "type": "spec", "settings": { "key": "保存期限", "value": "未開封 3 年／開封後 18 個月" }},
-        { "type": "spec", "settings": { "key": "認證",     "value": "SGS 99.9% 抗菌合格" }},
-        { "type": "review", "settings": { "name": "黃小姐",  "date": "2026.03.12", "scent": "淨心棉花", "body": "香味非常柔和不刺鼻，寶寶衣服洗起來也很放心。會一直回購！" }},
-        { "type": "review", "settings": { "name": "Emma L.", "date": "2026.03.08", "scent": "清雅白茶", "body": "白茶香是我的最愛，淡雅不俗氣。瓶身設計也很精緻。" }},
-        { "type": "review", "settings": { "name": "陳先生",  "date": "2026.02.28", "scent": "海洋晨曦", "body": "深層潔淨效果非常明顯，兒子運動服洗完真的像新的一樣。" }},
-        { "type": "faq", "settings": { "q": "可以洗嬰幼兒衣服嗎？", "a": "可以。通過 SGS 檢驗、8 大零添加、pH 中性，專為敏感肌與嬰幼兒設計。" }},
-        { "type": "faq", "settings": { "q": "用量比一般洗衣精省嗎？", "a": "是。超濃縮配方用量僅需 1/3，1L 可洗約 50 次。" }},
-        { "type": "faq", "settings": { "q": "不同香氛可混用嗎？", "a": "可以。每款都經過香氛師調配，相互搭配不衝突。" }},
-        { "type": "faq", "settings": { "q": "運送需要幾天？", "a": "下單後 24 小時內出貨，黑貓宅配 1-2 個工作日送達。" }},
-        { "type": "faq", "settings": { "q": "可以退換貨嗎？", "a": "未拆封商品提供 30 天鑑賞期，可無條件退換貨。" }}
+        { "type": "spec", "settings": { "key": "Product name", "value": "APGO Super Concentrated Laundry Detergent" }},
+        { "type": "spec", "settings": { "key": "Volume",     "value": "1L / 2L / 4L refill pack" }},
+        { "type": "spec", "settings": { "key": "Origin",     "value": "Made in Taiwan" }},
+        { "type": "spec", "settings": { "key": "Main ingredients", "value": "Concentrated enzymes, color-protection factors, botanical fragrance" }},
+        { "type": "spec", "settings": { "key": "Scent options", "value": "6 scents available" }},
+        { "type": "spec", "settings": { "key": "Suitable for",     "value": "All types of clothing, infants, pet supplies" }},
+        { "type": "spec", "settings": { "key": "pH value",    "value": "Neutral (pH 7.0 ± 0.5)" }},
+        { "type": "spec", "settings": { "key": "Shelf life", "value": "3 years unopened / 18 months after opening" }},
+        { "type": "spec", "settings": { "key": "Certification",     "value": "SGS 99.9% antibacterial certified" }},
+        { "type": "review", "settings": { "name": "Ms. Huang",  "date": "2026.03.12", "scent": "Pure Cotton", "body": "The scent is very gentle and not harsh; I feel completely at ease washing my baby's clothes with it. I'll keep repurchasing!" }},
+        { "type": "review", "settings": { "name": "Emma L.", "date": "2026.03.08", "scent": "White Tea", "body": "White tea is my favorite scent — light and elegant, never cheap-smelling. The bottle design is beautiful too." }},
+        { "type": "review", "settings": { "name": "Mr. Chen",  "date": "2026.02.28", "scent": "Ocean Dawn", "body": "The deep-cleaning effect is really noticeable; my son's sportswear comes out looking brand new." }},
+        { "type": "faq", "settings": { "q": "Can it be used to wash infant and toddler clothes?", "a": "Yes. SGS tested, 8 major zero-additives, pH neutral, designed for sensitive skin and infants." }},
+        { "type": "faq", "settings": { "q": "Does it use less than regular laundry detergent?", "a": "Yes. The super-concentrated formula needs only 1/3 the amount; 1L washes about 50 loads." }},
+        { "type": "faq", "settings": { "q": "Can different scents be mixed?", "a": "Yes. Each scent is blended by a fragrance specialist, so they pair together without clashing." }},
+        { "type": "faq", "settings": { "q": "How many days does shipping take?", "a": "Ships within 24 hours of ordering; T-Cat delivery arrives in 1-2 business days." }},
+        { "type": "faq", "settings": { "q": "Can I return or exchange?", "a": "Unopened products come with a 30-day trial period and can be returned or exchanged unconditionally." }}
       ]
     }
   ]
