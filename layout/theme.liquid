@@ -94,11 +94,11 @@
          so both are forced cream here. Scoped by the template.suffix gate
          wrapping this whole <style>, so no other page is affected. */
 
-      /* Header only: flip the scheme vars + explicit background across the
-         header group. The free-shipping marquee (#shopify-section-
-         free-shipping-popup) is deliberately NOT touched — creaming it
-         broke its scrolling text + spacing, and it stays its normal dark
-         promo bar. */
+      /* Cream chrome for this template — all three pieces share the theme's
+         own palette: background #FDFAF2 (--apgo-bg-alt) + text #2D2E28
+         (--apgo-ink, the theme's warm black, NOT pure #000). */
+
+      /* Header group: flip the Horizon scheme vars + explicit background. */
       #header-group,
       .header-section,
       header-component,
@@ -108,13 +108,33 @@
         --color-foreground: 45, 46, 40 !important;
         background-color: #fdfaf2 !important;
       }
-      /* Header text/icons → dark so they read on cream (logo is an image,
-         unaffected; orange accents that use background/border survive). */
+      /* Header text/icons → theme ink (logo is an image, unaffected). */
       #header-group a,
       #header-group .header__menu-item,
       #header-group svg,
       header-component a,
       header-component svg {
+        color: #2d2e28 !important;
+      }
+
+      /* Free-shipping marquee: its promo text is hardcoded #fff (line ~229
+         of free-shipping-popup.liquid), so creaming only the background
+         left invisible white-on-cream text + apparent empty space. Fix =
+         cream the section background AND force the promo text to theme ink
+         directly on .marquee__promo-item (beats the hardcoded white). */
+      #shopify-section-free-shipping-popup {
+        --color-background: 253, 250, 242 !important;
+        --color-foreground: 45, 46, 40 !important;
+        background: #fdfaf2 !important;
+      }
+      #shopify-section-free-shipping-popup .section-background,
+      #shopify-section-free-shipping-popup marquee-component,
+      #shopify-section-free-shipping-popup .marquee__content {
+        background: #fdfaf2 !important;
+      }
+      #shopify-section-free-shipping-popup .marquee__promo-item,
+      #shopify-section-free-shipping-popup .marquee__promo-item *:not(svg):not(path):not(rect):not(img),
+      #shopify-section-free-shipping-popup .marquee__content :is(p, span):not(.marquee__promo-flag) {
         color: #2d2e28 !important;
       }
 
