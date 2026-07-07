@@ -490,33 +490,54 @@
 
     var ghost = document.createElement('div');
     ghost.className = 'apgo-fly-to-cart';
-    ghost.style.cssText =
-      'position:fixed;' +
-      'left:' + (startX - 28) + 'px;' +
-      'top:' + (startY - 28) + 'px;' +
-      'width:56px;height:56px;' +
-      'border-radius:12px;' +
+    var base =
+      'position:fixed;width:56px;height:56px;border-radius:12px;' +
       'background:#fff center/cover no-repeat url("' + imgSrc + '");' +
       'box-shadow:0 8px 24px rgba(240,132,24,0.45),0 0 0 2px rgba(240,132,24,0.6);' +
-      'z-index:100050;pointer-events:none;' +
-      'transition:transform .7s cubic-bezier(.55,-0.05,.3,1.4),opacity .25s ease .55s;' +
-      'transform:translate(0,0) scale(1);' +
-      'opacity:1;';
-    document.body.appendChild(ghost);
+      'z-index:100050;pointer-events:none;';
 
-    /* Force layout flush, then animate to the cart icon */
-    void ghost.offsetWidth;
-    var dx = endX - startX;
-    var dy = endY - startY;
-    ghost.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(0.18) rotate(8deg)';
-    ghost.style.opacity = '0';
+    function landAndBump(delay) {
+      setTimeout(function () {
+        ghost.remove();
+        cartIcon.classList.add('apgo-cart-icon-bump');
+        setTimeout(function () { cartIcon.classList.remove('apgo-cart-icon-bump'); }, 480);
+      }, delay);
+    }
 
-    /* On arrival → pulse the cart icon for extra feedback */
-    setTimeout(function () {
-      ghost.remove();
-      cartIcon.classList.add('apgo-cart-icon-bump');
-      setTimeout(function () { cartIcon.classList.remove('apgo-cart-icon-bump'); }, 480);
-    }, 760);
+    var supportsOffsetPath = (window.CSS && CSS.supports && CSS.supports('offset-path', 'path("M0 0")'));
+
+    if (supportsOffsetPath) {
+      /* True bezier ARC (matches the birthday page): quadratic curve whose
+         control point is lifted above the midpoint, so the clone arcs
+         upward toward the cart instead of cutting a straight diagonal.
+         Peak lift scales with distance (clamped 70-240px). */
+      var midX = (startX + endX) / 2, midY = (startY + endY) / 2;
+      var dist = Math.sqrt((endX - startX) * (endX - startX) + (endY - startY) * (endY - startY));
+      var lift = Math.min(240, Math.max(70, dist * 0.28));
+      var ctrlX = midX, ctrlY = midY - lift;
+      ghost.style.cssText = base +
+        'left:0;top:0;offset-anchor:center;offset-rotate:0deg;offset-distance:0%;' +
+        'offset-path:path("M ' + startX + ' ' + startY + ' Q ' + ctrlX + ' ' + ctrlY + ' ' + endX + ' ' + endY + '");';
+      document.body.appendChild(ghost);
+      ghost.animate([
+        { offsetDistance: '0%',   transform: 'scale(1) rotate(-10deg)',  opacity: 1,   offset: 0 },
+        { offsetDistance: '45%',  transform: 'scale(0.8) rotate(10deg)', opacity: 1,   offset: 0.45 },
+        { offsetDistance: '85%',  transform: 'scale(0.4) rotate(30deg)', opacity: 0.9, offset: 0.85 },
+        { offsetDistance: '100%', transform: 'scale(0.18) rotate(45deg)', opacity: 0,  offset: 1 }
+      ], { duration: 850, easing: 'cubic-bezier(.42, 0, .58, 1)', fill: 'forwards' });
+      landAndBump(880);
+    } else {
+      /* Fallback: straight-line springy transition (old browsers). */
+      ghost.style.cssText = base +
+        'left:' + (startX - 28) + 'px;top:' + (startY - 28) + 'px;' +
+        'transition:transform .7s cubic-bezier(.55,-0.05,.3,1.4),opacity .25s ease .55s;' +
+        'transform:translate(0,0) scale(1);opacity:1;';
+      document.body.appendChild(ghost);
+      void ghost.offsetWidth;
+      ghost.style.transform = 'translate(' + (endX - startX) + 'px,' + (endY - startY) + 'px) scale(0.18) rotate(8deg)';
+      ghost.style.opacity = '0';
+      landAndBump(760);
+    }
   }
 
   function addToCart(opts) {
