@@ -39,7 +39,6 @@
         "ugc_a6ehf8": {
           "type": "ugc",
           "settings": {
-            "image": "shopify://shop_images/10-closing.jpg",
             "handle": "",
             "likes": 100,
             "url": ""
@@ -48,7 +47,6 @@
         "ugc_qrcPrV": {
           "type": "ugc",
           "settings": {
-            "image": "shopify://shop_images/07-matrix.jpg",
             "handle": "",
             "likes": 100,
             "url": ""
@@ -57,7 +55,6 @@
         "ugc_CHBLDa": {
           "type": "ugc",
           "settings": {
-            "image": "shopify://shop_images/09-ritual.jpg",
             "handle": "",
             "likes": 100,
             "url": ""
@@ -90,14 +87,14 @@
         "cmp_col_competitor": "Ordinary store-bought laundry detergent",
         "ugc_kicker": "Real photos from APGO users",
         "ugc_title": "@apgo_official · Instagram",
-        "related_collection": "All products"
+        "related_collection": "all products"
       }
     },
     "apgo_related_qqpb6W": {
       "type": "apgo-related",
       "settings": {
         "heading": "You may also like",
-        "collection": "All products",
+        "collection": "all products",
         "columns": 5,
         "limit": 5
       }
