@@ -1174,7 +1174,7 @@ body.template-suffix-apgo-v1s-plus [id^="shopify-section-apgo_tactical_hub"] {
    Content sourced from product.description.
    ========================================================================== */
 .apgo-mpdp-feature-card {
-  margin: 16px 16px 0;
+  margin: 16px 16px 28px;
   padding: 16px 18px;
   background: var(--apgo-bg-alt);
   border: 1px solid var(--apgo-line);
