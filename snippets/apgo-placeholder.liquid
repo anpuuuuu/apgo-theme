@@ -1,0 +1,15 @@
+{% comment %}
+  APGO Placeholder · 只在 theme editor 預覽時顯示
+  用法：{% render 'apgo-placeholder', name: '模組名稱', hint: '需要什麼資料' %}
+{% endcomment %}
+
+{% if request.design_mode %}
+  <div style="padding: 32px 24px; margin: 16px 32px; background: repeating-linear-gradient(45deg, #FDFAF2, #FDFAF2 10px, #F6F1E7 10px, #F6F1E7 20px); border: 2px dashed #5E6F5D; border-radius: 12px; text-align: center; color: #2D2E28; font-family: 'Noto Sans TC', sans-serif;">
+    <div style="font-size: 11px; letter-spacing: 0.3em; color: #5E6F5D; margin-bottom: 8px;">— PLACEHOLDER · EDITOR ONLY —</div>
+    <div style="font-size: 16px; font-weight: 500; margin-bottom: 6px;">⚠ {{ name | default: '此區塊' }} 尚未設定內容</div>
+    {% if hint %}
+      <div style="font-size: 12px; color: rgba(45,46,40,0.65); line-height: 1.7;">{{ hint }}</div>
+    {% endif %}
+    <div style="font-size: 10px; color: rgba(45,46,40,0.45); margin-top: 10px;">此提示僅在編輯器可見 · 前台訪客看不到此區塊</div>
+  </div>
+{% endif %}

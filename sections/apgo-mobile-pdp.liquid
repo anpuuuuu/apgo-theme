@@ -1,0 +1,1062 @@
+{% comment %}
+  APGO · PDP 內容 (single section, mobile + desktop)
+
+  This is the only PDP section on the apgo-v1s-plus product template.
+  It owns BOTH the desktop hero (3-col grid: thumb rail + main image + sidebar)
+  and the mobile mega-shell (carousel + info + tabs/panels + sticky CTA).
+
+  CSS visibility toggle:
+    .apgo-pdp.apgo-desktop-only         → desktop only (hidden < 768px)
+    .apgo-mpdp-mobile-shell             → mobile only (hidden >= 768px)
+    .apgo-mpdp-sticky                   → mobile only
+
+  Both layouts share the same {% form 'product' %}, the same
+  data-apgo-variants JSON, the same ship card (from shop metafield),
+  and the same option inputs. Picking a variant or quantity in either
+  layout updates BOTH (apgo-pdp.js dedupes option groups by
+  data-option-position so duplicated DOM nodes still resolve to one
+  variant).
+
+  apgo-hero.liquid still exists because three /pages/* templates use it,
+  but for the product template this section is the single source of truth.
+{% endcomment %}
+
+{%- liquid
+  assign v = product.selected_or_first_available_variant
+  assign has_compare = false
+  if product.compare_at_price > product.price
+    assign has_compare = true
+    assign discount_pct = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price
+  endif
+-%}
+
+<section class="apgo-mpdp" data-section-id="{{ section.id }}">
+  {% form 'product', product, id: 'apgo-mobile-product-form', class: 'apgo-product-form apgo-mpdp-form' %}
+    <input type="hidden" name="id" value="{{ v.id }}" data-apgo-variant-id>
+
+    {%- comment -%} ====== DESKTOP-ONLY SHELL: 3-col hero (hidden on mobile) ====== {%- endcomment -%}
+    <div class="apgo-pdp apgo-desktop-only">
+      <div class="apgo-container">
+
+        {%- comment -%} Breadcrumb {%- endcomment -%}
+        <nav class="apgo-breadcrumb">
+          <a href="{{ routes.root_url }}">首頁</a>
+          <span class="apgo-sep">/</span>
+          {%- if collection -%}
+            <a href="{{ collection.url }}">{{ collection.title }}</a>
+            <span class="apgo-sep">/</span>
+          {%- endif -%}
+          <span>{{ product.title }}</span>
+        </nav>
+
+        <div class="apgo-hero-grid">
+
+          {%- comment -%} Left column: main image + thumb rail {%- endcomment -%}
+          <div class="apgo-hero-left">
+            <div class="apgo-main-media">
+              {%- if product.featured_media -%}
+                <img class="apgo-main-img"
+                     src="{{ product.featured_media | image_url: width: 1400 }}"
+                     alt="{{ product.featured_media.alt | default: product.title }}"
+                     loading="eager"
+                     data-apgo-main-img>
+              {%- else -%}
+                <div class="apgo-main-img apgo-main-placeholder"></div>
+              {%- endif -%}
+
+              {%- if has_compare -%}
+                <div class="apgo-discount-badge">限時 {{ discount_pct }}% OFF</div>
+              {%- endif -%}
+            </div>
+
+            {%- if section.settings.show_thumb_rail -%}
+              <div class="apgo-thumb-rail-wrap">
+                <button type="button" class="apgo-thumb-nav apgo-thumb-nav--prev" data-apgo-thumb-nav="prev" aria-label="上一張">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                </button>
+                <div class="apgo-thumb-rail" data-apgo-thumb-rail>
+                  {%- if product.media.size > 0 -%}
+                    {%- for m in product.media -%}
+                      <button type="button"
+                              class="apgo-thumb {% if forloop.first %}active{% endif %}"
+                              data-apgo-thumb-idx="{{ forloop.index0 }}"
+                              data-apgo-image-id="{{ m.preview_image.id | default: m.id }}"
+                              aria-label="顯示第 {{ forloop.index }} 張圖">
+                        <img src="{{ m | image_url: width: 200 }}"
+                             alt="{{ m.alt | default: product.title }}"
+                             loading="lazy" width="80" height="80">
+                      </button>
+                    {%- endfor -%}
+                  {%- endif -%}
+                </div>
+                <button type="button" class="apgo-thumb-nav apgo-thumb-nav--next" data-apgo-thumb-nav="next" aria-label="下一張">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                </button>
+              </div>
+            {%- endif -%}
+          </div>
+
+          {%- comment -%} Right column: purchase sidebar {%- endcomment -%}
+          <aside class="apgo-sidebar">
+
+            {%- if section.settings.kicker != blank -%}
+              <div class="apgo-kicker">{{ section.settings.kicker }}</div>
+            {%- endif -%}
+
+            <h1 class="apgo-title apgo-serif">{{ product.title }}</h1>
+
+            {%- if product.metafields.apgo.subtitle != blank -%}
+              <p class="apgo-subtitle">{{ product.metafields.apgo.subtitle }}</p>
+            {%- endif -%}
+
+            {%- if section.settings.show_rating -%}
+              <div class="apgo-rating">
+                <span class="apgo-stars">★★★★★</span>
+                <span class="apgo-rating-num">{{ section.settings.rating_score }}</span>
+                <span class="apgo-muted">· {{ section.settings.rating_count }} 則評價</span>
+              </div>
+            {%- endif -%}
+
+            <div class="apgo-price-row">
+              <span class="apgo-serif apgo-price" data-apgo-price>{{ v.price | money }}</span>
+              {%- if has_compare -%}
+                <span class="apgo-price-compare" data-apgo-compare>{{ product.compare_at_price | money }}</span>
+                <span class="apgo-discount-pill">−{{ discount_pct }}%</span>
+              {%- endif -%}
+            </div>
+
+            {%- if section.settings.show_installment -%}
+              <div class="apgo-installment apgo-muted" data-apgo-installment>
+                分 3 期 0 利率 · 每期 {{ v.price | divided_by: 3 | money }}
+              </div>
+            {%- endif -%}
+
+            {%- comment -%}
+              Bundle picker (限時優惠組合) replaces variant + qty + CTAs when
+              product.metafields.apgo.bundle_enabled is true. Set per-product
+              in admin metafield. See docs/V1S_PLUS_BUNDLE_PLAN.md.
+            {%- endcomment -%}
+            {%- if product.metafields.apgo.bundle_enabled -%}
+              {%- render 'apgo-bundle-widget', product: product, shell: 'desktop' -%}
+            {%- else -%}
+
+            {%- comment -%} Variant options (scent + size) {%- endcomment -%}
+            {%- for option in product.options_with_values -%}
+              {%- assign is_scent = false -%}
+              {%- if option.name contains '香' or option.name contains 'Scent' -%}
+                {%- assign is_scent = true -%}
+              {%- endif -%}
+
+              <div class="apgo-option-group" data-apgo-option-group data-option-position="{{ option.position }}">
+                <div class="apgo-option-label">
+                  <span class="apgo-kicker-small">{{ option.name }}</span>
+                  <span class="apgo-muted apgo-option-current" data-apgo-current-value>{{ option.selected_value }}</span>
+                </div>
+
+                {%- if is_scent -%}
+                  {%- assign scent_palette = shop.metafields.apgo.scents.value -%}
+                  <div class="apgo-scent-grid">
+                    {%- for value in option.values -%}
+                      {%- assign swatch_color = '' -%}
+                      {%- if scent_palette != blank -%}
+                        {%- for s in scent_palette -%}
+                          {%- if s.name == value -%}{%- assign swatch_color = s.hex -%}{%- endif -%}
+                        {%- endfor -%}
+                      {%- endif -%}
+                      {%- if swatch_color == '' -%}
+                        {%- assign swatch_color = '#E8DFC9' -%}
+                        {%- case value -%}
+                          {%- when '淨心棉花' -%}{%- assign swatch_color = '#E8DFC9' -%}
+                          {%- when '花漾蒼蘭' -%}{%- assign swatch_color = '#D4DDE0' -%}
+                          {%- when '浪漫玫瑰' -%}{%- assign swatch_color = '#E8D4CF' -%}
+                          {%- when '海洋晨曦' -%}{%- assign swatch_color = '#C8D6DA' -%}
+                          {%- when '清雅白茶' -%}{%- assign swatch_color = '#DAE0CE' -%}
+                          {%- when '薰衣紫戀' -%}{%- assign swatch_color = '#D6CFDD' -%}
+                        {%- endcase -%}
+                      {%- endif -%}
+                      <label class="apgo-scentbtn {% if option.selected_value == value %}active{% endif %}">
+                        <input type="radio"
+                               name="options[{{ option.name | escape }}]"
+                               value="{{ value | escape }}"
+                               data-apgo-option-input
+                               {% if option.selected_value == value %}checked{% endif %}>
+                        <span class="apgo-swatch" style="background:{{ swatch_color }}"></span>
+                        <span class="apgo-serif">{{ value }}</span>
+                      </label>
+                    {%- endfor -%}
+                  </div>
+                {%- else -%}
+                  <div class="apgo-chip-row">
+                    {%- for value in option.values -%}
+                      <label class="apgo-chip {% if option.selected_value == value %}active{% endif %}">
+                        <input type="radio"
+                               name="options[{{ option.name | escape }}]"
+                               value="{{ value | escape }}"
+                               data-apgo-option-input
+                               {% if option.selected_value == value %}checked{% endif %}>
+                        <span>{{ value }}</span>
+                      </label>
+                    {%- endfor -%}
+                  </div>
+                {%- endif -%}
+              </div>
+            {%- endfor -%}
+
+            {%- comment -%} Quantity stepper {%- endcomment -%}
+            <div class="apgo-option-group">
+              <div class="apgo-kicker-small" style="margin-bottom:10px;">購買數量</div>
+              <div class="apgo-qty">
+                <button type="button" data-apgo-qty="down" aria-label="減少">−</button>
+                <input type="number" name="quantity" value="1" min="1" data-apgo-qty-input>
+                <button type="button" data-apgo-qty="up" aria-label="增加">+</button>
+              </div>
+            </div>
+
+            {%- comment -%} CTAs {%- endcomment -%}
+            <div class="apgo-cta-group">
+              <button type="submit" name="add"
+                      class="apgo-cta-primary"
+                      data-apgo-add
+                      {% unless v.available %}disabled{% endunless %}>
+                {%- if v.available -%}
+                  加入購物車 · <span data-apgo-total>{{ v.price | money }}</span>
+                {%- else -%}
+                  補貨中
+                {%- endif -%}
+              </button>
+
+              {%- if section.settings.show_buy_now -%}
+                <button type="button" class="apgo-cta-secondary" data-apgo-buy-now>
+                  立即購買 · 快速結帳
+                </button>
+              {%- endif -%}
+            </div>
+
+            {%- endif -%}{%- comment -%} end of apgo.bundle_enabled if/else (desktop) {%- endcomment -%}
+
+            {%- comment -%}
+              Ship card — same shop.metafields.apgo.ship_rows source as the
+              mobile shell uses below. Single edit in admin updates both.
+            {%- endcomment -%}
+            {%- assign desktop_ship_meta = shop.metafields.apgo.ship_rows.value -%}
+            {%- assign desktop_ship_blocks = section.blocks | where: 'type', 'ship_row' -%}
+            {%- if desktop_ship_meta != blank and desktop_ship_meta.size > 0 -%}
+              <div class="apgo-ship-card">
+                {%- for r in desktop_ship_meta -%}
+                  <div class="apgo-ship-row">
+                    <span class="apgo-ship-icon">{{ r.numeral }}</span>
+                    <div>
+                      <strong>{{ r.title }}</strong>
+                      <div class="apgo-muted apgo-ship-subtitle">{{ r.subtitle | newline_to_br }}</div>
+                    </div>
+                  </div>
+                  {%- unless forloop.last -%}<div class="apgo-ship-sep"></div>{%- endunless -%}
+                {%- endfor -%}
+              </div>
+            {%- elsif desktop_ship_blocks.size > 0 -%}
+              <div class="apgo-ship-card">
+                {%- for block in desktop_ship_blocks -%}
+                  <div class="apgo-ship-row" {{ block.shopify_attributes }}>
+                    <span class="apgo-ship-icon">{{ block.settings.numeral }}</span>
+                    <div>
+                      <strong>{{ block.settings.title }}</strong>
+                      <div class="apgo-muted apgo-ship-subtitle">{{ block.settings.subtitle | newline_to_br }}</div>
+                    </div>
+                  </div>
+                  {%- unless forloop.last -%}<div class="apgo-ship-sep"></div>{%- endunless -%}
+                {%- endfor -%}
+              </div>
+            {%- endif -%}
+
+          </aside>
+        </div>
+      </div>
+    </div>
+    {%- comment -%} ====== END DESKTOP-ONLY SHELL ====== {%- endcomment -%}
+
+    {%- comment -%} ====== MOBILE-ONLY SHELL: carousel + info block (hidden on desktop) ====== {%- endcomment -%}
+    <div class="apgo-mpdp-mobile-shell">
+
+    {%- comment -%} Carousel (video optional + images) {%- endcomment -%}
+    <div class="apgo-mpdp-carousel" data-apgo-carousel>
+      <div class="apgo-mpdp-track" data-apgo-carousel-track>
+        {%- if section.settings.video_url != blank -%}
+          <div class="apgo-mpdp-slide apgo-mpdp-slide-video">
+            <div class="apgo-mpdp-video-poster" style="background-image:url('{{ section.settings.video_poster | image_url: width: 800 }}');">
+              <div class="apgo-mpdp-play"><span></span></div>
+              <div class="apgo-mpdp-video-label">▶ {{ section.settings.video_label | default: '產品實測影片 · 60s' }}</div>
+            </div>
+          </div>
+        {%- endif -%}
+        {%- if product.media.size > 0 -%}
+          {%- for m in product.media -%}
+            <div class="apgo-mpdp-slide" data-apgo-image-id="{{ m.preview_image.id | default: m.id }}">
+              <img src="{{ m | image_url: width: 900 }}" alt="{{ m.alt | default: product.title }}" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
+            </div>
+          {%- endfor -%}
+        {%- endif -%}
+      </div>
+      {%- if has_compare -%}
+        <div class="apgo-mpdp-discount">限時 {{ discount_pct }}% OFF</div>
+      {%- endif -%}
+      <div class="apgo-mpdp-counter"><span data-apgo-carousel-idx>1</span> / <span data-apgo-carousel-total></span></div>
+    </div>
+
+    {%- comment -%} Mobile thumbnail rail — click to jump carousel; swipeable; ◀ ▶ to step {%- endcomment -%}
+    {%- if section.settings.show_thumb_rail and product.media.size > 1 -%}
+      <div class="apgo-mpdp-thumb-rail-wrap">
+        <button type="button" class="apgo-mpdp-thumb-nav apgo-mpdp-thumb-nav--prev" data-apgo-mthumb-nav="prev" aria-label="上一張">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <div class="apgo-mpdp-thumb-rail" data-apgo-mthumb-rail>
+          {%- for m in product.media -%}
+            <button type="button"
+                    class="apgo-mpdp-thumb {% if forloop.first %}active{% endif %}"
+                    data-apgo-mthumb-idx="{{ forloop.index0 }}"
+                    aria-label="顯示第 {{ forloop.index }} 張圖">
+              <img src="{{ m | image_url: width: 160 }}" alt="" loading="lazy">
+            </button>
+          {%- endfor -%}
+        </div>
+        <button type="button" class="apgo-mpdp-thumb-nav apgo-mpdp-thumb-nav--next" data-apgo-mthumb-nav="next" aria-label="下一張">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} Info block {%- endcomment -%}
+    <div class="apgo-mpdp-info">
+      {%- if section.settings.kicker != blank -%}
+        <div class="apgo-mpdp-kicker">{{ section.settings.kicker }}</div>
+      {%- endif -%}
+      <h1 class="apgo-mpdp-title apgo-serif">{{ product.title }}</h1>
+      {%- if product.metafields.apgo.subtitle != blank -%}
+        <div class="apgo-mpdp-subtitle">{{ product.metafields.apgo.subtitle }}</div>
+      {%- endif -%}
+
+      {%- if section.settings.show_rating -%}
+        <div class="apgo-mpdp-rating">
+          <span class="apgo-stars">★★★★★</span>
+          <strong>{{ section.settings.rating_score }}</strong>
+          <span class="apgo-muted">· {{ section.settings.rating_count }} 則評價</span>
+        </div>
+      {%- endif -%}
+
+      <div class="apgo-mpdp-price-row">
+        <span class="apgo-serif apgo-mpdp-price" data-apgo-price>{{ v.price | money }}</span>
+        {%- if has_compare -%}
+          <span class="apgo-mpdp-compare" data-apgo-compare>{{ product.compare_at_price | money }}</span>
+          <span class="apgo-mpdp-discount-pill">−{{ discount_pct }}%</span>
+        {%- endif -%}
+      </div>
+      {%- if section.settings.show_installment -%}
+        <div class="apgo-mpdp-installment" data-apgo-installment>分 3 期 0 利率 · 每期 {{ v.price | divided_by: 3 | money }}</div>
+      {%- endif -%}
+
+      {%- comment -%}
+        Bundle picker (limit時優惠組合) — mobile shell. Mirrors the desktop
+        path above; gated on the same product.metafields.apgo.bundle_enabled.
+      {%- endcomment -%}
+      {%- if product.metafields.apgo.bundle_enabled -%}
+        {%- render 'apgo-bundle-widget', product: product, shell: 'mobile', with_cta: false -%}
+      {%- else -%}
+
+      {%- comment -%} Variant options {%- endcomment -%}
+      {%- for option in product.options_with_values -%}
+        {%- assign is_scent = false -%}
+        {%- if option.name contains '香' or option.name contains 'Scent' -%}{%- assign is_scent = true -%}{%- endif -%}
+
+        <div class="apgo-mpdp-opt" data-apgo-option-group data-option-position="{{ option.position }}">
+          <div class="apgo-mpdp-opt-label">
+            <span>{{ option.name }}</span>
+            <span class="apgo-muted" data-apgo-current-value>{{ option.selected_value }}</span>
+          </div>
+          {%- if is_scent -%}
+            {%- assign scent_palette = shop.metafields.apgo.scents.value -%}
+            <div class="apgo-mpdp-scent-grid">
+              {%- for value in option.values -%}
+                {%- comment -%} Look up swatch hex from shop metaobject palette; fallback to hardcoded case {%- endcomment -%}
+                {%- assign sc = '' -%}
+                {%- if scent_palette != blank -%}
+                  {%- for s in scent_palette -%}
+                    {%- if s.name == value -%}{%- assign sc = s.hex -%}{%- endif -%}
+                  {%- endfor -%}
+                {%- endif -%}
+                {%- if sc == '' -%}
+                  {%- assign sc = '#E8DFC9' -%}
+                  {%- case value -%}
+                    {%- when '淨心棉花' -%}{%- assign sc = '#E8DFC9' -%}
+                    {%- when '花漾蒼蘭' -%}{%- assign sc = '#D4DDE0' -%}
+                    {%- when '浪漫玫瑰' -%}{%- assign sc = '#E8D4CF' -%}
+                    {%- when '海洋晨曦' -%}{%- assign sc = '#C8D6DA' -%}
+                    {%- when '清雅白茶' -%}{%- assign sc = '#DAE0CE' -%}
+                    {%- when '薰衣紫戀' -%}{%- assign sc = '#D6CFDD' -%}
+                  {%- endcase -%}
+                {%- endif -%}
+                <label class="apgo-mpdp-scentbtn {% if option.selected_value == value %}active{% endif %}">
+                  <input type="radio" name="options[{{ option.name | escape }}]" value="{{ value | escape }}" data-apgo-option-input {% if option.selected_value == value %}checked{% endif %}>
+                  <span class="apgo-mpdp-swatch" style="background:{{ sc }}"></span>
+                  <span class="apgo-serif">{{ value }}</span>
+                </label>
+              {%- endfor -%}
+            </div>
+          {%- else -%}
+            <div class="apgo-mpdp-chip-grid">
+              {%- for value in option.values -%}
+                <label class="apgo-mpdp-chip {% if option.selected_value == value %}active{% endif %}">
+                  <input type="radio" name="options[{{ option.name | escape }}]" value="{{ value | escape }}" data-apgo-option-input {% if option.selected_value == value %}checked{% endif %}>
+                  <span>{{ value }}</span>
+                </label>
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+
+      {%- comment -%} Qty (inline) {%- endcomment -%}
+      <div class="apgo-mpdp-qty-row">
+        <span class="apgo-mpdp-qty-label">數量</span>
+        <div class="apgo-mpdp-qty">
+          <button type="button" data-apgo-qty="down" aria-label="減少">−</button>
+          <input type="number" name="quantity" value="1" min="1" data-apgo-qty-input>
+          <button type="button" data-apgo-qty="up" aria-label="增加">+</button>
+        </div>
+      </div>
+
+      {%- endif -%}{%- comment -%} end of apgo.bundle_enabled if/else (mobile) {%- endcomment -%}
+
+      {%- comment -%}
+        Ship card — single source of truth lives in
+        shop.metafields.apgo.ship_rows (List of `shipping_row` metaobjects).
+        If empty (e.g., during migration), fall back to legacy section blocks.
+      {%- endcomment -%}
+      {%- assign ship_meta = shop.metafields.apgo.ship_rows.value -%}
+      {%- assign ship_blocks = section.blocks | where: 'type', 'ship_row' -%}
+      {%- if ship_meta != blank and ship_meta.size > 0 -%}
+        <div class="apgo-mpdp-ship">
+          {%- for r in ship_meta -%}
+            <div class="apgo-mpdp-ship-row">
+              <span class="apgo-mpdp-ship-icon">{{ r.numeral }}</span>
+              <div>
+                <strong>{{ r.title }}</strong>
+                <div class="apgo-muted apgo-mpdp-ship-subtitle">{{ r.subtitle | newline_to_br }}</div>
+              </div>
+            </div>
+            {%- unless forloop.last -%}<div class="apgo-mpdp-ship-sep"></div>{%- endunless -%}
+          {%- endfor -%}
+        </div>
+      {%- elsif ship_blocks.size > 0 -%}
+        <div class="apgo-mpdp-ship">
+          {%- for block in ship_blocks -%}
+            <div class="apgo-mpdp-ship-row" {{ block.shopify_attributes }}>
+              <span class="apgo-mpdp-ship-icon">{{ block.settings.numeral }}</span>
+              <div>
+                <strong>{{ block.settings.title }}</strong>
+                <div class="apgo-muted apgo-mpdp-ship-subtitle">{{ block.settings.subtitle | newline_to_br }}</div>
+              </div>
+            </div>
+            {%- unless forloop.last -%}<div class="apgo-mpdp-ship-sep"></div>{%- endunless -%}
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+    </div>
+
+    </div>
+    {%- comment -%} ====== END MOBILE-ONLY SHELL ====== {%- endcomment -%}
+
+    {%- comment -%}
+      Product feature card — visible on BOTH desktop and mobile,
+      positioned between the hero/info area and the tabs. Content comes
+      from the product's main Description field (admin → Products →
+      Description). Strips the <!-- apgo:sections --> marker so it
+      doesn't leak into the rendered card.
+    {%- endcomment -%}
+    {%- assign feature_text = product.description | replace: '<!-- apgo:sections -->', '' | strip -%}
+    {%- if feature_text != blank -%}
+      <div class="apgo-mpdp-feature-card">
+        <div class="apgo-mpdp-feature-head">
+          <span class="apgo-mpdp-feature-kicker">— FEATURES —</span>
+          <h3 class="apgo-mpdp-feature-title apgo-serif">商品特色</h3>
+        </div>
+        <div class="apgo-mpdp-feature-body rte">
+          {{ feature_text }}
+        </div>
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} Tabs {%- endcomment -%}
+    <div class="apgo-mpdp-tabs" role="tablist" data-apgo-mtabs>
+      <button type="button" class="apgo-mpdp-tab active" data-apgo-mtab="desc" role="tab">商品特色</button>
+      <button type="button" class="apgo-mpdp-tab" data-apgo-mtab="sgs" role="tab">SGS</button>
+      <button type="button" class="apgo-mpdp-tab" data-apgo-mtab="spec" role="tab">詳細資訊與安心成分</button>
+      <button type="button" class="apgo-mpdp-tab" data-apgo-mtab="warranty" role="tab">不滿意全額退<span class="apgo-mpdp-tab-line2">活動詳情</span></button>
+      <button type="button" class="apgo-mpdp-tab" data-apgo-mtab="review" role="tab">顧客評價</button>
+      <button type="button" class="apgo-mpdp-tab" data-apgo-mtab="faq" role="tab">商品 FAQ</button>
+    </div>
+
+    {%- comment -%}
+      Tab panel: 商品說明
+      ----------------------------------------------------------------
+      STRICT MODE: this entire panel is driven by Shopify admin →
+      Product → Description (rich-text editor, HTML mode capable).
+
+      To reproduce the original UI (Ritual hero / 痛點 × 解方 / 比較表 /
+      UGC / 長圖) the user pastes structured HTML using the existing
+      class hooks (.apgo-mpdp-ritual-wrap, .apgo-mpdp-pain-wrap,
+      .apgo-mpdp-cmp-wrap, .apgo-mpdp-ugc-wrap, .apgo-mpdp-longimg-wrap).
+      A reference snippet is kept in the team handbook.
+
+      Direct-child <div> snippets in description are NOT constrained by
+      .apgo-mpdp-description's reading-width rules — they keep their
+      original full-bleed look (see apgo-pdp.css line ~735).
+    {%- endcomment -%}
+    <div class="apgo-mpdp-panel active" data-apgo-mpanel="desc">
+      {%- comment -%}
+        Tab content order:
+          1. Product description images (metafield, list of images) —
+             the long-form product story shots
+          2. Pain × solution (metaobject)
+          3. Decorative pic (metafield)
+          4. Comparison table (metaobject)
+          5. UGC grid (blocks)
+
+        Note: product.description text itself no longer renders here — it
+        was moved to the .apgo-mpdp-feature-card under the ship card above.
+      {%- endcomment -%}
+      {%- assign feature_imgs = product.metafields.custom.product_description_images.value -%}
+      {%- if feature_imgs != blank and feature_imgs.size > 0 -%}
+        <div class="apgo-mpdp-feature-gallery">
+          {%- for img in feature_imgs -%}
+            <img src="{{ img | image_url: width: 1200 }}"
+                 alt="{{ product.title }} 商品說明圖 {{ forloop.index }}"
+                 loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                 class="apgo-mpdp-feature-gallery-img">
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} Pain × solution section (metaobject-driven) {%- endcomment -%}
+      {%- assign mf_pain = product.metafields.apgo.pain_solutions.value -%}
+      {%- if mf_pain != blank and mf_pain.size > 0 -%}
+        <div class="apgo-mpdp-pain-wrap">
+          {%- if section.settings.pain_heading != blank -%}
+            <h3>{{ section.settings.pain_heading }}</h3>
+          {%- endif -%}
+          <div class="apgo-mpdp-pain-grid">
+            {%- for entry in mf_pain -%}
+              <div class="apgo-mpdp-pain-card">
+                <div class="apgo-muted">{{ entry.pain }}</div>
+                <span class="apgo-mpdp-pain-arrow">→</span>
+                <div class="apgo-serif">{{ entry.solution }}</div>
+              </div>
+            {%- endfor -%}
+          </div>
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} Optional decorative image between pain and cmp sections {%- endcomment -%}
+      {%- assign mf_pic = product.metafields.custom.pic.value -%}
+      {%- if mf_pic != blank -%}
+        <div class="apgo-mpdp-pic-wrap">
+          <img src="{{ mf_pic | image_url: width: 1600 }}" alt="{{ product.title }}" loading="lazy">
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} Comparison table section (metaobject-driven) {%- endcomment -%}
+      {%- assign mf_cmp = product.metafields.apgo.comparison_rows.value -%}
+      {%- if mf_cmp != blank and mf_cmp.size > 0 -%}
+        <div class="apgo-mpdp-cmp-wrap">
+          {%- if section.settings.cmp_kicker != blank -%}
+            <span class="apgo-mpdp-kicker">— {{ section.settings.cmp_kicker }} —</span>
+          {%- endif -%}
+          {%- if section.settings.cmp_title != blank -%}
+            <h3>{{ section.settings.cmp_title }}</h3>
+          {%- endif -%}
+          <div class="apgo-mpdp-cmp">
+            <div class="apgo-mpdp-cmp-head">
+              <div>{{ section.settings.cmp_col_feature | default: '比較項目' }}</div>
+              <div>{{ section.settings.cmp_col_apgo | default: 'APGO 超級洗衣精' }}</div>
+              <div>{{ section.settings.cmp_col_competitor | default: '一般市售洗衣精' }}</div>
+            </div>
+            {%- for entry in mf_cmp -%}
+              <div class="apgo-mpdp-cmp-row">
+                <div>{{ entry.feature }}</div>
+                <div>{{ entry.apgo_value }}</div>
+                <div>{{ entry.competitor_value }}</div>
+              </div>
+            {%- endfor -%}
+          </div>
+        </div>
+      {%- endif -%}
+
+      {%- comment -%}
+        UGC grid — kept editable in theme editor (blocks of type "ugc") so
+        non-technical admin can add/remove IG cells without touching HTML.
+        Renders right after description; expects the description to already
+        contain the heading wrap (kicker + 用戶實拍 · Instagram).
+      {%- endcomment -%}
+      {%- assign ugc_blocks = section.blocks | where: 'type', 'ugc' -%}
+      {%- if ugc_blocks.size > 0 -%}
+        {%- assign ugc_has_heading = false -%}
+        {%- if section.settings.ugc_kicker != blank or section.settings.ugc_title != blank -%}
+          {%- assign ugc_has_heading = true -%}
+        {%- endif -%}
+        <div class="apgo-mpdp-ugc-wrap{% unless ugc_has_heading %} apgo-mpdp-ugc-wrap--grid-only{% endunless %}">
+          {%- if section.settings.ugc_kicker != blank -%}
+            <span class="apgo-mpdp-kicker">{{ section.settings.ugc_kicker }}</span>
+          {%- endif -%}
+          {%- if section.settings.ugc_title != blank -%}
+            <h3>{{ section.settings.ugc_title }}</h3>
+          {%- endif -%}
+          <div class="apgo-mpdp-ugc-grid">
+            {%- for block in ugc_blocks -%}
+              <a href="{{ block.settings.url }}" class="apgo-mpdp-ugc-cell" {{ block.shopify_attributes }} {% if block.settings.url != blank %}target="_blank" rel="noopener"{% endif %}>
+                {%- if block.settings.image != blank -%}
+                  <img src="{{ block.settings.image | image_url: width: 400 }}" alt="@{{ block.settings.handle }}" loading="lazy">
+                {%- endif -%}
+                <span class="apgo-mpdp-ugc-like">♡ {{ block.settings.likes }}</span>
+              </a>
+            {%- endfor -%}
+          </div>
+        </div>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} Tab panel: SGS — metafield-driven; if empty, panel renders empty-state {%- endcomment -%}
+    {%- assign sgs_reports = product.metafields.custom.sgs_reports.value -%}
+    <div class="apgo-mpdp-panel" data-apgo-mpanel="sgs">
+      {%- if sgs_reports == blank or sgs_reports.size == 0 -%}
+        <div class="apgo-sgs-empty apgo-muted">尚未上架 SGS 檢驗報告</div>
+      {%- else -%}
+      <div class="apgo-sgs">
+        <div class="apgo-sgs-header">
+          <div class="apgo-sgs-kicker">— CERTIFIED BY SGS —</div>
+          <h2 class="apgo-sgs-title apgo-serif">SGS 國家級檢驗認證</h2>
+          <div class="apgo-sgs-meta">委託單位：光世代科技有限公司</div>
+          <div class="apgo-sgs-meta">共五份完整 SGS 檢驗報告</div>
+        </div>
+
+        <div class="apgo-sgs-defs">
+          <div class="apgo-sgs-def">
+            <div class="apgo-sgs-def-head">
+              <span class="apgo-display apgo-sgs-def-abbr">N.D.</span>
+              <span class="apgo-sgs-def-name">Not Detected · 未檢出</span>
+            </div>
+            <p class="apgo-sgs-def-body">濃度低於儀器準確量化下限，視同「未含有」。</p>
+          </div>
+          <div class="apgo-sgs-def">
+            <div class="apgo-sgs-def-head">
+              <span class="apgo-display apgo-sgs-def-abbr">LOQ</span>
+              <span class="apgo-sgs-def-name">定量極限</span>
+            </div>
+            <p class="apgo-sgs-def-body">儀器能準確量化的最低濃度。SGS 的 LOQ 通常比法規嚴格 10–100 倍。</p>
+          </div>
+        </div>
+
+        <div class="apgo-sgs-cta-line">點擊查看為什麼要檢驗</div>
+
+        <div class="apgo-sgs-cards">
+          {%- for r in sgs_reports -%}
+            <article class="apgo-sgs-card" data-sgs-card>
+              <div class="apgo-sgs-card-head">
+                {%- if r.report_pdf != blank -%}
+                  <a class="apgo-sgs-thumb" href="{{ r.report_pdf }}" target="_blank" rel="noopener" aria-label="開啟 SGS 報告 PDF">
+                    {%- if r.report_image != blank -%}
+                      <img src="{{ r.report_image | image_url: width: 240 }}" alt="SGS 報告 {{ r.report_no }}" loading="lazy">
+                    {%- endif -%}
+                    <span class="apgo-sgs-thumb-badge">PDF</span>
+                  </a>
+                {%- else -%}
+                  <div class="apgo-sgs-thumb apgo-sgs-thumb--static">
+                    {%- if r.report_image != blank -%}
+                      <img src="{{ r.report_image | image_url: width: 240 }}" alt="SGS 報告 {{ r.report_no }}" loading="lazy">
+                    {%- endif -%}
+                  </div>
+                {%- endif -%}
+
+                <button type="button" class="apgo-sgs-card-meta" data-sgs-toggle aria-expanded="false">
+                  <div class="apgo-sgs-card-no">
+                    <span>{{ r.report_no }}</span>
+                    {%- if r.report_date != blank -%}
+                      <span class="apgo-sgs-card-sep" aria-hidden="true">·</span>
+                      <span class="apgo-sgs-card-date">{{ r.report_date }}</span>
+                    {%- endif -%}
+                  </div>
+                  <div class="apgo-sgs-card-test apgo-serif">{{ r.test_name }}</div>
+                  <div class="apgo-sgs-card-result-row">
+                    <div class="apgo-sgs-card-result apgo-display">{{ r.test_result }}</div>
+                    <div class="apgo-sgs-card-why">
+                      <span>WHY</span>
+                      <span class="apgo-sgs-card-arrow">↓</span>
+                    </div>
+                  </div>
+                </button>
+              </div>
+
+              <div class="apgo-sgs-card-body" hidden>
+                {%- if r.what_is_it != blank -%}
+                  <div class="apgo-sgs-card-row">
+                    <div class="apgo-sgs-card-row-label apgo-display">WHAT IS IT · 這是什麼</div>
+                    <div class="apgo-sgs-card-row-text">{% render 'apgo-richtext', content: r.what_is_it %}</div>
+                  </div>
+                {%- endif -%}
+                {%- if r.impact != blank -%}
+                  <div class="apgo-sgs-card-row">
+                    <div class="apgo-sgs-card-row-label apgo-display">IMPACT · 對人體的影響</div>
+                    <div class="apgo-sgs-card-row-text">{% render 'apgo-richtext', content: r.impact %}</div>
+                  </div>
+                {%- endif -%}
+                {%- if r.why_we_test != blank -%}
+                  <div class="apgo-sgs-card-row">
+                    <div class="apgo-sgs-card-row-label apgo-display">WHY WE TEST · 為什麼檢驗</div>
+                    <div class="apgo-sgs-card-row-text">{% render 'apgo-richtext', content: r.why_we_test %}</div>
+                  </div>
+                {%- endif -%}
+              </div>
+            </article>
+          {%- endfor -%}
+        </div>
+
+        <div class="apgo-sgs-overview">
+          <h3 class="apgo-sgs-overview-title apgo-serif">檢驗結果總覽</h3>
+          <p class="apgo-sgs-overview-sub">有害物質皆 N.D.，pH 6.4 弱酸親膚</p>
+          <div class="apgo-sgs-chips">
+            <div class="apgo-sgs-chip"><span class="apgo-sgs-chip-val apgo-display">N.D.</span><span class="apgo-sgs-chip-label">壬基苯酚</span></div>
+            <div class="apgo-sgs-chip"><span class="apgo-sgs-chip-val apgo-display">N.D.</span><span class="apgo-sgs-chip-label">甲醛</span></div>
+            <div class="apgo-sgs-chip"><span class="apgo-sgs-chip-val apgo-display">6.4</span><span class="apgo-sgs-chip-label">pH</span></div>
+            <div class="apgo-sgs-chip"><span class="apgo-sgs-chip-val apgo-display">陰性</span><span class="apgo-sgs-chip-label">螢光劑</span></div>
+            <div class="apgo-sgs-chip"><span class="apgo-sgs-chip-val apgo-display">陰性</span><span class="apgo-sgs-chip-label">大腸菌</span></div>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        (function () {
+          var panel = document.querySelector('[data-apgo-mpanel="sgs"]');
+          if (!panel || panel.dataset.sgsBound) return;
+          panel.dataset.sgsBound = '1';
+          panel.querySelectorAll('[data-sgs-toggle]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+              var card = btn.closest('[data-sgs-card]');
+              if (!card) return;
+              var body = card.querySelector('.apgo-sgs-card-body');
+              if (!body) return;
+              var open = card.classList.toggle('is-open');
+              btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+              if (open) body.removeAttribute('hidden'); else body.setAttribute('hidden', '');
+            });
+          });
+        })();
+      </script>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} Tab panel: 規格 — prefer metafield, fallback to blocks {%- endcomment -%}
+    {%- assign mf_spec_rows = product.metafields.apgo.spec_rows.value -%}
+    <div class="apgo-mpdp-panel" data-apgo-mpanel="spec">
+      {%- if mf_spec_rows != blank and mf_spec_rows.size > 0 -%}
+        {%- for entry in mf_spec_rows -%}
+          <div class="apgo-mpdp-spec-row">
+            <div class="apgo-muted">{{ entry.key }}</div>
+            <div class="apgo-serif">{{ entry.value }}</div>
+          </div>
+        {%- endfor -%}
+      {%- else -%}
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'spec' -%}
+            <div class="apgo-mpdp-spec-row" {{ block.shopify_attributes }}>
+              <div class="apgo-muted">{{ block.settings.key }}</div>
+              <div class="apgo-serif">{{ block.settings.value }}</div>
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} Tab panel: 評價 — prefer metafield, fallback to blocks {%- endcomment -%}
+    {%- assign mf_reviews = product.metafields.apgo.reviews.value -%}
+    <div class="apgo-mpdp-panel" data-apgo-mpanel="review">
+      <div class="apgo-mpdp-rev-summary">
+        <div class="apgo-serif apgo-mpdp-rev-score">{{ section.settings.rating_score }}</div>
+        <div class="apgo-stars">★★★★★</div>
+        <div class="apgo-muted">基於 {{ section.settings.rating_count }} 則真實評價</div>
+      </div>
+      {%- if mf_reviews != blank and mf_reviews.size > 0 -%}
+        {%- for entry in mf_reviews -%}
+          <div class="apgo-mpdp-rev-item">
+            <div class="apgo-mpdp-rev-head">
+              <strong>{{ entry.name }}</strong>
+              <span class="apgo-stars">★★★★★</span>
+            </div>
+            {%- assign rev_date = entry.date | default: entry.data -%}
+            <div class="apgo-mpdp-rev-meta">{{ rev_date }} · 已購買：{{ entry.scent }}</div>
+            <p>{{ entry.body }}</p>
+          </div>
+        {%- endfor -%}
+      {%- else -%}
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'review' -%}
+            <div class="apgo-mpdp-rev-item" {{ block.shopify_attributes }}>
+              <div class="apgo-mpdp-rev-head">
+                <strong>{{ block.settings.name }}</strong>
+                <span class="apgo-stars">★★★★★</span>
+              </div>
+              <div class="apgo-mpdp-rev-meta">{{ block.settings.date }} · 已購買：{{ block.settings.scent }}</div>
+              <p>{{ block.settings.body }}</p>
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} Tab panel: 問答 — prefer metafield, fallback to blocks {%- endcomment -%}
+    {%- assign mf_faqs = product.metafields.apgo.faqs.value -%}
+    <div class="apgo-mpdp-panel" data-apgo-mpanel="faq">
+      {%- if mf_faqs != blank and mf_faqs.size > 0 -%}
+        {%- for entry in mf_faqs -%}
+          <details class="apgo-mpdp-faq">
+            <summary>
+              <span class="apgo-serif">Q. {{ entry.question }}</span>
+              <span class="apgo-mpdp-faq-toggle">+</span>
+            </summary>
+            <p>A. {{ entry.answer }}</p>
+          </details>
+        {%- endfor -%}
+      {%- else -%}
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'faq' -%}
+            <details class="apgo-mpdp-faq" {{ block.shopify_attributes }}>
+              <summary>
+                <span class="apgo-serif">Q. {{ block.settings.q }}</span>
+                <span class="apgo-mpdp-faq-toggle">+</span>
+              </summary>
+              <p>A. {{ block.settings.a }}</p>
+            </details>
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+
+    {%- comment -%}
+      Tab panel: 不滿意全額退 活動詳情
+      ----------------------------------------------------------------
+      Driven by metafield `custom.warranty_images` (List of File references — images).
+      Falls back to single-image metafield `custom.warranty_image` if list isn't set.
+      Empty-state shown if neither is configured.
+    {%- endcomment -%}
+    {%- assign warranty_list = product.metafields.custom.warranty_images.value -%}
+    {%- assign warranty_single = product.metafields.custom.warranty_image -%}
+    <div class="apgo-mpdp-panel" data-apgo-mpanel="warranty">
+      {%- if warranty_list != blank and warranty_list.size > 0 -%}
+        <div class="apgo-mpdp-warranty">
+          {%- for img in warranty_list -%}
+            <img
+              class="apgo-mpdp-warranty-img"
+              src="{{ img | image_url: width: 1200 }}"
+              srcset="{{ img | image_url: width: 480 }} 480w, {{ img | image_url: width: 800 }} 800w, {{ img | image_url: width: 1200 }} 1200w"
+              sizes="(max-width: 749px) 100vw, 800px"
+              alt="不滿意全額退 活動詳情 {{ forloop.index }}"
+              loading="lazy"
+            >
+          {%- endfor -%}
+        </div>
+      {%- elsif warranty_single != blank -%}
+        <div class="apgo-mpdp-warranty">
+          <img
+            class="apgo-mpdp-warranty-img"
+            src="{{ warranty_single | image_url: width: 1200 }}"
+            srcset="{{ warranty_single | image_url: width: 480 }} 480w, {{ warranty_single | image_url: width: 800 }} 800w, {{ warranty_single | image_url: width: 1200 }} 1200w"
+            sizes="(max-width: 749px) 100vw, 800px"
+            alt="不滿意全額退 活動詳情"
+            loading="lazy"
+          >
+        </div>
+      {%- else -%}
+        <div class="apgo-sgs-empty apgo-muted">活動詳情即將上線</div>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} Related products (horizontal scroll) {%- endcomment -%}
+    {%- if section.settings.related_collection != blank -%}
+      {%- assign rcol = collections[section.settings.related_collection] -%}
+      {%- if rcol and rcol.products.size > 0 -%}
+        <div class="apgo-mpdp-related">
+          <h3 class="apgo-serif">您可能也喜歡</h3>
+          <div class="apgo-mpdp-related-scroll">
+            {%- for p in rcol.products limit: 8 -%}
+              {%- unless p.id == product.id -%}
+                <a class="apgo-mpdp-related-item" href="{{ p.url }}">
+                  <img src="{{ p.featured_image | image_url: width: 280 }}" alt="{{ p.title }}" loading="lazy">
+                  <div class="apgo-serif">{{ p.title }}</div>
+                  <div>{{ p.price | money }}</div>
+                </a>
+              {%- endunless -%}
+            {%- endfor -%}
+          </div>
+        </div>
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- comment -%} Sticky bottom CTA bar — two render paths {%- endcomment -%}
+    {%- if product.metafields.apgo.bundle_enabled -%}
+      {%- comment -%}
+        Bundle mode: disabled state initially shown as a single full-width
+        button. Phase B JS will swap to the enabled (add + buy) state once
+        the scent counter is filled.
+      {%- endcomment -%}
+      <div class="apgo-mpdp-sticky apgo-mpdp-sticky--bundle">
+        <button type="button"
+                class="apgo-mpdp-cta-bundle-disabled"
+                data-apgo-bundle-cta-disabled
+                disabled>
+          請先選滿香氛 · 還差 <span data-apgo-bundle-remaining>3</span> 包
+        </button>
+        <div class="apgo-mpdp-cta-bundle-enabled"
+             data-apgo-bundle-cta-enabled
+             style="display:none;">
+          <button type="button" class="apgo-mpdp-cta-secondary" data-apgo-bundle-add>加入購物車</button>
+          <button type="button" class="apgo-mpdp-cta-primary" data-apgo-bundle-buy-now>
+            立即購買 <span data-apgo-bundle-total>{{ 0 | money }}</span>
+          </button>
+        </div>
+      </div>
+    {%- else -%}
+      <div class="apgo-mpdp-sticky">
+        <button type="submit" name="add" class="apgo-mpdp-cta-secondary" data-apgo-add {% unless v.available %}disabled{% endunless %}>
+          {% if v.available %}加入購物車{% else %}補貨中{% endif %}
+        </button>
+        <button type="button" class="apgo-mpdp-cta-primary" data-apgo-buy-now {% unless v.available %}disabled{% endunless %}>
+          立即購買 <span data-apgo-total>{{ v.price | money }}</span>
+        </button>
+      </div>
+    {%- endif -%}
+
+    <script type="application/json" data-apgo-variants>{{ product.variants | json }}</script>
+  {% endform %}
+</section>
+
+{% schema %}
+{
+  "name": "APGO · PDP 內容（共用）",
+  "tag": "section",
+  "class": "apgo-section apgo-section-pdp-content",
+  "settings": [
+    { "type": "header", "content": "顶部 Carousel" },
+    { "type": "url",          "id": "video_url",      "label": "影片連結（選填）" },
+    { "type": "image_picker", "id": "video_poster",   "label": "影片封面（選填）" },
+    { "type": "text",         "id": "video_label",    "label": "影片標籤", "default": "產品實測影片 · 60s" },
+    { "type": "checkbox",     "id": "show_thumb_rail", "label": "顯示主圖下方縮圖列", "default": true },
+
+    { "type": "header", "content": "基本資訊" },
+    { "type": "text",     "id": "kicker",       "label": "英文副標", "default": "AROMA AESTHETICS" },
+    { "type": "checkbox", "id": "show_rating",  "label": "顯示評分", "default": true },
+    { "type": "text",     "id": "rating_score", "label": "評分", "default": "4.9" },
+    { "type": "text",     "id": "rating_count", "label": "評價數", "default": "2,847" },
+    { "type": "checkbox", "id": "show_installment", "label": "顯示 3 期 0 利率", "default": true },
+    { "type": "checkbox", "id": "show_buy_now",  "label": "顯示「立即購買」按鈕（桌面）", "default": true },
+
+    { "type": "header", "content": "商品說明 tab" },
+    { "type": "paragraph", "content": "「Ritual 視覺」「長圖」由 Description 提供（HTML 模式貼入 .apgo-mpdp-ritual-wrap / .apgo-mpdp-longimg-wrap）。「痛點 × 解方」「比較表」由產品 metafield 驅動（apgo.pain_solutions / apgo.comparison_rows）。在 Description 中插入 <!-- apgo:sections --> 這行 HTML 註解，pain + cmp 兩段就會渲染在那個位置。" },
+
+    { "type": "header", "content": "痛點 × 解方標題" },
+    { "type": "text", "id": "pain_heading", "label": "區塊主標", "default": "日常痛點 · 專屬科學解方" },
+
+    { "type": "header", "content": "比較表標題與欄位" },
+    { "type": "text", "id": "cmp_kicker",          "label": "上方小字（kicker）", "default": "THE DIFFERENCE" },
+    { "type": "text", "id": "cmp_title",           "label": "區塊主標", "default": "為什麼選 APGO？" },
+    { "type": "text", "id": "cmp_col_feature",     "label": "欄位 1 標籤", "default": "比較項目" },
+    { "type": "text", "id": "cmp_col_apgo",        "label": "欄位 2 標籤", "default": "APGO 超級洗衣精" },
+    { "type": "text", "id": "cmp_col_competitor",  "label": "欄位 3 標籤", "default": "一般市售洗衣精" },
+
+    { "type": "header", "content": "UGC 區標題（描述下方）" },
+    { "type": "text", "id": "ugc_kicker", "label": "上方小字（kicker）", "default": "APGO 用戶實拍" },
+    { "type": "text", "id": "ugc_title",  "label": "主標題", "default": "@apgo_official · Instagram" },
+
+    { "type": "header", "content": "相關商品" },
+    { "type": "collection", "id": "related_collection", "label": "相關商品集合" }
+  ],
+  "blocks": [
+    {
+      "type": "ship_row",
+      "name": "運送/保障資訊列",
+      "limit": 6,
+      "settings": [
+        { "type": "text", "id": "numeral", "label": "編號標記", "default": "i", "info": "顯示在最左邊的小符號（如 i / ii / iii）" },
+        { "type": "text", "id": "title", "label": "主標", "default": "滿 NT$ 799 免運" },
+        { "type": "textarea", "id": "subtitle", "label": "副標", "default": "黑貓宅配 · 24 小時內出貨", "info": "支持多行，每行會顯示成一段" }
+      ]
+    },
+    {
+      "type": "ugc",
+      "name": "UGC IG 貼文",
+      "limit": 9,
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "圖片" },
+        { "type": "text", "id": "handle", "label": "IG handle（顯示在 alt）" },
+        { "type": "number", "id": "likes", "label": "讚數", "default": 100 },
+        { "type": "url", "id": "url", "label": "IG 貼文連結（選填）" }
+      ]
+    },
+    {
+      "type": "spec",
+      "name": "規格列",
+      "limit": 12,
+      "settings": [
+        { "type": "text", "id": "key", "label": "欄位", "default": "商品名稱" },
+        { "type": "text", "id": "value", "label": "內容", "default": "APGO 超級濃縮洗衣精" }
+      ]
+    },
+    {
+      "type": "review",
+      "name": "評價",
+      "limit": 6,
+      "settings": [
+        { "type": "text", "id": "name", "label": "姓名", "default": "黃小姐" },
+        { "type": "text", "id": "date", "label": "日期", "default": "2026.03.12" },
+        { "type": "text", "id": "scent", "label": "購買香氛", "default": "淨心棉花" },
+        { "type": "textarea", "id": "body", "label": "評價內容", "default": "香味非常柔和不刺鼻，寶寶衣服洗起來也很放心。" }
+      ]
+    },
+    {
+      "type": "faq",
+      "name": "常見問題",
+      "limit": 8,
+      "settings": [
+        { "type": "text", "id": "q", "label": "問題", "default": "可以洗嬰幼兒衣服嗎？" },
+        { "type": "textarea", "id": "a", "label": "回答", "default": "可以。通過 SGS 檢驗、8 大零添加、pH 中性，專為敏感肌與嬰幼兒設計。" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "APGO · Mobile PDP",
+      "blocks": [
+        { "type": "ship_row", "settings": { "numeral": "i",   "title": "滿 NT$ 799 免運",   "subtitle": "黑貓宅配 · 24 小時內出貨" }},
+        { "type": "ship_row", "settings": { "numeral": "ii",  "title": "30 天鑑賞期",       "subtitle": "未拆封可無條件退換貨" }},
+        { "type": "ship_row", "settings": { "numeral": "iii", "title": "SGS 國家級檢驗",    "subtitle": "99.9% 抗菌 · 八大零添加" }},
+        { "type": "ugc", "settings": { "handle": "", "likes": 100, "url": "" }},
+        { "type": "ugc", "settings": { "handle": "", "likes": 100, "url": "" }},
+        { "type": "ugc", "settings": { "handle": "", "likes": 100, "url": "" }},
+        { "type": "spec", "settings": { "key": "商品名稱", "value": "APGO 超級濃縮洗衣精" }},
+        { "type": "spec", "settings": { "key": "容量",     "value": "1L / 2L / 4L 補充包" }},
+        { "type": "spec", "settings": { "key": "產地",     "value": "台灣製造" }},
+        { "type": "spec", "settings": { "key": "主要成分", "value": "濃縮酵素、護色因子、植萃香氛" }},
+        { "type": "spec", "settings": { "key": "香氛選擇", "value": "6 款香氛可選" }},
+        { "type": "spec", "settings": { "key": "適用",     "value": "各式衣物、嬰幼兒、寵物用品" }},
+        { "type": "spec", "settings": { "key": "pH 值",    "value": "中性（pH 7.0 ± 0.5）" }},
+        { "type": "spec", "settings": { "key": "保存期限", "value": "未開封 3 年／開封後 18 個月" }},
+        { "type": "spec", "settings": { "key": "認證",     "value": "SGS 99.9% 抗菌合格" }},
+        { "type": "review", "settings": { "name": "黃小姐",  "date": "2026.03.12", "scent": "淨心棉花", "body": "香味非常柔和不刺鼻，寶寶衣服洗起來也很放心。會一直回購！" }},
+        { "type": "review", "settings": { "name": "Emma L.", "date": "2026.03.08", "scent": "清雅白茶", "body": "白茶香是我的最愛，淡雅不俗氣。瓶身設計也很精緻。" }},
+        { "type": "review", "settings": { "name": "陳先生",  "date": "2026.02.28", "scent": "海洋晨曦", "body": "深層潔淨效果非常明顯，兒子運動服洗完真的像新的一樣。" }},
+        { "type": "faq", "settings": { "q": "可以洗嬰幼兒衣服嗎？", "a": "可以。通過 SGS 檢驗、8 大零添加、pH 中性，專為敏感肌與嬰幼兒設計。" }},
+        { "type": "faq", "settings": { "q": "用量比一般洗衣精省嗎？", "a": "是。超濃縮配方用量僅需 1/3，1L 可洗約 50 次。" }},
+        { "type": "faq", "settings": { "q": "不同香氛可混用嗎？", "a": "可以。每款都經過香氛師調配，相互搭配不衝突。" }},
+        { "type": "faq", "settings": { "q": "運送需要幾天？", "a": "下單後 24 小時內出貨，黑貓宅配 1-2 個工作日送達。" }},
+        { "type": "faq", "settings": { "q": "可以退換貨嗎？", "a": "未拆封商品提供 30 天鑑賞期，可無條件退換貨。" }}
+      ]
+    }
+  ]
+}
+{% endschema %}

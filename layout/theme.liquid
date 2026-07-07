@@ -54,6 +54,54 @@
       font-family: 'Poppins', 'Microsoft JhengHei', Arial, sans-serif !important;
     }
   </style>
+
+  {%- comment -%}
+    APGO v1s-plus laundry PDP template loader (migrated from TW store).
+    Gated on template.suffix so it's inert on every other page. Loads the
+    self-contained apgo-pdp.css / apgo-pdp.js; apgo-bundle.js only when the
+    product opts into bundle purchasing via apgo.bundle_enabled.
+    NOTE: the header-forcing rule in the critical <style> below (.header /
+    header-component / .announcement-bar → cream #fdfaf2) applies ONLY on
+    this template. If the MY header logo/nav loses contrast on the laundry
+    PDP, delete just that one rule.
+  {%- endcomment -%}
+  {%- if template.suffix == 'apgo-v1s-plus' -%}
+    <style id="apgo-v1s-plus-critical">
+      #apgo-promo-bar.apgo-promo--hidden {
+        visibility: hidden !important;
+        height: 0 !important;
+        overflow: hidden !important;
+      }
+      #apgo-promo-bar a[style],
+      #apgo-promo-bar a[class*="tw-bg-"] {
+        background: #fdfaf2 !important;
+        background-color: #fdfaf2 !important;
+      }
+      [id^="apgo-hub-"],
+      .apgo-widget-container {
+        --dt-bg-screen: #fdfaf2 !important;
+        --dt-bg-surface: #fdfaf2 !important;
+        --dt-bg-input: #f2ece0 !important;
+        --dt-border: #d9d3c3 !important;
+      }
+      [id^="shopify-section-apgo_tactical_hub"] {
+        background: transparent !important;
+      }
+      announcement-bar-component,
+      header-component,
+      .header,
+      .announcement-bar {
+        --color-background: 253, 250, 242;
+        --color-foreground: 45, 46, 40;
+        background: #fdfaf2 !important;
+      }
+    </style>
+    {{ 'apgo-pdp.css' | asset_url | stylesheet_tag }}
+    <script src="{{ 'apgo-pdp.js' | asset_url }}" defer></script>
+    {%- if product.metafields.apgo.bundle_enabled -%}
+      <script src="{{ 'apgo-bundle.js' | asset_url }}" defer></script>
+    {%- endif -%}
+  {%- endif -%}
   </head>
 
   {% liquid

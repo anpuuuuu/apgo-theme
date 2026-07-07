@@ -1,0 +1,74 @@
+{%- comment -%}
+  Render a Shopify rich-text field to HTML.
+
+  Usage:
+    {% render 'apgo-richtext', content: r.what_is_it %}
+
+  Why this exists:
+    Shopify normally auto-renders rich-text fields to HTML when output
+    directly with {{ field }}, but this is unreliable on metaobject
+    rich-text fields accessed through a metaobject reference list — in
+    those cases Liquid emits the raw JSON node tree instead. This
+    snippet walks `field.value` and emits HTML for the common nodes
+    (paragraph / list / heading / link / bold / italic).
+{%- endcomment -%}
+
+{%- liquid
+  assign rt = content.value | default: content
+-%}
+
+{%- if rt == blank -%}{%- else -%}
+  {%- if rt.children -%}
+    {%- for blk in rt.children -%}
+      {%- case blk.type -%}
+
+        {%- when 'paragraph' -%}
+          <p>
+          {%- for s in blk.children -%}
+            {%- if s.type == 'text' -%}
+              {%- if s.bold -%}<strong>{%- endif -%}
+              {%- if s.italic -%}<em>{%- endif -%}
+              {{- s.value | newline_to_br -}}
+              {%- if s.italic -%}</em>{%- endif -%}
+              {%- if s.bold -%}</strong>{%- endif -%}
+            {%- elsif s.type == 'link' -%}
+              <a href="{{ s.url }}" target="_blank" rel="noopener">
+                {%- for c in s.children -%}{{ c.value }}{%- endfor -%}
+              </a>
+            {%- endif -%}
+          {%- endfor -%}
+          </p>
+
+        {%- when 'list' -%}
+          {%- if blk.list_type == 'ordered' -%}<ol>{%- else -%}<ul>{%- endif -%}
+            {%- for li in blk.children -%}
+              <li>
+              {%- for s in li.children -%}
+                {%- if s.type == 'text' -%}
+                  {%- if s.bold -%}<strong>{%- endif -%}
+                  {%- if s.italic -%}<em>{%- endif -%}
+                  {{- s.value -}}
+                  {%- if s.italic -%}</em>{%- endif -%}
+                  {%- if s.bold -%}</strong>{%- endif -%}
+                {%- elsif s.type == 'link' -%}
+                  <a href="{{ s.url }}" target="_blank" rel="noopener">
+                    {%- for c in s.children -%}{{ c.value }}{%- endfor -%}
+                  </a>
+                {%- endif -%}
+              {%- endfor -%}
+              </li>
+            {%- endfor -%}
+          {%- if blk.list_type == 'ordered' -%}</ol>{%- else -%}</ul>{%- endif -%}
+
+        {%- when 'heading' -%}
+          {%- assign lvl = blk.level | default: 3 -%}
+          <h{{ lvl }}>
+          {%- for s in blk.children -%}
+            {{- s.value -}}
+          {%- endfor -%}
+          </h{{ lvl }}>
+
+      {%- endcase -%}
+    {%- endfor -%}
+  {%- endif -%}
+{%- endif -%}

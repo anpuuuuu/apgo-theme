@@ -1,0 +1,1914 @@
+/* ==========================================================================
+   APGO PDP · V1S+ (Desktop + Mobile)
+   Loaded only when template.suffix == 'apgo-v1s-plus' (see layout/theme.liquid)
+   ========================================================================== */
+
+:root {
+  --apgo-bg:         #F6F1E7;
+  --apgo-bg-alt:     #FDFAF2;
+  --apgo-bg-ash:     #E8E2D4;
+  --apgo-ink:        #2D2E28;
+  --apgo-sage:       #5E6F5D;
+  --apgo-sage-light: #8BA089;
+  --apgo-line:       rgba(94,111,93,0.15);
+  --apgo-muted:      rgba(45,46,40,0.55);
+  --apgo-star:       #C9A76B;
+  --apgo-serif:      'Noto Serif TC', 'Songti TC', serif;
+  --apgo-display:    'Cormorant Garamond', 'Noto Serif TC', serif;
+  --apgo-sans:       'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.apgo-section, .apgo-mpdp, .apgo-pdp {
+  font-family: var(--apgo-sans);
+  color: var(--apgo-ink);
+  box-sizing: border-box;
+}
+/* Section background — span full width to avoid page bg leaking through */
+.apgo-section,
+.apgo-mpdp,
+.apgo-pdp,
+.apgo-related,
+.apgo-hero,
+.apgo-section-pdp-content { background: var(--apgo-bg); }
+.apgo-section *, .apgo-mpdp *, .apgo-pdp * { box-sizing: border-box; }
+.apgo-serif { font-family: var(--apgo-serif); font-weight: 400; }
+.apgo-display { font-family: var(--apgo-display); font-style: italic; }
+.apgo-muted { color: var(--apgo-muted); }
+.apgo-kicker {
+  font-family: var(--apgo-display);
+  font-style: italic;
+  font-size: 12px;
+  letter-spacing: 0.4em;
+  color: var(--apgo-sage);
+  text-transform: uppercase;
+}
+.apgo-kicker-small { font-size: 12px; letter-spacing: 0.15em; color: var(--apgo-ink); }
+.apgo-container { max-width: 1240px; margin: 0 auto; padding: 40px 32px; }
+.apgo-stars { color: var(--apgo-star); letter-spacing: 2px; }
+
+/* ==========================================================================
+   VISIBILITY TOGGLE (desktop / mobile)
+   ========================================================================== */
+.apgo-mobile-only { display: none; }
+.apgo-desktop-only { display: block; }
+@media (max-width: 768px) {
+  .apgo-mobile-only { display: block; }
+  .apgo-desktop-only { display: none !important; }
+}
+
+/* ==========================================================================
+   DESKTOP — HERO (3-col grid)
+   ========================================================================== */
+.apgo-pdp { background: var(--apgo-bg); padding-bottom: 40px; }
+.apgo-breadcrumb { font-size: 12px; color: var(--apgo-muted); letter-spacing: 0.05em; margin-bottom: 24px; }
+.apgo-breadcrumb a { color: inherit; text-decoration: none; }
+.apgo-breadcrumb a:hover { color: var(--apgo-ink); }
+.apgo-breadcrumb .apgo-sep { margin: 0 8px; }
+
+.apgo-hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 460px;
+  gap: 32px;
+  align-items: start;
+}
+/* Left column: main image stacked tight on top of thumb carousel.
+   Using flex here (not grid rows) means the sidebar's height on the right
+   can't expand rows and push the thumbs away from the main image. */
+.apgo-hero-left {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;           /* allow shrink inside grid track */
+}
+
+/* Thumb rail wrapper — prev btn | rail (overflow hidden) | next btn */
+.apgo-thumb-rail-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.apgo-thumb-nav {
+  flex: 0 0 28px;
+  width: 28px; height: 28px;
+  border: 1px solid var(--apgo-line);
+  background: var(--apgo-bg);
+  color: var(--apgo-ink);
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0;
+  transition: background .15s, border-color .15s, opacity .15s;
+}
+.apgo-thumb-nav:hover { background: var(--apgo-bg-ash); border-color: var(--apgo-ink); }
+.apgo-thumb-nav:disabled { opacity: 0.3; cursor: default; }
+
+.apgo-thumb-rail {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  overflow: hidden;
+  scroll-behavior: smooth;
+}
+.apgo-thumb {
+  /* Exactly 5 thumbs visible at once: (100% - 4*10px gap) / 5 */
+  flex: 0 0 calc((100% - 40px) / 5);
+  aspect-ratio: 1/1;
+  padding: 0; border: 2px solid transparent; border-radius: 10px;
+  background: none; cursor: pointer; overflow: hidden; transition: border-color .2s;
+}
+.apgo-thumb img { width: 100%; height: 100%; aspect-ratio: 1/1; object-fit: cover; display: block; }
+.apgo-thumb.active { border-color: var(--apgo-ink); }
+.apgo-thumb-placeholder { background: var(--apgo-bg-ash); aspect-ratio: 1/1; }
+
+/* Main image — 強制 1:1 正方形裁切，確保所有產品主圖版面一致 */
+.apgo-main-media { position: relative; }
+.apgo-main-img {
+  width: 100%; aspect-ratio: 1/1; object-fit: cover;
+  background: var(--apgo-bg-ash); border-radius: 20px; display: block;
+}
+.apgo-main-placeholder { display: flex; align-items: center; justify-content: center; padding: 20px; }
+.apgo-discount-badge {
+  position: absolute; top: 16px; left: 16px;
+  padding: 6px 12px; background: var(--apgo-ink); color: var(--apgo-bg);
+  font-size: 11px; letter-spacing: 0.2em; border-radius: 999px;
+}
+
+/* Purchase sidebar */
+.apgo-sidebar { padding-left: 0; }
+.apgo-title { font-size: 30px; font-weight: 400; line-height: 1.35; margin: 10px 0 6px; }
+.apgo-subtitle { font-size: 14px; color: var(--apgo-muted); letter-spacing: 0.05em; margin-bottom: 18px; }
+.apgo-rating { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; font-size: 13px; }
+.apgo-rating-num { font-weight: 500; }
+
+.apgo-price-row { display: flex; align-items: baseline; gap: 14px; margin-bottom: 4px; }
+.apgo-price { font-size: 36px; font-weight: 400; }
+.apgo-price-compare { color: var(--apgo-muted); font-size: 15px; text-decoration: line-through; }
+.apgo-discount-pill {
+  padding: 2px 8px; background: var(--apgo-sage); color: var(--apgo-bg);
+  font-size: 11px; letter-spacing: 0.1em; border-radius: 999px;
+}
+.apgo-installment { font-size: 12px; margin-bottom: 28px; }
+
+/* Options */
+.apgo-option-group { margin-bottom: 24px; }
+.apgo-option-label { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+.apgo-option-current { font-size: 13px; }
+
+.apgo-chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.apgo-chip {
+  position: relative; padding: 10px 18px; border: 1px solid rgba(94,111,93,0.3);
+  border-radius: 999px; background: var(--apgo-bg-alt); font-size: 13px; cursor: pointer;
+  transition: all .18s;
+}
+.apgo-chip input { position: absolute; opacity: 0; inset: 0; pointer-events: none; }
+.apgo-chip:hover { border-color: var(--apgo-sage); }
+.apgo-chip.active { border-color: var(--apgo-ink); background: var(--apgo-ink); color: var(--apgo-bg); }
+
+.apgo-scent-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.apgo-scentbtn {
+  position: relative; display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border: 1px solid rgba(94,111,93,0.25); border-radius: 12px;
+  background: var(--apgo-bg-alt); font-size: 13px; cursor: pointer; transition: all .18s;
+}
+.apgo-scentbtn input { position: absolute; opacity: 0; inset: 0; pointer-events: none; }
+.apgo-scentbtn:hover { border-color: var(--apgo-sage); }
+.apgo-scentbtn.active { border-color: var(--apgo-ink); box-shadow: inset 0 0 0 1px var(--apgo-ink); }
+.apgo-swatch { width: 22px; height: 22px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.08); flex-shrink: 0; }
+
+.apgo-qty {
+  display: inline-flex; align-items: center;
+  border: 1px solid rgba(94,111,93,0.3); border-radius: 999px;
+  background: var(--apgo-bg-alt); overflow: hidden;
+}
+.apgo-qty button { width: 44px; height: 44px; border: none; background: none; font-size: 18px; color: var(--apgo-ink); cursor: pointer; }
+.apgo-qty input {
+  width: 50px; text-align: center; font-size: 15px; border: none; background: none;
+  -moz-appearance: textfield; outline: none;
+}
+.apgo-qty input::-webkit-outer-spin-button, .apgo-qty input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+.apgo-cta-group { display: flex; flex-direction: column; gap: 10px; margin: 12px 0 24px; }
+.apgo-cta-primary {
+  width: 100%; padding: 18px; background: var(--apgo-ink); color: var(--apgo-bg);
+  font-size: 15px; letter-spacing: 0.15em; font-weight: 500; border: none; border-radius: 999px;
+  cursor: pointer; transition: background .2s;
+}
+.apgo-cta-primary:hover:not([disabled]) { background: var(--apgo-sage); }
+.apgo-cta-primary[disabled] { opacity: 0.5; cursor: not-allowed; }
+.apgo-cta-secondary {
+  width: 100%; padding: 18px; background: transparent; border: 1px solid var(--apgo-ink);
+  color: var(--apgo-ink); font-size: 15px; letter-spacing: 0.15em; font-weight: 500;
+  border-radius: 999px; cursor: pointer; transition: all .2s;
+}
+.apgo-cta-secondary:hover { background: var(--apgo-ink); color: var(--apgo-bg); }
+.apgo-wishlist-link {
+  align-self: center; background: none; border: none; font-size: 13px;
+  letter-spacing: 0.1em; color: var(--apgo-muted); margin-top: 4px; cursor: pointer;
+}
+
+/* Trust badges */
+.apgo-trust-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
+.apgo-trust-cell {
+  padding: 12px 4px; text-align: center; background: var(--apgo-bg-alt);
+  border: 1px solid rgba(94,111,93,0.18); border-radius: 10px;
+}
+.apgo-trust-icon { font-size: 18px; color: var(--apgo-sage); margin-bottom: 4px; }
+.apgo-trust-title { font-size: 11px; font-weight: 500; }
+.apgo-trust-sub { font-size: 10px; margin-top: 1px; }
+
+/* Ship card */
+.apgo-ship-card {
+  background: var(--apgo-bg-alt); border: 1px solid var(--apgo-line);
+  border-radius: 14px; padding: 16px 18px;
+}
+.apgo-ship-row { display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; font-size: 13px; }
+.apgo-ship-row strong { font-weight: 500; }
+.apgo-ship-row .apgo-muted { margin-top: 2px; }
+.apgo-ship-icon {
+  width: 32px; height: 32px; border-radius: 50%; background: rgba(94,111,93,0.12);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--apgo-sage); font-family: var(--apgo-display); font-style: italic;
+  font-size: 14px; flex-shrink: 0;
+}
+.apgo-ship-sep { height: 1px; background: var(--apgo-line); }
+
+.apgo-share {
+  margin-top: 20px; display: flex; gap: 14px; font-size: 12px;
+  color: var(--apgo-muted); letter-spacing: 0.1em;
+}
+
+@media (max-width: 1080px) and (min-width: 769px) {
+  .apgo-hero-grid { grid-template-columns: 1fr 380px; gap: 16px 24px; }
+}
+
+/* ==========================================================================
+   DESKTOP — Secondary sections (existing handoff classes)
+   ========================================================================== */
+.apgo-editorial { padding: 80px 0; }
+.apgo-quiz-banner {
+  margin: 0 -32px; padding: 48px 32px;
+  background: linear-gradient(135deg, var(--apgo-sage), #3E4F3E);
+  color: var(--apgo-bg);
+  display: grid; grid-template-columns: 1fr auto; gap: 32px; align-items: center;
+}
+.apgo-quiz-banner .apgo-kicker { color: var(--apgo-bg); opacity: 0.75; }
+
+.apgo-pain-card {
+  padding: 20px; background: var(--apgo-bg);
+  display: grid; grid-template-columns: 1fr auto 1fr; gap: 14px; align-items: center;
+  border-radius: 12px;
+}
+
+.apgo-timeline { position: relative; padding: 0 40px; }
+.apgo-timeline-track {
+  position: absolute; left: 40px; right: 40px; top: 46px; height: 4px;
+  background: linear-gradient(to right, var(--apgo-sage), var(--apgo-sage-light), #B8CAB4, #D6DFD3);
+  border-radius: 2px;
+}
+.apgo-timeline-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; position: relative; }
+.apgo-timeline-dot {
+  width: 20px; height: 20px; border-radius: 50%; background: var(--apgo-ink);
+  margin: 8px auto 18px; position: relative; z-index: 2;
+  box-shadow: 0 0 0 4px var(--apgo-bg);
+}
+
+.apgo-comparison-table {
+  max-width: 880px; margin: 0 auto; background: var(--apgo-bg);
+  border-radius: 14px; overflow: hidden; border: 1px solid rgba(94,111,93,0.18);
+}
+.apgo-comparison-head {
+  display: grid; grid-template-columns: 1.4fr 1fr 1fr;
+  background: var(--apgo-ink); color: var(--apgo-bg);
+}
+.apgo-comparison-head > div { padding: 16px 20px; font-size: 14px; border-left: 1px solid rgba(246,241,231,0.2); }
+.apgo-comparison-head > div:first-child { border-left: none; font-size: 12px; letter-spacing: 0.15em; }
+.apgo-comparison-head > div:nth-child(2) { text-align: center; }
+.apgo-comparison-head > div:nth-child(3) { text-align: center; opacity: 0.75; }
+.apgo-comparison-row { display: grid; grid-template-columns: 1.4fr 1fr 1fr; border-top: 1px solid rgba(94,111,93,0.12); }
+.apgo-cell-feature { padding: 16px 20px; font-size: 13px; color: rgba(45,46,40,0.7); }
+.apgo-cell-apgo {
+  padding: 16px 20px; font-size: 14px; text-align: center;
+  background: rgba(94,111,93,0.08); border-left: 1px solid rgba(94,111,93,0.12);
+  font-family: var(--apgo-serif);
+}
+.apgo-cell-competitor { padding: 16px 20px; font-size: 13px; text-align: center; border-left: 1px solid rgba(94,111,93,0.12); color: rgba(45,46,40,0.55); }
+.apgo-win-mark { color: var(--apgo-sage); margin-right: 6px; }
+
+.apgo-ugc-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+.apgo-ugc-cell { position: relative; aspect-ratio: 1/1; border-radius: 10px; overflow: hidden; cursor: pointer; text-decoration: none; }
+.apgo-ugc-cell img { width: 100%; height: 100%; object-fit: cover; }
+.apgo-ugc-user { position: absolute; bottom: 8px; left: 8px; color: #fff; font-size: 10px; text-shadow: 0 1px 4px rgba(0,0,0,0.6); }
+.apgo-ugc-likes { position: absolute; top: 8px; right: 8px; color: #fff; font-size: 11px; text-shadow: 0 1px 4px rgba(0,0,0,0.6); }
+
+/* ==========================================================================
+   MOBILE — MEGA SECTION (.apgo-mpdp)
+   ========================================================================== */
+.apgo-mpdp {
+  background: var(--apgo-bg);
+  font-family: var(--apgo-sans);
+  color: var(--apgo-ink);
+  padding-bottom: 80px; /* clear sticky CTA */
+}
+.apgo-mpdp-form { margin: 0; }
+
+/* Carousel */
+.apgo-mpdp-carousel { position: relative; background: var(--apgo-bg-ash); }
+.apgo-mpdp-track {
+  display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
+  scrollbar-width: none; -webkit-overflow-scrolling: touch;
+}
+.apgo-mpdp-track::-webkit-scrollbar { display: none; }
+.apgo-mpdp-slide { flex: 0 0 100%; scroll-snap-align: start; position: relative; aspect-ratio: 1/1; }
+.apgo-mpdp-slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.apgo-mpdp-slide-video { background: var(--apgo-ink); }
+.apgo-mpdp-video-poster { width: 100%; height: 100%; background-size: cover; background-position: center; position: relative; }
+.apgo-mpdp-video-poster::before { content: ''; position: absolute; inset: 0; background: rgba(45,46,40,0.28); }
+.apgo-mpdp-play { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+.apgo-mpdp-play::before { content: ''; position: absolute; width: 68px; height: 68px; border-radius: 50%; background: rgba(253,250,242,0.95); }
+.apgo-mpdp-play span {
+  display: block; width: 0; height: 0;
+  border-left: 18px solid var(--apgo-ink);
+  border-top: 12px solid transparent; border-bottom: 12px solid transparent;
+  margin-left: 4px; position: relative; z-index: 1;
+}
+.apgo-mpdp-video-label {
+  position: absolute; bottom: 16px; left: 16px;
+  padding: 6px 12px; background: rgba(45,46,40,0.85); color: var(--apgo-bg);
+  font-size: 11px; letter-spacing: 0.15em; z-index: 1;
+}
+.apgo-mpdp-discount {
+  position: absolute; top: 14px; left: 14px; padding: 4px 10px;
+  background: var(--apgo-ink); color: var(--apgo-bg);
+  font-size: 10px; letter-spacing: 0.2em; border-radius: 999px; z-index: 2;
+}
+.apgo-mpdp-counter {
+  position: absolute; bottom: 14px; right: 14px; padding: 4px 10px;
+  background: rgba(45,46,40,0.7); color: var(--apgo-bg); font-size: 11px;
+  border-radius: 999px; z-index: 2;
+}
+
+/* Mobile thumbnail rail — 5 visible at once, swipeable, with prev/next chevrons.
+   Top padding 16px provides breathing room from the carousel above. */
+.apgo-mpdp-thumb-rail-wrap {
+  display: flex; align-items: center; gap: 8px;
+  padding: 16px 12px 4px;
+}
+.apgo-mpdp-thumb-nav {
+  flex: 0 0 28px;
+  width: 28px; height: 28px;
+  border: 1px solid var(--apgo-line);
+  background: var(--apgo-bg);
+  color: var(--apgo-ink);
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0;
+  transition: background .15s, border-color .15s, opacity .15s;
+}
+.apgo-mpdp-thumb-nav:disabled { opacity: 0.3; cursor: default; }
+.apgo-mpdp-thumb-rail {
+  flex: 1 1 auto; min-width: 0;
+  display: flex; gap: 8px;
+  overflow-x: auto;
+  scroll-behavior: smooth; scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.apgo-mpdp-thumb-rail::-webkit-scrollbar { display: none; }
+.apgo-mpdp-thumb {
+  /* Exactly 5 visible: (100% - 4*8px gap) / 5 */
+  flex: 0 0 calc((100% - 32px) / 5);
+  aspect-ratio: 1/1;
+  padding: 0; background: transparent;
+  border: 1.5px solid transparent; border-radius: 8px;
+  overflow: hidden; cursor: pointer;
+  transition: border-color .2s;
+}
+.apgo-mpdp-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.apgo-mpdp-thumb.active { border-color: var(--apgo-ink, #2D2E28); }
+
+/* Info */
+.apgo-mpdp-info { padding: 20px 16px 0; }
+.apgo-mpdp-kicker {
+  font-family: var(--apgo-display); font-style: italic;
+  font-size: 10px; letter-spacing: 0.35em; color: var(--apgo-sage);
+  margin-bottom: 6px; text-transform: uppercase;
+}
+.apgo-mpdp-kicker-inv { color: var(--apgo-bg); opacity: 0.75; }
+.apgo-mpdp-title { font-size: 22px; font-weight: 400; line-height: 1.35; margin: 0 0 4px; }
+.apgo-mpdp-subtitle { font-size: 12px; color: var(--apgo-muted); margin-bottom: 12px; }
+.apgo-mpdp-rating { display: flex; align-items: center; gap: 8px; font-size: 12px; margin-bottom: 16px; }
+
+.apgo-mpdp-price-row { display: flex; align-items: baseline; gap: 10px; margin-bottom: 2px; }
+.apgo-mpdp-price { font-size: 28px; }
+.apgo-mpdp-compare { font-size: 13px; text-decoration: line-through; color: var(--apgo-muted); }
+.apgo-mpdp-discount-pill {
+  padding: 2px 7px; background: var(--apgo-sage); color: var(--apgo-bg);
+  font-size: 10px; letter-spacing: 0.1em; border-radius: 999px;
+}
+.apgo-mpdp-installment { font-size: 11px; color: var(--apgo-muted); margin-bottom: 22px; }
+
+.apgo-mpdp-opt { margin-bottom: 18px; }
+.apgo-mpdp-opt-label { display: flex; justify-content: space-between; font-size: 11px; letter-spacing: 0.15em; margin-bottom: 8px; }
+.apgo-mpdp-scent-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.apgo-mpdp-scentbtn {
+  position: relative; display: flex; align-items: center; gap: 8px;
+  padding: 9px 10px; border: 1px solid rgba(94,111,93,0.25); border-radius: 12px;
+  background: var(--apgo-bg-alt); font-size: 12px; cursor: pointer;
+}
+.apgo-mpdp-scentbtn input { position: absolute; opacity: 0; inset: 0; pointer-events: none; }
+.apgo-mpdp-scentbtn.active { border-color: var(--apgo-ink); box-shadow: inset 0 0 0 1px var(--apgo-ink); }
+.apgo-mpdp-swatch { width: 18px; height: 18px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.08); flex-shrink: 0; }
+.apgo-mpdp-chip-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.apgo-mpdp-chip {
+  position: relative; padding: 10px 0; border: 1px solid rgba(94,111,93,0.3);
+  border-radius: 999px; background: var(--apgo-bg-alt); font-size: 12px;
+  cursor: pointer; text-align: center;
+}
+.apgo-mpdp-chip input { position: absolute; opacity: 0; inset: 0; pointer-events: none; }
+.apgo-mpdp-chip.active { border-color: var(--apgo-ink); background: var(--apgo-ink); color: var(--apgo-bg); }
+
+.apgo-mpdp-qty-row { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+.apgo-mpdp-qty-label { font-size: 11px; letter-spacing: 0.15em; }
+.apgo-mpdp-qty { display: flex; border: 1px solid rgba(94,111,93,0.3); background: var(--apgo-bg-alt); border-radius: 999px; overflow: hidden; }
+.apgo-mpdp-qty button { width: 38px; height: 38px; font-size: 16px; border: none; background: none; cursor: pointer; }
+.apgo-mpdp-qty input {
+  width: 44px; text-align: center; line-height: 38px; font-size: 14px;
+  border: none; background: none; -moz-appearance: textfield; outline: none;
+}
+.apgo-mpdp-qty input::-webkit-outer-spin-button, .apgo-mpdp-qty input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+.apgo-mpdp-ship { background: var(--apgo-bg-alt); border: 1px solid var(--apgo-line); border-radius: 14px; padding: 14px 16px; margin-bottom: 28px; }
+.apgo-mpdp-ship-row { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; font-size: 12px; }
+.apgo-mpdp-ship-row strong { font-weight: 500; }
+.apgo-mpdp-ship-row .apgo-muted { margin-top: 1px; font-size: 11px; }
+.apgo-mpdp-ship-icon {
+  width: 24px; height: 24px; border-radius: 50%; background: rgba(94,111,93,0.12);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--apgo-sage); font-family: var(--apgo-display); font-style: italic;
+  font-size: 11px; flex-shrink: 0;
+}
+.apgo-mpdp-ship-sep { height: 1px; background: var(--apgo-line); }
+
+/* Tabs (mobile) — horizontally scrollable when content overflows */
+.apgo-mpdp-tabs {
+  display: flex;
+  background: var(--apgo-bg-alt);
+  border-top: 1px solid rgba(94,111,93,0.2);
+  border-bottom: 1px solid rgba(94,111,93,0.2);
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;          /* Firefox */
+  scroll-snap-type: x proximity;
+}
+.apgo-mpdp-tabs::-webkit-scrollbar { display: none; } /* WebKit */
+
+.apgo-mpdp-tab {
+  flex: 0 0 auto;                 /* don't squish — let content size dictate */
+  padding: 12px 10px;             /* tighter horizontal padding so tabs sit closer */
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--apgo-muted);
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  line-height: 1.25;
+  scroll-snap-align: start;
+}
+/* 2-line label support (mobile: line2 wraps below; desktop: inline w/ space) */
+.apgo-mpdp-tab-line2 {
+  display: block;
+}
+.apgo-mpdp-tab.active { color: var(--apgo-ink); border-bottom-color: var(--apgo-ink); }
+
+.apgo-mpdp-panel { display: none; }
+.apgo-mpdp-panel.active { display: block; }
+
+/* 不滿意全額退 panel — full-width image stack */
+.apgo-mpdp-warranty {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+}
+.apgo-mpdp-warranty-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+/* Ritual */
+.apgo-mpdp-ritual { position: relative; background: transparent; border-radius: 12px; overflow: hidden; }
+.apgo-mpdp-ritual-img-mobile { width: 100%; aspect-ratio: 16/10; object-fit: cover; display: block; }
+.apgo-mpdp-ritual-video { width: 100%; aspect-ratio: 16/10; object-fit: cover; display: block; background: var(--apgo-ink); }
+/* Hide desktop image on mobile (default state) */
+.apgo-mpdp-ritual-img-desktop { display: none; }
+
+.apgo-mpdp-ritual-text { padding: 24px 16px 32px; }
+.apgo-mpdp-ritual-text h2 { font-size: 22px; font-weight: 300; line-height: 1.4; margin: 12px 0 14px; }
+.apgo-mpdp-ritual-text p { font-size: 13px; line-height: 1.9; color: rgba(45,46,40,0.75); margin: 0; }
+
+/* Pain */
+.apgo-mpdp-pain-wrap {
+  background: var(--apgo-bg-alt); padding: 32px 16px;
+  border-top: 1px solid var(--apgo-line); border-bottom: 1px solid var(--apgo-line);
+}
+.apgo-mpdp-pain-wrap h3 { font-size: 18px; text-align: center; margin: 0 0 20px; font-weight: 400; }
+.apgo-mpdp-pain-grid { display: grid; gap: 10px; }
+.apgo-mpdp-pain-card {
+  padding: 14px; background: var(--apgo-bg); border-radius: 12px;
+  display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; font-size: 12px;
+}
+.apgo-mpdp-pain-arrow { font-family: var(--apgo-display); color: var(--apgo-sage); font-size: 16px; }
+
+/* ----------------------------------------------------------------------
+   Product description (mobile) — renders {{ product.description }} from
+   Shopify admin's rich-text editor. Each product writes its own copy here.
+   Supports h2 / h3 / p / ul / ol / strong / em / img / a from the editor.
+   ---------------------------------------------------------------------- */
+.apgo-mpdp-description {
+  padding: 36px 16px;
+  background: var(--apgo-bg-alt);
+  color: var(--apgo-ink);
+  font-size: 14px;
+  line-height: 1.8;
+}
+/* Direct children only — typographic tags from the rich-text editor get this typography.
+   Pasted structured snippets (e.g. <div class="apgo-mpdp-pain-wrap">) are direct-child divs,
+   they're NOT styled here so they keep their original full-bleed UI. */
+.apgo-mpdp-description > p + p,
+.apgo-mpdp-description > p + h1, .apgo-mpdp-description > p + h2,
+.apgo-mpdp-description > p + h3, .apgo-mpdp-description > p + h4,
+.apgo-mpdp-description > h1 + p, .apgo-mpdp-description > h2 + p,
+.apgo-mpdp-description > h3 + p, .apgo-mpdp-description > h4 + p,
+.apgo-mpdp-description > p + ul, .apgo-mpdp-description > p + ol,
+.apgo-mpdp-description > ul + p, .apgo-mpdp-description > ol + p { margin-top: 14px; }
+.apgo-mpdp-description > h1,
+.apgo-mpdp-description > h2,
+.apgo-mpdp-description > h3,
+.apgo-mpdp-description > h4 {
+  font-family: var(--apgo-display);
+  font-weight: 400;
+  text-align: center;
+  letter-spacing: 0.02em;
+  margin-top: 28px;
+}
+.apgo-mpdp-description > h1 { font-size: 24px; }
+.apgo-mpdp-description > h2 { font-size: 20px; }
+.apgo-mpdp-description > h3 { font-size: 17px; }
+.apgo-mpdp-description > h4 { font-size: 15px; letter-spacing: 0.4em; text-transform: uppercase; color: var(--apgo-sage); font-family: inherit; }
+.apgo-mpdp-description > p { margin: 0; }
+.apgo-mpdp-description > p strong,
+.apgo-mpdp-description > h1 strong, .apgo-mpdp-description > h2 strong,
+.apgo-mpdp-description > h3 strong, .apgo-mpdp-description > h4 strong { font-weight: 600; color: var(--apgo-ink); }
+.apgo-mpdp-description > p em { font-style: italic; }
+.apgo-mpdp-description > ul,
+.apgo-mpdp-description > ol { padding-left: 1.4em; }
+.apgo-mpdp-description > ul li + li,
+.apgo-mpdp-description > ol li + li { margin-top: 6px; }
+.apgo-mpdp-description > p a { color: var(--apgo-sage); text-decoration: underline; }
+.apgo-mpdp-description > img,
+.apgo-mpdp-description > p > img {
+  display: block; width: 100%; height: auto;
+  border-radius: 12px; margin: 18px auto;
+}
+.apgo-mpdp-description > blockquote {
+  border-left: 3px solid var(--apgo-sage);
+  padding-left: 14px;
+  color: var(--apgo-muted);
+  font-style: italic;
+}
+.apgo-mpdp-description > hr {
+  border: none; border-top: 1px solid var(--apgo-line); margin: 28px 0;
+}
+
+/* Comparison (mobile) */
+/* Decorative image between pain and cmp sections (product.metafields.apgo.pic) */
+.apgo-mpdp-pic-wrap { padding: 0 16px; }
+.apgo-mpdp-pic-wrap img { display: block; width: 100%; height: auto; border-radius: 12px; }
+
+.apgo-mpdp-cmp-wrap { padding: 32px 16px; }
+.apgo-mpdp-cmp-wrap h3 { font-size: 18px; text-align: center; margin: 8px 0 20px; font-weight: 400; }
+.apgo-mpdp-cmp-wrap > .apgo-mpdp-kicker { text-align: center; display: block; margin-bottom: 8px; }
+.apgo-mpdp-cmp { border-radius: 12px; overflow: hidden; border: 1px solid rgba(94,111,93,0.18); }
+.apgo-mpdp-cmp-head { display: grid; grid-template-columns: 1fr 1fr 1fr; background: var(--apgo-ink); color: var(--apgo-bg); font-size: 10px; }
+.apgo-mpdp-cmp-head > div { padding: 10px 8px; border-left: 1px solid rgba(246,241,231,0.2); }
+.apgo-mpdp-cmp-head > div:first-child { border-left: none; letter-spacing: 0.1em; }
+.apgo-mpdp-cmp-head > div:nth-child(2) { text-align: center; }
+.apgo-mpdp-cmp-head > div:nth-child(3) { text-align: center; opacity: 0.7; }
+.apgo-mpdp-cmp-row { display: grid; grid-template-columns: 1fr 1fr 1fr; border-top: 1px solid rgba(94,111,93,0.12); font-size: 11px; }
+.apgo-mpdp-cmp-row > div { padding: 12px 8px; }
+.apgo-mpdp-cmp-row > div:nth-child(2) { text-align: center; background: rgba(94,111,93,0.08); border-left: 1px solid rgba(94,111,93,0.12); }
+.apgo-mpdp-cmp-row > div:nth-child(3) { text-align: center; border-left: 1px solid rgba(94,111,93,0.12); color: rgba(45,46,40,0.55); }
+.apgo-mpdp-win { color: var(--apgo-sage); margin-right: 3px; }
+
+/* UGC (mobile) */
+.apgo-mpdp-ugc-wrap { padding: 8px 16px 32px; }
+.apgo-mpdp-ugc-wrap h3 { font-size: 16px; text-align: center; margin: 4px 0; font-weight: 400; }
+.apgo-mpdp-ugc-wrap > .apgo-mpdp-kicker { text-align: center; display: block; }
+.apgo-mpdp-ugc-sub { text-align: center; font-size: 11px; margin-bottom: 16px; }
+.apgo-mpdp-ugc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+/* When the wrap renders only the grid (heading lives in description above), kill top padding so it sits flush with the heading wrap above. */
+.apgo-mpdp-ugc-wrap--grid-only { padding-top: 0; }
+.apgo-mpdp-ugc-cell { position: relative; aspect-ratio: 1/1; border-radius: 4px; overflow: hidden; display: block; }
+.apgo-mpdp-ugc-cell img { width: 100%; height: 100%; object-fit: cover; }
+.apgo-mpdp-ugc-like {
+  position: absolute; top: 4px; right: 6px; color: #fff; font-size: 10px;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+}
+
+/* Long image (below UGC) — full-width, natural aspect */
+.apgo-mpdp-longimg-wrap { padding: 8px 16px 32px; text-align: center; }
+.apgo-mpdp-longimg-link { display: block; }
+.apgo-mpdp-longimg {
+  display: block; width: 100%; height: auto;
+  max-width: 1200px; margin: 0 auto;
+  border-radius: 8px;
+}
+
+/* Spec tab */
+.apgo-mpdp-spec-row { padding: 13px 16px; border-bottom: 1px solid var(--apgo-line); font-size: 12px; }
+.apgo-mpdp-spec-row .apgo-muted { margin-bottom: 3px; }
+.apgo-mpdp-spec-row .apgo-serif { font-size: 13px; }
+
+/* Review tab */
+.apgo-mpdp-rev-summary { text-align: center; padding: 24px 16px; border-bottom: 1px solid var(--apgo-line); }
+.apgo-mpdp-rev-score { font-size: 48px; font-weight: 300; line-height: 1; }
+.apgo-mpdp-rev-summary .apgo-stars { letter-spacing: 3px; font-size: 15px; margin: 6px 0; display: block; }
+.apgo-mpdp-rev-summary .apgo-muted { font-size: 11px; }
+.apgo-mpdp-rev-item { padding: 16px; border-bottom: 1px solid var(--apgo-line); }
+.apgo-mpdp-rev-head { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 13px; }
+.apgo-mpdp-rev-meta { font-size: 10px; color: var(--apgo-muted); margin-bottom: 8px; }
+.apgo-mpdp-rev-item p { font-size: 12px; line-height: 1.8; color: rgba(45,46,40,0.85); margin: 0; }
+
+/* FAQ tab */
+.apgo-mpdp-faq { border-bottom: 1px solid var(--apgo-line); padding: 16px; cursor: pointer; }
+.apgo-mpdp-faq summary {
+  display: flex; justify-content: space-between; align-items: center;
+  list-style: none; font-size: 14px;
+}
+.apgo-mpdp-faq summary::-webkit-details-marker { display: none; }
+.apgo-mpdp-faq-toggle { font-family: var(--apgo-display); color: var(--apgo-sage); font-size: 20px; transition: transform .2s; }
+.apgo-mpdp-faq[open] .apgo-mpdp-faq-toggle { transform: rotate(45deg); }
+.apgo-mpdp-faq p { margin-top: 12px; font-size: 12px; line-height: 1.85; color: rgba(45,46,40,0.75); }
+
+/* Related */
+.apgo-mpdp-related { padding: 28px 16px 20px; border-top: 1px solid var(--apgo-line); }
+.apgo-mpdp-related h3 { font-size: 16px; text-align: center; margin: 0 0 16px; font-weight: 400; }
+.apgo-mpdp-related-scroll {
+  display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none;
+  margin: 0 -16px; padding: 0 16px; -webkit-overflow-scrolling: touch;
+}
+.apgo-mpdp-related-scroll::-webkit-scrollbar { display: none; }
+.apgo-mpdp-related-item { flex: 0 0 140px; text-decoration: none; color: inherit; }
+.apgo-mpdp-related-item img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 10px; margin-bottom: 8px; }
+.apgo-mpdp-related-item .apgo-serif { font-size: 12px; margin-bottom: 2px; line-height: 1.4; }
+.apgo-mpdp-related-item > div:last-child { font-size: 11px; }
+
+/* Sticky bottom CTA */
+.apgo-mpdp-sticky {
+  position: fixed; left: 0; right: 0; bottom: 0;
+  background: var(--apgo-bg-alt); border-top: 1px solid rgba(94,111,93,0.2);
+  padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 16px));
+  display: flex; gap: 10px; align-items: center; z-index: 100;
+}
+.apgo-mpdp-wish {
+  width: 44px; height: 44px; border-radius: 50%;
+  border: 1px solid rgba(94,111,93,0.3); background: var(--apgo-bg);
+  font-size: 18px; cursor: pointer; flex-shrink: 0;
+}
+.apgo-mpdp-cta-secondary {
+  flex: 1; padding: 14px 0; border: 1px solid var(--apgo-ink); border-radius: 999px;
+  background: transparent; color: var(--apgo-ink);
+  font-size: 12px; letter-spacing: 0.1em; font-weight: 500; cursor: pointer;
+}
+.apgo-mpdp-cta-secondary[disabled] { opacity: 0.5; cursor: not-allowed; }
+.apgo-mpdp-cta-primary {
+  flex: 1.3; padding: 14px 0; background: var(--apgo-ink); color: var(--apgo-bg);
+  font-size: 12px; letter-spacing: 0.1em; font-weight: 500; border: none; border-radius: 999px;
+  cursor: pointer;
+}
+.apgo-mpdp-cta-primary[disabled] { opacity: 0.5; cursor: not-allowed; }
+
+/* =====================================================================
+   FREE IMAGE BLOCKS — render inside desc panel after the ritual section
+   ===================================================================== */
+.apgo-mpdp-images { display: flex; flex-direction: column; gap: 16px; margin: 24px 16px; }
+.apgo-mpdp-image-block { margin: 0; }
+.apgo-mpdp-image-block img {
+  width: 100%; display: block; border-radius: 14px; object-fit: cover;
+}
+.apgo-mpdp-image-block figcaption {
+  margin-top: 8px; font-size: 12px; text-align: center; color: var(--apgo-muted);
+}
+
+/* =====================================================================
+   VIEWPORT-SCOPED VISIBILITY (within .apgo-mpdp section only)
+   ===================================================================== */
+.apgo-mpdp-desktop-only { display: none !important; }
+.apgo-mpdp-mobile-only  { display: initial; }
+
+/* Ritual overlay: heading + body styles (used on desktop) */
+.apgo-mpdp-overlay-heading { font-size: 22px; line-height: 1.3; color: var(--apgo-bg); margin-bottom: 8px; font-weight: 400; }
+.apgo-mpdp-overlay-body    { font-size: 13px; line-height: 1.7; color: var(--apgo-bg); opacity: 0.92; margin: 0; }
+
+
+/* =====================================================================
+   DESKTOP OVERRIDES — match Claude Design handoff specs
+   ===================================================================== */
+@media (min-width: 769px) {
+  /* Toggle viewport visibility */
+  .apgo-mpdp .apgo-mpdp-mobile-only  { display: none !important; }
+  .apgo-mpdp .apgo-mpdp-desktop-only { display: block !important; }
+
+  /* Hide mobile-only chunks */
+  .apgo-mpdp-mobile-shell,
+  .apgo-mpdp-sticky,
+  .apgo-mpdp-related { display: none !important; }
+
+  /* Section spans FULL width; inner content centered to 1280 */
+  .apgo-mpdp { width: 100%; padding: 0 0 80px; margin: 0; max-width: none; }
+
+  /* ---------- Tabs (desktop) — full-width bar ---------- */
+  .apgo-mpdp-tabs {
+    display: flex; justify-content: center; gap: 20px;
+    border-top: 1px solid var(--apgo-line);
+    border-bottom: 1px solid var(--apgo-line);
+    margin: 0 0 0; padding: 0 32px; overflow: visible;
+    max-width: none;
+  }
+  .apgo-mpdp-tab {
+    flex: 0 0 auto; padding: 20px 0; font-size: 13px;
+    letter-spacing: 0.18em; border-bottom: 2px solid transparent;
+    background: none; border-top: none; border-left: none; border-right: none;
+    color: var(--apgo-muted); white-space: nowrap;
+  }
+  .apgo-mpdp-tab.active {
+    color: var(--apgo-ink); border-bottom-color: var(--apgo-ink); font-weight: 500;
+  }
+  /* desktop: collapse 2-line label back to single line with a space */
+  .apgo-mpdp-tab-line2 { display: inline; margin-left: 0.35em; }
+
+  /* ---------- Panel: full-width container, inner blocks decide their own width ---------- */
+  .apgo-mpdp-panel { padding: 0; max-width: none; margin: 0; }
+  /* Centered inner blocks — cap to 1240 (matches hero container), with their own vertical padding */
+  .apgo-mpdp-cmp-wrap,
+  .apgo-mpdp-ugc-wrap,
+  .apgo-mpdp-longimg-wrap,
+  .apgo-mpdp-pic-wrap,
+  .apgo-mpdp-images { max-width: 1240px; margin-left: auto; margin-right: auto; padding-left: 32px; padding-right: 32px; }
+  /* Full-bleed blocks — bg spans the whole viewport, inner content stays centered to 1240 */
+  .apgo-mpdp-pain-wrap,
+  .apgo-mpdp-description { width: 100%; max-width: none; margin: 0; padding-left: 0; padding-right: 0; }
+  .apgo-mpdp-pain-wrap > h3,
+  .apgo-mpdp-pain-wrap > .apgo-mpdp-pain-grid { max-width: 1240px; margin-left: auto; margin-right: auto; padding-left: 32px; padding-right: 32px; }
+
+  /* ---------- RITUAL (Tabs下 Editorial): 2-col grid — 16:9 image w/ overlay card | text ---------- */
+  .apgo-mpdp-ritual-wrap {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 48px; align-items: center;
+    max-width: 1240px; margin: 0 auto; padding: 60px 32px;
+  }
+  .apgo-mpdp-ritual {
+    position: relative; margin: 0; background: transparent;
+    border-radius: 14px; overflow: hidden;
+    line-height: 0; /* prevents inline gap below img */
+  }
+  /* Desktop image: 16:9 landscape */
+  .apgo-mpdp-ritual-img-desktop {
+    display: block; width: 100%; height: auto;
+    aspect-ratio: 16/9; object-fit: cover;
+  }
+  /* Forcefully hide mobile-only media on desktop (override base display rules) */
+  .apgo-mpdp-ritual > .apgo-mpdp-ritual-img-mobile,
+  .apgo-mpdp-ritual > .apgo-mpdp-ritual-video { display: none !important; visibility: hidden; height: 0 !important; width: 0 !important; }
+  /* Right text column */
+  .apgo-mpdp-ritual-text { padding: 0; text-align: left; }
+  .apgo-mpdp-ritual-text .apgo-mpdp-kicker { font-size: 12px; letter-spacing: 0.4em; color: var(--apgo-sage); margin-bottom: 16px; }
+  .apgo-mpdp-ritual-text h2 { font-size: 34px; line-height: 1.35; margin: 0 0 20px; font-weight: 300; }
+  .apgo-mpdp-ritual-text p  { font-size: 14px; line-height: 1.95; color: var(--apgo-muted); margin: 0; }
+
+  /* ---------- PAIN (痛點卡片區): full-bleed bg, padding 60px ---------- */
+  .apgo-mpdp-pain-wrap { padding: 60px 0; text-align: center; background: var(--apgo-bg-alt); }
+  .apgo-mpdp-pain-wrap h3 { font-size: 26px; margin: 0 auto 36px; font-weight: 400; }
+  .apgo-mpdp-pain-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px 24px;
+    max-width: 960px; margin: 0 auto;
+  }
+  .apgo-mpdp-pain-card {
+    display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+    gap: 16px; padding: 18px 28px; border: 1px solid var(--apgo-line);
+    border-radius: 999px; text-align: left; background: var(--apgo-bg);
+  }
+  .apgo-mpdp-pain-card > .apgo-muted { font-size: 14px; text-align: right; }
+  .apgo-mpdp-pain-card > .apgo-serif { font-size: 15px; text-align: left; color: var(--apgo-ink); }
+  .apgo-mpdp-pain-arrow { color: var(--apgo-muted); font-size: 14px; }
+
+  /* ---------- DESCRIPTION (產品說明，從後台 product.description 渲染): full-bleed bg ---------- */
+  .apgo-mpdp-description {
+    padding: 80px 0;
+    text-align: left;
+    background: var(--apgo-bg-alt);
+    font-size: 15px;
+    line-height: 1.95;
+  }
+  /* Inner typographic content centered to a comfortable reading width.
+     Direct-child <div> snippets (Ritual / Pain / Cmp / Ugc / Longimg) are NOT constrained,
+     so they keep their original full-bleed UI when pasted in description HTML mode. */
+  .apgo-mpdp-description > p,
+  .apgo-mpdp-description > h1,
+  .apgo-mpdp-description > h2,
+  .apgo-mpdp-description > h3,
+  .apgo-mpdp-description > h4,
+  .apgo-mpdp-description > ul,
+  .apgo-mpdp-description > ol,
+  .apgo-mpdp-description > blockquote,
+  .apgo-mpdp-description > hr,
+  .apgo-mpdp-description > table {
+    max-width: 760px; margin-left: auto; margin-right: auto;
+    padding-left: 32px; padding-right: 32px;
+  }
+  .apgo-mpdp-description > h1 { font-size: 36px; margin-top: 48px; }
+  .apgo-mpdp-description > h2 { font-size: 28px; margin-top: 40px; }
+  .apgo-mpdp-description > h3 { font-size: 22px; margin-top: 32px; }
+  .apgo-mpdp-description > h4 { font-size: 13px; margin-top: 28px; }
+  .apgo-mpdp-description > img,
+  .apgo-mpdp-description > p > img {
+    max-width: 1080px; padding: 0; border-radius: 14px; margin: 32px auto;
+  }
+
+  /* ---------- COMPARISON (對比表): padding 60px 32px, table max 880px ---------- */
+  .apgo-mpdp-cmp-wrap { padding: 60px 32px; text-align: center; }
+  .apgo-mpdp-cmp-wrap > .apgo-mpdp-kicker { font-size: 12px; letter-spacing: 0.4em; color: var(--apgo-sage); margin-bottom: 14px; }
+  .apgo-mpdp-cmp-wrap > h3 { font-size: 26px; margin: 0 0 36px; font-weight: 400; }
+  .apgo-mpdp-cmp {
+    max-width: 880px; margin: 0 auto; border: 1px solid var(--apgo-line);
+    border-radius: 14px; overflow: hidden; background: var(--apgo-bg-alt);
+  }
+  .apgo-mpdp-cmp-head {
+    display: grid; grid-template-columns: 1.4fr 1fr 1fr;
+    background: var(--apgo-ink); color: var(--apgo-bg);
+    padding: 16px 20px; gap: 16px; text-align: center;
+    font-size: 12px; letter-spacing: 0.15em;
+  }
+  .apgo-mpdp-cmp-head > div:first-child { text-align: left; }
+  .apgo-mpdp-cmp-head > div:nth-child(2) { font-size: 14px; letter-spacing: 0.05em; }
+  .apgo-mpdp-cmp-head > div:nth-child(3) { font-size: 13px; opacity: 0.75; letter-spacing: 0.05em; }
+  .apgo-mpdp-cmp-row {
+    display: grid; grid-template-columns: 1.4fr 1fr 1fr;
+    padding: 16px 20px; gap: 16px; text-align: center;
+    border-top: 1px solid rgba(94,111,93,0.12); align-items: center;
+  }
+  .apgo-mpdp-cmp-row > div:nth-child(1) { font-size: 13px; text-align: left; color: rgba(45,46,40,0.7); }
+  .apgo-mpdp-cmp-row > div:nth-child(2) { font-size: 14px; color: var(--apgo-ink); background: rgba(94,111,93,0.06); padding: 8px 12px; border-radius: 8px; }
+  .apgo-mpdp-cmp-row > div:nth-child(3) { font-size: 13px; color: rgba(45,46,40,0.55); }
+  .apgo-mpdp-win { color: var(--apgo-sage); margin-right: 6px; }
+
+  /* ---------- IMAGE GALLERY (desktop) ---------- */
+  .apgo-mpdp-images { padding: 60px 32px; gap: 24px; }
+  .apgo-mpdp-image-block img { border-radius: 14px; }
+
+  /* ---------- SPEC panel: padding 60px 0 ---------- */
+  .apgo-mpdp-panel[data-apgo-mpanel="spec"] {
+    max-width: 720px; margin: 0 auto; padding: 60px 32px;
+  }
+  .apgo-mpdp-spec-row {
+    display: grid; grid-template-columns: 200px 1fr; gap: 32px;
+    padding: 16px 0; border-bottom: 1px solid var(--apgo-line); margin: 0;
+  }
+  .apgo-mpdp-spec-row .apgo-muted { font-size: 13px; }
+  .apgo-mpdp-spec-row .apgo-serif { font-size: 14px; color: var(--apgo-ink); }
+
+  /* ---------- REVIEW panel: padding 60px 0 ---------- */
+  .apgo-mpdp-panel[data-apgo-mpanel="review"] {
+    max-width: 880px; margin: 0 auto; padding: 60px 32px;
+  }
+  .apgo-mpdp-rev-summary { padding: 0 0 36px; text-align: center; border-bottom: 1px solid var(--apgo-line); margin-bottom: 32px; }
+  .apgo-mpdp-rev-score { font-size: 48px; line-height: 1; margin-bottom: 8px; font-weight: 300; }
+  .apgo-mpdp-rev-item { padding: 22px 0; border-bottom: 1px solid var(--apgo-line); }
+  .apgo-mpdp-rev-head { display: flex; gap: 16px; align-items: center; margin-bottom: 6px; }
+  .apgo-mpdp-rev-meta { font-size: 12px; color: var(--apgo-muted); margin-bottom: 12px; }
+  .apgo-mpdp-rev-item p { font-size: 14px; line-height: 1.95; margin: 0; }
+
+  /* ---------- FAQ panel: padding 60px 0 ---------- */
+  .apgo-mpdp-panel[data-apgo-mpanel="faq"] {
+    max-width: 800px; margin: 0 auto; padding: 60px 32px;
+  }
+  .apgo-mpdp-faq { border-bottom: 1px solid var(--apgo-line); padding: 0; }
+  .apgo-mpdp-faq summary {
+    list-style: none; cursor: pointer; padding: 24px 0;
+    display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  }
+  .apgo-mpdp-faq summary::-webkit-details-marker { display: none; }
+  .apgo-mpdp-faq summary .apgo-serif { font-size: 15px; }
+  .apgo-mpdp-faq-toggle { font-size: 20px; color: var(--apgo-muted); transition: transform 0.2s; }
+  .apgo-mpdp-faq[open] .apgo-mpdp-faq-toggle { transform: rotate(45deg); }
+  .apgo-mpdp-faq p { font-size: 14px; line-height: 1.95; padding: 0 0 22px; margin: 0; color: var(--apgo-muted); }
+}
+
+/* Tablet fallback: 769–1080px — keep horizontal layouts but tighten spacing */
+@media (min-width: 769px) and (max-width: 1080px) {
+  .apgo-mpdp-ritual-wrap { gap: 32px; padding: 48px 24px; }
+  .apgo-mpdp-ritual-text h2 { font-size: 26px; }
+  .apgo-mpdp-tabs { gap: 14px; padding: 0 24px; }
+  .apgo-mpdp-pain-wrap { padding: 48px 0; }
+  .apgo-mpdp-pain-grid { max-width: 100%; }
+  .apgo-mpdp-pain-card { padding: 14px 20px; gap: 12px; }
+  .apgo-mpdp-pain-wrap > h3,
+  .apgo-mpdp-pain-wrap > .apgo-mpdp-pain-grid { padding-left: 24px; padding-right: 24px; }
+  .apgo-mpdp-description { padding: 64px 0; }
+  .apgo-mpdp-description > p,
+  .apgo-mpdp-description > h1,
+  .apgo-mpdp-description > h2,
+  .apgo-mpdp-description > h3,
+  .apgo-mpdp-description > h4,
+  .apgo-mpdp-description > ul,
+  .apgo-mpdp-description > ol,
+  .apgo-mpdp-description > blockquote,
+  .apgo-mpdp-description > hr,
+  .apgo-mpdp-description > table { padding-left: 24px; padding-right: 24px; }
+  .apgo-mpdp-cmp-wrap { padding: 48px 24px; }
+}
+
+/* =========================================================================
+   V1S+ 專屬：覆寫 Header / Announcement Bar / Promo Bar / Footer 配色
+   只在 body.template-suffix-apgo-v1s-plus（= 本模板）下生效
+   ========================================================================= */
+
+/* 1) 翻轉 color-scheme CSS 變數（Header + Announcement 使用它們控 bg/字色） */
+body.template-suffix-apgo-v1s-plus announcement-bar-component,
+body.template-suffix-apgo-v1s-plus .announcement-bar,
+body.template-suffix-apgo-v1s-plus header-component,
+body.template-suffix-apgo-v1s-plus header.header,
+body.template-suffix-apgo-v1s-plus .header,
+body.template-suffix-apgo-v1s-plus [class*="color-scheme"]:is(header-component, .header, announcement-bar-component, .announcement-bar),
+body.template-suffix-apgo-v1s-plus .header__row,
+body.template-suffix-apgo-v1s-plus header-component *[class*="color-"] {
+  --color-background: 253, 250, 242 !important;      /* apgo-bg cream RGB */
+  --color-foreground: 45, 46, 40 !important;         /* apgo-ink RGB */
+  --color-foreground-heading: 45, 46, 40 !important;
+  --color-foreground-rgb: 45, 46, 40 !important;
+  --color-background-rgb: 253, 250, 242 !important;
+  background: var(--apgo-bg) !important;
+  background-color: var(--apgo-bg) !important;
+  color: var(--apgo-ink) !important;
+}
+
+/* Descendants — text / links only. Do NOT force fill/stroke on SVG icons here:
+   Shopify header icons are line icons (fill="none" stroke="currentColor"); forcing
+   fill: currentColor turns them into solid blobs. Just set color, let SVG natives decide. */
+body.template-suffix-apgo-v1s-plus announcement-bar-component *,
+body.template-suffix-apgo-v1s-plus .announcement-bar *,
+body.template-suffix-apgo-v1s-plus header-component *,
+body.template-suffix-apgo-v1s-plus header.header *,
+body.template-suffix-apgo-v1s-plus .header * {
+  color: var(--apgo-ink) !important;
+  border-color: var(--apgo-line) !important;
+}
+
+/* Cart badge: invert to dark pill on cream so the number stays legible */
+body.template-suffix-apgo-v1s-plus header-component .cart-count,
+body.template-suffix-apgo-v1s-plus header-component [class*="cart-count"],
+body.template-suffix-apgo-v1s-plus .header [class*="cart-count"] {
+  background: var(--apgo-ink) !important;
+  color: var(--apgo-bg) !important;
+}
+body.template-suffix-apgo-v1s-plus header-component .cart-count *,
+body.template-suffix-apgo-v1s-plus header-component [class*="cart-count"] *,
+body.template-suffix-apgo-v1s-plus .header [class*="cart-count"] * {
+  color: var(--apgo-bg) !important;
+}
+
+/* 2) APGO 戰術廣播條 (apgo-promo-bar)：inline styles + Tailwind tw-text-white */
+body.template-suffix-apgo-v1s-plus #apgo-promo-bar,
+body.template-suffix-apgo-v1s-plus #apgo-promo-bar > a,
+body.template-suffix-apgo-v1s-plus #apgo-promo-bar [class*="tw-bg-"] {
+  background: var(--apgo-bg) !important;
+  background-color: var(--apgo-bg) !important;
+  border-color: var(--apgo-line) !important;
+  color: var(--apgo-ink) !important;
+}
+body.template-suffix-apgo-v1s-plus #apgo-promo-bar,
+body.template-suffix-apgo-v1s-plus #apgo-promo-bar * {
+  color: var(--apgo-ink) !important;
+}
+body.template-suffix-apgo-v1s-plus #apgo-promo-bar .tw-text-white,
+body.template-suffix-apgo-v1s-plus #apgo-promo-bar .tw-text-gray-500 {
+  color: var(--apgo-ink) !important;
+}
+/* Keep the shimmer sweep subtle — it's white on dark; flip it */
+body.template-suffix-apgo-v1s-plus #apgo-promo-bar [class*="tw-via-white"] {
+  background: transparent !important;
+}
+body.template-suffix-apgo-v1s-plus #apgo-promo-bar svg {
+  fill: currentColor !important;
+  stroke: currentColor !important;
+}
+
+/* 3) Header 底部 1px 分隔線 */
+body.template-suffix-apgo-v1s-plus header-component,
+body.template-suffix-apgo-v1s-plus header.header {
+  border-bottom: 1px solid var(--apgo-line) !important;
+}
+
+/* 4) Footer：cream bg + ink 字 + 頂部 1px 全寬分隔線 */
+body.template-suffix-apgo-v1s-plus .apgo-footer {
+  background: var(--apgo-bg) !important;
+  color: var(--apgo-ink) !important;
+  border-top: 1px solid var(--apgo-line) !important;
+}
+body.template-suffix-apgo-v1s-plus .apgo-footer-main,
+body.template-suffix-apgo-v1s-plus .apgo-footer-bottom {
+  background: var(--apgo-bg) !important;
+  background-color: var(--apgo-bg) !important;
+}
+body.template-suffix-apgo-v1s-plus .apgo-footer,
+body.template-suffix-apgo-v1s-plus .apgo-footer * {
+  color: var(--apgo-ink) !important;
+  border-color: var(--apgo-line) !important;
+}
+body.template-suffix-apgo-v1s-plus .apgo-footer a:hover {
+  color: var(--apgo-sage) !important;
+}
+body.template-suffix-apgo-v1s-plus .apgo-footer svg {
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+/* 5) Footer 社群 icon：翻轉成「深色方塊 + 米白 icon」 */
+body.template-suffix-apgo-v1s-plus .apgo-footer .apgo-social-link {
+  background: var(--apgo-ink) !important;
+  background-color: var(--apgo-ink) !important;
+  border: 1px solid var(--apgo-ink) !important;
+  border-radius: 8px !important;   /* 方形（微圓角） */
+  color: var(--apgo-bg) !important;
+}
+body.template-suffix-apgo-v1s-plus .apgo-footer .apgo-social-link,
+body.template-suffix-apgo-v1s-plus .apgo-footer .apgo-social-link * {
+  color: var(--apgo-bg) !important;
+}
+body.template-suffix-apgo-v1s-plus .apgo-footer .apgo-social-link svg,
+body.template-suffix-apgo-v1s-plus .apgo-footer .apgo-social-link i {
+  color: var(--apgo-bg) !important;
+  fill: currentColor !important;
+}
+body.template-suffix-apgo-v1s-plus .apgo-footer .apgo-social-link:hover {
+  background: var(--apgo-sage) !important;
+  border-color: var(--apgo-sage) !important;
+}
+
+/* 6) APGO Tactical Hub：翻轉內建 --dt-* 變數為 cream 主題，保留橙色重點 */
+body.template-suffix-apgo-v1s-plus .apgo-widget-container,
+body.template-suffix-apgo-v1s-plus .apgo-widget-container * {
+  --dt-bg-screen: #fdfaf2;
+  --dt-bg-surface: #fdfaf2;     /* cream — trigger + panel bg */
+  --dt-bg-input: #f2ece0;       /* slightly ashy cream for inner cards */
+  --dt-text-secondary: #5a5b55; /* muted ink for secondary text */
+  --dt-border: #d9d3c3;         /* apgo-line */
+  /* --dt-signal-orange 保留橙色，不覆寫 */
+}
+/* 面板 & 觸發按鈕：確保字色轉成深墨，不被外層 .apgo-footer * 規則誤傷 */
+body.template-suffix-apgo-v1s-plus .apgo-widget-container .hub-panel,
+body.template-suffix-apgo-v1s-plus .apgo-widget-container .hub-trigger,
+body.template-suffix-apgo-v1s-plus .apgo-widget-container .hub-panel * {
+  color: var(--apgo-ink);
+}
+/* 保留橙色的標題/圖示 */
+body.template-suffix-apgo-v1s-plus .apgo-widget-container [style*="orange"],
+body.template-suffix-apgo-v1s-plus .apgo-widget-container .item-icon,
+body.template-suffix-apgo-v1s-plus .apgo-widget-container .hub-trigger {
+  color: var(--dt-signal-orange, #f08418);
+}
+/* 防「還沒載入前閃一下黑底」— section 外層 shopify-section 保持透明 */
+body.template-suffix-apgo-v1s-plus #shopify-section-apgo_tactical_hub_Nyn4XK,
+body.template-suffix-apgo-v1s-plus [id^="shopify-section-apgo_tactical_hub"] {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* 7) Hero 主圖區：窄視窗單列 — hero-left (主圖+縮圖) 然後 sidebar */
+@media (max-width: 900px) {
+  .apgo-hero-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+}
+
+/* ==========================================================================
+   APGO · Cart toast — pops up on add-to-cart success / failure.
+   Single shared root, fixed bottom-center, fades + slides in/out.
+   ========================================================================== */
+.apgo-toast-root {
+  position: fixed;
+  left: 50%;
+  top: 24px;
+  transform: translateX(-50%);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+.apgo-toast {
+  pointer-events: auto;
+  background: var(--apgo-ink, #2D2E28);
+  color: #fff;
+  font-family: var(--apgo-sans, -apple-system, BlinkMacSystemFont, sans-serif);
+  font-size: 14px;
+  letter-spacing: 0.05em;
+  padding: 12px 22px;
+  border-radius: 999px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+  opacity: 0;
+  transform: translateY(-12px);
+  transition: opacity .25s ease, transform .25s ease;
+  white-space: nowrap;
+  max-width: 90vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.apgo-toast.is-visible { opacity: 1; transform: translateY(0); }
+.apgo-toast--error { background: #B85C57; }
+
+/* Loading state on the add button while the request is in flight */
+.apgo-cta-primary.is-loading,
+.apgo-mpdp-cta-secondary.is-loading {
+  position: relative;
+  color: transparent !important;
+  pointer-events: none;
+}
+.apgo-cta-primary.is-loading::after,
+.apgo-mpdp-cta-secondary.is-loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 18px;
+  height: 18px;
+  margin: -9px 0 0 -9px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: apgo-spin 0.7s linear infinite;
+}
+@keyframes apgo-spin { to { transform: rotate(360deg); } }
+
+/* ==========================================================================
+   APGO · Ship card subtitle — preserve newlines from textarea
+   ========================================================================== */
+.apgo-mpdp-ship-subtitle,
+.apgo-ship-subtitle {
+  white-space: normal;
+  line-height: 1.6;
+}
+.apgo-mpdp-ship-subtitle br,
+.apgo-ship-subtitle br { display: block; content: ''; margin-top: 2px; }
+
+/* ==========================================================================
+   APGO · Feature card under the ship card (mobile + desktop)
+   Content sourced from product.description.
+   ========================================================================== */
+.apgo-mpdp-feature-card {
+  margin: 16px 16px 0;
+  padding: 16px 18px;
+  background: var(--apgo-bg-alt);
+  border: 1px solid var(--apgo-line);
+  border-radius: 8px;
+}
+.apgo-mpdp-feature-head {
+  text-align: center;
+  margin-bottom: 12px;
+}
+.apgo-mpdp-feature-kicker {
+  display: inline-block;
+  font-family: var(--apgo-display);
+  font-style: italic;
+  font-size: 11px;
+  letter-spacing: 0.4em;
+  color: var(--apgo-sage);
+  margin-bottom: 6px;
+}
+.apgo-mpdp-feature-title {
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--apgo-ink);
+  line-height: 1.3;
+  margin: 0;
+}
+.apgo-mpdp-feature-body {
+  font-family: var(--apgo-sans);
+  font-size: 13.5px;
+  line-height: 1.85;
+  color: rgba(45,46,40,0.85);
+}
+.apgo-mpdp-feature-body p { margin: 0 0 10px; }
+.apgo-mpdp-feature-body p:last-child { margin-bottom: 0; }
+.apgo-mpdp-feature-body strong { font-weight: 600; color: var(--apgo-ink); }
+.apgo-mpdp-feature-body img { max-width: 100%; height: auto; display: block; margin: 12px auto; border-radius: 6px; }
+.apgo-mpdp-feature-body a { color: var(--apgo-sage); text-decoration: underline; }
+
+/* Desktop: feature card + tab content panels constrained to 75% width, centered.
+   Declared AFTER the base feature-card rule so the centering margin wins
+   the cascade over the mobile `margin: 16px 16px 0` shorthand. */
+@media (min-width: 769px) {
+  .apgo-mpdp-feature-card {
+    width: 75%;
+    max-width: 75%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .apgo-mpdp-panel {
+    width: 75%;
+    max-width: 75%;
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
+  }
+}
+
+/* ==========================================================================
+   APGO · Feature gallery — long-form product images inside 商品特色 tab
+   ========================================================================== */
+.apgo-mpdp-feature-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0 0 8px;
+}
+.apgo-mpdp-feature-gallery-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ==========================================================================
+   APGO · SGS Certification (rendered inside the SGS tab panel)
+   ========================================================================== */
+.apgo-mpdp-panel[data-apgo-mpanel="sgs"] { padding: 0; }
+.apgo-sgs { padding: 24px 16px 32px; max-width: 720px; margin: 0 auto; }
+.apgo-sgs-empty { text-align: center; padding: 48px 16px; font-size: 13px; }
+
+/* Header */
+.apgo-sgs-header { text-align: center; margin-bottom: 28px; }
+.apgo-sgs-kicker {
+  font-family: var(--apgo-display);
+  font-style: italic;
+  font-size: 12px;
+  letter-spacing: 0.4em;
+  color: var(--apgo-sage);
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.apgo-sgs-title { font-size: 28px; font-weight: 400; color: var(--apgo-ink); margin: 0 0 16px; line-height: 1.25; }
+.apgo-sgs-meta { font-size: 13px; color: var(--apgo-muted); line-height: 1.7; }
+
+/* Definition cards (N.D. / LOQ) */
+.apgo-sgs-defs { display: flex; flex-direction: column; gap: 12px; margin: 24px 0 28px; }
+.apgo-sgs-def {
+  background: var(--apgo-bg-alt);
+  border-left: 3px solid var(--apgo-sage);
+  border-radius: 4px;
+  padding: 14px 16px;
+}
+.apgo-sgs-def-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 6px; }
+.apgo-sgs-def-abbr { font-size: 18px; font-style: italic; color: var(--apgo-sage); }
+.apgo-sgs-def-name { font-size: 13px; color: var(--apgo-ink); letter-spacing: 0.05em; }
+.apgo-sgs-def-body { font-size: 13px; line-height: 1.7; color: rgba(45,46,40,0.8); margin: 0; }
+
+/* CTA line */
+.apgo-sgs-cta-line {
+  text-align: center;
+  font-size: 14px;
+  color: var(--apgo-ink);
+  letter-spacing: 0.15em;
+  margin: 28px 0 16px;
+  position: relative;
+  padding: 0 16px;
+}
+.apgo-sgs-cta-line::before,
+.apgo-sgs-cta-line::after {
+  content: '';
+  display: inline-block;
+  width: 24px;
+  height: 1px;
+  background: var(--apgo-sage);
+  vertical-align: middle;
+  margin: 0 12px;
+  opacity: 0.5;
+}
+
+/* Report cards */
+.apgo-sgs-cards { display: flex; flex-direction: column; gap: 12px; }
+.apgo-sgs-card {
+  background: var(--apgo-bg-alt);
+  border: 1px solid var(--apgo-line);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color .2s ease;
+}
+.apgo-sgs-card.is-open { border-color: var(--apgo-sage); }
+
+.apgo-sgs-card-head { display: flex; gap: 12px; padding: 12px; align-items: stretch; }
+
+.apgo-sgs-thumb {
+  position: relative;
+  flex: 0 0 84px;
+  width: 84px;
+  height: 108px;
+  border: 1px solid var(--apgo-line);
+  border-radius: 4px;
+  overflow: hidden;
+  background: #fff;
+  display: block;
+  text-decoration: none;
+}
+.apgo-sgs-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.apgo-sgs-thumb-badge {
+  position: absolute; bottom: 4px; right: 4px;
+  background: rgba(45,46,40,0.85); color: #fff;
+  font-size: 9px; letter-spacing: 0.1em;
+  padding: 2px 5px; border-radius: 2px;
+  font-family: var(--apgo-sans);
+}
+.apgo-sgs-thumb--static { cursor: default; }
+
+.apgo-sgs-card-meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: stretch;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+.apgo-sgs-card-no {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--apgo-muted);
+  letter-spacing: 0.05em;
+  line-height: 1.5;
+  flex-wrap: wrap;
+}
+.apgo-sgs-card-sep { color: var(--apgo-muted); opacity: 0.7; }
+.apgo-sgs-card-date { color: var(--apgo-muted); }
+.apgo-sgs-card-test {
+  font-size: 17px;
+  color: var(--apgo-ink);
+  line-height: 1.3;
+}
+.apgo-sgs-card-result-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 2px;
+}
+.apgo-sgs-card-result {
+  font-size: 16px;
+  font-style: italic;
+  color: var(--apgo-sage);
+}
+.apgo-sgs-card-why {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--apgo-sage);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.apgo-sgs-card-arrow { transition: transform .2s ease; display: inline-block; }
+.apgo-sgs-card.is-open .apgo-sgs-card-arrow { transform: rotate(180deg); }
+
+.apgo-sgs-card-body {
+  border-top: 1px solid var(--apgo-line);
+  padding: 16px;
+  background: transparent;
+}
+.apgo-sgs-card-row + .apgo-sgs-card-row { margin-top: 14px; }
+.apgo-sgs-card-row-label {
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  color: var(--apgo-sage);
+  font-style: italic;
+  margin-bottom: 6px;
+}
+.apgo-sgs-card-row-text {
+  font-family: var(--apgo-sans);
+  font-size: 13px;
+  line-height: 1.85;
+  color: rgba(45,46,40,0.85);
+  font-weight: 400;
+}
+.apgo-sgs-card-row-text p {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  margin: 0 0 6px;
+}
+.apgo-sgs-card-row-text p:last-child { margin-bottom: 0; }
+.apgo-sgs-card-row-text strong { font-weight: 600; }
+.apgo-sgs-card-row-text a { color: var(--apgo-sage); text-decoration: underline; }
+
+/* Result Overview */
+.apgo-sgs-overview {
+  margin-top: 32px;
+  padding: 28px 16px;
+  background: var(--apgo-bg-alt);
+  border-radius: 6px;
+  text-align: center;
+}
+.apgo-sgs-overview-title { font-size: 20px; font-weight: 400; color: var(--apgo-ink); margin: 0 0 8px; position: relative; display: inline-block; padding: 0 24px; }
+.apgo-sgs-overview-title::before,
+.apgo-sgs-overview-title::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 18px;
+  height: 1px;
+  background: var(--apgo-sage);
+  opacity: 0.6;
+}
+.apgo-sgs-overview-title::before { left: 0; }
+.apgo-sgs-overview-title::after { right: 0; }
+.apgo-sgs-overview-sub { font-size: 13px; color: var(--apgo-muted); margin: 0 0 22px; }
+
+.apgo-sgs-chips {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  gap: 6px;
+}
+.apgo-sgs-chip {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 12px 6px;
+  background: #fff;
+  border: 1px solid var(--apgo-line);
+  border-radius: 999px;
+}
+.apgo-sgs-chip-val { font-size: 14px; font-style: italic; color: var(--apgo-sage); white-space: nowrap; }
+.apgo-sgs-chip-label { font-size: 10px; color: var(--apgo-muted); letter-spacing: 0.05em; white-space: nowrap; }
+
+/* Mobile tweaks */
+@media (max-width: 480px) {
+  .apgo-sgs-title { font-size: 24px; }
+  .apgo-sgs-thumb { flex-basis: 72px; width: 72px; height: 92px; }
+  .apgo-sgs-card-test { font-size: 15px; }
+  .apgo-sgs-chips { gap: 4px; }
+  .apgo-sgs-chip { padding: 10px 4px; }
+  .apgo-sgs-chip-val { font-size: 12px; }
+  .apgo-sgs-chip-label { font-size: 9px; letter-spacing: 0.02em; }
+}
+
+/* ============================================================================
+   APGO 限時優惠組合 (Bundle Picker) — Phase A layout
+   See docs/V1S_PLUS_BUNDLE_PLAN.md
+   Activated only when product.metafields.apgo.bundle_enabled == true.
+   ============================================================================ */
+
+.apgo-bundle {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 20px;
+  background: var(--apgo-bg-alt);
+  border: 1px solid var(--apgo-line);
+  border-radius: 14px;
+  font-family: var(--apgo-sans);
+  color: var(--apgo-ink);
+}
+
+.apgo-bundle__head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  border-bottom: 1px solid var(--apgo-line);
+  padding-bottom: 10px;
+}
+.apgo-bundle__title {
+  margin: 0;
+  font-family: var(--apgo-display);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--apgo-ink);
+  letter-spacing: 0;
+}
+.apgo-bundle__sub {
+  font-family: var(--apgo-display);
+  font-size: 11px;
+  font-style: italic;
+  color: var(--apgo-star);
+  letter-spacing: .15em;
+}
+
+/* ---- Tier cards ---- */
+.apgo-bundle__tiers {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.apgo-bundle__tier {
+  display: grid;
+  grid-template-columns: 24px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 16px;
+  background: var(--apgo-bg);
+  border: 1px solid var(--apgo-line);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all .2s;
+}
+.apgo-bundle__tier:hover {
+  border-color: var(--apgo-sage);
+}
+.apgo-bundle__tier.is-active {
+  background: var(--apgo-ink);
+  color: var(--apgo-bg-alt);
+  border-color: var(--apgo-ink);
+}
+.apgo-bundle__tier-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+}
+.apgo-bundle__tier-radio {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid var(--apgo-line);
+  background: var(--apgo-bg-alt);
+  position: relative;
+  flex-shrink: 0;
+  transition: border-color .15s, background .15s;
+}
+.apgo-bundle__tier.is-active .apgo-bundle__tier-radio {
+  border-color: var(--apgo-bg-alt);
+  background: var(--apgo-ink);
+}
+.apgo-bundle__tier.is-active .apgo-bundle__tier-radio::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: var(--apgo-star);
+}
+.apgo-bundle__tier-body { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.apgo-bundle__tier-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.apgo-bundle__tier-label {
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: .02em;
+}
+.apgo-bundle__tier-chip {
+  background: var(--apgo-star);
+  color: var(--apgo-ink);
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .05em;
+}
+/* Chip keeps its 金棕 fill on the active tier — same orange-gold colour
+   regardless of card bg. (Previously inverted to cream, but user wants
+   the chip visually anchored across active/inactive states.) */
+.apgo-bundle__tier-meta {
+  font-size: 11px;
+  color: var(--apgo-muted);
+  letter-spacing: .02em;
+}
+.apgo-bundle__tier.is-active .apgo-bundle__tier-meta {
+  color: rgba(253, 250, 242, .65);
+}
+.apgo-bundle__tier-savings {
+  color: var(--apgo-sage);
+  font-weight: 600;
+}
+.apgo-bundle__tier.is-active .apgo-bundle__tier-savings {
+  color: var(--apgo-star);
+}
+.apgo-bundle__tier-price-area { text-align: right; flex-shrink: 0; }
+.apgo-bundle__tier-price {
+  font-size: 14px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .02em;
+  white-space: nowrap;
+}
+.apgo-bundle__tier-gift {
+  font-size: 10px;
+  color: var(--apgo-star);
+  margin-top: 2px;
+  font-weight: 500;
+}
+.apgo-bundle__tier.is-active .apgo-bundle__tier-gift {
+  color: var(--apgo-star);
+}
+
+/* ---- Scent picker ---- */
+.apgo-bundle__scents {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 8px;
+  border-top: 1px solid var(--apgo-line);
+}
+.apgo-bundle__scents-head {
+  display: flex; align-items: baseline; justify-content: space-between;
+}
+.apgo-bundle__scents-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--apgo-ink);
+  letter-spacing: .04em;
+}
+.apgo-bundle__counter {
+  font-size: 12px;
+  color: var(--apgo-muted);
+  font-variant-numeric: tabular-nums;
+}
+.apgo-bundle__counter [data-apgo-bundle-current] {
+  color: var(--apgo-sage);
+  font-weight: 600;
+}
+
+.apgo-bundle__quick-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.apgo-bundle__action-btn {
+  padding: 5px 12px;
+  background: transparent;
+  border: 1px solid var(--apgo-line);
+  border-radius: 999px;
+  font-size: 11px;
+  color: var(--apgo-ink);
+  cursor: pointer;
+  transition: all .15s;
+}
+.apgo-bundle__action-btn:hover {
+  background: var(--apgo-bg-ash);
+  border-color: var(--apgo-sage);
+}
+
+.apgo-bundle__scent-rows { display: flex; flex-direction: column; }
+.apgo-bundle__scent-row {
+  display: grid;
+  grid-template-columns: 28px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--apgo-line);
+}
+.apgo-bundle__scent-row:last-child { border-bottom: none; }
+.apgo-bundle__scent-dot {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,0,0,.06);
+}
+.apgo-bundle__scent-info { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.apgo-bundle__scent-name { font-size: 13px; font-weight: 500; color: var(--apgo-ink); }
+.apgo-bundle__scent-en {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 9px;
+  color: var(--apgo-muted);
+  letter-spacing: .15em;
+}
+.apgo-bundle__scent-qty {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.apgo-bundle__qty-btn {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 1px solid var(--apgo-line);
+  background: var(--apgo-bg-alt);
+  color: var(--apgo-ink);
+  font-size: 14px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .15s;
+}
+.apgo-bundle__qty-btn:hover:not(:disabled) {
+  background: var(--apgo-bg-ash);
+  border-color: var(--apgo-sage);
+}
+.apgo-bundle__qty-btn:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+}
+.apgo-bundle__qty-num {
+  min-width: 18px;
+  text-align: center;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  color: var(--apgo-ink);
+}
+
+.apgo-bundle__min-note {
+  font-size: 11px;
+  color: var(--apgo-muted);
+  text-align: center;
+  margin-top: 4px;
+}
+
+/* ---- CTA dual state ---- */
+.apgo-bundle__cta-area { display: flex; flex-direction: column; gap: 8px; }
+.apgo-bundle__cta-disabled {
+  width: 100%;
+  padding: 14px;
+  background: var(--apgo-muted);
+  color: var(--apgo-bg-alt);
+  border: none;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  cursor: not-allowed;
+}
+.apgo-bundle__cta-enabled { display: flex; flex-direction: column; gap: 8px; }
+.apgo-bundle__cta-add,
+.apgo-bundle__cta-buy-now {
+  width: 100%;
+  padding: 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  cursor: pointer;
+  transition: all .15s;
+}
+.apgo-bundle__cta-add {
+  background: var(--apgo-ink);
+  color: var(--apgo-bg-alt);
+  border: 1px solid var(--apgo-ink);
+}
+.apgo-bundle__cta-add:hover { background: var(--apgo-sage); border-color: var(--apgo-sage); }
+.apgo-bundle__cta-buy-now {
+  background: var(--apgo-bg-alt);
+  color: var(--apgo-ink);
+  border: 1px solid var(--apgo-ink);
+}
+.apgo-bundle__cta-buy-now:hover { background: var(--apgo-bg-ash); }
+
+/* ---- Mobile breakpoint (single tier card stacking) ---- */
+@media (max-width: 599px) {
+  .apgo-bundle { padding: 16px; gap: 14px; }
+  .apgo-bundle__tier { padding: 12px 14px; gap: 10px; }
+  .apgo-bundle__tier-label { font-size: 13px; }
+  .apgo-bundle__tier-meta { font-size: 10px; }
+  .apgo-bundle__tier-price { font-size: 13px; }
+}
+
+/* ============================================================================
+   Sticky bottom CTA bar — bundle variant
+   When apgo.bundle_enabled, the sticky bar swaps add+buy for either:
+     A. disabled state (single full-width 還差 N 包 button)
+     B. enabled state (add + buy, mirroring the original)
+   Only one of A/B is visible at a time; Phase B JS toggles via display.
+   ============================================================================ */
+
+.apgo-mpdp-sticky--bundle {
+  /* Wish heart removed — single-column full-width CTA area. */
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  align-items: center;
+}
+.apgo-mpdp-sticky--bundle .apgo-mpdp-cta-bundle-disabled,
+.apgo-mpdp-sticky--bundle .apgo-mpdp-cta-bundle-enabled {
+  width: 100%;
+}
+
+.apgo-mpdp-cta-bundle-disabled {
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--apgo-muted);
+  color: var(--apgo-bg-alt);
+  border: none;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  cursor: not-allowed;
+  font-family: var(--apgo-sans);
+}
+
+.apgo-mpdp-cta-bundle-enabled {
+  display: flex;
+  gap: 6px;
+}
+.apgo-mpdp-cta-bundle-enabled .apgo-mpdp-cta-secondary,
+.apgo-mpdp-cta-bundle-enabled .apgo-mpdp-cta-primary {
+  flex: 1;
+  white-space: nowrap;
+}
+
+/* Out-of-stock scent row — Phase D */
+.apgo-bundle__scent-row.is-out-of-stock {
+  opacity: .55;
+}
+.apgo-bundle__scent-row.is-out-of-stock .apgo-bundle__scent-name,
+.apgo-bundle__scent-row.is-out-of-stock .apgo-bundle__scent-en {
+  text-decoration: none;
+}
+.apgo-bundle__scent-out {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 1px 6px;
+  background: var(--apgo-muted);
+  color: var(--apgo-bg-alt);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  border-radius: 4px;
+  vertical-align: middle;
+}
+.apgo-bundle__scent-row.is-out-of-stock .apgo-bundle__qty-btn[data-apgo-bundle-qty="1"] {
+  cursor: not-allowed;
+}
+
+/* ----------------------------------------------------------------------------
+   Bundle single-pack mode — 單包 tier shows a radio chip grid instead of
+   the row+qty stepper. The widget's data-mode toggles between 'multi'
+   (default) and 'single'.
+   ---------------------------------------------------------------------------- */
+
+/* Hide single grid by default (multi mode) */
+.apgo-bundle__single-grid { display: none; }
+/* Hide multi components when in single mode */
+.apgo-bundle[data-mode="single"] .apgo-bundle__scent-rows,
+.apgo-bundle[data-mode="single"] [data-apgo-bundle-quick-actions],
+.apgo-bundle[data-mode="single"] .apgo-bundle__min-note,
+.apgo-bundle[data-mode="single"] .apgo-bundle__counter { display: none; }
+/* Show single grid when in single mode. Visuals come from the existing
+   .apgo-scent-grid + .apgo-scentbtn + .apgo-swatch rules earlier in this
+   file — the snippet now uses those classes directly so the single-pack
+   picker matches the original variant picker exactly. */
+.apgo-bundle[data-mode="single"] .apgo-bundle__single-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+/* Out-of-stock single chip — dim + lock pointer */
+.apgo-bundle__single-grid .apgo-scentbtn.is-out-of-stock {
+  opacity: .55;
+  cursor: not-allowed;
+}
+.apgo-bundle__single-grid .apgo-scentbtn.is-out-of-stock input {
+  pointer-events: none;
+}
+
+/* Single mode: scents-head label changes color subtly so user knows it's
+   a different selection mode */
+.apgo-bundle[data-mode="single"] .apgo-bundle__scents-head .apgo-bundle__scents-title::after {
+  content: " · 選一款";
+  color: var(--apgo-muted);
+  font-weight: 400;
+  font-size: 11px;
+  margin-left: 4px;
+}
+
+/* Bundle widget bottom margin — separate it from the ship card / tabs
+   that follow. Without this, the widget's rounded corner sits flush
+   against the next card and the page reads as one solid block. */
+.apgo-bundle { margin-bottom: 20px; }
+
+/* On mobile shell specifically, tabs row gets a little more breathing
+   room above so the bundle widget doesn't push it into the tabs. */
+.apgo-mpdp-mobile-shell + .apgo-mpdp-tabs,
+.apgo-bundle + .apgo-mpdp-tabs {
+  margin-top: 20px;
+}
+
+/* Ship card — when it follows the bundle widget directly, ensure a
+   visible gap. (Existing margin-bottom: 28px below already handles
+   the gap to whatever comes after the ship card.) */
+.apgo-bundle + .apgo-mpdp-ship,
+.apgo-bundle ~ .apgo-mpdp-ship {
+  margin-top: 16px;
+}

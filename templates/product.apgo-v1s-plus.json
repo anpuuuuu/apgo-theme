@@ -1,0 +1,110 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "mobile": {
+      "type": "apgo-mobile-pdp",
+      "blocks": {
+        "ship_row_tkjBxd": {
+          "type": "ship_row",
+          "settings": {
+            "numeral": "i",
+            "title": "$999 免運＊訂單滿６包（含）以上享無效退費",
+            "subtitle": "宅配 · 24 小時內出貨\n可拆一包無償使用，如需退貨其餘數量需完好退回！"
+          }
+        },
+        "ship_row_iXAbnM": {
+          "type": "ship_row",
+          "settings": {
+            "numeral": "ii",
+            "title": "🚚 配送提醒",
+            "subtitle": "．7-11／全家：單筆訂單最多 8 包（請勿加購其他商品），多包請分開下單，避免超重，恕無法出貨。\n．新竹物流宅配：單筆訂單可超過 8 包以上"
+          }
+        },
+        "ship_row_7LqLWC": {
+          "type": "ship_row",
+          "settings": {
+            "numeral": "iii",
+            "title": "SGS 國家級檢驗 ／ 八大零添加",
+            "subtitle": "八大零添加（不含磷、甲醛、含氯漂白劑、甲醛、螢光劑、人工色素、壬基苯酚、EDTA/NTA）"
+          }
+        },
+        "ugc_a6ehf8": {
+          "type": "ugc",
+          "settings": {
+            "image": "shopify://shop_images/10-closing.jpg",
+            "handle": "",
+            "likes": 100,
+            "url": ""
+          }
+        },
+        "ugc_qrcPrV": {
+          "type": "ugc",
+          "settings": {
+            "image": "shopify://shop_images/07-matrix.jpg",
+            "handle": "",
+            "likes": 100,
+            "url": ""
+          }
+        },
+        "ugc_CHBLDa": {
+          "type": "ugc",
+          "settings": {
+            "image": "shopify://shop_images/09-ritual.jpg",
+            "handle": "",
+            "likes": 100,
+            "url": ""
+          }
+        }
+      },
+      "block_order": [
+        "ship_row_tkjBxd",
+        "ship_row_iXAbnM",
+        "ship_row_7LqLWC",
+        "ugc_a6ehf8",
+        "ugc_qrcPrV",
+        "ugc_CHBLDa"
+      ],
+      "settings": {
+        "video_url": "",
+        "video_label": "產品實測影片 · 60s",
+        "show_thumb_rail": true,
+        "kicker": "",
+        "show_rating": false,
+        "rating_score": "",
+        "rating_count": "",
+        "show_installment": false,
+        "show_buy_now": true,
+        "pain_heading": "日常痛點 · 專屬科學解方",
+        "cmp_kicker": "THE DIFFERENCE",
+        "cmp_title": "為什麼選 APGO？",
+        "cmp_col_feature": "比較項目",
+        "cmp_col_apgo": "APGO 超級洗衣精",
+        "cmp_col_competitor": "一般市售洗衣精",
+        "ugc_kicker": "APGO 用戶實拍",
+        "ugc_title": "@apgo_official · Instagram",
+        "related_collection": "所有產品"
+      }
+    },
+    "apgo_related_qqpb6W": {
+      "type": "apgo-related",
+      "settings": {
+        "heading": "您可能也喜歡",
+        "collection": "所有產品",
+        "columns": 5,
+        "limit": 5
+      }
+    }
+  },
+  "order": [
+    "mobile",
+    "apgo_related_qqpb6W"
+  ]
+}
