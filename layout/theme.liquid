@@ -159,6 +159,13 @@
         color: #f08418 !important;
       }
     </style>
+    {%- comment -%}
+      Active market currency for the PDP JS money formatter (apgo-pdp.js /
+      apgo-bundle.js). Without this they fall back to a hardcoded TWD/NT$
+      format inherited from the TW store. cart.currency reflects the
+      buyer's Shopify Markets currency: MY → MYR, SG → SGD.
+    {%- endcomment -%}
+    <script>window.APGO_ACTIVE_CURRENCY = {{ cart.currency.iso_code | json }};</script>
     {{ 'apgo-pdp.css' | asset_url | stylesheet_tag }}
     <script src="{{ 'apgo-pdp.js' | asset_url }}" defer></script>
     {%- if product.metafields.apgo.bundle_enabled -%}

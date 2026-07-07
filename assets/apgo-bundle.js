@@ -48,17 +48,25 @@
     };
   }
 
-  // Format cents → 'NT$ 1,596' style. Mirrors apgo-pdp.js / apgo-cc-quick-add.js
-  // approach: prefer Shopify.formatMoney with the theme's money_format, fall
-  // back to a sensible TWD default. The .money Liquid filter would have done
-  // this server-side; we need it client-side because tier prices are dynamic.
+  // Format cents → active-market currency (MY → MYR "RM", SG → SGD "S$"),
+  // matching apgo-pdp.js + cart-totals.liquid. Currency is seeded from
+  // Liquid (window.APGO_ACTIVE_CURRENCY). The .money Liquid filter does this
+  // server-side; we need it client-side because tier prices are dynamic.
   function formatMoney(cents) {
-    if (window.Shopify && typeof window.Shopify.formatMoney === 'function') {
-      var fmt = (window.theme && window.theme.moneyFormat) || 'NT${{amount}}';
-      try { return window.Shopify.formatMoney(cents, fmt); } catch (e) {}
+    var cur = window.APGO_ACTIVE_CURRENCY
+      || (window.Shopify && window.Shopify.currency && window.Shopify.currency.active)
+      || 'MYR';
+    var amount = (Number(cents) || 0) / 100;
+    var n = amount.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    if (cur === 'MYR') return 'RM ' + n;
+    if (cur === 'SGD') return 'S$ ' + n;
+    try {
+      return new Intl.NumberFormat(undefined, {
+        style: 'currency', currency: cur, minimumFractionDigits: 2, maximumFractionDigits: 2
+      }).format(amount);
+    } catch (e) {
+      return cur + ' ' + n;
     }
-    var n = Number(cents) / 100;
-    return 'NT$ ' + n.toLocaleString('zh-TW', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
   }
 
   function isSingleMode() {

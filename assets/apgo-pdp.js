@@ -36,14 +36,24 @@
   window.apgoCartToast = showApgoCartToast;
 
   function formatMoney(cents) {
-    // Try Shopify's global formatter if present; otherwise a sensible TWD default.
-    if (window.Shopify && typeof window.Shopify.formatMoney === 'function') {
-      var fmt = (window.theme && window.theme.moneyFormat) || '{{amount}}';
-      try { return window.Shopify.formatMoney(cents, fmt); } catch (e) { /* fall through */ }
+    // Follow the active Shopify Markets currency (MY → MYR "RM", SG → SGD
+    // "S$"), matching the cart-totals.liquid convention. Currency is seeded
+    // from Liquid (window.APGO_ACTIVE_CURRENCY); never hardcode TWD here or
+    // MY/SG prices come out as NT$.
+    var cur = window.APGO_ACTIVE_CURRENCY
+      || (window.Shopify && window.Shopify.currency && window.Shopify.currency.active)
+      || 'MYR';
+    var amount = (Number(cents) || 0) / 100;
+    var n = amount.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    if (cur === 'MYR') return 'RM ' + n;
+    if (cur === 'SGD') return 'S$ ' + n;
+    try {
+      return new Intl.NumberFormat(undefined, {
+        style: 'currency', currency: cur, minimumFractionDigits: 2, maximumFractionDigits: 2
+      }).format(amount);
+    } catch (e) {
+      return cur + ' ' + n;
     }
-    var n = Number(cents) / 100;
-    // NT$ 1,234 — matches the rest of the theme's default
-    return 'NT$ ' + n.toLocaleString('zh-TW', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
   }
 
   // ---------- per-form init ----------
