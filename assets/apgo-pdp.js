@@ -49,7 +49,22 @@
     var img = document.querySelector('[data-apgo-carousel] img, .apgo-mpdp-slide img, .apgo-gallery img, .apgo-hero-visual img, .apgo-mpdp-main img');
     var imgSrc = img && (img.currentSrc || img.src);
     if (!imgSrc) return;
-    var from = (srcEl || img).getBoundingClientRect();
+    // Resolve a VISIBLE source rect. The passed button may be the hidden
+    // desktop variant of the CTA (0x0 on mobile) — that made the clone
+    // fly from the top-left corner. Prefer srcEl, else the first add/buy
+    // button that's actually on screen, else the product image.
+    function visRect(el) {
+      if (!el) return null;
+      var r = el.getBoundingClientRect();
+      return (r.width > 0 && r.height > 0) ? r : null;
+    }
+    var from = visRect(srcEl);
+    if (!from) {
+      var btns = Array.prototype.slice.call(document.querySelectorAll('[data-apgo-add], [data-apgo-buy-now]'));
+      for (var i = 0; i < btns.length; i++) { from = visRect(btns[i]); if (from) break; }
+    }
+    if (!from) from = visRect(img);
+    if (!from) return;
     var to = cartIcon.getBoundingClientRect();
     var sx = from.left + from.width / 2, sy = from.top + from.height / 2;
     var ex = to.left + to.width / 2, ey = to.top + to.height / 2;
@@ -366,8 +381,8 @@
             .then(function (cart) { return { added: added, cart: cart }; });
         })
         .then(function (result) {
-          showApgoCartToast('✓ Added to cart');
-
+          // No success toast — the fly-to-cart animation + header bubble
+          // bump are the confirmation. (Error toast on failure is kept.)
           // Fly the product image up to the header cart icon, then sync
           // the header bubble count (needs detail.data.itemCount).
           apgoFlyToCart(addBtns[0]);
