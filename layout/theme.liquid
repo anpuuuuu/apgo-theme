@@ -94,19 +94,16 @@
          so both are forced cream here. Scoped by the template.suffix gate
          wrapping this whole <style>, so no other page is affected. */
 
-      /* Header: flip the scheme vars + explicit background, on the whole
-         header group + announcement/marquee bar so there's no black stripe
-         between the cream header and the cream PDP body. */
+      /* Header only: flip the scheme vars + explicit background across the
+         header group. The free-shipping marquee (#shopify-section-
+         free-shipping-popup) is deliberately NOT touched — creaming it
+         broke its scrolling text + spacing, and it stays its normal dark
+         promo bar. */
       #header-group,
       .header-section,
       header-component,
       .header,
-      .header__row,
-      announcement-bar-component,
-      .announcement-bar,
-      #shopify-section-free-shipping-popup,
-      #shopify-section-free-shipping-popup marquee-component,
-      #shopify-section-free-shipping-popup .marquee__content {
+      .header__row {
         --color-background: 253, 250, 242 !important;
         --color-foreground: 45, 46, 40 !important;
         background-color: #fdfaf2 !important;
@@ -117,8 +114,7 @@
       #header-group .header__menu-item,
       #header-group svg,
       header-component a,
-      header-component svg,
-      #shopify-section-free-shipping-popup .marquee__content {
+      header-component svg {
         color: #2d2e28 !important;
       }
 
