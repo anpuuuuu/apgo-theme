@@ -68,24 +68,59 @@
     var to = cartIcon.getBoundingClientRect();
     var sx = from.left + from.width / 2, sy = from.top + from.height / 2;
     var ex = to.left + to.width / 2, ey = to.top + to.height / 2;
+
     var ghost = document.createElement('div');
-    ghost.style.cssText =
-      'position:fixed;left:' + (sx - 28) + 'px;top:' + (sy - 28) + 'px;' +
-      'width:56px;height:56px;border-radius:12px;' +
+    ghost.className = 'apgo-fly-to-cart';
+    var base =
+      'position:fixed;width:56px;height:56px;border-radius:12px;' +
       'background:#fff center/cover no-repeat url("' + imgSrc + '");' +
       'box-shadow:0 8px 24px rgba(94,111,93,0.4),0 0 0 2px rgba(94,111,93,0.5);' +
-      'z-index:100050;pointer-events:none;' +
-      'transition:transform .7s cubic-bezier(.55,-0.05,.3,1.4),opacity .25s ease .55s;' +
-      'transform:translate(0,0) scale(1);opacity:1;';
-    document.body.appendChild(ghost);
-    void ghost.offsetWidth;
-    ghost.style.transform = 'translate(' + (ex - sx) + 'px,' + (ey - sy) + 'px) scale(0.18) rotate(8deg)';
-    ghost.style.opacity = '0';
-    setTimeout(function () {
-      if (ghost.parentNode) ghost.parentNode.removeChild(ghost);
-      cartIcon.classList.add('apgo-cart-icon-bump');
-      setTimeout(function () { cartIcon.classList.remove('apgo-cart-icon-bump'); }, 480);
-    }, 760);
+      'z-index:100050;pointer-events:none;';
+
+    function landAndBump(delay) {
+      setTimeout(function () {
+        if (ghost.parentNode) ghost.parentNode.removeChild(ghost);
+        cartIcon.classList.add('apgo-cart-icon-bump');
+        setTimeout(function () { cartIcon.classList.remove('apgo-cart-icon-bump'); }, 480);
+      }, delay);
+    }
+
+    var supportsOffsetPath = (window.CSS && CSS.supports && CSS.supports('offset-path', 'path("M0 0")'));
+
+    if (supportsOffsetPath) {
+      // True bezier ARC (same technique as the birthday page): a quadratic
+      // curve whose control point is lifted ABOVE the midpoint, so the clone
+      // arcs upward on its way to the cart instead of cutting a straight
+      // diagonal. Peak lift scales with trip distance (clamped) so both
+      // short and long flights look graceful.
+      var midX = (sx + ex) / 2, midY = (sy + ey) / 2;
+      var dist = Math.sqrt((ex - sx) * (ex - sx) + (ey - sy) * (ey - sy));
+      var lift = Math.min(240, Math.max(70, dist * 0.28));
+      var ctrlX = midX, ctrlY = midY - lift;
+      ghost.style.cssText = base +
+        'left:0;top:0;offset-anchor:center;offset-rotate:0deg;offset-distance:0%;' +
+        'offset-path:path("M ' + sx + ' ' + sy + ' Q ' + ctrlX + ' ' + ctrlY + ' ' + ex + ' ' + ey + '");';
+      document.body.appendChild(ghost);
+      ghost.animate([
+        { offsetDistance: '0%',   transform: 'scale(1) rotate(-10deg)',  opacity: 1,    offset: 0 },
+        { offsetDistance: '45%',  transform: 'scale(0.8) rotate(10deg)', opacity: 1,    offset: 0.45 },
+        { offsetDistance: '85%',  transform: 'scale(0.4) rotate(30deg)', opacity: 0.9,  offset: 0.85 },
+        { offsetDistance: '100%', transform: 'scale(0.18) rotate(45deg)', opacity: 0,   offset: 1 }
+      ], { duration: 850, easing: 'cubic-bezier(.42, 0, .58, 1)', fill: 'forwards' });
+      landAndBump(880);
+    } else {
+      // Fallback for browsers without CSS offset-path: straight-line
+      // transition with a springy easing (the previous behaviour).
+      ghost.style.cssText = base +
+        'left:' + (sx - 28) + 'px;top:' + (sy - 28) + 'px;' +
+        'transition:transform .7s cubic-bezier(.55,-0.05,.3,1.4),opacity .25s ease .55s;' +
+        'transform:translate(0,0) scale(1);opacity:1;';
+      document.body.appendChild(ghost);
+      void ghost.offsetWidth;
+      ghost.style.transform = 'translate(' + (ex - sx) + 'px,' + (ey - sy) + 'px) scale(0.18) rotate(8deg)';
+      ghost.style.opacity = '0';
+      landAndBump(760);
+    }
   }
 
   // Notify Horizon's <cart-icon> (which reads detail.data.itemCount) plus
