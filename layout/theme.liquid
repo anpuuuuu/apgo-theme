@@ -87,13 +87,56 @@
       [id^="shopify-section-apgo_tactical_hub"] {
         background: transparent !important;
       }
-      announcement-bar-component,
+      /* ── MY-store header + footer cream override (this template only) ──
+         MY's header paints its background from Horizon color-scheme CSS
+         vars; the visible footer is the custom APGO-footer whose colours
+         are all section-setting driven. Neither matched the TW selectors,
+         so both are forced cream here. Scoped by the template.suffix gate
+         wrapping this whole <style>, so no other page is affected. */
+
+      /* Header: flip the scheme vars + explicit background, on the whole
+         header group + announcement/marquee bar so there's no black stripe
+         between the cream header and the cream PDP body. */
+      #header-group,
+      .header-section,
       header-component,
       .header,
-      .announcement-bar {
-        --color-background: 253, 250, 242;
-        --color-foreground: 45, 46, 40;
+      .header__row,
+      announcement-bar-component,
+      .announcement-bar,
+      #shopify-section-free-shipping-popup,
+      #shopify-section-free-shipping-popup marquee-component,
+      #shopify-section-free-shipping-popup .marquee__content {
+        --color-background: 253, 250, 242 !important;
+        --color-foreground: 45, 46, 40 !important;
+        background-color: #fdfaf2 !important;
+      }
+      /* Header text/icons → dark so they read on cream (logo is an image,
+         unaffected; orange accents that use background/border survive). */
+      #header-group a,
+      #header-group .header__menu-item,
+      #header-group svg,
+      header-component a,
+      header-component svg,
+      #shopify-section-free-shipping-popup .marquee__content {
+        color: #2d2e28 !important;
+      }
+
+      /* Footer: APGO-footer colours are settings-driven (dark). Force the
+         containers cream and the text dark; keep orange as the hover
+         accent so links still feel branded. */
+      .apgo-footer,
+      .apgo-footer-main {
         background: #fdfaf2 !important;
+      }
+      .apgo-footer,
+      .apgo-footer *:not(svg):not(path):not(img) {
+        color: #2d2e28 !important;
+        border-color: rgba(45, 46, 40, 0.15) !important;
+      }
+      .apgo-footer a:hover,
+      .apgo-footer-links a:hover {
+        color: #f08418 !important;
       }
     </style>
     {{ 'apgo-pdp.css' | asset_url | stylesheet_tag }}
