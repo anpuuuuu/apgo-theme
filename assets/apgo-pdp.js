@@ -109,7 +109,7 @@
         else { n.style.display = 'none'; }
       });
       $$('[data-apgo-installment]', form).forEach(function (n) {
-        n.textContent = '分 3 期 0 利率 · 每期 ' + formatMoney(Math.round(price / 3));
+        n.textContent = '3 interest-free payments of ' + formatMoney(Math.round(price / 3));
       });
 
       // Availability → disable add button
@@ -306,7 +306,7 @@
             .then(function (cart) { return { added: added, cart: cart }; });
         })
         .then(function (result) {
-          showApgoCartToast('✓ 已加入購物車');
+          showApgoCartToast('✓ Added to cart');
 
           // Legacy + Horizon-style cart events. The Horizon CartUpdateEvent
           // module is optional; ignore the dynamic-import error on themes
@@ -334,7 +334,7 @@
         })
         .catch(function (err) {
           // Surface Shopify's error message if any, otherwise generic
-          var msg = (err && err.description) || (err && err.message) || '加入購物車失敗，請再試一次';
+          var msg = (err && err.description) || (err && err.message) || 'Failed to add to cart. Please try again.';
           showApgoCartToast(msg, true);
         })
         .then(function () {

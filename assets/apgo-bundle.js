@@ -1,4 +1,4 @@
-/* APGO · 限時優惠組合 (Bundle Picker) — Phase B logic + Phase C cart
+/* APGO · Limited-Time Bundle (Bundle Picker) — Phase B logic + Phase C cart
  *
  * Scope: only loaded when product.metafields.apgo.bundle_enabled == true
  *        (gated in layout/theme.liquid).
@@ -7,11 +7,11 @@
  * either shell updates state, then a render() pass syncs every widget
  * instance + the sticky bottom bar.
  *
- * Phase C: 加入購物車 / 立即購買 POST /cart/add.js with multi line items
+ * Phase C: Add to cart / Buy now POST /cart/add.js with multi line items
  * (one per scent qty). Bundle metadata attached as line item properties.
  * Discount is applied at cart stage by Shopify Automatic Discount rules
  * — admin must configure these (see docs/V1S_PLUS_BUNDLE_PLAN.md §8).
- * 立即購買 redirects to /cart so user can verify discount before checkout.
+ * Buy now redirects to /cart so user can verify discount before checkout.
  */
 (function () {
   'use strict';
@@ -137,7 +137,7 @@
       // + disabled when at max OR out of stock
       if (plusBtn)  plusBtn.disabled  = sel >= maxN || !avail;
 
-      // Out-of-stock visual: dim row + insert 缺貨 chip
+      // Out-of-stock visual: dim row + insert Out-of-stock chip
       row.classList.toggle('is-out-of-stock', !avail);
       var chip = row.querySelector('[data-apgo-bundle-stock-chip]');
       if (!avail) {
@@ -147,7 +147,7 @@
             chip = document.createElement('span');
             chip.className = 'apgo-bundle__scent-out';
             chip.setAttribute('data-apgo-bundle-stock-chip', '');
-            chip.textContent = '缺貨';
+            chip.textContent = 'Out of stock';
             info.appendChild(chip);
           }
         }
@@ -241,7 +241,7 @@
       render();
     });
 
-    // Quick actions: 全部都同款 / 隨機驚喜 / 清除.
+    // Quick actions: All same / Surprise me / Clear.
     // Out-of-stock scents are NEVER assigned to by quick actions; only the
     // available pool is used. Clear still wipes everything (including any
     // legacy qty on a now-out-of-stock scent so the counter stays clean).
@@ -257,7 +257,7 @@
         } else if (!pool.length) {
           // Edge: every scent is out of stock. Quick actions become no-op
           // except clear (handled above). Toast once for clarity.
-          toast('所有香氛暫時缺貨', true);
+          toast('All scents are temporarily out of stock', true);
           return;
         } else if (action === 'all-same') {
           // Pick the user's currently most-selected AVAILABLE scent;
@@ -299,7 +299,7 @@
   function submitToCart(triggerBtn, redirectToCart) {
     var payload = buildPayload();
     if (!payload.items.length) {
-      toast('請先選滿香氛', true);
+      toast('Please select all scents first', true);
       return;
     }
 
@@ -307,7 +307,7 @@
     var allBtns = $$('[data-apgo-bundle-add], [data-apgo-bundle-buy-now]');
     allBtns.forEach(function (b) { b.disabled = true; b.classList.add('is-loading'); });
     var origText = triggerBtn.innerHTML;
-    triggerBtn.textContent = '加入中…';
+    triggerBtn.textContent = 'Adding…';
 
     fetch('/cart/add.js', {
       method: 'POST',
@@ -354,14 +354,14 @@
         } catch (_) {}
 
         if (redirectToCart) {
-          // 立即購買 → land on /cart so user can verify the bundle discount
+          // Buy now → land on /cart so user can verify the bundle discount
           // applied before checkout. This is the user-confirmed UX (see
           // docs/V1S_PLUS_BUNDLE_PLAN.md Phase C, decision 2026-04-29).
           window.location.href = '/cart';
           return;
         }
 
-        toast('✓ 已加入購物車');
+        toast('✓ Added to cart');
 
         // Reset CTA UI back to enabled state for another round of selection
         allBtns.forEach(function (b) { b.disabled = false; b.classList.remove('is-loading'); });
@@ -373,7 +373,7 @@
       })
       .catch(function (err) {
         console.error('[apgo-bundle] cart add failed:', err);
-        var msg = (err && err.description) || (err && err.message) || '加入失敗，請稍後再試';
+        var msg = (err && err.description) || (err && err.message) || 'Failed to add. Please try again.';
         toast(msg, true);
         allBtns.forEach(function (b) { b.disabled = false; b.classList.remove('is-loading'); });
         triggerBtn.innerHTML = origText;
@@ -409,7 +409,7 @@
     try { arr = JSON.parse(el.textContent); } catch (e) { return; }
     if (!Array.isArray(arr)) return;
     arr.forEach(function (v) {
-      // The laundry detergent option layout is option1 = 香氛, option2 = 容量
+      // The laundry detergent option layout is option1 = Scent, option2 = Capacity
       // (with one capacity variant 1L). If a future product flips this, the
       // map will still be populated — we just may need a more explicit
       // option-name lookup. For now option1 is scent.

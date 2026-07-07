@@ -98,15 +98,17 @@
          own palette: background #FDFAF2 (--apgo-bg-alt) + text #2D2E28
          (--apgo-ink, the theme's warm black, NOT pure #000). */
 
-      /* Header group: flip the Horizon scheme vars + explicit background. */
+      /* Header group: flip the Horizon scheme vars + explicit background.
+         Cream = #F6F1E7 (--apgo-bg) to MATCH the PDP content area exactly
+         (was #FDFAF2 / --apgo-bg-alt, which read slightly lighter). */
       #header-group,
       .header-section,
       header-component,
       .header,
       .header__row {
-        --color-background: 253, 250, 242 !important;
+        --color-background: 246, 241, 231 !important;
         --color-foreground: 45, 46, 40 !important;
-        background-color: #fdfaf2 !important;
+        background-color: #f6f1e7 !important;
       }
       /* Header text/icons → theme ink (logo is an image, unaffected). */
       #header-group a,
@@ -123,14 +125,16 @@
          cream the section background AND force the promo text to theme ink
          directly on .marquee__promo-item (beats the hardcoded white). */
       #shopify-section-free-shipping-popup {
-        --color-background: 253, 250, 242 !important;
+        --color-background: 246, 241, 231 !important;
         --color-foreground: 45, 46, 40 !important;
-        background: #fdfaf2 !important;
+        background: #f6f1e7 !important;
+        /* Grey hairline under the marquee (this template only). */
+        border-bottom: 1px solid #d9d3c3 !important;
       }
       #shopify-section-free-shipping-popup .section-background,
       #shopify-section-free-shipping-popup marquee-component,
       #shopify-section-free-shipping-popup .marquee__content {
-        background: #fdfaf2 !important;
+        background: #f6f1e7 !important;
       }
       #shopify-section-free-shipping-popup .marquee__promo-item,
       #shopify-section-free-shipping-popup .marquee__promo-item *:not(svg):not(path):not(rect):not(img),
@@ -143,7 +147,7 @@
          accent so links still feel branded. */
       .apgo-footer,
       .apgo-footer-main {
-        background: #fdfaf2 !important;
+        background: #f6f1e7 !important;
       }
       .apgo-footer,
       .apgo-footer *:not(svg):not(path):not(img) {
