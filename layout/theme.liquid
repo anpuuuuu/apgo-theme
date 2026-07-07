@@ -53,6 +53,15 @@
     select {
       font-family: 'Poppins', 'Microsoft JhengHei', Arial, sans-serif !important;
     }
+    /* APGO: bold header navigation site-wide (same selectors the
+       apgo-v1s-plus template uses, so the header reads consistently
+       everywhere; colour is left to each page's own scheme). */
+    #header-group a,
+    header-component a,
+    #header-group .header__menu-item,
+    .menu-list__link {
+      font-weight: 700 !important;
+    }
   </style>
 
   {%- comment -%}
@@ -117,7 +126,6 @@
       header-component a,
       header-component svg {
         color: #2d2e28 !important;
-        font-weight: 700 !important;
       }
 
       /* Free-shipping marquee: its promo text is hardcoded #fff (line ~229
