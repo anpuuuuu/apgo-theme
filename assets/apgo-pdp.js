@@ -35,6 +35,55 @@
   // Expose in case other PDP modules want it
   window.apgoCartToast = showApgoCartToast;
 
+  function apgoFindCartIcon() {
+    return document.querySelector('[data-testid="cart-icon"]')
+      || document.querySelector('cart-icon')
+      || document.querySelector('.header-actions__cart-icon');
+  }
+
+  // Fly a clone of the product image from the tapped button up to the
+  // header cart icon, then bump the icon. Mirrors the v3 PDP animation.
+  function apgoFlyToCart(srcEl) {
+    var cartIcon = apgoFindCartIcon();
+    if (!cartIcon) return;
+    var img = document.querySelector('[data-apgo-carousel] img, .apgo-mpdp-slide img, .apgo-gallery img, .apgo-hero-visual img, .apgo-mpdp-main img');
+    var imgSrc = img && (img.currentSrc || img.src);
+    if (!imgSrc) return;
+    var from = (srcEl || img).getBoundingClientRect();
+    var to = cartIcon.getBoundingClientRect();
+    var sx = from.left + from.width / 2, sy = from.top + from.height / 2;
+    var ex = to.left + to.width / 2, ey = to.top + to.height / 2;
+    var ghost = document.createElement('div');
+    ghost.style.cssText =
+      'position:fixed;left:' + (sx - 28) + 'px;top:' + (sy - 28) + 'px;' +
+      'width:56px;height:56px;border-radius:12px;' +
+      'background:#fff center/cover no-repeat url("' + imgSrc + '");' +
+      'box-shadow:0 8px 24px rgba(94,111,93,0.4),0 0 0 2px rgba(94,111,93,0.5);' +
+      'z-index:100050;pointer-events:none;' +
+      'transition:transform .7s cubic-bezier(.55,-0.05,.3,1.4),opacity .25s ease .55s;' +
+      'transform:translate(0,0) scale(1);opacity:1;';
+    document.body.appendChild(ghost);
+    void ghost.offsetWidth;
+    ghost.style.transform = 'translate(' + (ex - sx) + 'px,' + (ey - sy) + 'px) scale(0.18) rotate(8deg)';
+    ghost.style.opacity = '0';
+    setTimeout(function () {
+      if (ghost.parentNode) ghost.parentNode.removeChild(ghost);
+      cartIcon.classList.add('apgo-cart-icon-bump');
+      setTimeout(function () { cartIcon.classList.remove('apgo-cart-icon-bump'); }, 480);
+    }, 760);
+  }
+
+  // Notify Horizon's <cart-icon> (which reads detail.data.itemCount) plus
+  // the rest of the cart UI. Without the itemCount payload the header
+  // bubble count never updates.
+  function apgoBroadcastCart(cart) {
+    var itemCount = (cart && typeof cart.item_count === 'number') ? cart.item_count : 0;
+    var detail = { data: { itemCount: itemCount, source: 'apgo-pdp' }, resource: cart, cart: cart };
+    ['cart:update', 'cart:updated', 'cart:refresh', 'cart:added'].forEach(function (name) {
+      try { document.dispatchEvent(new CustomEvent(name, { bubbles: true, detail: detail })); } catch (e) {}
+    });
+  }
+
   function formatMoney(cents) {
     // Follow the active Shopify Markets currency (MY → MYR "RM", SG → SGD
     // "S$"), matching the cart-totals.liquid convention. Currency is seeded
@@ -271,7 +320,8 @@
       });
     });
 
-    // Buy now — submit to /cart/add then redirect /checkout
+    // Buy now — submit to /cart/add then redirect to the CART page (not
+    // checkout) so the customer can review the order + any discounts first.
     $$('[data-apgo-buy-now]', form).forEach(function (btn) {
       btn.addEventListener('click', function (e) {
         e.preventDefault();
@@ -281,7 +331,7 @@
           headers: { 'Accept': 'application/json' },
           body: fd
         }).then(function (r) { return r.json(); })
-          .then(function () { window.location.href = '/checkout'; })
+          .then(function () { window.location.href = '/cart'; })
           .catch(function () { form.submit(); });
       });
     });
@@ -318,11 +368,14 @@
         .then(function (result) {
           showApgoCartToast('✓ Added to cart');
 
-          // Legacy + Horizon-style cart events. The Horizon CartUpdateEvent
-          // module is optional; ignore the dynamic-import error on themes
-          // that don't ship @theme/events.
-          document.dispatchEvent(new CustomEvent('cart:update', { detail: { cart: result.cart } }));
-          document.documentElement.dispatchEvent(new CustomEvent('cart:refresh', { bubbles: true, detail: { cart: result.cart } }));
+          // Fly the product image up to the header cart icon, then sync
+          // the header bubble count (needs detail.data.itemCount).
+          apgoFlyToCart(addBtns[0]);
+          apgoBroadcastCart(result.cart);
+
+          // Also fire Horizon's typed events when @theme/events ships, so
+          // any native cart component stays in sync. Optional; ignore the
+          // dynamic-import error on themes without it.
           try {
             import('@theme/events').then(function (mod) {
               if (mod && mod.CartUpdateEvent) {
@@ -333,14 +386,8 @@
               if (mod && mod.CartAddEvent) {
                 document.dispatchEvent(new mod.CartAddEvent({}, 'apgo-pdp', { source: 'apgo-pdp' }));
               }
-            }).catch(function () { /* theme without @theme/events — toast alone is fine */ });
+            }).catch(function () { /* theme without @theme/events — fine */ });
           } catch (_) { /* older browsers without dynamic import */ }
-
-          // If a cart drawer is in the DOM, ask it to open
-          var drawer = document.querySelector('cart-drawer-component, cart-drawer, [data-apgo-cart-drawer]');
-          if (drawer && typeof drawer.open === 'function') {
-            try { drawer.open(); } catch (_) { /* swallow */ }
-          }
         })
         .catch(function (err) {
           // Surface Shopify's error message if any, otherwise generic

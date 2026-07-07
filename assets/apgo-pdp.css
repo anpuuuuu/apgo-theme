@@ -1912,3 +1912,22 @@ body.template-suffix-apgo-v1s-plus [id^="shopify-section-apgo_tactical_hub"] {
 .apgo-bundle ~ .apgo-mpdp-ship {
   margin-top: 16px;
 }
+
+/* Cart-icon bump when the fly-to-cart animation lands (apgo-pdp.js). */
+cart-icon.apgo-cart-icon-bump,
+.header-actions__cart-icon.apgo-cart-icon-bump,
+[data-testid="cart-icon"].apgo-cart-icon-bump {
+  animation: apgoCartIconBump .42s cubic-bezier(.34, 1.56, .64, 1);
+  transform-origin: center;
+}
+@keyframes apgoCartIconBump {
+  0%   { transform: scale(1); }
+  35%  { transform: scale(1.28); }
+  65%  { transform: scale(0.94); }
+  100% { transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  cart-icon.apgo-cart-icon-bump,
+  .header-actions__cart-icon.apgo-cart-icon-bump,
+  [data-testid="cart-icon"].apgo-cart-icon-bump { animation: none; }
+}
