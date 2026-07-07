@@ -92,6 +92,7 @@
     },
     "apgo_related_qqpb6W": {
       "type": "apgo-related",
+      "disabled": true,
       "settings": {
         "heading": "You may also like",
         "collection": "all products",
