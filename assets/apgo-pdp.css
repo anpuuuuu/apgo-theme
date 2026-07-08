@@ -694,6 +694,21 @@
 }
 .apgo-mpdp-cta-primary[disabled] { opacity: 0.5; cursor: not-allowed; }
 
+/* When the mobile MENU DRAWER is open, hide this floating CTA bar so it
+   doesn't sit on top of the drawer. The drawer (z-index 18) and its
+   backdrop (z-index 4) both sit BELOW this sticky bar (z-index 100), so
+   without this the Add/Buy bar floats over the open drawer. The theme
+   uses details[open] on .menu-drawer-container as the drawer's open
+   state (see snippets/header-drawer.liquid), matched here via :has()
+   from <body>. Only the CTA bar is affected, and only while the drawer
+   is open — no z-index reshuffle. */
+body:has(.menu-drawer-container[open]) .apgo-mpdp-sticky {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
 /* =====================================================================
    FREE IMAGE BLOCKS — render inside desc panel after the ritual section
    ===================================================================== */
