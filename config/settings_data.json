@@ -10,12 +10,10 @@
 {
   "current": {
     "apgo_gwp_enabled": false,
-    "apgo_promo_banner_enabled": true,
-    "apgo_promo_banner_pdp_products": [
-      "apgo-car-wash-foam-pressure-sprayer-version-2-copy",
-      "apgo-atomic-coloured-glaze-premium-copy"
-    ],
-    "apgo_promo_banner_product": "apgo-car-wash-foam-pressure-sprayer-version-2-copy",
+    "apgo_promo_banner_enabled": false,
+    "apgo_promo_banner_pdp_products": [],
+    "apgo_promo_banner_show_countdown": false,
+    "apgo_promo_banner_product": "",
     "apgo_promo_banner_headline": "APGO Birthday Exclusive",
     "apgo_promo_banner_body": "Free 300ml Car Wash Shampoo  included with the Sprayer Special.",
     "logo": "shopify://shop_images/Untitled-1_4ef42425-f5e2-4f58-866d-c58ceb4f3268.png",
