@@ -172,6 +172,80 @@
       .apgo-footer-links a:hover {
         color: #f08418 !important;
       }
+
+      /* ── Mobile menu drawer cream override (this template only) ──
+         The shared drawer paints itself dark (#0f0f0f background + white
+         menu text, see snippets/header-drawer.liquid {% stylesheet %}).
+         On this cream template that clashed with the rest of the chrome,
+         so flip the whole drawer to the same cream palette as the header
+         and footer. Orange stays as the active/hover accent so links
+         still feel branded. Scoped by the template.suffix gate wrapping
+         this <style>, so the drawer stays dark on every other page. */
+      .menu-drawer {
+        background-color: #f6f1e7 !important;
+        border-right: 1px solid #d9d3c3 !important;
+        --color-background: 246, 241, 231 !important;
+        --color-foreground: 45, 46, 40 !important;
+        --color-border: rgba(45, 46, 40, 0.15) !important;
+      }
+      .menu-drawer .menu-drawer__menu-item,
+      .menu-drawer .menu-drawer__menu-item--mainlist,
+      .menu-drawer .menu-drawer__menu-item--parent,
+      .menu-drawer .menu-drawer__menu-item--child,
+      .menu-drawer .menu-drawer__menu-item-text,
+      .menu-drawer .menu-drawer__close-button,
+      .menu-drawer .menu-drawer__back-button,
+      .menu-drawer svg {
+        color: #2d2e28 !important;
+      }
+      .menu-drawer .menu-drawer__menu-item--mainlist:hover,
+      .menu-drawer .menu-drawer__menu-item--parent:hover,
+      .menu-drawer .menu-drawer__menu-item--child:hover {
+        color: #2d2e28 !important;
+        background: #e8e2d4 !important;
+      }
+      /* Active/current item — orange text on a soft cream chip. */
+      .menu-drawer .menu-drawer__menu-item--active,
+      .menu-drawer .menu-drawer__menu-item[aria-current='page'] {
+        color: #f08418 !important;
+        background: #efe8da !important;
+      }
+      .menu-drawer .menu-drawer__list-item--divider {
+        border-block-end-color: rgba(45, 46, 40, 0.12) !important;
+      }
+
+      /* Drawer-footer clone (APGO brand block + payment strip). Its own
+         borders are white-on-dark; recolour container, text and social
+         icons to the cream palette. */
+      .menu-drawer__apgo-footer-mount,
+      .menu-drawer__apgo-footer-mount .apgo-drawer-footer-strip-inner,
+      .menu-drawer__apgo-footer-mount .apgo-footer-snippet--drawer {
+        background: #f6f1e7 !important;
+      }
+      .menu-drawer__apgo-footer-mount,
+      .menu-drawer__apgo-footer-mount *:not(svg):not(path):not(img) {
+        color: #2d2e28 !important;
+      }
+      .menu-drawer__apgo-footer-mount .apgo-footer-snippet--drawer.apgo-footer-brand,
+      .menu-drawer__apgo-footer-mount .apgo-footer-snippet--drawer.apgo-footer-bottom {
+        border-top-color: rgba(45, 46, 40, 0.12) !important;
+      }
+      .menu-drawer__apgo-footer-mount .apgo-social-link {
+        background: transparent !important;
+        border-color: rgba(45, 46, 40, 0.25) !important;
+        color: #2d2e28 !important;
+      }
+      .menu-drawer__apgo-footer-mount .apgo-social-link svg {
+        fill: currentColor !important;
+        color: #2d2e28 !important;
+      }
+      .menu-drawer__apgo-footer-mount .apgo-social-link:hover {
+        border-color: #f08418 !important;
+        color: #f08418 !important;
+      }
+      .menu-drawer__apgo-footer-mount .apgo-payment-icon {
+        background: #efe8da !important;
+      }
     </style>
     {%- comment -%}
       Active market currency for the PDP JS money formatter (apgo-pdp.js /
