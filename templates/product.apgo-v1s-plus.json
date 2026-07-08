@@ -17,7 +17,7 @@
           "settings": {
             "numeral": "01",
             "title": "Free Shipping",
-            "subtitle": "Free shipping over RM155 to West Malaysia (SGD70 to Singapore)."
+            "subtitle": "Free shipping over RM155 to West Malaysia \n(SGD70 to Singapore)."
           }
         },
         "ship_row_iXAbnM": {
@@ -25,7 +25,7 @@
           "settings": {
             "numeral": "02",
             "title": "Fast Delivery",
-            "subtitle": "Estimated 2-3 business days (West Malaysia), 3-4 business days (Singapore)."
+            "subtitle": "Estimated 2-3 business days (West Malaysia), 5-7 business days (Singapore)."
           }
         },
         "ship_row_7LqLWC": {
@@ -36,24 +36,9 @@
             "subtitle": "SGS-tested formula, made in Taiwan."
           }
         },
-        "ugc_a6ehf8": {
-          "type": "ugc",
-          "settings": {
-            "handle": "",
-            "likes": 100,
-            "url": ""
-          }
-        },
         "ugc_qrcPrV": {
           "type": "ugc",
-          "settings": {
-            "handle": "",
-            "likes": 100,
-            "url": ""
-          }
-        },
-        "ugc_CHBLDa": {
-          "type": "ugc",
+          "disabled": true,
           "settings": {
             "handle": "",
             "likes": 100,
@@ -65,9 +50,7 @@
         "ship_row_tkjBxd",
         "ship_row_iXAbnM",
         "ship_row_7LqLWC",
-        "ugc_a6ehf8",
-        "ugc_qrcPrV",
-        "ugc_CHBLDa"
+        "ugc_qrcPrV"
       ],
       "settings": {
         "video_url": "",
