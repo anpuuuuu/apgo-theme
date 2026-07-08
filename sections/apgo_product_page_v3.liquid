@@ -3759,6 +3759,19 @@
     .apgo-cc-buybar { display: none !important; }
     .apgo-cc-confirm-modal { display: none !important; }
   }
+  /* Menu drawer open → hide the buy bar so it doesn't float on top of
+     the drawer. The buy bar (z-index 100000) sits far above the menu
+     drawer (z-index 18) and its backdrop (z-index 4). The theme uses
+     details[open] on .menu-drawer-container as the drawer's open state
+     (see snippets/header-drawer.liquid), matched here via :has() from
+     <body>. Only the buy bar is affected, and only while the drawer is
+     open — no z-index reshuffle. */
+  body:has(.menu-drawer-container[open]) .apgo-cc-buybar {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity .2s ease, visibility .2s ease;
+  }
 
   .apgo-cc-buybar__backdrop {
     position: fixed;
