@@ -490,7 +490,6 @@
       <button type="button" class="apgo-mpdp-tab active" data-apgo-mtab="desc" role="tab">Product Features</button>
       <button type="button" class="apgo-mpdp-tab" data-apgo-mtab="sgs" role="tab">SGS</button>
       <button type="button" class="apgo-mpdp-tab" data-apgo-mtab="spec" role="tab">Details & Safe Ingredients</button>
-      <button type="button" class="apgo-mpdp-tab" data-apgo-mtab="warranty" role="tab">Money-Back Guarantee<span class="apgo-mpdp-tab-line2">Details</span></button>
       <button type="button" class="apgo-mpdp-tab" data-apgo-mtab="review" role="tab">Customer Reviews</button>
       <button type="button" class="apgo-mpdp-tab" data-apgo-mtab="faq" role="tab">Product FAQ</button>
     </div>
@@ -835,45 +834,6 @@
             </details>
           {%- endif -%}
         {%- endfor -%}
-      {%- endif -%}
-    </div>
-
-    {%- comment -%}
-      Tab panel: Money-back guarantee campaign details
-      ----------------------------------------------------------------
-      Driven by metafield `custom.warranty_images` (List of File references — images).
-      Falls back to single-image metafield `custom.warranty_image` if list isn't set.
-      Empty-state shown if neither is configured.
-    {%- endcomment -%}
-    {%- assign warranty_list = product.metafields.custom.warranty_images.value -%}
-    {%- assign warranty_single = product.metafields.custom.warranty_image -%}
-    <div class="apgo-mpdp-panel" data-apgo-mpanel="warranty">
-      {%- if warranty_list != blank and warranty_list.size > 0 -%}
-        <div class="apgo-mpdp-warranty">
-          {%- for img in warranty_list -%}
-            <img
-              class="apgo-mpdp-warranty-img"
-              src="{{ img | image_url: width: 1200 }}"
-              srcset="{{ img | image_url: width: 480 }} 480w, {{ img | image_url: width: 800 }} 800w, {{ img | image_url: width: 1200 }} 1200w"
-              sizes="(max-width: 749px) 100vw, 800px"
-              alt="Money-back guarantee campaign details {{ forloop.index }}"
-              loading="lazy"
-            >
-          {%- endfor -%}
-        </div>
-      {%- elsif warranty_single != blank -%}
-        <div class="apgo-mpdp-warranty">
-          <img
-            class="apgo-mpdp-warranty-img"
-            src="{{ warranty_single | image_url: width: 1200 }}"
-            srcset="{{ warranty_single | image_url: width: 480 }} 480w, {{ warranty_single | image_url: width: 800 }} 800w, {{ warranty_single | image_url: width: 1200 }} 1200w"
-            sizes="(max-width: 749px) 100vw, 800px"
-            alt="Money-back guarantee campaign details"
-            loading="lazy"
-          >
-        </div>
-      {%- else -%}
-        <div class="apgo-sgs-empty apgo-muted">Campaign details coming soon</div>
       {%- endif -%}
     </div>
 
