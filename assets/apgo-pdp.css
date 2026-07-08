@@ -1931,3 +1931,121 @@ cart-icon.apgo-cart-icon-bump,
   .header-actions__cart-icon.apgo-cart-icon-bump,
   [data-testid="cart-icon"].apgo-cart-icon-bump { animation: none; }
 }
+
+/* =====================================================================
+   MOBILE CONFIRM SHEET — opened by sticky Add/Buy on ≤1023px
+   (apgo-pdp.js viewport gate). Cream bottom sheet mirroring apgo-v3.
+   ===================================================================== */
+html.apgo-confirm-lock { overflow: hidden; }
+
+.apgo-mpdp-confirm {
+  position: fixed; inset: 0; z-index: 1000;
+  display: flex; align-items: flex-end; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity .24s ease;
+}
+.apgo-mpdp-confirm[hidden] { display: none; }
+.apgo-mpdp-confirm.is-open { opacity: 1; pointer-events: auto; }
+
+.apgo-mpdp-confirm__backdrop {
+  position: absolute; inset: 0;
+  background: rgba(28, 28, 22, 0.48);
+  -webkit-backdrop-filter: blur(1px); backdrop-filter: blur(1px);
+}
+
+.apgo-mpdp-confirm__sheet {
+  position: relative; width: 100%; max-width: 560px;
+  background: var(--apgo-bg-alt);
+  border-radius: 22px 22px 0 0;
+  padding: 26px 20px calc(22px + env(safe-area-inset-bottom, 12px));
+  box-shadow: 0 -14px 44px rgba(45, 46, 40, 0.22);
+  transform: translateY(100%);
+  transition: transform .3s cubic-bezier(.22, 1, .36, 1);
+}
+.apgo-mpdp-confirm.is-open .apgo-mpdp-confirm__sheet { transform: translateY(0); }
+
+/* grabber */
+.apgo-mpdp-confirm__sheet::before {
+  content: ""; position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+  width: 40px; height: 4px; border-radius: 999px; background: rgba(94, 111, 93, 0.28);
+}
+
+.apgo-mpdp-confirm__close {
+  position: absolute; top: 14px; right: 14px;
+  width: 34px; height: 34px; display: flex; align-items: center; justify-content: center;
+  border: none; border-radius: 50%; background: transparent;
+  color: var(--apgo-muted); cursor: pointer; padding: 0;
+}
+.apgo-mpdp-confirm__close:hover { color: var(--apgo-ink); background: var(--apgo-bg-ash); }
+
+.apgo-mpdp-confirm__summary {
+  display: flex; align-items: center; gap: 14px;
+  padding: 6px 0 18px; margin-top: 4px;
+  border-bottom: 1px solid var(--apgo-line);
+}
+.apgo-mpdp-confirm__thumb { flex: 0 0 auto; }
+.apgo-mpdp-confirm__thumb img {
+  width: 72px; height: 72px; border-radius: 14px; object-fit: cover; display: block;
+  background: var(--apgo-bg-ash);
+}
+.apgo-mpdp-confirm__meta { flex: 1 1 auto; min-width: 0; }
+.apgo-mpdp-confirm__title {
+  margin: 0 0 6px; font-family: var(--apgo-serif);
+  font-size: 15px; line-height: 1.35; color: var(--apgo-ink);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.apgo-mpdp-confirm__price {
+  margin: 0; font-size: 18px; font-weight: 700; color: var(--apgo-ink); letter-spacing: 0.01em;
+}
+
+.apgo-mpdp-confirm__qtyrow {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 0 22px;
+}
+.apgo-mpdp-confirm__qtylabel {
+  font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--apgo-muted); font-weight: 700;
+}
+.apgo-mpdp-confirm__stepper {
+  display: flex; align-items: center;
+  border: 1px solid rgba(94, 111, 93, 0.3); border-radius: 999px; overflow: hidden;
+  background: var(--apgo-bg);
+}
+.apgo-mpdp-confirm__stepper button {
+  width: 42px; height: 42px; border: none; background: transparent;
+  font-size: 18px; color: var(--apgo-ink); cursor: pointer; line-height: 1;
+}
+.apgo-mpdp-confirm__stepper button:hover { background: var(--apgo-bg-ash); }
+.apgo-mpdp-confirm__stepper input {
+  width: 44px; height: 42px; border: none; background: transparent; text-align: center;
+  font-size: 15px; font-weight: 700; color: var(--apgo-ink);
+  -moz-appearance: textfield;
+}
+.apgo-mpdp-confirm__stepper input::-webkit-outer-spin-button,
+.apgo-mpdp-confirm__stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+.apgo-mpdp-confirm__actions { display: flex; }
+.apgo-mpdp-confirm__add,
+.apgo-mpdp-confirm__buy {
+  flex: 1; width: 100%; padding: 16px 0;
+  background: var(--apgo-ink); color: var(--apgo-bg);
+  border: none; border-radius: 999px;
+  font-size: 14px; letter-spacing: 0.1em; font-weight: 700; cursor: pointer;
+  transition: background .18s ease;
+}
+.apgo-mpdp-confirm__add:hover,
+.apgo-mpdp-confirm__buy:hover { background: var(--apgo-sage); }
+
+/* Intent filter — only the tapped action shows */
+.apgo-mpdp-confirm[data-intent="add"] .apgo-mpdp-confirm__buy { display: none; }
+.apgo-mpdp-confirm[data-intent="buy"] .apgo-mpdp-confirm__add { display: none; }
+
+/* Mobile-only — desktop commits directly, never opens the sheet */
+@media (min-width: 1024px) {
+  .apgo-mpdp-confirm { display: none !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .apgo-mpdp-confirm,
+  .apgo-mpdp-confirm__sheet { transition: none; }
+}

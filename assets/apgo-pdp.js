@@ -370,38 +370,46 @@
       });
     });
 
-    // Buy now — submit to /cart/add then redirect to the CART page (not
-    // checkout) so the customer can review the order + any discounts first.
-    $$('[data-apgo-buy-now]', form).forEach(function (btn) {
-      btn.addEventListener('click', function (e) {
-        e.preventDefault();
-        var fd = new FormData(form);
-        fetch('/cart/add.js', {
-          method: 'POST',
-          headers: { 'Accept': 'application/json' },
-          body: fd
-        }).then(function (r) { return r.json(); })
-          .then(function () { window.location.href = '/cart'; })
-          .catch(function () { form.submit(); });
-      });
-    });
+    // Viewport gate — the confirm sheet is a MOBILE-ONLY step (matches
+    // apgo-v3). On desktop (≥1024px) the CTA buttons commit directly; on
+    // mobile they first open the cream confirm sheet.
+    function apgoIsMobileVP() {
+      return !(window.matchMedia && window.matchMedia('(min-width: 1024px)').matches);
+    }
 
-    // Add to cart — intercept native form submit so the browser doesn't
-    // do a full page navigation to /cart. POST to /cart/add.js instead,
-    // then refresh the cart, dispatch the events the rest of the theme
-    // (cart drawer, header count, conditional offers) already listens
-    // for, and pop a success toast. Falls back to a normal submit if the
-    // network fails.
-    form.addEventListener('submit', function (e) {
-      // Don't intercept if user explicitly opted out (rare, e.g. legacy gift form)
-      if (form.hasAttribute('data-apgo-no-ajax')) return;
-      e.preventDefault();
+    // Buy now commit — POST to /cart/add then redirect to the CART page
+    // (not checkout) so the customer can review the order + any discounts.
+    function apgoCommitBuy() {
+      var fd = new FormData(form);
+      return fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Accept': 'application/json' },
+        body: fd
+      }).then(function (r) { return r.json(); })
+        .then(function () { window.location.href = '/cart'; })
+        .catch(function () { form.submit(); });
+    }
 
+    // Add-to-cart commit — POST to /cart/add.js (no page nav), refresh the
+    // cart, fly the product image up to the header cart icon, and dispatch
+    // the cart events the rest of the theme (drawer, header count, offers)
+    // listens for. `srcBtn` is the element the fly animation originates
+    // from (the tapped button, or the sheet's Add button). Returns a
+    // promise that REJECTS on failure so the sheet can stay open.
+    function apgoCommitAdd(srcBtn) {
       var addBtns = $$('[data-apgo-add]', form);
       addBtns.forEach(function (b) { b.setAttribute('disabled', 'disabled'); b.classList.add('is-loading'); });
+      function reenable() {
+        addBtns.forEach(function (b) {
+          b.classList.remove('is-loading');
+          // Re-enable only if the variant is currently available
+          var current = findVariant(readSelectedOptions());
+          if (current && current.available) b.removeAttribute('disabled');
+        });
+      }
 
       var fd = new FormData(form);
-      fetch('/cart/add.js', {
+      return fetch('/cart/add.js', {
         method: 'POST',
         headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
         body: fd
@@ -418,9 +426,7 @@
         .then(function (result) {
           // No success toast — the fly-to-cart animation + header bubble
           // bump are the confirmation. (Error toast on failure is kept.)
-          // Fly the product image up to the header cart icon, then sync
-          // the header bubble count (needs detail.data.itemCount).
-          apgoFlyToCart(addBtns[0]);
+          apgoFlyToCart(srcBtn || addBtns[0]);
           apgoBroadcastCart(result.cart);
 
           // Also fire Horizon's typed events when @theme/events ships, so
@@ -438,22 +444,114 @@
               }
             }).catch(function () { /* theme without @theme/events — fine */ });
           } catch (_) { /* older browsers without dynamic import */ }
+          reenable();
         })
         .catch(function (err) {
           // Surface Shopify's error message if any, otherwise generic
           var msg = (err && err.description) || (err && err.message) || 'Failed to add to cart. Please try again.';
           showApgoCartToast(msg, true);
-        })
-        .then(function () {
-          addBtns.forEach(function (b) {
-            b.classList.remove('is-loading');
-            // Re-enable only if the variant is currently available
-            var values = readSelectedOptions();
-            var current = findVariant(values);
-            if (current && current.available) b.removeAttribute('disabled');
-          });
+          reenable();
+          throw err; // propagate so the sheet stays open on failure
         });
+    }
+
+    // Buy now — mobile opens the confirm sheet; desktop commits directly.
+    $$('[data-apgo-buy-now]', form).forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        if (apgoIsMobileVP()) { apgoOpenConfirm('buy'); return; }
+        apgoCommitBuy();
+      });
     });
+
+    // Add to cart — intercept native form submit so the browser doesn't
+    // do a full page navigation. Mobile opens the confirm sheet; desktop
+    // commits directly via /cart/add.js.
+    form.addEventListener('submit', function (e) {
+      // Don't intercept if user explicitly opted out (rare, e.g. legacy gift form)
+      if (form.hasAttribute('data-apgo-no-ajax')) return;
+      e.preventDefault();
+      if (apgoIsMobileVP()) { apgoOpenConfirm('add'); return; }
+      apgoCommitAdd(null);
+    });
+
+    // ── Mobile confirm sheet ──────────────────────────────────────────
+    // Mirrors apgo-v3: on mobile the sticky Add/Buy first open a cream
+    // confirm sheet (product image, price, qty stepper, one action). The
+    // sheet's own button runs the real commit. Single-variant products →
+    // no variant chips, just qty.
+    var confirmEl     = $('[data-apgo-confirm]', document);
+    var confirmQtyIn  = confirmEl ? $('[data-apgo-confirm-qty-input]', confirmEl) : null;
+    var confirmAddBtn = confirmEl ? $('[data-apgo-confirm-add]', confirmEl) : null;
+    var confirmBuyBtn = confirmEl ? $('[data-apgo-confirm-buy]', confirmEl) : null;
+
+    function apgoOpenConfirm(intent) {
+      // No sheet in DOM (e.g. bundle mode) → fall back to direct commit
+      if (!confirmEl) {
+        if (intent === 'buy') apgoCommitBuy(); else apgoCommitAdd(null);
+        return;
+      }
+      // Seed the sheet qty from the form's current qty
+      var formQty = $('[data-apgo-qty-input]', form);
+      if (confirmQtyIn) confirmQtyIn.value = (formQty && parseInt(formQty.value, 10)) || 1;
+      confirmEl.setAttribute('data-intent', intent); // add | buy → CSS filters the button
+      confirmEl.removeAttribute('hidden');
+      confirmEl.setAttribute('aria-hidden', 'false');
+      requestAnimationFrame(function () { confirmEl.classList.add('is-open'); });
+      document.documentElement.classList.add('apgo-confirm-lock');
+    }
+
+    function apgoCloseConfirm() {
+      if (!confirmEl) return;
+      confirmEl.classList.remove('is-open');
+      confirmEl.setAttribute('aria-hidden', 'true');
+      document.documentElement.classList.remove('apgo-confirm-lock');
+      window.setTimeout(function () {
+        if (!confirmEl.classList.contains('is-open')) confirmEl.setAttribute('hidden', '');
+      }, 280);
+    }
+
+    if (confirmEl) {
+      // Close via X / backdrop / Esc
+      $$('[data-apgo-confirm-close]', confirmEl).forEach(function (el) {
+        el.addEventListener('click', apgoCloseConfirm);
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && confirmEl.classList.contains('is-open')) apgoCloseConfirm();
+      });
+
+      // Sheet qty stepper — writes back into the form qty inputs so the
+      // committed quantity matches what the customer sees in the sheet.
+      $$('[data-apgo-confirm-qty]', confirmEl).forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var q = parseInt(confirmQtyIn ? confirmQtyIn.value : '1', 10);
+          if (isNaN(q) || q < 1) q = 1;
+          if (btn.getAttribute('data-apgo-confirm-qty') === 'up') q += 1;
+          else q = Math.max(1, q - 1);
+          if (confirmQtyIn) confirmQtyIn.value = q;
+          syncQtyInputs(q);
+          onOptionChange();
+        });
+      });
+      if (confirmQtyIn) {
+        confirmQtyIn.addEventListener('change', function () {
+          var q = parseInt(confirmQtyIn.value, 10);
+          if (isNaN(q) || q < 1) q = 1;
+          confirmQtyIn.value = q;
+          syncQtyInputs(q);
+          onOptionChange();
+        });
+      }
+
+      // Sheet Add → commit, fly from the sheet button, then close (stay on page)
+      if (confirmAddBtn) confirmAddBtn.addEventListener('click', function () {
+        apgoCommitAdd(confirmAddBtn).then(apgoCloseConfirm).catch(function () { /* keep sheet open */ });
+      });
+      // Sheet Buy → commit (redirects to /cart)
+      if (confirmBuyBtn) confirmBuyBtn.addEventListener('click', function () {
+        apgoCommitBuy();
+      });
+    }
 
     // Desktop thumb rail → main image swap
     var mainImg = $('[data-apgo-main-img]', form);

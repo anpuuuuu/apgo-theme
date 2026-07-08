@@ -934,6 +934,50 @@
 
     <script type="application/json" data-apgo-variants>{{ product.variants | json }}</script>
   {% endform %}
+
+  {%- comment -%}
+    Mobile confirm sheet — opened by the sticky Add/Buy on ≤1023px (JS
+    viewport gate; desktop commits directly). Cream bottom sheet: product
+    thumb + title + price + qty stepper + one action (Add or Buy, filtered
+    by data-intent). Single-variant products → no variant chips. Not
+    rendered in bundle mode (that flow has its own CTAs).
+  {%- endcomment -%}
+  {%- unless product.metafields.apgo.bundle_enabled -%}
+    <div class="apgo-mpdp-confirm" data-apgo-confirm data-intent="add" role="dialog" aria-modal="true" aria-label="Confirm your order" aria-hidden="true" hidden>
+      <div class="apgo-mpdp-confirm__backdrop" data-apgo-confirm-close></div>
+      <div class="apgo-mpdp-confirm__sheet" role="document">
+        <button type="button" class="apgo-mpdp-confirm__close" data-apgo-confirm-close aria-label="Close">
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+
+        <div class="apgo-mpdp-confirm__summary">
+          {%- if product.featured_media -%}
+            <div class="apgo-mpdp-confirm__thumb">
+              <img src="{{ product.featured_media | image_url: width: 200 }}" alt="{{ product.title | escape }}" width="72" height="72" loading="lazy">
+            </div>
+          {%- endif -%}
+          <div class="apgo-mpdp-confirm__meta">
+            <p class="apgo-mpdp-confirm__title">{{ product.title }}</p>
+            <p class="apgo-mpdp-confirm__price" data-apgo-price>{{ v.price | money }}</p>
+          </div>
+        </div>
+
+        <div class="apgo-mpdp-confirm__qtyrow">
+          <span class="apgo-mpdp-confirm__qtylabel">Quantity</span>
+          <div class="apgo-mpdp-confirm__stepper">
+            <button type="button" data-apgo-confirm-qty="down" aria-label="Decrease quantity">&minus;</button>
+            <input type="text" inputmode="numeric" pattern="[0-9]*" value="1" data-apgo-confirm-qty-input aria-label="Quantity">
+            <button type="button" data-apgo-confirm-qty="up" aria-label="Increase quantity">+</button>
+          </div>
+        </div>
+
+        <div class="apgo-mpdp-confirm__actions">
+          <button type="button" class="apgo-mpdp-confirm__add" data-apgo-confirm-add>Add to cart</button>
+          <button type="button" class="apgo-mpdp-confirm__buy" data-apgo-confirm-buy>Buy now</button>
+        </div>
+      </div>
+    </div>
+  {%- endunless -%}
 </section>
 
 {% schema %}
