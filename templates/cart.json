@@ -117,10 +117,11 @@
       "name": "Gift with Purchase",
       "settings": {
         "section_title": "Special add on",
-        "section_subtitle_my": "Special price for fatherday : 1 per order only",
-        "section_subtitle_sg": "Special price for fatherday : 1 per order only",
+        "section_subtitle_my": "Special price for your purchase: Atomic Coating 360° Special Bundle",
+        "section_subtitle_sg": "Special price for your purchase: Atomic Coating 360° Bundle",
         "trigger_product_list": [
-          "apgo-atomic-car-nano-coating-standard-copy"
+          "apgo-atomic-car-nano-coating-standard-copy",
+          "7-7-✨atomic-coating-360-special-bundle-✨"
         ],
         "max_products": 12,
         "accent_color_start": "#f08418",
