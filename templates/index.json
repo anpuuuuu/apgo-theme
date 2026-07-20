@@ -18,7 +18,7 @@
         "eyebrow": "APGO - Professional Coating Experts",
         "heading": "We specialize in",
         "heading_accent": "Coating",
-        "subheading": "Because it lasts far longer than waxing.",
+        "subheading": "Because it's easier, more durable, and shinier than waxing.",
         "cta_label": "Shop Coating Now",
         "cta_link": "shopify://collections/atomic-coating-series",
         "show_scroll_hint": true,
@@ -34,7 +34,7 @@
           "settings": {
             "product": "apgo-atomic-titanium-crystal-car-nano-coating-premium",
             "custom_image": "shopify://shop_images/0_895dd8bc-acff-4324-859d-5d3466502d8a.png",
-            "badge": ""
+            "badge": "Premium"
           }
         },
         "prod_aurora": {
@@ -42,7 +42,7 @@
           "settings": {
             "product": "apgo-aurora-car-nano-coating-premium",
             "custom_image": "shopify://shop_images/0_99266a1c-3a81-4c37-90c4-54c56bed2d5e.png",
-            "badge": ""
+            "badge": "Enhanced Shine"
           }
         },
         "prod_glaze": {
@@ -50,7 +50,7 @@
           "settings": {
             "product": "apgo-atomic-glaze-car-nano-coating",
             "custom_image": "shopify://shop_images/0_9acc880f-5aaf-4783-918f-c4f9d3e2e2b1.png",
-            "badge": ""
+            "badge": "Best Seller"
           }
         },
         "prod_crystal": {
@@ -58,7 +58,7 @@
           "settings": {
             "product": "apgo-atomic-crystal-car-nano-coating",
             "custom_image": "shopify://shop_images/0.png",
-            "badge": ""
+            "badge": "Extra Smooth"
           }
         },
         "prod_sealing": {
@@ -66,7 +66,7 @@
           "settings": {
             "product": "apgo-atomic-sealing-car-nano-coating",
             "custom_image": "shopify://shop_images/0_55123166-7e3a-4d9a-ba89-c74055380a83.png",
-            "badge": ""
+            "badge": "Enhanced Shine"
           }
         },
         "prod_standard": {
@@ -74,7 +74,7 @@
           "settings": {
             "product": "apgo-atomic-car-nano-coating-standard",
             "custom_image": "shopify://shop_images/0_6be40b97-0127-463c-aa3f-22644fe177e4.png",
-            "badge": ""
+            "badge": "Classic"
           }
         }
       },
@@ -152,7 +152,7 @@
       "settings": {
         "eyebrow": "Live every night",
         "heading": "Cross-border Live Streaming, Quality Witnessed by All",
-        "subheading": "Authentic presentation is the most direct guarantee.",
+        "subheading": "Authentic presentation is the most direct guarantee for customers.",
         "color_scheme": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26",
         "padding-block-start": 0,
         "padding-block-end": 0
@@ -162,24 +162,44 @@
       "type": "apgo-home-compare",
       "name": "APGO Home Compare",
       "blocks": {
+        "row_application": {
+          "type": "row",
+          "settings": {
+            "label": "Application Time",
+            "left_value": "20-30 Minutes",
+            "left_percent": 92,
+            "right_value": "3+ Hours",
+            "right_percent": 22
+          }
+        },
         "row_durability": {
           "type": "row",
           "settings": {
             "label": "Durability",
-            "left_value": "2-3 Years",
-            "left_percent": 95,
+            "left_value": "1-6 Months",
+            "left_percent": 90,
             "right_value": "1-2 Weeks",
-            "right_percent": 8
+            "right_percent": 14
           }
         },
         "row_heat": {
           "type": "row",
           "settings": {
             "label": "Heat Resistance",
-            "left_value": "200°C+",
+            "left_value": "150°C+",
+            "left_percent": 88,
+            "right_value": "45°C",
+            "right_percent": 26
+          }
+        },
+        "row_wash": {
+          "type": "row",
+          "settings": {
+            "label": "Wash Cycles",
+            "left_value": "20+ Washes",
             "left_percent": 90,
-            "right_value": "60°C",
-            "right_percent": 27
+            "right_value": "2 Washes",
+            "right_percent": 10
           }
         },
         "row_gloss": {
@@ -191,28 +211,19 @@
             "right_value": "85%",
             "right_percent": 85
           }
-        },
-        "row_wash": {
-          "type": "row",
-          "settings": {
-            "label": "Wash Cycles",
-            "left_value": "300+ Washes",
-            "left_percent": 95,
-            "right_value": "5-10 Washes",
-            "right_percent": 5
-          }
         }
       },
       "block_order": [
+        "row_application",
         "row_durability",
         "row_heat",
-        "row_gloss",
-        "row_wash"
+        "row_wash",
+        "row_gloss"
       ],
       "settings": {
         "eyebrow": "The honest comparison",
         "heading": "Coating VS Waxing",
-        "subheading": "",
+        "subheading": "Let the data speak for itself, clear at a glance.",
         "col_left_label": "APGO Coating",
         "col_right_label": "Traditional Waxing",
         "color_scheme": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26",
@@ -228,7 +239,7 @@
           "type": "card",
           "settings": {
             "title": "New Car Protection",
-            "description": "Lock in that showroom shine from day one.",
+            "description": "Just purchased a new car and want the best protection.",
             "link": "shopify://collections/2025-new-launch"
           }
         },
@@ -236,7 +247,7 @@
           "type": "card",
           "settings": {
             "title": "Old Car Restoration",
-            "description": "Bring faded, weathered paint back to life.",
+            "description": "Used for a while and want to restore the shine.",
             "link": "shopify://collections/restoration"
           }
         },
@@ -244,7 +255,7 @@
           "type": "card",
           "settings": {
             "title": "DIY Beginner",
-            "description": "Start simple - one bottle, no experience needed.",
+            "description": "First time doing it yourself, need something simple and easy to use.",
             "link": "shopify://products/apgo-atomic-car-nano-coating-standard"
           }
         },
@@ -252,7 +263,7 @@
           "type": "card",
           "settings": {
             "title": "Professional Needs",
-            "description": "Advanced formulas for demanding finishes.",
+            "description": "Seeking the highest level of protection effects.",
             "link": "shopify://collections/atomic-coating-series"
           }
         }
@@ -276,45 +287,45 @@
       "type": "apgo-home-why",
       "name": "APGO Home Why",
       "blocks": {
-        "why_tech": {
-          "type": "advantage",
-          "settings": {
-            "title": "Exclusive Coating Technology",
-            "description": "Formulas developed and refined in-house - not rebottled generic products."
-          }
-        },
         "why_lab": {
           "type": "advantage",
           "settings": {
             "title": "Independent R&D Laboratory",
-            "description": "Our own lab formulates and tests every batch for consistent quality."
+            "description": "Equipped with professional R&D laboratory, all product formulas are personally developed and controlled by the founder, ensuring every bottle is a crystallization of exclusive technology."
           }
         },
         "why_factory": {
           "type": "advantage",
           "settings": {
             "title": "One-Stop Production Factory",
-            "description": "From raw materials to bottling, production stays under one roof."
+            "description": "From raw material procurement to finished product packaging, the entire process is completed in our own factory with strict quality control, every step is handled personally."
+          }
+        },
+        "why_tech": {
+          "type": "advantage",
+          "settings": {
+            "title": "Exclusive Coating Technology",
+            "description": "17 years of technical accumulation, developed multiple exclusive formulas with effects surpassing international manufacturers at more affordable prices."
           }
         },
         "why_cert": {
           "type": "advantage",
           "settings": {
             "title": "Southeast Asian Market Certification",
-            "description": "Trusted and certified across the markets we ship to every day."
+            "description": "Products are hot-selling in Malaysia, Singapore and other regions, withstanding tropical climate tests with quality widely recognized."
           }
         }
       },
       "block_order": [
-        "why_tech",
         "why_lab",
         "why_factory",
+        "why_tech",
         "why_cert"
       ],
       "settings": {
         "eyebrow": "Choose quality and trust",
         "heading": "Why Choose APGO?",
-        "subheading": "",
+        "subheading": "17-year local brand, one-stop control from R&D to production, exclusive technology hot-selling in Southeast Asia.",
         "color_scheme": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26",
         "padding-block-start": 0,
         "padding-block-end": 0
