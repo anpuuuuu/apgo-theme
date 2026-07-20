@@ -174,21 +174,25 @@
   transform: translateX(3px);
 }
 
-/* ── Scroll reveal ──────────────────────────────────────── */
-.apgo-home [data-apgo-reveal] {
+/* ── Scroll reveal ──────────────────────────────────────────
+   Progressive enhancement: the hidden state only applies once
+   apgo-home.js has stamped html.apgo-home-js. No JS (or a broken
+   IntersectionObserver) = content simply renders visible; the JS
+   also runs a timed failsafe sweep that force-reveals everything. */
+html.apgo-home-js .apgo-home [data-apgo-reveal] {
   opacity: 0;
   transform: translateY(22px);
   transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
   transition-delay: var(--apgo-reveal-delay, 0s);
 }
 
-.apgo-home [data-apgo-reveal].is-revealed {
+html.apgo-home-js .apgo-home [data-apgo-reveal].is-revealed {
   opacity: 1;
   transform: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .apgo-home [data-apgo-reveal] {
+  html.apgo-home-js .apgo-home [data-apgo-reveal] {
     opacity: 1;
     transform: none;
     transition: none;
@@ -781,7 +785,8 @@
   background: #5c5c5c;
 }
 
-.apgo-home-compare__row.is-revealed .apgo-home-compare__fill {
+.apgo-home-compare__row.is-revealed .apgo-home-compare__fill,
+html:not(.apgo-home-js) .apgo-home-compare__fill {
   width: var(--apgo-compare-pct, 0%);
 }
 

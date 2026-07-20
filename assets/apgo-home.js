@@ -53,19 +53,26 @@
   }
 
   function animateCount(el) {
+    if (el.dataset.apgoCounted) return;
     var to = parseFloat(el.dataset.apgoCountTo || '0');
     if (reducedMotion || !to) {
+      el.dataset.apgoCounted = '1';
       el.textContent = formatCount(to);
       return;
     }
     var duration = 1400;
     var start = null;
     function step(ts) {
+      if (el.dataset.apgoCounted) return;
       if (start === null) start = ts;
       var progress = Math.min((ts - start) / duration, 1);
       var eased = 1 - Math.pow(1 - progress, 3);
       el.textContent = formatCount(to * eased);
-      if (progress < 1) requestAnimationFrame(step);
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      } else {
+        el.dataset.apgoCounted = '1';
+      }
     }
     requestAnimationFrame(step);
   }
@@ -178,7 +185,28 @@
   }
 
   function initAll(scope) {
+    document.documentElement.classList.add('apgo-home-js');
     (scope || document).querySelectorAll('[data-apgo-home-section]').forEach(initSection);
+    scheduleFailsafe();
+  }
+
+  /* Failsafe: if IntersectionObserver / rAF never fire (broken embedder,
+     ancient browser), force-reveal everything and finalize counters so the
+     page is never left invisible. */
+  var failsafeTimer = null;
+  function scheduleFailsafe() {
+    if (failsafeTimer) clearTimeout(failsafeTimer);
+    failsafeTimer = setTimeout(function () {
+      document.querySelectorAll('.apgo-home [data-apgo-reveal]:not(.is-revealed)').forEach(function (el) {
+        el.classList.add('is-revealed');
+      });
+      document.querySelectorAll('.apgo-home [data-apgo-count]').forEach(function (el) {
+        if (!el.dataset.apgoCounted) {
+          el.dataset.apgoCounted = '1';
+          el.textContent = formatCount(parseFloat(el.dataset.apgoCountTo || '0'));
+        }
+      });
+    }, 2200);
   }
 
   if (document.readyState === 'loading') {
