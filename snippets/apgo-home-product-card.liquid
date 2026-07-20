@@ -1,0 +1,81 @@
+{%- doc -%}
+  APGO homepage product card (used by sections/apgo-home-products.liquid).
+
+  Deliberately independent from apgo-event-listing-card: the special-event
+  card is under active redesign (gold gradient / Add-to-cart stubs) and the
+  homepage must not inherit that churn. This card keeps the established
+  listing look — dark card, white two-line title, orange price left,
+  plain-orange + (variant drawer) right — via the shared price snippet
+  (money filter → RM / Markets SGD) and apgo-collection-variant-trigger.
+
+  @param {object} product - Product object
+  @param {string} card_uid - Unique id suffix for this card
+  @param {object} [custom_image] - Optional image override (homepage art shots)
+{%- enddoc -%}
+
+{% liquid
+  assign apgo_home_variant = product.selected_or_first_available_variant
+  capture apgo_home_lv_raw
+    render 'apgo-collection-listing-variant-id', product: product
+  endcapture
+  assign apgo_home_lv_id = apgo_home_lv_raw | strip | plus: 0
+  if apgo_home_lv_id != 0
+    for v in product.variants
+      if v.id == apgo_home_lv_id
+        assign apgo_home_variant = v
+        break
+      endif
+    endfor
+  endif
+
+  assign apgo_home_image = custom_image
+  if apgo_home_image == blank
+    assign apgo_home_image = apgo_home_variant.featured_image
+  endif
+  if apgo_home_image == blank
+    assign apgo_home_image = apgo_home_variant.image
+  endif
+  if apgo_home_image == blank and product.featured_media != blank
+    assign apgo_home_image = product.featured_media.preview_image
+  endif
+%}
+
+<article class="apgo-home-card" data-product-id="{{ product.id }}" id="apgo-home-card-{{ card_uid }}">
+  <a href="{{ apgo_home_variant.url }}" class="apgo-home-card__gallery">
+    {% if apgo_home_image != blank %}
+      <img
+        src="{{ apgo_home_image | image_url: width: 600 }}"
+        alt="{{ product.title | escape }}"
+        loading="lazy"
+        width="600"
+        height="600"
+      >
+    {% else %}
+      {{ 'product-1' | placeholder_svg_tag: 'apgo-home-card__placeholder' }}
+    {% endif %}
+  </a>
+  <div class="apgo-home-card__body">
+    <h3 class="apgo-home-card__title">
+      <a href="{{ apgo_home_variant.url }}">{{ product.title }}</a>
+    </h3>
+    <div class="apgo-home-card__footer apgo-card-price-row">
+      <div class="apgo-home-card__price">
+        <product-price data-product-id="{{ product.id }}">
+          {% render 'price',
+            product_resource: product,
+            listing_variant: apgo_home_variant,
+            listing_card_discount: true,
+            show_sale_price_first: true,
+            show_unit_price: false
+          %}
+        </product-price>
+      </div>
+      {% if product.available %}
+        {% render 'apgo-collection-variant-trigger',
+          product: product,
+          selected_variant: apgo_home_variant
+        %}
+      {% endif %}
+    </div>
+  </div>
+</article>

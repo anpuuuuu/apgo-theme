@@ -374,47 +374,63 @@
   }
 }
 
-/* Event-style card adaptation, scoped to the homepage products grid.
-   Mirrors assets/apgo-event-page.css card rules without the
-   body.apgo-special-event-page scope. */
-.apgo-home-products .apgo-event-listing-card .product-card__content {
+/* Homepage product card (snippets/apgo-home-product-card.liquid).
+   Same established look as the collection listing card — dark card,
+   white two-line title, orange price left, plain-orange + right —
+   but with its own classes, decoupled from the special-event card. */
+.apgo-home-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   background: var(--apgo-home-card);
-  border: none;
   border-radius: var(--apgo-home-radius);
   overflow: hidden;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
 }
 
-.apgo-home-products .apgo-event-listing-card__gallery {
+.apgo-home-card__gallery {
+  display: block;
+  aspect-ratio: 1 / 1;
   background: #ffffff;
-  border-radius: 0;
 }
 
-.apgo-home-products .apgo-event-listing-card__body {
+.apgo-home-card__gallery img,
+.apgo-home-card__gallery .apgo-home-card__placeholder {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.apgo-home-card__body {
   display: flex;
   flex-direction: column;
+  flex: 1 1 auto;
   gap: 8px;
   padding: 10px 10px 12px;
 }
 
-.apgo-home-products .apgo-event-listing-card__title {
+.apgo-home-card__title {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   flex: 0 0 auto;
+  margin: 0;
   color: var(--apgo-home-paper);
   font-size: clamp(0.7rem, 2.75vw, 0.875rem);
   font-weight: 600;
   line-height: 1.3;
   letter-spacing: 0.01em;
+  text-transform: none;
 }
 
-.apgo-home-products .apgo-event-listing-card__title a {
+.apgo-home-card__title a {
   color: inherit;
+  text-decoration: none;
 }
 
-.apgo-home-products .apgo-event-listing-card__footer.apgo-card-price-row {
+.apgo-home-card__footer.apgo-card-price-row {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -425,17 +441,17 @@
   margin-top: auto;
 }
 
-.apgo-home-products .apgo-event-listing-card__price {
+.apgo-home-card__price {
   flex: 1 1 auto;
   min-width: 0;
 }
 
-.apgo-home-products .apgo-event-listing-card__price product-price {
+.apgo-home-card__price product-price {
   display: block;
   width: 100%;
 }
 
-.apgo-home-products .apgo-event-listing-card .price--listing-discount .price-sale-row {
+.apgo-home-card .price--listing-discount .price-sale-row {
   display: inline-flex;
   flex-wrap: wrap;
   align-items: baseline;
@@ -443,14 +459,14 @@
   max-width: 100%;
 }
 
-.apgo-home-products .apgo-event-listing-card .price {
+.apgo-home-card .price {
   color: var(--apgo-home-primary);
   font-size: clamp(0.875rem, 3.1vw, 1.0625rem);
   font-weight: 700;
   letter-spacing: -0.01em;
 }
 
-.apgo-home-products .apgo-event-listing-card .price--listing-discount .price-discount-pct {
+.apgo-home-card .price--listing-discount .price-discount-pct {
   padding: 0.15em 0.45em;
   border-radius: 4px;
   background: rgba(240, 132, 24, 0.22);
@@ -459,12 +475,13 @@
   font-weight: 700;
 }
 
-.apgo-home-products .apgo-event-listing-card .apgo-coll-drawer-pack {
+.apgo-home-card .apgo-coll-drawer-pack {
   flex: 0 0 auto;
   margin-left: auto;
+  align-self: center;
 }
 
-.apgo-home-products .apgo-event-listing-card .apgo-coll-drawer-open {
+.apgo-home-card .apgo-coll-drawer-open {
   width: auto;
   height: auto;
   min-width: 0;
@@ -477,20 +494,20 @@
   flex-shrink: 0;
 }
 
-.apgo-home-products .apgo-event-listing-card .apgo-coll-drawer-open:hover,
-.apgo-home-products .apgo-event-listing-card .apgo-coll-drawer-open:focus-visible {
+.apgo-home-card .apgo-coll-drawer-open:hover,
+.apgo-home-card .apgo-coll-drawer-open:focus-visible {
   background: none;
   color: var(--apgo-home-primary);
   opacity: 0.75;
 }
 
-.apgo-home-products .apgo-event-listing-card .apgo-coll-drawer-open__icon,
-.apgo-home-products .apgo-event-listing-card .apgo-coll-drawer-open__icon svg {
+.apgo-home-card .apgo-coll-drawer-open__icon,
+.apgo-home-card .apgo-coll-drawer-open__icon svg {
   width: 0.9rem;
   height: 0.9rem;
 }
 
-.apgo-home-products .apgo-event-listing-card .apgo-coll-drawer-open__icon svg {
+.apgo-home-card .apgo-coll-drawer-open__icon svg {
   --icon-stroke-width: 2px;
 }
 

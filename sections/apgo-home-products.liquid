@@ -1,9 +1,9 @@
 {% comment %}
   APGO Home — Coating Series (rebuild of legacy "Homepage S5 Eng").
-  Real product pickers instead of hardcoded IDs. Cards reuse the shared
-  apgo-event-listing-card snippet (same UI as special-event / collection),
-  so prices come from the price snippet (money filter → RM / Markets SGD)
-  and the + button opens the variant drawer.
+  Real product pickers instead of hardcoded IDs. Cards use the dedicated
+  apgo-home-product-card snippet (independent from the special-event card,
+  which is under separate redesign); prices come from the price snippet
+  (money filter → RM / Markets SGD) and the + button opens the variant drawer.
   A "Best Seller" flag renders automatically for products tagged "hot"
   (or use the block's Badge setting to override).
 {% endcomment %}
@@ -50,9 +50,8 @@
             {% if flag_text != blank %}
               <span class="apgo-home-products__flag">{{ flag_text | escape }}</span>
             {% endif %}
-            {% render 'apgo-event-listing-card',
+            {% render 'apgo-home-product-card',
               product: card_product,
-              section_id: section.id,
               card_uid: block.id,
               custom_image: block.settings.custom_image
             %}
