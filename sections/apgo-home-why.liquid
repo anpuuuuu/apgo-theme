@@ -1,0 +1,160 @@
+{% comment %}
+  APGO Home — Why APGO (rebuild of legacy custom-liquid "Homepage S7 Eng").
+  Four advantage cards, unified orange accent. Shares apgo-home.css/js.
+{% endcomment %}
+
+{{ 'apgo-home.css' | asset_url | stylesheet_tag }}
+
+<section
+  id="apgo-home-why-{{ section.id }}"
+  class="apgo-home apgo-home-why color-{{ section.settings.color_scheme }}"
+  data-apgo-home-section="why"
+  data-apgo-home-init="reveal"
+  style="
+    --padding-block-start: {{ section.settings.padding-block-start }}px;
+    --padding-block-end: {{ section.settings.padding-block-end }}px;
+  "
+>
+  <div class="apgo-home__container">
+    <header class="apgo-home__header apgo-home__header--center" data-apgo-reveal>
+      {% if section.settings.eyebrow != blank %}
+        <span class="apgo-home__eyebrow">{{ section.settings.eyebrow | escape }}</span>
+      {% endif %}
+      <h2 class="apgo-home__heading">{{ section.settings.heading | escape }}</h2>
+      {% if section.settings.subheading != blank %}
+        <p class="apgo-home__sub">{{ section.settings.subheading | escape }}</p>
+      {% endif %}
+    </header>
+
+    <div class="apgo-home-why__grid">
+      {% for block in section.blocks %}
+        <article
+          class="apgo-home-why__card"
+          data-apgo-reveal
+          style="--apgo-reveal-delay: {{ forloop.index0 | times: 0.06 }}s"
+          {{ block.shopify_attributes }}
+        >
+          <span class="apgo-home-why__tick" aria-hidden="true"></span>
+          <h3 class="apgo-home-why__title">{{ block.settings.title | escape }}</h3>
+          {% if block.settings.description != blank %}
+            <p class="apgo-home-why__desc">{{ block.settings.description | escape }}</p>
+          {% endif %}
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<script src="{{ 'apgo-home.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "APGO Home — Why APGO",
+  "tag": "section",
+  "class": "apgo-home-why-wrapper",
+  "enabled_on": {
+    "templates": ["index"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Choose quality and trust"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Why Choose APGO?"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Extra top padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Extra bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "advantage",
+      "name": "Advantage",
+      "limit": 6,
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Exclusive Coating Technology"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "APGO Home — Why APGO",
+      "category": "APGO",
+      "blocks": [
+        {
+          "type": "advantage",
+          "settings": {
+            "title": "Exclusive Coating Technology",
+            "description": "Formulas developed and refined in-house — not rebottled generic products."
+          }
+        },
+        {
+          "type": "advantage",
+          "settings": {
+            "title": "Independent R&D Laboratory",
+            "description": "Our own lab formulates and tests every batch for consistent quality."
+          }
+        },
+        {
+          "type": "advantage",
+          "settings": {
+            "title": "One-Stop Production Factory",
+            "description": "From raw materials to bottling, production stays under one roof."
+          }
+        },
+        {
+          "type": "advantage",
+          "settings": {
+            "title": "Southeast Asian Market Certification",
+            "description": "Trusted and certified across the markets we ship to every day."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

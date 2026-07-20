@@ -1,0 +1,148 @@
+{% comment %}
+  APGO Home — Brand Story (rebuild of legacy "Homepage S8 Eng").
+  Mobile-compressed vertical timeline: orange rail on the left,
+  milestones reveal one by one on scroll.
+{% endcomment %}
+
+{{ 'apgo-home.css' | asset_url | stylesheet_tag }}
+
+<section
+  id="apgo-home-story-{{ section.id }}"
+  class="apgo-home apgo-home-story color-{{ section.settings.color_scheme }}"
+  data-apgo-home-section="story"
+  data-apgo-home-init="reveal"
+  style="
+    --padding-block-start: {{ section.settings.padding-block-start }}px;
+    --padding-block-end: {{ section.settings.padding-block-end }}px;
+  "
+>
+  <div class="apgo-home__container apgo-home__container--narrow">
+    <header class="apgo-home__header" data-apgo-reveal>
+      {% if section.settings.eyebrow != blank %}
+        <span class="apgo-home__eyebrow">{{ section.settings.eyebrow | escape }}</span>
+      {% endif %}
+      <h2 class="apgo-home__heading">{{ section.settings.heading | escape }}</h2>
+      {% if section.settings.intro != blank %}
+        <p class="apgo-home__sub">{{ section.settings.intro | escape }}</p>
+      {% endif %}
+    </header>
+
+    <ol class="apgo-home-story__list">
+      {% for block in section.blocks %}
+        <li
+          class="apgo-home-story__item"
+          data-apgo-reveal
+          style="--apgo-reveal-delay: {{ forloop.index0 | times: 0.05 }}s"
+          {{ block.shopify_attributes }}
+        >
+          {% if block.settings.year != blank %}
+            <span class="apgo-home-story__year">{{ block.settings.year | escape }}</span>
+          {% endif %}
+          <h3 class="apgo-home-story__title">{{ block.settings.title | escape }}</h3>
+          {% if block.settings.description != blank %}
+            <p class="apgo-home-story__desc">{{ block.settings.description | escape }}</p>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ol>
+  </div>
+</section>
+
+<script src="{{ 'apgo-home.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "APGO Home — Brand Story",
+  "tag": "section",
+  "class": "apgo-home-story-wrapper",
+  "enabled_on": {
+    "templates": ["index"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Since day one"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "APGO Brand Story"
+    },
+    {
+      "type": "textarea",
+      "id": "intro",
+      "label": "Intro"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Extra top padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Extra bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "milestone",
+      "name": "Milestone",
+      "limit": 12,
+      "settings": [
+        {
+          "type": "text",
+          "id": "year",
+          "label": "Year"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "APGO Brand Born"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "APGO Home — Brand Story",
+      "category": "APGO",
+      "blocks": [
+        { "type": "milestone", "settings": { "title": "Electronics Development Foundation" } },
+        { "type": "milestone", "settings": { "title": "Established Dashcam Factory" } },
+        { "type": "milestone", "settings": { "title": "Developed First Generation Car Wash Coating" } },
+        { "type": "milestone", "settings": { "title": "APGO Brand Born" } },
+        { "type": "milestone", "settings": { "title": "Entered International Markets" } },
+        { "type": "milestone", "settings": { "title": "Media Recognition & Endorsement" } },
+        { "type": "milestone", "settings": { "title": "Complete Product Upgrade" } },
+        { "type": "milestone", "settings": { "title": "Sales Milestone" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

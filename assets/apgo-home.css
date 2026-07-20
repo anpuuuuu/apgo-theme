@@ -1,0 +1,1020 @@
+/*
+  APGO Homepage — shared stylesheet for all apgo-home-* sections.
+
+  Scope discipline:
+  - Every rule lives under .apgo-home / .apgo-home-<section> prefixes.
+  - No bare element selectors, no `*` resets, no html/body rules — the old
+    custom-liquid homepage leaked global resets and broke the sticky header.
+  - font-family is intentionally never declared: layout/theme.liquid forces
+    Poppins + Microsoft JhengHei globally with !important.
+
+  Breakpoints (mobile-first, aligned with the theme's 749/750 split):
+    base = phone (designed at 375px, tolerant down to 360px)
+    @media (min-width: 750px)  = tablet
+    @media (min-width: 1024px) = desktop
+*/
+
+/* ── Tokens ─────────────────────────────────────────────── */
+.apgo-home {
+  --apgo-home-primary: #f08418;
+  --apgo-home-primary-light: #ff9a3c;
+  --apgo-home-red: #a42325;
+  --apgo-home-cream: #fcead8;
+  --apgo-home-ink: #000000;
+  --apgo-home-paper: #ffffff;
+  --apgo-home-card: #1a1a1a;
+  --apgo-home-card-2: #232323;
+  --apgo-home-track: #2d2d2d;
+  --apgo-home-text-dim: #b0b0b0;
+  --apgo-home-text-mute: #8a8a8a;
+  --apgo-home-line: rgba(255, 255, 255, 0.08);
+  --apgo-home-orange-tint: rgba(240, 132, 24, 0.12);
+  --apgo-home-orange-line: rgba(240, 132, 24, 0.35);
+  --apgo-home-radius: 12px;
+  --apgo-home-radius-lg: 18px;
+  --apgo-home-container: 1200px;
+  --apgo-home-gutter: 16px;
+  --apgo-home-pad: clamp(56px, 12vw, 104px);
+}
+
+@media (min-width: 750px) {
+  .apgo-home {
+    --apgo-home-gutter: 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .apgo-home {
+    --apgo-home-gutter: 32px;
+  }
+}
+
+/* ── Section shell ──────────────────────────────────────── */
+.apgo-home {
+  background: var(--apgo-home-ink);
+  color: var(--apgo-home-paper);
+  padding-block-start: calc(var(--apgo-home-pad) + var(--padding-block-start, 0px));
+  padding-block-end: calc(var(--apgo-home-pad) + var(--padding-block-end, 0px));
+  overflow: clip;
+}
+
+.apgo-home__container {
+  max-width: var(--apgo-home-container);
+  margin-inline: auto;
+  padding-inline: var(--apgo-home-gutter);
+}
+
+.apgo-home__container--narrow {
+  max-width: 760px;
+}
+
+/* ── Shared type ────────────────────────────────────────── */
+.apgo-home__eyebrow {
+  display: block;
+  margin: 0 0 12px;
+  color: var(--apgo-home-primary);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.apgo-home__heading {
+  margin: 0;
+  color: var(--apgo-home-paper);
+  font-size: clamp(26px, 7vw, 40px);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  text-transform: none;
+}
+
+.apgo-home__accent {
+  color: var(--apgo-home-primary);
+}
+
+.apgo-home__sub {
+  margin: 12px 0 0;
+  color: var(--apgo-home-text-dim);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.apgo-home__header {
+  margin-bottom: clamp(28px, 6vw, 48px);
+}
+
+.apgo-home__header--center {
+  text-align: center;
+}
+
+.apgo-home__header--center .apgo-home__sub {
+  margin-inline: auto;
+  max-width: 560px;
+}
+
+@media (min-width: 750px) {
+  .apgo-home__eyebrow {
+    font-size: 12px;
+  }
+
+  .apgo-home__sub {
+    font-size: 15px;
+  }
+}
+
+/* ── CTA buttons (thumb-friendly ≥48px) ─────────────────── */
+.apgo-home__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 13px 30px;
+  border: none;
+  border-radius: 999px;
+  background: var(--apgo-home-primary);
+  color: var(--apgo-home-ink);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.apgo-home__cta:hover {
+  background: var(--apgo-home-primary-light);
+  color: var(--apgo-home-ink);
+}
+
+.apgo-home__cta:active {
+  transform: scale(0.97);
+}
+
+.apgo-home__cta--ghost {
+  background: transparent;
+  border: 1.5px solid var(--apgo-home-orange-line);
+  color: var(--apgo-home-primary);
+}
+
+.apgo-home__cta--ghost:hover {
+  background: var(--apgo-home-orange-tint);
+  color: var(--apgo-home-primary);
+}
+
+.apgo-home__cta-arrow {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.apgo-home__cta:hover .apgo-home__cta-arrow {
+  transform: translateX(3px);
+}
+
+/* ── Scroll reveal ──────────────────────────────────────── */
+.apgo-home [data-apgo-reveal] {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--apgo-reveal-delay, 0s);
+}
+
+.apgo-home [data-apgo-reveal].is-revealed {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .apgo-home [data-apgo-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ── Hero (S1+S2: video-background hero) ────────────────── */
+.apgo-home-hero {
+  padding-block: 0;
+}
+
+.apgo-home-hero__stage {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  min-height: min(88svh, 760px);
+  overflow: hidden;
+}
+
+@supports not (height: 1svh) {
+  .apgo-home-hero__stage {
+    min-height: min(88vh, 760px);
+  }
+}
+
+.apgo-home-hero__media,
+.apgo-home-hero__poster,
+.apgo-home-hero__video {
+  position: absolute;
+  inset: 0;
+}
+
+.apgo-home-hero__poster,
+.apgo-home-hero__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.apgo-home-hero__video {
+  opacity: 0;
+  transition: opacity 0.9s ease;
+}
+
+.apgo-home-hero__stage.is-playing .apgo-home-hero__video {
+  opacity: 1;
+}
+
+.apgo-home-hero__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.92) 0%,
+    rgba(0, 0, 0, 0.45) 42%,
+    rgba(0, 0, 0, 0.25) 68%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
+}
+
+.apgo-home-hero__content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 680px;
+  margin-inline: auto;
+  padding-inline: var(--apgo-home-gutter);
+  padding-block-end: clamp(56px, 12vh, 96px);
+  text-align: center;
+}
+
+.apgo-home-hero__heading {
+  margin: 0;
+  font-size: clamp(34px, 9.5vw, 62px);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  color: var(--apgo-home-paper);
+}
+
+.apgo-home-hero__heading .apgo-home__accent {
+  display: inline-block;
+}
+
+.apgo-home-hero__sub {
+  margin: 14px 0 22px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.apgo-home-hero__hint {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  z-index: 1;
+  width: 2px;
+  height: 26px;
+  border-radius: 2px;
+  background: var(--apgo-home-orange-line);
+  overflow: hidden;
+}
+
+.apgo-home-hero__hint::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  top: -40%;
+  height: 40%;
+  background: var(--apgo-home-primary);
+  animation: apgo-home-hint 1.8s ease-in-out infinite;
+}
+
+@keyframes apgo-home-hint {
+  0% {
+    top: -40%;
+  }
+  60%,
+  100% {
+    top: 110%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .apgo-home-hero__hint::after {
+    animation: none;
+    top: 30%;
+  }
+}
+
+@media (min-width: 750px) {
+  .apgo-home-hero__sub {
+    font-size: 16px;
+  }
+}
+
+/* ── Products (S5: 6 picker cards, event-card style) ────── */
+.apgo-home-products__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.apgo-home-products__item {
+  position: relative;
+  min-width: 0;
+}
+
+.apgo-home-products__flag {
+  position: absolute;
+  z-index: 2;
+  top: 8px;
+  left: 8px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: var(--apgo-home-primary);
+  color: var(--apgo-home-ink);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.apgo-home-products__footer {
+  margin-top: clamp(24px, 5vw, 36px);
+  text-align: center;
+}
+
+@media (min-width: 750px) {
+  .apgo-home-products__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .apgo-home-products__grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 16px;
+  }
+}
+
+/* Event-style card adaptation, scoped to the homepage products grid.
+   Mirrors assets/apgo-event-page.css card rules without the
+   body.apgo-special-event-page scope. */
+.apgo-home-products .apgo-event-listing-card .product-card__content {
+  background: var(--apgo-home-card);
+  border: none;
+  border-radius: var(--apgo-home-radius);
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+}
+
+.apgo-home-products .apgo-event-listing-card__gallery {
+  background: #ffffff;
+  border-radius: 0;
+}
+
+.apgo-home-products .apgo-event-listing-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 10px 12px;
+}
+
+.apgo-home-products .apgo-event-listing-card__title {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex: 0 0 auto;
+  color: var(--apgo-home-paper);
+  font-size: clamp(0.7rem, 2.75vw, 0.875rem);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+}
+
+.apgo-home-products .apgo-event-listing-card__title a {
+  color: inherit;
+}
+
+.apgo-home-products .apgo-event-listing-card__footer.apgo-card-price-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  margin-top: auto;
+}
+
+.apgo-home-products .apgo-event-listing-card__price {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.apgo-home-products .apgo-event-listing-card__price product-price {
+  display: block;
+  width: 100%;
+}
+
+.apgo-home-products .apgo-event-listing-card .price--listing-discount .price-sale-row {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35em 0.45em;
+  max-width: 100%;
+}
+
+.apgo-home-products .apgo-event-listing-card .price {
+  color: var(--apgo-home-primary);
+  font-size: clamp(0.875rem, 3.1vw, 1.0625rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.apgo-home-products .apgo-event-listing-card .price--listing-discount .price-discount-pct {
+  padding: 0.15em 0.45em;
+  border-radius: 4px;
+  background: rgba(240, 132, 24, 0.22);
+  color: var(--apgo-home-primary);
+  font-size: 0.72em;
+  font-weight: 700;
+}
+
+.apgo-home-products .apgo-event-listing-card .apgo-coll-drawer-pack {
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+
+.apgo-home-products .apgo-event-listing-card .apgo-coll-drawer-open {
+  width: auto;
+  height: auto;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--apgo-home-primary);
+  opacity: 1;
+  flex-shrink: 0;
+}
+
+.apgo-home-products .apgo-event-listing-card .apgo-coll-drawer-open:hover,
+.apgo-home-products .apgo-event-listing-card .apgo-coll-drawer-open:focus-visible {
+  background: none;
+  color: var(--apgo-home-primary);
+  opacity: 0.75;
+}
+
+.apgo-home-products .apgo-event-listing-card .apgo-coll-drawer-open__icon,
+.apgo-home-products .apgo-event-listing-card .apgo-coll-drawer-open__icon svg {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+.apgo-home-products .apgo-event-listing-card .apgo-coll-drawer-open__icon svg {
+  --icon-stroke-width: 2px;
+}
+
+/* ── Live proof (S3: stat band + live videos) ───────────── */
+.apgo-home-live__stats {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 6px;
+  scrollbar-width: none;
+}
+
+.apgo-home-live__stats::-webkit-scrollbar {
+  display: none;
+}
+
+.apgo-home-live__stat {
+  flex: 1 0 132px;
+  min-width: 132px;
+  scroll-snap-align: start;
+  padding: 18px 14px;
+  border: 1px solid var(--apgo-home-line);
+  border-radius: 14px;
+  background: var(--apgo-home-card);
+  text-align: center;
+}
+
+.apgo-home-live__value {
+  display: block;
+  color: var(--apgo-home-primary);
+  font-size: clamp(22px, 6vw, 32px);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+.apgo-home-live__label {
+  display: block;
+  margin-top: 6px;
+  color: var(--apgo-home-text-dim);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.apgo-home-live__videos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: clamp(20px, 4vw, 32px);
+}
+
+.apgo-home-live__video-card {
+  position: relative;
+  aspect-ratio: 9 / 16;
+  border-radius: var(--apgo-home-radius-lg);
+  overflow: hidden;
+  background: var(--apgo-home-card);
+}
+
+.apgo-home-live__video-card video,
+.apgo-home-live__video-card img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.apgo-home-live__badge {
+  position: absolute;
+  z-index: 2;
+  top: 10px;
+  left: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.55);
+  color: var(--apgo-home-paper);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.apgo-home-live__badge::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--apgo-home-primary);
+  animation: apgo-home-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes apgo-home-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.8);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .apgo-home-live__badge::before {
+    animation: none;
+  }
+}
+
+.apgo-home-live__play {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: none;
+  background: rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: background 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.apgo-home-live__play:hover {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.apgo-home-live__play-ring {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border: 1.5px solid var(--apgo-home-primary);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.apgo-home-live__play-ring svg {
+  width: 18px;
+  height: 18px;
+  fill: var(--apgo-home-primary);
+  margin-left: 2px;
+}
+
+.apgo-home-live__video-card.is-started .apgo-home-live__play {
+  display: none;
+}
+
+.apgo-home-live__caption {
+  position: absolute;
+  z-index: 2;
+  inset-inline: 0;
+  bottom: 0;
+  padding: 24px 12px 10px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));
+  color: var(--apgo-home-paper);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  pointer-events: none;
+}
+
+@media (min-width: 750px) {
+  .apgo-home-live__stat {
+    flex-basis: 0;
+    min-width: 0;
+  }
+
+  .apgo-home-live__videos {
+    grid-template-columns: repeat(2, 260px);
+    justify-content: center;
+    gap: 16px;
+  }
+}
+
+/* ── Compare (S4: coating vs waxing bars) ───────────────── */
+.apgo-home-compare__panel {
+  padding: clamp(18px, 4vw, 32px);
+  border: 1px solid var(--apgo-home-line);
+  border-radius: var(--apgo-home-radius-lg);
+  background: var(--apgo-home-card);
+}
+
+.apgo-home-compare__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin-bottom: 18px;
+}
+
+.apgo-home-compare__legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--apgo-home-text-dim);
+}
+
+.apgo-home-compare__legend-item::before {
+  content: '';
+  width: 9px;
+  height: 9px;
+  border-radius: 3px;
+  background: var(--apgo-home-track);
+}
+
+.apgo-home-compare__legend-item--left {
+  color: var(--apgo-home-paper);
+}
+
+.apgo-home-compare__legend-item--left::before {
+  background: var(--apgo-home-primary);
+}
+
+.apgo-home-compare__row {
+  padding-block: 14px;
+  border-top: 1px solid var(--apgo-home-line);
+}
+
+.apgo-home-compare__row:first-of-type {
+  border-top: none;
+  padding-top: 0;
+}
+
+.apgo-home-compare__metric {
+  margin: 0 0 10px;
+  color: var(--apgo-home-paper);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.apgo-home-compare__bar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.apgo-home-compare__bar + .apgo-home-compare__bar {
+  margin-top: 7px;
+}
+
+.apgo-home-compare__track {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--apgo-home-track);
+  overflow: hidden;
+}
+
+.apgo-home-compare__fill {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: 4px;
+  background: var(--apgo-home-primary);
+  transition: width 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.15s;
+}
+
+.apgo-home-compare__bar--right .apgo-home-compare__fill {
+  background: #5c5c5c;
+}
+
+.apgo-home-compare__row.is-revealed .apgo-home-compare__fill {
+  width: var(--apgo-compare-pct, 0%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .apgo-home-compare__fill {
+    transition: none;
+    width: var(--apgo-compare-pct, 0%);
+  }
+}
+
+.apgo-home-compare__value {
+  min-width: 76px;
+  text-align: right;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--apgo-home-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.apgo-home-compare__bar--right .apgo-home-compare__value {
+  color: var(--apgo-home-text-mute);
+  font-weight: 600;
+}
+
+@media (min-width: 750px) {
+  .apgo-home-compare__metric {
+    font-size: 14px;
+  }
+
+  .apgo-home-compare__value {
+    min-width: 96px;
+    font-size: 13px;
+  }
+}
+
+/* ── Guide (S6: scenario cards) ─────────────────────────── */
+.apgo-home-guide__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.apgo-home-guide__card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 44px;
+  padding: 18px 48px 18px 18px;
+  border: 1px solid var(--apgo-home-line);
+  border-radius: var(--apgo-home-radius-lg);
+  background: var(--apgo-home-card);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.apgo-home-guide__card:hover {
+  border-color: var(--apgo-home-orange-line);
+  transform: translateY(-2px);
+}
+
+.apgo-home-guide__index {
+  color: var(--apgo-home-primary);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+
+.apgo-home-guide__title {
+  margin: 0;
+  color: var(--apgo-home-paper);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.apgo-home-guide__desc {
+  margin: 0;
+  color: var(--apgo-home-text-dim);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.apgo-home-guide__arrow {
+  position: absolute;
+  top: 18px;
+  right: 16px;
+  color: var(--apgo-home-primary);
+  font-size: 16px;
+  font-weight: 600;
+  transition: transform 0.2s ease;
+}
+
+.apgo-home-guide__card:hover .apgo-home-guide__arrow {
+  transform: translateX(3px);
+}
+
+@media (min-width: 750px) {
+  .apgo-home-guide__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .apgo-home-guide__grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .apgo-home-guide__card {
+    padding: 22px 22px 24px;
+  }
+
+  .apgo-home-guide__arrow {
+    top: auto;
+    bottom: 20px;
+  }
+}
+
+/* ── Why (S7: advantages, unified orange accent) ────────── */
+.apgo-home-why__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.apgo-home-why__card {
+  padding: 20px 18px;
+  border: 1px solid var(--apgo-home-line);
+  border-radius: var(--apgo-home-radius-lg);
+  background: var(--apgo-home-card);
+}
+
+.apgo-home-why__tick {
+  display: block;
+  width: 28px;
+  height: 3px;
+  margin-bottom: 14px;
+  border-radius: 2px;
+  background: var(--apgo-home-primary);
+}
+
+.apgo-home-why__title {
+  margin: 0 0 8px;
+  color: var(--apgo-home-paper);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.apgo-home-why__desc {
+  margin: 0;
+  color: var(--apgo-home-text-dim);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+@media (min-width: 750px) {
+  .apgo-home-why__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .apgo-home-why__grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .apgo-home-why__card {
+    padding: 26px 22px;
+  }
+}
+
+/* ── Story (S8: timeline) ───────────────────────────────── */
+.apgo-home-story__list {
+  position: relative;
+  margin: 0;
+  padding: 0 0 0 26px;
+  list-style: none;
+}
+
+.apgo-home-story__list::before {
+  content: '';
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  left: 7px;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--apgo-home-orange-line);
+}
+
+.apgo-home-story__item {
+  position: relative;
+  padding-bottom: 26px;
+}
+
+.apgo-home-story__item:last-child {
+  padding-bottom: 0;
+}
+
+.apgo-home-story__item::before {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: -25px;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--apgo-home-primary);
+  border-radius: 50%;
+  background: var(--apgo-home-ink);
+}
+
+.apgo-home-story__year {
+  display: inline-block;
+  margin-bottom: 4px;
+  color: var(--apgo-home-primary);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+.apgo-home-story__title {
+  margin: 0 0 4px;
+  color: var(--apgo-home-paper);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.apgo-home-story__desc {
+  margin: 0;
+  color: var(--apgo-home-text-dim);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+@media (min-width: 750px) {
+  .apgo-home-story__title {
+    font-size: 16px;
+  }
+
+  .apgo-home-story__item {
+    padding-bottom: 32px;
+  }
+}

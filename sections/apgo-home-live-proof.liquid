@@ -1,0 +1,274 @@
+{% comment %}
+  APGO Home — Live Proof (rebuild of legacy "Homepage S3 Eng", compressed).
+  Stat band with count-up animation + live-stream video cards.
+  Videos lazy-load their src only when scrolled near the viewport.
+  (The legacy floating-hearts animation is intentionally gone.)
+{% endcomment %}
+
+{{ 'apgo-home.css' | asset_url | stylesheet_tag }}
+
+<section
+  id="apgo-home-live-{{ section.id }}"
+  class="apgo-home apgo-home-live color-{{ section.settings.color_scheme }}"
+  data-apgo-home-section="live-proof"
+  data-apgo-home-init="reveal counters livevideo"
+  style="
+    --padding-block-start: {{ section.settings.padding-block-start }}px;
+    --padding-block-end: {{ section.settings.padding-block-end }}px;
+  "
+>
+  <div class="apgo-home__container">
+    <header class="apgo-home__header apgo-home__header--center" data-apgo-reveal>
+      {% if section.settings.eyebrow != blank %}
+        <span class="apgo-home__eyebrow">{{ section.settings.eyebrow | escape }}</span>
+      {% endif %}
+      <h2 class="apgo-home__heading">{{ section.settings.heading | escape }}</h2>
+      {% if section.settings.subheading != blank %}
+        <p class="apgo-home__sub">{{ section.settings.subheading | escape }}</p>
+      {% endif %}
+    </header>
+
+    {% liquid
+      assign stat_blocks = section.blocks | where: 'type', 'stat'
+      assign video_blocks = section.blocks | where: 'type', 'video'
+    %}
+
+    {% if stat_blocks.size > 0 %}
+      <div class="apgo-home-live__stats" data-apgo-reveal>
+        {% for block in stat_blocks %}
+          <div class="apgo-home-live__stat" {{ block.shopify_attributes }}>
+            <span class="apgo-home-live__value">
+              {%- if block.settings.number > 0 -%}
+                <span data-apgo-count data-apgo-count-to="{{ block.settings.number }}">0</span>
+              {%- endif -%}
+              {{- block.settings.suffix | escape -}}
+            </span>
+            <span class="apgo-home-live__label">{{ block.settings.label | escape }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if video_blocks.size > 0 %}
+      <div class="apgo-home-live__videos">
+        {% for block in video_blocks %}
+          {% liquid
+            assign live_src = ''
+            if block.settings.video != blank
+              for source in block.settings.video.sources
+                if source.format == 'mp4'
+                  assign live_src = source.url
+                  break
+                endif
+              endfor
+              if live_src == blank and block.settings.video.sources.size > 0
+                assign live_src = block.settings.video.sources.first.url
+              endif
+            endif
+            if live_src == blank
+              assign live_src = block.settings.video_url
+            endif
+          %}
+          {% if live_src != blank %}
+            <div
+              class="apgo-home-live__video-card"
+              data-apgo-live-video
+              data-apgo-reveal
+              style="--apgo-reveal-delay: {{ forloop.index0 | times: 0.08 }}s"
+              {{ block.shopify_attributes }}
+            >
+              {% if block.settings.show_live_badge %}
+                <span class="apgo-home-live__badge">Live</span>
+              {% endif %}
+              {% if block.settings.poster != blank %}
+                <img
+                  src="{{ block.settings.poster | image_url: width: 600 }}"
+                  alt=""
+                  loading="lazy"
+                  width="{{ block.settings.poster.width }}"
+                  height="{{ block.settings.poster.height }}"
+                >
+              {% endif %}
+              <video data-src="{{ live_src }}" preload="none" playsinline></video>
+              <button type="button" class="apgo-home-live__play" aria-label="Play video">
+                <span class="apgo-home-live__play-ring">
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M8 5v14l11-7z"></path>
+                  </svg>
+                </span>
+              </button>
+              {% if block.settings.caption != blank %}
+                <span class="apgo-home-live__caption">{{ block.settings.caption | escape }}</span>
+              {% endif %}
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<script src="{{ 'apgo-home.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "APGO Home — Live Proof",
+  "tag": "section",
+  "class": "apgo-home-live-wrapper",
+  "enabled_on": {
+    "templates": ["index"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Live every night"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Cross-border Live Streaming, Quality Witnessed by All"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Authentic presentation is the most direct guarantee."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Extra top padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Extra bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "stat",
+      "name": "Stat",
+      "limit": 4,
+      "settings": [
+        {
+          "type": "number",
+          "id": "number",
+          "label": "Number",
+          "info": "Counts up when scrolled into view."
+        },
+        {
+          "type": "text",
+          "id": "suffix",
+          "label": "Suffix",
+          "info": "Shown right after the number, e.g. + or %."
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label"
+        }
+      ]
+    },
+    {
+      "type": "video",
+      "name": "Live video",
+      "limit": 2,
+      "settings": [
+        {
+          "type": "video",
+          "id": "video",
+          "label": "Video"
+        },
+        {
+          "type": "text",
+          "id": "video_url",
+          "label": "Video URL (fallback)",
+          "info": "Used when no video is picked above. MP4 URL."
+        },
+        {
+          "type": "image_picker",
+          "id": "poster",
+          "label": "Poster image"
+        },
+        {
+          "type": "text",
+          "id": "caption",
+          "label": "Caption"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_live_badge",
+          "label": "Show LIVE badge",
+          "default": true
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "APGO Home — Live Proof",
+      "category": "APGO",
+      "blocks": [
+        {
+          "type": "stat",
+          "settings": {
+            "number": 5000000,
+            "suffix": "+",
+            "label": "Units — Annual Sales"
+          }
+        },
+        {
+          "type": "stat",
+          "settings": {
+            "number": 10,
+            "suffix": "",
+            "label": "Years — Live Streaming Experience"
+          }
+        },
+        {
+          "type": "stat",
+          "settings": {
+            "number": 30,
+            "suffix": "",
+            "label": "Professional Streamers"
+          }
+        },
+        {
+          "type": "video",
+          "settings": {
+            "video_url": "https://cdn.shopify.com/videos/c/o/v/4ddb944f1ef94ed4bf6a6f3fe93a0a6c.mp4",
+            "caption": "Taiwan Team"
+          }
+        },
+        {
+          "type": "video",
+          "settings": {
+            "video_url": "https://cdn.shopify.com/videos/c/o/v/9a0fa6d2993b468b9f3b3ecc48056039.mp4",
+            "caption": "SG · MY Team"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

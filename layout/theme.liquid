@@ -420,7 +420,16 @@
 
     {% render 'search-modal' %}
     {% render 'apgo-cart-toast' %}
-    {% if template.name == 'collection' %}
+    {% comment %}
+      Variant drawer shell + JS. The drawer trigger (apgo-collection-variant-trigger)
+      is rendered by collection cards, the apgo-home-products homepage section, and
+      the special-event listing cards — the shell must ship on all three templates
+      or their + buttons silently do nothing.
+    {% endcomment %}
+    {% if template.name == 'collection'
+      or template.name == 'index'
+      or template.suffix == 'special-event'
+    %}
       {% render 'apgo-collection-variant-drawer' %}
     {% endif %}
 

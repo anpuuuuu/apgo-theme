@@ -1,0 +1,169 @@
+{% comment %}
+  APGO Home — Scenario Guide (rebuild of legacy "Homepage S6 Eng").
+  Four fully-tappable scenario cards linking to collections/products.
+  Links are relative (no hardcoded domain, no stale variant params).
+{% endcomment %}
+
+{{ 'apgo-home.css' | asset_url | stylesheet_tag }}
+
+<section
+  id="apgo-home-guide-{{ section.id }}"
+  class="apgo-home apgo-home-guide color-{{ section.settings.color_scheme }}"
+  data-apgo-home-section="guide"
+  data-apgo-home-init="reveal"
+  style="
+    --padding-block-start: {{ section.settings.padding-block-start }}px;
+    --padding-block-end: {{ section.settings.padding-block-end }}px;
+  "
+>
+  <div class="apgo-home__container">
+    <header class="apgo-home__header apgo-home__header--center" data-apgo-reveal>
+      {% if section.settings.eyebrow != blank %}
+        <span class="apgo-home__eyebrow">{{ section.settings.eyebrow | escape }}</span>
+      {% endif %}
+      <h2 class="apgo-home__heading">{{ section.settings.heading | escape }}</h2>
+      {% if section.settings.subheading != blank %}
+        <p class="apgo-home__sub">{{ section.settings.subheading | escape }}</p>
+      {% endif %}
+    </header>
+
+    <div class="apgo-home-guide__grid">
+      {% for block in section.blocks %}
+        <a
+          class="apgo-home-guide__card"
+          href="{{ block.settings.link | default: '/collections/atomic-coating-series' }}"
+          data-apgo-reveal
+          style="--apgo-reveal-delay: {{ forloop.index0 | times: 0.06 }}s"
+          {{ block.shopify_attributes }}
+        >
+          <span class="apgo-home-guide__index">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+          <h3 class="apgo-home-guide__title">{{ block.settings.title | escape }}</h3>
+          {% if block.settings.description != blank %}
+            <p class="apgo-home-guide__desc">{{ block.settings.description | escape }}</p>
+          {% endif %}
+          <span class="apgo-home-guide__arrow" aria-hidden="true">&rarr;</span>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<script src="{{ 'apgo-home.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "APGO Home — Guide",
+  "tag": "section",
+  "class": "apgo-home-guide-wrapper",
+  "enabled_on": {
+    "templates": ["index"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Find your coating"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Not sure which one to choose?"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Let us help you find the most suitable coating product."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Extra top padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Extra bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Scenario card",
+      "limit": 6,
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "New Car Protection"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "APGO Home — Guide",
+      "category": "APGO",
+      "blocks": [
+        {
+          "type": "card",
+          "settings": {
+            "title": "New Car Protection",
+            "description": "Lock in that showroom shine from day one."
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "title": "Old Car Restoration",
+            "description": "Bring faded, weathered paint back to life."
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "title": "DIY Beginner",
+            "description": "Start simple — one bottle, no experience needed."
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "title": "Professional Needs",
+            "description": "Advanced formulas for demanding finishes."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

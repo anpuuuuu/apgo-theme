@@ -1,0 +1,185 @@
+{% comment %}
+  APGO Home — Coating Series (rebuild of legacy "Homepage S5 Eng").
+  Real product pickers instead of hardcoded IDs. Cards reuse the shared
+  apgo-event-listing-card snippet (same UI as special-event / collection),
+  so prices come from the price snippet (money filter → RM / Markets SGD)
+  and the + button opens the variant drawer.
+  A "Best Seller" flag renders automatically for products tagged "hot"
+  (or use the block's Badge setting to override).
+{% endcomment %}
+
+{{ 'apgo-home.css' | asset_url | stylesheet_tag }}
+
+<section
+  id="apgo-home-products-{{ section.id }}"
+  class="apgo-home apgo-home-products color-{{ section.settings.color_scheme }}"
+  data-apgo-home-section="products"
+  data-apgo-home-init="reveal"
+  style="
+    --padding-block-start: {{ section.settings.padding-block-start }}px;
+    --padding-block-end: {{ section.settings.padding-block-end }}px;
+  "
+>
+  <div class="apgo-home__container">
+    <header class="apgo-home__header apgo-home__header--center" data-apgo-reveal>
+      {% if section.settings.eyebrow != blank %}
+        <span class="apgo-home__eyebrow">{{ section.settings.eyebrow | escape }}</span>
+      {% endif %}
+      <h2 class="apgo-home__heading">{{ section.settings.heading | escape }}</h2>
+      {% if section.settings.subheading != blank %}
+        <p class="apgo-home__sub">{{ section.settings.subheading | escape }}</p>
+      {% endif %}
+    </header>
+
+    <div class="apgo-home-products__grid">
+      {% for block in section.blocks %}
+        {% liquid
+          assign card_product = block.settings.product
+          assign flag_text = block.settings.badge
+          if flag_text == blank and card_product.tags contains 'hot'
+            assign flag_text = 'Best Seller'
+          endif
+        %}
+        {% if card_product != blank %}
+          <div
+            class="apgo-home-products__item"
+            data-apgo-reveal
+            style="--apgo-reveal-delay: {{ forloop.index0 | times: 0.05 }}s"
+            {{ block.shopify_attributes }}
+          >
+            {% if flag_text != blank %}
+              <span class="apgo-home-products__flag">{{ flag_text | escape }}</span>
+            {% endif %}
+            {% render 'apgo-event-listing-card',
+              product: card_product,
+              section_id: section.id,
+              card_uid: block.id,
+              custom_image: block.settings.custom_image
+            %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    {% if section.settings.view_all_label != blank %}
+      <div class="apgo-home-products__footer" data-apgo-reveal>
+        <a
+          class="apgo-home__cta apgo-home__cta--ghost"
+          href="{{ section.settings.view_all_link | default: '/collections/atomic-coating-series' }}"
+        >
+          {{ section.settings.view_all_label | escape }}
+          <span class="apgo-home__cta-arrow" aria-hidden="true">&rarr;</span>
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<script src="{{ 'apgo-home.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "APGO Home — Products",
+  "tag": "section",
+  "class": "apgo-home-products-wrapper",
+  "enabled_on": {
+    "templates": ["index"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Made in our own factory"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Professional Coating Series"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading"
+    },
+    {
+      "type": "text",
+      "id": "view_all_label",
+      "label": "View-all button label",
+      "default": "View All Coating Products"
+    },
+    {
+      "type": "url",
+      "id": "view_all_link",
+      "label": "View-all button link"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Extra top padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Extra bottom padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "Product card",
+      "limit": 6,
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "type": "image_picker",
+          "id": "custom_image",
+          "label": "Custom card image",
+          "info": "Optional. Falls back to the product's featured image."
+        },
+        {
+          "type": "text",
+          "id": "badge",
+          "label": "Badge",
+          "info": "Optional. Products tagged \"hot\" automatically show \"Best Seller\"."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "APGO Home — Products",
+      "category": "APGO",
+      "blocks": [
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" },
+        { "type": "product" }
+      ]
+    }
+  ]
+}
+{% endschema %}
