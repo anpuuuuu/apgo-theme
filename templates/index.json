@@ -34,7 +34,12 @@
           "settings": {
             "product": "apgo-atomic-titanium-crystal-car-nano-coating-premium",
             "custom_image": "shopify://shop_images/0_895dd8bc-acff-4324-859d-5d3466502d8a.png",
-            "badge": "Premium"
+            "badge": "Premium",
+            "subtitle": "High-hardness titanium crystal structure, ultimate protection and lasting shine.",
+            "spec_value_1": "180 days",
+            "spec_value_2": "95%",
+            "spec_value_3": "30+ washes",
+            "spec_value_4": "98%"
           }
         },
         "prod_aurora": {
@@ -42,7 +47,12 @@
           "settings": {
             "product": "apgo-aurora-car-nano-coating-premium",
             "custom_image": "shopify://shop_images/0_99266a1c-3a81-4c37-90c4-54c56bed2d5e.png",
-            "badge": "Enhanced Shine"
+            "badge": "Enhanced Shine",
+            "subtitle": "Aurora-like brilliance, enhanced surface protection, improved aesthetics.",
+            "spec_value_1": "150 days",
+            "spec_value_2": "80%",
+            "spec_value_3": "20+ washes",
+            "spec_value_4": "80 pts"
           }
         },
         "prod_glaze": {
@@ -50,7 +60,12 @@
           "settings": {
             "product": "apgo-atomic-glaze-car-nano-coating",
             "custom_image": "shopify://shop_images/0_9acc880f-5aaf-4783-918f-c4f9d3e2e2b1.png",
-            "badge": "Best Seller"
+            "badge": "Best Seller",
+            "subtitle": "Glaze texture, enhances surface smoothness and stain resistance.",
+            "spec_value_1": "120 days",
+            "spec_value_2": "80%",
+            "spec_value_3": "20+ washes",
+            "spec_value_4": "80 pts"
           }
         },
         "prod_crystal": {
@@ -58,7 +73,12 @@
           "settings": {
             "product": "apgo-atomic-crystal-car-nano-coating",
             "custom_image": "shopify://shop_images/0.png",
-            "badge": "Extra Smooth"
+            "badge": "Extra Smooth",
+            "subtitle": "Crystal structure, refined protection, enhances surface delicacy.",
+            "spec_value_1": "70 days",
+            "spec_value_2": "70%",
+            "spec_value_3": "15+ washes",
+            "spec_value_4": "70 pts"
           }
         },
         "prod_sealing": {
@@ -66,7 +86,12 @@
           "settings": {
             "product": "apgo-atomic-sealing-car-nano-coating",
             "custom_image": "shopify://shop_images/0_55123166-7e3a-4d9a-ba89-c74055380a83.png",
-            "badge": "Enhanced Shine"
+            "badge": "Enhanced Shine",
+            "subtitle": "Sealing technology, long-lasting car paint protection, prevents oxidation.",
+            "spec_value_1": "70 days",
+            "spec_value_2": "65%",
+            "spec_value_3": "10+ washes",
+            "spec_value_4": "80 pts"
           }
         },
         "prod_standard": {
@@ -74,7 +99,12 @@
           "settings": {
             "product": "apgo-atomic-car-nano-coating-standard",
             "custom_image": "shopify://shop_images/0_6be40b97-0127-463c-aa3f-22644fe177e4.png",
-            "badge": "Classic"
+            "badge": "Classic",
+            "subtitle": "Classic atomic coating, basic protection and shine effect.",
+            "spec_value_1": "30 days",
+            "spec_value_2": "40%",
+            "spec_value_3": "8+ washes",
+            "spec_value_4": "60 pts"
           }
         }
       },
@@ -90,6 +120,10 @@
         "eyebrow": "Made in our own factory",
         "heading": "Professional Coating Series",
         "subheading": "Six formulas, one goal - lasting protection with a deep glass shine.",
+        "spec_label_1": "Durability",
+        "spec_label_2": "Water Repellency",
+        "spec_label_3": "Wash Count",
+        "spec_label_4": "Gloss Level",
         "view_all_label": "View All Coating Products",
         "view_all_link": "shopify://collections/atomic-coating-series",
         "color_scheme": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26",

@@ -11,6 +11,8 @@
   @param {object} product - Product object
   @param {string} card_uid - Unique id suffix for this card
   @param {object} [custom_image] - Optional image override (homepage art shots)
+  @param {object} [block] - Section block (subtitle + spec_value_1..4 settings)
+  @param {object} [section] - Parent section (spec_label_1..4 settings)
 {%- enddoc -%}
 
 {% liquid
@@ -58,6 +60,37 @@
     <h3 class="apgo-home-card__title">
       <a href="{{ apgo_home_variant.url }}">{{ product.title }}</a>
     </h3>
+    {% if block.settings.subtitle != blank %}
+      <p class="apgo-home-card__subtitle">{{ block.settings.subtitle | escape }}</p>
+    {% endif %}
+    {% liquid
+      assign apgo_home_has_specs = false
+      for i in (1..4)
+        assign apgo_home_vkey = 'spec_value_' | append: i
+        if block.settings[apgo_home_vkey] != blank
+          assign apgo_home_has_specs = true
+          break
+        endif
+      endfor
+    %}
+    {% if apgo_home_has_specs %}
+      <ul class="apgo-home-card__specs">
+        {% for i in (1..4) %}
+          {% liquid
+            assign apgo_home_lkey = 'spec_label_' | append: i
+            assign apgo_home_vkey = 'spec_value_' | append: i
+            assign apgo_home_spec_label = section.settings[apgo_home_lkey]
+            assign apgo_home_spec_value = block.settings[apgo_home_vkey]
+          %}
+          {% if apgo_home_spec_label != blank and apgo_home_spec_value != blank %}
+            <li>
+              <span class="apgo-home-card__spec-label">{{ apgo_home_spec_label | escape }}</span>
+              <span class="apgo-home-card__spec-value">{{ apgo_home_spec_value | escape }}</span>
+            </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    {% endif %}
     <div class="apgo-home-card__footer apgo-card-price-row">
       <div class="apgo-home-card__price">
         <product-price data-product-id="{{ product.id }}">
