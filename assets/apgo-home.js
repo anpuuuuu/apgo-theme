@@ -144,13 +144,13 @@
       onIntersect(card, { rootMargin: '200px 0px' }, function () {
         if (!video.src && video.dataset.src) {
           video.preload = 'metadata';
-          video.src = video.dataset.src;
+          video.src = video.dataset.src + '#t=0.1';
         }
       });
 
       if (playButton) {
         playButton.addEventListener('click', function () {
-          if (!video.src && video.dataset.src) video.src = video.dataset.src;
+          if (!video.src && video.dataset.src) video.src = video.dataset.src + '#t=0.1';
           card.classList.add('is-started');
           video.controls = true;
           video.playsInline = true;

@@ -696,6 +696,48 @@ html.apgo-home-js .apgo-home [data-apgo-reveal].is-revealed {
   }
 }
 
+/* Desktop: magazine split — heading + stats left, live clips right. */
+@media (min-width: 1024px) {
+  .apgo-home-live .apgo-home__container {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    grid-template-areas:
+      'head vids'
+      'stats vids';
+    align-items: center;
+    column-gap: clamp(40px, 5vw, 72px);
+    row-gap: 40px;
+  }
+
+  .apgo-home-live .apgo-home__header,
+  .apgo-home-live .apgo-home__header--center {
+    grid-area: head;
+    margin-bottom: 0;
+    text-align: left;
+    align-self: end;
+  }
+
+  .apgo-home-live .apgo-home__header--center .apgo-home__sub {
+    margin-inline: 0;
+    max-width: 460px;
+  }
+
+  .apgo-home-live__stats {
+    grid-area: stats;
+    align-self: start;
+  }
+
+  .apgo-home-live__videos {
+    grid-area: vids;
+    margin-top: 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    justify-content: stretch;
+    justify-self: end;
+    width: 100%;
+    max-width: 560px;
+  }
+}
+
 /* ── Compare (S4: coating vs waxing bars) ───────────────── */
 .apgo-home-compare__panel {
   padding: clamp(18px, 4vw, 32px);
@@ -1038,5 +1080,90 @@ html:not(.apgo-home-js) .apgo-home-compare__fill {
 
   .apgo-home-story__item {
     padding-bottom: 32px;
+  }
+}
+
+/* ── Ambient décor ──────────────────────────────────────────
+   1) Orange micro-particles: reuses the site-wide system from
+      snippets/apgo-aboutus-page-particles.liquid (#MainContent::before).
+      Sections go transparent so the particle layer shows through;
+      cards/panels keep their own solid backgrounds.
+   2) Desktop-only accents: soft brand-orange glows + oversized
+      ghost outline words, so wide viewports don't feel empty. */
+#MainContent.apgo-aboutus-main-particles .apgo-home {
+  background: transparent;
+}
+
+.apgo-home {
+  position: relative;
+}
+
+.apgo-home__container,
+.apgo-home-hero__stage {
+  position: relative;
+  z-index: 1;
+}
+
+@media (min-width: 1024px) {
+  .apgo-home-live::before,
+  .apgo-home-compare::before,
+  .apgo-home-why::before,
+  .apgo-home-story::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: radial-gradient(560px 380px at 88% 8%, rgba(240, 132, 24, 0.09), transparent 70%);
+  }
+
+  .apgo-home-compare::before {
+    background: radial-gradient(560px 380px at 10% 92%, rgba(240, 132, 24, 0.08), transparent 70%);
+  }
+
+  .apgo-home-story::before {
+    background: radial-gradient(520px 360px at 8% 12%, rgba(240, 132, 24, 0.07), transparent 70%);
+  }
+
+  .apgo-home-live::after,
+  .apgo-home-compare::after,
+  .apgo-home-why::after {
+    position: absolute;
+    z-index: 0;
+    pointer-events: none;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    color: rgba(255, 255, 255, 0.025);
+  }
+
+  @supports (-webkit-text-stroke: 1px rgba(255, 255, 255, 0.05)) {
+    .apgo-home-live::after,
+    .apgo-home-compare::after,
+    .apgo-home-why::after {
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(255, 255, 255, 0.05);
+    }
+  }
+
+  .apgo-home-live::after {
+    content: 'LIVE';
+    top: 30px;
+    left: -14px;
+    font-size: clamp(120px, 14vw, 200px);
+  }
+
+  .apgo-home-compare::after {
+    content: 'VS';
+    right: -8px;
+    bottom: 20px;
+    font-size: clamp(140px, 16vw, 230px);
+  }
+
+  .apgo-home-why::after {
+    content: 'APGO';
+    right: -12px;
+    top: 16px;
+    font-size: clamp(110px, 13vw, 190px);
   }
 }

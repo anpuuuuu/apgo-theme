@@ -1,6 +1,7 @@
 {% comment %}
-  About Us、Find Us（page.social_media）全頁共用一層橘色微粒背景，密度為原設計約一半（3 層 + 較大 tile）。
+  About Us、Find Us（page.social_media）、首頁（index）共用一層橘色微粒背景，密度為原設計約一半（3 層 + 較大 tile）。
   微粒在 ::before 且 z-index:0；各 section 為 z-index:1。若內層再用不透明白/黑底蓋滿，粒子會被擋住，故強制主內容外層透明，由 #MainContent 提供黑底。
+  首頁的 apgo-home 區塊配套透明化在 assets/apgo-home.css。
   垂直位移用 px 而非 %：% 會隨 #MainContent 高度解析，About Us 多 section 極高、Find Us 僅一區，同秒數下像素移速差很多，兩頁看起來不一致。
 {% endcomment %}
 {% liquid
@@ -10,6 +11,8 @@
   elsif template.name == 'page' and template.suffix == 'about-us'
     assign apgo_aboutus_particles = true
   elsif template.name == 'page' and template.suffix == 'social_media'
+    assign apgo_aboutus_particles = true
+  elsif template.name == 'index'
     assign apgo_aboutus_particles = true
   endif
 %}
