@@ -131,17 +131,20 @@
     }
   }
 
-  /* ── Live proof videos ── */
-  function primeLiveVideo(card) {
-    var video = card.querySelector('video');
-    if (!video || video.src || !video.dataset.src) return;
-    video.preload = 'metadata';
+  /* ── Live proof videos ──
+     Autoplay muted + looping while in view (the only autoplay browsers
+     allow); sound stays off until the viewer taps the speaker button. */
+  var liveAutoplay = !reducedMotion && !saveData;
+
+  function loadLiveSrc(video) {
+    if (video.src || !video.dataset.src) return;
+    video.preload = 'auto';
     video.src = video.dataset.src + '#t=0.1';
     /* Chrome won't decode a poster frame from metadata alone — nudge a
-       seek once metadata arrives so the first frame actually paints. */
+       seek once metadata arrives so a frame paints even if autoplay is off. */
     video.addEventListener('loadedmetadata', function primeFrame() {
       video.removeEventListener('loadedmetadata', primeFrame);
-      if (video.paused && !card.classList.contains('is-started')) {
+      if (video.paused) {
         try {
           video.currentTime = 0.101;
         } catch (e) {}
@@ -149,18 +152,21 @@
     });
   }
 
-  function startLiveVideo(card) {
-    var video = card.querySelector('video');
-    if (!video) return;
-    if (!video.src && video.dataset.src) {
-      video.preload = 'metadata';
-      video.src = video.dataset.src + '#t=0.1';
-    }
-    card.classList.add('is-started');
-    video.controls = true;
-    video.playsInline = true;
+  function playLive(video) {
     var p = video.play();
     if (p && p.catch) p.catch(function () {});
+  }
+
+  function setLiveSound(card, unmuted) {
+    var video = card.querySelector('video');
+    var button = card.querySelector('[data-apgo-live-sound]');
+    if (!video) return;
+    video.muted = !unmuted;
+    card.classList.toggle('is-unmuted', unmuted);
+    if (button) {
+      button.setAttribute('aria-pressed', unmuted ? 'true' : 'false');
+      button.setAttribute('aria-label', unmuted ? 'Turn sound off' : 'Turn sound on');
+    }
   }
 
   function initLiveVideos(root) {
@@ -168,29 +174,81 @@
       if (card.dataset.apgoBound) return;
       card.dataset.apgoBound = '1';
 
-      onIntersect(card, { rootMargin: '200px 0px' }, primeLiveVideo);
+      var video = card.querySelector('video');
+      if (!video) return;
+
+      video.muted = true;
+      video.loop = true;
+      video.playsInline = true;
+
+      video.addEventListener('playing', function () {
+        card.classList.add('is-playing');
+      });
+      video.addEventListener('pause', function () {
+        card.classList.remove('is-playing');
+      });
 
       if ('IntersectionObserver' in window) {
+        /* Persistent observer: play on enter, pause on leave, every time. */
         new IntersectionObserver(function (entries) {
           entries.forEach(function (entry) {
             var v = entry.target.querySelector('video');
-            if (v && !entry.isIntersecting && !v.paused) v.pause();
+            if (!v) return;
+            if (entry.isIntersecting) {
+              loadLiveSrc(v);
+              if (liveAutoplay) playLive(v);
+            } else if (!v.paused) {
+              v.pause();
+            }
           });
-        }, { threshold: 0.1 }).observe(card);
+        }, { threshold: 0.25 }).observe(card);
+      } else {
+        loadLiveSrc(video);
+        if (liveAutoplay) playLive(video);
       }
     });
   }
 
-  /* Card tap-to-play is DELEGATED at document level: the theme's page
-     transitions can morph #MainContent after init, which keeps attributes
-     (apgoBound survives) but strips per-node listeners. Delegation is the
-     same defense apgo-collection-variant-drawer.js uses for its + button. */
+  /* Clicks are DELEGATED at document level: the theme's page transitions can
+     morph #MainContent after init, which keeps attributes (apgoBound survives)
+     but strips per-node listeners. Same defense apgo-collection-variant-drawer.js
+     uses for its + button. */
   if (!window.__apgoHomeLiveDelegated) {
     window.__apgoHomeLiveDelegated = true;
     document.addEventListener('click', function (e) {
-      var card = e.target && e.target.closest ? e.target.closest('[data-apgo-live-video]') : null;
-      if (!card || card.classList.contains('is-started')) return;
-      startLiveVideo(card);
+      if (!e.target || !e.target.closest) return;
+
+      var soundButton = e.target.closest('[data-apgo-live-sound]');
+      if (soundButton) {
+        e.preventDefault();
+        var soundCard = soundButton.closest('[data-apgo-live-video]');
+        var soundVideo = soundCard && soundCard.querySelector('video');
+        if (!soundVideo) return;
+        var unmute = soundVideo.muted;
+        if (unmute) {
+          /* Only one clip may play out loud at a time. */
+          document.querySelectorAll('[data-apgo-live-video]').forEach(function (other) {
+            if (other !== soundCard) setLiveSound(other, false);
+          });
+        }
+        setLiveSound(soundCard, unmute);
+        loadLiveSrc(soundVideo);
+        if (soundVideo.paused) playLive(soundVideo);
+        return;
+      }
+
+      /* Tapping the clip itself is the fallback play control when autoplay
+         is unavailable (reduced motion, Save-Data, blocked by the browser). */
+      var card = e.target.closest('[data-apgo-live-video]');
+      if (!card) return;
+      var video = card.querySelector('video');
+      if (!video) return;
+      loadLiveSrc(video);
+      if (video.paused) {
+        playLive(video);
+      } else {
+        video.pause();
+      }
     });
   }
 

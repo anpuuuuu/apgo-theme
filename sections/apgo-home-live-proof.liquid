@@ -89,7 +89,27 @@
                   height="{{ block.settings.poster.height }}"
                 >
               {% endif %}
-              <video data-src="{{ live_src }}" preload="none" playsinline></video>
+              {% comment %}
+                muted + playsinline + loop are required for browsers to allow
+                autoplay. Sound stays off until the viewer taps the speaker.
+              {% endcomment %}
+              <video data-src="{{ live_src }}" preload="none" playsinline muted loop></video>
+              <button
+                type="button"
+                class="apgo-home-live__sound"
+                data-apgo-live-sound
+                aria-label="Turn sound on"
+                aria-pressed="false"
+              >
+                <svg class="apgo-home-live__icon apgo-home-live__icon--off" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M11 5 6.5 9H3v6h3.5L11 19V5z"></path>
+                  <path d="m16.5 9.5 5 5m0-5-5 5" stroke-width="2" fill="none" stroke-linecap="round"></path>
+                </svg>
+                <svg class="apgo-home-live__icon apgo-home-live__icon--on" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M11 5 6.5 9H3v6h3.5L11 19V5z"></path>
+                  <path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" stroke-width="2" fill="none" stroke-linecap="round"></path>
+                </svg>
+              </button>
               <button type="button" class="apgo-home-live__play" aria-label="Play video">
                 <span class="apgo-home-live__play-ring">
                   <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">

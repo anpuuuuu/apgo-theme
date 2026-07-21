@@ -696,7 +696,7 @@ html:not(.apgo-home-js) .apgo-home-card__spec-bar i {
   position: absolute;
   z-index: 2;
   top: 10px;
-  left: 10px;
+  right: 10px;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -738,6 +738,53 @@ html:not(.apgo-home-js) .apgo-home-card__spec-bar i {
   }
 }
 
+/* Sound toggle — top-left, muted by default. */
+.apgo-home-live__sound {
+  position: absolute;
+  z-index: 3;
+  top: 8px;
+  left: 8px;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  color: var(--apgo-home-paper);
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.apgo-home-live__sound:hover,
+.apgo-home-live__sound:focus-visible {
+  background: rgba(0, 0, 0, 0.75);
+  color: var(--apgo-home-primary);
+}
+
+.apgo-home-live__icon {
+  width: 17px;
+  height: 17px;
+  fill: currentColor;
+  stroke: currentColor;
+}
+
+.apgo-home-live__icon--on,
+.apgo-home-live__video-card.is-unmuted .apgo-home-live__icon--off {
+  display: none;
+}
+
+.apgo-home-live__video-card.is-unmuted .apgo-home-live__icon--on {
+  display: block;
+}
+
+.apgo-home-live__video-card.is-unmuted .apgo-home-live__sound {
+  background: var(--apgo-home-primary);
+  color: var(--apgo-home-ink);
+}
+
 .apgo-home-live__play {
   position: absolute;
   inset: 0;
@@ -756,6 +803,11 @@ html:not(.apgo-home-js) .apgo-home-card__spec-bar i {
 
 .apgo-home-live__play:hover {
   background: rgba(0, 0, 0, 0.15);
+}
+
+/* Play ring is only the fallback affordance — hidden while the clip runs. */
+.apgo-home-live__video-card.is-playing .apgo-home-live__play {
+  display: none;
 }
 
 .apgo-home-live__play-ring {
@@ -790,6 +842,7 @@ html:not(.apgo-home-js) .apgo-home-card__spec-bar i {
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.03em;
+  text-align: right;
   pointer-events: none;
 }
 
