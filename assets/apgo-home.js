@@ -132,51 +132,65 @@
   }
 
   /* ── Live proof videos ── */
+  function primeLiveVideo(card) {
+    var video = card.querySelector('video');
+    if (!video || video.src || !video.dataset.src) return;
+    video.preload = 'metadata';
+    video.src = video.dataset.src + '#t=0.1';
+    /* Chrome won't decode a poster frame from metadata alone — nudge a
+       seek once metadata arrives so the first frame actually paints. */
+    video.addEventListener('loadedmetadata', function primeFrame() {
+      video.removeEventListener('loadedmetadata', primeFrame);
+      if (video.paused && !card.classList.contains('is-started')) {
+        try {
+          video.currentTime = 0.101;
+        } catch (e) {}
+      }
+    });
+  }
+
+  function startLiveVideo(card) {
+    var video = card.querySelector('video');
+    if (!video) return;
+    if (!video.src && video.dataset.src) {
+      video.preload = 'metadata';
+      video.src = video.dataset.src + '#t=0.1';
+    }
+    card.classList.add('is-started');
+    video.controls = true;
+    video.playsInline = true;
+    var p = video.play();
+    if (p && p.catch) p.catch(function () {});
+  }
+
   function initLiveVideos(root) {
     root.querySelectorAll('[data-apgo-live-video]').forEach(function (card) {
       if (card.dataset.apgoBound) return;
       card.dataset.apgoBound = '1';
 
-      var video = card.querySelector('video');
-      if (!video) return;
-
-      function loadSrc() {
-        if (video.src || !video.dataset.src) return;
-        video.preload = 'metadata';
-        video.src = video.dataset.src + '#t=0.1';
-        /* Chrome won't decode a poster frame from metadata alone — nudge a
-           seek once metadata arrives so the first frame actually paints. */
-        video.addEventListener('loadedmetadata', function primeFrame() {
-          video.removeEventListener('loadedmetadata', primeFrame);
-          if (video.paused && !card.classList.contains('is-started')) {
-            try {
-              video.currentTime = 0.101;
-            } catch (e) {}
-          }
-        });
-      }
-
-      onIntersect(card, { rootMargin: '200px 0px' }, loadSrc);
-
-      /* Whole card is the tap target (52px ring alone is easy to miss);
-         once playback starts, native controls take over. */
-      card.addEventListener('click', function () {
-        if (card.classList.contains('is-started')) return;
-        loadSrc();
-        card.classList.add('is-started');
-        video.controls = true;
-        video.playsInline = true;
-        var p = video.play();
-        if (p && p.catch) p.catch(function () {});
-      });
+      onIntersect(card, { rootMargin: '200px 0px' }, primeLiveVideo);
 
       if ('IntersectionObserver' in window) {
         new IntersectionObserver(function (entries) {
           entries.forEach(function (entry) {
-            if (!entry.isIntersecting && !video.paused) video.pause();
+            var v = entry.target.querySelector('video');
+            if (v && !entry.isIntersecting && !v.paused) v.pause();
           });
         }, { threshold: 0.1 }).observe(card);
       }
+    });
+  }
+
+  /* Card tap-to-play is DELEGATED at document level: the theme's page
+     transitions can morph #MainContent after init, which keeps attributes
+     (apgoBound survives) but strips per-node listeners. Delegation is the
+     same defense apgo-collection-variant-drawer.js uses for its + button. */
+  if (!window.__apgoHomeLiveDelegated) {
+    window.__apgoHomeLiveDelegated = true;
+    document.addEventListener('click', function (e) {
+      var card = e.target && e.target.closest ? e.target.closest('[data-apgo-live-video]') : null;
+      if (!card || card.classList.contains('is-started')) return;
+      startLiveVideo(card);
     });
   }
 
