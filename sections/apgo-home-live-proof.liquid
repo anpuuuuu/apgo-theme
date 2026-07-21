@@ -1,7 +1,8 @@
 {% comment %}
   APGO Home — Live Proof (rebuild of legacy "Homepage S3 Eng", compressed).
   Stat band with count-up animation + live-stream video cards.
-  Videos lazy-load their src only when scrolled near the viewport.
+  Clips are ambient: muted, looping, autoplay in view, no click target.
+  The speaker button only renders for blocks marked as having sound.
   (The legacy floating-hearts animation is intentionally gone.)
 {% endcomment %}
 
@@ -111,13 +112,6 @@
                   </svg>
                 </button>
               {% endif %}
-              <button type="button" class="apgo-home-live__play" aria-label="Play video">
-                <span class="apgo-home-live__play-ring">
-                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                    <path d="M8 5v14l11-7z"></path>
-                  </svg>
-                </span>
-              </button>
               {% if block.settings.caption != blank %}
                 <span class="apgo-home-live__caption">{{ block.settings.caption | escape }}</span>
               {% endif %}

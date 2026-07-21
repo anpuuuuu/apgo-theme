@@ -14,7 +14,7 @@
       "name": "APGO Home Hero",
       "settings": {
         "poster_image": "shopify://shop_images/fa6f8da217907f3de717e871bebef875.png",
-        "video_url": "https://cdn.shopify.com/videos/c/vp/8f7ea63e677a4dd9a40d5e99c77c66df/8f7ea63e677a4dd9a40d5e99c77c66df.SD-480p-1.0Mbps-89472141.mp4",
+        "video_url": "https://cdn.shopify.com/videos/c/o/v/d8e8828223b342a3b6167dbdb1bda547.mp4",
         "eyebrow": "APGO - Professional Coating Experts",
         "heading": "We specialize in",
         "heading_accent": "Coating",
@@ -159,22 +159,22 @@
             "label": "Professional Streamers"
           }
         },
-        "video_tw": {
+        "video_my": {
           "type": "video",
           "settings": {
-            "video_url": "https://cdn.shopify.com/videos/c/vp/a75df34cd43f4c88b22e4b736360d198/a75df34cd43f4c88b22e4b736360d198.HD-720p-1.6Mbps-89472140.mp4",
-            "caption": "Taiwan Team",
+            "video_url": "https://cdn.shopify.com/videos/c/o/v/4ddb944f1ef94ed4bf6a6f3fe93a0a6c.mp4",
+            "caption": "SG & MY Team",
             "show_live_badge": true,
             "has_sound": false
           }
         },
-        "video_sgmy": {
+        "video_tw": {
           "type": "video",
           "settings": {
-            "video_url": "https://cdn.shopify.com/videos/c/vp/f225acbcbd8342708eb4ebe2911ace8d/f225acbcbd8342708eb4ebe2911ace8d.HD-720p-1.6Mbps-89472139.mp4",
-            "caption": "SG & MY Team",
+            "video_url": "https://cdn.shopify.com/videos/c/vp/f225acbcbd8342708eb4ebe2911ace8d/f225acbcbd8342708eb4ebe2911ace8d.HD-1080p-2.5Mbps-89472139.mp4",
+            "caption": "Taiwan Team",
             "show_live_badge": true,
-            "has_sound": true
+            "has_sound": false
           }
         }
       },
@@ -182,8 +182,8 @@
         "stat_units",
         "stat_years",
         "stat_streamers",
-        "video_tw",
-        "video_sgmy"
+        "video_my",
+        "video_tw"
       ],
       "settings": {
         "eyebrow": "Live every night",

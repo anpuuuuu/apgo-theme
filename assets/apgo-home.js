@@ -241,10 +241,11 @@
     });
   }
 
-  /* Clicks are DELEGATED at document level: the theme's page transitions can
-     morph #MainContent after init, which keeps attributes (apgoBound survives)
-     but strips per-node listeners. Same defense apgo-collection-variant-drawer.js
-     uses for its + button. */
+  /* The speaker button's click is DELEGATED at document level: the theme's page
+     transitions can morph #MainContent after init, which keeps attributes
+     (apgoBound survives) but strips per-node listeners. Same defense
+     apgo-collection-variant-drawer.js uses for its + button. The clips
+     themselves are not clickable — they are ambient, muted loops. */
   if (!window.__apgoHomeLiveDelegated) {
     window.__apgoHomeLiveDelegated = true;
 
@@ -287,20 +288,6 @@
         setLiveSound(soundCard, unmute);
         loadLiveSrc(soundVideo, 'auto');
         if (soundVideo.paused) playLive(soundVideo);
-        return;
-      }
-
-      /* Tapping the clip itself is the fallback play control when autoplay
-         is unavailable (reduced motion, Save-Data, blocked by the browser). */
-      var card = e.target.closest('[data-apgo-live-video]');
-      if (!card) return;
-      var video = card.querySelector('video');
-      if (!video) return;
-      loadLiveSrc(video, 'auto');
-      if (video.paused) {
-        playLive(video);
-      } else {
-        video.pause();
       }
     });
   }
