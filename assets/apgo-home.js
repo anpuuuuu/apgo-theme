@@ -140,11 +140,23 @@
   /* ── Live proof videos ──
      Autoplay muted + looping while in view (the only autoplay browsers
      allow); sound stays off until the viewer taps the speaker button. */
-  var liveAutoplay = !reducedMotion && !saveData;
+  var isMobileViewport = window.matchMedia('(max-width: 749px)').matches;
 
-  function loadLiveSrc(video) {
+  /* Autoplay downloads the whole clip. Desktop always autoplays; mobile only
+     when the merchant enables it per section (off until the files are small
+     enough to be kind to mobile data). */
+  function liveAutoplayAllowed(card) {
+    if (reducedMotion || saveData) return false;
+    if (!isMobileViewport) return true;
+    var section = card && card.closest ? card.closest('[data-apgo-live-autoplay-mobile]') : null;
+    return !!section && section.dataset.apgoLiveAutoplayMobile === 'true';
+  }
+
+  function loadLiveSrc(video, preloadMode) {
     if (video.src || !video.dataset.src) return;
-    video.preload = 'auto';
+    /* 'metadata' when we're not going to autoplay: enough for a poster frame
+       without pulling the whole clip down on mobile data. */
+    video.preload = preloadMode || 'metadata';
     video.src = video.dataset.src + '#t=0.1';
     /* Chrome won't decode a poster frame from metadata alone — nudge a
        seek once metadata arrives so a frame paints even if autoplay is off. */
@@ -189,8 +201,9 @@
         var v = entry.target.querySelector('video');
         if (!v) return;
         if (entry.isIntersecting) {
-          loadLiveSrc(v);
-          if (liveAutoplay) playLive(v);
+          var autoplay = liveAutoplayAllowed(entry.target);
+          loadLiveSrc(v, autoplay ? 'auto' : 'metadata');
+          if (autoplay) playLive(v);
         } else if (!v.paused) {
           v.pause();
         }
@@ -221,8 +234,9 @@
       if (observer) {
         observer.observe(card);
       } else {
-        loadLiveSrc(video);
-        if (liveAutoplay) playLive(video);
+        var canAutoplay = liveAutoplayAllowed(card);
+        loadLiveSrc(video, canAutoplay ? 'auto' : 'metadata');
+        if (canAutoplay) playLive(video);
       }
     });
   }
@@ -271,7 +285,7 @@
           });
         }
         setLiveSound(soundCard, unmute);
-        loadLiveSrc(soundVideo);
+        loadLiveSrc(soundVideo, 'auto');
         if (soundVideo.paused) playLive(soundVideo);
         return;
       }
@@ -282,7 +296,7 @@
       if (!card) return;
       var video = card.querySelector('video');
       if (!video) return;
-      loadLiveSrc(video);
+      loadLiveSrc(video, 'auto');
       if (video.paused) {
         playLive(video);
       } else {

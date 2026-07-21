@@ -10,6 +10,7 @@
   class="apgo-home apgo-home-live color-{{ section.settings.color_scheme }}"
   data-apgo-home-section="live-proof"
   data-apgo-home-init="reveal counters livevideo"
+  data-apgo-live-autoplay-mobile="{% if section.settings.autoplay_mobile %}true{% else %}false{% endif %}"
   style="
     --padding-block-start: {{ section.settings.padding-block-start }}px;
     --padding-block-end: {{ section.settings.padding-block-end }}px;
@@ -152,6 +153,13 @@
       "id": "subheading",
       "label": "Subheading",
       "default": "Authentic presentation is the most direct guarantee."
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay_mobile",
+      "label": "Autoplay videos on mobile",
+      "info": "Off until the clips are compressed — autoplay downloads the full file on mobile data. Desktop autoplays either way; on mobile the viewer taps to play.",
+      "default": false
     },
     {
       "type": "color_scheme",

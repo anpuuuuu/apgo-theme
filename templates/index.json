@@ -187,6 +187,7 @@
         "eyebrow": "Live every night",
         "heading": "Cross-border Live Streaming, Quality Witnessed by All",
         "subheading": "Authentic presentation is the most direct guarantee for customers.",
+        "autoplay_mobile": false,
         "color_scheme": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26",
         "padding-block-start": 0,
         "padding-block-end": 0
