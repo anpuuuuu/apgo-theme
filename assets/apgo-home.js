@@ -138,26 +138,37 @@
       card.dataset.apgoBound = '1';
 
       var video = card.querySelector('video');
-      var playButton = card.querySelector('.apgo-home-live__play');
       if (!video) return;
 
-      onIntersect(card, { rootMargin: '200px 0px' }, function () {
-        if (!video.src && video.dataset.src) {
-          video.preload = 'metadata';
-          video.src = video.dataset.src + '#t=0.1';
-        }
-      });
-
-      if (playButton) {
-        playButton.addEventListener('click', function () {
-          if (!video.src && video.dataset.src) video.src = video.dataset.src + '#t=0.1';
-          card.classList.add('is-started');
-          video.controls = true;
-          video.playsInline = true;
-          var p = video.play();
-          if (p && p.catch) p.catch(function () {});
+      function loadSrc() {
+        if (video.src || !video.dataset.src) return;
+        video.preload = 'metadata';
+        video.src = video.dataset.src + '#t=0.1';
+        /* Chrome won't decode a poster frame from metadata alone — nudge a
+           seek once metadata arrives so the first frame actually paints. */
+        video.addEventListener('loadedmetadata', function primeFrame() {
+          video.removeEventListener('loadedmetadata', primeFrame);
+          if (video.paused && !card.classList.contains('is-started')) {
+            try {
+              video.currentTime = 0.101;
+            } catch (e) {}
+          }
         });
       }
+
+      onIntersect(card, { rootMargin: '200px 0px' }, loadSrc);
+
+      /* Whole card is the tap target (52px ring alone is easy to miss);
+         once playback starts, native controls take over. */
+      card.addEventListener('click', function () {
+        if (card.classList.contains('is-started')) return;
+        loadSrc();
+        card.classList.add('is-started');
+        video.controls = true;
+        video.playsInline = true;
+        var p = video.play();
+        if (p && p.catch) p.catch(function () {});
+      });
 
       if ('IntersectionObserver' in window) {
         new IntersectionObserver(function (entries) {

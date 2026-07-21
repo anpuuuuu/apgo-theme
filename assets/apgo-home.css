@@ -620,39 +620,40 @@ html:not(.apgo-home-js) .apgo-home-card__spec-bar i {
   --icon-stroke-width: 2px;
 }
 
-/* ── Live proof (S3: stat band + live videos) ───────────── */
+/* ── Live proof (S3: stat band + live videos) ─────────────
+   Mobile: hero stat full-width on top, two stats side by side below. */
 .apgo-home-live__stats {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  padding-bottom: 6px;
-  scrollbar-width: none;
-}
-
-.apgo-home-live__stats::-webkit-scrollbar {
-  display: none;
 }
 
 .apgo-home-live__stat {
-  flex: 1 0 132px;
-  min-width: 132px;
-  scroll-snap-align: start;
-  padding: 18px 14px;
+  min-width: 0;
+  padding: 16px 12px;
   border: 1px solid var(--apgo-home-line);
   border-radius: 14px;
   background: var(--apgo-home-card);
   text-align: center;
 }
 
+.apgo-home-live__stat:first-child {
+  grid-column: 1 / -1;
+}
+
 .apgo-home-live__value {
   display: block;
   color: var(--apgo-home-primary);
-  font-size: clamp(22px, 6vw, 32px);
+  font-size: clamp(20px, 5.6vw, 24px);
   font-weight: 700;
   line-height: 1.1;
   letter-spacing: -0.01em;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.apgo-home-live__stat:first-child .apgo-home-live__value {
+  font-size: clamp(26px, 8.5vw, 34px);
 }
 
 .apgo-home-live__label {
@@ -676,6 +677,10 @@ html:not(.apgo-home-js) .apgo-home-card__spec-bar i {
   border-radius: var(--apgo-home-radius-lg);
   overflow: hidden;
   background: var(--apgo-home-card);
+}
+
+.apgo-home-live__video-card:not(.is-started) {
+  cursor: pointer;
 }
 
 .apgo-home-live__video-card video,
@@ -789,9 +794,17 @@ html:not(.apgo-home-js) .apgo-home-card__spec-bar i {
 }
 
 @media (min-width: 750px) {
-  .apgo-home-live__stat {
-    flex-basis: 0;
-    min-width: 0;
+  .apgo-home-live__stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .apgo-home-live__stat:first-child {
+    grid-column: auto;
+  }
+
+  .apgo-home-live__value,
+  .apgo-home-live__stat:first-child .apgo-home-live__value {
+    font-size: clamp(20px, 2.2vw, 26px);
   }
 
   .apgo-home-live__videos {
@@ -830,6 +843,11 @@ html:not(.apgo-home-js) .apgo-home-card__spec-bar i {
   .apgo-home-live__stats {
     grid-area: stats;
     align-self: start;
+  }
+
+  .apgo-home-live__value,
+  .apgo-home-live__stat:first-child .apgo-home-live__value {
+    font-size: 22px;
   }
 
   .apgo-home-live__videos {
