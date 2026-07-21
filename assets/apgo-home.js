@@ -169,10 +169,40 @@
     }
   }
 
+  /* Bound-node tracking uses a WeakSet, not a data attribute: the theme's
+     DOM morphing clones attributes onto fresh nodes, so an attribute flag
+     would mark a brand-new (unbound) node as already initialized. */
+  var liveBound = typeof WeakSet === 'function' ? new WeakSet() : null;
+  var liveObserver = null;
+
+  function getLiveObserver() {
+    if (liveObserver || !('IntersectionObserver' in window)) return liveObserver;
+    /* One shared, persistent observer: play on enter, pause on leave, every time. */
+    liveObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        var v = entry.target.querySelector('video');
+        if (!v) return;
+        if (entry.isIntersecting) {
+          loadLiveSrc(v);
+          if (liveAutoplay) playLive(v);
+        } else if (!v.paused) {
+          v.pause();
+        }
+      });
+    }, { threshold: 0.25 });
+    return liveObserver;
+  }
+
   function initLiveVideos(root) {
     root.querySelectorAll('[data-apgo-live-video]').forEach(function (card) {
-      if (card.dataset.apgoBound) return;
-      card.dataset.apgoBound = '1';
+      if (liveBound) {
+        if (liveBound.has(card)) return;
+        liveBound.add(card);
+      } else if (card.dataset.apgoBound) {
+        return;
+      } else {
+        card.dataset.apgoBound = '1';
+      }
 
       var video = card.querySelector('video');
       if (!video) return;
@@ -181,27 +211,9 @@
       video.loop = true;
       video.playsInline = true;
 
-      video.addEventListener('playing', function () {
-        card.classList.add('is-playing');
-      });
-      video.addEventListener('pause', function () {
-        card.classList.remove('is-playing');
-      });
-
-      if ('IntersectionObserver' in window) {
-        /* Persistent observer: play on enter, pause on leave, every time. */
-        new IntersectionObserver(function (entries) {
-          entries.forEach(function (entry) {
-            var v = entry.target.querySelector('video');
-            if (!v) return;
-            if (entry.isIntersecting) {
-              loadLiveSrc(v);
-              if (liveAutoplay) playLive(v);
-            } else if (!v.paused) {
-              v.pause();
-            }
-          });
-        }, { threshold: 0.25 }).observe(card);
+      var observer = getLiveObserver();
+      if (observer) {
+        observer.observe(card);
       } else {
         loadLiveSrc(video);
         if (liveAutoplay) playLive(video);
@@ -215,6 +227,27 @@
      uses for its + button. */
   if (!window.__apgoHomeLiveDelegated) {
     window.__apgoHomeLiveDelegated = true;
+
+    /* Media events don't bubble, so these are capture-phase listeners on
+       document — same reason as the delegated clicks, they survive DOM
+       morphing that would strip per-element listeners. */
+    document.addEventListener(
+      'playing',
+      function (e) {
+        var card = e.target && e.target.closest ? e.target.closest('[data-apgo-live-video]') : null;
+        if (card) card.classList.add('is-playing');
+      },
+      true
+    );
+    document.addEventListener(
+      'pause',
+      function (e) {
+        var card = e.target && e.target.closest ? e.target.closest('[data-apgo-live-video]') : null;
+        if (card) card.classList.remove('is-playing');
+      },
+      true
+    );
+
     document.addEventListener('click', function (e) {
       if (!e.target || !e.target.closest) return;
 
@@ -303,4 +336,18 @@
   document.addEventListener('shopify:section:load', function (event) {
     initAll(event.target);
   });
+
+  /* Self-heal after the theme's view transitions swap #MainContent: the
+     replacement nodes are new objects, so initAll re-observes them (the
+     WeakSet guard keeps already-live cards from being bound twice). */
+  if (typeof MutationObserver === 'function' && !window.__apgoHomeMutationBound) {
+    window.__apgoHomeMutationBound = true;
+    var reinitTimer = null;
+    new MutationObserver(function () {
+      if (reinitTimer) clearTimeout(reinitTimer);
+      reinitTimer = setTimeout(function () {
+        initAll(document);
+      }, 120);
+    }).observe(document.documentElement, { childList: true, subtree: true });
+  }
 })();
