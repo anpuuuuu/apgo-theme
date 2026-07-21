@@ -3,8 +3,6 @@
   Four advantage cards, unified orange accent. Shares apgo-home.css/js.
 {% endcomment %}
 
-{{ 'apgo-home.css' | asset_url | stylesheet_tag }}
-
 <section
   id="apgo-home-why-{{ section.id }}"
   class="apgo-home apgo-home-why color-{{ section.settings.color_scheme }}"
@@ -44,8 +42,6 @@
     </div>
   </div>
 </section>
-
-<script src="{{ 'apgo-home.js' | asset_url }}" defer></script>
 
 {% schema %}
 {

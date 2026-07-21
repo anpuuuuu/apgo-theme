@@ -4,8 +4,6 @@
   milestones reveal one by one on scroll.
 {% endcomment %}
 
-{{ 'apgo-home.css' | asset_url | stylesheet_tag }}
-
 <section
   id="apgo-home-story-{{ section.id }}"
   class="apgo-home apgo-home-story color-{{ section.settings.color_scheme }}"
@@ -47,8 +45,6 @@
     </ol>
   </div>
 </section>
-
-<script src="{{ 'apgo-home.js' | asset_url }}" defer></script>
 
 {% schema %}
 {

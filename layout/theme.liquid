@@ -260,6 +260,17 @@
       <script src="{{ 'apgo-bundle.js' | asset_url }}" defer></script>
     {%- endif -%}
   {%- endif -%}
+
+  {%- comment -%}
+    Homepage bundle, loaded once here rather than per-section: the seven
+    apgo-home-* sections share one stylesheet and one script, and emitting
+    the tags inside each section produced seven copies (seven script
+    executions, hence seven duplicate observers).
+  {%- endcomment -%}
+  {%- if template.name == 'index' -%}
+    {{ 'apgo-home.css' | asset_url | stylesheet_tag }}
+    <script src="{{ 'apgo-home.js' | asset_url }}" defer></script>
+  {%- endif -%}
   </head>
 
   {% liquid

@@ -13,6 +13,12 @@
 (function () {
   'use strict';
 
+  /* Run-once guard: the file is loaded from layout/theme.liquid, but this
+     keeps a stray duplicate include from setting up a second set of
+     observers and listeners. */
+  if (window.__apgoHomeBooted) return;
+  window.__apgoHomeBooted = true;
+
   var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var saveData = !!(navigator.connection && navigator.connection.saveData);
 

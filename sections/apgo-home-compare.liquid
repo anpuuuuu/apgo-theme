@@ -4,8 +4,6 @@
   (pure CSS transition triggered by the shared reveal observer).
 {% endcomment %}
 
-{{ 'apgo-home.css' | asset_url | stylesheet_tag }}
-
 <section
   id="apgo-home-compare-{{ section.id }}"
   class="apgo-home apgo-home-compare color-{{ section.settings.color_scheme }}"
@@ -59,8 +57,6 @@
     </div>
   </div>
 </section>
-
-<script src="{{ 'apgo-home.js' | asset_url }}" defer></script>
 
 {% schema %}
 {

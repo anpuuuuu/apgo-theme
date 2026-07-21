@@ -4,8 +4,6 @@
   Links are relative (no hardcoded domain, no stale variant params).
 {% endcomment %}
 
-{{ 'apgo-home.css' | asset_url | stylesheet_tag }}
-
 <section
   id="apgo-home-guide-{{ section.id }}"
   class="apgo-home apgo-home-guide color-{{ section.settings.color_scheme }}"
@@ -47,8 +45,6 @@
     </div>
   </div>
 </section>
-
-<script src="{{ 'apgo-home.js' | asset_url }}" defer></script>
 
 {% schema %}
 {

@@ -5,8 +5,6 @@
   (The legacy floating-hearts animation is intentionally gone.)
 {% endcomment %}
 
-{{ 'apgo-home.css' | asset_url | stylesheet_tag }}
-
 <section
   id="apgo-home-live-{{ section.id }}"
   class="apgo-home apgo-home-live color-{{ section.settings.color_scheme }}"
@@ -127,8 +125,6 @@
     {% endif %}
   </div>
 </section>
-
-<script src="{{ 'apgo-home.js' | asset_url }}" defer></script>
 
 {% schema %}
 {

@@ -4,8 +4,6 @@
   and fades in on top (skipped for prefers-reduced-motion / Save-Data).
 {% endcomment %}
 
-{{ 'apgo-home.css' | asset_url | stylesheet_tag }}
-
 {% liquid
   assign hero_video_src = ''
   if section.settings.video != blank
@@ -93,8 +91,6 @@
     {% endif %}
   </div>
 </section>
-
-<script src="{{ 'apgo-home.js' | asset_url }}" defer></script>
 
 {% schema %}
 {

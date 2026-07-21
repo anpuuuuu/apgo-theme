@@ -8,8 +8,6 @@
   (or use the block's Badge setting to override).
 {% endcomment %}
 
-{{ 'apgo-home.css' | asset_url | stylesheet_tag }}
-
 <section
   id="apgo-home-products-{{ section.id }}"
   class="apgo-home apgo-home-products color-{{ section.settings.color_scheme }}"
@@ -75,8 +73,6 @@
     {% endif %}
   </div>
 </section>
-
-<script src="{{ 'apgo-home.js' | asset_url }}" defer></script>
 
 {% schema %}
 {
