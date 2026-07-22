@@ -1,0 +1,41 @@
+{% doc %}
+  Renders a promotional event zone with a heading, limited-offer message, and a banner linked to one product.
+
+  @param {string} heading - Zone heading text.
+  @param {string} message - Promotional message shown above the banner.
+  @param {image} banner_image - Promotional banner image.
+  @param {product} product - Product opened when the banner is selected.
+  @param {string} zone_class - Modifier suffix for the zone wrapper.
+{% enddoc %}
+
+{% if banner_image != blank and product != blank %}
+  <section class="apgo-event-linked-banner-zone apgo-event-linked-banner-zone--{{ zone_class }}">
+    {% if heading != blank %}
+      <h3 class="apgo-event-scroll-zone__heading">
+        <span class="apgo-event-scroll-zone__heading-star" aria-hidden="true">★</span>
+        {{ heading | escape }}
+        <span class="apgo-event-scroll-zone__heading-star" aria-hidden="true">★</span>
+      </h3>
+    {% endif %}
+
+    {% if message != blank %}
+      <p class="apgo-event-linked-banner-zone__message">{{ message | escape }}</p>
+    {% endif %}
+
+    <a
+      class="apgo-event-scroll-zone__banner apgo-event-linked-banner-zone__link"
+      href="{{ product.url }}"
+      aria-label="{{ product.title | escape }}"
+    >
+      {{ banner_image
+        | image_url: width: 1600
+        | image_tag:
+          class: 'apgo-event-scroll-zone__banner-img',
+          loading: 'lazy',
+          widths: '360, 540, 720, 960, 1200, 1600',
+          sizes: '(min-width: 990px) 1200px, calc(100vw - 48px)',
+          alt: product.title
+      }}
+    </a>
+  </section>
+{% endif %}

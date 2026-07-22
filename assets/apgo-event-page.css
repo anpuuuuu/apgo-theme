@@ -1018,6 +1018,35 @@ body.apgo-special-event-page .apgo-event-scroll-zone {
   position: relative;
   z-index: 1;
 }
+body.apgo-special-event-page .apgo-event-linked-banner-zone {
+  margin-block: 0 clamp(20px, 4vw, 40px);
+  padding-block: clamp(14px, 2.75vw, 26px) 0;
+  padding-inline: clamp(12px, 3vw, 32px);
+  position: relative;
+  z-index: 1;
+}
+body.apgo-special-event-page .apgo-event-linked-banner-zone__message {
+  margin: -4px 0 clamp(10px, 2vw, 18px);
+  color: var(--apgo-event-gold-light);
+  font-size: clamp(10px, 1.5vw, 13px);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  line-height: 1.4;
+  text-align: center;
+  text-transform: uppercase;
+}
+body.apgo-special-event-page .apgo-event-linked-banner-zone__link {
+  display: block;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+body.apgo-special-event-page .apgo-event-linked-banner-zone__link:hover {
+  transform: translateY(-2px);
+}
+body.apgo-special-event-page .apgo-event-linked-banner-zone__link:focus-visible {
+  outline: 2px solid var(--apgo-event-gold-light);
+  outline-offset: 3px;
+}
 body.apgo-special-event-page .apgo-event-scroll-zone__heading {
   margin: 0 0 clamp(10px, 2vw, 18px);
   font-size: clamp(16px, 2.4vw, 22px);
@@ -1054,6 +1083,9 @@ body.apgo-special-event-page .apgo-event-scroll-zone__banner-img {
   display: block;
   width: 100%;
   height: auto;
+}
+body.apgo-special-event-page .apgo-event-scroll-zone__banner.apgo-event-linked-banner-zone__link {
+  margin-bottom: 0;
 }
 
 /* Scroll track — flex row with snap; webkit smooth scrolling on touch */
@@ -1591,14 +1623,22 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-heading-subtitle 
   text-shadow: 0 0 10px rgba(242, 227, 179, 0.2);
 }
 
-body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-scroll-zone {
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-scroll-zone,
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-linked-banner-zone {
   margin-block-end: clamp(26px, 5vw, 48px);
   padding: clamp(24px, 4vw, 38px) clamp(12px, 3vw, 32px) 0;
 }
 
-body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-scroll-zone + .apgo-event-scroll-zone {
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-scroll-zone + .apgo-event-scroll-zone,
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-scroll-zone + .apgo-event-linked-banner-zone,
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-linked-banner-zone + .apgo-event-scroll-zone {
   border-top: 1px solid rgba(242, 227, 179, 0.22);
   box-shadow: 0 -1px 0 rgba(255, 252, 237, 0.04);
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-linked-banner-zone__message {
+  color: rgba(255, 252, 237, 0.84);
+  text-shadow: 0 0 10px rgba(242, 227, 179, 0.2);
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-scroll-zone__heading {
@@ -1673,6 +1713,14 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-scroll-zone__bann
   body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-heading-star,
   body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-heading-text {
     animation: none !important;
+  }
+
+  body.apgo-special-event-page .apgo-event-linked-banner-zone__link {
+    transition: none;
+  }
+
+  body.apgo-special-event-page .apgo-event-linked-banner-zone__link:hover {
+    transform: none;
   }
 }
 

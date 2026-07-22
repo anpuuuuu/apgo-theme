@@ -117,7 +117,17 @@
           section_id: section.id %}
       {%- endif -%}
 
-      {%- comment -%} ZONE 2 — Buy 1 Free 1 horizontal scroll {%- endcomment -%}
+      {%- comment -%} ZONE 2 — Single-product linked promotional banner {%- endcomment -%}
+      {%- if section.settings.show_aurora_zone -%}
+        {% render 'apgo-event-linked-banner-zone',
+          heading: section.settings.aurora_zone_heading,
+          message: section.settings.aurora_zone_message,
+          banner_image: section.settings.aurora_zone_banner,
+          product: section.settings.aurora_zone_product,
+          zone_class: 'aurora' %}
+      {%- endif -%}
+
+      {%- comment -%} ZONE 3 — Buy 1 Free 1 horizontal scroll {%- endcomment -%}
       {%- if section.settings.show_b1f1_zone -%}
         {% render 'apgo-event-scroll-zone',
           heading: section.settings.b1f1_zone_heading,
@@ -274,6 +284,38 @@
       "label": "Hide original (strikethrough) price",
       "info": "Tick to show only the current price on Discount-zone cards.",
       "default": false
+    },
+    {
+      "type": "header",
+      "content": "Single-product linked banner"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_aurora_zone",
+      "label": "Show linked banner zone",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "aurora_zone_heading",
+      "label": "Zone heading"
+    },
+    {
+      "type": "text",
+      "id": "aurora_zone_message",
+      "label": "Limited-offer message"
+    },
+    {
+      "type": "image_picker",
+      "id": "aurora_zone_banner",
+      "label": "Clickable banner",
+      "info": "The zone stays hidden until both a banner and product are selected."
+    },
+    {
+      "type": "product",
+      "id": "aurora_zone_product",
+      "label": "Banner destination product",
+      "info": "The whole banner links directly to this product page."
     },
     {
       "type": "header",
