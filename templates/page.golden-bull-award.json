@@ -192,7 +192,7 @@
         "aurora_zone_product": "apgo-aurora-car-nano-coating-premium",
         "show_b1f1_zone": true,
         "b1f1_zone_heading": "AWARD-WINNING COATING DEAL",
-        "b1f1_zone_banner": "",
+        "b1f1_zone_banner": "shopify://shop_images/Main_Banner_2.png",
         "b1f1_zone_products": [],
         "b1f1_zone_hide_compare_at": true,
         "show_featured_stage": false,
