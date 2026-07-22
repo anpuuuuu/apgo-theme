@@ -1539,6 +1539,7 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-heading-wrap {
   margin-inline: auto;
   padding: clamp(16px, 3vw, 24px) clamp(14px, 4vw, 36px);
   gap: clamp(10px, 2.2vw, 22px);
+  justify-content: space-between;
   border: 1px solid rgba(242, 227, 179, 0.56);
   border-radius: 10px;
   outline: 1px solid rgba(255, 252, 237, 0.1);
@@ -1549,6 +1550,12 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-heading-wrap {
   box-shadow:
     0 12px 30px rgba(0, 0, 0, 0.34),
     0 0 26px rgba(242, 227, 179, 0.1);
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-heading-stack {
+  flex: 1 1 auto;
+  min-width: 0;
+  gap: 0;
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-heading-star {
@@ -1573,7 +1580,7 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-heading-title {
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-heading-subtitle {
-  margin: 12px 0 0;
+  margin: 5px 0 0;
   color: rgba(255, 252, 237, 0.84);
   font-size: clamp(9px, 1.4vw, 12px);
   font-weight: 650;
