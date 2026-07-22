@@ -1779,6 +1779,26 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-scroll-zone__bann
   border-radius: 7px;
 }
 
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-scroll-zone__banner.apgo-event-linked-banner-zone__link {
+  margin-bottom: 0;
+  padding: 1px;
+  border-color: rgba(242, 227, 179, 0.58);
+  border-radius: 10px;
+  background: #020509;
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-linked-banner-zone__link .apgo-event-scroll-zone__banner-img {
+  border-radius: 8px 8px 0 0;
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-linked-banner-zone__cta {
+  border-top: 1px solid rgba(216, 191, 122, 0.62);
+  border-radius: 0 0 8px 8px;
+  background: linear-gradient(110deg, #fffef7 0%, #fbf4dc 42%, #ecdda9 72%, #fffdf2 100%);
+  color: #071019;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
 @keyframes apgoGoldenBullConfetti {
   from { background-position: 0 0; }
   to { background-position: 12px 8px; }
