@@ -1491,16 +1491,30 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-heading-text {
   animation: apgoGoldenBullTitleGlow 6s ease-in-out infinite;
 }
 
-body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-heading-subtitle {
-  margin: 2px 0 0;
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-heading-title,
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-heading-tagline {
+  display: block;
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-heading-tagline {
+  margin-top: 8px;
   color: #fff0b2;
-  font-size: clamp(10px, 1.6vw, 13px);
+  font-size: clamp(9px, 1.5vw, 12px);
   font-weight: 800;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.2em;
   line-height: 1.4;
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-heading-subtitle {
+  margin: 12px 0 0;
+  color: rgba(255, 248, 224, 0.82);
+  font-size: clamp(9px, 1.4vw, 12px);
+  font-weight: 650;
+  letter-spacing: 0.12em;
+  line-height: 1.5;
   text-align: center;
   text-transform: uppercase;
-  text-shadow: 0 0 12px rgba(227, 179, 77, 0.3);
+  text-shadow: 0 0 10px rgba(227, 179, 77, 0.2);
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-scroll-zone {

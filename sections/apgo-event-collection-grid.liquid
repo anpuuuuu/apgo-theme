@@ -43,7 +43,7 @@
     {%- if section.settings.show_countdown and section.settings.countdown_end_at != blank -%}
       {%- assign apgo_show_countdown = true -%}
     {%- endif -%}
-    {% if section.settings.heading != blank or section.settings.celebration_subheading != blank or apgo_show_countdown %}
+    {% if section.settings.heading != blank or section.settings.celebration_subheading != blank or section.settings.celebration_message != blank or apgo_show_countdown %}
       <header class="apgo-event-collection-grid__header">
         {% if section.settings.heading != blank %}
           {%- comment -%}
@@ -62,10 +62,13 @@
                   <span class="apgo-event-heading-badge">{{ section.settings.anniversary_badge }}</span>
                 {% endif %}
                 <h2 class="apgo-event-collection-grid__heading apgo-event-heading-text">
-                  {{ section.settings.heading | escape | newline_to_br }}
+                  <span class="apgo-event-heading-title">{{ section.settings.heading | escape | newline_to_br }}</span>
+                  {% if section.settings.celebration_subheading != blank %}
+                    <span class="apgo-event-heading-tagline">{{ section.settings.celebration_subheading | escape }}</span>
+                  {% endif %}
                 </h2>
-                {% if section.settings.celebration_subheading != blank %}
-                  <p class="apgo-event-heading-subtitle">{{ section.settings.celebration_subheading | escape }}</p>
+                {% if section.settings.celebration_message != blank %}
+                  <p class="apgo-event-heading-subtitle">{{ section.settings.celebration_message | escape }}</p>
                 {% endif %}
               </div>
               <span class="apgo-event-heading-star apgo-event-heading-star--right">
@@ -73,13 +76,18 @@
               </span>
             </div>
           {% else %}
-            <h2 class="apgo-event-collection-grid__heading">{{ section.settings.heading | escape | newline_to_br }}</h2>
-            {% if section.settings.celebration_subheading != blank %}
-              <p class="apgo-event-heading-subtitle">{{ section.settings.celebration_subheading | escape }}</p>
+            <h2 class="apgo-event-collection-grid__heading">
+              <span class="apgo-event-heading-title">{{ section.settings.heading | escape | newline_to_br }}</span>
+              {% if section.settings.celebration_subheading != blank %}
+                <span class="apgo-event-heading-tagline">{{ section.settings.celebration_subheading | escape }}</span>
+              {% endif %}
+            </h2>
+            {% if section.settings.celebration_message != blank %}
+              <p class="apgo-event-heading-subtitle">{{ section.settings.celebration_message | escape }}</p>
             {% endif %}
           {% endif %}
-        {% elsif section.settings.celebration_subheading != blank %}
-          <p class="apgo-event-heading-subtitle">{{ section.settings.celebration_subheading | escape }}</p>
+        {% elsif section.settings.celebration_message != blank %}
+          <p class="apgo-event-heading-subtitle">{{ section.settings.celebration_message | escape }}</p>
         {% endif %}
 
         {%- if apgo_show_countdown -%}
@@ -214,8 +222,14 @@
     {
       "type": "text",
       "id": "celebration_subheading",
-      "label": "Celebration subheading",
-      "info": "Short message shown below the main event heading. Leave blank to hide."
+      "label": "Celebration tagline",
+      "info": "Short reward line grouped with the main event heading. Leave blank to hide."
+    },
+    {
+      "type": "text",
+      "id": "celebration_message",
+      "label": "Celebration message",
+      "info": "Meaningful customer-facing message shown below the main heading. Leave blank to hide."
     },
     {
       "type": "checkbox",
