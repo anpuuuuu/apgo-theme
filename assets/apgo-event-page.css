@@ -1390,7 +1390,71 @@ body.apgo-special-event-page.apgo-golden-bull-page {
   --apgo-event-gold-light: #f4d482;
   --apgo-event-gold-bright: #e3b34d;
   --apgo-event-gold-deep: #9b6512;
+  --apgo-award-card-title: #f5efe3;
+  --apgo-award-card-muted: rgba(221, 214, 197, 0.5);
+  --apgo-award-card-gold: #d7ba70;
+  --apgo-award-card-gold-light: #f1dea5;
+  --apgo-award-card-gold-deep: #a47c31;
   background-color: var(--apgo-event-page-bg);
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-listing-card__title,
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-listing-card__title a,
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-listing-card__title a:hover,
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-listing-card .product-card__title,
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-listing-card .product-card__title a {
+  color: var(--apgo-award-card-title) !important;
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-listing-card__price-compare {
+  color: var(--apgo-award-card-muted);
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-listing-card__price-current {
+  background: linear-gradient(135deg, var(--apgo-award-card-gold-light), var(--apgo-award-card-gold) 58%, var(--apgo-award-card-gold-deep));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: var(--apgo-award-card-gold);
+  filter: drop-shadow(0 0 8px rgba(215, 186, 112, 0.2));
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-listing-card__btn {
+  min-height: 36px;
+  border-radius: 7px;
+  border-color: rgba(215, 186, 112, 0.82);
+  font-weight: 750;
+  letter-spacing: 0.075em;
+  transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-listing-card__btn--add {
+  background: rgba(5, 13, 20, 0.78);
+  color: var(--apgo-award-card-gold-light);
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-listing-card__btn--add:hover {
+  background: rgba(215, 186, 112, 0.12);
+  border-color: var(--apgo-award-card-gold-light);
+  color: #fff4cf;
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-listing-card__btn--buy {
+  background: linear-gradient(180deg, #f4e6bf 0%, #d6b56a 100%);
+  border-color: #d6b56a;
+  color: #071019;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.44), 0 4px 12px rgba(164, 124, 49, 0.16);
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-listing-card__btn--buy:hover {
+  background: linear-gradient(180deg, #fff0c9 0%, #dfc17c 100%);
+  border-color: var(--apgo-award-card-gold-light);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 5px 15px rgba(215, 186, 112, 0.22);
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-listing-card__btn:focus-visible {
+  outline: 2px solid #fff4cf;
+  outline-offset: 2px;
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page #MainContent {
