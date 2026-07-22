@@ -43,7 +43,7 @@
     {%- if section.settings.show_countdown and section.settings.countdown_end_at != blank -%}
       {%- assign apgo_show_countdown = true -%}
     {%- endif -%}
-    {% if section.settings.heading != blank or apgo_show_countdown %}
+    {% if section.settings.heading != blank or section.settings.celebration_subheading != blank or apgo_show_countdown %}
       <header class="apgo-event-collection-grid__header">
         {% if section.settings.heading != blank %}
           {%- comment -%}
@@ -64,6 +64,9 @@
                 <h2 class="apgo-event-collection-grid__heading apgo-event-heading-text">
                   {{ section.settings.heading | escape | newline_to_br }}
                 </h2>
+                {% if section.settings.celebration_subheading != blank %}
+                  <p class="apgo-event-heading-subtitle">{{ section.settings.celebration_subheading | escape }}</p>
+                {% endif %}
               </div>
               <span class="apgo-event-heading-star apgo-event-heading-star--right">
                 {% render 'apgo-icon-star', unique: 'evt-grid-r' %}
@@ -71,7 +74,12 @@
             </div>
           {% else %}
             <h2 class="apgo-event-collection-grid__heading">{{ section.settings.heading | escape | newline_to_br }}</h2>
+            {% if section.settings.celebration_subheading != blank %}
+              <p class="apgo-event-heading-subtitle">{{ section.settings.celebration_subheading | escape }}</p>
+            {% endif %}
           {% endif %}
+        {% elsif section.settings.celebration_subheading != blank %}
+          <p class="apgo-event-heading-subtitle">{{ section.settings.celebration_subheading | escape }}</p>
         {% endif %}
 
         {%- if apgo_show_countdown -%}
@@ -90,12 +98,16 @@
       {%- endcomment -%}
       {%- assign discount_card_blocks = section.blocks | where: 'type', 'discount_card' -%}
       {%- assign b1f1_card_blocks     = section.blocks | where: 'type', 'b1f1_card' -%}
+      {%- assign discount_zone_banner = section.settings.discount_zone_banner -%}
+      {%- if localization.country.iso_code == 'SG' and section.settings.discount_zone_banner_sg != blank -%}
+        {%- assign discount_zone_banner = section.settings.discount_zone_banner_sg -%}
+      {%- endif -%}
 
       {%- comment -%} ZONE 1 — Discount horizontal scroll {%- endcomment -%}
       {%- if section.settings.show_discount_zone -%}
         {% render 'apgo-event-scroll-zone',
           heading: section.settings.discount_zone_heading,
-          banner_image: section.settings.discount_zone_banner,
+          banner_image: discount_zone_banner,
           card_blocks: discount_card_blocks,
           products: section.settings.discount_zone_products,
           zone_class: 'discount',
@@ -200,6 +212,12 @@
       "info": "Press Enter for a second line."
     },
     {
+      "type": "text",
+      "id": "celebration_subheading",
+      "label": "Celebration subheading",
+      "info": "Short message shown below the main event heading. Leave blank to hide."
+    },
+    {
       "type": "checkbox",
       "id": "show_festive_lockup",
       "label": "Show festive heading lockup",
@@ -232,8 +250,14 @@
     {
       "type": "image_picker",
       "id": "discount_zone_banner",
-      "label": "Banner image (above products)",
-      "info": "Decorative image shown between the heading and the product list. Not clickable. Leave blank to hide."
+      "label": "Malaysia / default banner",
+      "info": "Shown in Malaysia and all non-Singapore markets. Not clickable. Leave blank to hide."
+    },
+    {
+      "type": "image_picker",
+      "id": "discount_zone_banner_sg",
+      "label": "Singapore discount banner",
+      "info": "Shown only when the selected country is Singapore. Falls back to the Malaysia / default banner when blank."
     },
     {
       "type": "product_list",

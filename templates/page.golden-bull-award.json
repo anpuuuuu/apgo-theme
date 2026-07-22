@@ -173,18 +173,20 @@
       "name": "Event Collection Grid",
       "settings": {
         "show_countdown": false,
-        "countdown_label": "BIRTHDAY SALE ENDS IN",
+        "countdown_label": "AWARD CELEBRATION ENDS IN",
         "countdown_end_at": "2026-07-07T00:00:00+08:00",
         "heading": "APGO Golden Bull Award",
+        "celebration_subheading": "OUR WIN, YOUR REWARD",
         "show_festive_lockup": true,
         "anniversary_badge": "",
         "show_discount_zone": true,
-        "discount_zone_heading": "special DISCOUNT",
-        "discount_zone_banner": "shopify://shop_images/19_6f610470-5f92-4560-a586-850c2851cb95.png",
+        "discount_zone_heading": "GOLDEN CELEBRATION SPECIALS",
+        "discount_zone_banner": "shopify://shop_images/18_6c593269-9a8d-40c1-8480-6d16a0aa3ae4.png",
+        "discount_zone_banner_sg": "shopify://shop_images/19_6f610470-5f92-4560-a586-850c2851cb95.png",
         "discount_zone_products": [],
         "discount_zone_hide_compare_at": false,
         "show_b1f1_zone": true,
-        "b1f1_zone_heading": "BUY 1 FREE 1",
+        "b1f1_zone_heading": "AWARD-WINNING COATING DEAL",
         "b1f1_zone_banner": "shopify://shop_images/21_1bb5483d-35b8-45a0-9407-949fe38ccba9.png",
         "b1f1_zone_products": [],
         "b1f1_zone_hide_compare_at": true,
@@ -199,28 +201,16 @@
         "featured_stage_hide_compare_at": false,
         "overlap_enabled": false,
         "overlap_offset": 16,
-        "panel_radius": 32,
+        "panel_radius": 14,
         "color_scheme": "scheme-3",
         "padding-block-start": 0,
         "padding-block-end": 0
-      }
-    },
-    "apgo_event_banner_kfy6Kb": {
-      "type": "apgo-event-banner",
-      "name": "APGO Event Banner",
-      "settings": {
-        "image": "shopify://shop_images/55555.png",
-        "image_alt": "",
-        "link": "",
-        "desktop_width_percent": 67,
-        "color_scheme": ""
       }
     }
   },
   "order": [
     "main",
     "apgo_event_banner_jRgaPP",
-    "apgo_event_collection_grid_n3e6dm",
-    "apgo_event_banner_kfy6Kb"
+    "apgo_event_collection_grid_n3e6dm"
   ]
 }
