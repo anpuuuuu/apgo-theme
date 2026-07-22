@@ -43,7 +43,7 @@
     {%- if section.settings.show_countdown and section.settings.countdown_end_at != blank -%}
       {%- assign apgo_show_countdown = true -%}
     {%- endif -%}
-    {% if section.settings.heading != blank or section.settings.celebration_subheading != blank or section.settings.celebration_message != blank or apgo_show_countdown %}
+    {% if section.settings.heading != blank or section.settings.celebration_message != blank or apgo_show_countdown %}
       <header class="apgo-event-collection-grid__header">
         {% if section.settings.heading != blank %}
           {%- comment -%}
@@ -63,9 +63,6 @@
                 {% endif %}
                 <h2 class="apgo-event-collection-grid__heading apgo-event-heading-text">
                   <span class="apgo-event-heading-title">{{ section.settings.heading | escape | newline_to_br }}</span>
-                  {% if section.settings.celebration_subheading != blank %}
-                    <span class="apgo-event-heading-tagline">{{ section.settings.celebration_subheading | escape }}</span>
-                  {% endif %}
                 </h2>
                 {% if section.settings.celebration_message != blank %}
                   <p class="apgo-event-heading-subtitle">{{ section.settings.celebration_message | escape }}</p>
@@ -78,9 +75,6 @@
           {% else %}
             <h2 class="apgo-event-collection-grid__heading">
               <span class="apgo-event-heading-title">{{ section.settings.heading | escape | newline_to_br }}</span>
-              {% if section.settings.celebration_subheading != blank %}
-                <span class="apgo-event-heading-tagline">{{ section.settings.celebration_subheading | escape }}</span>
-              {% endif %}
             </h2>
             {% if section.settings.celebration_message != blank %}
               <p class="apgo-event-heading-subtitle">{{ section.settings.celebration_message | escape }}</p>
@@ -218,12 +212,6 @@
       "id": "heading",
       "label": "Section heading (optional)",
       "info": "Press Enter for a second line."
-    },
-    {
-      "type": "text",
-      "id": "celebration_subheading",
-      "label": "Celebration tagline",
-      "info": "Short reward line grouped with the main event heading. Leave blank to hide."
     },
     {
       "type": "text",

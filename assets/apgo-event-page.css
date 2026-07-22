@@ -1550,23 +1550,13 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-heading-star--rig
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-heading-text {
-  font-size: clamp(20px, 3.8vw, 34px);
-  letter-spacing: 0.055em;
+  font-size: clamp(15px, 2.7vw, 24px);
+  letter-spacing: 0.12em;
   animation: apgoGoldenBullTitleGlow 6s ease-in-out infinite;
 }
 
-body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-heading-title,
-body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-heading-tagline {
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-heading-title {
   display: block;
-}
-
-body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-heading-tagline {
-  margin-top: 8px;
-  color: #fff0b2;
-  font-size: clamp(9px, 1.5vw, 12px);
-  font-weight: 800;
-  letter-spacing: 0.2em;
-  line-height: 1.4;
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-heading-subtitle {
