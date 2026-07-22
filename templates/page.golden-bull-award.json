@@ -216,7 +216,7 @@
       "type": "apgo-event-banner",
       "name": "APGO Event Banner",
       "settings": {
-        "image": "shopify://shop_images/Main_Banner_2.png",
+        "image": "shopify://shop_images/footer_2.png",
         "image_alt": "",
         "link": "",
         "desktop_width_percent": 67,
