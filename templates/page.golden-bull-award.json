@@ -201,7 +201,7 @@
         "featured_stage_hide_compare_at": false,
         "overlap_enabled": false,
         "overlap_offset": 16,
-        "panel_radius": 14,
+        "panel_radius": 16,
         "color_scheme": "scheme-3",
         "padding-block-start": 0,
         "padding-block-end": 0
