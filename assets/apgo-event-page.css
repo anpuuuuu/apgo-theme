@@ -1360,7 +1360,11 @@ body.apgo-special-event-page .apgo-event-featured-banner__btn:active {
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page {
-  --apgo-event-brand: #e3b34d;
+  --apgo-award-gold-highlight: #fff2a3;
+  --apgo-award-gold-core: #f6c84a;
+  --apgo-award-gold-mid: #d99a18;
+  --apgo-award-gold-deep: #b8750c;
+  --apgo-event-brand: var(--apgo-award-gold-core);
   --apgo-event-page-bg: #020509;
   --apgo-event-panel-bg: #071019;
   --apgo-event-heading-bg: #071019;
@@ -1373,7 +1377,7 @@ body.apgo-special-event-page.apgo-golden-bull-page {
     ),
     radial-gradient(
       ellipse 58% 28% at 50% 6%,
-      rgba(227, 179, 77, 0.14) 0%,
+      rgba(246, 200, 74, 0.15) 0%,
       transparent 76%
     ),
     linear-gradient(
@@ -1382,20 +1386,25 @@ body.apgo-special-event-page.apgo-golden-bull-page {
       #050c13 54%,
       #020509 100%
     );
-  --apgo-event-heading-color: #f4d482;
-  --apgo-event-heading-gradient: linear-gradient(135deg, #fff0b2 0%, #e3b34d 48%, #9b6512 100%);
-  --apgo-event-card-price-color: #e3b34d;
-  --apgo-event-card-discount-bg: linear-gradient(135deg, #f4d482, #b97916);
+  --apgo-event-heading-color: var(--apgo-award-gold-core);
+  --apgo-event-heading-gradient: linear-gradient(115deg, var(--apgo-award-gold-highlight) 0%, var(--apgo-award-gold-core) 34%, var(--apgo-award-gold-mid) 67%, var(--apgo-award-gold-deep) 100%);
+  --apgo-event-card-price-color: var(--apgo-award-gold-core);
+  --apgo-event-card-discount-bg: linear-gradient(135deg, var(--apgo-award-gold-highlight), var(--apgo-award-gold-mid));
   --apgo-event-card-discount-color: #05080c;
-  --apgo-event-gold-light: #f4d482;
-  --apgo-event-gold-bright: #e3b34d;
-  --apgo-event-gold-deep: #9b6512;
-  --apgo-award-card-title: #f5efe3;
-  --apgo-award-card-muted: rgba(221, 214, 197, 0.5);
-  --apgo-award-card-gold: #d7ba70;
-  --apgo-award-card-gold-light: #f1dea5;
-  --apgo-award-card-gold-deep: #a47c31;
+  --apgo-event-gold-light: var(--apgo-award-gold-highlight);
+  --apgo-event-gold-bright: var(--apgo-award-gold-core);
+  --apgo-event-gold-deep: var(--apgo-award-gold-deep);
+  --apgo-award-card-title: #f4c541;
+  --apgo-award-card-muted: rgba(232, 211, 154, 0.48);
+  --apgo-award-card-gold: var(--apgo-award-gold-core);
+  --apgo-award-card-gold-light: var(--apgo-award-gold-highlight);
+  --apgo-award-card-gold-deep: var(--apgo-award-gold-deep);
   background-color: var(--apgo-event-page-bg);
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-listing-card {
+  background: linear-gradient(180deg, #07131d 0%, #03080d 100%) !important;
+  border: 1px solid rgba(246, 200, 74, 0.24);
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-listing-card__title,
@@ -1416,13 +1425,13 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-listing-card__pri
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   color: var(--apgo-award-card-gold);
-  filter: drop-shadow(0 0 8px rgba(215, 186, 112, 0.2));
+  filter: drop-shadow(0 0 8px rgba(246, 200, 74, 0.24));
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-listing-card__btn {
   min-height: 36px;
   border-radius: 7px;
-  border-color: rgba(215, 186, 112, 0.82);
+  border-color: rgba(246, 200, 74, 0.88);
   font-weight: 750;
   letter-spacing: 0.075em;
   transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
@@ -1434,22 +1443,22 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-listing-card__btn
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-listing-card__btn--add:hover {
-  background: rgba(215, 186, 112, 0.12);
+  background: rgba(246, 200, 74, 0.14);
   border-color: var(--apgo-award-card-gold-light);
   color: #fff4cf;
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-listing-card__btn--buy {
-  background: linear-gradient(180deg, #f4e6bf 0%, #d6b56a 100%);
-  border-color: #d6b56a;
+  background: linear-gradient(135deg, var(--apgo-award-gold-highlight) 0%, var(--apgo-award-gold-core) 42%, var(--apgo-award-gold-mid) 76%, var(--apgo-award-gold-deep) 100%);
+  border-color: var(--apgo-award-gold-core);
   color: #071019;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.44), 0 4px 12px rgba(164, 124, 49, 0.16);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.48), 0 4px 12px rgba(217, 154, 24, 0.2);
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-listing-card__btn--buy:hover {
-  background: linear-gradient(180deg, #fff0c9 0%, #dfc17c 100%);
+  background: linear-gradient(135deg, #fff7c7 0%, #ffd967 42%, #e5a927 78%, #b8750c 100%);
   border-color: var(--apgo-award-card-gold-light);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 5px 15px rgba(215, 186, 112, 0.22);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.52), 0 5px 15px rgba(246, 200, 74, 0.26);
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-listing-card__btn:focus-visible {
@@ -1477,10 +1486,10 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-collection-grid__
   box-sizing: border-box;
   background: var(--apgo-event-panel-bg-gradient);
   color: var(--apgo-event-gold-light);
-  border: 1px solid rgba(227, 179, 77, 0.5) !important;
+  border: 1px solid rgba(246, 200, 74, 0.5) !important;
   border-radius: 16px !important;
   box-shadow:
-    inset 0 0 0 1px rgba(255, 240, 178, 0.08),
+    inset 0 0 0 1px rgba(255, 242, 163, 0.09),
     0 18px 44px rgba(0, 0, 0, 0.42);
 }
 
@@ -1488,12 +1497,12 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-collection-grid__
   inset: 0 0 auto;
   height: min(360px, 38%);
   background-image:
-    radial-gradient(circle at 7% 18%, rgba(244, 212, 130, 0.42) 0 2px, transparent 3px),
-    radial-gradient(circle at 16% 54%, rgba(227, 179, 77, 0.25) 0 1px, transparent 2px),
-    radial-gradient(circle at 28% 12%, rgba(255, 240, 178, 0.28) 0 1.5px, transparent 2.5px),
-    radial-gradient(circle at 72% 18%, rgba(244, 212, 130, 0.3) 0 1.5px, transparent 2.5px),
-    radial-gradient(circle at 84% 58%, rgba(227, 179, 77, 0.26) 0 1px, transparent 2px),
-    radial-gradient(circle at 94% 22%, rgba(255, 240, 178, 0.4) 0 2px, transparent 3px);
+    radial-gradient(circle at 7% 18%, rgba(255, 242, 163, 0.44) 0 2px, transparent 3px),
+    radial-gradient(circle at 16% 54%, rgba(246, 200, 74, 0.28) 0 1px, transparent 2px),
+    radial-gradient(circle at 28% 12%, rgba(255, 242, 163, 0.3) 0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 72% 18%, rgba(246, 200, 74, 0.34) 0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 84% 58%, rgba(217, 154, 24, 0.3) 0 1px, transparent 2px),
+    radial-gradient(circle at 94% 22%, rgba(255, 242, 163, 0.42) 0 2px, transparent 3px);
   background-size: 420px 280px;
   opacity: 0.72;
   animation: apgoGoldenBullConfetti 12s ease-in-out infinite alternate;
@@ -1507,8 +1516,8 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-collection-grid__
   right: 12px;
   height: 4px;
   border-radius: 0 0 999px 999px;
-  background: linear-gradient(90deg, transparent 0%, #9b6512 14%, #fff0b2 50%, #9b6512 86%, transparent 100%);
-  box-shadow: 0 0 18px rgba(227, 179, 77, 0.45);
+  background: linear-gradient(90deg, transparent 0%, var(--apgo-award-gold-deep) 14%, var(--apgo-award-gold-highlight) 50%, var(--apgo-award-gold-mid) 86%, transparent 100%);
+  box-shadow: 0 0 18px rgba(246, 200, 74, 0.5);
   pointer-events: none;
   z-index: 3;
 }
@@ -1518,30 +1527,30 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-collection-grid__
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-collection-grid__header {
-  padding: clamp(28px, 5vw, 52px) clamp(12px, 3vw, 24px) clamp(12px, 2vw, 22px);
+  padding: clamp(18px, 3.5vw, 34px) clamp(12px, 3vw, 24px) clamp(4px, 1vw, 10px);
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-heading-wrap {
   width: min(92%, 760px);
   margin-inline: auto;
-  padding: clamp(16px, 3vw, 24px) clamp(14px, 4vw, 36px);
+  padding: clamp(13px, 2.2vw, 18px) clamp(12px, 3.5vw, 32px);
   gap: clamp(10px, 2.2vw, 22px);
-  border: 1px solid rgba(227, 179, 77, 0.58);
+  border: 1px solid rgba(246, 200, 74, 0.62);
   border-radius: 10px;
-  outline: 1px solid rgba(255, 240, 178, 0.1);
+  outline: 1px solid rgba(255, 242, 163, 0.12);
   outline-offset: -5px;
   background:
-    radial-gradient(circle at 50% 0%, rgba(227, 179, 77, 0.14), transparent 62%),
+    radial-gradient(circle at 50% 0%, rgba(246, 200, 74, 0.16), transparent 62%),
     linear-gradient(180deg, rgba(11, 27, 40, 0.96), rgba(4, 11, 17, 0.96));
   box-shadow:
     0 12px 30px rgba(0, 0, 0, 0.34),
-    0 0 26px rgba(227, 179, 77, 0.08);
+    0 0 26px rgba(246, 200, 74, 0.11);
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-heading-star {
   width: clamp(22px, 4vw, 36px);
   height: clamp(22px, 4vw, 36px);
-  filter: drop-shadow(0 0 8px rgba(244, 212, 130, 0.58));
+  filter: drop-shadow(0 0 8px rgba(255, 242, 163, 0.62));
   animation: apgoGoldenBullStarGlow 5.5s ease-in-out infinite;
 }
 
@@ -1550,8 +1559,9 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-heading-star--rig
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-heading-text {
-  font-size: clamp(15px, 2.7vw, 24px);
-  letter-spacing: 0.12em;
+  font-size: clamp(14px, 2.35vw, 20px);
+  line-height: 1.25;
+  letter-spacing: 0.115em;
   animation: apgoGoldenBullTitleGlow 6s ease-in-out infinite;
 }
 
@@ -1560,32 +1570,33 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-heading-title {
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-heading-subtitle {
-  margin: 12px 0 0;
-  color: rgba(255, 248, 224, 0.82);
-  font-size: clamp(9px, 1.4vw, 12px);
-  font-weight: 650;
-  letter-spacing: 0.12em;
-  line-height: 1.5;
+  margin: 8px 0 0;
+  color: rgba(255, 242, 163, 0.88);
+  font-size: clamp(9px, 1.25vw, 11px);
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  line-height: 1.4;
   text-align: center;
   text-transform: uppercase;
-  text-shadow: 0 0 10px rgba(227, 179, 77, 0.2);
+  text-shadow: 0 0 10px rgba(246, 200, 74, 0.24);
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-scroll-zone {
-  margin-block-end: clamp(26px, 5vw, 48px);
-  padding: clamp(24px, 4vw, 38px) clamp(12px, 3vw, 32px) 0;
+  margin-block-end: clamp(24px, 4vw, 42px);
+  padding: clamp(16px, 3vw, 28px) clamp(12px, 3vw, 32px) 0;
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-scroll-zone + .apgo-event-scroll-zone {
-  border-top: 1px solid rgba(227, 179, 77, 0.22);
-  box-shadow: 0 -1px 0 rgba(255, 240, 178, 0.04);
+  border-top: 1px solid rgba(246, 200, 74, 0.24);
+  box-shadow: 0 -1px 0 rgba(255, 242, 163, 0.05);
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-scroll-zone__heading {
-  margin-bottom: clamp(14px, 2.5vw, 22px);
-  color: #f4d482;
-  font-size: clamp(15px, 2.5vw, 23px);
-  letter-spacing: 0.14em;
+  margin-bottom: clamp(11px, 2vw, 18px);
+  color: var(--apgo-award-gold-core);
+  font-size: clamp(14px, 2.2vw, 20px);
+  line-height: 1.25;
+  letter-spacing: 0.13em;
   -webkit-text-fill-color: transparent;
 }
 
@@ -1594,7 +1605,7 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-scroll-zone__head
   content: '';
   flex: 0 1 76px;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(227, 179, 77, 0.8));
+  background: linear-gradient(90deg, transparent, rgba(246, 200, 74, 0.86));
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-scroll-zone__heading::after {
@@ -1602,20 +1613,20 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-scroll-zone__head
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-scroll-zone__heading-star {
-  color: #e3b34d;
-  -webkit-text-fill-color: #e3b34d;
-  filter: drop-shadow(0 0 6px rgba(227, 179, 77, 0.5));
+  color: var(--apgo-award-gold-core);
+  -webkit-text-fill-color: var(--apgo-award-gold-core);
+  filter: drop-shadow(0 0 6px rgba(246, 200, 74, 0.52));
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-scroll-zone__banner {
-  margin-bottom: clamp(14px, 2.5vw, 22px);
+  margin-bottom: clamp(12px, 2vw, 18px);
   padding: 2px;
-  border: 1px solid rgba(227, 179, 77, 0.5);
+  border: 1px solid rgba(246, 200, 74, 0.56);
   border-radius: 10px;
   background: #020509;
   box-shadow:
     0 12px 30px rgba(0, 0, 0, 0.38),
-    0 0 18px rgba(227, 179, 77, 0.08);
+    0 0 18px rgba(246, 200, 74, 0.1);
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-scroll-zone__banner-img {
@@ -1634,7 +1645,7 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-scroll-zone__bann
 
 @keyframes apgoGoldenBullTitleGlow {
   0%, 100% { filter: brightness(1) drop-shadow(0 0 0 transparent); }
-  50% { filter: brightness(1.08) drop-shadow(0 0 12px rgba(227, 179, 77, 0.3)); }
+  50% { filter: brightness(1.08) drop-shadow(0 0 12px rgba(246, 200, 74, 0.34)); }
 }
 
 @media (max-width: 749px) {
