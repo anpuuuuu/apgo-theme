@@ -114,6 +114,7 @@
           products: section.settings.discount_zone_products,
           zone_class: 'discount',
           hide_compare_at: section.settings.discount_zone_hide_compare_at,
+          show_scroll_cue: section.settings.show_product_scroll_cue,
           section_id: section.id %}
       {%- endif -%}
 
@@ -124,6 +125,7 @@
           message: section.settings.aurora_zone_message,
           banner_image: section.settings.aurora_zone_banner,
           product: section.settings.aurora_zone_product,
+          cta: section.settings.aurora_zone_cta,
           zone_class: 'aurora' %}
       {%- endif -%}
 
@@ -136,6 +138,7 @@
           products: section.settings.b1f1_zone_products,
           zone_class: 'b1f1',
           hide_compare_at: section.settings.b1f1_zone_hide_compare_at,
+          show_scroll_cue: section.settings.show_product_scroll_cue,
           section_id: section.id %}
       {%- endif -%}
 
@@ -231,6 +234,13 @@
     },
     {
       "type": "checkbox",
+      "id": "show_product_scroll_cue",
+      "label": "Show product swipe cue",
+      "info": "Adds an animated swipe hint and a large next button to horizontal product lists.",
+      "default": false
+    },
+    {
+      "type": "checkbox",
       "id": "show_festive_lockup",
       "label": "Show festive heading lockup",
       "info": "Adds gold star icons either side of the heading + optional anniversary badge above.",
@@ -316,6 +326,12 @@
       "id": "aurora_zone_product",
       "label": "Banner destination product",
       "info": "The whole banner links directly to this product page."
+    },
+    {
+      "type": "text",
+      "id": "aurora_zone_cta",
+      "label": "Banner CTA label",
+      "default": "VIEW AURORA DEAL"
     },
     {
       "type": "header",

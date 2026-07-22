@@ -5,10 +5,12 @@
   @param {string} message - Promotional message shown above the banner.
   @param {image} banner_image - Promotional banner image.
   @param {product} product - Product opened when the banner is selected.
+  @param {string} cta - Optional call-to-action label below the banner image.
   @param {string} zone_class - Modifier suffix for the zone wrapper.
 {% enddoc %}
 
 {% if banner_image != blank and product != blank %}
+  {% assign link_label = cta | default: product.title %}
   <section class="apgo-event-linked-banner-zone apgo-event-linked-banner-zone--{{ zone_class }}">
     {% if heading != blank %}
       <h3 class="apgo-event-scroll-zone__heading">
@@ -25,7 +27,7 @@
     <a
       class="apgo-event-scroll-zone__banner apgo-event-linked-banner-zone__link"
       href="{{ product.url }}"
-      aria-label="{{ product.title | escape }}"
+      aria-label="{{ link_label | escape }}"
     >
       {{ banner_image
         | image_url: width: 1600
@@ -36,6 +38,12 @@
           sizes: '(min-width: 990px) 1200px, calc(100vw - 48px)',
           alt: product.title
       }}
+      {% if cta != blank %}
+        <span class="apgo-event-linked-banner-zone__cta">
+          {{ cta | escape }}
+          <span aria-hidden="true">→</span>
+        </span>
+      {% endif %}
     </a>
   </section>
 {% endif %}

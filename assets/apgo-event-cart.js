@@ -283,5 +283,73 @@
     });
   }
 
+  function initScrollCues(root) {
+    var scope = root || document;
+    if (!scope.querySelectorAll) return;
+
+    var viewports = scope.querySelectorAll('[data-apgo-scroll-viewport]');
+    Array.prototype.forEach.call(viewports, function (viewport) {
+      if (viewport.getAttribute('data-apgo-scroll-ready') === 'true') return;
+
+      var track = viewport.querySelector('[data-apgo-scroll-track]');
+      var nextButton = viewport.querySelector('[data-apgo-scroll-next]');
+      if (!track || !nextButton) return;
+
+      var zone = viewport.closest('.apgo-event-scroll-zone');
+      var hint = zone ? zone.querySelector('[data-apgo-scroll-hint]') : null;
+      var dismissed = false;
+      var reducedMotion = window.matchMedia &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      viewport.setAttribute('data-apgo-scroll-ready', 'true');
+
+      function updateScrollCue() {
+        var maxScroll = Math.max(0, track.scrollWidth - track.clientWidth);
+        var hasOverflow = maxScroll > 8;
+
+        if (track.scrollLeft > 16) dismissed = true;
+        nextButton.hidden = !hasOverflow;
+        nextButton.disabled = !hasOverflow || track.scrollLeft >= maxScroll - 8;
+
+        if (hint) {
+          hint.hidden = !hasOverflow;
+          hint.classList.toggle('is-dismissed', dismissed);
+        }
+      }
+
+      function dismissHint() {
+        dismissed = true;
+        if (hint) hint.classList.add('is-dismissed');
+      }
+
+      nextButton.addEventListener('click', function () {
+        var maxScroll = Math.max(0, track.scrollWidth - track.clientWidth);
+        var distance = Math.max(track.clientWidth * 0.8, 240);
+        dismissHint();
+        track.scrollTo({
+          left: Math.min(maxScroll, track.scrollLeft + distance),
+          behavior: reducedMotion ? 'auto' : 'smooth'
+        });
+      });
+
+      track.addEventListener('scroll', updateScrollCue, { passive: true });
+      track.addEventListener('pointerdown', dismissHint, { passive: true });
+      track.addEventListener('touchstart', dismissHint, { passive: true });
+
+      if ('ResizeObserver' in window) {
+        var resizeObserver = new ResizeObserver(updateScrollCue);
+        resizeObserver.observe(track);
+      } else {
+        window.addEventListener('resize', updateScrollCue, { passive: true });
+      }
+
+      updateScrollCue();
+    });
+  }
+
   document.addEventListener('click', handleClick);
+  initScrollCues(document);
+  document.addEventListener('shopify:section:load', function (event) {
+    initScrollCues(event.target);
+  });
 })();

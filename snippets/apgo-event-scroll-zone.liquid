@@ -11,13 +11,15 @@
 
   @param {string} heading      - Zone heading text (e.g. "DISCOUNT DEALS")
   @param {image}  banner_image - Optional decorative banner image
-  @param {array}  card_blocks  - Section blocks for this zone (preferred).
+  @param {object[]} card_blocks - Section blocks for this zone (preferred).
                                  Each block has settings.product +
                                  settings.variant_id.
-  @param {array}  products     - Legacy fallback: a flat product array.
+  @param {object[]} products   - Legacy fallback: a flat product array.
                                  Used only when card_blocks is blank.
   @param {string} zone_class   - Modifier suffix added to the wrapper
                                  (used for analytics / per-zone CSS hooks)
+  @param {boolean} hide_compare_at - When true, hides the compare-at price.
+  @param {boolean} show_scroll_cue - Shows an animated hint and next button when the track overflows.
   @param {string} section_id   - Parent section id, used for unique card ids
 {%- enddoc -%}
 
@@ -71,33 +73,53 @@
           height="{{ banner_image.height }}">
       </div>
     {%- endif -%}
-    <div class="apgo-event-scroll-zone__track" role="list">
-      {%- if apgo_use_blocks -%}
-        {%- for block in card_blocks -%}
-          {%- assign apgo_block_product = block.settings.product -%}
-          {%- if apgo_block_product != blank -%}
-            {%- assign apgo_event_card_uid = section_id | append: '-' | append: zone_class | append: '-' | append: block.id -%}
-            <div class="apgo-event-scroll-zone__card" role="listitem" {{ block.shopify_attributes }}>
+    {%- if show_scroll_cue -%}
+      <div class="apgo-event-scroll-zone__scroll-hint" data-apgo-scroll-hint aria-hidden="true">
+        <span>{{ 'actions.swipe_to_see_more' | t }}</span>
+        <span class="apgo-event-scroll-zone__scroll-chevrons" aria-hidden="true">››</span>
+      </div>
+    {%- endif -%}
+    <div class="apgo-event-scroll-zone__viewport" data-apgo-scroll-viewport>
+      <div class="apgo-event-scroll-zone__track" role="list" data-apgo-scroll-track>
+        {%- if apgo_use_blocks -%}
+          {%- for block in card_blocks -%}
+            {%- assign apgo_block_product = block.settings.product -%}
+            {%- if apgo_block_product != blank -%}
+              {%- assign apgo_event_card_uid = section_id | append: '-' | append: zone_class | append: '-' | append: block.id -%}
+              <div class="apgo-event-scroll-zone__card" role="listitem" {{ block.shopify_attributes }}>
+                {% render 'apgo-event-listing-card',
+                  product: apgo_block_product,
+                  variant_id: block.settings.variant_id,
+                  section_id: section_id,
+                  card_uid: apgo_event_card_uid,
+                  hide_compare_at: apgo_hide_compare %}
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        {%- else -%}
+          {%- for product in products -%}
+            {%- assign apgo_event_card_uid = section_id | append: '-' | append: zone_class | append: '-' | append: product.id -%}
+            <div class="apgo-event-scroll-zone__card" role="listitem">
               {% render 'apgo-event-listing-card',
-                product: apgo_block_product,
-                variant_id: block.settings.variant_id,
+                product: product,
                 section_id: section_id,
                 card_uid: apgo_event_card_uid,
                 hide_compare_at: apgo_hide_compare %}
             </div>
-          {%- endif -%}
-        {%- endfor -%}
-      {%- else -%}
-        {%- for product in products -%}
-          {%- assign apgo_event_card_uid = section_id | append: '-' | append: zone_class | append: '-' | append: product.id -%}
-          <div class="apgo-event-scroll-zone__card" role="listitem">
-            {% render 'apgo-event-listing-card',
-              product: product,
-              section_id: section_id,
-              card_uid: apgo_event_card_uid,
-              hide_compare_at: apgo_hide_compare %}
-          </div>
-        {%- endfor -%}
+          {%- endfor -%}
+        {%- endif -%}
+      </div>
+      {%- if show_scroll_cue -%}
+        <button
+          class="apgo-event-scroll-zone__next"
+          type="button"
+          data-apgo-scroll-next
+          aria-label="{{ 'accessibility.show_more_products' | t }}"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="m9 5 7 7-7 7" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4"/>
+          </svg>
+        </button>
       {%- endif -%}
     </div>
   </section>
