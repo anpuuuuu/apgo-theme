@@ -290,6 +290,8 @@
       assign apgo_body_page_class = ' apgo-all-products-collection'
     elsif template.name == 'page' and template.suffix == 'special-event'
       assign apgo_body_page_class = ' apgo-special-event-page'
+    elsif template.name == 'page' and template.suffix == 'golden-bull-award'
+      assign apgo_body_page_class = ' apgo-special-event-page'
     endif
   %}
 
@@ -442,6 +444,7 @@
     {% if template.name == 'collection'
       or template.name == 'index'
       or template.suffix == 'special-event'
+      or template.suffix == 'golden-bull-award'
     %}
       {% render 'apgo-collection-variant-drawer' %}
     {% endif %}
