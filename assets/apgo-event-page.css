@@ -1359,3 +1359,46 @@ body.apgo-special-event-page .apgo-event-featured-banner__btn:active {
   }
 }
 
+body.apgo-special-event-page.apgo-golden-bull-page {
+  --apgo-event-brand: #d6a23d;
+  --apgo-event-page-bg: #020509;
+  --apgo-event-panel-bg: #071019;
+  --apgo-event-heading-bg: #071019;
+  --apgo-event-panel-bg-gradient:
+    radial-gradient(
+      ellipse 82% 55% at 50% 0%,
+      rgba(20, 82, 126, 0.46) 0%,
+      rgba(9, 34, 53, 0.28) 38%,
+      transparent 68%
+    ),
+    radial-gradient(
+      ellipse 68% 42% at 50% 8%,
+      rgba(214, 162, 61, 0.12) 0%,
+      transparent 72%
+    ),
+    linear-gradient(
+      180deg,
+      #071019 0%,
+      #040a10 52%,
+      #020509 100%
+    );
+  --apgo-event-heading-color: #f4d482;
+  --apgo-event-heading-gradient: linear-gradient(135deg, #fff0b2 0%, #e3b34d 48%, #9b6512 100%);
+  --apgo-event-card-price-color: #e3b34d;
+  --apgo-event-card-discount-bg: linear-gradient(135deg, #f4d482, #c58a24);
+  --apgo-event-card-discount-color: #05080c;
+  --apgo-event-gold-light: #f4d482;
+  --apgo-event-gold-bright: #e3b34d;
+  --apgo-event-gold-deep: #9b6512;
+  --apgo-event-banner-orange: #b67a19;
+  background-color: var(--apgo-event-page-bg);
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page #MainContent {
+  background-color: var(--apgo-event-page-bg);
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-collection-grid__panel {
+  color: var(--apgo-event-gold-light);
+}
+
