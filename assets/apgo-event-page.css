@@ -1540,6 +1540,10 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-scroll-zone__trac
   overflow-y: hidden;
 }
 
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-scroll-zone__scroll-hint {
+  display: none;
+}
+
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-listing-card__title,
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-listing-card__title a,
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-listing-card__title a:hover,
