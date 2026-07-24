@@ -2267,14 +2267,13 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-linked-banner-zon
     min-width: 8px;
   }
 
-  body.apgo-special-event-page .apgo-event-scroll-zone__previous,
   body.apgo-special-event-page .apgo-event-scroll-zone__next {
     width: 46px;
     height: 46px;
   }
 
   body.apgo-special-event-page .apgo-event-scroll-zone__previous {
-    left: 7px;
+    display: none;
   }
 
   body.apgo-special-event-page .apgo-event-scroll-zone__next {
