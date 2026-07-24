@@ -48,29 +48,19 @@
               {% liquid
                 assign apgo_nt = link.title | downcase | strip
                 assign apgo_nh = link.handle | downcase | strip
-                assign apgo_nav_url = link.url
-                assign apgo_nav_active = link.current
                 if apgo_nt == 'category' or apgo_nt == 'categories' or apgo_nt == '分類'
                   continue
                 endif
                 if apgo_nh == 'category' or apgo_nh == 'categories'
                   continue
                 endif
-                if apgo_nt == 'limited time deals' or apgo_nt == 'limited time deal'
-                  assign apgo_nav_url = '/pages/golden-bull-award'
-                  if request.path contains '/pages/golden-bull-award'
-                    assign apgo_nav_active = true
-                  else
-                    assign apgo_nav_active = false
-                  endif
-                endif
               %}
               <li>
                 <a
-                  href="{{ apgo_nav_url }}"
+                  href="{{ link.url }}"
                   id="MenuItem-{{ link.handle }}"
                   class="menu-list__item"
-                  {% if apgo_nav_active %}
+                  {% if link.current %}
                     aria-current="page"
                   {% endif %}
                 >

@@ -38,14 +38,7 @@
       assign link_url = link.url
       assign link_label = link.title
       assign link_is_active = link.active
-      if link_title_normalized == 'limited time deals' or link_title_normalized == 'limited time deal'
-        assign link_url = '/pages/golden-bull-award'
-        if request.path contains '/pages/golden-bull-award'
-          assign link_is_active = true
-        else
-          assign link_is_active = false
-        endif
-      elsif link_title_normalized == 'contact'
+      if link_title_normalized == 'contact'
         assign link_url = '/pages/about-us'
         assign link_label = 'About Us'
         if request.path contains '/pages/about-us'
