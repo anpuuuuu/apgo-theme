@@ -2175,18 +2175,15 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-linked-banner-zon
 
   body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-scroll-zone--discount .apgo-event-scroll-zone__promo-limit {
     display: block;
-    margin: 0 0 9px;
-    padding: 7px 10px;
-    border: 1px solid rgba(242, 227, 179, 0.34);
-    border-radius: 7px;
-    background: rgba(7, 16, 25, 0.72);
-    color: rgba(255, 252, 237, 0.86);
-    font-size: 9px;
-    font-weight: 750;
-    letter-spacing: 0.055em;
-    line-height: 1.35;
-    text-align: center;
+    margin: 0 0 7px;
+    color: rgba(255, 252, 237, 0.68);
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.035em;
+    line-height: 1.25;
+    text-align: left;
     text-transform: uppercase;
+    white-space: nowrap;
   }
 
   body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-scroll-zone--discount .apgo-event-listing-card__promo-limit {
