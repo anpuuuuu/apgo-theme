@@ -2087,15 +2087,17 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-linked-banner-zon
   }
 
   body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-scroll-zone--discount .apgo-event-scroll-zone__heading {
-    gap: 0.4em;
-    font-size: 12px;
-    letter-spacing: 0.1em;
+    width: 100%;
+    gap: 0.32em;
+    font-size: clamp(13px, 3.6vw, 14px);
+    letter-spacing: 0.075em;
     white-space: nowrap;
   }
 
   body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-scroll-zone--discount .apgo-event-scroll-zone__heading::before,
   body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-scroll-zone--discount .apgo-event-scroll-zone__heading::after {
-    flex-basis: 10px;
+    flex: 1 1 12px;
+    min-width: 8px;
   }
 
   body.apgo-special-event-page .apgo-event-scroll-zone__next {
