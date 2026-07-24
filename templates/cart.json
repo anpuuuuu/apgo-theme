@@ -107,11 +107,10 @@
       "name": "Gift with Purchase",
       "settings": {
         "section_title": "Special add on",
-        "section_subtitle_my": "Special price for your purchase: Atomic Coating 360° Special Bundle",
-        "section_subtitle_sg": "Special price for your purchase: Atomic Coating 360° Bundle",
+        "section_subtitle_my": "Special price for your purchase: Aurora Set - Golden Bull Celebration",
+        "section_subtitle_sg": "Special price for your purchase: Aurora Set - Golden Bull Celebration",
         "trigger_product_list": [
-          "apgo-atomic-car-nano-coating-standard-copy",
-          "7-7-✨atomic-coating-360-special-bundle-✨"
+          "golden-bull-celebration-apgo-aurora-car-nano-coating-premium"
         ],
         "max_products": 12,
         "accent_color_start": "#f08418",
