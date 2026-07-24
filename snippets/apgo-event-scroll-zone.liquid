@@ -79,6 +79,11 @@
         <span class="apgo-event-scroll-zone__scroll-chevrons" aria-hidden="true">››</span>
       </div>
     {%- endif -%}
+    {%- if zone_class == 'discount' -%}
+      <p class="apgo-event-scroll-zone__promo-limit">
+        {{ 'apgo_event.product_limit_note' | t }}
+      </p>
+    {%- endif -%}
     <div class="apgo-event-scroll-zone__viewport" data-apgo-scroll-viewport>
       <div class="apgo-event-scroll-zone__track" role="list" data-apgo-scroll-track>
         {%- if apgo_use_blocks -%}

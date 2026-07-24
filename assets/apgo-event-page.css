@@ -1922,6 +1922,10 @@ body.apgo-special-event-page .apgo-event-listing-card__promo-limit {
   letter-spacing: 0.035em;
 }
 
+body.apgo-special-event-page .apgo-event-scroll-zone__promo-limit {
+  display: none;
+}
+
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-stock-counter__meta {
   display: flex;
   justify-content: space-between;
@@ -2167,6 +2171,26 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-linked-banner-zon
     padding: 11px 8px;
     font-size: 11px;
     letter-spacing: 0.07em;
+  }
+
+  body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-scroll-zone--discount .apgo-event-scroll-zone__promo-limit {
+    display: block;
+    margin: 0 0 9px;
+    padding: 7px 10px;
+    border: 1px solid rgba(242, 227, 179, 0.34);
+    border-radius: 7px;
+    background: rgba(7, 16, 25, 0.72);
+    color: rgba(255, 252, 237, 0.86);
+    font-size: 9px;
+    font-weight: 750;
+    letter-spacing: 0.055em;
+    line-height: 1.35;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-scroll-zone--discount .apgo-event-listing-card__promo-limit {
+    display: none;
   }
 
   body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-collection-grid__panel-body > .apgo-event-scroll-zone:first-child,
