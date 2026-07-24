@@ -5,7 +5,7 @@
   @param {string} message - Promotional message shown above the banner.
   @param {boolean} show_counter - Whether to render the campaign stock counter.
   @param {string} counter_total - Total number of campaign sets.
-  @param {string} counter_claimed - Number of campaign sets already claimed.
+  @param {string} counter_claimed - Fallback number of campaign sets already claimed.
   @param {image} banner_image - Promotional banner image.
   @param {product} product - Product opened when the banner is selected.
   @param {string} variant_id - Optional numeric ID of the promoted product variant.
@@ -44,13 +44,13 @@
         if campaign_total < 1
           assign campaign_total = 500
         endif
-        if action_variant.inventory_management != blank
-          assign campaign_remaining = action_variant.inventory_quantity | at_least: 0 | at_most: campaign_total
-          assign campaign_claimed = campaign_total | minus: campaign_remaining
+        assign paid_sets_metafield = shop.metafields.apgo_campaign.aurora_paid_sets
+        if paid_sets_metafield != blank
+          assign campaign_claimed = paid_sets_metafield.value | plus: 0 | at_least: 0 | at_most: campaign_total
         else
           assign campaign_claimed = counter_claimed | plus: 0 | at_least: 0 | at_most: campaign_total
-          assign campaign_remaining = campaign_total | minus: campaign_claimed
         endif
+        assign campaign_remaining = campaign_total | minus: campaign_claimed
         assign campaign_progress = campaign_remaining | times: 100.0 | divided_by: campaign_total
         assign low_stock_threshold = campaign_total | times: 0.25
       %}
