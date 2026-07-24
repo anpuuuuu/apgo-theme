@@ -13,16 +13,26 @@
 
 {%- liquid
   assign apgo_promo_handles = ',apgo-car-interior-eco-friendly-coating-500ml,apgo-car-interior-eco-friendly-cleaner-500ml,apgo-glass-cleaner-500ml,apgo-car-exterior-plastic-protectant-500ml,apgo-car-extreme-iron-remover-500ml,apgo-car-all-purpose-cleaner,apgo-water-stain-remover,apgo-car-wash-shampoo-special-formula-refill-pack,apgo-car-wiper-fluid-refill-pack,'
+  assign apgo_lower_price_handles = ',apgo-car-wash-shampoo-special-formula-refill-pack,apgo-car-wiper-fluid-refill-pack,'
   assign apgo_promo_handle_token = ',' | append: product.handle | append: ','
   assign apgo_promo_price_cents = 0
 
   if apgo_promo_handles contains apgo_promo_handle_token
-    case localization.country.iso_code
-      when 'MY'
-        assign apgo_promo_price_cents = 990
-      when 'SG'
-        assign apgo_promo_price_cents = 660
-    endcase
+    if apgo_lower_price_handles contains apgo_promo_handle_token
+      case localization.country.iso_code
+        when 'MY'
+          assign apgo_promo_price_cents = 880
+        when 'SG'
+          assign apgo_promo_price_cents = 590
+      endcase
+    else
+      case localization.country.iso_code
+        when 'MY'
+          assign apgo_promo_price_cents = 990
+        when 'SG'
+          assign apgo_promo_price_cents = 660
+      endcase
+    endif
   endif
 
   if apgo_promo_price_cents > 0
