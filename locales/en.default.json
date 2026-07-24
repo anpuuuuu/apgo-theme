@@ -418,7 +418,7 @@
     "host": "Host"
   },
   "apgo_event": {
-    "product_limit_note": "Promo price: max 2 per item · 3rd at regular price",
+    "product_limit_note": "Limited offer: only 2 sets per product at this special price · while stocks last",
     "aurora_counter": {
       "sets_remaining": "sets left",
       "milestone_reached": "{{ total }}-set milestone reached",
