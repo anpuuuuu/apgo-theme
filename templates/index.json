@@ -462,8 +462,24 @@
     "apgo_cc_badge_carousel_rmwWa6": {
       "type": "apgo-cc-badge-carousel",
       "blocks": {
+        "banner_NAT7Ja": {
+          "type": "banner",
+          "settings": {
+            "link": "",
+            "alt": ""
+          }
+        },
+        "banner_QtGqd3": {
+          "type": "banner",
+          "settings": {
+            "image": "shopify://shop_images/celebrating_our_1.png",
+            "link": "shopify://pages/golden-bull-award",
+            "alt": ""
+          }
+        },
         "banner_DQJFfb": {
           "type": "banner",
+          "disabled": true,
           "settings": {
             "image": "shopify://shop_images/1_4.png",
             "link": "shopify://pages/apgo-birthday-page",
@@ -490,11 +506,12 @@
         }
       },
       "block_order": [
+        "banner_NAT7Ja",
+        "banner_QtGqd3",
         "banner_DQJFfb",
         "banner_UzGTTj",
         "banner_fCxet7"
       ],
-      "disabled": true,
       "name": "APGO · Badge 輪播",
       "settings": {
         "autoplay": true,
