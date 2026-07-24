@@ -85,6 +85,19 @@
       </p>
     {%- endif -%}
     <div class="apgo-event-scroll-zone__viewport" data-apgo-scroll-viewport>
+      {%- if show_scroll_cue -%}
+        <button
+          class="apgo-event-scroll-zone__previous"
+          type="button"
+          data-apgo-scroll-previous
+          aria-label="{{ 'accessibility.slideshow_previous' | t }}"
+          disabled
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="m15 5-7 7 7 7" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.4"/>
+          </svg>
+        </button>
+      {%- endif -%}
       <div class="apgo-event-scroll-zone__track" role="list" data-apgo-scroll-track>
         {%- if apgo_use_blocks -%}
           {%- for block in card_blocks -%}

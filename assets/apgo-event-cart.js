@@ -294,8 +294,9 @@
       if (viewport.getAttribute('data-apgo-scroll-ready') === 'true') return;
 
       var track = viewport.querySelector('[data-apgo-scroll-track]');
+      var previousButton = viewport.querySelector('[data-apgo-scroll-previous]');
       var nextButton = viewport.querySelector('[data-apgo-scroll-next]');
-      if (!track || !nextButton) return;
+      if (!track || !previousButton || !nextButton) return;
 
       var zone = viewport.closest('.apgo-event-scroll-zone');
       var hint = zone ? zone.querySelector('[data-apgo-scroll-hint]') : null;
@@ -310,6 +311,8 @@
         var hasOverflow = maxScroll > 8;
 
         if (track.scrollLeft > 16) dismissed = true;
+        previousButton.hidden = !hasOverflow;
+        previousButton.disabled = !hasOverflow || track.scrollLeft <= 8;
         nextButton.hidden = !hasOverflow;
         nextButton.disabled = !hasOverflow || track.scrollLeft >= maxScroll - 8;
 
@@ -323,6 +326,15 @@
         dismissed = true;
         if (hint) hint.classList.add('is-dismissed');
       }
+
+      previousButton.addEventListener('click', function () {
+        var distance = Math.max(track.clientWidth * 0.8, 240);
+        dismissHint();
+        track.scrollTo({
+          left: Math.max(0, track.scrollLeft - distance),
+          behavior: reducedMotion ? 'auto' : 'smooth'
+        });
+      });
 
       nextButton.addEventListener('click', function () {
         var maxScroll = Math.max(0, track.scrollWidth - track.clientWidth);

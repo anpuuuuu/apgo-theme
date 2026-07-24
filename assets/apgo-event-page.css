@@ -1184,11 +1184,11 @@ body.apgo-special-event-page .apgo-event-scroll-zone__scroll-chevrons {
 body.apgo-special-event-page .apgo-event-scroll-zone__viewport {
   position: relative;
 }
+body.apgo-special-event-page .apgo-event-scroll-zone__previous,
 body.apgo-special-event-page .apgo-event-scroll-zone__next {
   position: absolute;
   z-index: 4;
   top: 50%;
-  right: 9px;
   display: grid;
   width: 50px;
   height: 50px;
@@ -1203,22 +1203,35 @@ body.apgo-special-event-page .apgo-event-scroll-zone__next {
   cursor: pointer;
   animation: apgoEventNextButton 1.8s ease-in-out infinite;
 }
+body.apgo-special-event-page .apgo-event-scroll-zone__previous {
+  left: 9px;
+}
+body.apgo-special-event-page .apgo-event-scroll-zone__next {
+  right: 9px;
+}
+body.apgo-special-event-page .apgo-event-scroll-zone__previous svg,
 body.apgo-special-event-page .apgo-event-scroll-zone__next svg {
   width: 27px;
   height: 27px;
 }
+body.apgo-special-event-page .apgo-event-scroll-zone__previous:hover,
 body.apgo-special-event-page .apgo-event-scroll-zone__next:hover {
   background: #fffef7;
 }
+body.apgo-special-event-page .apgo-event-scroll-zone__previous:focus-visible,
 body.apgo-special-event-page .apgo-event-scroll-zone__next:focus-visible {
   outline: 3px solid #fffef7;
   outline-offset: 3px;
 }
+body.apgo-special-event-page .apgo-event-scroll-zone__previous:disabled,
 body.apgo-special-event-page .apgo-event-scroll-zone__next:disabled {
-  opacity: 0.28;
+  opacity: 0.3;
+  filter: blur(0.7px) saturate(0.55);
   cursor: default;
+  pointer-events: none;
   animation: none;
 }
+body.apgo-special-event-page .apgo-event-scroll-zone__previous[hidden],
 body.apgo-special-event-page .apgo-event-scroll-zone__next[hidden],
 body.apgo-special-event-page .apgo-event-scroll-zone__scroll-hint[hidden] {
   display: none;
@@ -2254,10 +2267,18 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-linked-banner-zon
     min-width: 8px;
   }
 
+  body.apgo-special-event-page .apgo-event-scroll-zone__previous,
   body.apgo-special-event-page .apgo-event-scroll-zone__next {
-    right: 7px;
     width: 46px;
     height: 46px;
+  }
+
+  body.apgo-special-event-page .apgo-event-scroll-zone__previous {
+    left: 7px;
+  }
+
+  body.apgo-special-event-page .apgo-event-scroll-zone__next {
+    right: 7px;
   }
 }
 
@@ -2266,6 +2287,7 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-linked-banner-zon
   body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-heading-star,
   body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-heading-text,
   body.apgo-special-event-page .apgo-event-scroll-zone__scroll-chevrons,
+  body.apgo-special-event-page .apgo-event-scroll-zone__previous,
   body.apgo-special-event-page .apgo-event-scroll-zone__next {
     animation: none !important;
   }
