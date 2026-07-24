@@ -44,8 +44,13 @@
         if campaign_total < 1
           assign campaign_total = 500
         endif
-        assign campaign_claimed = counter_claimed | plus: 0 | at_least: 0 | at_most: campaign_total
-        assign campaign_remaining = campaign_total | minus: campaign_claimed
+        if action_variant.inventory_management != blank
+          assign campaign_remaining = action_variant.inventory_quantity | at_least: 0 | at_most: campaign_total
+          assign campaign_claimed = campaign_total | minus: campaign_remaining
+        else
+          assign campaign_claimed = counter_claimed | plus: 0 | at_least: 0 | at_most: campaign_total
+          assign campaign_remaining = campaign_total | minus: campaign_claimed
+        endif
         assign campaign_progress = campaign_remaining | times: 100.0 | divided_by: campaign_total
         assign low_stock_threshold = campaign_total | times: 0.25
       %}
