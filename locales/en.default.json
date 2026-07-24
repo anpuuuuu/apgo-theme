@@ -421,9 +421,6 @@
     "aurora_counter": {
       "sets_remaining": "sets left",
       "milestone_reached": "{{ total }}-set milestone reached",
-      "limited_release": "limited release",
-      "release_total": "{{ count }}-set launch",
-      "while_stocks_last": "while stocks last",
       "progress_label": "{{ remaining }} of {{ total }} campaign sets remaining"
     }
   },

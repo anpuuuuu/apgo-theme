@@ -1877,18 +1877,6 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-stock-counter.is-
     0 0 30px rgba(216, 181, 93, 0.32);
 }
 
-body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-stock-counter__meta {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  color: rgba(255, 252, 237, 0.62);
-  font-size: clamp(9px, 1.25vw, 11px);
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  line-height: 1.25;
-  text-transform: uppercase;
-}
-
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-scroll-zone__heading {
   margin-bottom: clamp(14px, 2.5vw, 22px);
   color: var(--apgo-award-gold-core);
@@ -1943,22 +1931,38 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-linked-banner-zon
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-linked-banner-zone__actions {
+  gap: 1px;
+  padding: 0;
+  overflow: hidden;
   border-top: 1px solid rgba(216, 191, 122, 0.62);
   border-radius: 0 0 8px 8px;
-  background:
-    radial-gradient(circle at 50% 0%, rgba(36, 86, 112, 0.2), transparent 66%),
-    #02070d;
+  background: rgba(216, 191, 122, 0.62);
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-linked-banner-zone__button {
+  min-height: 50px;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-linked-banner-zone__button--add {
-  border-color: rgba(255, 253, 242, 0.88);
+  background: #02070d;
   color: #fffdf2;
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-linked-banner-zone__button--buy {
-  border-color: #f4d482;
   background: linear-gradient(110deg, #fffef7 0%, #f8edc8 44%, #e7ca7c 76%, #fff9e5 100%);
   color: #071019;
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-linked-banner-zone__button:hover:not(:disabled) {
+  transform: none;
+  box-shadow: none;
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-linked-banner-zone__button:focus-visible {
+  outline-offset: -3px;
 }
 
 @keyframes apgoStockCounterSweep {
@@ -2040,6 +2044,15 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-linked-banner-zon
     padding-inline: 8px;
     font-size: 10px;
     letter-spacing: 0.08em;
+  }
+
+  body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-linked-banner-zone__actions {
+    gap: 1px;
+    padding: 0;
+  }
+
+  body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-linked-banner-zone__button {
+    min-height: 46px;
   }
 
   body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-collection-grid__panel-body > .apgo-event-scroll-zone:first-child,

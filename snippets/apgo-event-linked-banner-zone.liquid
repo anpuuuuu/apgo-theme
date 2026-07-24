@@ -82,14 +82,6 @@
             style="--apgo-stock-progress: {{ campaign_progress }}%;"
           ></span>
         </div>
-        <div class="apgo-event-stock-counter__meta">
-          <span>
-            {{ 'apgo_event.aurora_counter.limited_release' | t }}
-            ·
-            {{ 'apgo_event.aurora_counter.release_total' | t: count: campaign_total }}
-          </span>
-          <span>{{ 'apgo_event.aurora_counter.while_stocks_last' | t }}</span>
-        </div>
       </div>
     {% endif %}
 
