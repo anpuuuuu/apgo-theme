@@ -119,6 +119,20 @@
             "product": "apgo-water-stain-remover",
             "variant_id": ""
           }
+        },
+        "discount_card_WyP3Je": {
+          "type": "discount_card",
+          "settings": {
+            "product": "apgo-car-wash-shampoo-special-formula-refill-pack",
+            "variant_id": ""
+          }
+        },
+        "discount_card_UnciNn": {
+          "type": "discount_card",
+          "settings": {
+            "product": "apgo-car-wiper-fluid-refill-pack",
+            "variant_id": ""
+          }
         }
       },
       "block_order": [
@@ -128,7 +142,9 @@
         "discount_card_GmYPkf",
         "discount_card_fXRHLm",
         "discount_card_WEXkac",
-        "discount_card_8gqQ9J"
+        "discount_card_8gqQ9J",
+        "discount_card_WyP3Je",
+        "discount_card_UnciNn"
       ],
       "name": "Event Collection Grid",
       "settings": {
