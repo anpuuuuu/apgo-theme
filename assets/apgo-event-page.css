@@ -22,6 +22,15 @@
   text-decoration: none;
 }
 
+.apgo-event-banner__link[href^='#'] {
+  cursor: pointer;
+}
+
+.apgo-event-banner__link:focus-visible {
+  outline: 2px solid #f4d482;
+  outline-offset: 3px;
+}
+
 .apgo-event-banner__img {
   width: 100%;
   height: auto;
@@ -58,11 +67,18 @@
   position: relative;
   width: 100%;
   max-width: 100%;
+  scroll-margin-top: 88px;
   padding-inline: 0;
   margin-inline: 0;
   padding-block: var(--padding-block-start, 0) var(--padding-block-end, 0);
   background: transparent !important;
   --apgo-event-content-desktop-width: 67%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:has(body.apgo-golden-bull-page) {
+    scroll-behavior: smooth;
+  }
 }
 
 .apgo-event-collection-grid.section--full-width > .apgo-event-collection-grid__panel {
