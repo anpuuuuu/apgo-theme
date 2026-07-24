@@ -70,6 +70,7 @@
     },
     "apgo_event_banner_wxUJYc": {
       "type": "apgo-event-banner",
+      "disabled": true,
       "name": "APGO Event Banner",
       "settings": {
         "image": "shopify://shop_images/quality.png",
