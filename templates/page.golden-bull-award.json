@@ -203,12 +203,24 @@
         "padding-block-start": 0,
         "padding-block-end": 0
       }
+    },
+    "apgo_event_banner_jBTfGT": {
+      "type": "apgo-event-banner",
+      "name": "APGO Event Banner",
+      "settings": {
+        "image": "shopify://shop_images/footer_2.png",
+        "image_alt": "",
+        "link": "",
+        "desktop_width_percent": 67,
+        "color_scheme": ""
+      }
     }
   },
   "order": [
     "main",
     "apgo_event_banner_jRgaPP",
     "apgo_event_banner_wxUJYc",
-    "apgo_event_collection_grid_n3e6dm"
+    "apgo_event_collection_grid_n3e6dm",
+    "apgo_event_banner_jBTfGT"
   ]
 }
