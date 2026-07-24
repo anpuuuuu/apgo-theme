@@ -8,12 +8,23 @@
   @param {string} counter_claimed - Number of campaign sets already claimed.
   @param {image} banner_image - Promotional banner image.
   @param {product} product - Product opened when the banner is selected.
-  @param {string} cta - Optional call-to-action label below the banner image.
+  @param {string} variant_id - Optional numeric ID of the promoted product variant.
   @param {string} zone_class - Modifier suffix for the zone wrapper.
 {% enddoc %}
 
 {% if banner_image != blank and product != blank %}
-  {% assign link_label = cta | default: product.title %}
+  {% liquid
+    assign action_variant = product.selected_or_first_available_variant
+    assign requested_variant_id = variant_id | default: '' | strip | plus: 0
+    if requested_variant_id != 0
+      for candidate_variant in product.variants
+        if candidate_variant.id == requested_variant_id
+          assign action_variant = candidate_variant
+          break
+        endif
+      endfor
+    endif
+  %}
   <section class="apgo-event-linked-banner-zone apgo-event-linked-banner-zone--{{ zone_class }}">
     {% if heading != blank %}
       <h3 class="apgo-event-scroll-zone__heading">
@@ -35,17 +46,21 @@
         endif
         assign campaign_claimed = counter_claimed | plus: 0 | at_least: 0 | at_most: campaign_total
         assign campaign_remaining = campaign_total | minus: campaign_claimed
-        assign campaign_progress = campaign_claimed | times: 100.0 | divided_by: campaign_total
+        assign campaign_progress = campaign_remaining | times: 100.0 | divided_by: campaign_total
+        assign low_stock_threshold = campaign_total | times: 0.25
       %}
       <div
-        class="apgo-event-stock-counter"
+        class="apgo-event-stock-counter{% if campaign_remaining <= low_stock_threshold %} is-low{% endif %}"
         data-aurora-stock-counter
         data-total="{{ campaign_total }}"
         data-claimed="{{ campaign_claimed }}"
         data-remaining="{{ campaign_remaining }}"
       >
         <div class="apgo-event-stock-counter__number-row">
-          <span class="apgo-event-stock-counter__number">{{ campaign_remaining }}</span>
+          <span
+            class="apgo-event-stock-counter__number"
+            data-aurora-stock-number
+          >{{ campaign_remaining }}</span>
           <span class="apgo-event-stock-counter__label">
             {% if campaign_remaining > 0 %}
               {{ 'apgo_event.aurora_counter.sets_remaining' | t }}
@@ -57,10 +72,10 @@
         <div
           class="apgo-event-stock-counter__progress"
           role="progressbar"
-          aria-label="{{ 'apgo_event.aurora_counter.progress_label' | t: claimed: campaign_claimed, total: campaign_total }}"
+          aria-label="{{ 'apgo_event.aurora_counter.progress_label' | t: remaining: campaign_remaining, total: campaign_total }}"
           aria-valuemin="0"
           aria-valuemax="{{ campaign_total }}"
-          aria-valuenow="{{ campaign_claimed }}"
+          aria-valuenow="{{ campaign_remaining }}"
         >
           <span
             class="apgo-event-stock-counter__progress-fill"
@@ -68,32 +83,60 @@
           ></span>
         </div>
         <div class="apgo-event-stock-counter__meta">
-          <span>{{ 'apgo_event.aurora_counter.claimed' | t: count: campaign_claimed }}</span>
-          <span>{{ 'apgo_event.aurora_counter.total' | t: count: campaign_total }}</span>
+          <span>
+            {{ 'apgo_event.aurora_counter.limited_release' | t }}
+            ·
+            {{ 'apgo_event.aurora_counter.release_total' | t: count: campaign_total }}
+          </span>
+          <span>{{ 'apgo_event.aurora_counter.while_stocks_last' | t }}</span>
         </div>
       </div>
     {% endif %}
 
-    <a
-      class="apgo-event-scroll-zone__banner apgo-event-linked-banner-zone__link"
-      href="{{ product.url }}"
-      aria-label="{{ link_label | escape }}"
-    >
-      {{ banner_image
-        | image_url: width: 1600
-        | image_tag:
-          class: 'apgo-event-scroll-zone__banner-img',
-          loading: 'lazy',
-          widths: '360, 540, 720, 960, 1200, 1600',
-          sizes: '(min-width: 990px) 1200px, calc(100vw - 48px)',
-          alt: product.title
-      }}
-      {% if cta != blank %}
-        <span class="apgo-event-linked-banner-zone__cta">
-          {{ cta | escape }}
-          <span aria-hidden="true">→</span>
-        </span>
-      {% endif %}
-    </a>
+    <div class="apgo-event-scroll-zone__banner apgo-event-linked-banner-zone__offer">
+      <a
+        class="apgo-event-linked-banner-zone__link"
+        href="{{ action_variant.url }}"
+        aria-label="{{ product.title | escape }}"
+      >
+        {{ banner_image
+          | image_url: width: 1600
+          | image_tag:
+            class: 'apgo-event-scroll-zone__banner-img',
+            loading: 'lazy',
+            widths: '360, 540, 720, 960, 1200, 1600',
+            sizes: '(min-width: 990px) 1200px, calc(100vw - 48px)',
+            alt: product.title
+        }}
+      </a>
+      <div class="apgo-event-linked-banner-zone__actions">
+        <button
+          type="button"
+          class="apgo-event-linked-banner-zone__button apgo-event-linked-banner-zone__button--add"
+          data-variant-id="{{ action_variant.id }}"
+          aria-label="{{ 'actions.add_to_cart' | t }}: {{ product.title | escape }}"
+          {% unless action_variant.available %}disabled{% endunless %}
+        >
+          {% if action_variant.available %}
+            {{ 'actions.add_to_cart' | t }}
+          {% else %}
+            {{ 'products.product.sold_out' | t }}
+          {% endif %}
+        </button>
+        <button
+          type="button"
+          class="apgo-event-linked-banner-zone__button apgo-event-linked-banner-zone__button--buy"
+          data-variant-id="{{ action_variant.id }}"
+          aria-label="{{ 'product.buy_now' | t }}: {{ product.title | escape }}"
+          {% unless action_variant.available %}disabled{% endunless %}
+        >
+          {% if action_variant.available %}
+            {{ 'product.buy_now' | t }}
+          {% else %}
+            {{ 'products.product.sold_out' | t }}
+          {% endif %}
+        </button>
+      </div>
+    </div>
   </section>
 {% endif %}

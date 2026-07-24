@@ -1037,42 +1037,65 @@ body.apgo-special-event-page .apgo-event-linked-banner-zone__message {
 }
 body.apgo-special-event-page .apgo-event-linked-banner-zone__link {
   display: block;
+  overflow: hidden;
   text-decoration: none;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: filter 0.2s ease;
 }
 body.apgo-special-event-page .apgo-event-linked-banner-zone__link:hover {
-  transform: translateY(-2px);
+  filter: brightness(1.06);
 }
 body.apgo-special-event-page .apgo-event-linked-banner-zone__link:focus-visible {
-  outline: 2px solid var(--apgo-event-gold-light);
-  outline-offset: 3px;
+  outline: 2px solid #fffdf2;
+  outline-offset: -3px;
 }
-body.apgo-special-event-page .apgo-event-linked-banner-zone__cta {
-  display: flex;
+body.apgo-special-event-page .apgo-event-linked-banner-zone__actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  padding: 8px;
+  border-top: 1px solid rgba(216, 191, 122, 0.5);
+  background: #02070d;
+}
+body.apgo-special-event-page .apgo-event-linked-banner-zone__button {
+  display: inline-flex;
   min-height: 48px;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 11px 18px;
-  background: linear-gradient(110deg, #fffdf2 0%, #f7e8b9 44%, #e2c273 74%, #fff6d7 100%);
-  color: #06111a;
-  font-size: clamp(12px, 1.7vw, 15px);
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 253, 242, 0.9);
+  border-radius: 8px;
+  color: #fffdf2;
+  font: inherit;
+  font-size: clamp(11px, 1.5vw, 14px);
   font-weight: 850;
-  letter-spacing: 0.13em;
+  letter-spacing: 0.1em;
   line-height: 1.2;
   text-align: center;
   text-transform: uppercase;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition: transform 0.18s ease, filter 0.18s ease, box-shadow 0.18s ease;
 }
-body.apgo-special-event-page .apgo-event-linked-banner-zone__cta > span {
-  display: inline-block;
-  font-size: 1.35em;
-  line-height: 0.7;
-  transition: transform 0.2s ease;
+body.apgo-special-event-page .apgo-event-linked-banner-zone__button--add {
+  background: transparent;
 }
-body.apgo-special-event-page .apgo-event-linked-banner-zone__link:hover .apgo-event-linked-banner-zone__cta > span,
-body.apgo-special-event-page .apgo-event-linked-banner-zone__link:focus-visible .apgo-event-linked-banner-zone__cta > span {
-  transform: translateX(5px);
+body.apgo-special-event-page .apgo-event-linked-banner-zone__button--buy {
+  border-color: #f4d482;
+  background: linear-gradient(110deg, #fffef7 0%, #f6e8b9 52%, #d9b55d 100%);
+  color: #071019;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+body.apgo-special-event-page .apgo-event-linked-banner-zone__button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  filter: brightness(1.08);
+  box-shadow: 0 5px 14px rgba(216, 181, 93, 0.2);
+}
+body.apgo-special-event-page .apgo-event-linked-banner-zone__button:focus-visible {
+  outline: 2px solid #fffdf2;
+  outline-offset: 2px;
+}
+body.apgo-special-event-page .apgo-event-linked-banner-zone__button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 body.apgo-special-event-page .apgo-event-scroll-zone__heading {
   margin: 0 0 clamp(10px, 2vw, 18px);
@@ -1111,7 +1134,7 @@ body.apgo-special-event-page .apgo-event-scroll-zone__banner-img {
   width: 100%;
   height: auto;
 }
-body.apgo-special-event-page .apgo-event-scroll-zone__banner.apgo-event-linked-banner-zone__link {
+body.apgo-special-event-page .apgo-event-scroll-zone__banner.apgo-event-linked-banner-zone__offer {
   margin-bottom: 0;
 }
 
@@ -1808,14 +1831,50 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-stock-counter__pr
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-stock-counter__progress-fill {
+  position: relative;
   display: block;
   width: var(--apgo-stock-progress);
   min-width: 0;
   height: 100%;
+  overflow: hidden;
   border-radius: inherit;
   background: linear-gradient(90deg, #ad7a20, #f4d482 46%, #fff7d6 70%, #c8902e);
   box-shadow: 0 0 10px rgba(244, 212, 130, 0.45);
   transition: width 0.5s ease;
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-stock-counter__progress-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-120%);
+  background: linear-gradient(100deg, transparent 20%, rgba(255, 255, 255, 0.7) 50%, transparent 80%);
+  animation: apgoStockCounterSweep 2.8s ease-in-out infinite;
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-stock-counter.is-counting .apgo-event-stock-counter__progress-fill {
+  width: 100%;
+  transition: none;
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-stock-counter.is-counting.is-counting-ready .apgo-event-stock-counter__progress-fill {
+  width: var(--apgo-stock-progress);
+  transition: width 1.15s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-stock-counter.is-low {
+  border-color: rgba(255, 231, 166, 0.82);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 10px 24px rgba(0, 0, 0, 0.34),
+    0 0 24px rgba(244, 196, 82, 0.18);
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-stock-counter.is-low .apgo-event-stock-counter__number {
+  color: #fff3c7;
+  text-shadow:
+    0 0 14px rgba(255, 243, 199, 0.4),
+    0 0 30px rgba(216, 181, 93, 0.32);
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-stock-counter__meta {
@@ -1871,7 +1930,7 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-scroll-zone__bann
   border-radius: 7px;
 }
 
-body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-scroll-zone__banner.apgo-event-linked-banner-zone__link {
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-scroll-zone__banner.apgo-event-linked-banner-zone__offer {
   margin-bottom: 0;
   padding: 1px;
   border-color: rgba(242, 227, 179, 0.58);
@@ -1883,12 +1942,28 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-linked-banner-zon
   border-radius: 8px 8px 0 0;
 }
 
-body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-linked-banner-zone__cta {
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-linked-banner-zone__actions {
   border-top: 1px solid rgba(216, 191, 122, 0.62);
   border-radius: 0 0 8px 8px;
-  background: linear-gradient(110deg, #fffef7 0%, #fbf4dc 42%, #ecdda9 72%, #fffdf2 100%);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(36, 86, 112, 0.2), transparent 66%),
+    #02070d;
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-linked-banner-zone__button--add {
+  border-color: rgba(255, 253, 242, 0.88);
+  color: #fffdf2;
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-linked-banner-zone__button--buy {
+  border-color: #f4d482;
+  background: linear-gradient(110deg, #fffef7 0%, #f8edc8 44%, #e7ca7c 76%, #fff9e5 100%);
   color: #071019;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+@keyframes apgoStockCounterSweep {
+  0%, 38% { transform: translateX(-120%); }
+  72%, 100% { transform: translateX(120%); }
 }
 
 @keyframes apgoGoldenBullConfetti {
@@ -1955,6 +2030,18 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-linked-banner-zon
     height: 6px;
   }
 
+  body.apgo-special-event-page .apgo-event-linked-banner-zone__actions {
+    gap: 7px;
+    padding: 7px;
+  }
+
+  body.apgo-special-event-page .apgo-event-linked-banner-zone__button {
+    min-height: 44px;
+    padding-inline: 8px;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+  }
+
   body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-collection-grid__panel-body > .apgo-event-scroll-zone:first-child,
   body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-collection-grid__panel-body > .apgo-event-linked-banner-zone:first-child {
     padding-top: 14px;
@@ -1986,14 +2073,16 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-linked-banner-zon
   }
 
   body.apgo-special-event-page .apgo-event-linked-banner-zone__link:hover {
-    transform: none;
+    filter: none;
   }
 
-  body.apgo-special-event-page .apgo-event-linked-banner-zone__cta > span {
+  body.apgo-special-event-page .apgo-event-linked-banner-zone__button {
     transition: none;
   }
 
-  body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-stock-counter__progress-fill {
+  body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-stock-counter__progress-fill,
+  body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-stock-counter__progress-fill::after {
+    animation: none;
     transition: none;
   }
 }

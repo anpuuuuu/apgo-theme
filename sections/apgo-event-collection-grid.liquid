@@ -128,7 +128,7 @@
           counter_claimed: section.settings.aurora_counter_claimed,
           banner_image: section.settings.aurora_zone_banner,
           product: section.settings.aurora_zone_product,
-          cta: section.settings.aurora_zone_cta,
+          variant_id: section.settings.aurora_zone_variant_id,
           zone_class: 'aurora' %}
       {%- endif -%}
 
@@ -354,9 +354,9 @@
     },
     {
       "type": "text",
-      "id": "aurora_zone_cta",
-      "label": "Banner CTA label",
-      "default": "VIEW AURORA DEAL"
+      "id": "aurora_zone_variant_id",
+      "label": "Aurora deal variant ID",
+      "info": "Optional. Paste the numeric variant ID for the promoted set. When blank, the first available variant is used."
     },
     {
       "type": "header",

@@ -23,10 +23,12 @@
 
   var ADD_SELECTOR =
     '.apgo-event-listing-card__btn--add,' +
-    '.apgo-event-featured-banner__btn--add';
+    '.apgo-event-featured-banner__btn--add,' +
+    '.apgo-event-linked-banner-zone__button--add';
   var BUY_SELECTOR =
     '.apgo-event-listing-card__btn--buy,' +
-    '.apgo-event-featured-banner__btn--buy';
+    '.apgo-event-featured-banner__btn--buy,' +
+    '.apgo-event-linked-banner-zone__button--buy';
 
   /* Header cart icon — used as the target of the fly-to animation
      and the element we pulse after a successful add. The Horizon
@@ -347,9 +349,72 @@
     });
   }
 
+  function initStockCounters(root) {
+    var scope = root || document;
+    if (!scope.querySelectorAll) return;
+
+    var counters = scope.querySelectorAll('[data-aurora-stock-counter]');
+    Array.prototype.forEach.call(counters, function (counter) {
+      if (counter.getAttribute('data-counter-ready') === 'true') return;
+
+      var number = counter.querySelector('[data-aurora-stock-number]');
+      var total = parseInt(counter.getAttribute('data-total'), 10);
+      var remaining = parseInt(counter.getAttribute('data-remaining'), 10);
+      if (!number || !Number.isFinite(total) || !Number.isFinite(remaining)) return;
+
+      counter.setAttribute('data-counter-ready', 'true');
+      number.textContent = String(remaining);
+
+      var reducedMotion = window.matchMedia &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reducedMotion || total <= remaining) return;
+
+      counter.classList.add('is-counting');
+
+      function startCounter() {
+        var startedAt = null;
+        var duration = Math.min(1400, Math.max(800, (total - remaining) * 8));
+
+        requestAnimationFrame(function () {
+          counter.classList.add('is-counting-ready');
+        });
+
+        function updateNumber(timestamp) {
+          if (startedAt === null) startedAt = timestamp;
+          var progress = Math.min(1, (timestamp - startedAt) / duration);
+          var eased = 1 - Math.pow(1 - progress, 3);
+          var current = Math.round(total + ((remaining - total) * eased));
+          number.textContent = String(current);
+
+          if (progress < 1) {
+            requestAnimationFrame(updateNumber);
+          } else {
+            number.textContent = String(remaining);
+            counter.classList.remove('is-counting', 'is-counting-ready');
+          }
+        }
+
+        requestAnimationFrame(updateNumber);
+      }
+
+      if ('IntersectionObserver' in window) {
+        var observer = new IntersectionObserver(function (entries) {
+          if (!entries[0] || !entries[0].isIntersecting) return;
+          observer.disconnect();
+          startCounter();
+        }, { threshold: 0.35 });
+        observer.observe(counter);
+      } else {
+        startCounter();
+      }
+    });
+  }
+
   document.addEventListener('click', handleClick);
   initScrollCues(document);
+  initStockCounters(document);
   document.addEventListener('shopify:section:load', function (event) {
     initScrollCues(event.target);
+    initStockCounters(event.target);
   });
 })();
