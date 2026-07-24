@@ -1782,6 +1782,7 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-stock-counter {
     inset 0 1px 0 rgba(255, 255, 255, 0.06),
     0 10px 24px rgba(0, 0, 0, 0.3),
     0 0 18px rgba(242, 227, 179, 0.08);
+  animation: apgoStockCounterBreath 3.6s ease-in-out infinite;
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-stock-counter::before {
@@ -1793,6 +1794,29 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-stock-counter::be
   box-shadow: 0 0 12px rgba(242, 227, 179, 0.45);
 }
 
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-stock-counter::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  transform: translateX(-135%);
+  background: linear-gradient(
+    105deg,
+    transparent 34%,
+    rgba(255, 248, 220, 0.02) 43%,
+    rgba(255, 248, 220, 0.12) 50%,
+    rgba(255, 248, 220, 0.02) 57%,
+    transparent 66%
+  );
+  animation: apgoStockCounterPanelSweep 4.2s ease-in-out infinite;
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-stock-counter > * {
+  position: relative;
+  z-index: 1;
+}
+
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-stock-counter__number-row {
   display: flex;
   align-items: baseline;
@@ -1802,6 +1826,7 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-stock-counter__nu
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-stock-counter__number {
+  display: inline-block;
   color: #fffdf2;
   font-size: clamp(32px, 5vw, 48px);
   font-weight: 900;
@@ -1810,6 +1835,8 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-stock-counter__nu
   text-shadow:
     0 0 14px rgba(255, 253, 242, 0.28),
     0 0 26px rgba(216, 181, 93, 0.2);
+  transform-origin: center;
+  animation: apgoStockCounterHeartbeat 3.6s ease-in-out infinite;
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-stock-counter__label {
@@ -1849,7 +1876,7 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-stock-counter__pr
   inset: 0;
   transform: translateX(-120%);
   background: linear-gradient(100deg, transparent 20%, rgba(255, 255, 255, 0.7) 50%, transparent 80%);
-  animation: apgoStockCounterSweep 2.8s ease-in-out infinite;
+  animation: apgoStockCounterSweep 2.2s ease-in-out infinite;
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-stock-counter.is-counting .apgo-event-stock-counter__progress-fill {
@@ -1998,6 +2025,54 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-linked-banner-zon
   72%, 100% { transform: translateX(120%); }
 }
 
+@keyframes apgoStockCounterPanelSweep {
+  0%, 48% { transform: translateX(-135%); }
+  78%, 100% { transform: translateX(135%); }
+}
+
+@keyframes apgoStockCounterBreath {
+  0%, 55%, 100% {
+    border-color: rgba(242, 227, 179, 0.5);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.06),
+      0 10px 24px rgba(0, 0, 0, 0.3),
+      0 0 18px rgba(242, 227, 179, 0.08);
+  }
+  68% {
+    border-color: rgba(255, 238, 174, 0.86);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 10px 24px rgba(0, 0, 0, 0.32),
+      0 0 30px rgba(244, 212, 130, 0.24);
+  }
+  80% {
+    border-color: rgba(242, 227, 179, 0.62);
+  }
+}
+
+@keyframes apgoStockCounterHeartbeat {
+  0%, 55%, 100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  64% {
+    transform: scale(1.075);
+    filter: brightness(1.18);
+  }
+  71% {
+    transform: scale(0.995);
+    filter: brightness(1.04);
+  }
+  78% {
+    transform: scale(1.04);
+    filter: brightness(1.14);
+  }
+  88% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
 @keyframes apgoGoldenBullConfetti {
   from { background-position: 0 0; }
   to { background-position: 12px 8px; }
@@ -2142,6 +2217,12 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-linked-banner-zon
   body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-stock-counter__progress-fill::after {
     animation: none;
     transition: none;
+  }
+
+  body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-stock-counter,
+  body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-stock-counter::after,
+  body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-stock-counter__number {
+    animation: none;
   }
 }
 
