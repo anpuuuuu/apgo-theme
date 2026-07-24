@@ -424,6 +424,7 @@
       "milestone_reached": "{{ total }}-set milestone reached",
       "limited_release": "limited release",
       "while_stocks_last": "while stocks last",
+      "stock_update_notice": "*Stock is updated periodically and may not reflect orders currently being processed",
       "progress_label": "{{ remaining }} of {{ total }} campaign sets remaining"
     }
   },
