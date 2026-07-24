@@ -61,7 +61,7 @@
       "type": "apgo-event-banner",
       "name": "APGO Event Banner",
       "settings": {
-        "image": "shopify://shop_images/Main_Banner.png",
+        "image": "shopify://shop_images/11111.png",
         "image_alt": "APGO Golden Bull Award",
         "link": "",
         "desktop_width_percent": 67,
@@ -197,7 +197,7 @@
       "type": "apgo-event-banner",
       "name": "APGO Event Banner",
       "settings": {
-        "image": "shopify://shop_images/footer_2.png",
+        "image": "shopify://shop_images/quality.png",
         "image_alt": "",
         "link": "",
         "desktop_width_percent": 67,
