@@ -63,7 +63,7 @@
       "settings": {
         "image": "shopify://shop_images/celebrating_our_1.png",
         "image_alt": "APGO Golden Bull Award",
-        "link": "#apgo-event-grid-apgo_event_collection_grid_n3e6dm",
+        "link": "#golden-bull-promos",
         "desktop_width_percent": 67,
         "color_scheme": ""
       }
@@ -160,6 +160,7 @@
       ],
       "name": "Event Collection Grid",
       "settings": {
+        "anchor_id": "golden-bull-promos",
         "show_countdown": false,
         "countdown_label": "AWARD CELEBRATION ENDS IN",
         "countdown_end_at": "2026-07-07T00:00:00+08:00",

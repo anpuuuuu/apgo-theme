@@ -10,8 +10,15 @@
 {{ 'apgo-event-page.css' | asset_url | stylesheet_tag }}
 <script src="{{ 'apgo-event-cart.js' | asset_url }}" defer></script>
 
+{% liquid
+  assign event_grid_id = section.settings.anchor_id | handleize
+  if event_grid_id == blank
+    assign event_grid_id = 'apgo-event-grid-' | append: section.id
+  endif
+%}
+
 <div
-  id="apgo-event-grid-{{ section.id }}"
+  id="{{ event_grid_id }}"
   class="
     apgo-event-collection-grid section section--full-width
     {% if section.settings.overlap_enabled %}apgo-event-collection-grid--overlap{% endif %}
@@ -194,6 +201,12 @@
     "templates": ["page"]
   },
   "settings": [
+    {
+      "type": "text",
+      "id": "anchor_id",
+      "label": "Section anchor ID",
+      "info": "Optional target used by page links. Use letters, numbers, and hyphens."
+    },
     {
       "type": "header",
       "content": "Countdown"
