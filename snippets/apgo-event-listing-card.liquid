@@ -3,7 +3,6 @@
   Matches Limited Time Deals listing UI (+ drawer, discount badge) without Theme Editor product-card blocks.
 
   @param {object} product    - Product object
-  @param {string} section_id - Parent section id
   @param {string} card_uid   - Unique id suffix for this card
   @param {string}  variant_id        - Optional. Editor-picked variant ID
                                        (from the block setting). If set +
@@ -137,22 +136,39 @@
              framing)
           2. current price — integer + sup decimal + gold gradient + glow
       {%- endcomment -%}
-      {%- assign apgo_card_price_str = apgo_listing_variant.price | money | replace: ' MYR', '' | replace: 'MYR', '' -%}
+      {%- capture apgo_limited_promo_raw -%}
+        {%- render 'apgo-limited-promo-data', product: product -%}
+      {%- endcapture -%}
+      {%- assign apgo_limited_promo_parts = apgo_limited_promo_raw | strip | split: '|' -%}
+      {%- assign apgo_limited_promo_price_cents = apgo_limited_promo_parts[0] | plus: 0 -%}
+      {%- assign apgo_limited_promo_message = apgo_limited_promo_parts[1] -%}
+      {%- assign apgo_limited_promo_active = false -%}
+      {%- assign apgo_card_price_cents = apgo_listing_variant.price -%}
+      {%- assign apgo_card_compare_cents = apgo_listing_variant.compare_at_price -%}
+      {%- if apgo_limited_promo_price_cents > 0 and apgo_listing_variant.price > apgo_limited_promo_price_cents -%}
+        {%- assign apgo_limited_promo_active = true -%}
+        {%- assign apgo_card_price_cents = apgo_limited_promo_price_cents -%}
+        {%- assign apgo_card_compare_cents = apgo_listing_variant.price -%}
+      {%- endif -%}
+      {%- assign apgo_card_price_str = apgo_card_price_cents | money | replace: ' MYR', '' | replace: 'MYR', '' -%}
       {%- assign apgo_card_price_parts = apgo_card_price_str | split: '.' -%}
       {%- assign apgo_card_on_sale = false -%}
-      {%- if apgo_listing_variant.compare_at_price > apgo_listing_variant.price and hide_compare_at != true -%}
+      {%- if apgo_card_compare_cents > apgo_card_price_cents and hide_compare_at != true -%}
         {%- assign apgo_card_on_sale = true -%}
       {%- endif -%}
       <div class="apgo-event-listing-card__footer">
         <div class="apgo-event-listing-card__price-stack">
           {%- if apgo_card_on_sale -%}
             <span class="apgo-event-listing-card__price-compare">
-              {{ apgo_listing_variant.compare_at_price | money | replace: ' MYR', '' | replace: 'MYR', '' }}
+              {{ apgo_card_compare_cents | money | replace: ' MYR', '' | replace: 'MYR', '' }}
             </span>
           {%- endif -%}
           <span class="apgo-event-listing-card__price-current">
             <span class="apgo-event-listing-card__price-int">{{ apgo_card_price_parts[0] }}</span>{%- if apgo_card_price_parts[1] -%}<sup class="apgo-event-listing-card__price-frac">{{ apgo_card_price_parts[1] }}</sup>{%- endif -%}
           </span>
+          {%- if apgo_limited_promo_active -%}
+            <span class="apgo-event-listing-card__promo-limit">{{ apgo_limited_promo_message }}</span>
+          {%- endif -%}
         </div>
         {%- if product.available -%}
           <div class="apgo-event-listing-card__actions">

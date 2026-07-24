@@ -22,6 +22,18 @@
   endif
   assign raw_price_cents = selected_variant.price
   assign raw_compare_cents = selected_variant.compare_at_price
+  capture apgo_limited_promo_raw
+    render 'apgo-limited-promo-data', product: product_resource
+  endcapture
+  assign apgo_limited_promo_parts = apgo_limited_promo_raw | strip | split: '|'
+  assign apgo_limited_promo_price_cents = apgo_limited_promo_parts[0] | plus: 0
+  assign apgo_limited_promo_message = apgo_limited_promo_parts[1]
+  assign apgo_limited_promo_active = false
+  if apgo_limited_promo_price_cents > 0 and selected_variant.price > apgo_limited_promo_price_cents
+    assign apgo_limited_promo_active = true
+    assign raw_compare_cents = selected_variant.price
+    assign raw_price_cents = apgo_limited_promo_price_cents
+  endif
   assign discount_pct = 0
   if raw_compare_cents > raw_price_cents and raw_compare_cents > 0
     assign discount_pct = raw_compare_cents | minus: raw_price_cents | times: 100 | divided_by: raw_compare_cents
@@ -72,9 +84,9 @@
 
 <div
   ref="priceContainer"
-  class="{% if listing_card_discount and show_compare_price %}price--listing-discount{% endif %}"
+  class="{% if listing_card_discount and show_compare_price and apgo_limited_promo_active == false %}price--listing-discount{% endif %}{% if apgo_limited_promo_active %} price--apgo-limited-promo{% endif %}"
 >
-  {% if listing_card_discount and show_compare_price %}
+  {% if listing_card_discount and show_compare_price and apgo_limited_promo_active == false %}
     <span role="group" class="price-sale-row">
       <span class="visually-hidden">{{ 'content.price_regular' | t }}&nbsp;{{- compare_at_price -}}</span>
       <span class="visually-hidden">{{ 'content.price_sale' | t }}&nbsp;</span>
@@ -122,6 +134,9 @@
     -%}
     {% render 'unit-price', price: unit_price, measurement: selected_variant.unit_price_measurement %}
   {%- endif -%}
+  {%- if apgo_limited_promo_active -%}
+    <span class="apgo-promo-limit-note">{{ apgo_limited_promo_message }}</span>
+  {%- endif -%}
 </div>
 
 {% stylesheet %}
@@ -140,5 +155,17 @@
     padding: 0.1em 0.38em;
     border-radius: 4px;
     line-height: 1.2;
+  }
+
+  .price--apgo-limited-promo .apgo-promo-limit-note {
+    display: block;
+    width: 100%;
+    margin-block-start: 0.35rem;
+    color: currentColor;
+    font-size: 0.625rem;
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: 0.035em;
+    opacity: 0.72;
   }
 {% endstylesheet %}

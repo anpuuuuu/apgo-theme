@@ -1,0 +1,33 @@
+{%- doc -%}
+  Emits the Golden Bull fixed-price promotion data for custom product
+  templates whose price UI is updated by JavaScript.
+{%- enddoc -%}
+
+{%- if template.name == 'product' and product != blank -%}
+  {%- capture apgo_limited_promo_raw -%}
+    {%- render 'apgo-limited-promo-data', product: product -%}
+  {%- endcapture -%}
+  {%- assign apgo_limited_promo_parts = apgo_limited_promo_raw | strip | split: '|' -%}
+  {%- assign apgo_limited_promo_price_cents = apgo_limited_promo_parts[0] | plus: 0 -%}
+  {%- assign apgo_limited_promo_message = apgo_limited_promo_parts[1] -%}
+
+  {%- if apgo_limited_promo_price_cents > 0 -%}
+    <script>
+      window.APGO_LIMITED_PROMO = {
+        priceCents: {{ apgo_limited_promo_price_cents | json }},
+        message: {{ apgo_limited_promo_message | json }}
+      };
+    </script>
+    <style>
+      .apgo-cc-pdp__promo-limit {
+        display: block;
+        margin-top: 7px;
+        color: rgba(255, 255, 255, 0.62);
+        font-size: 10px;
+        font-weight: 700;
+        line-height: 1.3;
+        letter-spacing: 0.04em;
+      }
+    </style>
+  {%- endif -%}
+{%- endif -%}

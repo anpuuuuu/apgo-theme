@@ -30,6 +30,41 @@
   var addBtn    = form.querySelector('[data-apgo-cc-add]');
   var buyBtn    = form.querySelector('[data-apgo-cc-buy-now]');
   var qtyInput  = form.querySelector('[data-apgo-cc-qty-input]');
+  var promoConfig = window.APGO_LIMITED_PROMO || null;
+  var promoPriceCents = promoConfig
+    ? parseInt(promoConfig.priceCents, 10) || 0
+    : 0;
+  if (promoPriceCents > 0 && priceEl) {
+    var promoPriceCard = priceEl.closest('.apgo-cc-pdp__price-card');
+    var promoPriceBottom = priceEl.closest('.apgo-cc-pdp__price-bottom');
+    if (promoPriceCard) {
+      promoPriceCard.classList.add('apgo-cc-pdp__price-card--sale');
+      if (!promoPriceBottom) {
+        promoPriceBottom = document.createElement('div');
+        promoPriceBottom.className = 'apgo-cc-pdp__price-bottom';
+        priceEl.parentNode.insertBefore(promoPriceBottom, priceEl);
+        promoPriceBottom.appendChild(priceEl);
+      }
+      if (!compareEl) {
+        compareEl = document.createElement('span');
+        compareEl.className = 'apgo-cc-pdp__price-compare';
+        compareEl.setAttribute('data-apgo-cc-compare', '');
+        promoPriceBottom.appendChild(compareEl);
+      }
+      if (!saveEl) {
+        saveEl = document.createElement('span');
+        saveEl.className = 'apgo-cc-pdp__price-save';
+        saveEl.setAttribute('data-apgo-cc-save', '');
+        promoPriceBottom.appendChild(saveEl);
+      }
+      if (!promoPriceCard.querySelector('.apgo-cc-pdp__promo-limit')) {
+        var promoLimit = document.createElement('span');
+        promoLimit.className = 'apgo-cc-pdp__promo-limit';
+        promoLimit.textContent = promoConfig.message || '';
+        promoPriceCard.appendChild(promoLimit);
+      }
+    }
+  }
 
   /* Market-aware money formatter: read currency code from .apgo-product-section[data-apgo-currency]
      (Shopify sets this from {{ cart.currency.iso_code }}), then format via Intl.NumberFormat.
@@ -141,20 +176,31 @@
 
     if (idInput) idInput.value = v.id;
     window.currentVariantId = v.id;
-    if (priceEl) priceEl.textContent = fmtMoney(v.price);
+    var displayedPrice = promoPriceCents > 0 && v.price > promoPriceCents
+      ? promoPriceCents
+      : v.price;
+    var displayedCompare = promoPriceCents > 0 && v.price > promoPriceCents
+      ? v.price
+      : v.compare_at_price;
+    if (priceEl) {
+      priceEl.textContent = fmtMoney(displayedPrice);
+      priceEl.setAttribute('data-cents', displayedPrice);
+    }
 
     /* Compare-at + save badge — only shown when compare > price */
     if (compareEl) {
-      if (v.compare_at_price && v.compare_at_price > v.price) {
-        compareEl.textContent = fmtMoney(v.compare_at_price);
+      if (displayedCompare && displayedCompare > displayedPrice) {
+        compareEl.textContent = fmtMoney(displayedCompare);
+        compareEl.setAttribute('data-cents', displayedCompare);
         compareEl.style.display = '';
       } else {
         compareEl.style.display = 'none';
       }
     }
     if (saveEl) {
-      if (v.compare_at_price && v.compare_at_price > v.price) {
-        saveEl.textContent = 'Save ' + fmtMoney(v.compare_at_price - v.price);
+      if (displayedCompare && displayedCompare > displayedPrice) {
+        saveEl.textContent = 'Save ' + fmtMoney(displayedCompare - displayedPrice);
+        saveEl.setAttribute('data-cents', displayedCompare - displayedPrice);
         saveEl.style.display = '';
       } else {
         saveEl.style.display = 'none';

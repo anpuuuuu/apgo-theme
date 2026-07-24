@@ -1,0 +1,32 @@
+{%- doc -%}
+  Returns the active Golden Bull fixed-price promotion as a pipe-delimited
+  string:
+
+    price_cents|customer-facing limit message
+
+  The output is intentionally data-only so standard cards, custom event
+  cards, and custom PDPs can share one source of truth. An empty string means
+  that the product or market is not part of this promotion.
+
+  @param {product} product - Product to test against the campaign allowlist
+{%- enddoc -%}
+
+{%- liquid
+  assign apgo_promo_handles = ',apgo-car-interior-eco-friendly-coating-500ml,apgo-car-interior-eco-friendly-cleaner-500ml,apgo-glass-cleaner-500ml,apgo-car-exterior-plastic-protectant-500ml,apgo-car-extreme-iron-remover-500ml,apgo-car-all-purpose-cleaner,apgo-water-stain-remover,apgo-car-wash-shampoo-special-formula-refill-pack,apgo-car-wiper-fluid-refill-pack,'
+  assign apgo_promo_handle_token = ',' | append: product.handle | append: ','
+  assign apgo_promo_price_cents = 0
+
+  if apgo_promo_handles contains apgo_promo_handle_token
+    case localization.country.iso_code
+      when 'MY'
+        assign apgo_promo_price_cents = 990
+      when 'SG'
+        assign apgo_promo_price_cents = 660
+    endcase
+  endif
+
+  if apgo_promo_price_cents > 0
+    echo apgo_promo_price_cents
+    echo '|PROMO PRICE: MAX 2 PER ITEM · 3RD AT REGULAR PRICE'
+  endif
+-%}
