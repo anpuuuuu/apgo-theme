@@ -123,6 +123,9 @@
         {% render 'apgo-event-linked-banner-zone',
           heading: section.settings.aurora_zone_heading,
           message: section.settings.aurora_zone_message,
+          show_counter: section.settings.show_aurora_counter,
+          counter_total: section.settings.aurora_counter_total,
+          counter_claimed: section.settings.aurora_counter_claimed,
           banner_image: section.settings.aurora_zone_banner,
           product: section.settings.aurora_zone_product,
           cta: section.settings.aurora_zone_cta,
@@ -314,6 +317,28 @@
       "type": "text",
       "id": "aurora_zone_message",
       "label": "Limited-offer message"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_aurora_counter",
+      "label": "Show 500-set counter",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "aurora_counter_total",
+      "label": "Total campaign sets",
+      "info": "Enter a whole number. This can later be connected to a dynamic source.",
+      "default": "500",
+      "visible_if": "{{ section.settings.show_aurora_counter }}"
+    },
+    {
+      "type": "text",
+      "id": "aurora_counter_claimed",
+      "label": "Claimed sets",
+      "info": "Enter the real number of paid sets claimed so far.",
+      "default": "0",
+      "visible_if": "{{ section.settings.show_aurora_counter }}"
     },
     {
       "type": "image_picker",

@@ -417,6 +417,15 @@
   "apgo_live": {
     "host": "Host"
   },
+  "apgo_event": {
+    "aurora_counter": {
+      "sets_remaining": "sets remaining",
+      "milestone_reached": "{{ total }}-set milestone reached",
+      "claimed": "{{ count }} claimed",
+      "total": "{{ count }} total sets",
+      "progress_label": "{{ claimed }} of {{ total }} campaign sets claimed"
+    }
+  },
   "cart": {
     "exclusive_coupon": "Exclusive Coupon",
     "progress_title": "Amount left to goal",
