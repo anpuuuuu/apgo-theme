@@ -473,7 +473,7 @@
           "type": "banner",
           "settings": {
             "image": "shopify://shop_images/celebrating_our_1.png",
-            "link": "shopify://pages/golden-bull-award",
+            "link": "/pages/golden-bull-award#golden-bull-promos",
             "alt": ""
           }
         },
