@@ -71,104 +71,64 @@
     "apgo_event_collection_grid_n3e6dm": {
       "type": "apgo-event-collection-grid",
       "blocks": {
-        "b1f1_card_9gyjB9": {
-          "type": "b1f1_card",
-          "settings": {
-            "product": "apgo-atomic-glaze-car-nano-coating-refill-pack-new-version",
-            "variant_id": ""
-          }
-        },
-        "b1f1_card_wgMyHg": {
-          "type": "b1f1_card",
-          "settings": {
-            "product": "apgo-pro-car-wash-towel-m-100cm-x-50cm",
-            "variant_id": ""
-          }
-        },
-        "b1f1_card_fyGQBM": {
-          "type": "b1f1_card",
-          "settings": {
-            "product": "apgo-pro-car-wash-towel-copy",
-            "variant_id": ""
-          }
-        },
-        "b1f1_card_bBeNyX": {
-          "type": "b1f1_card",
-          "settings": {
-            "product": "apgo-car-wheel-rim-cleaner",
-            "variant_id": ""
-          }
-        },
-        "b1f1_card_8nYVxK": {
-          "type": "b1f1_card",
-          "settings": {
-            "product": "apgo-car-tire-gloss-dressing-and-protectant",
-            "variant_id": ""
-          }
-        },
-        "b1f1_card_LDxjM9": {
-          "type": "b1f1_card",
-          "settings": {
-            "product": "apgo-car-exterior-plastic-protectant",
-            "variant_id": ""
-          }
-        },
-        "b1f1_card_h8Uejm": {
-          "type": "b1f1_card",
-          "settings": {
-            "product": "apgo-car-bug-tar-remover",
-            "variant_id": ""
-          }
-        },
-        "b1f1_card_aLtxDy": {
-          "type": "b1f1_card",
-          "settings": {
-            "product": "apgo-car-extreme-iron-remover",
-            "variant_id": ""
-          }
-        },
-        "discount_card_yA8wkF": {
+        "discount_card_c3FpMG": {
           "type": "discount_card",
           "settings": {
-            "product": "apgo-atomic-titanium-crystal-car-nano-coating-premium",
-            "variant_id": "46859280744602"
-          }
-        },
-        "discount_card_yhwfpF": {
-          "type": "discount_card",
-          "settings": {
-            "product": "apgo-aurora-car-nano-coating-premium",
-            "variant_id": "46875334312090"
-          }
-        },
-        "discount_card_m8Gek8": {
-          "type": "discount_card",
-          "settings": {
-            "product": "plastic-hard-coating",
+            "product": "apgo-car-interior-eco-friendly-coating-500ml",
             "variant_id": ""
           }
         },
-        "discount_card_9YLDex": {
+        "discount_card_QiGfMd": {
           "type": "discount_card",
           "settings": {
-            "product": "apgo-windshield-oil-film-remover-perfect-glass-restorer-quartz-glass-coating",
-            "variant_id": "46971481260186"
+            "product": "apgo-car-interior-eco-friendly-cleaner-500ml",
+            "variant_id": ""
+          }
+        },
+        "discount_card_X8VrYn": {
+          "type": "discount_card",
+          "settings": {
+            "product": "apgo-glass-cleaner-500ml",
+            "variant_id": ""
+          }
+        },
+        "discount_card_GmYPkf": {
+          "type": "discount_card",
+          "settings": {
+            "product": "apgo-car-exterior-plastic-protectant-500ml",
+            "variant_id": ""
+          }
+        },
+        "discount_card_fXRHLm": {
+          "type": "discount_card",
+          "settings": {
+            "product": "apgo-car-extreme-iron-remover-500ml",
+            "variant_id": ""
+          }
+        },
+        "discount_card_WEXkac": {
+          "type": "discount_card",
+          "settings": {
+            "product": "apgo-car-all-purpose-cleaner",
+            "variant_id": ""
+          }
+        },
+        "discount_card_8gqQ9J": {
+          "type": "discount_card",
+          "settings": {
+            "product": "apgo-water-stain-remover",
+            "variant_id": ""
           }
         }
       },
       "block_order": [
-        "b1f1_card_9gyjB9",
-        "b1f1_card_wgMyHg",
-        "b1f1_card_fyGQBM",
-        "b1f1_card_bBeNyX",
-        "b1f1_card_8nYVxK",
-        "b1f1_card_LDxjM9",
-        "b1f1_card_h8Uejm",
-        "b1f1_card_aLtxDy",
-        "discount_card_yA8wkF",
-        "discount_card_yhwfpF",
-        "discount_card_m8Gek8",
-        "discount_card_9YLDex"
+        "discount_card_c3FpMG",
+        "discount_card_QiGfMd",
+        "discount_card_X8VrYn",
+        "discount_card_GmYPkf",
+        "discount_card_fXRHLm",
+        "discount_card_WEXkac",
+        "discount_card_8gqQ9J"
       ],
       "name": "Event Collection Grid",
       "settings": {
