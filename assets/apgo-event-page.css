@@ -1782,14 +1782,6 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-linked-banner-zon
   padding: clamp(24px, 4vw, 38px) clamp(12px, 3vw, 32px) 0;
 }
 
-body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-linked-banner-zone--aurora {
-  margin-block-end: 0;
-}
-
-body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-linked-banner-zone--aurora + .apgo-event-scroll-zone {
-  padding-top: clamp(12px, 1.5vw, 18px);
-}
-
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-scroll-zone + .apgo-event-scroll-zone,
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-scroll-zone + .apgo-event-linked-banner-zone,
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-linked-banner-zone + .apgo-event-scroll-zone {
