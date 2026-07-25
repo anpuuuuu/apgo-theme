@@ -178,7 +178,7 @@
         "show_aurora_zone": true,
         "aurora_zone_heading": "AURORA EXCLUSIVE DEAL",
         "aurora_zone_message": "",
-        "show_aurora_counter": true,
+        "show_aurora_counter": false,
         "aurora_counter_total": "500",
         "aurora_counter_claimed": "0",
         "aurora_zone_banner": "shopify://shop_images/23123213.png",
