@@ -85,7 +85,6 @@
       "blocks": {
         "b1f1_card_AzRMiV": {
           "type": "b1f1_card",
-          "disabled": true,
           "settings": {
             "product": "apgo-windshield-oil-film-remover-perfect-glass-restorer-quartz-glass-coating",
             "variant_id": ""
@@ -93,7 +92,6 @@
         },
         "b1f1_card_KRwDX9": {
           "type": "b1f1_card",
-          "disabled": true,
           "settings": {
             "product": "apgo-pro-car-wash-towel-m-100cm-x-50cm",
             "variant_id": ""
@@ -101,7 +99,6 @@
         },
         "b1f1_card_HKHJj3": {
           "type": "b1f1_card",
-          "disabled": true,
           "settings": {
             "product": "apgo-pro-car-wash-towel-copy",
             "variant_id": ""
@@ -109,9 +106,8 @@
         },
         "b1f1_card_Lqf6D3": {
           "type": "b1f1_card",
-          "disabled": true,
           "settings": {
-            "product": "",
+            "product": "apgo-atomic-glaze-car-nano-coating-refill-pack-new-version",
             "variant_id": ""
           }
         },
