@@ -83,6 +83,38 @@
     "apgo_event_collection_grid_n3e6dm": {
       "type": "apgo-event-collection-grid",
       "blocks": {
+        "b1f1_card_AzRMiV": {
+          "type": "b1f1_card",
+          "disabled": true,
+          "settings": {
+            "product": "apgo-windshield-oil-film-remover-perfect-glass-restorer-quartz-glass-coating",
+            "variant_id": ""
+          }
+        },
+        "b1f1_card_KRwDX9": {
+          "type": "b1f1_card",
+          "disabled": true,
+          "settings": {
+            "product": "apgo-pro-car-wash-towel-m-100cm-x-50cm",
+            "variant_id": ""
+          }
+        },
+        "b1f1_card_HKHJj3": {
+          "type": "b1f1_card",
+          "disabled": true,
+          "settings": {
+            "product": "apgo-pro-car-wash-towel-copy",
+            "variant_id": ""
+          }
+        },
+        "b1f1_card_Lqf6D3": {
+          "type": "b1f1_card",
+          "disabled": true,
+          "settings": {
+            "product": "",
+            "variant_id": ""
+          }
+        },
         "discount_card_c3FpMG": {
           "type": "discount_card",
           "settings": {
@@ -148,6 +180,10 @@
         }
       },
       "block_order": [
+        "b1f1_card_AzRMiV",
+        "b1f1_card_KRwDX9",
+        "b1f1_card_HKHJj3",
+        "b1f1_card_Lqf6D3",
         "discount_card_c3FpMG",
         "discount_card_QiGfMd",
         "discount_card_X8VrYn",
@@ -186,7 +222,7 @@
         "aurora_zone_variant_id": "",
         "show_b1f1_zone": true,
         "b1f1_zone_heading": "AWARD-WINNING COATING DEAL",
-        "b1f1_zone_banner": "shopify://shop_images/Main_Banner_2.png",
+        "b1f1_zone_banner": "shopify://shop_images/6_d62a57fd-3001-4aeb-980d-4c79bebcfabc.png",
         "b1f1_zone_products": [],
         "b1f1_zone_hide_compare_at": true,
         "show_featured_stage": false,
