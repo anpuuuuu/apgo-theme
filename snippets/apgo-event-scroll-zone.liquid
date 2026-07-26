@@ -18,6 +18,7 @@
                                  Used only when card_blocks is blank.
   @param {string} zone_class   - Modifier suffix added to the wrapper
                                  (used for analytics / per-zone CSS hooks)
+  @param {number} zone_position - One-based campaign section position.
   @param {boolean} hide_compare_at - When true, hides the compare-at price.
   @param {boolean} show_scroll_cue - Shows an animated hint and next button when the track overflows.
   @param {string} section_id   - Parent section id, used for unique card ids
@@ -54,7 +55,14 @@
 -%}
 
 {%- if apgo_has_items -%}
-  <section class="apgo-event-scroll-zone apgo-event-scroll-zone--{{ zone_class }}">
+  <section
+    class="apgo-event-scroll-zone apgo-event-scroll-zone--{{ zone_class }}"
+    data-apgo-campaign-section
+    data-section-id="{{ zone_class | escape }}"
+    data-section-name="{{ heading | escape }}"
+    data-section-position="{{ zone_position }}"
+    data-promotion-id="golden_bull_{{ zone_class | escape }}"
+  >
     {%- if heading != blank -%}
       <h3 class="apgo-event-scroll-zone__heading">
         <span class="apgo-event-scroll-zone__heading-star" aria-hidden="true">★</span>
@@ -110,6 +118,7 @@
                   variant_id: block.settings.variant_id,
                   section_id: section_id,
                   card_uid: apgo_event_card_uid,
+                  card_position: forloop.index,
                   hide_compare_at: apgo_hide_compare %}
               </div>
             {%- endif -%}
@@ -122,6 +131,7 @@
                 product: product,
                 section_id: section_id,
                 card_uid: apgo_event_card_uid,
+                card_position: forloop.index,
                 hide_compare_at: apgo_hide_compare %}
             </div>
           {%- endfor -%}

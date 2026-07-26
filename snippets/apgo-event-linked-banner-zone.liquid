@@ -10,6 +10,7 @@
   @param {product} product - Product opened when the banner is selected.
   @param {string} variant_id - Optional numeric ID of the promoted product variant.
   @param {string} zone_class - Modifier suffix for the zone wrapper.
+  @param {number} zone_position - One-based campaign section position.
 {% enddoc %}
 
 {% if banner_image != blank and product != blank %}
@@ -25,7 +26,17 @@
       endfor
     endif
   %}
-  <section class="apgo-event-linked-banner-zone apgo-event-linked-banner-zone--{{ zone_class }}">
+  <section
+    class="apgo-event-linked-banner-zone apgo-event-linked-banner-zone--{{ zone_class }}"
+    data-apgo-campaign-section
+    data-section-id="{{ zone_class | escape }}"
+    data-section-name="{{ heading | escape }}"
+    data-section-position="{{ zone_position }}"
+    data-promotion-id="golden_bull_{{ zone_class | escape }}"
+    data-product-id="{{ product.id }}"
+    data-product-name="{{ product.title | escape }}"
+    data-product-handle="{{ product.handle | escape }}"
+  >
     {% if heading != blank %}
       <h3 class="apgo-event-scroll-zone__heading">
         <span class="apgo-event-scroll-zone__heading-star" aria-hidden="true">★</span>
@@ -101,6 +112,10 @@
       <a
         class="apgo-event-linked-banner-zone__link"
         href="{{ action_variant.url }}"
+        data-apgo-campaign-promotion-link
+        data-promotion-id="golden_bull_aurora_banner"
+        data-promotion-name="{{ heading | escape }}"
+        data-variant-id="{{ action_variant.id }}"
         aria-label="{{ product.title | escape }}"
       >
         {{ banner_image

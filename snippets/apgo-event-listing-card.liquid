@@ -15,6 +15,7 @@
                                        Used by the B1F1 scroll zone where
                                        showing an original price under a
                                        'Buy 1 Free 1' framing is confusing.
+  @param {number} card_position       - One-based position within the zone.
 {%- enddoc -%}
 
 {% liquid
@@ -61,6 +62,10 @@
 <product-card
   class="product-card apgo-event-listing-card"
   data-product-id="{{ product.id }}"
+  data-product-name="{{ product.title | escape }}"
+  data-product-handle="{{ product.handle | escape }}"
+  data-variant-id="{{ apgo_listing_variant.id }}"
+  data-card-position="{{ card_position }}"
   data-product-variants-size="{{ product.variants.size }}"
   id="product-card-{{ card_uid }}"
 >

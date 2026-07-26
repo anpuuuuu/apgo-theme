@@ -13,7 +13,15 @@
   {% if section.settings.image != blank %}
     <div class="apgo-event-banner__frame">
       {% if section.settings.link != blank %}
-        <a href="{{ section.settings.link }}" class="apgo-event-banner__link">
+        <a
+          href="{{ section.settings.link }}"
+          class="apgo-event-banner__link"
+          {% if template.suffix == 'golden-bull-award' %}
+            data-apgo-campaign-promotion-link
+            data-promotion-id="golden_bull_hero"
+            data-promotion-name="Golden Bull Award hero"
+          {% endif %}
+        >
       {% endif %}
       <img
         class="apgo-event-banner__img"

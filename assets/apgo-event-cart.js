@@ -281,6 +281,15 @@
       setBusy(btn, false);
       var msg = (err && (err.description || err.message)) ||
                 'Could not add to cart. Please try again.';
+      try {
+        window.dispatchEvent(new CustomEvent('apgo:cart-error', {
+          detail: {
+            variant_id: variantId,
+            cta_type: buyBtn ? 'buy_now' : 'add_to_cart',
+            error_type: 'cart_add_failed'
+          }
+        }));
+      } catch (eventError) {}
       window.alert(msg);
     });
   }

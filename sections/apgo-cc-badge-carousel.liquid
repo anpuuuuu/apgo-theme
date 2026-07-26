@@ -16,6 +16,7 @@
 -%}
 
 {%- if shown > 0 -%}
+  <script src="{{ 'apgo-campaign-tracking.js' | asset_url }}" defer></script>
   <section
     class="apgo-cc-badge"
     data-apgo-cc-badge
@@ -41,7 +42,17 @@
           >
         {%- endcapture -%}
         {%- if block.settings.link != blank -%}
-          <a class="apgo-cc-badge__slide" href="{{ block.settings.link }}" data-badge-slide {{ block.shopify_attributes }}>{{ img }}</a>
+          <a
+            class="apgo-cc-badge__slide"
+            href="{{ block.settings.link }}"
+            data-badge-slide
+            {% if block.settings.link contains 'golden-bull-award' %}
+              data-apgo-homepage-campaign-link
+              data-campaign-placement="homepage_badge_carousel"
+              data-slide-position="{{ forloop.index }}"
+            {% endif %}
+            {{ block.shopify_attributes }}
+          >{{ img }}</a>
         {%- else -%}
           <div class="apgo-cc-badge__slide" data-badge-slide {{ block.shopify_attributes }}>{{ img }}</div>
         {%- endif -%}

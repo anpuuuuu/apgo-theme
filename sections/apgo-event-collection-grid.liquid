@@ -9,6 +9,7 @@
 
 {{ 'apgo-event-page.css' | asset_url | stylesheet_tag }}
 <script src="{{ 'apgo-event-cart.js' | asset_url }}" defer></script>
+<script src="{{ 'apgo-campaign-tracking.js' | asset_url }}" defer></script>
 
 {% liquid
   assign event_grid_id = section.settings.anchor_id | handleize
@@ -19,6 +20,10 @@
 
 <div
   id="{{ event_grid_id }}"
+  data-apgo-campaign-root
+  data-campaign-id="golden_bull_award"
+  data-market="{{ localization.country.iso_code }}"
+  data-currency="{{ cart.currency.iso_code }}"
   class="
     apgo-event-collection-grid section section--full-width
     {% if section.settings.overlap_enabled %}apgo-event-collection-grid--overlap{% endif %}
@@ -120,6 +125,7 @@
           card_blocks: discount_card_blocks,
           products: section.settings.discount_zone_products,
           zone_class: 'discount',
+          zone_position: 1,
           hide_compare_at: section.settings.discount_zone_hide_compare_at,
           show_scroll_cue: section.settings.show_product_scroll_cue,
           section_id: section.id %}
@@ -136,7 +142,8 @@
           banner_image: section.settings.aurora_zone_banner,
           product: section.settings.aurora_zone_product,
           variant_id: section.settings.aurora_zone_variant_id,
-          zone_class: 'aurora' %}
+          zone_class: 'aurora',
+          zone_position: 2 %}
       {%- endif -%}
 
       {%- comment -%} ZONE 3 — Buy 1 Free 1 horizontal scroll {%- endcomment -%}
@@ -147,6 +154,7 @@
           card_blocks: b1f1_card_blocks,
           products: section.settings.b1f1_zone_products,
           zone_class: 'b1f1',
+          zone_position: 3,
           hide_compare_at: section.settings.b1f1_zone_hide_compare_at,
           show_scroll_cue: section.settings.show_product_scroll_cue,
           section_id: section.id %}
