@@ -517,6 +517,7 @@
   }
 
   .apgo-aurora-mini-counter {
+    position: relative;
     display: grid;
     grid-template-columns: auto auto minmax(72px, 1fr);
     align-items: center;
@@ -524,6 +525,7 @@
     width: min(100%, 360px);
     margin: 0 auto 12px;
     padding: 8px 10px;
+    overflow: hidden;
     border: 1px solid rgba(244, 212, 130, 0.5);
     border-radius: 10px;
     background:
@@ -533,6 +535,28 @@
       inset 0 1px 0 rgba(255, 255, 255, 0.05),
       0 0 16px rgba(227, 179, 77, 0.08);
     color: #fffdf2;
+  }
+
+  .apgo-aurora-mini-counter::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    transform: translateX(-145%);
+    background: linear-gradient(
+      110deg,
+      transparent 35%,
+      rgba(255, 248, 220, 0.03) 44%,
+      rgba(255, 248, 220, 0.25) 50%,
+      rgba(255, 248, 220, 0.03) 56%,
+      transparent 65%
+    );
+    animation: apgoAuroraMiniCounterSweep 3.6s ease-in-out infinite;
+  }
+
+  .apgo-aurora-mini-counter > * {
+    position: relative;
+    z-index: 1;
   }
 
   .apgo-aurora-mini-counter__pulse {
@@ -550,7 +574,8 @@
     letter-spacing: -0.025em;
     line-height: 1;
     color: #fffdf2;
-    text-shadow: 0 0 12px rgba(244, 212, 130, 0.25);
+    text-shadow: 0 0 12px rgba(255, 249, 221, 0.65);
+    animation: apgoAuroraMiniCounterGlow 2.8s ease-in-out infinite;
   }
 
   .apgo-aurora-mini-counter__label {
@@ -583,6 +608,17 @@
     transition: width 0.5s ease;
   }
 
+  .apgo-aurora-mini-counter__promo-note {
+    grid-column: 1 / -1;
+    margin: -1px 0 0;
+    color: rgba(255, 252, 237, 0.62);
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    line-height: 1.2;
+    text-align: left;
+  }
+
   .apgo-aurora-mini-counter.is-low {
     border-color: rgba(255, 225, 140, 0.82);
     box-shadow:
@@ -599,8 +635,32 @@
     }
   }
 
+  @keyframes apgoAuroraMiniCounterSweep {
+    0%, 50% {
+      transform: translateX(-145%);
+    }
+    78%, 100% {
+      transform: translateX(145%);
+    }
+  }
+
+  @keyframes apgoAuroraMiniCounterGlow {
+    0%, 55%, 100% {
+      color: #fffdf2;
+      text-shadow: 0 0 10px rgba(255, 249, 221, 0.45);
+    }
+    72% {
+      color: #ffffff;
+      text-shadow:
+        0 0 8px rgba(255, 255, 255, 0.9),
+        0 0 22px rgba(244, 212, 130, 0.75);
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .apgo-aurora-mini-counter__pulse {
+    .apgo-aurora-mini-counter::after,
+    .apgo-aurora-mini-counter__pulse,
+    .apgo-aurora-mini-counter__number {
       animation: none;
     }
 
@@ -4194,18 +4254,6 @@
         {% endif %}
       </div>
 
-      {% if section.settings.show_aurora_campaign_counter
-        and section.settings.aurora_counter_product != blank
-        and product.id == section.settings.aurora_counter_product.id
-      %}
-        {% render 'apgo-aurora-stock-counter',
-          total: section.settings.aurora_counter_total,
-          starting_remaining: section.settings.aurora_counter_start_remaining,
-          flow_baseline: section.settings.aurora_counter_flow_baseline,
-          mode: 'compact'
-        %}
-      {% endif %}
-
       {%- comment -%}
         ============================================================
         Car Care inline price / promo / variant / qty / shipping / CTA
@@ -4229,6 +4277,18 @@
         block (display:contents-equivalent), no styles applied.
       {%- endcomment -%}
       <div class="apgo-cc-pdp__buy-col">
+
+      {% if section.settings.show_aurora_campaign_counter
+        and section.settings.aurora_counter_product != blank
+        and product.id == section.settings.aurora_counter_product.id
+      %}
+        {% render 'apgo-aurora-stock-counter',
+          total: section.settings.aurora_counter_total,
+          starting_remaining: section.settings.aurora_counter_start_remaining,
+          flow_baseline: section.settings.aurora_counter_flow_baseline,
+          mode: 'compact'
+        %}
+      {% endif %}
 
       {%- comment -%}
         Price card — boxed style with orange left border on sale; plain large on regular.
