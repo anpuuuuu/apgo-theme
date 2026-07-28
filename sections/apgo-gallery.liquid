@@ -201,6 +201,28 @@
     margin-inline: auto;
   }
 
+  body.apgo-golden-bull-page .apgo-gallery {
+    width: 100%;
+    margin-inline: auto;
+    background: var(--apgo-event-panel-bg-gradient, var(--apgo-gallery-background, #050505));
+    border: 1px solid rgba(242, 227, 179, 0.46);
+    border-radius: 16px;
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 252, 237, 0.09),
+      0 18px 44px rgba(0, 0, 0, 0.42);
+  }
+
+  body.apgo-golden-bull-page .apgo-gallery__inner {
+    width: 100%;
+  }
+
+  @media (min-width: 750px) {
+    body.apgo-golden-bull-page .apgo-gallery {
+      width: var(--apgo-event-content-desktop-width, 67%);
+      padding-inline: clamp(16px, 2.2vw, 30px);
+    }
+  }
+
   .apgo-gallery__heading {
     margin: 0 0 20px;
     color: #ffffff;
