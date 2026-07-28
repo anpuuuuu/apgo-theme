@@ -290,18 +290,18 @@
             "caption": ""
           }
         },
-        "portrait_TeY3L8": {
-          "type": "portrait",
-          "settings": {
-            "image": "shopify://shop_images/DSC08412.jpg",
-            "alt_text": "",
-            "caption": ""
-          }
-        },
         "portrait_LWnKVT": {
           "type": "portrait",
           "settings": {
             "image": "shopify://shop_images/IMG_4531.heic",
+            "alt_text": "",
+            "caption": ""
+          }
+        },
+        "portrait_TeY3L8": {
+          "type": "portrait",
+          "settings": {
+            "image": "shopify://shop_images/DSC08412.jpg",
             "alt_text": "",
             "caption": ""
           }
@@ -314,10 +314,18 @@
             "caption": ""
           }
         },
-        "landscape_8a4Re7": {
+        "landscape_cqPBxG": {
           "type": "landscape",
           "settings": {
-            "image": "shopify://shop_images/0fa92906-3c2c-4475-ad68-ebe42529e041.png",
+            "image": "shopify://shop_images/photo_2026-07-28_17-41-52.jpg",
+            "alt_text": "",
+            "caption": ""
+          }
+        },
+        "landscape_LayQ4g": {
+          "type": "landscape",
+          "settings": {
+            "image": "shopify://shop_images/photo_2026-07-28_17-41-53.jpg",
             "alt_text": "",
             "caption": ""
           }
@@ -326,6 +334,22 @@
           "type": "landscape",
           "settings": {
             "image": "shopify://shop_images/CKS08712.jpg",
+            "alt_text": "",
+            "caption": ""
+          }
+        },
+        "landscape_8a4Re7": {
+          "type": "landscape",
+          "settings": {
+            "image": "shopify://shop_images/0fa92906-3c2c-4475-ad68-ebe42529e041.png",
+            "alt_text": "",
+            "caption": ""
+          }
+        },
+        "landscape_QXFLPe": {
+          "type": "landscape",
+          "settings": {
+            "image": "shopify://shop_images/IMG_4545.heic",
             "alt_text": "",
             "caption": ""
           }
@@ -345,21 +369,6 @@
             "alt_text": "",
             "caption": ""
           }
-        },
-        "landscape_QXFLPe": {
-          "type": "landscape",
-          "settings": {
-            "image": "shopify://shop_images/IMG_4545.heic",
-            "alt_text": "",
-            "caption": ""
-          }
-        },
-        "landscape_cqPBxG": {
-          "type": "landscape",
-          "settings": {
-            "alt_text": "",
-            "caption": ""
-          }
         }
       },
       "block_order": [
@@ -367,15 +376,16 @@
         "portrait_BKtgCQ",
         "portrait_g9DPNj",
         "portrait_bRw6yw",
-        "portrait_TeY3L8",
         "portrait_LWnKVT",
+        "portrait_TeY3L8",
         "landscape_G38Czn",
-        "landscape_8a4Re7",
+        "landscape_cqPBxG",
+        "landscape_LayQ4g",
         "landscape_pdzLRX",
-        "landscape_YXCe9w",
-        "landscape_b7pQXn",
+        "landscape_8a4Re7",
         "landscape_QXFLPe",
-        "landscape_cqPBxG"
+        "landscape_YXCe9w",
+        "landscape_b7pQXn"
       ],
       "name": "Gallery",
       "settings": {
