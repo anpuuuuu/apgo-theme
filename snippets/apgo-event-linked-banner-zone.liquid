@@ -18,6 +18,14 @@
   {% liquid
     assign action_variant = product.selected_or_first_available_variant
     assign requested_variant_id = variant_id | default: '' | strip | plus: 0
+    assign apgo_counter_visible = show_counter
+    assign apgo_counter_start_remaining = counter_start_remaining
+    assign apgo_counter_flow_baseline = counter_flow_baseline
+    if template.suffix == 'golden-bull-award'
+      assign apgo_counter_visible = true
+      assign apgo_counter_start_remaining = 262
+      assign apgo_counter_flow_baseline = 23
+    endif
     if requested_variant_id != 0
       for candidate_variant in product.variants
         if candidate_variant.id == requested_variant_id
@@ -50,11 +58,11 @@
       <p class="apgo-event-linked-banner-zone__message">{{ message | escape }}</p>
     {% endif %}
 
-    {% if show_counter %}
+    {% if apgo_counter_visible %}
       {% render 'apgo-aurora-stock-counter',
         total: counter_total,
-        starting_remaining: counter_start_remaining,
-        flow_baseline: counter_flow_baseline
+        starting_remaining: apgo_counter_start_remaining,
+        flow_baseline: apgo_counter_flow_baseline
       %}
     {% endif %}
 
