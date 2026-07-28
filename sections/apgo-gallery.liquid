@@ -33,7 +33,11 @@
   >
     <div class="apgo-gallery__inner">
       {%- if section.settings.heading != blank -%}
-        <h2 class="apgo-gallery__heading">{{ section.settings.heading | escape }}</h2>
+        <h2 class="apgo-gallery__heading">
+          <span class="apgo-gallery__heading-star" aria-hidden="true">★</span>
+          <span>{{ section.settings.heading | escape }}</span>
+          <span class="apgo-gallery__heading-star" aria-hidden="true">★</span>
+        </h2>
       {%- endif -%}
 
       <figure
@@ -64,7 +68,11 @@
       {%- if portrait_count > 0 -%}
         <div class="apgo-gallery__region apgo-gallery__region--portrait">
           {%- if section.settings.portrait_heading != blank -%}
-            <h3 class="apgo-gallery__region-heading">{{ section.settings.portrait_heading | escape }}</h3>
+            <h3 class="apgo-gallery__region-heading">
+              <span class="apgo-gallery__heading-star" aria-hidden="true">★</span>
+              <span>{{ section.settings.portrait_heading | escape }}</span>
+              <span class="apgo-gallery__heading-star" aria-hidden="true">★</span>
+            </h3>
           {%- endif -%}
           <div class="apgo-gallery__rail-shell" data-apgo-gallery-rail-shell>
             <div class="apgo-gallery__rail" data-apgo-gallery-rail>
@@ -123,7 +131,11 @@
       {%- if landscape_count > 0 -%}
         <div class="apgo-gallery__region apgo-gallery__region--landscape">
           {%- if section.settings.landscape_heading != blank -%}
-            <h3 class="apgo-gallery__region-heading">{{ section.settings.landscape_heading | escape }}</h3>
+            <h3 class="apgo-gallery__region-heading">
+              <span class="apgo-gallery__heading-star" aria-hidden="true">★</span>
+              <span>{{ section.settings.landscape_heading | escape }}</span>
+              <span class="apgo-gallery__heading-star" aria-hidden="true">★</span>
+            </h3>
           {%- endif -%}
           <div class="apgo-gallery__rail-shell" data-apgo-gallery-rail-shell>
             <div class="apgo-gallery__rail" data-apgo-gallery-rail>
@@ -212,6 +224,38 @@
       0 18px 44px rgba(0, 0, 0, 0.42);
   }
 
+  body.apgo-golden-bull-page
+    .shopify-section.apgo-event-collection-grid-wrapper:has(+ .shopify-section.apgo-gallery-section)
+    .apgo-event-collection-grid__panel {
+    border-bottom-color: transparent !important;
+    border-bottom-right-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+    box-shadow: inset 0 0 0 1px rgba(255, 252, 237, 0.09);
+  }
+
+  body.apgo-golden-bull-page
+    .shopify-section.apgo-event-collection-grid-wrapper:has(+ .shopify-section.apgo-gallery-section)
+    .apgo-event-collection-grid__panel-body {
+    padding-bottom: clamp(16px, 2.5vw, 26px) !important;
+  }
+
+  body.apgo-golden-bull-page
+    .shopify-section.apgo-event-collection-grid-wrapper
+    + .shopify-section.apgo-gallery-section {
+    margin-top: 0 !important;
+  }
+
+  body.apgo-golden-bull-page
+    .shopify-section.apgo-event-collection-grid-wrapper
+    + .shopify-section.apgo-gallery-section
+    .apgo-gallery {
+    margin-top: -1px;
+    padding-top: clamp(20px, 3vw, 32px);
+    border-top: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+
   body.apgo-golden-bull-page .apgo-gallery__inner {
     width: 100%;
   }
@@ -230,6 +274,64 @@
     font-weight: 800;
     line-height: 1.1;
     text-align: center;
+  }
+
+  .apgo-gallery__heading-star {
+    display: none;
+  }
+
+  body.apgo-golden-bull-page .apgo-gallery__heading,
+  body.apgo-golden-bull-page .apgo-gallery__region-heading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6em;
+    color: var(--apgo-award-gold-core, #e3b34d);
+    background: var(
+      --apgo-event-heading-gradient,
+      linear-gradient(90deg, #d8bf7a, #fffced 48%, #e3b34d)
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: clamp(15px, 2.5vw, 23px);
+    font-weight: 800;
+    line-height: 1.25;
+    letter-spacing: 0.14em;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  body.apgo-golden-bull-page .apgo-gallery__heading {
+    margin-bottom: clamp(14px, 2.5vw, 22px);
+  }
+
+  body.apgo-golden-bull-page .apgo-gallery__region-heading {
+    margin-bottom: clamp(14px, 2.5vw, 22px);
+  }
+
+  body.apgo-golden-bull-page .apgo-gallery__heading::before,
+  body.apgo-golden-bull-page .apgo-gallery__heading::after,
+  body.apgo-golden-bull-page .apgo-gallery__region-heading::before,
+  body.apgo-golden-bull-page .apgo-gallery__region-heading::after {
+    content: '';
+    flex: 0 1 76px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(242, 227, 179, 0.8));
+  }
+
+  body.apgo-golden-bull-page .apgo-gallery__heading::after,
+  body.apgo-golden-bull-page .apgo-gallery__region-heading::after {
+    transform: scaleX(-1);
+  }
+
+  body.apgo-golden-bull-page .apgo-gallery__heading-star {
+    display: inline;
+    flex: 0 0 auto;
+    color: var(--apgo-award-gold-core, #e3b34d);
+    font-size: 0.85em;
+    -webkit-text-fill-color: var(--apgo-award-gold-core, #e3b34d);
+    filter: drop-shadow(0 0 6px rgba(242, 227, 179, 0.48));
   }
 
   .apgo-gallery__viewer {
@@ -411,9 +513,33 @@
       padding-inline: 10px;
     }
 
+    body.apgo-golden-bull-page
+      .shopify-section.apgo-event-collection-grid-wrapper
+      + .shopify-section.apgo-gallery-section
+      .apgo-gallery {
+      padding-top: 20px;
+    }
+
     .apgo-gallery__heading {
       margin-bottom: 14px;
       font-size: clamp(22px, 8vw, 32px);
+    }
+
+    body.apgo-golden-bull-page .apgo-gallery__heading,
+    body.apgo-golden-bull-page .apgo-gallery__region-heading {
+      width: 100%;
+      gap: 0.32em;
+      font-size: clamp(13px, 3.6vw, 14px);
+      letter-spacing: 0.075em;
+      white-space: nowrap;
+    }
+
+    body.apgo-golden-bull-page .apgo-gallery__heading::before,
+    body.apgo-golden-bull-page .apgo-gallery__heading::after,
+    body.apgo-golden-bull-page .apgo-gallery__region-heading::before,
+    body.apgo-golden-bull-page .apgo-gallery__region-heading::after {
+      flex: 1 1 12px;
+      min-width: 8px;
     }
 
     .apgo-gallery__viewer-caption {
