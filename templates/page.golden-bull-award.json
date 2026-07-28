@@ -266,6 +266,14 @@
             "caption": ""
           }
         },
+        "portrait_BKtgCQ": {
+          "type": "portrait",
+          "settings": {
+            "image": "shopify://shop_images/SAN09436.jpg",
+            "alt_text": "",
+            "caption": ""
+          }
+        },
         "portrait_g9DPNj": {
           "type": "portrait",
           "settings": {
@@ -290,26 +298,18 @@
             "caption": ""
           }
         },
-        "portrait_BKtgCQ": {
+        "portrait_LWnKVT": {
           "type": "portrait",
           "settings": {
-            "image": "shopify://shop_images/SAN09436.jpg",
+            "image": "shopify://shop_images/IMG_4531.heic",
             "alt_text": "",
             "caption": ""
           }
         },
-        "landscape_b7pQXn": {
+        "landscape_G38Czn": {
           "type": "landscape",
           "settings": {
-            "image": "shopify://shop_images/DSC08416.jpg",
-            "alt_text": "",
-            "caption": ""
-          }
-        },
-        "landscape_YXCe9w": {
-          "type": "landscape",
-          "settings": {
-            "image": "shopify://shop_images/DSC08408.jpg",
+            "image": "shopify://shop_images/GB4A1311.jpg",
             "alt_text": "",
             "caption": ""
           }
@@ -322,6 +322,30 @@
             "caption": ""
           }
         },
+        "landscape_pdzLRX": {
+          "type": "landscape",
+          "settings": {
+            "image": "shopify://shop_images/CKS08712.jpg",
+            "alt_text": "",
+            "caption": ""
+          }
+        },
+        "landscape_YXCe9w": {
+          "type": "landscape",
+          "settings": {
+            "image": "shopify://shop_images/DSC08408.jpg",
+            "alt_text": "",
+            "caption": ""
+          }
+        },
+        "landscape_b7pQXn": {
+          "type": "landscape",
+          "settings": {
+            "image": "shopify://shop_images/DSC08416.jpg",
+            "alt_text": "",
+            "caption": ""
+          }
+        },
         "landscape_QXFLPe": {
           "type": "landscape",
           "settings": {
@@ -330,10 +354,9 @@
             "caption": ""
           }
         },
-        "landscape_G38Czn": {
+        "landscape_cqPBxG": {
           "type": "landscape",
           "settings": {
-            "image": "shopify://shop_images/GB4A1311.jpg",
             "alt_text": "",
             "caption": ""
           }
@@ -341,15 +364,18 @@
       },
       "block_order": [
         "portrait_PmFb47",
+        "portrait_BKtgCQ",
         "portrait_g9DPNj",
         "portrait_bRw6yw",
         "portrait_TeY3L8",
-        "portrait_BKtgCQ",
-        "landscape_b7pQXn",
-        "landscape_YXCe9w",
+        "portrait_LWnKVT",
+        "landscape_G38Czn",
         "landscape_8a4Re7",
+        "landscape_pdzLRX",
+        "landscape_YXCe9w",
+        "landscape_b7pQXn",
         "landscape_QXFLPe",
-        "landscape_G38Czn"
+        "landscape_cqPBxG"
       ],
       "name": "Gallery",
       "settings": {
