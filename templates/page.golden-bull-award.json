@@ -255,6 +255,87 @@
         "padding-block-end": 0
       }
     },
+    "apgo_gallery_TYBKmf": {
+      "type": "apgo-gallery",
+      "blocks": {
+        "portrait_PmFb47": {
+          "type": "portrait",
+          "settings": {
+            "image": "shopify://shop_images/IMG_4802.heic",
+            "alt_text": "111",
+            "caption": ""
+          }
+        },
+        "portrait_g9DPNj": {
+          "type": "portrait",
+          "settings": {
+            "image": "shopify://shop_images/IMG_4497.heic",
+            "alt_text": "",
+            "caption": ""
+          }
+        },
+        "portrait_bRw6yw": {
+          "type": "portrait",
+          "settings": {
+            "image": "shopify://shop_images/IMG_4491.heic",
+            "alt_text": "",
+            "caption": ""
+          }
+        },
+        "portrait_TeY3L8": {
+          "type": "portrait",
+          "settings": {
+            "image": "shopify://shop_images/DSC08412.jpg",
+            "alt_text": "",
+            "caption": ""
+          }
+        },
+        "landscape_8a4Re7": {
+          "type": "landscape",
+          "settings": {
+            "image": "shopify://shop_images/0fa92906-3c2c-4475-ad68-ebe42529e041.png",
+            "alt_text": "",
+            "caption": ""
+          }
+        },
+        "landscape_G38Czn": {
+          "type": "landscape",
+          "settings": {
+            "image": "shopify://shop_images/GB4A1311.jpg",
+            "alt_text": "",
+            "caption": ""
+          }
+        }
+      },
+      "block_order": [
+        "portrait_PmFb47",
+        "portrait_g9DPNj",
+        "portrait_bRw6yw",
+        "portrait_TeY3L8",
+        "landscape_8a4Re7",
+        "landscape_G38Czn"
+      ],
+      "name": "Gallery",
+      "settings": {
+        "heading": "Gallery",
+        "main_image": "shopify://shop_images/DSC08860.jpg",
+        "main_alt": "",
+        "main_caption": "",
+        "portrait_heading": "Portrait Gallery",
+        "landscape_heading": "Landscape Gallery",
+        "viewer_ratio": "16 / 9",
+        "show_main_arrows": true,
+        "show_counter": true,
+        "show_rail_arrows": true,
+        "max_width": 1200,
+        "radius": 12,
+        "background_color": "#050505",
+        "frame_color": "#3d4148",
+        "accent_color": "#e3b34d",
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
     "apgo_event_banner_jBTfGT": {
       "type": "apgo-event-banner",
       "name": "APGO Event Banner",
@@ -272,6 +353,7 @@
     "apgo_event_banner_jRgaPP",
     "apgo_event_banner_wxUJYc",
     "apgo_event_collection_grid_n3e6dm",
+    "apgo_gallery_TYBKmf",
     "apgo_event_banner_jBTfGT"
   ]
 }
