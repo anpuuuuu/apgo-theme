@@ -1,20 +1,32 @@
 {%- liquid
-  assign gallery_count = 0
+  assign portrait_count = 0
+  assign landscape_count = 0
+
   for block in section.blocks
-    if block.type == 'image' and block.settings.image != blank
-      assign gallery_count = gallery_count | plus: 1
+    if block.settings.image != blank
+      if block.type == 'portrait'
+        assign portrait_count = portrait_count | plus: 1
+      elsif block.type == 'landscape'
+        assign landscape_count = landscape_count | plus: 1
+      endif
     endif
   endfor
+
+  assign gallery_count = portrait_count | plus: landscape_count
+  if section.settings.main_image != blank
+    assign gallery_count = gallery_count | plus: 1
+  endif
 -%}
 
-{%- if gallery_count > 0 -%}
+{%- if section.settings.main_image != blank -%}
+  {%- assign main_alt = section.settings.main_alt | default: section.settings.main_image.alt | default: section.settings.heading -%}
   <section
     id="ApgoGallery-{{ section.id }}"
     class="apgo-gallery"
     data-apgo-gallery
     style="
       --apgo-gallery-max-width: {{ section.settings.max_width }}px;
-      --apgo-gallery-ratio: {{ section.settings.aspect_ratio }};
+      --apgo-gallery-ratio: {{ section.settings.viewer_ratio }};
       --apgo-gallery-background: {{ section.settings.background_color }};
       --apgo-gallery-frame: {{ section.settings.frame_color }};
       --apgo-gallery-accent: {{ section.settings.accent_color }};
@@ -28,55 +40,39 @@
         <h2 class="apgo-gallery__heading">{{ section.settings.heading | escape }}</h2>
       {%- endif -%}
 
-      <div class="apgo-gallery__viewer">
-        <div
-          class="apgo-gallery__track"
-          data-apgo-gallery-track
-          tabindex="0"
-          aria-label="{{ section.settings.heading | default: 'Gallery' | escape }}"
-        >
-          {%- assign gallery_index = 0 -%}
-          {%- for block in section.blocks -%}
-            {%- if block.type == 'image' and block.settings.image != blank -%}
-              {%- assign gallery_position = gallery_index | plus: 1 -%}
-              {%- assign image_loading = 'lazy' -%}
-              {%- assign image_priority = 'auto' -%}
-              {%- if gallery_index == 0 -%}
-                {%- assign image_loading = 'eager' -%}
-                {%- assign image_priority = 'high' -%}
-              {%- endif -%}
-              {%- assign image_alt = block.settings.alt_text | default: block.settings.image.alt | default: section.settings.heading -%}
-              <figure
-                class="apgo-gallery__slide"
-                data-apgo-gallery-slide="{{ gallery_index }}"
-                data-gallery-block-id="{{ block.id }}"
-                aria-label="{{ 'accessibility.slide_status' | t: index: gallery_position, length: gallery_count }}"
-                {{ block.shopify_attributes }}
-              >
-                {{
-                  block.settings.image
-                  | image_url: width: 2400
-                  | image_tag:
-                    class: 'apgo-gallery__image',
-                    loading: image_loading,
-                    fetchpriority: image_priority,
-                    widths: '480, 720, 960, 1200, 1600, 2000, 2400',
-                    sizes: '(min-width: 1200px) 1160px, calc(100vw - 32px)',
-                    alt: image_alt
-                }}
-                {%- if block.settings.caption != blank -%}
-                  <figcaption class="apgo-gallery__caption">{{ block.settings.caption | escape }}</figcaption>
-                {%- endif -%}
-              </figure>
-              {%- assign gallery_index = gallery_index | plus: 1 -%}
-            {%- endif -%}
-          {%- endfor -%}
-        </div>
+      <figure
+        class="apgo-gallery__viewer"
+        data-apgo-gallery-source
+        data-gallery-index="0"
+        data-gallery-src="{{ section.settings.main_image | image_url: width: 2400 }}"
+        data-gallery-alt="{{ main_alt | escape }}"
+        data-gallery-caption="{{ section.settings.main_caption | escape }}"
+        tabindex="0"
+        aria-label="{{ section.settings.heading | default: 'Gallery' | escape }}"
+      >
+        {{
+          section.settings.main_image
+          | image_url: width: 2400
+          | image_tag:
+            class: 'apgo-gallery__viewer-image',
+            loading: 'eager',
+            fetchpriority: 'high',
+            widths: '480, 720, 960, 1200, 1600, 2000, 2400',
+            sizes: '(min-width: 1200px) 1160px, calc(100vw - 32px)',
+            alt: main_alt
+        }}
 
-        {%- if gallery_count > 1 and section.settings.show_arrows -%}
+        <figcaption
+          class="apgo-gallery__viewer-caption{% if section.settings.main_caption == blank %} is-hidden{% endif %}"
+          data-apgo-gallery-viewer-caption
+        >
+          {{ section.settings.main_caption | escape }}
+        </figcaption>
+
+        {%- if gallery_count > 1 and section.settings.show_main_arrows -%}
           <button
             type="button"
-            class="apgo-gallery__arrow apgo-gallery__arrow--previous"
+            class="apgo-gallery__viewer-arrow apgo-gallery__viewer-arrow--previous"
             data-apgo-gallery-previous
             aria-label="{{ 'accessibility.slideshow_previous' | t }}"
             disabled
@@ -87,7 +83,7 @@
           </button>
           <button
             type="button"
-            class="apgo-gallery__arrow apgo-gallery__arrow--next"
+            class="apgo-gallery__viewer-arrow apgo-gallery__viewer-arrow--next"
             data-apgo-gallery-next
             aria-label="{{ 'accessibility.slideshow_next' | t }}"
           >
@@ -98,43 +94,153 @@
         {%- endif -%}
 
         {%- if gallery_count > 1 and section.settings.show_counter -%}
-          <div class="apgo-gallery__counter" data-apgo-gallery-counter aria-live="polite">
+          <div class="apgo-gallery__counter" aria-live="polite">
             <span data-apgo-gallery-current>1</span>
             <span aria-hidden="true">/</span>
             <span>{{ gallery_count }}</span>
           </div>
         {%- endif -%}
-      </div>
+      </figure>
 
-      {%- if gallery_count > 1 -%}
-        <div class="apgo-gallery__thumbnails" data-apgo-gallery-thumbnails>
-          {%- assign thumbnail_index = 0 -%}
-          {%- for block in section.blocks -%}
-            {%- if block.type == 'image' and block.settings.image != blank -%}
-              {%- assign thumbnail_position = thumbnail_index | plus: 1 -%}
-              {%- assign thumbnail_alt = block.settings.alt_text | default: block.settings.image.alt | default: section.settings.heading -%}
+      {%- assign media_index = 1 -%}
+
+      {%- if portrait_count > 0 -%}
+        <div class="apgo-gallery__region apgo-gallery__region--portrait">
+          {%- if section.settings.portrait_heading != blank -%}
+            <h3 class="apgo-gallery__region-heading">{{ section.settings.portrait_heading | escape }}</h3>
+          {%- endif -%}
+          <div class="apgo-gallery__rail-shell" data-apgo-gallery-rail-shell>
+            <div class="apgo-gallery__rail" data-apgo-gallery-rail>
+              {%- for block in section.blocks -%}
+                {%- if block.type == 'portrait' and block.settings.image != blank -%}
+                  {%- assign portrait_alt = block.settings.alt_text | default: block.settings.image.alt | default: section.settings.portrait_heading -%}
+                  {%- assign portrait_position = media_index | plus: 1 -%}
+                  <button
+                    type="button"
+                    class="apgo-gallery__card apgo-gallery__card--portrait"
+                    data-apgo-gallery-source
+                    data-apgo-gallery-card
+                    data-gallery-index="{{ media_index }}"
+                    data-gallery-block-id="{{ block.id }}"
+                    data-gallery-src="{{ block.settings.image | image_url: width: 2400 }}"
+                    data-gallery-alt="{{ portrait_alt | escape }}"
+                    data-gallery-caption="{{ block.settings.caption | escape }}"
+                    aria-label="{{ 'accessibility.slide_status' | t: index: portrait_position, length: gallery_count }}"
+                    aria-current="false"
+                    {{ block.shopify_attributes }}
+                  >
+                    {{
+                      block.settings.image
+                      | image_url: width: 600
+                      | image_tag:
+                        class: 'apgo-gallery__card-image',
+                        loading: 'lazy',
+                        widths: '180, 260, 360, 480, 600',
+                        sizes: '(max-width: 749px) 38vw, 180px',
+                        alt: portrait_alt
+                    }}
+                    {%- if block.settings.caption != blank -%}
+                      <span class="apgo-gallery__card-caption">{{ block.settings.caption | escape }}</span>
+                    {%- endif -%}
+                  </button>
+                  {%- assign media_index = media_index | plus: 1 -%}
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+            {%- if portrait_count > 1 and section.settings.show_rail_arrows -%}
               <button
                 type="button"
-                class="apgo-gallery__thumbnail{% if thumbnail_index == 0 %} is-active{% endif %}"
-                data-apgo-gallery-thumbnail="{{ thumbnail_index }}"
-                data-gallery-block-id="{{ block.id }}"
-                aria-label="{{ 'accessibility.slide_status' | t: index: thumbnail_position, length: gallery_count }}"
-                aria-current="{% if thumbnail_index == 0 %}true{% else %}false{% endif %}"
+                class="apgo-gallery__rail-arrow apgo-gallery__rail-arrow--previous"
+                data-apgo-gallery-rail-previous
+                aria-label="{{ 'accessibility.slideshow_previous' | t }}"
+                disabled
               >
-                {{
-                  block.settings.image
-                  | image_url: width: 320
-                  | image_tag:
-                    class: 'apgo-gallery__thumbnail-image',
-                    loading: 'lazy',
-                    widths: '120, 180, 240, 320',
-                    sizes: '(max-width: 749px) 26vw, 140px',
-                    alt: thumbnail_alt
-                }}
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m15 18-6-6 6-6"></path>
+                </svg>
               </button>
-              {%- assign thumbnail_index = thumbnail_index | plus: 1 -%}
+              <button
+                type="button"
+                class="apgo-gallery__rail-arrow apgo-gallery__rail-arrow--next"
+                data-apgo-gallery-rail-next
+                aria-label="{{ 'accessibility.slideshow_next' | t }}"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg>
+              </button>
             {%- endif -%}
-          {%- endfor -%}
+          </div>
+        </div>
+      {%- endif -%}
+
+      {%- if landscape_count > 0 -%}
+        <div class="apgo-gallery__region apgo-gallery__region--landscape">
+          {%- if section.settings.landscape_heading != blank -%}
+            <h3 class="apgo-gallery__region-heading">{{ section.settings.landscape_heading | escape }}</h3>
+          {%- endif -%}
+          <div class="apgo-gallery__rail-shell" data-apgo-gallery-rail-shell>
+            <div class="apgo-gallery__rail" data-apgo-gallery-rail>
+              {%- for block in section.blocks -%}
+                {%- if block.type == 'landscape' and block.settings.image != blank -%}
+                  {%- assign landscape_alt = block.settings.alt_text | default: block.settings.image.alt | default: section.settings.landscape_heading -%}
+                  {%- assign landscape_position = media_index | plus: 1 -%}
+                  <button
+                    type="button"
+                    class="apgo-gallery__card apgo-gallery__card--landscape"
+                    data-apgo-gallery-source
+                    data-apgo-gallery-card
+                    data-gallery-index="{{ media_index }}"
+                    data-gallery-block-id="{{ block.id }}"
+                    data-gallery-src="{{ block.settings.image | image_url: width: 2400 }}"
+                    data-gallery-alt="{{ landscape_alt | escape }}"
+                    data-gallery-caption="{{ block.settings.caption | escape }}"
+                    aria-label="{{ 'accessibility.slide_status' | t: index: landscape_position, length: gallery_count }}"
+                    aria-current="false"
+                    {{ block.shopify_attributes }}
+                  >
+                    {{
+                      block.settings.image
+                      | image_url: width: 1000
+                      | image_tag:
+                        class: 'apgo-gallery__card-image',
+                        loading: 'lazy',
+                        widths: '320, 480, 640, 800, 1000',
+                        sizes: '(max-width: 749px) 76vw, 340px',
+                        alt: landscape_alt
+                    }}
+                    {%- if block.settings.caption != blank -%}
+                      <span class="apgo-gallery__card-caption">{{ block.settings.caption | escape }}</span>
+                    {%- endif -%}
+                  </button>
+                  {%- assign media_index = media_index | plus: 1 -%}
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+            {%- if landscape_count > 1 and section.settings.show_rail_arrows -%}
+              <button
+                type="button"
+                class="apgo-gallery__rail-arrow apgo-gallery__rail-arrow--previous"
+                data-apgo-gallery-rail-previous
+                aria-label="{{ 'accessibility.slideshow_previous' | t }}"
+                disabled
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m15 18-6-6 6-6"></path>
+                </svg>
+              </button>
+              <button
+                type="button"
+                class="apgo-gallery__rail-arrow apgo-gallery__rail-arrow--next"
+                data-apgo-gallery-rail-next
+                aria-label="{{ 'accessibility.slideshow_next' | t }}"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg>
+              </button>
+            {%- endif -%}
+          </div>
         </div>
       {%- endif -%}
     </div>
@@ -171,51 +277,24 @@
 
   .apgo-gallery__viewer {
     position: relative;
+    display: grid;
+    width: 100%;
+    margin: 0;
     overflow: hidden;
     aspect-ratio: var(--apgo-gallery-ratio, 16 / 9);
+    place-items: center;
     border: 1px solid var(--apgo-gallery-frame, #3d4148);
     border-radius: var(--apgo-gallery-radius, 12px);
     background: #000000;
     box-shadow: 0 18px 48px rgba(0, 0, 0, 0.34);
   }
 
-  .apgo-gallery__track {
-    display: flex;
-    width: 100%;
-    height: 100%;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scroll-behavior: smooth;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
-    overscroll-behavior-x: contain;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .apgo-gallery__track::-webkit-scrollbar,
-  .apgo-gallery__thumbnails::-webkit-scrollbar {
-    display: none;
-  }
-
-  .apgo-gallery__track:focus-visible {
+  .apgo-gallery__viewer:focus-visible {
     outline: 2px solid var(--apgo-gallery-accent, #e3b34d);
-    outline-offset: -3px;
+    outline-offset: 3px;
   }
 
-  .apgo-gallery__slide {
-    position: relative;
-    display: grid;
-    flex: 0 0 100%;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    place-items: center;
-    scroll-snap-align: center;
-    scroll-snap-stop: always;
-    background: #000000;
-  }
-
-  .apgo-gallery__image {
+  .apgo-gallery__viewer-image {
     display: block;
     width: 100%;
     height: 100%;
@@ -225,61 +304,77 @@
     -webkit-user-drag: none;
   }
 
-  .apgo-gallery__caption {
+  .apgo-gallery__viewer-caption {
     position: absolute;
     inset: auto 0 0;
-    padding: 32px 18px 14px;
-    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+    z-index: 1;
+    padding: 44px 64px 16px;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.82));
     color: #ffffff;
     font-size: 14px;
     line-height: 1.4;
     text-align: center;
   }
 
-  .apgo-gallery__arrow {
-    position: absolute;
-    top: 50%;
-    z-index: 2;
+  .apgo-gallery__viewer-caption.is-hidden {
+    display: none;
+  }
+
+  .apgo-gallery__viewer-arrow,
+  .apgo-gallery__rail-arrow {
     display: grid;
-    width: 48px;
-    height: 48px;
     padding: 0;
-    transform: translateY(-50%);
     place-items: center;
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.52);
     border-radius: 50%;
-    background: rgba(0, 0, 0, 0.72);
+    background: rgba(0, 0, 0, 0.78);
     color: #ffffff;
     box-shadow: 0 6px 22px rgba(0, 0, 0, 0.34);
     cursor: pointer;
-    transition: opacity 180ms ease, background 180ms ease, transform 180ms ease;
+    transition: opacity 180ms ease, background 180ms ease, color 180ms ease, transform 180ms ease;
   }
 
-  .apgo-gallery__arrow:hover:not(:disabled) {
+  .apgo-gallery__viewer-arrow {
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    width: 50px;
+    height: 50px;
+    transform: translateY(-50%);
+  }
+
+  .apgo-gallery__viewer-arrow--previous {
+    left: 16px;
+  }
+
+  .apgo-gallery__viewer-arrow--next {
+    right: 16px;
+  }
+
+  .apgo-gallery__viewer-arrow:hover:not(:disabled),
+  .apgo-gallery__rail-arrow:hover:not(:disabled) {
     background: var(--apgo-gallery-accent, #e3b34d);
     color: #050505;
+  }
+
+  .apgo-gallery__viewer-arrow:hover:not(:disabled) {
     transform: translateY(-50%) scale(1.04);
   }
 
-  .apgo-gallery__arrow:focus-visible {
+  .apgo-gallery__viewer-arrow:focus-visible,
+  .apgo-gallery__rail-arrow:focus-visible {
     outline: 2px solid #ffffff;
     outline-offset: 3px;
   }
 
-  .apgo-gallery__arrow:disabled {
+  .apgo-gallery__viewer-arrow:disabled,
+  .apgo-gallery__rail-arrow:disabled {
     opacity: 0.24;
     cursor: default;
   }
 
-  .apgo-gallery__arrow--previous {
-    left: 16px;
-  }
-
-  .apgo-gallery__arrow--next {
-    right: 16px;
-  }
-
-  .apgo-gallery__arrow svg {
+  .apgo-gallery__viewer-arrow svg,
+  .apgo-gallery__rail-arrow svg {
     width: 24px;
     height: 24px;
     fill: none;
@@ -299,66 +394,121 @@
     padding: 6px 10px;
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 999px;
-    background: rgba(0, 0, 0, 0.72);
+    background: rgba(0, 0, 0, 0.76);
     color: #ffffff;
     font-size: 12px;
     font-weight: 700;
     line-height: 1;
   }
 
-  .apgo-gallery__thumbnails {
-    display: grid;
-    grid-auto-columns: clamp(104px, 14vw, 150px);
-    grid-auto-flow: column;
-    gap: 10px;
-    margin-top: 12px;
-    padding: 2px 2px 8px;
+  .apgo-gallery__region {
+    margin-top: clamp(24px, 4vw, 44px);
+  }
+
+  .apgo-gallery__region-heading {
+    margin: 0 0 12px;
+    color: #ffffff;
+    font-size: clamp(17px, 2vw, 24px);
+    font-weight: 750;
+    line-height: 1.2;
+  }
+
+  .apgo-gallery__rail-shell {
+    position: relative;
+  }
+
+  .apgo-gallery__rail {
+    display: flex;
+    gap: 12px;
+    padding: 2px 2px 9px;
     overflow-x: auto;
+    overflow-y: hidden;
     scroll-behavior: smooth;
     scroll-snap-type: x proximity;
-    scrollbar-width: none;
+    scrollbar-color: rgba(227, 179, 77, 0.62) rgba(255, 255, 255, 0.08);
+    scrollbar-width: thin;
     overscroll-behavior-x: contain;
     -webkit-overflow-scrolling: touch;
   }
 
-  .apgo-gallery__thumbnail {
+  .apgo-gallery__card {
+    position: relative;
     display: block;
-    width: 100%;
+    flex-shrink: 0;
     padding: 0;
     overflow: hidden;
-    aspect-ratio: 4 / 3;
     scroll-snap-align: start;
     border: 2px solid transparent;
-    border-radius: max(6px, calc(var(--apgo-gallery-radius, 12px) - 4px));
+    border-radius: max(6px, calc(var(--apgo-gallery-radius, 12px) - 3px));
     background: #000000;
-    opacity: 0.58;
+    opacity: 0.78;
     cursor: pointer;
     transition: border-color 180ms ease, opacity 180ms ease, transform 180ms ease;
   }
 
-  .apgo-gallery__thumbnail:hover,
-  .apgo-gallery__thumbnail.is-active {
+  .apgo-gallery__card--portrait {
+    flex-basis: clamp(142px, 16vw, 188px);
+    aspect-ratio: 3 / 4;
+  }
+
+  .apgo-gallery__card--landscape {
+    flex-basis: clamp(260px, 30vw, 360px);
+    aspect-ratio: 16 / 9;
+  }
+
+  .apgo-gallery__card:hover,
+  .apgo-gallery__card.is-active {
     border-color: var(--apgo-gallery-accent, #e3b34d);
     opacity: 1;
   }
 
-  .apgo-gallery__thumbnail:hover {
+  .apgo-gallery__card:hover {
     transform: translateY(-2px);
   }
 
-  .apgo-gallery__thumbnail:focus-visible {
+  .apgo-gallery__card:focus-visible {
     outline: 2px solid #ffffff;
     outline-offset: 2px;
   }
 
-  .apgo-gallery__thumbnail-image {
+  .apgo-gallery__card-image {
     display: block;
     width: 100%;
     height: 100%;
     object-fit: contain;
+    object-position: center;
     background: #000000;
     user-select: none;
     -webkit-user-drag: none;
+  }
+
+  .apgo-gallery__card-caption {
+    position: absolute;
+    inset: auto 0 0;
+    padding: 24px 10px 8px;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.82));
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 650;
+    line-height: 1.3;
+    text-align: left;
+  }
+
+  .apgo-gallery__rail-arrow {
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    width: 46px;
+    height: 46px;
+    transform: translateY(-56%);
+  }
+
+  .apgo-gallery__rail-arrow--previous {
+    left: 10px;
+  }
+
+  .apgo-gallery__rail-arrow--next {
+    right: 10px;
   }
 
   @media (max-width: 749px) {
@@ -371,38 +521,69 @@
       font-size: clamp(22px, 8vw, 32px);
     }
 
-    .apgo-gallery__arrow {
+    .apgo-gallery__viewer-arrow {
       width: 42px;
       height: 42px;
     }
 
-    .apgo-gallery__arrow--previous {
+    .apgo-gallery__viewer-arrow--previous {
       left: 8px;
     }
 
-    .apgo-gallery__arrow--next {
+    .apgo-gallery__viewer-arrow--next {
       right: 8px;
     }
 
-    .apgo-gallery__thumbnails {
-      grid-auto-columns: clamp(80px, 26vw, 108px);
+    .apgo-gallery__viewer-caption {
+      padding: 30px 52px 10px;
+      font-size: 12px;
+    }
+
+    .apgo-gallery__region {
+      margin-top: 24px;
+    }
+
+    .apgo-gallery__region-heading {
+      margin-bottom: 9px;
+      font-size: 17px;
+    }
+
+    .apgo-gallery__rail {
       gap: 8px;
     }
 
-    .apgo-gallery__caption {
-      padding: 26px 12px 10px;
-      font-size: 12px;
+    .apgo-gallery__card--portrait {
+      flex-basis: 38vw;
+      max-width: 164px;
+    }
+
+    .apgo-gallery__card--landscape {
+      flex-basis: 76vw;
+      max-width: 330px;
+    }
+
+    .apgo-gallery__rail-arrow {
+      width: 42px;
+      height: 42px;
+    }
+
+    .apgo-gallery__rail-arrow--previous {
+      left: 6px;
+    }
+
+    .apgo-gallery__rail-arrow--next {
+      right: 6px;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .apgo-gallery__track,
-    .apgo-gallery__thumbnails {
+    .apgo-gallery__rail {
       scroll-behavior: auto;
     }
 
-    .apgo-gallery__arrow,
-    .apgo-gallery__thumbnail {
+    .apgo-gallery__viewer-arrow,
+    .apgo-gallery__rail-arrow,
+    .apgo-gallery__card {
       transition: none;
     }
   }
@@ -413,86 +594,118 @@
     const initializeGallery = (root) => {
       if (!root || root.dataset.apgoGalleryReady === 'true') return;
 
-      const track = root.querySelector('[data-apgo-gallery-track]');
-      const slides = Array.from(root.querySelectorAll('[data-apgo-gallery-slide]'));
-      const thumbnails = Array.from(root.querySelectorAll('[data-apgo-gallery-thumbnail]'));
+      const viewer = root.querySelector('.apgo-gallery__viewer');
+      const viewerImage = root.querySelector('.apgo-gallery__viewer-image');
+      const viewerCaption = root.querySelector('[data-apgo-gallery-viewer-caption]');
+      const sources = Array.from(root.querySelectorAll('[data-apgo-gallery-source]'));
+      const cards = Array.from(root.querySelectorAll('[data-apgo-gallery-card]'));
       const previousButton = root.querySelector('[data-apgo-gallery-previous]');
       const nextButton = root.querySelector('[data-apgo-gallery-next]');
       const currentLabel = root.querySelector('[data-apgo-gallery-current]');
 
-      if (!track || slides.length === 0) return;
+      if (!viewer || !viewerImage || sources.length === 0) return;
 
       root.dataset.apgoGalleryReady = 'true';
       let currentIndex = 0;
-      let frame = 0;
+      let touchStartX = 0;
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-      const updateInterface = (index) => {
-        currentIndex = Math.max(0, Math.min(index, slides.length - 1));
+      const showMedia = (index) => {
+        const nextIndex = Math.max(0, Math.min(index, sources.length - 1));
+        const source = sources[nextIndex];
+        if (!source) return;
 
-        thumbnails.forEach((thumbnail, thumbnailIndex) => {
-          const isCurrent = thumbnailIndex === currentIndex;
-          thumbnail.classList.toggle('is-active', isCurrent);
-          thumbnail.setAttribute('aria-current', isCurrent ? 'true' : 'false');
+        currentIndex = nextIndex;
+        viewerImage.removeAttribute('srcset');
+        viewerImage.removeAttribute('sizes');
+        viewerImage.src = source.dataset.gallerySrc;
+        viewerImage.alt = source.dataset.galleryAlt || '';
+
+        const caption = source.dataset.galleryCaption || '';
+        if (viewerCaption) {
+          viewerCaption.textContent = caption;
+          viewerCaption.classList.toggle('is-hidden', caption.length === 0);
+        }
+
+        cards.forEach((card) => {
+          const isActive = Number(card.dataset.galleryIndex) === currentIndex;
+          card.classList.toggle('is-active', isActive);
+          card.setAttribute('aria-current', isActive ? 'true' : 'false');
         });
 
         if (previousButton) previousButton.disabled = currentIndex === 0;
-        if (nextButton) nextButton.disabled = currentIndex === slides.length - 1;
+        if (nextButton) nextButton.disabled = currentIndex === sources.length - 1;
         if (currentLabel) currentLabel.textContent = String(currentIndex + 1);
-      };
 
-      const goTo = (index, focusThumbnail = false) => {
-        const nextIndex = Math.max(0, Math.min(index, slides.length - 1));
-        track.scrollTo({
-          left: nextIndex * track.clientWidth,
-          behavior: reduceMotion ? 'auto' : 'smooth'
-        });
-        updateInterface(nextIndex);
-
-        const thumbnail = thumbnails[nextIndex];
-        if (thumbnail) {
-          thumbnail.scrollIntoView({
-            behavior: reduceMotion ? 'auto' : 'smooth',
-            block: 'nearest',
-            inline: 'nearest'
-          });
-          if (focusThumbnail) thumbnail.focus({ preventScroll: true });
+        const activeCard = cards.find((card) => Number(card.dataset.galleryIndex) === currentIndex);
+        if (activeCard) {
+          const rail = activeCard.closest('[data-apgo-gallery-rail]');
+          if (rail) {
+            const targetLeft = activeCard.offsetLeft - rail.offsetLeft - 12;
+            rail.scrollTo({ left: targetLeft, behavior: reduceMotion ? 'auto' : 'smooth' });
+          }
         }
       };
 
-      const syncFromScroll = () => {
-        frame = 0;
-        if (track.clientWidth === 0) return;
-        updateInterface(Math.round(track.scrollLeft / track.clientWidth));
-      };
+      cards.forEach((card) => {
+        card.addEventListener('click', () => showMedia(Number(card.dataset.galleryIndex)));
+      });
 
-      track.addEventListener('scroll', () => {
-        if (!frame) frame = window.requestAnimationFrame(syncFromScroll);
-      }, { passive: true });
+      if (previousButton) previousButton.addEventListener('click', () => showMedia(currentIndex - 1));
+      if (nextButton) nextButton.addEventListener('click', () => showMedia(currentIndex + 1));
 
-      track.addEventListener('keydown', (event) => {
+      viewer.addEventListener('keydown', (event) => {
         if (event.key === 'ArrowLeft') {
           event.preventDefault();
-          goTo(currentIndex - 1);
+          showMedia(currentIndex - 1);
         }
         if (event.key === 'ArrowRight') {
           event.preventDefault();
-          goTo(currentIndex + 1);
+          showMedia(currentIndex + 1);
         }
       });
 
-      thumbnails.forEach((thumbnail, index) => {
-        thumbnail.addEventListener('click', () => goTo(index));
+      viewer.addEventListener('touchstart', (event) => {
+        touchStartX = event.changedTouches[0].clientX;
+      }, { passive: true });
+
+      viewer.addEventListener('touchend', (event) => {
+        const distance = event.changedTouches[0].clientX - touchStartX;
+        if (Math.abs(distance) < 45) return;
+        showMedia(distance > 0 ? currentIndex - 1 : currentIndex + 1);
+      }, { passive: true });
+
+      root.querySelectorAll('[data-apgo-gallery-rail-shell]').forEach((shell) => {
+        const rail = shell.querySelector('[data-apgo-gallery-rail]');
+        const railPrevious = shell.querySelector('[data-apgo-gallery-rail-previous]');
+        const railNext = shell.querySelector('[data-apgo-gallery-rail-next]');
+        if (!rail) return;
+
+        let frame = 0;
+        const updateRailButtons = () => {
+          frame = 0;
+          const maxScroll = Math.max(0, rail.scrollWidth - rail.clientWidth);
+          if (railPrevious) railPrevious.disabled = rail.scrollLeft <= 2;
+          if (railNext) railNext.disabled = rail.scrollLeft >= maxScroll - 2;
+        };
+
+        const scrollRail = (direction) => {
+          rail.scrollBy({
+            left: direction * rail.clientWidth * 0.82,
+            behavior: reduceMotion ? 'auto' : 'smooth'
+          });
+        };
+
+        rail.addEventListener('scroll', () => {
+          if (!frame) frame = window.requestAnimationFrame(updateRailButtons);
+        }, { passive: true });
+
+        if (railPrevious) railPrevious.addEventListener('click', () => scrollRail(-1));
+        if (railNext) railNext.addEventListener('click', () => scrollRail(1));
+        updateRailButtons();
       });
 
-      if (previousButton) previousButton.addEventListener('click', () => goTo(currentIndex - 1));
-      if (nextButton) nextButton.addEventListener('click', () => goTo(currentIndex + 1));
-
-      window.addEventListener('resize', () => {
-        track.scrollTo({ left: currentIndex * track.clientWidth, behavior: 'auto' });
-      });
-
-      updateInterface(0);
+      showMedia(0);
     };
 
     const initializeAllGalleries = (scope = document) => {
@@ -512,8 +725,8 @@
     document.addEventListener('shopify:block:select', (event) => {
       const root = event.target.closest('[data-apgo-gallery]');
       if (!root) return;
-      const thumbnail = root.querySelector(`[data-apgo-gallery-thumbnail][data-gallery-block-id="${event.detail.blockId}"]`);
-      if (thumbnail) thumbnail.click();
+      const card = root.querySelector(`[data-apgo-gallery-card][data-gallery-block-id="${event.detail.blockId}"]`);
+      if (card) card.click();
     });
   })();
 {% endjavascript %}
@@ -527,13 +740,40 @@
     {
       "type": "text",
       "id": "heading",
-      "label": "Heading",
+      "label": "Gallery heading",
       "default": "Gallery"
     },
     {
+      "type": "image_picker",
+      "id": "main_image",
+      "label": "Main landscape image"
+    },
+    {
+      "type": "text",
+      "id": "main_alt",
+      "label": "Main image alt text"
+    },
+    {
+      "type": "text",
+      "id": "main_caption",
+      "label": "Main image caption"
+    },
+    {
+      "type": "text",
+      "id": "portrait_heading",
+      "label": "Portrait section heading",
+      "default": "Portrait Gallery"
+    },
+    {
+      "type": "text",
+      "id": "landscape_heading",
+      "label": "Landscape section heading",
+      "default": "Landscape Gallery"
+    },
+    {
       "type": "select",
-      "id": "aspect_ratio",
-      "label": "Viewer aspect ratio",
+      "id": "viewer_ratio",
+      "label": "Main viewer aspect ratio",
       "options": [
         {
           "value": "16 / 9",
@@ -552,14 +792,20 @@
     },
     {
       "type": "checkbox",
-      "id": "show_arrows",
-      "label": "Show navigation arrows",
+      "id": "show_main_arrows",
+      "label": "Show arrows on main viewer",
       "default": true
     },
     {
       "type": "checkbox",
       "id": "show_counter",
       "label": "Show image counter",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rail_arrows",
+      "label": "Show arrows on photo rows",
       "default": true
     },
     {
@@ -591,13 +837,13 @@
     {
       "type": "color",
       "id": "frame_color",
-      "label": "Viewer border",
+      "label": "Image border",
       "default": "#3d4148"
     },
     {
       "type": "color",
       "id": "accent_color",
-      "label": "Active thumbnail and button color",
+      "label": "Active image and arrow color",
       "default": "#e3b34d"
     },
     {
@@ -623,13 +869,34 @@
   ],
   "blocks": [
     {
-      "type": "image",
-      "name": "Image",
+      "type": "portrait",
+      "name": "Portrait photo",
       "settings": [
         {
           "type": "image_picker",
           "id": "image",
-          "label": "Image"
+          "label": "Portrait image"
+        },
+        {
+          "type": "text",
+          "id": "alt_text",
+          "label": "Alt text"
+        },
+        {
+          "type": "text",
+          "id": "caption",
+          "label": "Caption"
+        }
+      ]
+    },
+    {
+      "type": "landscape",
+      "name": "Landscape photo",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Landscape image"
         },
         {
           "type": "text",
@@ -650,13 +917,19 @@
       "name": "Gallery",
       "blocks": [
         {
-          "type": "image"
+          "type": "portrait"
         },
         {
-          "type": "image"
+          "type": "portrait"
         },
         {
-          "type": "image"
+          "type": "portrait"
+        },
+        {
+          "type": "landscape"
+        },
+        {
+          "type": "landscape"
         }
       ]
     }
