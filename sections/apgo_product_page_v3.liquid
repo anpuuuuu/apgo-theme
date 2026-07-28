@@ -516,6 +516,99 @@
     color: var(--text-gray);
   }
 
+  .apgo-aurora-mini-counter {
+    display: grid;
+    grid-template-columns: auto auto minmax(72px, 1fr);
+    align-items: center;
+    gap: 7px;
+    width: min(100%, 360px);
+    margin: 0 auto 12px;
+    padding: 8px 10px;
+    border: 1px solid rgba(244, 212, 130, 0.5);
+    border-radius: 10px;
+    background:
+      linear-gradient(115deg, rgba(7, 18, 28, 0.98), rgba(3, 9, 15, 0.98)),
+      var(--dark-bg);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.05),
+      0 0 16px rgba(227, 179, 77, 0.08);
+    color: #fffdf2;
+  }
+
+  .apgo-aurora-mini-counter__pulse {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #f4d482;
+    box-shadow: 0 0 0 0 rgba(244, 212, 130, 0.5);
+    animation: apgoAuroraMiniCounterPulse 2.4s ease-out infinite;
+  }
+
+  .apgo-aurora-mini-counter__number {
+    font-size: 1.25rem;
+    font-weight: 900;
+    letter-spacing: -0.025em;
+    line-height: 1;
+    color: #fffdf2;
+    text-shadow: 0 0 12px rgba(244, 212, 130, 0.25);
+  }
+
+  .apgo-aurora-mini-counter__label {
+    min-width: 0;
+    color: #f4d482;
+    font-size: 0.6875rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    line-height: 1.15;
+    text-align: left;
+    text-transform: uppercase;
+  }
+
+  .apgo-aurora-mini-counter__track {
+    grid-column: 1 / -1;
+    display: block;
+    height: 3px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.11);
+  }
+
+  .apgo-aurora-mini-counter__fill {
+    display: block;
+    width: var(--apgo-stock-progress);
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #b98a2d, #fff1bd);
+    box-shadow: 0 0 8px rgba(244, 212, 130, 0.4);
+    transition: width 0.5s ease;
+  }
+
+  .apgo-aurora-mini-counter.is-low {
+    border-color: rgba(255, 225, 140, 0.82);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.07),
+      0 0 20px rgba(227, 179, 77, 0.15);
+  }
+
+  @keyframes apgoAuroraMiniCounterPulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(244, 212, 130, 0.5);
+    }
+    70%, 100% {
+      box-shadow: 0 0 0 7px rgba(244, 212, 130, 0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .apgo-aurora-mini-counter__pulse {
+      animation: none;
+    }
+
+    .apgo-aurora-mini-counter__fill {
+      transition: none;
+    }
+  }
+
   /* 性能指標展示 */
   .apgo-performance-metrics {
     background: var(--card-bg);
@@ -4101,6 +4194,18 @@
         {% endif %}
       </div>
 
+      {% if section.settings.show_aurora_campaign_counter
+        and section.settings.aurora_counter_product != blank
+        and product.id == section.settings.aurora_counter_product.id
+      %}
+        {% render 'apgo-aurora-stock-counter',
+          total: section.settings.aurora_counter_total,
+          starting_remaining: section.settings.aurora_counter_start_remaining,
+          flow_baseline: section.settings.aurora_counter_flow_baseline,
+          mode: 'compact'
+        %}
+      {% endif %}
+
       {%- comment -%}
         ============================================================
         Car Care inline price / promo / variant / qty / shipping / CTA
@@ -6928,6 +7033,42 @@ document.addEventListener('DOMContentLoaded', function() {
       "label": "顯示產品次圖（縮圖列）",
       "info": "關閉後主圖下方的縮圖列將不會顯示。",
       "default": true
+    },
+    {
+      "type": "header",
+      "content": "Aurora campaign counter"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_aurora_campaign_counter",
+      "label": "Show compact Aurora counter",
+      "default": false
+    },
+    {
+      "type": "product",
+      "id": "aurora_counter_product",
+      "label": "Aurora campaign product",
+      "info": "The compact counter only appears on this product page."
+    },
+    {
+      "type": "text",
+      "id": "aurora_counter_total",
+      "label": "Total campaign sets",
+      "default": "500"
+    },
+    {
+      "type": "text",
+      "id": "aurora_counter_start_remaining",
+      "label": "Starting sets remaining",
+      "info": "The number shown when Flow is switched back on.",
+      "default": "500"
+    },
+    {
+      "type": "text",
+      "id": "aurora_counter_flow_baseline",
+      "label": "Flow paid-set baseline",
+      "info": "Enter the current apgo_campaign.aurora_paid_sets value when Flow is switched back on.",
+      "default": "0"
     },
     {
       "type": "header",

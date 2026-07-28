@@ -1,0 +1,104 @@
+{% doc %}
+  Renders the Aurora campaign counter from the paid-order shop metafield.
+
+  @param {number} total - Total campaign allocation.
+  @param {number} starting_remaining - Remaining sets shown when Flow resumes.
+  @param {number} flow_baseline - Metafield value at the moment Flow resumes.
+  @param {string} [mode] - Use "compact" on the Aurora product page.
+{% enddoc %}
+
+{% liquid
+  assign campaign_total = total | plus: 0
+  if campaign_total < 1
+    assign campaign_total = 500
+  endif
+
+  if starting_remaining == blank
+    assign campaign_starting_remaining = campaign_total
+  else
+    assign campaign_starting_remaining = starting_remaining | plus: 0 | at_least: 0 | at_most: campaign_total
+  endif
+
+  assign campaign_flow_baseline = flow_baseline | plus: 0 | at_least: 0
+  assign paid_sets_metafield = shop.metafields.apgo_campaign.aurora_paid_sets
+  if paid_sets_metafield != blank
+    assign campaign_flow_paid_sets = paid_sets_metafield.value | plus: 0 | at_least: 0
+  else
+    assign campaign_flow_paid_sets = campaign_flow_baseline
+  endif
+
+  assign campaign_new_paid_sets = campaign_flow_paid_sets | minus: campaign_flow_baseline | at_least: 0
+  assign campaign_remaining = campaign_starting_remaining | minus: campaign_new_paid_sets | at_least: 0 | at_most: campaign_total
+  assign campaign_claimed = campaign_total | minus: campaign_remaining
+  assign campaign_progress = campaign_remaining | times: 100.0 | divided_by: campaign_total
+  assign low_stock_threshold = campaign_total | times: 0.25
+%}
+
+{% if mode == 'compact' %}
+  <aside
+    class="apgo-aurora-mini-counter{% if campaign_remaining <= low_stock_threshold %} is-low{% endif %}"
+    data-aurora-stock-counter
+    data-total="{{ campaign_total }}"
+    data-claimed="{{ campaign_claimed }}"
+    data-remaining="{{ campaign_remaining }}"
+    aria-label="{{ 'apgo_event.aurora_counter.progress_label' | t: remaining: campaign_remaining, total: campaign_total }}"
+  >
+    <span class="apgo-aurora-mini-counter__pulse" aria-hidden="true"></span>
+    <strong class="apgo-aurora-mini-counter__number" data-aurora-stock-number>{{ campaign_remaining }}</strong>
+    <span class="apgo-aurora-mini-counter__label">
+      {% if campaign_remaining > 0 %}
+        {{ 'apgo_event.aurora_counter.sets_remaining' | t }}
+      {% else %}
+        {{ 'apgo_event.aurora_counter.milestone_reached' | t: total: campaign_total }}
+      {% endif %}
+    </span>
+    <span class="apgo-aurora-mini-counter__track" aria-hidden="true">
+      <span
+        class="apgo-aurora-mini-counter__fill"
+        style="--apgo-stock-progress: {{ campaign_progress }}%;"
+      ></span>
+    </span>
+  </aside>
+{% else %}
+  <div
+    class="apgo-event-stock-counter{% if campaign_remaining <= low_stock_threshold %} is-low{% endif %}"
+    data-aurora-stock-counter
+    data-total="{{ campaign_total }}"
+    data-claimed="{{ campaign_claimed }}"
+    data-remaining="{{ campaign_remaining }}"
+  >
+    <div class="apgo-event-stock-counter__number-row">
+      <span
+        class="apgo-event-stock-counter__number"
+        data-aurora-stock-number
+      >{{ campaign_remaining }}</span>
+      <span class="apgo-event-stock-counter__label">
+        {% if campaign_remaining > 0 %}
+          {{ 'apgo_event.aurora_counter.sets_remaining' | t }}
+        {% else %}
+          {{ 'apgo_event.aurora_counter.milestone_reached' | t: total: campaign_total }}
+        {% endif %}
+      </span>
+    </div>
+    <div
+      class="apgo-event-stock-counter__progress"
+      role="progressbar"
+      aria-label="{{ 'apgo_event.aurora_counter.progress_label' | t: remaining: campaign_remaining, total: campaign_total }}"
+      aria-valuemin="0"
+      aria-valuemax="{{ campaign_total }}"
+      aria-valuenow="{{ campaign_remaining }}"
+    >
+      <span
+        class="apgo-event-stock-counter__progress-fill"
+        style="--apgo-stock-progress: {{ campaign_progress }}%;"
+      ></span>
+    </div>
+    <div class="apgo-event-stock-counter__meta">
+      <span>{{ 'apgo_event.aurora_counter.limited_release' | t }}</span>
+      <span>{{ 'apgo_event.aurora_counter.while_stocks_last' | t }}</span>
+    </div>
+  </div>
+  <p class="apgo-event-stock-counter__notice">
+    {{ 'apgo_event.aurora_counter.stock_update_notice' | t }}
+  </p>
+{% endif %}
