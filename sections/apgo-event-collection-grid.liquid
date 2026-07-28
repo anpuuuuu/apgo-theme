@@ -119,10 +119,12 @@
       {%- assign apgo_show_aurora_counter = section.settings.show_aurora_counter -%}
       {%- assign apgo_aurora_counter_start_remaining = section.settings.aurora_counter_start_remaining -%}
       {%- assign apgo_aurora_counter_flow_baseline = section.settings.aurora_counter_claimed -%}
+      {%- assign apgo_aurora_counter_catchup_sets = 0 -%}
       {%- if template.suffix == 'golden-bull-award' -%}
         {%- assign apgo_show_aurora_counter = true -%}
         {%- assign apgo_aurora_counter_start_remaining = 262 -%}
-        {%- assign apgo_aurora_counter_flow_baseline = 9 -%}
+        {%- assign apgo_aurora_counter_flow_baseline = 0 -%}
+        {%- assign apgo_aurora_counter_catchup_sets = 5 -%}
       {%- endif -%}
 
       {%- comment -%} ZONE 1 — Discount horizontal scroll {%- endcomment -%}
@@ -148,6 +150,7 @@
           counter_total: section.settings.aurora_counter_total,
           counter_start_remaining: apgo_aurora_counter_start_remaining,
           counter_flow_baseline: apgo_aurora_counter_flow_baseline,
+          counter_catchup_sets: apgo_aurora_counter_catchup_sets,
           banner_image: section.settings.aurora_zone_banner,
           product: section.settings.aurora_zone_product,
           variant_id: section.settings.aurora_zone_variant_id,

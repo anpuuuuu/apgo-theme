@@ -249,11 +249,20 @@
     .shopify-section.apgo-event-collection-grid-wrapper
     + .shopify-section.apgo-gallery-section
     .apgo-gallery {
-    margin-top: -1px;
-    padding-top: clamp(20px, 3vw, 32px);
-    border-top: 0;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
+      margin-top: -1px;
+      padding-top: clamp(20px, 3vw, 32px);
+      background:
+        linear-gradient(
+          180deg,
+          #020509 0,
+          rgba(2, 5, 9, 0.94) 18px,
+          rgba(7, 16, 25, 0.62) 72px,
+          transparent 132px
+        ),
+        var(--apgo-event-panel-bg-gradient, var(--apgo-gallery-background, #050505));
+      border-top: 0;
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
   }
 
   body.apgo-golden-bull-page .apgo-gallery__inner {
