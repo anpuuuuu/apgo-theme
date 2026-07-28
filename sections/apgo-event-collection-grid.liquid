@@ -116,6 +116,14 @@
       {%- if localization.country.iso_code == 'SG' and section.settings.discount_zone_banner_sg != blank -%}
         {%- assign discount_zone_banner = section.settings.discount_zone_banner_sg -%}
       {%- endif -%}
+      {%- assign apgo_show_aurora_counter = section.settings.show_aurora_counter -%}
+      {%- assign apgo_aurora_counter_start_remaining = section.settings.aurora_counter_start_remaining -%}
+      {%- assign apgo_aurora_counter_flow_baseline = section.settings.aurora_counter_claimed -%}
+      {%- if template.suffix == 'golden-bull-award' and apgo_show_aurora_counter == false -%}
+        {%- assign apgo_show_aurora_counter = true -%}
+        {%- assign apgo_aurora_counter_start_remaining = 262 -%}
+        {%- assign apgo_aurora_counter_flow_baseline = 23 -%}
+      {%- endif -%}
 
       {%- comment -%} ZONE 1 — Discount horizontal scroll {%- endcomment -%}
       {%- if section.settings.show_discount_zone -%}
@@ -136,10 +144,10 @@
         {% render 'apgo-event-linked-banner-zone',
           heading: section.settings.aurora_zone_heading,
           message: section.settings.aurora_zone_message,
-          show_counter: section.settings.show_aurora_counter,
+          show_counter: apgo_show_aurora_counter,
           counter_total: section.settings.aurora_counter_total,
-          counter_start_remaining: section.settings.aurora_counter_start_remaining,
-          counter_flow_baseline: section.settings.aurora_counter_claimed,
+          counter_start_remaining: apgo_aurora_counter_start_remaining,
+          counter_flow_baseline: apgo_aurora_counter_flow_baseline,
           banner_image: section.settings.aurora_zone_banner,
           product: section.settings.aurora_zone_product,
           variant_id: section.settings.aurora_zone_variant_id,
