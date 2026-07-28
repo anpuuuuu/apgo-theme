@@ -276,18 +276,21 @@
     display: grid;
     padding: 0;
     place-items: center;
-    border: 1px solid rgba(255, 255, 255, 0.52);
+    border: 1px solid rgba(242, 227, 179, 0.42);
     border-radius: 50%;
-    background: rgba(0, 0, 0, 0.78);
-    color: #ffffff;
-    box-shadow: 0 6px 22px rgba(0, 0, 0, 0.34);
+    background: rgba(3, 8, 13, 0.54);
+    color: rgba(255, 252, 237, 0.92);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.24);
+    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(7px);
     cursor: pointer;
-    transition: opacity 180ms ease, background 180ms ease, color 180ms ease, transform 180ms ease;
+    transition: opacity 180ms ease, background 180ms ease, border-color 180ms ease, color 180ms ease;
   }
 
   .apgo-gallery__rail-arrow:hover:not(:disabled) {
-    background: var(--apgo-gallery-accent, #e3b34d);
-    color: #050505;
+    border-color: rgba(255, 252, 237, 0.72);
+    background: rgba(216, 191, 122, 0.68);
+    color: #020509;
   }
 
   .apgo-gallery__rail-arrow:focus-visible {
@@ -296,13 +299,13 @@
   }
 
   .apgo-gallery__rail-arrow:disabled {
-    opacity: 0.24;
+    opacity: 0.16;
     cursor: default;
   }
 
   .apgo-gallery__rail-arrow svg {
-    width: 24px;
-    height: 24px;
+    width: 19px;
+    height: 19px;
     fill: none;
     stroke: currentColor;
     stroke-linecap: round;
@@ -390,17 +393,17 @@
     position: absolute;
     top: 50%;
     z-index: 2;
-    width: 46px;
-    height: 46px;
-    transform: translateY(-56%);
+    width: 38px;
+    height: 38px;
+    transform: translateY(-50%);
   }
 
   .apgo-gallery__rail-arrow--previous {
-    left: 10px;
+    left: 5px;
   }
 
   .apgo-gallery__rail-arrow--next {
-    right: 10px;
+    right: 5px;
   }
 
   @media (max-width: 749px) {
@@ -429,6 +432,24 @@
 
     .apgo-gallery__rail {
       gap: 8px;
+    }
+
+    .apgo-gallery__rail-arrow {
+      width: 34px;
+      height: 34px;
+    }
+
+    .apgo-gallery__rail-arrow svg {
+      width: 17px;
+      height: 17px;
+    }
+
+    .apgo-gallery__rail-arrow--previous {
+      left: 3px;
+    }
+
+    .apgo-gallery__rail-arrow--next {
+      right: 3px;
     }
 
     .apgo-gallery__card--portrait {
