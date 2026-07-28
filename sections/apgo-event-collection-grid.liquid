@@ -119,7 +119,7 @@
       {%- assign apgo_show_aurora_counter = section.settings.show_aurora_counter -%}
       {%- assign apgo_aurora_counter_start_remaining = section.settings.aurora_counter_start_remaining -%}
       {%- assign apgo_aurora_counter_flow_baseline = section.settings.aurora_counter_claimed -%}
-      {%- if template.suffix == 'golden-bull-award' and apgo_show_aurora_counter == false -%}
+      {%- if template.suffix == 'golden-bull-award' -%}
         {%- assign apgo_show_aurora_counter = true -%}
         {%- assign apgo_aurora_counter_start_remaining = 262 -%}
         {%- assign apgo_aurora_counter_flow_baseline = 23 -%}
