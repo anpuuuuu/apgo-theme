@@ -12,10 +12,6 @@
     endif
   endfor
 
-  assign gallery_count = portrait_count | plus: landscape_count
-  if section.settings.main_image != blank
-    assign gallery_count = gallery_count | plus: 1
-  endif
 -%}
 
 {%- if section.settings.main_image != blank -%}
@@ -42,12 +38,6 @@
 
       <figure
         class="apgo-gallery__viewer"
-        data-apgo-gallery-source
-        data-gallery-index="0"
-        data-gallery-src="{{ section.settings.main_image | image_url: width: 2400 }}"
-        data-gallery-alt="{{ main_alt | escape }}"
-        data-gallery-caption="{{ section.settings.main_caption | escape }}"
-        tabindex="0"
         aria-label="{{ section.settings.heading | default: 'Gallery' | escape }}"
       >
         {{
@@ -69,40 +59,7 @@
           {{ section.settings.main_caption | escape }}
         </figcaption>
 
-        {%- if gallery_count > 1 and section.settings.show_main_arrows -%}
-          <button
-            type="button"
-            class="apgo-gallery__viewer-arrow apgo-gallery__viewer-arrow--previous"
-            data-apgo-gallery-previous
-            aria-label="{{ 'accessibility.slideshow_previous' | t }}"
-            disabled
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="m15 18-6-6 6-6"></path>
-            </svg>
-          </button>
-          <button
-            type="button"
-            class="apgo-gallery__viewer-arrow apgo-gallery__viewer-arrow--next"
-            data-apgo-gallery-next
-            aria-label="{{ 'accessibility.slideshow_next' | t }}"
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="m9 18 6-6-6-6"></path>
-            </svg>
-          </button>
-        {%- endif -%}
-
-        {%- if gallery_count > 1 and section.settings.show_counter -%}
-          <div class="apgo-gallery__counter" aria-live="polite">
-            <span data-apgo-gallery-current>1</span>
-            <span aria-hidden="true">/</span>
-            <span>{{ gallery_count }}</span>
-          </div>
-        {%- endif -%}
       </figure>
-
-      {%- assign media_index = 1 -%}
 
       {%- if portrait_count > 0 -%}
         <div class="apgo-gallery__region apgo-gallery__region--portrait">
@@ -114,19 +71,9 @@
               {%- for block in section.blocks -%}
                 {%- if block.type == 'portrait' and block.settings.image != blank -%}
                   {%- assign portrait_alt = block.settings.alt_text | default: block.settings.image.alt | default: section.settings.portrait_heading -%}
-                  {%- assign portrait_position = media_index | plus: 1 -%}
-                  <button
-                    type="button"
+                  <figure
                     class="apgo-gallery__card apgo-gallery__card--portrait"
-                    data-apgo-gallery-source
-                    data-apgo-gallery-card
-                    data-gallery-index="{{ media_index }}"
                     data-gallery-block-id="{{ block.id }}"
-                    data-gallery-src="{{ block.settings.image | image_url: width: 2400 }}"
-                    data-gallery-alt="{{ portrait_alt | escape }}"
-                    data-gallery-caption="{{ block.settings.caption | escape }}"
-                    aria-label="{{ 'accessibility.slide_status' | t: index: portrait_position, length: gallery_count }}"
-                    aria-current="false"
                     {{ block.shopify_attributes }}
                   >
                     {{
@@ -140,10 +87,9 @@
                         alt: portrait_alt
                     }}
                     {%- if block.settings.caption != blank -%}
-                      <span class="apgo-gallery__card-caption">{{ block.settings.caption | escape }}</span>
+                      <figcaption class="apgo-gallery__card-caption">{{ block.settings.caption | escape }}</figcaption>
                     {%- endif -%}
-                  </button>
-                  {%- assign media_index = media_index | plus: 1 -%}
+                  </figure>
                 {%- endif -%}
               {%- endfor -%}
             </div>
@@ -184,19 +130,9 @@
               {%- for block in section.blocks -%}
                 {%- if block.type == 'landscape' and block.settings.image != blank -%}
                   {%- assign landscape_alt = block.settings.alt_text | default: block.settings.image.alt | default: section.settings.landscape_heading -%}
-                  {%- assign landscape_position = media_index | plus: 1 -%}
-                  <button
-                    type="button"
+                  <figure
                     class="apgo-gallery__card apgo-gallery__card--landscape"
-                    data-apgo-gallery-source
-                    data-apgo-gallery-card
-                    data-gallery-index="{{ media_index }}"
                     data-gallery-block-id="{{ block.id }}"
-                    data-gallery-src="{{ block.settings.image | image_url: width: 2400 }}"
-                    data-gallery-alt="{{ landscape_alt | escape }}"
-                    data-gallery-caption="{{ block.settings.caption | escape }}"
-                    aria-label="{{ 'accessibility.slide_status' | t: index: landscape_position, length: gallery_count }}"
-                    aria-current="false"
                     {{ block.shopify_attributes }}
                   >
                     {{
@@ -210,10 +146,9 @@
                         alt: landscape_alt
                     }}
                     {%- if block.settings.caption != blank -%}
-                      <span class="apgo-gallery__card-caption">{{ block.settings.caption | escape }}</span>
+                      <figcaption class="apgo-gallery__card-caption">{{ block.settings.caption | escape }}</figcaption>
                     {%- endif -%}
-                  </button>
-                  {%- assign media_index = media_index | plus: 1 -%}
+                  </figure>
                 {%- endif -%}
               {%- endfor -%}
             </div>
@@ -289,11 +224,6 @@
     box-shadow: 0 18px 48px rgba(0, 0, 0, 0.34);
   }
 
-  .apgo-gallery__viewer:focus-visible {
-    outline: 2px solid var(--apgo-gallery-accent, #e3b34d);
-    outline-offset: 3px;
-  }
-
   .apgo-gallery__viewer-image {
     display: block;
     width: 100%;
@@ -320,7 +250,6 @@
     display: none;
   }
 
-  .apgo-gallery__viewer-arrow,
   .apgo-gallery__rail-arrow {
     display: grid;
     padding: 0;
@@ -334,46 +263,21 @@
     transition: opacity 180ms ease, background 180ms ease, color 180ms ease, transform 180ms ease;
   }
 
-  .apgo-gallery__viewer-arrow {
-    position: absolute;
-    top: 50%;
-    z-index: 2;
-    width: 50px;
-    height: 50px;
-    transform: translateY(-50%);
-  }
-
-  .apgo-gallery__viewer-arrow--previous {
-    left: 16px;
-  }
-
-  .apgo-gallery__viewer-arrow--next {
-    right: 16px;
-  }
-
-  .apgo-gallery__viewer-arrow:hover:not(:disabled),
   .apgo-gallery__rail-arrow:hover:not(:disabled) {
     background: var(--apgo-gallery-accent, #e3b34d);
     color: #050505;
   }
 
-  .apgo-gallery__viewer-arrow:hover:not(:disabled) {
-    transform: translateY(-50%) scale(1.04);
-  }
-
-  .apgo-gallery__viewer-arrow:focus-visible,
   .apgo-gallery__rail-arrow:focus-visible {
     outline: 2px solid #ffffff;
     outline-offset: 3px;
   }
 
-  .apgo-gallery__viewer-arrow:disabled,
   .apgo-gallery__rail-arrow:disabled {
     opacity: 0.24;
     cursor: default;
   }
 
-  .apgo-gallery__viewer-arrow svg,
   .apgo-gallery__rail-arrow svg {
     width: 24px;
     height: 24px;
@@ -382,23 +286,6 @@
     stroke-linecap: round;
     stroke-linejoin: round;
     stroke-width: 2;
-  }
-
-  .apgo-gallery__counter {
-    position: absolute;
-    right: 14px;
-    bottom: 12px;
-    z-index: 2;
-    display: flex;
-    gap: 5px;
-    padding: 6px 10px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 999px;
-    background: rgba(0, 0, 0, 0.76);
-    color: #ffffff;
-    font-size: 12px;
-    font-weight: 700;
-    line-height: 1;
   }
 
   .apgo-gallery__region {
@@ -435,15 +322,13 @@
     position: relative;
     display: block;
     flex-shrink: 0;
+    margin: 0;
     padding: 0;
     overflow: hidden;
     scroll-snap-align: start;
-    border: 2px solid transparent;
+    border: 1px solid var(--apgo-gallery-frame, #3d4148);
     border-radius: max(6px, calc(var(--apgo-gallery-radius, 12px) - 3px));
     background: #000000;
-    opacity: 0.78;
-    cursor: pointer;
-    transition: border-color 180ms ease, opacity 180ms ease, transform 180ms ease;
   }
 
   .apgo-gallery__card--portrait {
@@ -454,21 +339,6 @@
   .apgo-gallery__card--landscape {
     flex-basis: clamp(260px, 30vw, 360px);
     aspect-ratio: 16 / 9;
-  }
-
-  .apgo-gallery__card:hover,
-  .apgo-gallery__card.is-active {
-    border-color: var(--apgo-gallery-accent, #e3b34d);
-    opacity: 1;
-  }
-
-  .apgo-gallery__card:hover {
-    transform: translateY(-2px);
-  }
-
-  .apgo-gallery__card:focus-visible {
-    outline: 2px solid #ffffff;
-    outline-offset: 2px;
   }
 
   .apgo-gallery__card-image {
@@ -521,19 +391,6 @@
       font-size: clamp(22px, 8vw, 32px);
     }
 
-    .apgo-gallery__viewer-arrow {
-      width: 42px;
-      height: 42px;
-    }
-
-    .apgo-gallery__viewer-arrow--previous {
-      left: 8px;
-    }
-
-    .apgo-gallery__viewer-arrow--next {
-      right: 8px;
-    }
-
     .apgo-gallery__viewer-caption {
       padding: 30px 52px 10px;
       font-size: 12px;
@@ -581,9 +438,7 @@
       scroll-behavior: auto;
     }
 
-    .apgo-gallery__viewer-arrow,
-    .apgo-gallery__rail-arrow,
-    .apgo-gallery__card {
+    .apgo-gallery__rail-arrow {
       transition: none;
     }
   }
@@ -594,86 +449,8 @@
     const initializeGallery = (root) => {
       if (!root || root.dataset.apgoGalleryReady === 'true') return;
 
-      const viewer = root.querySelector('.apgo-gallery__viewer');
-      const viewerImage = root.querySelector('.apgo-gallery__viewer-image');
-      const viewerCaption = root.querySelector('[data-apgo-gallery-viewer-caption]');
-      const sources = Array.from(root.querySelectorAll('[data-apgo-gallery-source]'));
-      const cards = Array.from(root.querySelectorAll('[data-apgo-gallery-card]'));
-      const previousButton = root.querySelector('[data-apgo-gallery-previous]');
-      const nextButton = root.querySelector('[data-apgo-gallery-next]');
-      const currentLabel = root.querySelector('[data-apgo-gallery-current]');
-
-      if (!viewer || !viewerImage || sources.length === 0) return;
-
       root.dataset.apgoGalleryReady = 'true';
-      let currentIndex = 0;
-      let touchStartX = 0;
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-      const showMedia = (index) => {
-        const nextIndex = Math.max(0, Math.min(index, sources.length - 1));
-        const source = sources[nextIndex];
-        if (!source) return;
-
-        currentIndex = nextIndex;
-        viewerImage.removeAttribute('srcset');
-        viewerImage.removeAttribute('sizes');
-        viewerImage.src = source.dataset.gallerySrc;
-        viewerImage.alt = source.dataset.galleryAlt || '';
-
-        const caption = source.dataset.galleryCaption || '';
-        if (viewerCaption) {
-          viewerCaption.textContent = caption;
-          viewerCaption.classList.toggle('is-hidden', caption.length === 0);
-        }
-
-        cards.forEach((card) => {
-          const isActive = Number(card.dataset.galleryIndex) === currentIndex;
-          card.classList.toggle('is-active', isActive);
-          card.setAttribute('aria-current', isActive ? 'true' : 'false');
-        });
-
-        if (previousButton) previousButton.disabled = currentIndex === 0;
-        if (nextButton) nextButton.disabled = currentIndex === sources.length - 1;
-        if (currentLabel) currentLabel.textContent = String(currentIndex + 1);
-
-        const activeCard = cards.find((card) => Number(card.dataset.galleryIndex) === currentIndex);
-        if (activeCard) {
-          const rail = activeCard.closest('[data-apgo-gallery-rail]');
-          if (rail) {
-            const targetLeft = activeCard.offsetLeft - rail.offsetLeft - 12;
-            rail.scrollTo({ left: targetLeft, behavior: reduceMotion ? 'auto' : 'smooth' });
-          }
-        }
-      };
-
-      cards.forEach((card) => {
-        card.addEventListener('click', () => showMedia(Number(card.dataset.galleryIndex)));
-      });
-
-      if (previousButton) previousButton.addEventListener('click', () => showMedia(currentIndex - 1));
-      if (nextButton) nextButton.addEventListener('click', () => showMedia(currentIndex + 1));
-
-      viewer.addEventListener('keydown', (event) => {
-        if (event.key === 'ArrowLeft') {
-          event.preventDefault();
-          showMedia(currentIndex - 1);
-        }
-        if (event.key === 'ArrowRight') {
-          event.preventDefault();
-          showMedia(currentIndex + 1);
-        }
-      });
-
-      viewer.addEventListener('touchstart', (event) => {
-        touchStartX = event.changedTouches[0].clientX;
-      }, { passive: true });
-
-      viewer.addEventListener('touchend', (event) => {
-        const distance = event.changedTouches[0].clientX - touchStartX;
-        if (Math.abs(distance) < 45) return;
-        showMedia(distance > 0 ? currentIndex - 1 : currentIndex + 1);
-      }, { passive: true });
 
       root.querySelectorAll('[data-apgo-gallery-rail-shell]').forEach((shell) => {
         const rail = shell.querySelector('[data-apgo-gallery-rail]');
@@ -704,8 +481,6 @@
         if (railNext) railNext.addEventListener('click', () => scrollRail(1));
         updateRailButtons();
       });
-
-      showMedia(0);
     };
 
     const initializeAllGalleries = (scope = document) => {
@@ -725,8 +500,11 @@
     document.addEventListener('shopify:block:select', (event) => {
       const root = event.target.closest('[data-apgo-gallery]');
       if (!root) return;
-      const card = root.querySelector(`[data-apgo-gallery-card][data-gallery-block-id="${event.detail.blockId}"]`);
-      if (card) card.click();
+      const card = root.querySelector(`[data-gallery-block-id="${event.detail.blockId}"]`);
+      const rail = card ? card.closest('[data-apgo-gallery-rail]') : null;
+      if (card && rail) {
+        rail.scrollTo({ left: card.offsetLeft - rail.offsetLeft - 12, behavior: 'smooth' });
+      }
     });
   })();
 {% endjavascript %}
@@ -789,18 +567,6 @@
         }
       ],
       "default": "16 / 9"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_main_arrows",
-      "label": "Show arrows on main viewer",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "show_counter",
-      "label": "Show image counter",
-      "default": true
     },
     {
       "type": "checkbox",
