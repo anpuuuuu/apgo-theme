@@ -290,10 +290,42 @@
             "caption": ""
           }
         },
+        "portrait_BKtgCQ": {
+          "type": "portrait",
+          "settings": {
+            "image": "shopify://shop_images/SAN09436.jpg",
+            "alt_text": "",
+            "caption": ""
+          }
+        },
+        "landscape_b7pQXn": {
+          "type": "landscape",
+          "settings": {
+            "image": "shopify://shop_images/DSC08416.jpg",
+            "alt_text": "",
+            "caption": ""
+          }
+        },
+        "landscape_YXCe9w": {
+          "type": "landscape",
+          "settings": {
+            "image": "shopify://shop_images/DSC08408.jpg",
+            "alt_text": "",
+            "caption": ""
+          }
+        },
         "landscape_8a4Re7": {
           "type": "landscape",
           "settings": {
             "image": "shopify://shop_images/0fa92906-3c2c-4475-ad68-ebe42529e041.png",
+            "alt_text": "",
+            "caption": ""
+          }
+        },
+        "landscape_QXFLPe": {
+          "type": "landscape",
+          "settings": {
+            "image": "shopify://shop_images/IMG_4545.heic",
             "alt_text": "",
             "caption": ""
           }
@@ -312,10 +344,13 @@
         "portrait_g9DPNj",
         "portrait_bRw6yw",
         "portrait_TeY3L8",
+        "portrait_BKtgCQ",
+        "landscape_b7pQXn",
+        "landscape_YXCe9w",
         "landscape_8a4Re7",
+        "landscape_QXFLPe",
         "landscape_G38Czn"
       ],
-      "disabled": true,
       "name": "Gallery",
       "settings": {
         "heading": "OUR GOLDEN MOMENT",
@@ -325,8 +360,6 @@
         "portrait_heading": "AWARD NIGHT",
         "landscape_heading": "",
         "viewer_ratio": "16 / 9",
-        "show_main_arrows": true,
-        "show_counter": true,
         "show_rail_arrows": true,
         "max_width": 1200,
         "radius": 12,
