@@ -58,6 +58,8 @@
                 <img class="apgo-main-img"
                      src="{{ product.featured_media | image_url: width: 1400 }}"
                      alt="{{ product.featured_media.alt | default: product.title }}"
+                     width="{{ product.featured_media.preview_image.width }}"
+                     height="{{ product.featured_media.preview_image.height }}"
                      loading="eager"
                      data-apgo-main-img>
               {%- else -%}
@@ -291,7 +293,7 @@
         {%- if product.media.size > 0 -%}
           {%- for m in product.media -%}
             <div class="apgo-mpdp-slide" data-apgo-image-id="{{ m.preview_image.id | default: m.id }}">
-              <img src="{{ m | image_url: width: 900 }}" alt="{{ m.alt | default: product.title }}" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
+              <img src="{{ m | image_url: width: 900 }}" alt="{{ m.alt | default: product.title }}" width="{{ m.preview_image.width }}" height="{{ m.preview_image.height }}" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
             </div>
           {%- endfor -%}
         {%- endif -%}
@@ -314,7 +316,7 @@
                     class="apgo-mpdp-thumb {% if forloop.first %}active{% endif %}"
                     data-apgo-mthumb-idx="{{ forloop.index0 }}"
                     aria-label="Show image {{ forloop.index }}">
-              <img src="{{ m | image_url: width: 160 }}" alt="" loading="lazy">
+              <img src="{{ m | image_url: width: 160 }}" alt="" width="{{ m.preview_image.width }}" height="{{ m.preview_image.height }}" loading="lazy">
             </button>
           {%- endfor -%}
         </div>
@@ -486,12 +488,14 @@
     {%- endif -%}
 
     {%- comment -%} Tabs {%- endcomment -%}
-    <div class="apgo-mpdp-tabs" role="tablist" data-apgo-mtabs>
-      <button type="button" class="apgo-mpdp-tab active" data-apgo-mtab="desc" role="tab">Product Features</button>
-      <button type="button" class="apgo-mpdp-tab" data-apgo-mtab="sgs" role="tab">SGS</button>
-      <button type="button" class="apgo-mpdp-tab" data-apgo-mtab="spec" role="tab">Details & Safe Ingredients</button>
-      <button type="button" class="apgo-mpdp-tab" data-apgo-mtab="review" role="tab">Customer Reviews</button>
-      <button type="button" class="apgo-mpdp-tab" data-apgo-mtab="faq" role="tab">Product FAQ</button>
+    <div class="apgo-mpdp-tabs-sticky" data-apgo-mtabs-sticky>
+      <div class="apgo-mpdp-tabs" role="tablist" data-apgo-mtabs>
+        <button type="button" class="apgo-mpdp-tab active" id="apgo-mtab-desc-{{ section.id }}" data-apgo-mtab="desc" role="tab" aria-controls="apgo-mpanel-desc-{{ section.id }}" aria-selected="true">Product Features</button>
+        <button type="button" class="apgo-mpdp-tab" id="apgo-mtab-sgs-{{ section.id }}" data-apgo-mtab="sgs" role="tab" aria-controls="apgo-mpanel-sgs-{{ section.id }}" aria-selected="false" tabindex="-1">{{ 'products.apgo_v1s_plus.sgs_certification' | t }}</button>
+        <button type="button" class="apgo-mpdp-tab" id="apgo-mtab-spec-{{ section.id }}" data-apgo-mtab="spec" role="tab" aria-controls="apgo-mpanel-spec-{{ section.id }}" aria-selected="false" tabindex="-1">{{ 'products.apgo_v1s_plus.details' | t }}</button>
+        <button type="button" class="apgo-mpdp-tab" id="apgo-mtab-review-{{ section.id }}" data-apgo-mtab="review" role="tab" aria-controls="apgo-mpanel-review-{{ section.id }}" aria-selected="false" tabindex="-1">{{ 'products.apgo_v1s_plus.reviews' | t }}</button>
+        <button type="button" class="apgo-mpdp-tab" id="apgo-mtab-faq-{{ section.id }}" data-apgo-mtab="faq" role="tab" aria-controls="apgo-mpanel-faq-{{ section.id }}" aria-selected="false" tabindex="-1">Product FAQ</button>
+      </div>
     </div>
 
     {%- comment -%}
@@ -510,7 +514,7 @@
       .apgo-mpdp-description's reading-width rules — they keep their
       original full-bleed look (see apgo-pdp.css line ~735).
     {%- endcomment -%}
-    <div class="apgo-mpdp-panel active" data-apgo-mpanel="desc">
+    <div class="apgo-mpdp-panel active" id="apgo-mpanel-desc-{{ section.id }}" data-apgo-mpanel="desc" role="tabpanel" aria-labelledby="apgo-mtab-desc-{{ section.id }}">
       {%- comment -%}
         Tab content order:
           1. Product description images (metafield, list of images) —
@@ -529,6 +533,8 @@
           {%- for img in feature_imgs -%}
             <img src="{{ img | image_url: width: 1200 }}"
                  alt="{{ product.title }} product description image {{ forloop.index }}"
+                 width="{{ img.width }}"
+                 height="{{ img.height }}"
                  loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
                  class="apgo-mpdp-feature-gallery-img">
           {%- endfor -%}
@@ -537,7 +543,7 @@
 
       {%- comment -%} Pain × solution section (metaobject-driven) {%- endcomment -%}
       {%- assign mf_pain = product.metafields.apgo.pain_solutions.value -%}
-      {%- if mf_pain != blank and mf_pain.size > 0 -%}
+      {%- if section.settings.show_pain_solution and mf_pain != blank and mf_pain.size > 0 -%}
         <div class="apgo-mpdp-pain-wrap">
           {%- if section.settings.pain_heading != blank -%}
             <h3>{{ section.settings.pain_heading }}</h3>
@@ -558,13 +564,13 @@
       {%- assign mf_pic = product.metafields.custom.pic.value -%}
       {%- if mf_pic != blank -%}
         <div class="apgo-mpdp-pic-wrap">
-          <img src="{{ mf_pic | image_url: width: 1600 }}" alt="{{ product.title }}" loading="lazy">
+          <img src="{{ mf_pic | image_url: width: 1600 }}" alt="{{ product.title }}" width="{{ mf_pic.width }}" height="{{ mf_pic.height }}" loading="lazy">
         </div>
       {%- endif -%}
 
       {%- comment -%} Comparison table section (metaobject-driven) {%- endcomment -%}
       {%- assign mf_cmp = product.metafields.apgo.comparison_rows.value -%}
-      {%- if mf_cmp != blank and mf_cmp.size > 0 -%}
+      {%- if section.settings.show_comparison and mf_cmp != blank and mf_cmp.size > 0 -%}
         <div class="apgo-mpdp-cmp-wrap">
           {%- if section.settings.cmp_kicker != blank -%}
             <span class="apgo-mpdp-kicker">— {{ section.settings.cmp_kicker }} —</span>
@@ -612,7 +618,7 @@
             {%- for block in ugc_blocks -%}
               <a href="{{ block.settings.url }}" class="apgo-mpdp-ugc-cell" {{ block.shopify_attributes }} {% if block.settings.url != blank %}target="_blank" rel="noopener"{% endif %}>
                 {%- if block.settings.image != blank -%}
-                  <img src="{{ block.settings.image | image_url: width: 400 }}" alt="@{{ block.settings.handle }}" loading="lazy">
+                  <img src="{{ block.settings.image | image_url: width: 400 }}" alt="@{{ block.settings.handle }}" width="{{ block.settings.image.width }}" height="{{ block.settings.image.height }}" loading="lazy">
                 {%- endif -%}
                 <span class="apgo-mpdp-ugc-like">♡ {{ block.settings.likes }}</span>
               </a>
@@ -624,7 +630,7 @@
 
     {%- comment -%} Tab panel: SGS — metafield-driven; if empty, panel renders empty-state {%- endcomment -%}
     {%- assign sgs_reports = product.metafields.custom.sgs_reports.value -%}
-    <div class="apgo-mpdp-panel" data-apgo-mpanel="sgs">
+    <div class="apgo-mpdp-panel" id="apgo-mpanel-sgs-{{ section.id }}" data-apgo-mpanel="sgs" role="tabpanel" aria-labelledby="apgo-mtab-sgs-{{ section.id }}">
       {%- if sgs_reports == blank or sgs_reports.size == 0 -%}
         <div class="apgo-sgs-empty apgo-muted">SGS test reports not yet available</div>
       {%- else -%}
@@ -662,14 +668,14 @@
                 {%- if r.report_pdf != blank -%}
                   <a class="apgo-sgs-thumb" href="{{ r.report_pdf }}" target="_blank" rel="noopener" aria-label="Open SGS report PDF">
                     {%- if r.report_image != blank -%}
-                      <img src="{{ r.report_image | image_url: width: 240 }}" alt="SGS report {{ r.report_no }}" loading="lazy">
+                      <img src="{{ r.report_image | image_url: width: 240 }}" alt="SGS report {{ r.report_no }}" width="{{ r.report_image.width }}" height="{{ r.report_image.height }}" loading="lazy">
                     {%- endif -%}
                     <span class="apgo-sgs-thumb-badge">PDF</span>
                   </a>
                 {%- else -%}
                   <div class="apgo-sgs-thumb apgo-sgs-thumb--static">
                     {%- if r.report_image != blank -%}
-                      <img src="{{ r.report_image | image_url: width: 240 }}" alt="SGS report {{ r.report_no }}" loading="lazy">
+                      <img src="{{ r.report_image | image_url: width: 240 }}" alt="SGS report {{ r.report_no }}" width="{{ r.report_image.width }}" height="{{ r.report_image.height }}" loading="lazy">
                     {%- endif -%}
                   </div>
                 {%- endif -%}
@@ -753,7 +759,7 @@
 
     {%- comment -%} Tab panel: specifications — prefer metafield, fallback to blocks {%- endcomment -%}
     {%- assign mf_spec_rows = product.metafields.apgo.spec_rows.value -%}
-    <div class="apgo-mpdp-panel" data-apgo-mpanel="spec">
+    <div class="apgo-mpdp-panel" id="apgo-mpanel-spec-{{ section.id }}" data-apgo-mpanel="spec" role="tabpanel" aria-labelledby="apgo-mtab-spec-{{ section.id }}">
       {%- if mf_spec_rows != blank and mf_spec_rows.size > 0 -%}
         {%- for entry in mf_spec_rows -%}
           <div class="apgo-mpdp-spec-row">
@@ -775,7 +781,7 @@
 
     {%- comment -%} Tab panel: reviews — prefer metafield, fallback to blocks {%- endcomment -%}
     {%- assign mf_reviews = product.metafields.apgo.reviews.value -%}
-    <div class="apgo-mpdp-panel" data-apgo-mpanel="review">
+    <div class="apgo-mpdp-panel" id="apgo-mpanel-review-{{ section.id }}" data-apgo-mpanel="review" role="tabpanel" aria-labelledby="apgo-mtab-review-{{ section.id }}">
       <div class="apgo-mpdp-rev-summary">
         <div class="apgo-serif apgo-mpdp-rev-score">{{ section.settings.rating_score }}</div>
         <div class="apgo-stars">★★★★★</div>
@@ -811,7 +817,7 @@
 
     {%- comment -%} Tab panel: FAQ — prefer metafield, fallback to blocks {%- endcomment -%}
     {%- assign mf_faqs = product.metafields.apgo.faqs.value -%}
-    <div class="apgo-mpdp-panel" data-apgo-mpanel="faq">
+    <div class="apgo-mpdp-panel" id="apgo-mpanel-faq-{{ section.id }}" data-apgo-mpanel="faq" role="tabpanel" aria-labelledby="apgo-mtab-faq-{{ section.id }}">
       {%- if mf_faqs != blank and mf_faqs.size > 0 -%}
         {%- for entry in mf_faqs -%}
           <details class="apgo-mpdp-faq">
@@ -847,7 +853,7 @@
             {%- for p in rcol.products limit: 8 -%}
               {%- unless p.id == product.id -%}
                 <a class="apgo-mpdp-related-item" href="{{ p.url }}">
-                  <img src="{{ p.featured_image | image_url: width: 280 }}" alt="{{ p.title }}" loading="lazy">
+                  <img src="{{ p.featured_image | image_url: width: 280 }}" alt="{{ p.title }}" width="{{ p.featured_image.width }}" height="{{ p.featured_image.height }}" loading="lazy">
                   <div class="apgo-serif">{{ p.title }}</div>
                   <div>{{ p.price | money }}</div>
                 </a>
@@ -964,9 +970,11 @@
     { "type": "paragraph", "content": "The \"Ritual visual\" and \"long image\" come from the Description (paste into .apgo-mpdp-ritual-wrap / .apgo-mpdp-longimg-wrap in HTML mode). \"Pain point × solution\" and \"comparison table\" are driven by product metafields (apgo.pain_solutions / apgo.comparison_rows). Insert the HTML comment <!-- apgo:sections --> in the Description and the pain + cmp sections will render at that position." },
 
     { "type": "header", "content": "Pain Point × Solution Heading" },
+    { "type": "checkbox", "id": "show_pain_solution", "label": "Show pain point and solution table", "default": true },
     { "type": "text", "id": "pain_heading", "label": "Section heading", "default": "Everyday pain points · Tailored scientific solutions" },
 
     { "type": "header", "content": "Comparison Table Heading & Columns" },
+    { "type": "checkbox", "id": "show_comparison", "label": "Show comparison table", "default": true },
     { "type": "text", "id": "cmp_kicker",          "label": "Kicker (small text above)", "default": "THE DIFFERENCE" },
     { "type": "text", "id": "cmp_title",           "label": "Section heading", "default": "Why choose APGO?" },
     { "type": "text", "id": "cmp_col_feature",     "label": "Column 1 label", "default": "Comparison" },

@@ -616,26 +616,61 @@
   function initTabs(root) {
     var tabs = $$('[data-apgo-mtab]', root);
     var panels = $$('[data-apgo-mpanel]', root);
+    var tabsBar = $('[data-apgo-mtabs]', root);
+    var stickyBar = $('[data-apgo-mtabs-sticky]', root) || tabsBar;
     if (!tabs.length || !panels.length) return;
 
-    function activate(key) {
+    function alignPanel(panel) {
+      if (!panel || !stickyBar) return;
+      var panelTop = panel.getBoundingClientRect().top;
+      var barBottom = stickyBar.getBoundingClientRect().bottom;
+      var delta = panelTop - barBottom;
+      if (Math.abs(delta) > 1) window.scrollBy({ top: delta, behavior: 'auto' });
+    }
+
+    function activate(key, shouldAlign) {
+      var activeTab = null;
+      var activePanel = null;
       tabs.forEach(function (t) {
-        if (t.getAttribute('data-apgo-mtab') === key) t.classList.add('active');
-        else t.classList.remove('active');
+        var selected = t.getAttribute('data-apgo-mtab') === key;
+        t.classList.toggle('active', selected);
+        t.setAttribute('aria-selected', selected ? 'true' : 'false');
+        t.tabIndex = selected ? 0 : -1;
+        if (selected) activeTab = t;
       });
       panels.forEach(function (p) {
-        if (p.getAttribute('data-apgo-mpanel') === key) p.classList.add('active');
-        else p.classList.remove('active');
+        var selected = p.getAttribute('data-apgo-mpanel') === key;
+        p.classList.toggle('active', selected);
+        p.setAttribute('aria-hidden', selected ? 'false' : 'true');
+        if (selected) activePanel = p;
       });
+
+      if (activeTab && tabsBar) {
+        var left = activeTab.offsetLeft - ((tabsBar.clientWidth - activeTab.offsetWidth) / 2);
+        tabsBar.scrollTo({ left: Math.max(0, left), behavior: 'smooth' });
+      }
+
+      if (shouldAlign && activePanel) {
+        window.requestAnimationFrame(function () {
+          window.requestAnimationFrame(function () {
+            alignPanel(activePanel);
+            window.setTimeout(function () { alignPanel(activePanel); }, 320);
+          });
+        });
+      }
     }
 
     tabs.forEach(function (t) {
-      t.addEventListener('click', function () { activate(t.getAttribute('data-apgo-mtab')); });
+      if (t.getAttribute('data-apgo-tab-bound') === 'true') return;
+      t.setAttribute('data-apgo-tab-bound', 'true');
+      t.addEventListener('click', function () { activate(t.getAttribute('data-apgo-mtab'), true); });
     });
 
     // Default → first tab active if none is
     if (!$$('[data-apgo-mtab].active', root).length) {
-      activate(tabs[0].getAttribute('data-apgo-mtab'));
+      activate(tabs[0].getAttribute('data-apgo-mtab'), false);
+    } else {
+      activate($('[data-apgo-mtab].active', root).getAttribute('data-apgo-mtab'), false);
     }
   }
 

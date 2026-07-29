@@ -308,6 +308,11 @@
       "inventory_label": "Inventory",
       "sold_out": "Sold out",
       "unavailable": "Unavailable"
+    },
+    "apgo_v1s_plus": {
+      "sgs_certification": "SGS CERTIFICATION",
+      "details": "Details",
+      "reviews": "Reviews"
     }
   },
   "product": {

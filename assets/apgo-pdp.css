@@ -451,6 +451,22 @@
 .apgo-mpdp-ship-sep { height: 1px; background: var(--apgo-line); }
 
 /* Tabs (mobile) — horizontally scrollable when content overflows */
+.apgo-mpdp-tabs-sticky {
+  position: sticky;
+  top: var(--apgo-stack-h, var(--header-group-height, 0px));
+  z-index: calc(var(--layer-sticky, 8) - 1);
+  width: 100%;
+  background: var(--apgo-bg-alt);
+  box-shadow: 0 8px 18px rgba(45, 46, 40, 0.06);
+  transition: transform .28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (max-width: 749px) {
+  body.apgo-scroll-hide .apgo-mpdp-tabs-sticky {
+    transform: translateY(calc(-1 * var(--apgo-stack-h, 0px)));
+  }
+}
+
 .apgo-mpdp-tabs {
   display: flex;
   background: var(--apgo-bg-alt);
