@@ -66,32 +66,34 @@
           <span data-apgo-cc-buybar-chip-total>{{ 0 | money }}</span>
         </span>
       </button>
-      {%- comment -%}
-        When every variant of this product is out of stock, collapse the
-        Add to cart + Buy now into one disabled "Out of stock" button.
-        `product.available` is false only when ALL variants are unavailable.
-        Per-variant out-of-stock state is handled separately by the inline
-        picker JS (which disables both buttons via .disabled + label swap).
-      {%- endcomment -%}
-      <div class="apgo-cc-buybar__actions{% if product.available == false %} apgo-cc-buybar__actions--out{% endif %}">
-        {%- if product.available -%}
-          <button type="button"
-                  class="apgo-cc-buybar__btn apgo-cc-buybar__btn--add"
-                  data-apgo-cc-buybar-add>
-            Add to cart
-          </button>
-          <button type="button"
-                  class="apgo-cc-buybar__btn apgo-cc-buybar__btn--buy"
-                  data-apgo-cc-buybar-checkout>
-            Buy now
-          </button>
-        {%- else -%}
-          <button type="button"
-                  class="apgo-cc-buybar__btn apgo-cc-buybar__btn--out"
-                  disabled>
-            Out of stock
-          </button>
-        {%- endif -%}
+      {%- assign apgo_buybar_variant = product.selected_or_first_available_variant -%}
+      {%- assign apgo_buybar_sold_out = false -%}
+      {%- unless apgo_buybar_variant.available -%}
+        {%- assign apgo_buybar_sold_out = true -%}
+      {%- endunless -%}
+      {%- if apgo_buybar_variant.inventory_management != blank and apgo_buybar_variant.inventory_quantity <= 0 -%}
+        {%- assign apgo_buybar_sold_out = true -%}
+      {%- endif -%}
+      <div class="apgo-cc-buybar__actions{% if apgo_buybar_sold_out %} apgo-cc-buybar__actions--out{% endif %}">
+        <button type="button"
+                class="apgo-cc-buybar__btn apgo-cc-buybar__btn--add"
+                data-apgo-cc-buybar-add
+                {% if apgo_buybar_sold_out %}hidden{% endif %}>
+          Add to cart
+        </button>
+        <button type="button"
+                class="apgo-cc-buybar__btn apgo-cc-buybar__btn--buy"
+                data-apgo-cc-buybar-checkout
+                {% if apgo_buybar_sold_out %}hidden{% endif %}>
+          Buy now
+        </button>
+        <button type="button"
+                class="apgo-cc-buybar__btn apgo-cc-buybar__btn--out"
+                data-apgo-cc-buybar-sold-out
+                disabled
+                {% unless apgo_buybar_sold_out %}hidden{% endunless %}>
+          {{ 'products.product.sold_out' | t }}
+        </button>
       </div>
     </div>
   </div>

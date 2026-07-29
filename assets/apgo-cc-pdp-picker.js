@@ -29,6 +29,24 @@
   var saveEl    = document.querySelector('[data-apgo-cc-save]');
   var addBtn    = form.querySelector('[data-apgo-cc-add]');
   var buyBtn    = form.querySelector('[data-apgo-cc-buy-now]');
+  var ctaRow     = addBtn ? addBtn.closest('.apgo-cc-pdp__cta-row') : null;
+  var soldOutBtn = ctaRow ? ctaRow.querySelector('[data-apgo-cc-sold-out]') : null;
+  if (ctaRow && !soldOutBtn) {
+    soldOutBtn = document.createElement('button');
+    soldOutBtn.type = 'button';
+    soldOutBtn.className = 'apgo-cc-pdp__cta apgo-cc-pdp__cta--out';
+    soldOutBtn.setAttribute('data-apgo-cc-sold-out', '');
+    soldOutBtn.textContent = 'Sold out';
+    soldOutBtn.disabled = true;
+    soldOutBtn.hidden = true;
+    soldOutBtn.style.gridColumn = '1 / -1';
+    soldOutBtn.style.width = '100%';
+    ctaRow.appendChild(soldOutBtn);
+  }
+  var buybarActions = document.querySelector('.apgo-cc-buybar__actions');
+  var buybarAddBtn = document.querySelector('[data-apgo-cc-buybar-add]');
+  var buybarBuyBtn = document.querySelector('[data-apgo-cc-buybar-checkout]');
+  var buybarSoldOutBtn = document.querySelector('[data-apgo-cc-buybar-sold-out]');
   var qtyInput  = form.querySelector('[data-apgo-cc-qty-input]');
   var promoConfig = window.APGO_LIMITED_PROMO || null;
   var promoPriceCents = promoConfig
@@ -112,6 +130,47 @@
       if (match) return v;
     }
     return null;
+  }
+
+  /*
+    Shopify may report available=true when "Continue selling when out of
+    stock" is enabled. For this v3 PDP, an inventory-tracked variant at zero
+    must still behave as sold out so the stock label and purchase actions
+    cannot disagree.
+  */
+  function isVariantSoldOut(v) {
+    if (!v || !v.available) return true;
+    return typeof v.inventory_quantity === 'number' && v.inventory_quantity <= 0;
+  }
+
+  window.apgoCcIsCurrentVariantSoldOut = function () {
+    return isVariantSoldOut(findVariant(currentOptionValues()));
+  };
+
+  function syncPurchaseActions(v) {
+    var soldOut = isVariantSoldOut(v);
+
+    if (ctaRow) ctaRow.style.gridTemplateColumns = soldOut ? '1fr' : '';
+    if (addBtn) {
+      addBtn.hidden = soldOut;
+      addBtn.disabled = soldOut;
+    }
+    if (buyBtn) {
+      buyBtn.hidden = soldOut;
+      buyBtn.disabled = soldOut;
+    }
+    if (soldOutBtn) soldOutBtn.hidden = !soldOut;
+
+    if (buybarActions) buybarActions.classList.toggle('apgo-cc-buybar__actions--out', soldOut);
+    if (buybarAddBtn) {
+      buybarAddBtn.hidden = soldOut;
+      buybarAddBtn.disabled = soldOut;
+    }
+    if (buybarBuyBtn) {
+      buybarBuyBtn.hidden = soldOut;
+      buybarBuyBtn.disabled = soldOut;
+    }
+    if (buybarSoldOutBtn) buybarSoldOutBtn.hidden = !soldOut;
   }
 
   function syncChipsActive() {
@@ -207,12 +266,8 @@
       }
     }
 
-    /* Disable add button if variant not available */
-    if (addBtn) {
-      addBtn.disabled = !v.available;
-      addBtn.textContent = v.available ? 'Add to cart' : 'Sold out';
-    }
-    if (buyBtn) buyBtn.disabled = !v.available;
+    /* Keep desktop + mobile purchase actions aligned with actual stock. */
+    syncPurchaseActions(v);
 
     /*
       Inline shipping-row stock indicator (right of "2–3 business days").
@@ -588,6 +643,11 @@
 
   function addToCart(opts) {
     opts = opts || {};
+    var activeVariant = findVariant(currentOptionValues());
+    if (isVariantSoldOut(activeVariant)) {
+      syncPurchaseActions(activeVariant);
+      return Promise.reject({ description: 'Sold out' });
+    }
     var btn = opts.btn;
     var fd = new FormData(form);
     var orig = btn ? btn.textContent : '';
@@ -911,7 +971,7 @@
         /* Order matters: check `available` first. A variant where Shopify
            reports available=false should ALWAYS read as Sold out — even if
            inventory_management isn't set (untracked) or qty isn't numeric. */
-        if (!curV.available) {
+        if (isVariantSoldOut(curV)) {
           setStock('out', 'Sold out');
         } else if (!tracked || typeof qty !== 'number') {
           /* Tracked-but-unknown qty (or fully untracked) → safe default */
@@ -942,7 +1002,7 @@
       to a variant that Shopify will reject anyway.
     */
     if (confirmAddBtn || confirmBuyBtn) {
-      var soldOut = curV && !curV.available;
+      var soldOut = isVariantSoldOut(curV);
       [confirmAddBtn, confirmBuyBtn].forEach(function (b) {
         if (!b) return;
         if (soldOut) {

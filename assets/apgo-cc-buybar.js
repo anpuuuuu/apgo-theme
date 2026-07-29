@@ -297,6 +297,10 @@
      quantity, and sees the active variation contents before final commit. The
      modal handles the actual /cart/add.js call, toast, redirect, etc. */
   function openConfirm(intent, sourceBtn) {
+    if (typeof window.apgoCcIsCurrentVariantSoldOut === 'function'
+        && window.apgoCcIsCurrentVariantSoldOut()) {
+      return;
+    }
     if (typeof window.apgoOpenConfirmModal === 'function') {
       window.apgoOpenConfirmModal(intent);
       return;
