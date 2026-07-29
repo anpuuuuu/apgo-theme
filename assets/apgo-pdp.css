@@ -766,7 +766,6 @@ body:has(.menu-drawer-container[open]) .apgo-mpdp-sticky {
   /* ---------- Tabs (desktop) — full-width bar ---------- */
   .apgo-mpdp-tabs {
     display: flex; justify-content: center; gap: 20px;
-    border-top: 1px solid var(--apgo-line);
     border-bottom: 1px solid var(--apgo-line);
     margin: 0 0 0; padding: 0 32px; overflow: visible;
     max-width: none;
