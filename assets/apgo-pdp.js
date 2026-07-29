@@ -622,10 +622,13 @@
 
     function alignPanel(panel) {
       if (!panel || !stickyBar) return;
-      var panelTop = panel.getBoundingClientRect().top;
-      var barBottom = stickyBar.getBoundingClientRect().bottom;
-      var delta = panelTop - barBottom;
-      if (Math.abs(delta) > 1) window.scrollBy({ top: delta, behavior: 'auto' });
+      var stickyTop = parseFloat(window.getComputedStyle(stickyBar).top) || 0;
+      var targetTop = stickyTop + stickyBar.offsetHeight;
+      var panelPageTop = window.scrollY + panel.getBoundingClientRect().top;
+      var nextScrollTop = Math.max(0, panelPageTop - targetTop);
+      if (Math.abs(window.scrollY - nextScrollTop) > 1) {
+        window.scrollTo({ top: nextScrollTop, behavior: 'auto' });
+      }
     }
 
     function activate(key, shouldAlign) {
