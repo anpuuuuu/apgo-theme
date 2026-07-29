@@ -306,6 +306,14 @@
             "caption": ""
           }
         },
+        "landscape_7xhUqK": {
+          "type": "landscape",
+          "settings": {
+            "image": "shopify://shop_images/photo_2026-07-28_17-41-49.jpg",
+            "alt_text": "",
+            "caption": ""
+          }
+        },
         "landscape_G38Czn": {
           "type": "landscape",
           "settings": {
@@ -378,6 +386,7 @@
         "portrait_bRw6yw",
         "portrait_LWnKVT",
         "portrait_TeY3L8",
+        "landscape_7xhUqK",
         "landscape_G38Czn",
         "landscape_cqPBxG",
         "landscape_LayQ4g",
@@ -390,7 +399,7 @@
       "name": "Gallery",
       "settings": {
         "heading": "OUR GOLDEN MOMENT",
-        "main_image": "shopify://shop_images/photo_2026-07-28_17-41-49.jpg",
+        "main_image": "shopify://shop_images/GBA26_GroupPic1.jpg",
         "main_alt": "",
         "main_caption": "",
         "portrait_heading": "AWARD NIGHT",
