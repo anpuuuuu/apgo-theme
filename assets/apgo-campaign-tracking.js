@@ -71,15 +71,34 @@
   function gaEvent(name, payload) {
     var params = Object.assign({}, payload);
     var eventName = name;
+    var promotionItem;
 
     if (name === 'apgo_promotion_view') {
       eventName = 'view_promotion';
       params.creative_name = payload.promotion_name;
-      params.creative_slot = payload.section_id;
+      params.creative_slot = payload.section_id || payload.placement || 'hero';
+      promotionItem = compact({
+        promotion_id: payload.promotion_id,
+        promotion_name: payload.promotion_name,
+        creative_name: payload.promotion_name,
+        creative_slot: params.creative_slot,
+        item_id: payload.product_id,
+        item_name: payload.product_name
+      });
+      params.items = [promotionItem];
     } else if (name === 'apgo_promotion_click') {
       eventName = 'select_promotion';
       params.creative_name = payload.promotion_name;
-      params.creative_slot = payload.section_id || 'hero';
+      params.creative_slot = payload.section_id || payload.placement || 'hero';
+      promotionItem = compact({
+        promotion_id: payload.promotion_id,
+        promotion_name: payload.promotion_name,
+        creative_name: payload.promotion_name,
+        creative_slot: params.creative_slot,
+        item_id: payload.product_id,
+        item_name: payload.product_name
+      });
+      params.items = [promotionItem];
     } else if (name === 'apgo_product_click') {
       eventName = 'select_item';
       params.item_list_id = payload.section_id;
@@ -90,6 +109,8 @@
         item_variant: payload.variant_id,
         index: payload.card_position
       }];
+    } else if (name === 'apgo_campaign_exit') {
+      params.transport_type = 'beacon';
     }
 
     return { name: eventName, params: compact(params) };
@@ -194,15 +215,51 @@
 
   function initHomepageLinks(scope) {
     var links = scope.querySelectorAll('[data-apgo-homepage-campaign-link]');
+    var viewObserver = null;
+    if ('IntersectionObserver' in window) {
+      viewObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting || entry.intersectionRatio < 0.5) return;
+          var link = entry.target;
+          if (link.getAttribute('data-apgo-homepage-view-recorded') === 'true') return;
+          link.setAttribute('data-apgo-homepage-view-recorded', 'true');
+          publish('apgo_homepage_campaign_view', {
+            source: 'homepage',
+            placement: link.getAttribute('data-campaign-placement') || 'homepage_carousel',
+            promotion_id: link.getAttribute('data-campaign-promotion-id'),
+            promotion_name: link.getAttribute('data-campaign-promotion-name'),
+            slide_position: Number(link.getAttribute('data-slide-position')),
+            destination_path: link.getAttribute('href')
+          });
+          viewObserver.unobserve(link);
+        });
+      }, { threshold: [0.5] });
+    }
+
     Array.prototype.forEach.call(links, function (link) {
       if (link.getAttribute('data-apgo-tracking-ready') === 'true') return;
       link.setAttribute('data-apgo-tracking-ready', 'true');
+      if (viewObserver) {
+        viewObserver.observe(link);
+      } else if (link.getAttribute('data-slide-position') === '1') {
+        link.setAttribute('data-apgo-homepage-view-recorded', 'true');
+        publish('apgo_homepage_campaign_view', {
+          source: 'homepage',
+          placement: link.getAttribute('data-campaign-placement') || 'homepage_carousel',
+          promotion_id: link.getAttribute('data-campaign-promotion-id'),
+          promotion_name: link.getAttribute('data-campaign-promotion-name'),
+          slide_position: Number(link.getAttribute('data-slide-position')),
+          destination_path: link.getAttribute('href')
+        });
+      }
       link.addEventListener('click', function () {
         var placement = link.getAttribute('data-campaign-placement') || 'homepage_carousel';
         writeEntrySource('homepage_carousel', placement);
         publish('apgo_homepage_campaign_click', {
           source: 'homepage',
           placement: placement,
+          promotion_id: link.getAttribute('data-campaign-promotion-id'),
+          promotion_name: link.getAttribute('data-campaign-promotion-name'),
           slide_position: Number(link.getAttribute('data-slide-position')),
           destination_path: link.getAttribute('href')
         });
@@ -214,7 +271,7 @@
     var sections = root.querySelectorAll('[data-apgo-campaign-section]');
     if (!('IntersectionObserver' in window)) {
       Array.prototype.forEach.call(sections, function (section) {
-        publish('apgo_promotion_view', Object.assign({}, context, getSectionContext(section), {
+        publish('apgo_campaign_section_view', Object.assign({}, context, getSectionContext(section), {
           promotion_id: section.getAttribute('data-promotion-id'),
           promotion_name: section.getAttribute('data-section-name')
         }));
@@ -228,7 +285,7 @@
         var section = entry.target;
         if (section.getAttribute('data-apgo-view-recorded') === 'true') return;
         section.setAttribute('data-apgo-view-recorded', 'true');
-        publish('apgo_promotion_view', Object.assign({}, context, getSectionContext(section), {
+        publish('apgo_campaign_section_view', Object.assign({}, context, getSectionContext(section), {
           promotion_id: section.getAttribute('data-promotion-id'),
           promotion_name: section.getAttribute('data-section-name')
         }));
@@ -239,6 +296,119 @@
     Array.prototype.forEach.call(sections, function (section) {
       observer.observe(section);
     });
+  }
+
+  function initPromotionViews(scope, context) {
+    var links = scope.querySelectorAll('[data-apgo-campaign-promotion-link]');
+    if (!('IntersectionObserver' in window)) {
+      Array.prototype.forEach.call(links, function (link) {
+        if (link.getAttribute('data-apgo-promotion-view-recorded') === 'true') return;
+        link.setAttribute('data-apgo-promotion-view-recorded', 'true');
+        publish('apgo_promotion_view', Object.assign(
+          {},
+          context,
+          getSectionContext(link),
+          getProductContext(link),
+          {
+            promotion_id: link.getAttribute('data-promotion-id'),
+            promotion_name: link.getAttribute('data-promotion-name')
+          }
+        ));
+      });
+      return;
+    }
+
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting || entry.intersectionRatio < 0.5) return;
+        var link = entry.target;
+        if (link.getAttribute('data-apgo-promotion-view-recorded') === 'true') return;
+        link.setAttribute('data-apgo-promotion-view-recorded', 'true');
+        publish('apgo_promotion_view', Object.assign(
+          {},
+          context,
+          getSectionContext(link),
+          getProductContext(link),
+          {
+            promotion_id: link.getAttribute('data-promotion-id'),
+            promotion_name: link.getAttribute('data-promotion-name')
+          }
+        ));
+        observer.unobserve(link);
+      });
+    }, { threshold: [0.5] });
+
+    Array.prototype.forEach.call(links, function (link) {
+      observer.observe(link);
+    });
+  }
+
+  function initCampaignEngagement(root, context) {
+    if (root.getAttribute('data-apgo-engagement-ready') === 'true') return;
+    root.setAttribute('data-apgo-engagement-ready', 'true');
+
+    var activeSeconds = 0;
+    var maxScrollPercent = 0;
+    var hadInteraction = false;
+    var exitRecorded = false;
+    var milestones = {
+      3: 'apgo_campaign_3s',
+      10: 'apgo_campaign_10s',
+      30: 'apgo_campaign_30s',
+      60: 'apgo_campaign_60s'
+    };
+
+    function updateScrollDepth() {
+      var scrollable = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      maxScrollPercent = Math.max(
+        maxScrollPercent,
+        Math.min(100, Math.round((window.scrollY / scrollable) * 100))
+      );
+    }
+
+    function recordInteraction() {
+      hadInteraction = true;
+    }
+
+    function recordExit() {
+      if (exitRecorded) return;
+      exitRecorded = true;
+      var bucket = 'under_3_seconds';
+      if (activeSeconds >= 60) {
+        bucket = '60_seconds_or_more';
+      } else if (activeSeconds >= 30) {
+        bucket = '30_to_59_seconds';
+      } else if (activeSeconds >= 10) {
+        bucket = '10_to_29_seconds';
+      } else if (activeSeconds >= 3) {
+        bucket = '3_to_9_seconds';
+      }
+      updateScrollDepth();
+      publish('apgo_campaign_exit', Object.assign({}, context, {
+        active_seconds: activeSeconds,
+        visit_duration_bucket: bucket,
+        max_scroll_percent: maxScrollPercent,
+        had_interaction: hadInteraction ? 'yes' : 'no'
+      }));
+    }
+
+    var timer = window.setInterval(function () {
+      if (document.hidden) return;
+      activeSeconds += 1;
+      if (milestones[activeSeconds]) {
+        publish(milestones[activeSeconds], Object.assign({}, context, {
+          engagement_seconds: activeSeconds
+        }));
+      }
+    }, 1000);
+
+    window.addEventListener('scroll', updateScrollDepth, { passive: true });
+    window.addEventListener('pointerdown', recordInteraction, { passive: true });
+    window.addEventListener('keydown', recordInteraction);
+    window.addEventListener('pagehide', function () {
+      window.clearInterval(timer);
+      recordExit();
+    }, { once: true });
   }
 
   function initCarouselTracking(root, context) {
@@ -399,8 +569,10 @@
       { page_referrer: document.referrer }
     ));
     initSectionViews(root, context);
+    initPromotionViews(document, context);
     initCarouselTracking(root, context);
     initCampaignClicks(root, context);
+    initCampaignEngagement(root, context);
   }
 
   function init(scope) {
