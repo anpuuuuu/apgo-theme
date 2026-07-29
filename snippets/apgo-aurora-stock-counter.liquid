@@ -23,7 +23,7 @@
   assign campaign_flow_baseline = flow_baseline | plus: 0 | at_least: 0
   assign campaign_catchup_sets = catchup_sets | plus: 0 | at_least: 0
   if mode == 'compact' and catchup_sets == blank
-    assign campaign_catchup_sets = 24
+    assign campaign_catchup_sets = 38
   endif
   assign paid_sets_metafield = shop.metafields.apgo_campaign.aurora_paid_sets
   if paid_sets_metafield != blank
