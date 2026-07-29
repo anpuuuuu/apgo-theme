@@ -804,6 +804,38 @@
 
   // ---------- boot ----------
   function boot() {
+    var normalizedPath = window.location.pathname.replace(/\/+$/, '');
+    if (normalizedPath === '/products/golden-bull-celebration-apgo-aurora-car-nano-coating-premium') {
+      var auroraCounter = document.querySelector('.apgo-aurora-mini-counter[data-aurora-stock-counter]');
+      if (auroraCounter && auroraCounter.getAttribute('data-manual-adjustment-applied') !== 'true') {
+        var currentRemaining = parseInt(auroraCounter.getAttribute('data-remaining'), 10);
+        var campaignTotal = parseInt(auroraCounter.getAttribute('data-total'), 10);
+        if (Number.isFinite(currentRemaining) && Number.isFinite(campaignTotal)) {
+          var adjustedRemaining = Math.max(0, currentRemaining - 14);
+          var counterNumber = auroraCounter.querySelector('[data-aurora-stock-number]');
+          var counterFill = auroraCounter.querySelector('.apgo-aurora-mini-counter__fill');
+          var counterLabel = auroraCounter.getAttribute('aria-label');
+
+          auroraCounter.setAttribute('data-manual-adjustment-applied', 'true');
+          auroraCounter.setAttribute('data-remaining', String(adjustedRemaining));
+          auroraCounter.setAttribute('data-claimed', String(campaignTotal - adjustedRemaining));
+          if (counterNumber) counterNumber.textContent = String(adjustedRemaining);
+          if (counterFill) {
+            counterFill.style.setProperty(
+              '--apgo-stock-progress',
+              String((adjustedRemaining / campaignTotal) * 100) + '%'
+            );
+          }
+          if (counterLabel) {
+            auroraCounter.setAttribute(
+              'aria-label',
+              counterLabel.replace(String(currentRemaining), String(adjustedRemaining))
+            );
+          }
+        }
+      }
+    }
+
     $$('form.apgo-product-form').forEach(initForm);
     $$('[data-section-id]').forEach(function (section) {
       initTabs(section);
