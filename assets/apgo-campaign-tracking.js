@@ -568,11 +568,11 @@
       readEntrySource(),
       { page_referrer: document.referrer }
     ));
+    initCampaignEngagement(root, context);
     initSectionViews(root, context);
     initPromotionViews(document, context);
     initCarouselTracking(root, context);
     initCampaignClicks(root, context);
-    initCampaignEngagement(root, context);
   }
 
   function init(scope) {
