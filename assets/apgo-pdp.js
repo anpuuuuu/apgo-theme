@@ -652,8 +652,17 @@
 
     function alignPanel(panel) {
       if (!panel || !stickyBar) return;
-      var stickyTop = parseFloat(window.getComputedStyle(stickyBar).top) || 0;
-      var targetTop = stickyTop + stickyBar.offsetHeight;
+      var stickyStyle = window.getComputedStyle(stickyBar);
+      var stickyTop = parseFloat(stickyStyle.top) || 0;
+      var translateY = 0;
+      var matrixMatch = stickyStyle.transform.match(/^matrix\((.+)\)$/);
+      var matrix3dMatch = stickyStyle.transform.match(/^matrix3d\((.+)\)$/);
+      if (matrixMatch) {
+        translateY = parseFloat(matrixMatch[1].split(',')[5]) || 0;
+      } else if (matrix3dMatch) {
+        translateY = parseFloat(matrix3dMatch[1].split(',')[13]) || 0;
+      }
+      var targetTop = Math.max(0, stickyTop + translateY) + stickyBar.offsetHeight;
       var panelPageTop = window.scrollY + panel.getBoundingClientRect().top;
       var nextScrollTop = Math.max(0, panelPageTop - targetTop);
       if (Math.abs(window.scrollY - nextScrollTop) > 1) {
