@@ -132,6 +132,20 @@
     return null;
   }
 
+  function getCurrentVariant() {
+    var matched = findVariant(currentOptionValues());
+    if (matched) return matched;
+
+    var selectedId = idInput ? parseInt(idInput.value, 10) : 0;
+    if (selectedId) {
+      for (var i = 0; i < variants.length; i++) {
+        if (parseInt(variants[i].id, 10) === selectedId) return variants[i];
+      }
+    }
+
+    return variants.length ? variants[0] : null;
+  }
+
   /*
     Shopify may report available=true when "Continue selling when out of
     stock" is enabled. For this v3 PDP, an inventory-tracked variant at zero
@@ -144,7 +158,7 @@
   }
 
   window.apgoCcIsCurrentVariantSoldOut = function () {
-    return isVariantSoldOut(findVariant(currentOptionValues()));
+    return isVariantSoldOut(getCurrentVariant());
   };
 
   function syncPurchaseActions(v) {
@@ -228,8 +242,7 @@
   buildVariationSections();
 
   function refreshVariant() {
-    var opts = currentOptionValues();
-    var v = findVariant(opts);
+    var v = getCurrentVariant();
     syncChipsActive();
     if (!v) return;
 
@@ -643,7 +656,7 @@
 
   function addToCart(opts) {
     opts = opts || {};
-    var activeVariant = findVariant(currentOptionValues());
+    var activeVariant = getCurrentVariant();
     if (isVariantSoldOut(activeVariant)) {
       syncPurchaseActions(activeVariant);
       return Promise.reject({ description: 'Sold out' });
@@ -939,8 +952,7 @@
     /* Mirror image + price from the current variant. Reads cents/img from the
        same `variants` array + the inline price element so it always tracks the
        live selection regardless of which input (chip click / swipe) drove it. */
-    var curOpts = currentOptionValues();
-    var curV = findVariant(curOpts);
+    var curV = getCurrentVariant();
     if (curV) {
       if (confirmPriceEl) {
         confirmPriceEl.setAttribute('data-cents', curV.price);

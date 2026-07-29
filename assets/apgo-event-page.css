@@ -480,8 +480,22 @@ body.apgo-special-event-page .apgo-event-listing-card__btn--buy:hover {
   background: #ffba5c;
 }
 
+body.apgo-special-event-page .apgo-event-listing-card__btn--sold-out,
+body.apgo-special-event-page .apgo-event-listing-card__btn--sold-out:hover {
+  flex: 1 1 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(244, 210, 138, 0.36);
+  color: rgba(244, 210, 138, 0.62);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
 body.apgo-special-event-page .apgo-event-listing-card__btn:active {
   transform: translateY(1px);
+}
+
+body.apgo-special-event-page .apgo-event-listing-card__btn--sold-out:active {
+  transform: none;
 }
 
 /* Desktop: cards are wider — buttons can sit side-by-side */

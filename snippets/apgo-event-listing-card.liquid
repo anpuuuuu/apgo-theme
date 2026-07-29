@@ -57,6 +57,14 @@
   endif
 
   assign apgo_card_link_id = 'apgo-event-card-' | append: card_uid | append: '-' | append: product.id
+
+  assign apgo_card_sold_out = false
+  unless apgo_listing_variant.available
+    assign apgo_card_sold_out = true
+  endunless
+  if apgo_listing_variant.inventory_management != blank and apgo_listing_variant.inventory_quantity <= 0
+    assign apgo_card_sold_out = true
+  endif
 %}
 
 <product-card
@@ -175,7 +183,7 @@
             <span class="apgo-event-listing-card__promo-limit">{{ apgo_limited_promo_message }}</span>
           {%- endif -%}
         </div>
-        {%- if product.available -%}
+        {%- unless apgo_card_sold_out -%}
           <div class="apgo-event-listing-card__actions">
             <button
               type="button"
@@ -192,7 +200,17 @@
               Buy now
             </button>
           </div>
-        {%- endif -%}
+        {%- else -%}
+          <div class="apgo-event-listing-card__actions">
+            <button
+              type="button"
+              class="apgo-event-listing-card__btn apgo-event-listing-card__btn--sold-out"
+              disabled
+              aria-disabled="true">
+              {{ 'products.product.sold_out' | t }}
+            </button>
+          </div>
+        {%- endunless -%}
       </div>
     </div>
   </div>
