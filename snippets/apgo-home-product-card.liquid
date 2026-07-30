@@ -65,7 +65,7 @@
     {% endif %}
     {% liquid
       assign apgo_home_has_specs = false
-      for i in (1..4)
+      for i in (1..5)
         assign apgo_home_vkey = 'spec_value_' | append: i
         if block.settings[apgo_home_vkey] != blank
           assign apgo_home_has_specs = true
@@ -75,7 +75,7 @@
     %}
     {% if apgo_home_has_specs %}
       <ul class="apgo-home-card__specs">
-        {% for i in (1..4) %}
+        {% for i in (1..5) %}
           {% liquid
             assign apgo_home_lkey = 'spec_label_' | append: i
             assign apgo_home_vkey = 'spec_value_' | append: i
@@ -83,31 +83,11 @@
             assign apgo_home_spec_value = block.settings[apgo_home_vkey]
           %}
           {% if apgo_home_spec_label != blank and apgo_home_spec_value != blank %}
-            {% liquid
-              # Bar fill = this value relative to the column max across all
-              # product blocks, so the six cards stay visually comparable.
-              # plus: 0 parses the leading number ("180 days" -> 180, "95%" -> 95).
-              assign apgo_home_spec_num = apgo_home_spec_value | plus: 0
-              assign apgo_home_spec_max = 0
-              for b in section.blocks
-                if b.type == 'product'
-                  assign apgo_home_b_num = b.settings[apgo_home_vkey] | plus: 0
-                  if apgo_home_b_num > apgo_home_spec_max
-                    assign apgo_home_spec_max = apgo_home_b_num
-                  endif
-                endif
-              endfor
-              assign apgo_home_spec_pct = 100
-              if apgo_home_spec_max > 0
-                assign apgo_home_spec_pct = apgo_home_spec_num | times: 100.0 | divided_by: apgo_home_spec_max | round | at_least: 6 | at_most: 100
-              endif
-            %}
-            <li style="--apgo-spec-pct: {{ apgo_home_spec_pct }}%">
+            <li>
               <div class="apgo-home-card__spec-row">
                 <span class="apgo-home-card__spec-label">{{ apgo_home_spec_label | escape }}</span>
                 <span class="apgo-home-card__spec-value">{{ apgo_home_spec_value | escape }}</span>
               </div>
-              <span class="apgo-home-card__spec-bar" aria-hidden="true"><i></i></span>
             </li>
           {% endif %}
         {% endfor %}

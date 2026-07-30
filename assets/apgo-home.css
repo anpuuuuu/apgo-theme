@@ -337,17 +337,30 @@ html.apgo-home-js .apgo-home [data-apgo-reveal].is-revealed {
 .apgo-home-products__grid {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: 78%;
+  grid-auto-columns: minmax(210px, 72vw);
   gap: 12px;
   overflow-x: auto;
+  overflow-y: hidden;
   scroll-snap-type: x mandatory;
-  scroll-padding-inline: var(--apgo-home-gutter);
-  padding-bottom: 8px;
-  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+  scroll-padding-inline: 0;
+  padding: 2px 0 12px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(240, 132, 24, 0.72) rgba(255, 255, 255, 0.08);
 }
 
 .apgo-home-products__grid::-webkit-scrollbar {
-  display: none;
+  height: 6px;
+}
+
+.apgo-home-products__grid::-webkit-scrollbar-track {
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.apgo-home-products__grid::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(240, 132, 24, 0.72);
 }
 
 .apgo-home-products__item {
@@ -379,20 +392,15 @@ html.apgo-home-js .apgo-home [data-apgo-reveal].is-revealed {
 
 @media (min-width: 750px) {
   .apgo-home-products__grid {
-    grid-auto-flow: row;
-    grid-auto-columns: auto;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-columns: minmax(220px, 34vw);
     gap: 14px;
-    overflow-x: visible;
-    scroll-snap-type: none;
-    padding-bottom: 0;
   }
 }
 
 @media (min-width: 1024px) {
   .apgo-home-products__grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 18px;
+    grid-auto-columns: clamp(220px, 22vw, 270px);
+    gap: 16px;
   }
 }
 
@@ -428,8 +436,8 @@ html.apgo-home-js .apgo-home [data-apgo-reveal].is-revealed {
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
-  gap: 8px;
-  padding: 10px 10px 12px;
+  gap: 6px;
+  padding: 9px 10px 11px;
 }
 
 .apgo-home-card__title {
@@ -459,21 +467,23 @@ html.apgo-home-js .apgo-home [data-apgo-reveal].is-revealed {
   overflow: hidden;
   margin: -2px 0 0;
   color: var(--apgo-home-text-dim);
-  font-size: 11px;
-  line-height: 1.5;
+  font-size: 10.5px;
+  line-height: 1.4;
 }
 
 .apgo-home-card__specs {
   list-style: none;
-  margin: 4px 0 0;
+  margin: 2px 0 0;
   padding: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .apgo-home-card__specs li {
   display: block;
-  padding: 5px 0 7px;
-  font-size: 11px;
-  line-height: 1.4;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 10px;
+  line-height: 1.25;
 }
 
 .apgo-home-card__spec-row {
@@ -481,7 +491,6 @@ html.apgo-home-js .apgo-home [data-apgo-reveal].is-revealed {
   align-items: baseline;
   justify-content: space-between;
   gap: 10px;
-  margin-bottom: 4px;
 }
 
 .apgo-home-card__spec-label {
@@ -496,46 +505,17 @@ html.apgo-home-js .apgo-home [data-apgo-reveal].is-revealed {
   font-variant-numeric: tabular-nums;
 }
 
-.apgo-home-card__spec-bar {
-  display: block;
-  height: 4px;
-  border-radius: 2px;
-  background: rgba(255, 255, 255, 0.1);
-  overflow: hidden;
-}
-
-.apgo-home-card__spec-bar i {
-  display: block;
-  height: 100%;
-  width: 0;
-  border-radius: 2px;
-  background: var(--apgo-home-primary);
-  transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.2s;
-}
-
-.apgo-home-products__item.is-revealed .apgo-home-card__spec-bar i,
-html:not(.apgo-home-js) .apgo-home-card__spec-bar i {
-  width: var(--apgo-spec-pct, 0%);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .apgo-home-card__spec-bar i {
-    transition: none;
-    width: var(--apgo-spec-pct, 0%);
-  }
-}
-
 @media (min-width: 750px) {
   .apgo-home-card__subtitle {
-    font-size: 12px;
+    font-size: 11px;
   }
 
   .apgo-home-card__specs li {
-    font-size: 12px;
+    font-size: 10.5px;
   }
 
   .apgo-home-card__body {
-    padding: 12px 12px 14px;
+    padding: 10px 11px 12px;
   }
 }
 
