@@ -458,12 +458,15 @@
   width: 100%;
   background: var(--apgo-bg-alt);
   box-shadow: 0 8px 18px rgba(45, 46, 40, 0.06);
-  transition: transform .28s cubic-bezier(0.22, 1, 0.36, 1);
+  transition:
+    top .28s cubic-bezier(0.22, 1, 0.36, 1),
+    transform .28s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @media (max-width: 749px) {
   body.apgo-scroll-hide .apgo-mpdp-tabs-sticky {
-    transform: translateY(calc(-1 * var(--apgo-mpdp-tabs-top, var(--apgo-stack-h, 0px))));
+    top: 0;
+    transform: none;
   }
 }
 
