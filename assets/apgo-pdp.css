@@ -1244,19 +1244,19 @@ body.template-suffix-apgo-v1s-plus [id^="shopify-section-apgo_tactical_hub"] {
 .apgo-mpdp-feature-body img { max-width: 100%; height: auto; display: block; margin: 12px auto; border-radius: 6px; }
 .apgo-mpdp-feature-body a { color: var(--apgo-sage); text-decoration: underline; }
 
-/* Desktop: feature card + tab content panels constrained to 75% width, centered.
+/* Desktop: feature card + tab content panels constrained to two-thirds width, centered.
    Declared AFTER the base feature-card rule so the centering margin wins
    the cascade over the mobile `margin: 16px 16px 0` shorthand. */
 @media (min-width: 769px) {
   .apgo-mpdp-feature-card {
-    width: 75%;
-    max-width: 75%;
+    width: 66.6667%;
+    max-width: 66.6667%;
     margin-left: auto;
     margin-right: auto;
   }
   .apgo-mpdp-panel {
-    width: 75%;
-    max-width: 75%;
+    width: 66.6667%;
+    max-width: 66.6667%;
     margin-left: auto;
     margin-right: auto;
     box-sizing: border-box;
