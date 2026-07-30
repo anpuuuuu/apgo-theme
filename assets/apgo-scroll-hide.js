@@ -96,7 +96,7 @@
     var total = parseInt(counter.getAttribute('data-total'), 10);
     if (!Number.isFinite(remaining) || !Number.isFinite(total) || total <= 0) return;
 
-    var adjusted = Math.max(0, remaining - 14);
+    var adjusted = Math.max(0, remaining - 30);
     var number = counter.querySelector('[data-aurora-stock-number]');
     var fill = counter.querySelector('.apgo-aurora-mini-counter__fill');
     var label = counter.getAttribute('aria-label');
