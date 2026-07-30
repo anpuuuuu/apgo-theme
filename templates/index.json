@@ -87,7 +87,7 @@
         "heading_accent": "Coating",
         "subheading": "Because it's easier, more durable, and shinier than waxing.",
         "cta_label": "Shop Coating Now",
-        "cta_link": "shopify://collections/atomic-coating-series",
+        "cta_link": "/collections/all#collection-atomic-coating-series",
         "show_scroll_hint": true,
         "color_scheme": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26"
       }
@@ -197,7 +197,7 @@
         "spec_label_3": "Dust Resistance",
         "spec_label_4": "Wash Resistance",
         "spec_label_5": "Gloss",
-        "view_all_link": "shopify://collections/atomic-coating-series",
+        "view_all_link": "/collections/all#collection-atomic-coating-series",
         "color_scheme": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26",
         "padding-block-start": 0,
         "padding-block-end": 0
