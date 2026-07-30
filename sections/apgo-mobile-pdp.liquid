@@ -663,7 +663,8 @@
 
         <div class="apgo-sgs-cards">
           {%- for r in sgs_reports -%}
-            <article class="apgo-sgs-card" data-sgs-card>
+            {%- if r.report_image != blank -%}
+              <article class="apgo-sgs-card" data-sgs-card>
               <div class="apgo-sgs-card-head">
                 {%- if r.report_image != blank -%}
                   <a class="apgo-sgs-thumb" href="{{ r.report_image | image_url: width: 5760 }}" target="_blank" rel="noopener" aria-label="Open SGS report image">
@@ -714,7 +715,8 @@
                   </div>
                 {%- endif -%}
               </div>
-            </article>
+              </article>
+            {%- endif -%}
           {%- endfor -%}
         </div>
 
