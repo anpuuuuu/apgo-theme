@@ -1459,57 +1459,151 @@ body.template-suffix-apgo-v1s-plus [id^="shopify-section-apgo_tactical_hub"] {
 
 /* Result Overview */
 .apgo-sgs-overview {
+  position: relative;
   margin-top: 32px;
-  padding: 28px 16px;
-  background: var(--apgo-bg-alt);
-  border-radius: 6px;
+  padding: 28px 20px 22px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(178, 145, 99, 0.11), transparent 48%),
+    linear-gradient(145deg, #fffdf8 0%, var(--apgo-bg-alt) 100%);
+  border: 1px solid rgba(178, 145, 99, 0.24);
+  border-radius: 14px;
+  box-shadow: 0 14px 34px rgba(68, 58, 43, 0.07);
   text-align: center;
 }
-.apgo-sgs-overview-title { font-size: 20px; font-weight: 400; color: var(--apgo-ink); margin: 0 0 8px; position: relative; display: inline-block; padding: 0 24px; }
+.apgo-sgs-overview::before {
+  content: '';
+  position: absolute;
+  inset: 0 20% auto;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(178, 145, 99, 0.85), transparent);
+}
+.apgo-sgs-overview-title {
+  position: relative;
+  display: inline-block;
+  margin: 0 0 8px;
+  padding: 0 30px;
+  color: var(--apgo-ink);
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
 .apgo-sgs-overview-title::before,
 .apgo-sgs-overview-title::after {
   content: '';
   position: absolute;
   top: 50%;
-  width: 18px;
+  width: 20px;
   height: 1px;
-  background: var(--apgo-sage);
-  opacity: 0.6;
+  background: linear-gradient(90deg, transparent, var(--apgo-sage));
+  opacity: 0.7;
 }
 .apgo-sgs-overview-title::before { left: 0; }
-.apgo-sgs-overview-title::after { right: 0; }
-.apgo-sgs-overview-sub { font-size: 13px; color: var(--apgo-muted); margin: 0 0 22px; }
+.apgo-sgs-overview-title::after {
+  right: 0;
+  transform: scaleX(-1);
+}
+.apgo-sgs-overview-sub {
+  max-width: 520px;
+  margin: 0 auto 22px;
+  color: var(--apgo-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
 
 .apgo-sgs-chips {
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: center;
-  gap: 6px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
 }
 .apgo-sgs-chip {
-  flex: 1 1 0;
+  position: relative;
   min-width: 0;
+  min-height: 78px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  padding: 12px 6px;
-  background: #fff;
-  border: 1px solid var(--apgo-line);
-  border-radius: 999px;
+  justify-content: center;
+  gap: 5px;
+  padding: 13px 8px 11px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(94, 111, 93, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(45, 46, 40, 0.05);
 }
-.apgo-sgs-chip-val { font-size: 14px; font-style: italic; color: var(--apgo-sage); white-space: nowrap; }
-.apgo-sgs-chip-label { font-size: 10px; color: var(--apgo-muted); letter-spacing: 0.05em; white-space: nowrap; }
+.apgo-sgs-chip::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 5px;
+  height: 5px;
+  background: var(--apgo-sage);
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px rgba(94, 111, 93, 0.09);
+}
+.apgo-sgs-chip-val {
+  color: var(--apgo-sage);
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  white-space: nowrap;
+}
+.apgo-sgs-chip-label {
+  color: var(--apgo-muted);
+  font-size: 10px;
+  letter-spacing: 0.035em;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
 
 /* Mobile tweaks */
 @media (max-width: 480px) {
   .apgo-sgs-title { font-size: 24px; }
   .apgo-sgs-thumb { flex-basis: 72px; width: 72px; height: 92px; }
   .apgo-sgs-card-test { font-size: 15px; }
-  .apgo-sgs-chips { gap: 4px; }
-  .apgo-sgs-chip { padding: 10px 4px; }
-  .apgo-sgs-chip-val { font-size: 12px; }
-  .apgo-sgs-chip-label { font-size: 9px; letter-spacing: 0.02em; }
+  .apgo-sgs-overview {
+    padding: 24px 14px 16px;
+    border-radius: 12px;
+  }
+  .apgo-sgs-overview-title {
+    padding: 0 24px;
+    font-size: 16px;
+    letter-spacing: 0.06em;
+  }
+  .apgo-sgs-overview-title::before,
+  .apgo-sgs-overview-title::after {
+    width: 16px;
+  }
+  .apgo-sgs-overview-sub {
+    margin-bottom: 18px;
+    padding: 0 6px;
+    font-size: 12px;
+  }
+  .apgo-sgs-chips {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .apgo-sgs-chip {
+    min-height: 68px;
+    padding: 12px 10px 10px;
+  }
+  .apgo-sgs-chip:nth-child(3) {
+    grid-column: 1 / -1;
+    min-height: 58px;
+    flex-direction: row;
+    gap: 10px;
+  }
+  .apgo-sgs-chip:nth-child(3) .apgo-sgs-chip-label::before {
+    content: '·';
+    margin-right: 10px;
+    color: rgba(94, 111, 93, 0.45);
+  }
+  .apgo-sgs-chip-val { font-size: 14px; }
+  .apgo-sgs-chip-label { font-size: 10px; }
 }
 
 /* ============================================================================
