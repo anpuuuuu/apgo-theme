@@ -350,7 +350,7 @@
           "settings": {
             "title": "New Car Protection",
             "description": "Just purchased a new car and want the best protection.",
-            "link": "shopify://collections/2025-new-launch"
+            "link": "/collections/all#collection-2025-new-launch"
           }
         },
         "guide_restore": {
@@ -358,7 +358,7 @@
           "settings": {
             "title": "Old Car Restoration",
             "description": "Used for a while and want to restore the shine.",
-            "link": "shopify://collections/restoration"
+            "link": "/collections/all#collection-restoration"
           }
         },
         "guide_diy": {
@@ -366,7 +366,7 @@
           "settings": {
             "title": "DIY Beginner",
             "description": "First time doing it yourself, need something simple and easy to use.",
-            "link": "shopify://products/apgo-atomic-car-nano-coating-standard"
+            "link": "/collections/all#collection-atomic-coating-series"
           }
         },
         "guide_pro": {
@@ -374,7 +374,7 @@
           "settings": {
             "title": "Professional Needs",
             "description": "Seeking the highest level of protection effects.",
-            "link": "shopify://collections/atomic-coating-series"
+            "link": "/collections/all#collection-atomic-coating-series"
           }
         }
       },
