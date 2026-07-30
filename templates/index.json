@@ -100,10 +100,10 @@
           "settings": {
             "product": "apgo-atomic-titanium-crystal-car-nano-coating-premium",
             "badge": "Premium",
-            "subtitle": "High-hardness titanium crystal structure, ultimate protection and lasting shine.",
+            "subtitle": "Premium titanium-crystal coating for maximum durability, hydrophobic protection and gloss.",
             "spec_value_1": "180 days",
             "spec_value_2": "95%",
-            "spec_value_3": "",
+            "spec_value_3": "Enhanced",
             "spec_value_4": "30+ washes",
             "spec_value_5": "98%"
           }
@@ -112,13 +112,13 @@
           "type": "product",
           "settings": {
             "product": "apgo-aurora-car-nano-coating-premium",
-            "badge": "Enhanced Shine",
-            "subtitle": "Aurora-like brilliance, enhanced surface protection, improved aesthetics.",
-            "spec_value_1": "150 days",
-            "spec_value_2": "80%",
-            "spec_value_3": "",
-            "spec_value_4": "20+ washes",
-            "spec_value_5": "80 pts"
+            "badge": "Flagship",
+            "subtitle": "Star flagship wet coating with maximum protection across all functions.",
+            "spec_value_1": "+30%",
+            "spec_value_2": "+50%",
+            "spec_value_3": "+50%",
+            "spec_value_4": "+30%",
+            "spec_value_5": "+30%"
           }
         },
         "prod_glaze": {
