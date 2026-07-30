@@ -211,14 +211,14 @@
       var q = qty();
       var total = price * q;
 
-      $$('[data-apgo-price]', form).forEach(function (n) { n.textContent = formatMoney(price); });
+      $$('[data-apgo-price]', form).forEach(function (n) { n.textContent = formatMoney(total); });
       $$('[data-apgo-total]', form).forEach(function (n) { n.textContent = formatMoney(total); });
       $$('[data-apgo-compare]', form).forEach(function (n) {
-        if (compare > price) { n.textContent = formatMoney(compare); n.style.display = ''; }
+        if (compare > price) { n.textContent = formatMoney(compare * q); n.style.display = ''; }
         else { n.style.display = 'none'; }
       });
       $$('[data-apgo-installment]', form).forEach(function (n) {
-        n.textContent = '3 interest-free payments of ' + formatMoney(Math.round(price / 3));
+        n.textContent = '3 interest-free payments of ' + formatMoney(Math.round(total / 3));
       });
 
       // Availability → disable add button
@@ -259,11 +259,59 @@
       return noQuery.substring(noQuery.lastIndexOf('/') + 1).toLowerCase();
     }
 
+    function variantMedia(variant) {
+      if (!variant) return null;
+      var media = variant.featured_image || variant.featured_media;
+      if (!media) return null;
+      if (typeof media === 'string') return { id: '', src: media };
+      var preview = media.preview_image || {};
+      return {
+        id: String(media.id || preview.id || ''),
+        src: media.src || media.url || preview.src || ''
+      };
+    }
+
+    function inferOnlyUnassignedMedia(variant) {
+      var missing = variants.filter(function (item) {
+        var media = variantMedia(item);
+        return !media || !media.src;
+      });
+      if (missing.length !== 1 || String(missing[0].id) !== String(variant.id)) return null;
+
+      var assignedFiles = {};
+      variants.forEach(function (item) {
+        var media = variantMedia(item);
+        var filename = media && srcFilename(media.src);
+        if (filename) assignedFiles[filename] = true;
+      });
+
+      var candidates = [];
+      var seen = {};
+      $$('[data-apgo-thumb-idx]', form).forEach(function (thumb, index) {
+        if (index === 0) return;
+        var img = $('img', thumb);
+        if (!img) return;
+        var src = img.currentSrc || img.src;
+        var filename = srcFilename(src);
+        if (!filename || assignedFiles[filename] || seen[filename]) return;
+        seen[filename] = true;
+        candidates.push({
+          id: String(thumb.getAttribute('data-apgo-image-id') || ''),
+          src: src
+        });
+      });
+      return candidates.length === 1 ? candidates[0] : null;
+    }
+
     // Swap the main media (desktop main img + thumb activation, mobile carousel scroll)
-    // to the variant's featured image. No-op if the variant has no featured image set.
+    // to the variant's featured image. If exactly one variant and one gallery
+    // image are unassigned, pair them as a safe fallback.
     function syncMediaToVariant(variant) {
-      if (!variant || !variant.featured_image || !variant.featured_image.src) return;
-      var targetFile = srcFilename(variant.featured_image.src);
+      if (!variant) return;
+      var target = variantMedia(variant) || inferOnlyUnassignedMedia(variant);
+      if (!target || !target.src) return;
+      var targetFile = srcFilename(target.src);
+      var targetId = String(target.id || '');
       if (!targetFile) return;
 
       // Desktop: find matching thumb, activate it, push its image into main slot.
@@ -272,7 +320,8 @@
       $$('[data-apgo-thumb-idx]', form).forEach(function (t) {
         var img = $('img', t);
         if (!img) return;
-        if (srcFilename(img.currentSrc || img.src) === targetFile) matchedThumb = t;
+        var mediaId = String(t.getAttribute('data-apgo-image-id') || '');
+        if ((targetId && mediaId === targetId) || srcFilename(img.currentSrc || img.src) === targetFile) matchedThumb = t;
       });
       if (matchedThumb) {
         $$('[data-apgo-thumb-idx]', form).forEach(function (t) { t.classList.remove('active'); });
@@ -290,7 +339,7 @@
       } else if (mainImg) {
         // No matching thumb (image only attached to variant, not in product.media gallery).
         // Still swap the main img directly to the variant featured image.
-        mainImg.src = variant.featured_image.src.replace(/(\?|&)width=\d+/, '$1width=1400');
+        mainImg.src = target.src.replace(/(\?|&)width=\d+/, '$1width=1400');
       }
 
       // Mobile: scroll the carousel track to the matching slide.
@@ -300,7 +349,8 @@
         for (var i = 0; i < slides.length; i++) {
           var simg = $('img', slides[i]);
           if (!simg) continue;
-          if (srcFilename(simg.currentSrc || simg.src) === targetFile) {
+          var slideMediaId = String(slides[i].getAttribute('data-apgo-image-id') || '');
+          if ((targetId && slideMediaId === targetId) || srcFilename(simg.currentSrc || simg.src) === targetFile) {
             try { track.scrollTo({ left: slides[i].offsetLeft, behavior: 'smooth' }); }
             catch (e) { track.scrollLeft = slides[i].offsetLeft; }
             break;
@@ -317,27 +367,19 @@
       syncMediaToVariant(variant);
     }
 
-    // Wire radio inputs. When the user changes a radio in one layout,
-    // mirror the selection into all radios with the same name+value
-    // across the form so the desktop ↔ mobile shells stay in sync (e.g.,
-    // active class for styling, browser back/forward state).
+    // Desktop and mobile use separate radio names so one shell cannot
+    // uncheck the other. Mirror selections by option position instead.
     $$('input[data-apgo-option-input]', form).forEach(function (input) {
       input.addEventListener('change', function () {
-        var name = input.name;
+        var sourceGroup = input.closest('[data-apgo-option-group]');
+        var position = sourceGroup ? sourceGroup.getAttribute('data-option-position') : '';
         var val = input.value;
-        $$('input[data-apgo-option-input][name="' + CSS.escape(name) + '"]', form).forEach(function (mirror) {
-          if (mirror === input) return;
-          mirror.checked = (mirror.value === val);
-          // Also reflect on the wrapping label for active-class styling
-          var labelMirror = mirror.closest('label');
-          if (labelMirror) labelMirror.classList.toggle('active', mirror.checked);
+        if (!position) return;
+        $$('[data-apgo-option-group][data-option-position="' + position + '"]', form).forEach(function (group) {
+          $$('input[data-apgo-option-input]', group).forEach(function (mirror) {
+            mirror.checked = (mirror.value === val);
+          });
         });
-        var ownLabel = input.closest('label');
-        if (ownLabel) {
-          var sib = ownLabel.parentNode ? ownLabel.parentNode.children : [];
-          for (var k = 0; k < sib.length; k++) sib[k].classList && sib[k].classList.remove('active');
-          ownLabel.classList.add('active');
-        }
         onOptionChange();
       });
     });

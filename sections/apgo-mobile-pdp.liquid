@@ -178,7 +178,7 @@
                       {%- endif -%}
                       <label class="apgo-scentbtn {% if option.selected_value == value %}active{% endif %}">
                         <input type="radio"
-                               name="options[{{ option.name | escape }}]"
+                               name="apgo_desktop_option_{{ option.position }}"
                                value="{{ value | escape }}"
                                data-apgo-option-input
                                {% if option.selected_value == value %}checked{% endif %}>
@@ -192,7 +192,7 @@
                     {%- for value in option.values -%}
                       <label class="apgo-chip {% if option.selected_value == value %}active{% endif %}">
                         <input type="radio"
-                               name="options[{{ option.name | escape }}]"
+                               name="apgo_desktop_option_{{ option.position }}"
                                value="{{ value | escape }}"
                                data-apgo-option-input
                                {% if option.selected_value == value %}checked{% endif %}>
@@ -396,7 +396,7 @@
                   {%- endcase -%}
                 {%- endif -%}
                 <label class="apgo-mpdp-scentbtn {% if option.selected_value == value %}active{% endif %}">
-                  <input type="radio" name="options[{{ option.name | escape }}]" value="{{ value | escape }}" data-apgo-option-input {% if option.selected_value == value %}checked{% endif %}>
+                  <input type="radio" name="apgo_mobile_option_{{ option.position }}" value="{{ value | escape }}" data-apgo-option-input {% if option.selected_value == value %}checked{% endif %}>
                   <span class="apgo-mpdp-swatch" style="background:{{ sc }}"></span>
                   <span class="apgo-serif">{{ value }}</span>
                 </label>
@@ -406,7 +406,7 @@
             <div class="apgo-mpdp-chip-grid">
               {%- for value in option.values -%}
                 <label class="apgo-mpdp-chip {% if option.selected_value == value %}active{% endif %}">
-                  <input type="radio" name="options[{{ option.name | escape }}]" value="{{ value | escape }}" data-apgo-option-input {% if option.selected_value == value %}checked{% endif %}>
+                  <input type="radio" name="apgo_mobile_option_{{ option.position }}" value="{{ value | escape }}" data-apgo-option-input {% if option.selected_value == value %}checked{% endif %}>
                   <span>{{ value }}</span>
                 </label>
               {%- endfor -%}
