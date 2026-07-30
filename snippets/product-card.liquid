@@ -49,12 +49,16 @@
   endif
 
   if settings.transition_to_main_product
-    assign featured_image = apgo_listing_variant.featured_image
-    if featured_image == blank
-      assign featured_image = apgo_listing_variant.image
-    endif
-    if featured_image == blank
-      assign featured_image = product.featured_media.preview_image
+    if product.id == 9066539745434
+      assign featured_image = product.media.first.preview_image
+    else
+      assign featured_image = apgo_listing_variant.featured_image
+      if featured_image == blank
+        assign featured_image = apgo_listing_variant.image
+      endif
+      if featured_image == blank
+        assign featured_image = product.featured_media.preview_image
+      endif
     endif
 
     if featured_image != blank

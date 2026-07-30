@@ -66,12 +66,16 @@
     assign temp_ratio = '1'
   elsif image_ratio_setting == 'adapt'
     if product != blank
-      assign current_featured_image_for_ratio = apgo_listing_variant.featured_image
-      if current_featured_image_for_ratio == blank
-        assign current_featured_image_for_ratio = apgo_listing_variant.image
-      endif
-      if current_featured_image_for_ratio == blank and product.featured_media.preview_image != blank
-        assign current_featured_image_for_ratio = product.featured_media.preview_image
+      if product.id == 9066539745434
+        assign current_featured_image_for_ratio = product.media.first.preview_image
+      else
+        assign current_featured_image_for_ratio = apgo_listing_variant.featured_image
+        if current_featured_image_for_ratio == blank
+          assign current_featured_image_for_ratio = apgo_listing_variant.image
+        endif
+        if current_featured_image_for_ratio == blank and product.featured_media.preview_image != blank
+          assign current_featured_image_for_ratio = product.featured_media.preview_image
+        endif
       endif
 
       if current_featured_image_for_ratio != blank and current_featured_image_for_ratio.aspect_ratio != null and current_featured_image_for_ratio.aspect_ratio > 0
@@ -87,12 +91,16 @@
   endif
 
   assign variant_images = product.images | where: 'attached_to_variant?', true | map: 'src'
-  assign selected_variant_image = apgo_listing_variant.image.src
-  if selected_variant_image == blank and apgo_listing_variant.featured_image != blank
-    assign selected_variant_image = apgo_listing_variant.featured_image.src
-  endif
-  if selected_variant_image == blank and product.featured_image != blank
-    assign selected_variant_image = product.featured_image.src
+  if product.id == 9066539745434
+    assign selected_variant_image = product.media.first.preview_image.src
+  else
+    assign selected_variant_image = apgo_listing_variant.image.src
+    if selected_variant_image == blank and apgo_listing_variant.featured_image != blank
+      assign selected_variant_image = apgo_listing_variant.featured_image.src
+    endif
+    if selected_variant_image == blank and product.featured_image != blank
+      assign selected_variant_image = product.featured_image.src
+    endif
   endif
   assign selected_variant_image_index = 0
   for image in product.images

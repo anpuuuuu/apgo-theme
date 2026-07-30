@@ -665,18 +665,13 @@
           {%- for r in sgs_reports -%}
             <article class="apgo-sgs-card" data-sgs-card>
               <div class="apgo-sgs-card-head">
-                {%- if r.report_pdf != blank -%}
-                  <a class="apgo-sgs-thumb" href="{{ r.report_pdf }}" target="_blank" rel="noopener" aria-label="Open SGS report PDF">
-                    {%- if r.report_image != blank -%}
-                      <img src="{{ r.report_image | image_url: width: 240 }}" alt="SGS report {{ r.report_no }}" width="{{ r.report_image.width }}" height="{{ r.report_image.height }}" loading="lazy">
-                    {%- endif -%}
-                    <span class="apgo-sgs-thumb-badge">PDF</span>
+                {%- if r.report_image != blank -%}
+                  <a class="apgo-sgs-thumb" href="{{ r.report_image | image_url: width: 5760 }}" target="_blank" rel="noopener" aria-label="Open SGS report image">
+                    <img src="{{ r.report_image | image_url: width: 240 }}" alt="SGS report {{ r.report_no }}" width="{{ r.report_image.width }}" height="{{ r.report_image.height }}" loading="lazy">
+                    <span class="apgo-sgs-thumb-badge">VIEW</span>
                   </a>
                 {%- else -%}
                   <div class="apgo-sgs-thumb apgo-sgs-thumb--static">
-                    {%- if r.report_image != blank -%}
-                      <img src="{{ r.report_image | image_url: width: 240 }}" alt="SGS report {{ r.report_no }}" width="{{ r.report_image.width }}" height="{{ r.report_image.height }}" loading="lazy">
-                    {%- endif -%}
                   </div>
                 {%- endif -%}
 
