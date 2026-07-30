@@ -284,14 +284,15 @@
           "type": "row",
           "settings": {
             "label": "Durability",
-            "left_value": "1-6 Months",
+            "left_value": "1-2 Months",
             "left_percent": 90,
             "right_value": "1-2 Weeks",
-            "right_percent": 14
+            "right_percent": 20
           }
         },
         "row_heat": {
           "type": "row",
+          "disabled": true,
           "settings": {
             "label": "Heat Resistance",
             "left_value": "150°C+",
