@@ -83,6 +83,13 @@
     "apgo_event_collection_grid_n3e6dm": {
       "type": "apgo-event-collection-grid",
       "blocks": {
+        "b1f1_card_3EpAUP": {
+          "type": "b1f1_card",
+          "settings": {
+            "product": "atomic-series-coating-refill-5-in-1-set",
+            "variant_id": ""
+          }
+        },
         "b1f1_card_CbeJhU": {
           "type": "b1f1_card",
           "settings": {
@@ -190,6 +197,7 @@
         }
       },
       "block_order": [
+        "b1f1_card_3EpAUP",
         "b1f1_card_CbeJhU",
         "b1f1_card_QVijhx",
         "b1f1_card_AzRMiV",
