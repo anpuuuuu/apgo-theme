@@ -4292,6 +4292,7 @@
           total: section.settings.aurora_counter_total,
           starting_remaining: section.settings.aurora_counter_start_remaining,
           flow_baseline: section.settings.aurora_counter_flow_baseline,
+          catchup_sets: section.settings.aurora_counter_manual_sold,
           mode: 'compact'
         %}
       {% endif %}
@@ -7135,6 +7136,13 @@ document.addEventListener('DOMContentLoaded', function() {
       "label": "Flow paid-set baseline",
       "info": "Enter the current apgo_campaign.aurora_paid_sets value when Flow is switched back on.",
       "default": "0"
+    },
+    {
+      "type": "text",
+      "id": "aurora_counter_manual_sold",
+      "label": "Manual sets sold (extra reduction)",
+      "info": "Marks this many sets as sold ON TOP of live paid orders — raise it to manually lower this product-page counter, lower it to raise it. Displayed remaining = Starting remaining − paid orders − this number. Default 24. (Independent of the Golden Bull page counter.)",
+      "default": "24"
     },
     {
       "type": "header",
