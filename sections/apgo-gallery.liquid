@@ -16,6 +16,7 @@
 
 {%- if section.settings.main_image != blank -%}
   {%- assign main_alt = section.settings.main_alt | default: section.settings.main_image.alt | default: section.settings.heading -%}
+  <script src="{{ 'apgo-campaign-tracking.js' | asset_url }}" defer></script>
   <section
     id="ApgoGallery-{{ section.id }}"
     class="apgo-gallery"
@@ -75,7 +76,13 @@
             </h3>
           {%- endif -%}
           <div class="apgo-gallery__rail-shell" data-apgo-gallery-rail-shell>
-            <div class="apgo-gallery__rail" data-apgo-gallery-rail>
+            <div
+              class="apgo-gallery__rail"
+              data-apgo-gallery-rail
+              data-apgo-gallery-section-id="gallery_portrait"
+              data-apgo-gallery-section-name="{{ section.settings.portrait_heading | default: section.settings.heading | default: 'Gallery portrait' | escape }}"
+              data-apgo-gallery-section-position="1"
+            >
               {%- for block in section.blocks -%}
                 {%- if block.type == 'portrait' and block.settings.image != blank -%}
                   {%- assign portrait_alt = block.settings.alt_text | default: block.settings.image.alt | default: section.settings.portrait_heading -%}
@@ -138,7 +145,13 @@
             </h3>
           {%- endif -%}
           <div class="apgo-gallery__rail-shell" data-apgo-gallery-rail-shell>
-            <div class="apgo-gallery__rail" data-apgo-gallery-rail>
+            <div
+              class="apgo-gallery__rail"
+              data-apgo-gallery-rail
+              data-apgo-gallery-section-id="gallery_landscape"
+              data-apgo-gallery-section-name="{{ section.settings.landscape_heading | default: section.settings.heading | default: 'Gallery landscape' | escape }}"
+              data-apgo-gallery-section-position="2"
+            >
               {%- for block in section.blocks -%}
                 {%- if block.type == 'landscape' and block.settings.image != blank -%}
                   {%- assign landscape_alt = block.settings.alt_text | default: block.settings.image.alt | default: section.settings.landscape_heading -%}

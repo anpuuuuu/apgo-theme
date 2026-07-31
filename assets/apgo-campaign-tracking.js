@@ -498,6 +498,101 @@
     });
   }
 
+  function initGalleryTracking(scope) {
+    var rails = scope.querySelectorAll('[data-apgo-gallery-rail][data-apgo-gallery-section-id]');
+    if (!rails.length) return;
+
+    var campaignRoot = document.querySelector('[data-apgo-campaign-root]');
+    var baseContext = campaignRoot ? getCampaignContext(campaignRoot) : {};
+
+    Array.prototype.forEach.call(rails, function (track) {
+      if (track.getAttribute('data-apgo-gallery-tracking-ready') === 'true') return;
+      track.setAttribute('data-apgo-gallery-tracking-ready', 'true');
+
+      var sectionContext = {
+        section_id: track.getAttribute('data-apgo-gallery-section-id'),
+        section_name: track.getAttribute('data-apgo-gallery-section-name'),
+        section_position: Number(track.getAttribute('data-apgo-gallery-section-position')) || undefined
+      };
+      var cardsTotal = track.querySelectorAll('.apgo-gallery__card').length;
+      var milestones = [25, 50, 75, 100];
+      var recorded = {};
+      var started = false;
+      var inputMethod = '';
+      var initialScrollLeft = track.scrollLeft;
+      var frame = 0;
+
+      function recordStart(method) {
+        if (started) return;
+        started = true;
+        publish('apgo_carousel_start', Object.assign({}, baseContext, sectionContext, {
+          input_method: method || 'scroll',
+          cards_total: cardsTotal
+        }));
+      }
+
+      function recordProgress() {
+        frame = 0;
+        var maxScroll = Math.max(0, track.scrollWidth - track.clientWidth);
+        if (maxScroll <= 8) return;
+        var distance = Math.abs(track.scrollLeft - initialScrollLeft);
+        if (distance > 4) recordStart(inputMethod || 'scroll');
+        var percent = Math.min(100, Math.max(0, Math.round((track.scrollLeft / maxScroll) * 100)));
+
+        milestones.forEach(function (milestone) {
+          if (percent < milestone || recorded[milestone]) return;
+          recorded[milestone] = true;
+          publish('apgo_carousel_progress', Object.assign({}, baseContext, sectionContext, {
+            progress_percent: milestone,
+            input_method: inputMethod || 'scroll',
+            cards_total: cardsTotal
+          }));
+          if (milestone === 100) {
+            publish('apgo_carousel_complete', Object.assign({}, baseContext, sectionContext, {
+              input_method: inputMethod || 'scroll',
+              cards_total: cardsTotal
+            }));
+          }
+        });
+      }
+
+      track.addEventListener('pointerdown', function (event) {
+        inputMethod = event.pointerType === 'touch' ? 'swipe' : 'drag';
+        initialScrollLeft = track.scrollLeft;
+      }, { passive: true });
+      track.addEventListener('touchstart', function () {
+        inputMethod = 'swipe';
+        initialScrollLeft = track.scrollLeft;
+      }, { passive: true });
+      track.addEventListener('wheel', function () {
+        inputMethod = 'wheel';
+        initialScrollLeft = track.scrollLeft;
+      }, { passive: true });
+      track.addEventListener('scroll', function () {
+        if (!frame) frame = window.requestAnimationFrame(recordProgress);
+      }, { passive: true });
+
+      var shell = track.closest('[data-apgo-gallery-rail-shell]');
+      var previousButton = shell ? shell.querySelector('[data-apgo-gallery-rail-previous]') : null;
+      var nextButton = shell ? shell.querySelector('[data-apgo-gallery-rail-next]') : null;
+      [
+        { button: previousButton, direction: 'previous' },
+        { button: nextButton, direction: 'next' }
+      ].forEach(function (control) {
+        if (!control.button) return;
+        control.button.addEventListener('click', function () {
+          inputMethod = control.direction + '_arrow';
+          initialScrollLeft = track.scrollLeft;
+          recordStart(inputMethod);
+          publish('apgo_carousel_arrow_click', Object.assign({}, baseContext, sectionContext, {
+            direction: control.direction,
+            cards_total: cardsTotal
+          }));
+        });
+      });
+    });
+  }
+
   function initCampaignClicks(root, context) {
     document.addEventListener('click', function (event) {
       var target = event.target;
@@ -578,6 +673,7 @@
   function init(scope) {
     var target = scope && scope.querySelectorAll ? scope : document;
     initHomepageLinks(target);
+    initGalleryTracking(target);
     initCampaignPage(target);
   }
 
