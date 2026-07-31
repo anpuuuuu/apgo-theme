@@ -37,6 +37,18 @@
         endif
       endfor
     endif
+
+    # Sold-out state. The promoted product may use inventory policy
+    # "continue selling when out of stock" (CONTINUE), so variant.available
+    # stays true even at 0 stock. Mirror the PDP: treat real inventory of 0
+    # (tracked variant, inventory_quantity <= 0) as sold out too.
+    assign apgo_zone_sold_out = false
+    unless action_variant.available
+      assign apgo_zone_sold_out = true
+    endunless
+    if action_variant.inventory_management != blank and action_variant.inventory_quantity != blank and action_variant.inventory_quantity <= 0
+      assign apgo_zone_sold_out = true
+    endif
   %}
   <section
     class="apgo-event-linked-banner-zone apgo-event-linked-banner-zone--{{ zone_class }}"
@@ -96,12 +108,12 @@
           class="apgo-event-linked-banner-zone__button apgo-event-linked-banner-zone__button--add"
           data-variant-id="{{ action_variant.id }}"
           aria-label="{{ 'actions.add_to_cart' | t }}: {{ product.title | escape }}"
-          {% unless action_variant.available %}disabled{% endunless %}
+          {% if apgo_zone_sold_out %}disabled{% endif %}
         >
-          {% if action_variant.available %}
-            {{ 'actions.add_to_cart' | t }}
-          {% else %}
+          {% if apgo_zone_sold_out %}
             {{ 'products.product.sold_out' | t }}
+          {% else %}
+            {{ 'actions.add_to_cart' | t }}
           {% endif %}
         </button>
         <button
@@ -109,12 +121,12 @@
           class="apgo-event-linked-banner-zone__button apgo-event-linked-banner-zone__button--buy"
           data-variant-id="{{ action_variant.id }}"
           aria-label="{{ 'product.buy_now' | t }}: {{ product.title | escape }}"
-          {% unless action_variant.available %}disabled{% endunless %}
+          {% if apgo_zone_sold_out %}disabled{% endif %}
         >
-          {% if action_variant.available %}
-            {{ 'product.buy_now' | t }}
-          {% else %}
+          {% if apgo_zone_sold_out %}
             {{ 'products.product.sold_out' | t }}
+          {% else %}
+            {{ 'product.buy_now' | t }}
           {% endif %}
         </button>
       </div>
