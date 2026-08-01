@@ -119,12 +119,9 @@
       {%- assign apgo_show_aurora_counter = section.settings.show_aurora_counter -%}
       {%- assign apgo_aurora_counter_start_remaining = section.settings.aurora_counter_start_remaining -%}
       {%- assign apgo_aurora_counter_flow_baseline = section.settings.aurora_counter_claimed -%}
-      {%- assign apgo_aurora_counter_catchup_sets = 0 -%}
+      {%- assign apgo_aurora_counter_catchup_sets = section.settings.aurora_counter_manual_sold | plus: 0 -%}
       {%- if template.suffix == 'golden-bull-award' -%}
         {%- assign apgo_show_aurora_counter = true -%}
-        {%- assign apgo_aurora_counter_start_remaining = 262 -%}
-        {%- assign apgo_aurora_counter_flow_baseline = 0 -%}
-        {%- assign apgo_aurora_counter_catchup_sets = section.settings.aurora_counter_manual_sold | default: 54 -%}
       {%- endif -%}
 
       {%- comment -%} ZONE 1 — Discount horizontal scroll {%- endcomment -%}
@@ -386,8 +383,8 @@
       "type": "text",
       "id": "aurora_counter_manual_sold",
       "label": "Manual sets sold (extra reduction)",
-      "info": "Golden Bull page only. Marks this many sets as sold ON TOP of live paid orders — raise it to manually lower the counter, lower it to raise the counter. Displayed remaining = Starting remaining − paid orders − this number. Default 54.",
-      "default": "54",
+      "info": "Optional extra reduction on top of paid orders. Leave this at 0 when no manual adjustment is required.",
+      "default": "0",
       "visible_if": "{{ section.settings.show_aurora_counter }}"
     },
     {

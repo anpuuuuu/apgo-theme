@@ -41,10 +41,7 @@
   assign campaign_progress = campaign_remaining | times: 100.0 | divided_by: campaign_total
 
   assign campaign_extension_total = extension_total | plus: 0 | at_least: 0
-  assign campaign_extension_claimed = 0
-  if campaign_raw_remaining < 0
-    assign campaign_extension_claimed = campaign_raw_remaining | abs
-  endif
+  assign campaign_extension_claimed = campaign_flow_paid_sets | minus: campaign_flow_baseline | at_least: 0
   assign campaign_extension_remaining = campaign_extension_total | minus: campaign_extension_claimed | at_least: 0 | at_most: campaign_extension_total
   assign campaign_extension_progress = 0
   if campaign_extension_total > 0
@@ -56,7 +53,7 @@
   assign active_remaining = campaign_remaining
   assign active_claimed = campaign_claimed
   assign active_progress = campaign_progress
-  if campaign_remaining == 0 and campaign_extension_total > 0
+  if campaign_extension_total > 0
     assign campaign_extension_active = true
     assign active_total = campaign_extension_total
     assign active_remaining = campaign_extension_remaining

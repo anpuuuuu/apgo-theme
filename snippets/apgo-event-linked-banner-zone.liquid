@@ -24,12 +24,6 @@
     assign apgo_counter_start_remaining = counter_start_remaining
     assign apgo_counter_flow_baseline = counter_flow_baseline
     assign apgo_counter_catchup_sets = counter_catchup_sets | default: 0
-    if template.suffix == 'golden-bull-award'
-      assign apgo_counter_visible = true
-      assign apgo_counter_start_remaining = 262
-      assign apgo_counter_flow_baseline = 0
-      assign apgo_counter_catchup_sets = counter_catchup_sets | default: 54
-    endif
     if requested_variant_id != 0
       for candidate_variant in product.variants
         if candidate_variant.id == requested_variant_id
