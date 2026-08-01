@@ -117,9 +117,6 @@
         {%- assign discount_zone_banner = section.settings.discount_zone_banner_sg -%}
       {%- endif -%}
       {%- assign apgo_show_aurora_counter = section.settings.show_aurora_counter -%}
-      {%- assign apgo_aurora_counter_start_remaining = section.settings.aurora_counter_start_remaining -%}
-      {%- assign apgo_aurora_counter_flow_baseline = section.settings.aurora_counter_claimed -%}
-      {%- assign apgo_aurora_counter_catchup_sets = section.settings.aurora_counter_manual_sold | plus: 0 -%}
       {%- if template.suffix == 'golden-bull-award' -%}
         {%- assign apgo_show_aurora_counter = true -%}
       {%- endif -%}
@@ -144,11 +141,9 @@
           heading: section.settings.aurora_zone_heading,
           message: section.settings.aurora_zone_message,
           show_counter: apgo_show_aurora_counter,
-          counter_total: section.settings.aurora_counter_total,
-          counter_start_remaining: apgo_aurora_counter_start_remaining,
-          counter_flow_baseline: apgo_aurora_counter_flow_baseline,
-          counter_catchup_sets: apgo_aurora_counter_catchup_sets,
-          counter_extension_total: section.settings.aurora_counter_extension_total,
+          counter_release_total: section.settings.aurora_counter_release_total,
+          counter_flow_baseline: section.settings.aurora_counter_flow_baseline,
+          counter_milestone_total: section.settings.aurora_counter_milestone_total,
           banner_image: section.settings.aurora_zone_banner,
           product: section.settings.aurora_zone_product,
           variant_id: section.settings.aurora_zone_variant_id,
@@ -352,47 +347,31 @@
     {
       "type": "checkbox",
       "id": "show_aurora_counter",
-      "label": "Show 500-set counter",
+      "label": "Show Aurora counter",
       "default": false
     },
     {
       "type": "text",
-      "id": "aurora_counter_total",
-      "label": "Total campaign sets",
-      "info": "Enter a whole number. This can later be connected to a dynamic source.",
+      "id": "aurora_counter_milestone_total",
+      "label": "Previous sold-out milestone",
+      "info": "Display-only number for the completed first release.",
       "default": "500",
       "visible_if": "{{ section.settings.show_aurora_counter }}"
     },
     {
       "type": "text",
-      "id": "aurora_counter_start_remaining",
-      "label": "Starting sets remaining",
-      "info": "The number shown when Flow is switched back on. Future paid sets reduce this number.",
-      "default": "500",
-      "visible_if": "{{ section.settings.show_aurora_counter }}"
-    },
-    {
-      "type": "text",
-      "id": "aurora_counter_claimed",
-      "label": "Flow paid-set baseline",
-      "info": "Enter the current apgo_campaign.aurora_paid_sets value when Flow is switched back on. Only later increases reduce the displayed number. Inventory changes never affect this counter.",
-      "default": "0",
-      "visible_if": "{{ section.settings.show_aurora_counter }}"
-    },
-    {
-      "type": "text",
-      "id": "aurora_counter_manual_sold",
-      "label": "Manual sets sold (extra reduction)",
-      "info": "Optional extra reduction on top of paid orders. Leave this at 0 when no manual adjustment is required.",
-      "default": "0",
-      "visible_if": "{{ section.settings.show_aurora_counter }}"
-    },
-    {
-      "type": "text",
-      "id": "aurora_counter_extension_total",
-      "label": "Additional release sets",
-      "info": "After the original campaign reaches zero, later paid sets automatically reduce this additional allocation.",
+      "id": "aurora_counter_release_total",
+      "label": "Current release sets",
+      "info": "The allocation for the active release.",
       "default": "88",
+      "visible_if": "{{ section.settings.show_aurora_counter }}"
+    },
+    {
+      "type": "text",
+      "id": "aurora_counter_flow_baseline",
+      "label": "Flow paid-set baseline",
+      "info": "The apgo_campaign.aurora_paid_sets value captured when this release started. Remaining = current release sets minus later paid sets.",
+      "default": "0",
       "visible_if": "{{ section.settings.show_aurora_counter }}"
     },
     {

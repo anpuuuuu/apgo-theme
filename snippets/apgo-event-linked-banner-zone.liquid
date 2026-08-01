@@ -4,11 +4,9 @@
   @param {string} heading - Zone heading text.
   @param {string} message - Promotional message shown above the banner.
   @param {boolean} show_counter - Whether to render the campaign stock counter.
-  @param {string} counter_total - Total number of campaign sets.
-  @param {string} counter_start_remaining - Remaining sets shown when Flow resumes.
+  @param {string} counter_release_total - Sets allocated to the current release.
   @param {string} counter_flow_baseline - Paid-set metafield value when Flow resumes.
-  @param {number} counter_catchup_sets - Confirmed paid sets missing from the Flow metafield.
-  @param {number} counter_extension_total - Additional allocation after the original campaign sells out.
+  @param {number} counter_milestone_total - Previous sold-out allocation shown as a milestone.
   @param {image} banner_image - Promotional banner image.
   @param {product} product - Product opened when the banner is selected.
   @param {string} variant_id - Optional numeric ID of the promoted product variant.
@@ -21,9 +19,7 @@
     assign action_variant = product.selected_or_first_available_variant
     assign requested_variant_id = variant_id | default: '' | strip | plus: 0
     assign apgo_counter_visible = show_counter
-    assign apgo_counter_start_remaining = counter_start_remaining
     assign apgo_counter_flow_baseline = counter_flow_baseline
-    assign apgo_counter_catchup_sets = counter_catchup_sets | default: 0
     if requested_variant_id != 0
       for candidate_variant in product.variants
         if candidate_variant.id == requested_variant_id
@@ -70,11 +66,9 @@
 
     {% if apgo_counter_visible %}
       {% render 'apgo-aurora-stock-counter',
-        total: counter_total,
-        starting_remaining: apgo_counter_start_remaining,
+        release_total: counter_release_total,
         flow_baseline: apgo_counter_flow_baseline,
-        catchup_sets: apgo_counter_catchup_sets,
-        extension_total: counter_extension_total
+        milestone_total: counter_milestone_total
       %}
     {% endif %}
 

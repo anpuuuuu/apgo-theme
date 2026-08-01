@@ -4191,6 +4191,8 @@
                   alt="{{ product.title }} - {{ 'product.image_alt' | t: index: forloop.index }}"
                   class="apgo-product-image-main is-cover"
                   loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                  width="{{ image.width }}"
+                  height="{{ image.height }}"
                 >
               </div>
             {% endfor %}
@@ -4241,6 +4243,8 @@
               alt="{{ product.title }} - {{ 'product.image_alt' | t: index: forloop.index }}"
               class="apgo-thumbnail-image"
               loading="lazy"
+              width="{{ image.width }}"
+              height="{{ image.height }}"
             >
           </div>
         {% endfor %}
@@ -4289,10 +4293,8 @@
         and product.id == section.settings.aurora_counter_product.id
       %}
         {% render 'apgo-aurora-stock-counter',
-          total: section.settings.aurora_counter_total,
-          starting_remaining: section.settings.aurora_counter_start_remaining,
+          release_total: section.settings.aurora_counter_release_total,
           flow_baseline: section.settings.aurora_counter_flow_baseline,
-          catchup_sets: section.settings.aurora_counter_manual_sold,
           mode: 'compact'
         %}
       {% endif %}
@@ -4422,7 +4424,7 @@
         {%- endif -%}
       </div>
 
-      <form action="/cart/add" method="post" enctype="multipart/form-data" class="apgo-cc-pdp__form" data-apgo-cc-form>
+      <form action="{{ routes.cart_add_url }}" method="post" enctype="multipart/form-data" class="apgo-cc-pdp__form" data-apgo-cc-form>
         <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}" data-apgo-cc-variant-id>
 
         {%- comment -%}
@@ -4868,10 +4870,8 @@
                       src="{{ mf | image_url: width: 1200 }}"
                       alt="{{ product.title | escape }} — {{ forloop.index }}"
                       loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
-                      {% if mf.width and mf.height %}
-                        width="{{ mf.width }}"
-                        height="{{ mf.height }}"
-                      {% endif %}
+                      width="{{ mf.width }}"
+                      height="{{ mf.height }}"
                     >
                   {% endif %}
                 {% endfor %}
@@ -4924,6 +4924,8 @@
             src="{{ insidebox_image | image_url: width: 2000 }}"
             alt="{{ 'product.whats_included' | t }}"
             loading="lazy"
+            width="{{ insidebox_image.width }}"
+            height="{{ insidebox_image.height }}"
           >
         </div>
       </section>
@@ -4982,6 +4984,8 @@
                   src="{{ poster_url }}"
                   alt="{{ video_obj.title | default: product.title }}"
                   loading="lazy"
+                  width="640"
+                  height="360"
                 >
               {% else %}
                 <div class="apgo-video-thumbnail apgo-video-placeholder" style="position: relative;">
@@ -5039,6 +5043,8 @@
                   src="{{ poster_url }}"
                   alt="{{ product.title }}"
                   loading="lazy"
+                  width="640"
+                  height="360"
                 >
               {% else %}
                 <div class="apgo-video-thumbnail apgo-video-placeholder" style="position: relative;">
@@ -5180,10 +5186,8 @@
                       src="{{ pic | image_url: width: 1400 }}"
                       alt="{{ product.title | escape }} — {{ forloop.index }}"
                       loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
-                      {% if pic.width and pic.height %}
-                        width="{{ pic.width }}"
-                        height="{{ pic.height }}"
-                      {% endif %}
+                      width="{{ pic.width }}"
+                      height="{{ pic.height }}"
                     >
                   {% endif %}
                 {% endfor %}
@@ -5261,6 +5265,8 @@
                   src="{{ customer_review_image | image_url: width: 2000 }}"
                   alt="Review"
                   loading="lazy"
+                  width="{{ customer_review_image.width }}"
+                  height="{{ customer_review_image.height }}"
                 >
               {% endif %}
               {% if mobile_review_list != blank %}
@@ -5271,6 +5277,8 @@
                       src="{{ mf | image_url: width: 2000 }}"
                       alt="Review {{ forloop.index }}"
                       loading="{% if customer_review_image == blank and forloop.first %}eager{% else %}lazy{% endif %}"
+                      width="{{ mf.width }}"
+                      height="{{ mf.height }}"
                     >
                   {% endif %}
                 {% endfor %}
@@ -5291,8 +5299,6 @@
         assign cs_probe = cs_try.first.title | default: cs_try.first.desc | default: cs_try.first.description | default: cs_try.first.step
         if cs_probe != blank
           assign cs_steps = cs_try
-        else
-          assign cs_steps = cs_mf.value | parse_json
         endif
       endif
     %}
@@ -7119,30 +7125,17 @@ document.addEventListener('DOMContentLoaded', function() {
     },
     {
       "type": "text",
-      "id": "aurora_counter_total",
-      "label": "Total campaign sets",
-      "default": "500"
-    },
-    {
-      "type": "text",
-      "id": "aurora_counter_start_remaining",
-      "label": "Starting sets remaining",
-      "info": "The number shown when Flow is switched back on.",
-      "default": "500"
+      "id": "aurora_counter_release_total",
+      "label": "Current release sets",
+      "info": "The allocation for this release. Remaining = this number minus paid sets recorded after the Flow baseline.",
+      "default": "88"
     },
     {
       "type": "text",
       "id": "aurora_counter_flow_baseline",
       "label": "Flow paid-set baseline",
-      "info": "Enter the current apgo_campaign.aurora_paid_sets value when Flow is switched back on.",
+      "info": "The apgo_campaign.aurora_paid_sets value captured when this release started. Do not change it while the release is running.",
       "default": "0"
-    },
-    {
-      "type": "text",
-      "id": "aurora_counter_manual_sold",
-      "label": "Manual sets sold (extra reduction)",
-      "info": "Marks this many sets as sold ON TOP of live paid orders — raise it to manually lower this product-page counter, lower it to raise it. Displayed remaining = Starting remaining − paid orders − this number. Default 24. (Independent of the Golden Bull page counter.)",
-      "default": "24"
     },
     {
       "type": "header",
