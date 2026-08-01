@@ -142,7 +142,7 @@
           message: section.settings.aurora_zone_message,
           show_counter: apgo_show_aurora_counter,
           counter_release_total: section.settings.aurora_counter_release_total,
-          counter_flow_baseline: section.settings.aurora_counter_flow_baseline,
+          counter_manual_deduction: section.settings.aurora_counter_manual_deduction,
           counter_milestone_total: section.settings.aurora_counter_milestone_total,
           banner_image: section.settings.aurora_zone_banner,
           product: section.settings.aurora_zone_product,
@@ -362,15 +362,15 @@
       "type": "text",
       "id": "aurora_counter_release_total",
       "label": "Current release sets",
-      "info": "The allocation for the active release.",
+      "info": "Starting allocation for this release. Remaining = this number minus current-release Flow orders minus the extra manual deduction.",
       "default": "88",
       "visible_if": "{{ section.settings.show_aurora_counter }}"
     },
     {
       "type": "text",
-      "id": "aurora_counter_flow_baseline",
-      "label": "Flow paid-set baseline",
-      "info": "The apgo_campaign.aurora_paid_sets value captured when this release started. Remaining = current release sets minus later paid sets.",
+      "id": "aurora_counter_manual_deduction",
+      "label": "Extra deduction (manual)",
+      "info": "Optional extra sets to subtract after Flow orders. Use 0 when no manual adjustment is needed.",
       "default": "0",
       "visible_if": "{{ section.settings.show_aurora_counter }}"
     },

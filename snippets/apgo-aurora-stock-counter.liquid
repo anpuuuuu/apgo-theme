@@ -2,7 +2,7 @@
   Renders the Aurora campaign counter from the paid-order shop metafield.
 
   @param {number} release_total - Sets allocated to the current release.
-  @param {number} flow_baseline - Paid-set metafield value when the current release starts.
+  @param {number} [manual_deduction] - Additional sets to subtract in the theme editor.
   @param {number} [milestone_total] - Previous sold-out allocation shown as a milestone.
   @param {string} [mode] - Use "compact" on the Aurora product page.
 {% enddoc %}
@@ -12,7 +12,7 @@
   if campaign_release_total < 1
     assign campaign_release_total = 88
   endif
-  assign campaign_flow_baseline = flow_baseline | plus: 0 | at_least: 0
+  assign campaign_flow_baseline = 263
   assign paid_sets_metafield = shop.metafields.apgo_campaign.aurora_paid_sets
   if paid_sets_metafield != blank
     assign campaign_flow_paid_sets = paid_sets_metafield.value | plus: 0 | at_least: 0
@@ -20,8 +20,10 @@
     assign campaign_flow_paid_sets = campaign_flow_baseline
   endif
   assign campaign_new_paid_sets = campaign_flow_paid_sets | minus: campaign_flow_baseline | at_least: 0
-  assign campaign_remaining = campaign_release_total | minus: campaign_new_paid_sets | at_least: 0 | at_most: campaign_release_total
-  assign campaign_claimed = campaign_new_paid_sets | at_most: campaign_release_total
+  assign campaign_manual_deduction = manual_deduction | plus: 0 | at_least: 0
+  assign campaign_total_deduction = campaign_new_paid_sets | plus: campaign_manual_deduction
+  assign campaign_remaining = campaign_release_total | minus: campaign_total_deduction | at_least: 0 | at_most: campaign_release_total
+  assign campaign_claimed = campaign_total_deduction | at_most: campaign_release_total
   assign campaign_progress = campaign_remaining | times: 100.0 | divided_by: campaign_release_total
   assign campaign_milestone_total = milestone_total | plus: 0 | at_least: 0
   assign campaign_has_milestone = false

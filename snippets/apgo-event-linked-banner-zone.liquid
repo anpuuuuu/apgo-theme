@@ -5,7 +5,7 @@
   @param {string} message - Promotional message shown above the banner.
   @param {boolean} show_counter - Whether to render the campaign stock counter.
   @param {string} counter_release_total - Sets allocated to the current release.
-  @param {string} counter_flow_baseline - Paid-set metafield value when Flow resumes.
+  @param {number} counter_manual_deduction - Additional sets subtracted in the theme editor.
   @param {number} counter_milestone_total - Previous sold-out allocation shown as a milestone.
   @param {image} banner_image - Promotional banner image.
   @param {product} product - Product opened when the banner is selected.
@@ -19,7 +19,6 @@
     assign action_variant = product.selected_or_first_available_variant
     assign requested_variant_id = variant_id | default: '' | strip | plus: 0
     assign apgo_counter_visible = show_counter
-    assign apgo_counter_flow_baseline = counter_flow_baseline
     if requested_variant_id != 0
       for candidate_variant in product.variants
         if candidate_variant.id == requested_variant_id
@@ -67,7 +66,7 @@
     {% if apgo_counter_visible %}
       {% render 'apgo-aurora-stock-counter',
         release_total: counter_release_total,
-        flow_baseline: apgo_counter_flow_baseline,
+        manual_deduction: counter_manual_deduction,
         milestone_total: counter_milestone_total
       %}
     {% endif %}
