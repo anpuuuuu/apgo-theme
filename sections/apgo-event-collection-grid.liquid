@@ -151,6 +151,7 @@
           counter_start_remaining: apgo_aurora_counter_start_remaining,
           counter_flow_baseline: apgo_aurora_counter_flow_baseline,
           counter_catchup_sets: apgo_aurora_counter_catchup_sets,
+          counter_extension_total: section.settings.aurora_counter_extension_total,
           banner_image: section.settings.aurora_zone_banner,
           product: section.settings.aurora_zone_product,
           variant_id: section.settings.aurora_zone_variant_id,
@@ -387,6 +388,14 @@
       "label": "Manual sets sold (extra reduction)",
       "info": "Golden Bull page only. Marks this many sets as sold ON TOP of live paid orders — raise it to manually lower the counter, lower it to raise the counter. Displayed remaining = Starting remaining − paid orders − this number. Default 54.",
       "default": "54",
+      "visible_if": "{{ section.settings.show_aurora_counter }}"
+    },
+    {
+      "type": "text",
+      "id": "aurora_counter_extension_total",
+      "label": "Additional release sets",
+      "info": "After the original campaign reaches zero, later paid sets automatically reduce this additional allocation.",
+      "default": "88",
       "visible_if": "{{ section.settings.show_aurora_counter }}"
     },
     {

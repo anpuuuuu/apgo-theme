@@ -427,6 +427,13 @@
     "aurora_counter": {
       "sets_remaining": "sets left",
       "milestone_reached": "{{ total }}-set milestone reached",
+      "first_release_sold_out": "First {{ total }} sets — sold out",
+      "milestone_thanks": "Milestone reached · thank you!",
+      "extra_release": "Last chance · {{ total }} additional sets",
+      "extra_release_short": "{{ total }} extra sets released",
+      "extra_sets_remaining": "extra sets left",
+      "extra_release_sold_out": "Additional release sold out",
+      "extra_progress_label": "{{ remaining }} of {{ total }} additional sets remaining",
       "limited_release": "limited release",
       "while_stocks_last": "while stocks last",
       "stock_update_notice": "*Stock is updated periodically and may not reflect orders currently being processed",

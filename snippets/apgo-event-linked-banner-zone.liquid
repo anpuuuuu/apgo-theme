@@ -8,6 +8,7 @@
   @param {string} counter_start_remaining - Remaining sets shown when Flow resumes.
   @param {string} counter_flow_baseline - Paid-set metafield value when Flow resumes.
   @param {number} counter_catchup_sets - Confirmed paid sets missing from the Flow metafield.
+  @param {number} counter_extension_total - Additional allocation after the original campaign sells out.
   @param {image} banner_image - Promotional banner image.
   @param {product} product - Product opened when the banner is selected.
   @param {string} variant_id - Optional numeric ID of the promoted product variant.
@@ -78,7 +79,8 @@
         total: counter_total,
         starting_remaining: apgo_counter_start_remaining,
         flow_baseline: apgo_counter_flow_baseline,
-        catchup_sets: apgo_counter_catchup_sets
+        catchup_sets: apgo_counter_catchup_sets,
+        extension_total: counter_extension_total
       %}
     {% endif %}
 
