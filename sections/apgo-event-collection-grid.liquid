@@ -144,6 +144,7 @@
           counter_release_total: section.settings.aurora_counter_release_total,
           counter_manual_deduction: section.settings.aurora_counter_manual_deduction,
           counter_milestone_total: section.settings.aurora_counter_milestone_total,
+          counter_flow_baseline: section.settings.aurora_counter_flow_baseline,
           banner_image: section.settings.aurora_zone_banner,
           product: section.settings.aurora_zone_product,
           variant_id: section.settings.aurora_zone_variant_id,
@@ -370,8 +371,16 @@
       "type": "text",
       "id": "aurora_counter_manual_deduction",
       "label": "Extra deduction (manual)",
-      "info": "Sets to subtract from the current release. This is the only value that reduces the counter.",
+      "info": "Sets to subtract from the current release on top of live paid orders.",
       "default": "0",
+      "visible_if": "{{ section.settings.show_aurora_counter }}"
+    },
+    {
+      "type": "text",
+      "id": "aurora_counter_flow_baseline",
+      "label": "Flow baseline (live auto-count)",
+      "info": "Leave BLANK to keep the counter fully manual. To make it count down live with paid orders, enter the current apgo_campaign.aurora_paid_sets metafield value here — only orders AFTER this baseline reduce the counter. Remaining = Current release − Extra deduction − (paid orders since baseline).",
+      "default": "",
       "visible_if": "{{ section.settings.show_aurora_counter }}"
     },
     {

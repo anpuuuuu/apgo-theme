@@ -7,6 +7,7 @@
   @param {string} counter_release_total - Sets allocated to the current release.
   @param {number} counter_manual_deduction - Additional sets subtracted in the theme editor.
   @param {number} counter_milestone_total - Previous sold-out allocation shown as a milestone.
+  @param {number} [counter_flow_baseline] - aurora_paid_sets value when Flow is connected; paid sets beyond it reduce the counter live.
   @param {image} banner_image - Promotional banner image.
   @param {product} product - Product opened when the banner is selected.
   @param {string} variant_id - Optional numeric ID of the promoted product variant.
@@ -67,7 +68,8 @@
       {% render 'apgo-aurora-stock-counter',
         release_total: counter_release_total,
         manual_deduction: counter_manual_deduction,
-        milestone_total: counter_milestone_total
+        milestone_total: counter_milestone_total,
+        flow_baseline: counter_flow_baseline
       %}
     {% endif %}
 

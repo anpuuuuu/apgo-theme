@@ -4,6 +4,7 @@
   @param {number} release_total - Sets allocated to the current release.
   @param {number} [manual_deduction] - Additional sets to subtract in the theme editor.
   @param {number} [milestone_total] - Previous sold-out allocation shown as a milestone.
+  @param {number} [flow_baseline] - apgo_campaign.aurora_paid_sets value when Flow is connected. Paid sets beyond this baseline reduce the counter live. Leave blank to disable the flow decrement.
   @param {string} [mode] - Use "compact" on the Aurora product page.
 {% enddoc %}
 
@@ -14,7 +15,23 @@
   endif
   assign campaign_manual_deduction = manual_deduction | plus: 0 | at_least: 0
   assign campaign_remaining = campaign_release_total | minus: campaign_manual_deduction | at_least: 0 | at_most: campaign_release_total
-  assign campaign_claimed = campaign_manual_deduction | at_most: campaign_release_total
+
+  # Optional live flow decrement. When flow_baseline is set (theme editor),
+  # subtract the paid sets recorded SINCE that baseline: the
+  # apgo_campaign.aurora_paid_sets shop metafield (Shopify Flow increments it
+  # on each paid order) minus the baseline. Baseline = the metafield value at
+  # the moment Flow is connected, so only orders from then on reduce the count.
+  if flow_baseline != blank
+    assign campaign_flow_baseline = flow_baseline | plus: 0 | at_least: 0
+    assign campaign_paid_metafield = shop.metafields.apgo_campaign.aurora_paid_sets
+    if campaign_paid_metafield != blank
+      assign campaign_flow_current = campaign_paid_metafield.value | plus: 0 | at_least: 0
+      assign campaign_flow_new_paid = campaign_flow_current | minus: campaign_flow_baseline | at_least: 0
+      assign campaign_remaining = campaign_remaining | minus: campaign_flow_new_paid | at_least: 0
+    endif
+  endif
+
+  assign campaign_claimed = campaign_release_total | minus: campaign_remaining | at_least: 0
   assign campaign_progress = campaign_remaining | times: 100.0 | divided_by: campaign_release_total
   assign campaign_milestone_total = milestone_total | plus: 0 | at_least: 0
   assign campaign_has_milestone = false
