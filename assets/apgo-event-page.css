@@ -1947,16 +1947,6 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-stock-counter.is-
     0 0 30px rgba(216, 181, 93, 0.32);
 }
 
-body.apgo-special-event-page .apgo-event-listing-card__promo-limit {
-  display: block;
-  margin-top: 5px;
-  color: rgba(250, 239, 207, 0.7);
-  font-size: 8px;
-  font-weight: 750;
-  line-height: 1.25;
-  letter-spacing: 0.035em;
-}
-
 body.apgo-special-event-page .apgo-event-scroll-zone__promo-limit {
   display: none;
 }
@@ -2067,10 +2057,6 @@ body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-stock-counter__ex
   text-shadow:
     0 0 12px rgba(255, 253, 242, 0.3),
     0 0 24px rgba(216, 181, 93, 0.22);
-}
-
-body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-scroll-zone--discount .apgo-event-listing-card__promo-limit {
-  display: none;
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page .apgo-event-stock-counter__meta {

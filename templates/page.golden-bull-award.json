@@ -234,7 +234,7 @@
         "show_product_scroll_cue": true,
         "show_festive_lockup": true,
         "anniversary_badge": "",
-        "show_discount_zone": true,
+        "show_discount_zone": false,
         "discount_zone_heading": "thank you CELEBRATION deals",
         "discount_zone_banner": "shopify://shop_images/22_d4016573-8805-471f-9527-da6101a5c4db.png",
         "discount_zone_banner_sg": "shopify://shop_images/23_b0735d48-a022-4f52-b715-cc6b4454bdeb.png",
