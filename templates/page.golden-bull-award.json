@@ -243,7 +243,7 @@
         "show_aurora_zone": true,
         "aurora_zone_heading": "AURORA EXCLUSIVE DEAL",
         "aurora_zone_message": "",
-        "show_aurora_counter": true,
+        "show_aurora_counter": false,
         "aurora_counter_milestone_total": "500",
         "aurora_counter_release_total": "88",
         "aurora_counter_manual_deduction": "88",

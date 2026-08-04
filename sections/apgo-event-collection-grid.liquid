@@ -116,10 +116,12 @@
       {%- if localization.country.iso_code == 'SG' and section.settings.discount_zone_banner_sg != blank -%}
         {%- assign discount_zone_banner = section.settings.discount_zone_banner_sg -%}
       {%- endif -%}
+      {%- comment -%}
+        Counter visibility follows the section setting on every page (the
+        golden-bull-award force-on override was removed so the toggle in
+        the theme editor actually controls it).
+      {%- endcomment -%}
       {%- assign apgo_show_aurora_counter = section.settings.show_aurora_counter -%}
-      {%- if template.suffix == 'golden-bull-award' -%}
-        {%- assign apgo_show_aurora_counter = true -%}
-      {%- endif -%}
 
       {%- comment -%} ZONE 1 — Discount horizontal scroll {%- endcomment -%}
       {%- if section.settings.show_discount_zone -%}

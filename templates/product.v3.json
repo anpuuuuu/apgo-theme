@@ -17,7 +17,7 @@
         "subtitle_fallback": "",
         "show_bottom_bar": true,
         "show_thumbnails": true,
-        "show_aurora_campaign_counter": true,
+        "show_aurora_campaign_counter": false,
         "aurora_counter_product": "golden-bull-celebration-apgo-aurora-car-nano-coating-premium",
         "aurora_counter_release_total": "118",
         "aurora_counter_manual_deduction": "88",
