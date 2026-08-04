@@ -381,8 +381,8 @@
       "type": "text",
       "id": "aurora_counter_flow_baseline",
       "label": "Flow baseline (live auto-count)",
-      "info": "Leave BLANK to keep the counter fully manual. To make it count down live with paid orders, enter the current apgo_campaign.aurora_paid_sets metafield value here — only orders AFTER this baseline reduce the counter. Remaining = Current release − Extra deduction − (paid orders since baseline).",
-      "default": "",
+      "info": "Set 0 to keep the counter fully manual. To make it count down live with paid orders, enter the current apgo_campaign.aurora_paid_sets metafield value here — only orders AFTER this baseline reduce the counter. Remaining = Current release − Extra deduction − (paid orders since baseline).",
+      "default": "0",
       "visible_if": "{{ section.settings.show_aurora_counter }}"
     },
     {
