@@ -4640,11 +4640,25 @@
           Desktop CTA row. Visible only ≥1024px (CSS `.apgo-cc-pdp__cta-row`).
           Mobile commits via the bottom buybar → confirm modal flow instead.
         {%- endcomment -%}
-        <div class="apgo-cc-pdp__cta-row">
-          <button type="button" class="apgo-cc-pdp__cta apgo-cc-pdp__cta--secondary" data-apgo-cc-add>
-            {%- if product.available -%}Add to cart{%- else -%}Sold out{%- endif -%}
-          </button>
-          <button type="button" class="apgo-cc-pdp__cta apgo-cc-pdp__cta--primary" data-apgo-cc-buy-now>Buy now</button>
+        {%- comment -%}
+          Real-inventory sold-out (matches apgo-cc-pdp-picker.js isVariantSoldOut):
+          the product may use inventory policy CONTINUE, so variant.available
+          stays true at 0 stock. Treat a tracked variant at inventory <= 0 as
+          sold out here in the SSR too, so the first paint (and the no-JS case)
+          is correct. The JS then keeps it in sync on variant change.
+        {%- endcomment -%}
+        {%- assign apgo_cc_cta_variant = product.selected_or_first_available_variant -%}
+        {%- assign apgo_cc_cta_sold_out = false -%}
+        {%- unless apgo_cc_cta_variant.available -%}
+          {%- assign apgo_cc_cta_sold_out = true -%}
+        {%- endunless -%}
+        {%- if apgo_cc_cta_variant.inventory_management != blank and apgo_cc_cta_variant.inventory_quantity != blank and apgo_cc_cta_variant.inventory_quantity <= 0 -%}
+          {%- assign apgo_cc_cta_sold_out = true -%}
+        {%- endif -%}
+        <div class="apgo-cc-pdp__cta-row"{% if apgo_cc_cta_sold_out %} style="grid-template-columns:1fr;"{% endif %}>
+          <button type="button" class="apgo-cc-pdp__cta apgo-cc-pdp__cta--secondary" data-apgo-cc-add{% if apgo_cc_cta_sold_out %} hidden disabled{% endif %}>Add to cart</button>
+          <button type="button" class="apgo-cc-pdp__cta apgo-cc-pdp__cta--primary" data-apgo-cc-buy-now{% if apgo_cc_cta_sold_out %} hidden disabled{% endif %}>Buy now</button>
+          <button type="button" class="apgo-cc-pdp__cta apgo-cc-pdp__cta--out" data-apgo-cc-sold-out disabled style="grid-column:1 / -1; width:100%;"{% unless apgo_cc_cta_sold_out %} hidden{% endunless %}>Sold out</button>
         </div>
       </form>
 
