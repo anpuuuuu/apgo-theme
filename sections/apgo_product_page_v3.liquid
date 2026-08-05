@@ -4167,9 +4167,9 @@
   .apgo-gift-picker {
     margin: 4px 0 2px;
     padding: 14px;
-    border: 1px solid rgba(240, 132, 24, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 14px;
-    background: rgba(240, 132, 24, 0.06);
+    background: rgba(255, 255, 255, 0.03);
   }
   .apgo-gift-picker__head {
     display: flex;
@@ -4199,72 +4199,77 @@
     color: #111;
   }
   .apgo-gift-picker__grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    display: flex;
+    flex-direction: column;
     gap: 8px;
   }
   .apgo-gift-card {
     position: relative;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    gap: 6px;
-    padding: 8px 6px 9px;
-    border: 1.5px solid rgba(255, 255, 255, 0.14);
+    gap: 12px;
+    padding: 8px 42px 8px 8px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 12px;
-    background: var(--card-bg);
+    background: rgba(255, 255, 255, 0.02);
     color: #fff;
     cursor: pointer;
-    text-align: center;
-    transition: border-color .15s ease, background .15s ease, transform .1s ease;
+    text-align: left;
+    transition: border-color .15s ease, background .15s ease;
     -webkit-tap-highlight-color: transparent;
   }
   .apgo-gift-card:hover:not(.is-disabled):not(.is-soldout) {
-    border-color: rgba(240, 132, 24, 0.6);
+    border-color: rgba(255, 255, 255, 0.3);
   }
   .apgo-gift-card__img {
-    width: 100%;
-    max-width: 72px;
-    aspect-ratio: 1 / 1;
+    flex: 0 0 56px;
+    width: 56px;
+    height: 56px;
     object-fit: contain;
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(255, 255, 255, 0.05);
   }
   .apgo-gift-card__img--placeholder {
     display: block;
   }
   .apgo-gift-card__title {
-    font-size: 11px;
-    line-height: 1.25;
-    color: rgba(255, 255, 255, 0.85);
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 12px;
+    line-height: 1.3;
+    color: rgba(255, 255, 255, 0.9);
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    min-height: 2.6em;
   }
   .apgo-gift-card__check {
     position: absolute;
-    top: 5px;
-    right: 5px;
-    width: 20px;
-    height: 20px;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%) scale(0.5);
+    width: 22px;
+    height: 22px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    background: var(--primary-orange);
+    border: 1.5px solid rgba(255, 255, 255, 0.25);
     color: #111;
     opacity: 0;
-    transform: scale(0.5);
     transition: opacity .12s ease, transform .12s ease;
   }
   .apgo-gift-card.is-selected {
     border-color: var(--primary-orange);
-    background: rgba(240, 132, 24, 0.12);
+    background: rgba(240, 132, 24, 0.08);
   }
   .apgo-gift-card.is-selected .apgo-gift-card__check {
     opacity: 1;
-    transform: scale(1);
+    transform: translateY(-50%) scale(1);
+    background: var(--primary-orange);
+    border-color: var(--primary-orange);
   }
   .apgo-gift-card.is-selected .apgo-gift-card__title {
     color: #fff;
