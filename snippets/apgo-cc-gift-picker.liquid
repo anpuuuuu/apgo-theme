@@ -1,0 +1,67 @@
+{%- comment -%}
+  APGO v3 PDP — "choose N free gifts" picker.
+  Rendered in TWO places on the gated product (desktop buy-column + mobile
+  confirm modal). Selection state is shared across instances by
+  apgo-cc-pdp-picker.js, which also injects the chosen gifts into the
+  /cart/add.js items[] array. Actual $0 pricing is handled by AIOD.
+
+  Accepts:
+    pool     {product_list} - selectable gift products
+    heading  {string}       - section heading
+    count    {number}       - how many the customer must pick (default 2)
+    property {string}       - line-item property key stamped on gift lines (default _gift_pick)
+    location {string}       - 'desktop' | 'mobile' (for unique ids / styling hooks)
+{%- endcomment -%}
+
+{%- liquid
+  assign gp_count = count | default: 2 | plus: 0
+  if gp_count < 1
+    assign gp_count = 2
+  endif
+  assign gp_property = property | default: '_gift_pick'
+  assign gp_location = location | default: 'desktop'
+-%}
+
+{%- if pool != blank and pool.size > 0 -%}
+  <div
+    class="apgo-gift-picker apgo-gift-picker--{{ gp_location }}"
+    data-apgo-cc-gift-picker
+    data-gift-count="{{ gp_count }}"
+    data-gift-property="{{ gp_property | escape }}"
+    data-gift-location="{{ gp_location }}"
+  >
+    <div class="apgo-gift-picker__head">
+      <span class="apgo-gift-picker__heading">{{ heading | default: 'Choose your free gifts' }}</span>
+      <span class="apgo-gift-picker__counter" data-apgo-cc-gift-counter>0/{{ gp_count }}</span>
+    </div>
+
+    <div class="apgo-gift-picker__grid" role="group" aria-label="{{ heading | default: 'Choose your free gifts' | escape }}">
+      {%- for gp in pool -%}
+        {%- assign gp_variant = gp.selected_or_first_available_variant -%}
+        {%- assign gp_available = gp.available -%}
+        <button
+          type="button"
+          class="apgo-gift-card{% unless gp_available %} is-soldout{% endunless %}"
+          data-apgo-cc-gift-option
+          data-gift-variant="{{ gp_variant.id }}"
+          data-gift-title="{{ gp.title | escape }}"
+          aria-pressed="false"
+          {% unless gp_available %}disabled aria-disabled="true"{% endunless %}
+        >
+          <span class="apgo-gift-card__check" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>
+          </span>
+          {%- if gp.featured_image -%}
+            <img class="apgo-gift-card__img" src="{{ gp.featured_image | image_url: width: 160 }}" alt="{{ gp.title | escape }}" width="72" height="72" loading="lazy">
+          {%- else -%}
+            <span class="apgo-gift-card__img apgo-gift-card__img--placeholder" aria-hidden="true"></span>
+          {%- endif -%}
+          <span class="apgo-gift-card__title">{{ gp.title }}</span>
+          {%- unless gp_available -%}<span class="apgo-gift-card__soldout">Sold out</span>{%- endunless -%}
+        </button>
+      {%- endfor -%}
+    </div>
+
+    <p class="apgo-gift-picker__hint" data-apgo-cc-gift-hint aria-live="polite" hidden>Please choose {{ gp_count }} free gifts to continue.</p>
+  </div>
+{%- endif -%}

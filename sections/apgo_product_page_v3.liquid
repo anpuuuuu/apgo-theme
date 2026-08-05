@@ -4162,6 +4162,144 @@
     (style: snippets/apgo-cart-toast.liquid, JS reused: apgo-cc-buybar.js
     showToast). No section-local toast CSS needed.
   */
+
+  /* ── 🎁 Free gift picker ─────────────────────────────────────────── */
+  .apgo-gift-picker {
+    margin: 4px 0 2px;
+    padding: 14px;
+    border: 1px solid rgba(240, 132, 24, 0.35);
+    border-radius: 14px;
+    background: rgba(240, 132, 24, 0.06);
+  }
+  .apgo-gift-picker__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .apgo-gift-picker__heading {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    color: var(--primary-orange);
+    text-transform: uppercase;
+  }
+  .apgo-gift-picker__counter {
+    flex: 0 0 auto;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 999px;
+    padding: 2px 10px;
+  }
+  .apgo-gift-picker.is-complete .apgo-gift-picker__counter {
+    background: var(--primary-orange);
+    color: #111;
+  }
+  .apgo-gift-picker__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .apgo-gift-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 6px 9px;
+    border: 1.5px solid rgba(255, 255, 255, 0.14);
+    border-radius: 12px;
+    background: var(--card-bg);
+    color: #fff;
+    cursor: pointer;
+    text-align: center;
+    transition: border-color .15s ease, background .15s ease, transform .1s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .apgo-gift-card:hover:not(.is-disabled):not(.is-soldout) {
+    border-color: rgba(240, 132, 24, 0.6);
+  }
+  .apgo-gift-card__img {
+    width: 100%;
+    max-width: 72px;
+    aspect-ratio: 1 / 1;
+    object-fit: contain;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.04);
+  }
+  .apgo-gift-card__img--placeholder {
+    display: block;
+  }
+  .apgo-gift-card__title {
+    font-size: 11px;
+    line-height: 1.25;
+    color: rgba(255, 255, 255, 0.85);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .apgo-gift-card__check {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--primary-orange);
+    color: #111;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: opacity .12s ease, transform .12s ease;
+  }
+  .apgo-gift-card.is-selected {
+    border-color: var(--primary-orange);
+    background: rgba(240, 132, 24, 0.12);
+  }
+  .apgo-gift-card.is-selected .apgo-gift-card__check {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .apgo-gift-card.is-selected .apgo-gift-card__title {
+    color: #fff;
+  }
+  .apgo-gift-card.is-disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .apgo-gift-card.is-soldout {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .apgo-gift-card__soldout {
+    font-size: 10px;
+    font-weight: 700;
+    color: #ff6b6b;
+    text-transform: uppercase;
+  }
+  .apgo-gift-picker__hint {
+    margin: 10px 0 0;
+    font-size: 12px;
+    font-weight: 700;
+    color: #ff8a5c;
+  }
+  .apgo-gift-picker.is-nudge {
+    animation: apgoGiftNudge .4s ease;
+  }
+  @keyframes apgoGiftNudge {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .apgo-gift-picker.is-nudge { animation: none; }
+  }
 </style>
 
 <div class="apgo-product-section" data-apgo-currency="{{ cart.currency.iso_code }}" data-apgo-pdp="v3">
@@ -4634,6 +4772,26 @@
               {%- if initial_available -%}● In stock{%- else -%}● Out of stock{%- endif -%}
             </span>
           </div>
+        {%- endif -%}
+
+        {%- comment -%}
+          🎁 Gift picker gate — shows only on the configured promo products
+          (e.g. 8.8 MY + SG61 SG). apgo_gift_show is computed once here and
+          reused by the mobile confirm-modal render further below.
+        {%- endcomment -%}
+        {%- assign apgo_gift_show = false -%}
+        {%- if section.settings.gift_picker_enabled and section.settings.gift_picker_products != blank -%}
+          {%- for apgo_gp in section.settings.gift_picker_products -%}
+            {%- if apgo_gp.id == product.id -%}{%- assign apgo_gift_show = true -%}{%- break -%}{%- endif -%}
+          {%- endfor -%}
+        {%- endif -%}
+        {%- if apgo_gift_show -%}
+          {%- render 'apgo-cc-gift-picker',
+            pool: section.settings.gift_picker_pool,
+            heading: section.settings.gift_picker_heading,
+            count: section.settings.gift_picker_count,
+            property: section.settings.gift_picker_property,
+            location: 'desktop' -%}
         {%- endif -%}
 
         {%- comment -%}
@@ -7056,6 +7214,16 @@ document.addEventListener('DOMContentLoaded', function() {
       <div class="apgo-cc-confirm-modal__variation" data-apgo-cc-confirm-variation>
         {%- comment -%} Populated by JS at open time — copy of the active variant's variation section {%- endcomment -%}
       </div>
+
+      {%- comment -%} 🎁 Gift picker (mobile) — reuses apgo_gift_show computed above {%- endcomment -%}
+      {%- if apgo_gift_show -%}
+        {%- render 'apgo-cc-gift-picker',
+          pool: section.settings.gift_picker_pool,
+          heading: section.settings.gift_picker_heading,
+          count: section.settings.gift_picker_count,
+          property: section.settings.gift_picker_property,
+          location: 'mobile' -%}
+      {%- endif -%}
     </div>
 
     {%- comment -%}
@@ -7158,6 +7326,57 @@ document.addEventListener('DOMContentLoaded', function() {
       "label": "Flow baseline (live auto-count)",
       "info": "Set 0 to keep the counter fully manual. To make it count down live with paid orders, enter the current apgo_campaign.aurora_paid_sets metafield value here — only orders AFTER this baseline reduce the counter. Remaining = Current release − Extra deduction − (paid orders since baseline).",
       "default": "0"
+    },
+    {
+      "type": "header",
+      "content": "🎁 Free Gift Picker (single product)"
+    },
+    {
+      "type": "paragraph",
+      "content": "Lets the customer choose N free gifts from a pool on ONE product page. Adds the chosen gifts to the cart as line items — pricing to $0 is done by AIOD (rule: free up to N from the gift-pool collection when this product is in cart, with a free-quantity limit)."
+    },
+    {
+      "type": "checkbox",
+      "id": "gift_picker_enabled",
+      "label": "Enable gift picker",
+      "default": false
+    },
+    {
+      "type": "product_list",
+      "id": "gift_picker_products",
+      "label": "Show on these products",
+      "info": "The gift picker appears only on these product pages (e.g. the 8.8 MY promo + the SG61 SG promo). Region visibility of each product is handled by Shopify Markets, not here.",
+      "limit": 6,
+      "visible_if": "{{ section.settings.gift_picker_enabled }}"
+    },
+    {
+      "type": "product_list",
+      "id": "gift_picker_pool",
+      "label": "Gift pool (products the customer can choose from)",
+      "limit": 12,
+      "visible_if": "{{ section.settings.gift_picker_enabled }}"
+    },
+    {
+      "type": "text",
+      "id": "gift_picker_count",
+      "label": "How many the customer must pick",
+      "default": "2",
+      "visible_if": "{{ section.settings.gift_picker_enabled }}"
+    },
+    {
+      "type": "text",
+      "id": "gift_picker_heading",
+      "label": "Heading",
+      "default": "Choose 2 gifts — FREE",
+      "visible_if": "{{ section.settings.gift_picker_enabled }}"
+    },
+    {
+      "type": "text",
+      "id": "gift_picker_property",
+      "label": "Gift line-item property key",
+      "info": "Advanced. Hidden property stamped on the chosen gift lines so the theme can identify them. Leave as _gift_pick unless you know why to change it.",
+      "default": "_gift_pick",
+      "visible_if": "{{ section.settings.gift_picker_enabled }}"
     },
     {
       "type": "header",

@@ -49,6 +49,86 @@
   var buybarSoldOutBtn = document.querySelector('[data-apgo-cc-buybar-sold-out]');
   var qtyInput  = form.querySelector('[data-apgo-cc-qty-input]');
 
+  /* ── 🎁 Free gift picker ────────────────────────────────────────────
+     On the gated product the section renders one or two
+     [data-apgo-cc-gift-picker] blocks (desktop buy-column + mobile confirm
+     modal). The customer must pick exactly `giftRequired` gifts; the chosen
+     variant ids are injected into the /cart/add.js items[] array (each with
+     a hidden line-item property so the theme can identify them; AIOD prices
+     them to $0). Selection state is shared across both picker instances. */
+  var giftPickers = Array.prototype.slice.call(document.querySelectorAll('[data-apgo-cc-gift-picker]'));
+  var giftPickerActive = giftPickers.length > 0;
+  var giftRequired = 2;
+  var giftProperty = '_gift_pick';
+  if (giftPickerActive) {
+    giftRequired = parseInt(giftPickers[0].getAttribute('data-gift-count'), 10) || 2;
+    giftProperty = giftPickers[0].getAttribute('data-gift-property') || '_gift_pick';
+  }
+  var giftChosen = []; // [{ id: String, title: String }]
+
+  function giftIsChosen(id) {
+    for (var i = 0; i < giftChosen.length; i++) { if (giftChosen[i].id === id) return true; }
+    return false;
+  }
+  function giftReady() { return giftPickerActive && giftChosen.length === giftRequired; }
+  function giftItems() {
+    return giftChosen.map(function (g) {
+      var props = {};
+      props[giftProperty] = 'true';
+      return { id: parseInt(g.id, 10), quantity: 1, properties: props };
+    });
+  }
+  function renderGiftPickers() {
+    var atMax = giftChosen.length >= giftRequired;
+    giftPickers.forEach(function (picker) {
+      var opts = picker.querySelectorAll('[data-apgo-cc-gift-option]');
+      Array.prototype.forEach.call(opts, function (btn) {
+        var id = btn.getAttribute('data-gift-variant');
+        var soldout = btn.classList.contains('is-soldout');
+        var chosen = giftIsChosen(id);
+        btn.classList.toggle('is-selected', chosen);
+        btn.setAttribute('aria-pressed', chosen ? 'true' : 'false');
+        btn.classList.toggle('is-disabled', !chosen && atMax && !soldout);
+        btn.disabled = soldout || (!chosen && atMax);
+      });
+      var counter = picker.querySelector('[data-apgo-cc-gift-counter]');
+      if (counter) counter.textContent = giftChosen.length + '/' + giftRequired;
+      picker.classList.toggle('is-complete', giftChosen.length === giftRequired);
+      if (giftChosen.length === giftRequired) {
+        var hint = picker.querySelector('[data-apgo-cc-gift-hint]');
+        if (hint) hint.hidden = true;
+      }
+    });
+  }
+  function flashGiftHint() {
+    giftPickers.forEach(function (picker) {
+      if (picker.offsetParent === null) return; // only nudge the visible picker(s)
+      var hint = picker.querySelector('[data-apgo-cc-gift-hint]');
+      if (hint) hint.hidden = false;
+      picker.classList.remove('is-nudge');
+      void picker.offsetWidth; // restart animation
+      picker.classList.add('is-nudge');
+      try { picker.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {}
+    });
+  }
+  if (giftPickerActive) {
+    giftPickers.forEach(function (picker) {
+      picker.addEventListener('click', function (e) {
+        var btn = e.target.closest('[data-apgo-cc-gift-option]');
+        if (!btn || btn.disabled || btn.classList.contains('is-soldout')) return;
+        var id = btn.getAttribute('data-gift-variant');
+        if (!id) return;
+        if (giftIsChosen(id)) {
+          giftChosen = giftChosen.filter(function (g) { return g.id !== id; });
+        } else if (giftChosen.length < giftRequired) {
+          giftChosen.push({ id: id, title: btn.getAttribute('data-gift-title') || '' });
+        }
+        renderGiftPickers();
+      });
+    });
+    renderGiftPickers();
+  }
+
   /* Market-aware money formatter: read currency code from .apgo-product-section[data-apgo-currency]
      (Shopify sets this from {{ cart.currency.iso_code }}), then format via Intl.NumberFormat.
      Falls back to TWD only if both the data attribute and Shopify global are unavailable. */
@@ -622,6 +702,11 @@
       syncPurchaseActions(activeVariant);
       return Promise.reject({ description: 'Sold out' });
     }
+    /* Gift picker: block add until exactly the required number is chosen. */
+    if (giftPickerActive && !giftReady()) {
+      flashGiftHint();
+      return Promise.reject({ description: 'choose-gifts' });
+    }
     var btn = opts.btn;
     var fd = new FormData(form);
     var orig = btn ? btn.textContent : '';
@@ -638,10 +723,27 @@
     var xId = fd.get('id');
     var xQty = parseInt(fd.get('quantity') || '1', 10) || 1;
     var giftId = window.APGO_GIFT_MAP && window.APGO_GIFT_MAP[xId];
-    var addedGiftAtomically = !!giftId;
+    var pickerItems = giftPickerActive ? giftItems() : [];
+    /* Atomic multi-item add (gift picker OR the GWP map) — skip the post-hook
+       reconciler below so it doesn't fight AIOD / re-add these lines. */
+    var addedGiftAtomically = !!giftId || pickerItems.length > 0;
 
     var fetchOptions;
-    if (giftId) {
+    if (pickerItems.length) {
+      /* Gift picker: main item + the customer's chosen free gifts, one txn. */
+      var mainItem = { id: parseInt(xId, 10), quantity: xQty };
+      fd.forEach(function (val, key) {
+        if (key.indexOf('properties[') === 0 && key.charAt(key.length - 1) === ']') {
+          mainItem.properties = mainItem.properties || {};
+          mainItem.properties[key.slice(11, -1)] = val;
+        }
+      });
+      fetchOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ items: [mainItem].concat(pickerItems) })
+      };
+    } else if (giftId) {
       var xItem = { id: parseInt(xId, 10), quantity: xQty };
       /* Forward any line-item properties from the form onto X */
       fd.forEach(function (val, key) {
