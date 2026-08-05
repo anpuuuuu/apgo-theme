@@ -110,6 +110,9 @@
         {%- if apgo_use_blocks -%}
           {%- for block in card_blocks -%}
             {%- assign apgo_block_product = block.settings.product -%}
+            {%- comment -%} Region lock: skip products market-locked away from this storefront (custom.only_market). {%- endcomment -%}
+            {%- assign apgo_pm = apgo_block_product.metafields.custom.only_market.value | strip | upcase -%}
+            {%- if apgo_pm != blank and localization.country.iso_code != apgo_pm -%}{%- continue -%}{%- endif -%}
             {%- if apgo_block_product != blank -%}
               {%- assign apgo_event_card_uid = section_id | append: '-' | append: zone_class | append: '-' | append: block.id -%}
               <div class="apgo-event-scroll-zone__card" role="listitem" {{ block.shopify_attributes }}>
@@ -125,6 +128,9 @@
           {%- endfor -%}
         {%- else -%}
           {%- for product in products -%}
+            {%- comment -%} Region lock: skip products market-locked away from this storefront (custom.only_market). {%- endcomment -%}
+            {%- assign apgo_pm = product.metafields.custom.only_market.value | strip | upcase -%}
+            {%- if apgo_pm != blank and localization.country.iso_code != apgo_pm -%}{%- continue -%}{%- endif -%}
             {%- assign apgo_event_card_uid = section_id | append: '-' | append: zone_class | append: '-' | append: product.id -%}
             <div class="apgo-event-scroll-zone__card" role="listitem">
               {% render 'apgo-event-listing-card',

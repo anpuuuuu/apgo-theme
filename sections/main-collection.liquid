@@ -111,6 +111,9 @@
           {% assign catalog_chunk_is_first = forloop.first %}
           {% capture children %}
             {% for product in cat_coll.products limit: apgo_hub_section_limit %}
+              {%- comment -%} Region lock: skip products market-locked away from this storefront (custom.only_market, same convention as the PDP redirect guard in theme.liquid). {%- endcomment -%}
+              {%- assign apgo_pm = product.metafields.custom.only_market.value | strip | upcase -%}
+              {%- if apgo_pm != blank and localization.country.iso_code != apgo_pm -%}{%- continue -%}{%- endif -%}
               <li
                 id="{{ section.id }}-{{ product.id }}-{{ ch }}"
                 class="product-grid__item product-grid__item--{{ forloop.index0 }}"
@@ -183,6 +186,9 @@
         {% paginate collection.products by 24 %}
           {% capture children %}
             {% for product in collection.products %}
+              {%- comment -%} Region lock: skip products market-locked away from this storefront. {%- endcomment -%}
+              {%- assign apgo_pm = product.metafields.custom.only_market.value | strip | upcase -%}
+              {%- if apgo_pm != blank and localization.country.iso_code != apgo_pm -%}{%- continue -%}{%- endif -%}
               <li
                 id="{{ section.id }}-{{ product.id }}"
                 class="product-grid__item product-grid__item--{{ forloop.index0 }}"
