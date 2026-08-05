@@ -123,6 +123,40 @@
       {%- endcomment -%}
       {%- assign apgo_show_aurora_counter = section.settings.show_aurora_counter -%}
 
+      {%- comment -%} ZONE — Glaze promo banner (region-aware: SG sees SG banner+product, MY sees MY) {%- endcomment -%}
+      {%- if section.settings.show_glaze_zone -%}
+        {%- assign glaze_banner = section.settings.glaze_zone_banner -%}
+        {%- assign glaze_product = section.settings.glaze_zone_product -%}
+        {%- assign glaze_variant = section.settings.glaze_zone_variant_id -%}
+        {%- if localization.country.iso_code == 'SG' -%}
+          {%- if section.settings.glaze_zone_banner_sg != blank -%}{%- assign glaze_banner = section.settings.glaze_zone_banner_sg -%}{%- endif -%}
+          {%- if section.settings.glaze_zone_product_sg != blank -%}{%- assign glaze_product = section.settings.glaze_zone_product_sg -%}{%- endif -%}
+          {%- assign glaze_variant = section.settings.glaze_zone_variant_id_sg -%}
+        {%- endif -%}
+        {% render 'apgo-event-linked-banner-zone',
+          heading: section.settings.glaze_zone_heading,
+          message: section.settings.glaze_zone_message,
+          show_counter: false,
+          banner_image: glaze_banner,
+          product: glaze_product,
+          variant_id: glaze_variant,
+          zone_class: 'glaze',
+          zone_position: 1 %}
+      {%- endif -%}
+
+      {%- comment -%} ZONE — Detergent promo banner (single, no region) {%- endcomment -%}
+      {%- if section.settings.show_detergent_zone -%}
+        {% render 'apgo-event-linked-banner-zone',
+          heading: section.settings.detergent_zone_heading,
+          message: section.settings.detergent_zone_message,
+          show_counter: false,
+          banner_image: section.settings.detergent_zone_banner,
+          product: section.settings.detergent_zone_product,
+          variant_id: section.settings.detergent_zone_variant_id,
+          zone_class: 'detergent',
+          zone_position: 2 %}
+      {%- endif -%}
+
       {%- comment -%} ZONE 1 — Discount horizontal scroll {%- endcomment -%}
       {%- if section.settings.show_discount_zone -%}
         {% render 'apgo-event-scroll-zone',
@@ -135,23 +169,6 @@
           hide_compare_at: section.settings.discount_zone_hide_compare_at,
           show_scroll_cue: section.settings.show_product_scroll_cue,
           section_id: section.id %}
-      {%- endif -%}
-
-      {%- comment -%} ZONE 2 — Single-product linked promotional banner {%- endcomment -%}
-      {%- if section.settings.show_aurora_zone -%}
-        {% render 'apgo-event-linked-banner-zone',
-          heading: section.settings.aurora_zone_heading,
-          message: section.settings.aurora_zone_message,
-          show_counter: apgo_show_aurora_counter,
-          counter_release_total: section.settings.aurora_counter_release_total,
-          counter_manual_deduction: section.settings.aurora_counter_manual_deduction,
-          counter_milestone_total: section.settings.aurora_counter_milestone_total,
-          counter_flow_baseline: section.settings.aurora_counter_flow_baseline,
-          banner_image: section.settings.aurora_zone_banner,
-          product: section.settings.aurora_zone_product,
-          variant_id: section.settings.aurora_zone_variant_id,
-          zone_class: 'aurora',
-          zone_position: 2 %}
       {%- endif -%}
 
       {%- comment -%} ZONE 3 — Buy 1 Free 1 horizontal scroll {%- endcomment -%}
@@ -203,6 +220,23 @@
               hide_compare_at: section.settings.featured_stage_hide_compare_at %}
           </div>
         </div>
+      {%- endif -%}
+
+      {%- comment -%} ZONE — Aurora single-product banner (moved to after Boss Recommends) {%- endcomment -%}
+      {%- if section.settings.show_aurora_zone -%}
+        {% render 'apgo-event-linked-banner-zone',
+          heading: section.settings.aurora_zone_heading,
+          message: section.settings.aurora_zone_message,
+          show_counter: apgo_show_aurora_counter,
+          counter_release_total: section.settings.aurora_counter_release_total,
+          counter_manual_deduction: section.settings.aurora_counter_manual_deduction,
+          counter_milestone_total: section.settings.aurora_counter_milestone_total,
+          counter_flow_baseline: section.settings.aurora_counter_flow_baseline,
+          banner_image: section.settings.aurora_zone_banner,
+          product: section.settings.aurora_zone_product,
+          variant_id: section.settings.aurora_zone_variant_id,
+          zone_class: 'aurora',
+          zone_position: 5 %}
       {%- endif -%}
     </div>
   </div>
@@ -402,6 +436,99 @@
       "id": "aurora_zone_variant_id",
       "label": "Aurora deal variant ID",
       "info": "Optional. Paste the numeric variant ID for the promoted set. When blank, the first available variant is used."
+    },
+    {
+      "type": "header",
+      "content": "Glaze Zone (region-aware)"
+    },
+    {
+      "type": "paragraph",
+      "content": "Renders first on the page. SG storefront shows the SG banner + links to the SG product; everywhere else shows the MY banner + product. Zone hides until a banner + product are set."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_glaze_zone",
+      "label": "Show Glaze zone",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "glaze_zone_heading",
+      "label": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "glaze_zone_message",
+      "label": "Message"
+    },
+    {
+      "type": "image_picker",
+      "id": "glaze_zone_banner",
+      "label": "Banner — MY (default)"
+    },
+    {
+      "type": "product",
+      "id": "glaze_zone_product",
+      "label": "Destination product — MY"
+    },
+    {
+      "type": "text",
+      "id": "glaze_zone_variant_id",
+      "label": "Variant ID — MY (optional)"
+    },
+    {
+      "type": "image_picker",
+      "id": "glaze_zone_banner_sg",
+      "label": "Banner — SG"
+    },
+    {
+      "type": "product",
+      "id": "glaze_zone_product_sg",
+      "label": "Destination product — SG"
+    },
+    {
+      "type": "text",
+      "id": "glaze_zone_variant_id_sg",
+      "label": "Variant ID — SG (optional)"
+    },
+    {
+      "type": "header",
+      "content": "Detergent Zone"
+    },
+    {
+      "type": "paragraph",
+      "content": "Renders second. Single product/banner (no region split). Zone hides until a banner + product are set."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_detergent_zone",
+      "label": "Show Detergent zone",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "detergent_zone_heading",
+      "label": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "detergent_zone_message",
+      "label": "Message"
+    },
+    {
+      "type": "image_picker",
+      "id": "detergent_zone_banner",
+      "label": "Banner"
+    },
+    {
+      "type": "product",
+      "id": "detergent_zone_product",
+      "label": "Destination product"
+    },
+    {
+      "type": "text",
+      "id": "detergent_zone_variant_id",
+      "label": "Variant ID (optional)"
     },
     {
       "type": "header",
