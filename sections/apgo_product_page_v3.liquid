@@ -7345,16 +7345,14 @@ document.addEventListener('DOMContentLoaded', function() {
       "type": "product_list",
       "id": "gift_picker_products",
       "label": "Show on these products",
-      "info": "The gift picker appears only on these product pages (e.g. the 8.8 MY promo + the SG61 SG promo). Region visibility of each product is handled by Shopify Markets, not here.",
-      "limit": 6,
-      "visible_if": "{{ section.settings.gift_picker_enabled }}"
+      "info": "The gift picker appears only on these product pages (e.g. the 8.8 MY promo + the SG61 SG promo). Only takes effect when 'Enable gift picker' is on.",
+      "limit": 6
     },
     {
       "type": "product_list",
       "id": "gift_picker_pool",
       "label": "Gift pool (products the customer can choose from)",
-      "limit": 12,
-      "visible_if": "{{ section.settings.gift_picker_enabled }}"
+      "limit": 12
     },
     {
       "type": "text",
