@@ -58,7 +58,7 @@
       endif
     endfor
   else
-    assign tiers_str = '1|0|Single pack|::2|1|Buy 2 get 1 free|Popular pick::4|2|Buy 4 get 2 free|Top choice::6|3|Buy 6 get 3 free|Best value'
+    assign tiers_str = '1|0|Single pack|::4|2|Buy 4 get 2 free|Top choice::6|3|Buy 6 get 3 free|Best value'
   endif
   assign tiers = tiers_str | split: '::'
 
@@ -145,15 +145,22 @@
               <span class="apgo-bundle__tier-chip">{{ t_chip }}</span>
             {%- endif -%}
           </div>
+          {%- comment -%}
+            Compact English meta line. The store money format appends the
+            ISO code ("RM39.00 MYR"), which reads doubled/cluttered here —
+            strip it (market-aware: MYR on MY, SGD on SG).
+          {%- endcomment -%}
+          {%- assign t_avg_fmt = t_avg_price | money | replace: cart.currency.iso_code, '' | strip -%}
+          {%- assign t_save_fmt = t_savings | money | replace: cart.currency.iso_code, '' | strip -%}
           <div class="apgo-bundle__tier-meta">
-            {{ t_total_count }} packs total · {{ t_avg_price | money }} avg/pack
+            {{ t_total_count }} pack{% if t_total_count > 1 %}s{% endif %} · {{ t_avg_fmt }}/pack
             {%- if t_savings > 0 -%}
-              <span class="apgo-bundle__tier-savings">· Save {{ t_savings | money }}</span>
+              <span class="apgo-bundle__tier-savings">· Save {{ t_save_fmt }}</span>
             {%- endif -%}
           </div>
         </div>
         <div class="apgo-bundle__tier-price-area">
-          <div class="apgo-bundle__tier-price">{{ t_total_price | money }}</div>
+          <div class="apgo-bundle__tier-price">{{ t_total_price | money | replace: cart.currency.iso_code, '' | strip }}</div>
           {%- if t_gift > 0 -%}
             <div class="apgo-bundle__tier-gift">+{{ t_gift }} free</div>
           {%- endif -%}
@@ -268,12 +275,12 @@
   {%- if with_cta -%}
     <div class="apgo-bundle__cta-area">
       <button type="button" class="apgo-bundle__cta-disabled" data-apgo-bundle-cta-disabled disabled>
-        Select all scents first · <span data-apgo-bundle-remaining>3</span> to go
+        Choose scents · <span data-apgo-bundle-remaining>3</span> to go
       </button>
       <div class="apgo-bundle__cta-enabled" data-apgo-bundle-cta-enabled style="display:none;">
         <button type="button" class="apgo-bundle__cta-add" data-apgo-bundle-add>Add to cart</button>
         <button type="button" class="apgo-bundle__cta-buy-now" data-apgo-bundle-buy-now>
-          Buy now <span data-apgo-bundle-total>{{ 0 | money }}</span>
+          Buy now <span data-apgo-bundle-total>{{ 0 | money | replace: cart.currency.iso_code, '' | strip }}</span>
         </button>
       </div>
     </div>
