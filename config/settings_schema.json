@@ -25,6 +25,38 @@
         "default": true
       },
       {
+        "type": "header",
+        "content": "Quantity-threshold gift (native BXGY companion)"
+      },
+      {
+        "type": "paragraph",
+        "content": "Auto-adds a free gift when the cart holds enough of a trigger product, so a NATIVE Shopify Buy-X-get-Y discount can zero it (native discounts never add the gift themselves). Gift qty = floor(trigger qty ÷ minimum). Set up the matching native discount in Admin → Discounts."
+      },
+      {
+        "type": "checkbox",
+        "id": "apgo_qty_gift_enabled",
+        "label": "Enable quantity-threshold gift auto-add",
+        "default": false
+      },
+      {
+        "type": "product",
+        "id": "apgo_qty_gift_trigger_product",
+        "label": "Trigger product",
+        "info": "Quantities of ALL its variants are summed (e.g. the Laundry Detergent Promotion's 6 scents)."
+      },
+      {
+        "type": "text",
+        "id": "apgo_qty_gift_min_qty",
+        "label": "Minimum quantity per gift",
+        "default": "6"
+      },
+      {
+        "type": "product",
+        "id": "apgo_qty_gift_product",
+        "label": "Gift product",
+        "info": "Its first variant is auto-added (e.g. APGO Floor Cleaner 30ml). Must match the Y in the native discount."
+      },
+      {
         "type": "checkbox",
         "id": "apgo_promo_banner_enabled",
         "label": "Show promo banner on top of PDP",

@@ -448,6 +448,27 @@
       <script src="{{ 'apgo-gift-reconciler.js' | asset_url }}" defer></script>
     {% endif %}
 
+    {%- comment -%}
+      Quantity-threshold free gift (native-BXGY companion). Native Shopify
+      "Buy X get Y" discounts only zero a gift ALREADY in the cart — they
+      never add it. apgo-qty-gift.js keeps the gift line in sync:
+      floor(trigger-product qty / min qty) gift units, tagged _free_gift so
+      the cart lockdown + free-shipping exclusion apply. Configured in
+      Theme settings → APGO — Free Gift Promo → Quantity-threshold gift.
+    {%- endcomment -%}
+    {% if settings.apgo_qty_gift_enabled
+       and settings.apgo_qty_gift_trigger_product != blank
+       and settings.apgo_qty_gift_product != blank %}
+      <script>
+        window.APGO_QTY_GIFT = {
+          triggerProductId: {{ settings.apgo_qty_gift_trigger_product.id | json }},
+          minQty: {{ settings.apgo_qty_gift_min_qty | default: '6' | plus: 0 | at_least: 1 | json }},
+          giftVariantId: {{ settings.apgo_qty_gift_product.variants.first.id | json }}
+        };
+      </script>
+      <script src="{{ 'apgo-qty-gift.js' | asset_url }}" defer></script>
+    {% endif %}
+
     {% render 'search-modal' %}
     {% render 'apgo-cart-toast' %}
     {% comment %}
