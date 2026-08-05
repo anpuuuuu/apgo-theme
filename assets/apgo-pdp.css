@@ -1723,10 +1723,10 @@ body.template-suffix-apgo-v1s-plus [id^="shopify-section-apgo_tactical_hub"] {
   white-space: nowrap;
 }
 .apgo-bundle__tier-gift {
-  font-size: 10px;
+  font-size: 13px;
   color: var(--apgo-star);
   margin-top: 2px;
-  font-weight: 500;
+  font-weight: 700;
 }
 .apgo-bundle__tier.is-active .apgo-bundle__tier-gift {
   color: var(--apgo-star);

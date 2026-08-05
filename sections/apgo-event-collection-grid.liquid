@@ -174,8 +174,16 @@
         {%- endif -%}
       {%- endif -%}
 
-      {%- comment -%} ZONE — Detergent promo banner (single, no region) {%- endcomment -%}
-      {%- if section.settings.show_detergent_zone -%}
+      {%- comment -%}
+        ZONE — Detergent promo banner. MY-only promo: the product carries
+        custom.only_market=MY (SG visitors get redirected off its PDP), so
+        hide the whole zone on the SG storefront too.
+      {%- endcomment -%}
+      {%- assign apgo_show_detergent = section.settings.show_detergent_zone -%}
+      {%- if section.settings.detergent_zone_hide_sg and localization.country.iso_code == 'SG' -%}
+        {%- assign apgo_show_detergent = false -%}
+      {%- endif -%}
+      {%- if apgo_show_detergent -%}
         {% render 'apgo-event-linked-banner-zone',
           heading: section.settings.detergent_zone_heading,
           message: section.settings.detergent_zone_message,
@@ -559,6 +567,13 @@
       "id": "show_detergent_zone",
       "label": "Show Detergent zone",
       "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "detergent_zone_hide_sg",
+      "label": "Hide Detergent zone on SG storefront",
+      "info": "The detergent promo is MY-only (SG visitors are redirected off its product page), so keep this on to also hide its banner from SG.",
+      "default": true
     },
     {
       "type": "text",
