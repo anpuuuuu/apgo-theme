@@ -10,10 +10,6 @@
 {
   "current": {
     "apgo_gwp_enabled": false,
-    "apgo_qty_gift_enabled": true,
-    "apgo_qty_gift_trigger_product": "apgo-laundry-detergent-special-promotion-1",
-    "apgo_qty_gift_min_qty": "6",
-    "apgo_qty_gift_product": "apgo-floor-cleaner-30ml",
     "apgo_promo_banner_enabled": false,
     "apgo_promo_banner_pdp_products": [],
     "apgo_promo_banner_show_countdown": false,
