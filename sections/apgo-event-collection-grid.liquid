@@ -142,6 +142,36 @@
           variant_id: glaze_variant,
           zone_class: 'glaze',
           zone_position: 1 %}
+
+        {%- comment -%}
+          🎁 Glaze gift-picker modal. The Glaze promo products carry a
+          "choose N free gifts" step (same as their PDPs), so the zone's
+          Add/Buy must NOT add directly — apgo-event-cart.js intercepts
+          them when this modal is present and opens it instead (mobile:
+          bottom sheet, desktop: centered dialog — CSS media query).
+          Commit posts main + chosen gifts in one /cart/add.js items[]
+          call with the _gift_pick property; AIOD prices the gifts $0.
+        {%- endcomment -%}
+        {%- if section.settings.glaze_gift_enabled and section.settings.glaze_gift_pool != blank -%}
+          <div class="apgo-event-gift-modal" data-apgo-event-gift-modal data-intent="add" aria-hidden="true" hidden>
+            <div class="apgo-event-gift-modal__backdrop" data-apgo-event-gift-close></div>
+            <div class="apgo-event-gift-modal__panel" role="dialog" aria-modal="true" aria-label="{{ section.settings.glaze_gift_heading | default: 'Choose your free gifts' | escape }}">
+              <button type="button" class="apgo-event-gift-modal__close" data-apgo-event-gift-close aria-label="Close">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+              </button>
+              {%- render 'apgo-cc-gift-picker',
+                pool: section.settings.glaze_gift_pool,
+                heading: section.settings.glaze_gift_heading,
+                count: section.settings.glaze_gift_count,
+                property: '_gift_pick',
+                location: 'event' -%}
+              <div class="apgo-event-gift-modal__actions">
+                <button type="button" class="apgo-event-gift-modal__cta apgo-event-gift-modal__cta--add" data-apgo-event-gift-add disabled>Add to cart</button>
+                <button type="button" class="apgo-event-gift-modal__cta apgo-event-gift-modal__cta--buy" data-apgo-event-gift-buy disabled>Buy now</button>
+              </div>
+            </div>
+          </div>
+        {%- endif -%}
       {%- endif -%}
 
       {%- comment -%} ZONE — Detergent promo banner (single, no region) {%- endcomment -%}
@@ -490,6 +520,31 @@
       "type": "text",
       "id": "glaze_zone_variant_id_sg",
       "label": "Variant ID — SG (optional)"
+    },
+    {
+      "type": "checkbox",
+      "id": "glaze_gift_enabled",
+      "label": "Glaze buttons open the free-gift picker",
+      "info": "When on, the zone's Add/Buy open a popup to choose the free gifts (same flow as the promo PDP) instead of adding directly. Pricing to $0 is done by AIOD.",
+      "default": false
+    },
+    {
+      "type": "product_list",
+      "id": "glaze_gift_pool",
+      "label": "Gift pool (products the customer can choose from)",
+      "limit": 12
+    },
+    {
+      "type": "text",
+      "id": "glaze_gift_count",
+      "label": "How many gifts the customer must pick",
+      "default": "2"
+    },
+    {
+      "type": "text",
+      "id": "glaze_gift_heading",
+      "label": "Gift picker heading",
+      "default": "Choose 2 gifts — FREE"
     },
     {
       "type": "header",
