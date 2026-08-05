@@ -78,7 +78,7 @@
   assign scent_palette = shop.metafields.apgo.scents.value
   assign scent_option = nil
   for option in product.options_with_values
-    if option.name contains '香'
+    if option.name contains '香' or option.name contains 'Scent' or option.name contains 'scent'
       assign scent_option = option
     endif
   endfor
