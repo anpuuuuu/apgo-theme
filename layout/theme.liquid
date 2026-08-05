@@ -5,6 +5,21 @@
   lang="{{ request.locale.iso_code }}"
 >
   <head>
+    {%- comment -%}
+      Region lock — hides a promo product page outside its market. When a
+      product carries custom.only_market ('MY' / 'SG') and the buyer's
+      market country differs, redirect to the home page so only the
+      region-appropriate product is visible (e.g. 8.8 = MY only, SG61 =
+      SG only). Placed first in <head> so it fires before the page paints.
+      Products without the metafield are unaffected.
+    {%- endcomment -%}
+    {%- if request.page_type == 'product' and product.metafields.custom.only_market != blank -%}
+      {%- assign apgo_lock_market = product.metafields.custom.only_market.value | strip | upcase -%}
+      {%- if apgo_lock_market != blank and localization.country.iso_code != apgo_lock_market -%}
+        <script>window.location.replace({{ routes.root_url | json }});</script>
+      {%- endif -%}
+    {%- endif -%}
+
     {{ 'base.css' | asset_url | stylesheet_tag }}
 
     {%- if settings.favicon != blank -%}
