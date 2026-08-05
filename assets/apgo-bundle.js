@@ -341,25 +341,21 @@
         }).then(function (r) { return r.json(); });
       })
       .then(function (cart) {
-        // Dispatch the same cart events apgo-pdp.js dispatches so the rest
-        // of the theme stays in sync.
-        document.dispatchEvent(new CustomEvent('cart:update', { detail: { cart: cart } }));
-        document.documentElement.dispatchEvent(new CustomEvent('cart:refresh', { bubbles: true, detail: { cart: cart } }));
-        document.dispatchEvent(new CustomEvent('cart:updated'));
-
-        // Optional: try to fire Horizon's @theme/events. Ignore if absent.
-        try {
-          import('@theme/events').then(function (mod) {
-            if (mod && mod.CartUpdateEvent) {
-              document.dispatchEvent(new mod.CartUpdateEvent(cart, 'apgo-bundle', {
-                itemCount: cart.item_count, source: 'apgo-bundle', sections: {}
-              }));
-            }
-            if (mod && mod.CartAddEvent) {
-              document.dispatchEvent(new mod.CartAddEvent({}, 'apgo-bundle', { source: 'apgo-bundle' }));
-            }
-          }).catch(function () {});
-        } catch (_) {}
+        // Cart update events — Horizon's <cart-icon> REQUIRES
+        // event.detail.data.itemCount to repaint the header badge
+        // (a bare { detail: { cart } } shape reads undefined -> badge
+        // stays frozen). Mirror apgo-pdp.js apgoBroadcastCart exactly.
+        var itemCount = (cart && typeof cart.item_count === 'number') ? cart.item_count : 0;
+        var detail = {
+          data: { itemCount: itemCount, source: 'apgo-bundle' },
+          resource: cart,
+          cart: cart
+        };
+        ['cart:update', 'cart:updated', 'cart:refresh', 'cart:added'].forEach(function (name) {
+          try {
+            document.dispatchEvent(new CustomEvent(name, { bubbles: true, detail: detail }));
+          } catch (e) { /* no-op */ }
+        });
 
         if (redirectToCart) {
           // Buy now → land on /cart so user can verify the bundle discount
