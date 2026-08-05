@@ -260,7 +260,18 @@
         "glaze_zone_banner_sg": "shopify://shop_images/2_4.png",
         "glaze_zone_product_sg": "atomic-glaze-coating-sg61-promotion",
         "glaze_zone_variant_id_sg": "",
+        "glaze_gift_enabled": true,
+        "glaze_gift_pool": [
+          "apgo-car-interior-eco-friendly-cleaner-500ml",
+          "apgo-car-interior-eco-friendly-coating-500ml",
+          "apgo-glass-cleaner-500ml",
+          "apgo-car-wash-shampoo-special-formula-refill-pack",
+          "apgo-car-wiper-fluid-refill-pack"
+        ],
+        "glaze_gift_count": "2",
+        "glaze_gift_heading": "Choose 2 gifts — FREE",
         "show_detergent_zone": false,
+        "detergent_zone_hide_sg": true,
         "detergent_zone_heading": "",
         "detergent_zone_message": "",
         "detergent_zone_product": "",
