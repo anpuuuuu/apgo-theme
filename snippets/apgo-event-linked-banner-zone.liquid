@@ -101,18 +101,23 @@
             used for promos that must be bought via the PDP picker (e.g.
             the detergent bundle's tier + scent flow).
           {%- endcomment -%}
+          {%- comment -%}
+            NOTE: deliberately NO --buy class and NO data-variant-id here —
+            apgo-event-cart.js intercepts clicks on .__button--buy elements
+            carrying data-variant-id and turns them into cart adds. This CTA
+            must NAVIGATE to the PDP, so it stays outside those selectors.
+          {%- endcomment -%}
           {%- if apgo_zone_sold_out -%}
-            <button type="button" class="apgo-event-linked-banner-zone__button apgo-event-linked-banner-zone__button--buy apgo-event-linked-banner-zone__button--single" disabled>
+            <button type="button" class="apgo-event-linked-banner-zone__button apgo-event-linked-banner-zone__button--single" disabled>
               {{ 'products.product.sold_out' | t }}
             </button>
           {%- else -%}
             <a
-              class="apgo-event-linked-banner-zone__button apgo-event-linked-banner-zone__button--buy apgo-event-linked-banner-zone__button--single"
+              class="apgo-event-linked-banner-zone__button apgo-event-linked-banner-zone__button--single"
               href="{{ action_variant.url }}"
               data-apgo-campaign-promotion-link
               data-promotion-id="golden_bull_{{ zone_class | escape }}_cta"
               data-promotion-name="{{ heading | escape }}"
-              data-variant-id="{{ action_variant.id }}"
               aria-label="{{ single_cta_label | escape }}: {{ product.title | escape }}"
             >{{ single_cta_label }}</a>
           {%- endif -%}
