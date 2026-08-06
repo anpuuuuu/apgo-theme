@@ -5,6 +5,14 @@
   @param {object} selected_variant - Variant to pre-select (e.g. listing bundle pick)
 {%- enddoc -%}
 
+{%- comment -%}
+  Per-product opt-out: products with metafield custom.hide_quick_add = true
+  render NO + trigger (e.g. the detergent bundle promo, which must be
+  bought through its PDP scent/tier picker, not a bare variant add).
+{%- endcomment -%}
+{%- if product.metafields.custom.hide_quick_add.value -%}
+  {%- comment -%} quick add disabled for this product {%- endcomment -%}
+{%- else -%}
 {% capture apgo_coll_drawer_json %}
 {
   "product_id": {{ product.id }},
@@ -46,6 +54,8 @@
     </span>
   </button>
 </div>
+
+{%- endif -%}
 
 {% stylesheet %}
   .apgo-coll-drawer-pack {

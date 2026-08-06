@@ -7,6 +7,13 @@
   @param {string} [layout] - Pass `price-row` when quick-add sits beside the price on collection cards.
 {%- enddoc -%}
 
+{%- comment -%}
+  Per-product opt-out: metafield custom.hide_quick_add = true renders no
+  quick-add for this product (e.g. the detergent bundle promo — must be
+  bought via its PDP tier/scent picker).
+{%- endcomment -%}
+{%- unless product.metafields.custom.hide_quick_add.value -%}
+
 {% liquid
   assign apgo_quick_add_suffix = section_id
   if block != blank
@@ -135,6 +142,7 @@
     {%- endform -%}
   </product-form-component>
 </quick-add-component>
+{%- endunless -%}
 
 {% stylesheet %}
   /* Quick Add */
