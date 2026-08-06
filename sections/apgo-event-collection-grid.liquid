@@ -191,6 +191,7 @@
           banner_image: section.settings.detergent_zone_banner,
           product: section.settings.detergent_zone_product,
           variant_id: section.settings.detergent_zone_variant_id,
+          single_cta_label: section.settings.detergent_zone_single_cta,
           zone_class: 'detergent',
           zone_position: 2 %}
       {%- endif -%}
@@ -599,6 +600,13 @@
       "type": "text",
       "id": "detergent_zone_variant_id",
       "label": "Variant ID (optional)"
+    },
+    {
+      "type": "text",
+      "id": "detergent_zone_single_cta",
+      "label": "Single button label",
+      "info": "When filled (e.g. \"Grab Deals Now\"), the banner shows ONE full-width button that opens the product page instead of Add to cart / Buy now. Leave empty to keep the two buttons.",
+      "default": "Grab Deals Now"
     },
     {
       "type": "header",

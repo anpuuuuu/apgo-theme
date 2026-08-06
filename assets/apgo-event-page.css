@@ -1114,6 +1114,11 @@ body.apgo-special-event-page .apgo-event-linked-banner-zone__button--buy {
   color: #071019;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
+/* Single-CTA mode: one full-width gold link button (spans both grid cols) */
+body.apgo-special-event-page .apgo-event-linked-banner-zone__button--single {
+  grid-column: 1 / -1;
+  text-decoration: none;
+}
 body.apgo-special-event-page .apgo-event-linked-banner-zone__button:hover:not(:disabled) {
   transform: translateY(-1px);
   filter: brightness(1.08);
