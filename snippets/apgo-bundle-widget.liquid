@@ -158,6 +158,9 @@
               <span class="apgo-bundle__tier-savings">· Save {{ t_save_fmt }}</span>
             {%- endif -%}
           </div>
+          {%- if t_buy == 6 and t_gift == 3 -%}
+            <div class="apgo-bundle__tier-bonus">🎁 Free Floor Cleaner 30ml included</div>
+          {%- endif -%}
         </div>
         <div class="apgo-bundle__tier-price-area">
           <div class="apgo-bundle__tier-price">{{ t_total_price | money | replace: cart.currency.iso_code, '' | strip }}</div>
