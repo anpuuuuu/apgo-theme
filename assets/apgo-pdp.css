@@ -1728,6 +1728,12 @@ body.template-suffix-apgo-v1s-plus [id^="shopify-section-apgo_tactical_hub"] {
   margin-top: 2px;
   font-weight: 700;
 }
+.apgo-bundle__stack-note {
+  margin: 8px 0 0;
+  font-size: 11px;
+  color: var(--apgo-muted);
+  letter-spacing: 0.02em;
+}
 .apgo-bundle__tier.is-active .apgo-bundle__tier-gift {
   color: var(--apgo-star);
 }
