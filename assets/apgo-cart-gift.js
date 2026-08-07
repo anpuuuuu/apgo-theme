@@ -73,7 +73,12 @@
     modal.removeAttribute('hidden');
     modal.setAttribute('aria-hidden', 'false');
     document.documentElement.classList.add('apgo-cart-gift-lock');
-    requestAnimationFrame(function () { modal.classList.add('is-open'); });
+    /* Forced reflow instead of requestAnimationFrame: rAF never fires in
+       background tabs, which would leave the modal invisible when the
+       cart loads in an unfocused tab. The reflow commits the un-hidden
+       state so the transition still animates. */
+    void modal.offsetWidth;
+    modal.classList.add('is-open');
     renderPicker();
   }
 
