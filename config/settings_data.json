@@ -10,6 +10,19 @@
 {
   "current": {
     "apgo_gwp_enabled": false,
+    "apgo_cart_gift_enabled": true,
+    "apgo_cart_gift_triggers": [
+      "atomic-glaze-coating-8-8-promotion",
+      "atomic-glaze-coating-sg61-promotion"
+    ],
+    "apgo_cart_gift_pool": [
+      "apgo-car-interior-eco-friendly-coating-500ml",
+      "apgo-car-interior-eco-friendly-cleaner-500ml",
+      "apgo-glass-cleaner-500ml",
+      "apgo-car-wiper-fluid-refill-pack",
+      "apgo-car-wash-shampoo-special-formula-refill-pack"
+    ],
+    "apgo_cart_gift_per": "2",
     "apgo_promo_banner_enabled": false,
     "apgo_promo_banner_pdp_products": [],
     "apgo_promo_banner_show_countdown": false,

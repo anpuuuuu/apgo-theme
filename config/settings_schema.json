@@ -25,6 +25,38 @@
         "default": true
       },
       {
+        "type": "header",
+        "content": "Glaze gift picker — cart follow-up"
+      },
+      {
+        "type": "paragraph",
+        "content": "Keeps the customer's chosen free gifts in sync when the promo bundle's CART quantity changes. Increase → a picker pops up to choose the extra gifts; decrease/remove → excess gift lines are trimmed automatically (AIOD only frees N per bundle — extras would be charged). Must match the AIOD Glaze FreeGift rule."
+      },
+      {
+        "type": "checkbox",
+        "id": "apgo_cart_gift_enabled",
+        "label": "Enable cart gift follow-up",
+        "default": false
+      },
+      {
+        "type": "product_list",
+        "id": "apgo_cart_gift_triggers",
+        "label": "Trigger products (the promo bundles)",
+        "limit": 6
+      },
+      {
+        "type": "product_list",
+        "id": "apgo_cart_gift_pool",
+        "label": "Gift pool (same list as the PDP picker)",
+        "limit": 12
+      },
+      {
+        "type": "text",
+        "id": "apgo_cart_gift_per",
+        "label": "Free gifts per bundle unit",
+        "default": "2"
+      },
+      {
         "type": "checkbox",
         "id": "apgo_promo_banner_enabled",
         "label": "Show promo banner on top of PDP",

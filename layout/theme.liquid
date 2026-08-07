@@ -448,6 +448,26 @@
       <script src="{{ 'apgo-gift-reconciler.js' | asset_url }}" defer></script>
     {% endif %}
 
+    {%- comment -%}
+      Glaze promo — cart follow-up gift picker. When the promo bundle's
+      CART quantity changes, apgo-cart-gift.js re-syncs the customer's
+      chosen free gifts (entitled = bundle qty × per): increase opens the
+      picker modal for the extra gifts, decrease trims excess gift lines
+      (AIOD only frees N per bundle — extras would be charged).
+    {%- endcomment -%}
+    {% if settings.apgo_cart_gift_enabled
+       and settings.apgo_cart_gift_triggers != blank
+       and settings.apgo_cart_gift_pool != blank %}
+      <script>
+        window.APGO_CART_GIFT = {
+          triggers: [{% for p in settings.apgo_cart_gift_triggers %}{{ p.id }}{% unless forloop.last %},{% endunless %}{% endfor %}],
+          per: {{ settings.apgo_cart_gift_per | default: '2' | plus: 0 | at_least: 1 }}
+        };
+      </script>
+      {% render 'apgo-cart-gift-modal' %}
+      <script src="{{ 'apgo-cart-gift.js' | asset_url }}" defer></script>
+    {% endif %}
+
     {% render 'search-modal' %}
     {% render 'apgo-cart-toast' %}
     {% comment %}
