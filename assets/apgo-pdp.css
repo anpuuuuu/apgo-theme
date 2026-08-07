@@ -1729,10 +1729,18 @@ body.template-suffix-apgo-v1s-plus [id^="shopify-section-apgo_tactical_hub"] {
   font-weight: 700;
 }
 .apgo-bundle__tier-bonus {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   margin-top: 3px;
   font-size: 11px;
   font-weight: 700;
   color: var(--apgo-sage);
+}
+.apgo-bundle__tier-bonus-icon {
+  flex: 0 0 auto;
+  width: 12px;
+  height: 12px;
 }
 .apgo-bundle__tier.is-active .apgo-bundle__tier-bonus {
   color: var(--apgo-star);
