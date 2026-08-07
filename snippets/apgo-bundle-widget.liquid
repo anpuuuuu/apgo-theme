@@ -161,9 +161,6 @@
         </div>
         <div class="apgo-bundle__tier-price-area">
           <div class="apgo-bundle__tier-price">{{ t_total_price | money | replace: cart.currency.iso_code, '' | strip }}</div>
-          {%- if t_gift > 0 -%}
-            <div class="apgo-bundle__tier-gift">+{{ t_gift }} free</div>
-          {%- endif -%}
         </div>
       </label>
     {%- endfor -%}
