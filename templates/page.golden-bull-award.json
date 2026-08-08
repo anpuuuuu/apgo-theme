@@ -83,6 +83,20 @@
     "apgo_event_collection_grid_n3e6dm": {
       "type": "apgo-event-collection-grid",
       "blocks": {
+        "b1f1_card_HKHJj3": {
+          "type": "b1f1_card",
+          "settings": {
+            "product": "apgo-car-paint-headlight-care",
+            "variant_id": ""
+          }
+        },
+        "b1f1_card_Lqf6D3": {
+          "type": "b1f1_card",
+          "settings": {
+            "product": "apgo-wheel-cleaner-tyre-care-set",
+            "variant_id": ""
+          }
+        },
         "b1f1_card_CbeJhU": {
           "type": "b1f1_card",
           "settings": {
@@ -115,20 +129,6 @@
           "type": "b1f1_card",
           "settings": {
             "product": "apgo-pro-car-wash-towel-m-100cm-x-50cm",
-            "variant_id": ""
-          }
-        },
-        "b1f1_card_HKHJj3": {
-          "type": "b1f1_card",
-          "settings": {
-            "product": "apgo-pro-car-wash-towel-copy",
-            "variant_id": ""
-          }
-        },
-        "b1f1_card_Lqf6D3": {
-          "type": "b1f1_card",
-          "settings": {
-            "product": "apgo-atomic-glaze-car-nano-coating-refill-pack-new-version",
             "variant_id": ""
           }
         },
@@ -206,13 +206,13 @@
         }
       },
       "block_order": [
+        "b1f1_card_HKHJj3",
+        "b1f1_card_Lqf6D3",
         "b1f1_card_CbeJhU",
         "b1f1_card_QVijhx",
         "b1f1_card_3EpAUP",
         "b1f1_card_AzRMiV",
         "b1f1_card_KRwDX9",
-        "b1f1_card_HKHJj3",
-        "b1f1_card_Lqf6D3",
         "discount_card_c3FpMG",
         "discount_card_QiGfMd",
         "discount_card_X8VrYn",
@@ -277,6 +277,7 @@
         "detergent_zone_banner": "shopify://shop_images/detergent_banner_photo.png",
         "detergent_zone_product": "apgo-laundry-detergent-special-promotion-1",
         "detergent_zone_variant_id": "",
+        "detergent_zone_single_cta": "Grab Deals Now",
         "show_b1f1_zone": true,
         "b1f1_zone_heading": "Dont Play Play Deals👍🏻",
         "b1f1_zone_banner": "shopify://shop_images/6_d62a57fd-3001-4aeb-980d-4c79bebcfabc.png",
