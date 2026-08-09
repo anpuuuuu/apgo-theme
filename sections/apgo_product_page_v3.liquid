@@ -4209,7 +4209,7 @@
     flex-direction: row;
     align-items: center;
     gap: 12px;
-    padding: 8px 42px 8px 8px;
+    padding: 8px 96px 8px 8px;
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 12px;
     background: rgba(255, 255, 255, 0.02);
@@ -4245,32 +4245,54 @@
     overflow: hidden;
     min-height: 2.6em;
   }
-  .apgo-gift-card__check {
+  /* Quantity stepper on the right of each gift card */
+  .apgo-gift-card__qty {
     position: absolute;
     top: 50%;
-    right: 12px;
-    transform: translateY(-50%) scale(0.5);
-    width: 22px;
-    height: 22px;
+    right: 10px;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.25);
+    padding: 2px;
+  }
+  .apgo-gift-card__qty-btn {
+    width: 24px;
+    height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
+    border: none;
     border-radius: 50%;
-    border: 1.5px solid rgba(255, 255, 255, 0.25);
-    color: #111;
-    opacity: 0;
-    transition: opacity .12s ease, transform .12s ease;
+    background: transparent;
+    color: #fff;
+    font-size: 15px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+    transition: background .12s ease, opacity .12s ease;
+  }
+  .apgo-gift-card__qty-btn:hover:not(:disabled) { background: rgba(255, 255, 255, 0.14); }
+  .apgo-gift-card__qty-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .apgo-gift-card__qty-value {
+    min-width: 16px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    font-variant-numeric: tabular-nums;
   }
   .apgo-gift-card.is-selected {
     border-color: var(--primary-orange);
     background: rgba(240, 132, 24, 0.08);
   }
-  .apgo-gift-card.is-selected .apgo-gift-card__check {
-    opacity: 1;
-    transform: translateY(-50%) scale(1);
-    background: var(--primary-orange);
-    border-color: var(--primary-orange);
+  .apgo-gift-card.is-selected .apgo-gift-card__qty {
+    border-color: rgba(240, 132, 24, 0.5);
   }
+  .apgo-gift-card.is-selected .apgo-gift-card__qty-value { color: var(--primary-orange); }
   .apgo-gift-card.is-selected .apgo-gift-card__title {
     color: #fff;
   }

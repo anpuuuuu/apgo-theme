@@ -39,26 +39,33 @@
       {%- for gp in pool -%}
         {%- assign gp_variant = gp.selected_or_first_available_variant -%}
         {%- assign gp_available = gp.available -%}
-        <button
-          type="button"
+        {%- comment -%}
+          Quantity stepper (not a single-select toggle): the same gift may be
+          taken more than once, e.g. 2× the same cleaner. The card row itself
+          is a plain div; only the −/+ buttons are interactive.
+        {%- endcomment -%}
+        <div
           class="apgo-gift-card{% unless gp_available %} is-soldout{% endunless %}"
           data-apgo-cc-gift-option
           data-gift-variant="{{ gp_variant.id }}"
           data-gift-title="{{ gp.title | escape }}"
-          aria-pressed="false"
-          {% unless gp_available %}disabled aria-disabled="true"{% endunless %}
         >
-          <span class="apgo-gift-card__check" aria-hidden="true">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>
-          </span>
           {%- if gp.featured_image -%}
             <img class="apgo-gift-card__img" src="{{ gp.featured_image | image_url: width: 160 }}" alt="{{ gp.title | escape }}" width="72" height="72" loading="lazy">
           {%- else -%}
             <span class="apgo-gift-card__img apgo-gift-card__img--placeholder" aria-hidden="true"></span>
           {%- endif -%}
           <span class="apgo-gift-card__title">{{ gp.title }}</span>
-          {%- unless gp_available -%}<span class="apgo-gift-card__soldout">Sold out</span>{%- endunless -%}
-        </button>
+          {%- if gp_available -%}
+            <span class="apgo-gift-card__qty" data-apgo-cc-gift-qty>
+              <button type="button" class="apgo-gift-card__qty-btn" data-apgo-cc-gift-step="down" aria-label="Remove one {{ gp.title | escape }}" disabled>&minus;</button>
+              <span class="apgo-gift-card__qty-value" data-apgo-cc-gift-qty-value aria-live="polite">0</span>
+              <button type="button" class="apgo-gift-card__qty-btn" data-apgo-cc-gift-step="up" aria-label="Add one {{ gp.title | escape }}">+</button>
+            </span>
+          {%- else -%}
+            <span class="apgo-gift-card__soldout">Sold out</span>
+          {%- endif -%}
+        </div>
       {%- endfor -%}
     </div>
 

@@ -258,27 +258,36 @@
   var giftPickerEl = giftModal ? giftModal.querySelector('[data-apgo-cc-gift-picker]') : null;
   var giftRequired = giftPickerEl ? (parseInt(giftPickerEl.getAttribute('data-gift-count'), 10) || 2) : 2;
   var giftProperty = giftPickerEl ? (giftPickerEl.getAttribute('data-gift-property') || '_gift_pick') : '_gift_pick';
-  var giftChosen = [];      // chosen gift variant ids (strings)
+  var giftQty = {};         // { variantId: qty } — same gift may be taken more than once
   var giftMainVariant = null; // pending main-product variant id
   var giftTriggerBtn = null;  // banner button that opened the modal (fly origin)
 
-  function giftModalReady() { return giftChosen.length === giftRequired; }
+  function giftTotal() {
+    var n = 0;
+    for (var k in giftQty) { if (Object.prototype.hasOwnProperty.call(giftQty, k)) n += giftQty[k]; }
+    return n;
+  }
+  function giftModalReady() { return giftTotal() === giftRequired; }
 
   function renderGiftModal() {
     if (!giftModal) return;
-    var atMax = giftChosen.length >= giftRequired;
+    var total = giftTotal();
+    var atMax = total >= giftRequired;
     var opts = giftModal.querySelectorAll('[data-apgo-cc-gift-option]');
-    Array.prototype.forEach.call(opts, function (btn) {
-      var id = btn.getAttribute('data-gift-variant');
-      var soldout = btn.classList.contains('is-soldout');
-      var chosen = giftChosen.indexOf(id) !== -1;
-      btn.classList.toggle('is-selected', chosen);
-      btn.setAttribute('aria-pressed', chosen ? 'true' : 'false');
-      btn.classList.toggle('is-disabled', !chosen && atMax && !soldout);
-      btn.disabled = soldout || (!chosen && atMax);
+    Array.prototype.forEach.call(opts, function (card) {
+      var id = card.getAttribute('data-gift-variant');
+      var soldout = card.classList.contains('is-soldout');
+      var qty = giftQty[id] || 0;
+      card.classList.toggle('is-selected', qty > 0);
+      var valueEl = card.querySelector('[data-apgo-cc-gift-qty-value]');
+      if (valueEl) valueEl.textContent = String(qty);
+      var minus = card.querySelector('[data-apgo-cc-gift-step="down"]');
+      var plus = card.querySelector('[data-apgo-cc-gift-step="up"]');
+      if (minus) minus.disabled = soldout || qty < 1;
+      if (plus) plus.disabled = soldout || atMax;
     });
     var counter = giftModal.querySelector('[data-apgo-cc-gift-counter]');
-    if (counter) counter.textContent = giftChosen.length + '/' + giftRequired;
+    if (counter) counter.textContent = total + '/' + giftRequired;
     if (giftPickerEl) giftPickerEl.classList.toggle('is-complete', giftModalReady());
     var addCta = giftModal.querySelector('[data-apgo-event-gift-add]');
     var buyCta = giftModal.querySelector('[data-apgo-event-gift-buy]');
@@ -312,11 +321,13 @@
     if (!giftModal || !giftMainVariant || !giftModalReady()) return;
     if (ctaBtn) { ctaBtn.disabled = true; ctaBtn.setAttribute('aria-busy', 'true'); }
     var items = [{ id: parseInt(giftMainVariant, 10), quantity: 1 }];
-    giftChosen.forEach(function (id) {
+    for (var gid in giftQty) {
+      if (!Object.prototype.hasOwnProperty.call(giftQty, gid)) continue;
+      if (giftQty[gid] < 1) continue;
       var props = {};
       props[giftProperty] = 'true';
-      items.push({ id: parseInt(id, 10), quantity: 1, properties: props });
-    });
+      items.push({ id: parseInt(gid, 10), quantity: giftQty[gid], properties: props });
+    }
     fetch('/cart/add.js', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
@@ -344,13 +355,21 @@
   if (giftModal) {
     giftModal.addEventListener('click', function (e) {
       if (e.target.closest('[data-apgo-event-gift-close]')) { closeGiftModal(); return; }
-      var opt = e.target.closest('[data-apgo-cc-gift-option]');
-      if (opt && !opt.disabled && !opt.classList.contains('is-soldout')) {
-        var id = opt.getAttribute('data-gift-variant');
-        var idx = giftChosen.indexOf(id);
-        if (idx !== -1) giftChosen.splice(idx, 1);
-        else if (giftChosen.length < giftRequired) giftChosen.push(id);
-        renderGiftModal();
+      var step = e.target.closest('[data-apgo-cc-gift-step]');
+      if (step && !step.disabled) {
+        var card = step.closest('[data-apgo-cc-gift-option]');
+        if (card && !card.classList.contains('is-soldout')) {
+          var id = card.getAttribute('data-gift-variant');
+          var qty = giftQty[id] || 0;
+          if (step.getAttribute('data-apgo-cc-gift-step') === 'up') {
+            if (giftTotal() < giftRequired) giftQty[id] = qty + 1;
+          } else if (qty <= 1) {
+            delete giftQty[id];
+          } else {
+            giftQty[id] = qty - 1;
+          }
+          renderGiftModal();
+        }
         return;
       }
       var addCta = e.target.closest('[data-apgo-event-gift-add]');

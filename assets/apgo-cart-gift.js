@@ -38,33 +38,42 @@
   var running = false;
   var selfDispatching = false;
   var missing = 0;        // how many gifts the customer still has to pick
-  var chosen = [];        // variant ids currently selected in the modal
+  var qtyMap = {};        // { variantId: qty } — same gift may be taken more than once
   var lastOfferKey = '';  // avoid re-opening after a manual close for the SAME state
 
   function isCartPage() { return /^\/cart\/?$/.test(window.location.pathname); }
 
   /* ---------- modal ---------- */
+  function pickedTotal() {
+    var n = 0;
+    for (var k in qtyMap) { if (Object.prototype.hasOwnProperty.call(qtyMap, k)) n += qtyMap[k]; }
+    return n;
+  }
   function renderPicker() {
-    var atMax = chosen.length >= missing;
+    var total = pickedTotal();
+    var atMax = total >= missing;
     var opts = picker.querySelectorAll('[data-apgo-cc-gift-option]');
-    Array.prototype.forEach.call(opts, function (btn) {
-      var id = btn.getAttribute('data-gift-variant');
-      var soldout = btn.classList.contains('is-soldout');
-      var sel = chosen.indexOf(id) !== -1;
-      btn.classList.toggle('is-selected', sel);
-      btn.setAttribute('aria-pressed', sel ? 'true' : 'false');
-      btn.classList.toggle('is-disabled', !sel && atMax && !soldout);
-      btn.disabled = soldout || (!sel && atMax);
+    Array.prototype.forEach.call(opts, function (card) {
+      var id = card.getAttribute('data-gift-variant');
+      var soldout = card.classList.contains('is-soldout');
+      var qty = qtyMap[id] || 0;
+      card.classList.toggle('is-selected', qty > 0);
+      var valueEl = card.querySelector('[data-apgo-cc-gift-qty-value]');
+      if (valueEl) valueEl.textContent = String(qty);
+      var minus = card.querySelector('[data-apgo-cc-gift-step="down"]');
+      var plus = card.querySelector('[data-apgo-cc-gift-step="up"]');
+      if (minus) minus.disabled = soldout || qty < 1;
+      if (plus) plus.disabled = soldout || atMax;
     });
     var counter = picker.querySelector('[data-apgo-cc-gift-counter]');
-    if (counter) counter.textContent = chosen.length + '/' + missing;
-    picker.classList.toggle('is-complete', chosen.length === missing && missing > 0);
-    if (addCta) addCta.disabled = chosen.length !== missing || missing === 0;
+    if (counter) counter.textContent = total + '/' + missing;
+    picker.classList.toggle('is-complete', total === missing && missing > 0);
+    if (addCta) addCta.disabled = total !== missing || missing === 0;
   }
 
   function openModal(n) {
     missing = n;
-    chosen = [];
+    qtyMap = {};
     if (leadEl) {
       leadEl.textContent = n === 1
         ? 'You’ve unlocked 1 more free gift — choose it below.'
@@ -93,13 +102,21 @@
 
   modal.addEventListener('click', function (e) {
     if (e.target.closest('[data-apgo-cart-gift-close]')) { closeModal(); return; }
-    var opt = e.target.closest('[data-apgo-cc-gift-option]');
-    if (opt && !opt.disabled && !opt.classList.contains('is-soldout')) {
-      var id = opt.getAttribute('data-gift-variant');
-      var idx = chosen.indexOf(id);
-      if (idx !== -1) chosen.splice(idx, 1);
-      else if (chosen.length < missing) chosen.push(id);
-      renderPicker();
+    var step = e.target.closest('[data-apgo-cc-gift-step]');
+    if (step && !step.disabled) {
+      var card = step.closest('[data-apgo-cc-gift-option]');
+      if (card && !card.classList.contains('is-soldout')) {
+        var id = card.getAttribute('data-gift-variant');
+        var qty = qtyMap[id] || 0;
+        if (step.getAttribute('data-apgo-cc-gift-step') === 'up') {
+          if (pickedTotal() < missing) qtyMap[id] = qty + 1;
+        } else if (qty <= 1) {
+          delete qtyMap[id];
+        } else {
+          qtyMap[id] = qty - 1;
+        }
+        renderPicker();
+      }
       return;
     }
     var cta = e.target.closest('[data-apgo-cart-gift-add]');
@@ -110,12 +127,15 @@
   });
 
   function commitChosen(cta) {
-    if (!chosen.length) return;
+    if (!pickedTotal()) return;
     cta.disabled = true;
     cta.setAttribute('aria-busy', 'true');
-    var items = chosen.map(function (id) {
-      return { id: parseInt(id, 10), quantity: 1, properties: { _gift_pick: 'true' } };
-    });
+    var items = [];
+    for (var gid in qtyMap) {
+      if (!Object.prototype.hasOwnProperty.call(qtyMap, gid)) continue;
+      if (qtyMap[gid] < 1) continue;
+      items.push({ id: parseInt(gid, 10), quantity: qtyMap[gid], properties: { _gift_pick: 'true' } });
+    }
     fetch('/cart/add.js', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },

@@ -128,7 +128,7 @@
   .apgo-cart-gift-modal .apgo-gift-picker__grid { display: flex; flex-direction: column; gap: 8px; }
   .apgo-cart-gift-modal .apgo-gift-card {
     position: relative; display: flex; flex-direction: row; align-items: center; gap: 12px;
-    padding: 8px 42px 8px 8px; border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 12px;
+    padding: 8px 96px 8px 8px; border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 12px;
     background: rgba(255, 255, 255, 0.03); color: #fff; cursor: pointer; text-align: left;
     transition: border-color .15s ease, background .15s ease; -webkit-tap-highlight-color: transparent;
   }
@@ -141,17 +141,27 @@
     flex: 1 1 auto; min-width: 0; font-size: 12px; line-height: 1.3; color: rgba(255, 255, 255, 0.9);
     display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.6em;
   }
-  .apgo-cart-gift-modal .apgo-gift-card__check {
-    position: absolute; top: 50%; right: 12px; transform: translateY(-50%) scale(0.5);
-    width: 22px; height: 22px; display: flex; align-items: center; justify-content: center;
-    border-radius: 50%; border: 1.5px solid rgba(255, 255, 255, 0.25); color: #1a1206;
-    opacity: 0; transition: opacity .12s ease, transform .12s ease;
+  .apgo-cart-gift-modal .apgo-gift-card__qty {
+    position: absolute; top: 50%; right: 10px; transform: translateY(-50%);
+    display: inline-flex; align-items: center; gap: 2px;
+    border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 999px;
+    background: rgba(0, 0, 0, 0.3); padding: 2px;
+  }
+  .apgo-cart-gift-modal .apgo-gift-card__qty-btn {
+    width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
+    border: none; border-radius: 50%; background: transparent; color: #fff;
+    font-size: 15px; line-height: 1; cursor: pointer; padding: 0;
+    transition: background .12s ease, opacity .12s ease;
+  }
+  .apgo-cart-gift-modal .apgo-gift-card__qty-btn:hover:not(:disabled) { background: rgba(255, 255, 255, 0.14); }
+  .apgo-cart-gift-modal .apgo-gift-card__qty-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .apgo-cart-gift-modal .apgo-gift-card__qty-value {
+    min-width: 16px; text-align: center; font-size: 12px; font-weight: 700; color: #fff;
+    font-variant-numeric: tabular-nums;
   }
   .apgo-cart-gift-modal .apgo-gift-card.is-selected { border-color: #d9b25f; background: rgba(217, 178, 95, 0.1); }
-  .apgo-cart-gift-modal .apgo-gift-card.is-selected .apgo-gift-card__check {
-    opacity: 1; transform: translateY(-50%) scale(1);
-    background: linear-gradient(135deg, #f6dfa4, #d9b25f); border-color: #d9b25f;
-  }
+  .apgo-cart-gift-modal .apgo-gift-card.is-selected .apgo-gift-card__qty { border-color: rgba(217, 178, 95, 0.55); }
+  .apgo-cart-gift-modal .apgo-gift-card.is-selected .apgo-gift-card__qty-value { color: #f2d896; }
   .apgo-cart-gift-modal .apgo-gift-card.is-disabled,
   .apgo-cart-gift-modal .apgo-gift-card.is-soldout { opacity: 0.4; cursor: not-allowed; }
   .apgo-cart-gift-modal .apgo-gift-card__soldout { font-size: 10px; font-weight: 700; color: #ff6b6b; text-transform: uppercase; }
