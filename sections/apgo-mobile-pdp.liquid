@@ -228,8 +228,13 @@
               </button>
 
               {%- if section.settings.show_buy_now -%}
-                <button type="button" class="apgo-cta-secondary" data-apgo-buy-now>
-                  Buy now · Express checkout
+                <button type="button" class="apgo-cta-secondary" data-apgo-buy-now
+                        {% unless v.available %}disabled{% endunless %}>
+                  {%- if v.available -%}
+                    Buy now · Express checkout
+                  {%- else -%}
+                    Restocking
+                  {%- endif -%}
                 </button>
               {%- endif -%}
             </div>

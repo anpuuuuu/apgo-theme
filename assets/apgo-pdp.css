@@ -201,7 +201,8 @@
   color: var(--apgo-ink); font-size: 15px; letter-spacing: 0.15em; font-weight: 700;
   border-radius: 999px; cursor: pointer; transition: all .2s;
 }
-.apgo-cta-secondary:hover { background: var(--apgo-ink); color: var(--apgo-bg); }
+.apgo-cta-secondary:hover:not([disabled]) { background: var(--apgo-ink); color: var(--apgo-bg); }
+.apgo-cta-secondary[disabled] { opacity: 0.5; cursor: not-allowed; }
 .apgo-wishlist-link {
   align-self: center; background: none; border: none; font-size: 13px;
   letter-spacing: 0.1em; color: var(--apgo-muted); margin-top: 4px; cursor: pointer;

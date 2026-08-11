@@ -221,8 +221,11 @@
         n.textContent = '3 interest-free payments of ' + formatMoney(Math.round(total / 3));
       });
 
-      // Availability → disable add button
-      $$('[data-apgo-add]', form).forEach(function (btn) {
+      // Availability → disable BOTH CTAs. Buy now must follow the same
+      // rule as Add to cart: it posts the same variant, so leaving it
+      // clickable on a sold-out scent sends the customer to a cart that
+      // rejects the line.
+      $$('[data-apgo-add], [data-apgo-buy-now]', form).forEach(function (btn) {
         if (variant.available) {
           btn.removeAttribute('disabled');
           btn.classList.remove('is-soldout');
