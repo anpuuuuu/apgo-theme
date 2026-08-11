@@ -43,9 +43,6 @@
           "static": true,
           "settings": {
             "header_title": "Cart Item(s)",
-            "show_bulk_actions": true,
-            "remove_selected_text": "Remove selected",
-            "clear_cart_text": "Clear cart",
             "show_action_button": false,
             "action_type": "clear",
             "action_text": "清空購物車",

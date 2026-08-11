@@ -62,13 +62,6 @@
               class="cart-items__table-row"
             >
               <th
-                id="productSelection"
-                scope="col"
-                role="columnheader"
-              >
-                Select item
-              </th>
-              <th
                 id="productImage"
                 scope="col"
                 role="columnheader"
@@ -125,39 +118,10 @@
                 class="cart-items__table-row{% if apgo_line_locked %} apgo-cart-item--gift{% endif %}"
                 {% if apgo_line_locked %}data-apgo-gift-line{% endif %}
                 ref="cartItemRows[]"
-                data-line-key="{{ item.key | escape }}"
                 data-line-original-cents="{{ item.original_line_price }}"
                 data-line-final-cents="{{ item.final_line_price }}"
                 data-compare-at-cents="{% if item.variant.compare_at_price > item.original_price %}{{ item.variant.compare_at_price | times: item.quantity }}{% else %}0{% endif %}"
               >
-                <td
-                  class="cart-items__selection"
-                  role="cell"
-                  headers="productSelection"
-                >
-                  <label class="cart-item-select-control{% if apgo_line_locked %} cart-item-select-control--locked{% endif %}">
-                    <input
-                      type="checkbox"
-                      class="cart-item-select"
-                      data-cart-item-select
-                      {% if apgo_line_locked %}
-                        disabled
-                        aria-disabled="true"
-                        title="Free gifts are adjusted automatically"
-                      {% else %}
-                        aria-label="Select {{ item.product.title | escape }} for removal"
-                      {% endif %}
-                    >
-                    <span class="cart-item-select-box" aria-hidden="true"></span>
-                    <span class="visually-hidden">
-                      {% if apgo_line_locked %}
-                        Free gift cannot be removed separately
-                      {% else %}
-                        Select {{ item.product.title | escape }} for removal
-                      {% endif %}
-                    </span>
-                  </label>
-                </td>
                 <td
                   class="cart-items__media"
                   role="cell"
@@ -390,11 +354,11 @@
     --cart-item-price-width: 6rem;
 
     display: grid;
-    grid-template-columns: 1.5rem clamp(2.5rem, 15cqi, 7.5rem) minmax(0, 1fr) minmax(var(--cart-item-price-width), auto);
+    grid-template-columns: clamp(2.5rem, 15cqi, 7.5rem) minmax(0, 1fr) minmax(var(--cart-item-price-width), auto);
     grid-template-areas:
-      'selection media details price'
-      'selection media quantity price'
-      'selection media error error';
+      'media details price'
+      'media quantity price'
+      'media error error';
     column-gap: var(--gap-md);
     align-items: start;
     padding-bottom: var(--cart-items-gap);
@@ -443,69 +407,6 @@
   .cart-items__details {
     grid-area: details;
     color: rgb(from var(--color-foreground) r g b / 70%);
-  }
-
-  .cart-items__selection {
-    grid-area: selection;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    padding: 0;
-  }
-
-  .cart-item-select-control {
-    position: relative;
-    display: inline-flex;
-    width: 1.25rem;
-    height: 1.25rem;
-    cursor: pointer;
-  }
-
-  .cart-item-select {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    opacity: 0;
-    cursor: inherit;
-  }
-
-  .cart-item-select-box {
-    width: 100%;
-    height: 100%;
-    border: 1px solid rgb(from var(--color-foreground) r g b / 35%);
-    border-radius: 0.3rem;
-    background: rgb(from var(--color-background) r g b / 45%);
-    transition: border-color var(--animation-speed) ease, background-color var(--animation-speed) ease;
-  }
-
-  .cart-item-select:focus-visible + .cart-item-select-box {
-    outline: 2px solid var(--color-foreground);
-    outline-offset: 2px;
-  }
-
-  .cart-item-select:checked + .cart-item-select-box {
-    border-color: #f08418;
-    background: #f08418;
-  }
-
-  .cart-item-select:checked + .cart-item-select-box::after {
-    content: '';
-    position: absolute;
-    left: 0.39rem;
-    top: 0.17rem;
-    width: 0.3rem;
-    height: 0.58rem;
-    border: solid #080808;
-    border-width: 0 0.13rem 0.13rem 0;
-    transform: rotate(45deg);
-  }
-
-  .cart-item-select-control--locked {
-    cursor: not-allowed;
-    opacity: 0.28;
   }
 
   .cart-items__details > * + *,
@@ -637,11 +538,11 @@
     .cart-items__table-row {
       --cart-item-price-width: 6rem;
 
-      grid-template-columns: 1.5rem 7.5rem 1fr 1fr minmax(var(--cart-item-price-width), auto);
+      grid-template-columns: 7.5rem 1fr 1fr minmax(var(--cart-item-price-width), auto);
       grid-template-rows: min-content 1fr;
       grid-template-areas:
-        'selection media details quantity price'
-        'selection media details error error';
+        'media details quantity price'
+        'media details error error';
     }
 
     .cart-items__quantity,

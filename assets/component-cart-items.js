@@ -37,7 +37,6 @@ class CartItemsComponent extends Component {
    * Value: { pending: number|null, pendingAction: string|null, inflight: boolean }
    */
   #lineState = new Map();
-  #bulkObserver;
 
   connectedCallback() {
     super.connectedCallback();
@@ -45,141 +44,13 @@ class CartItemsComponent extends Component {
     document.addEventListener(ThemeEvents.cartUpdate, this.#handleCartUpdate);
     document.addEventListener(ThemeEvents.discountUpdate, this.handleDiscountUpdate);
     document.addEventListener(ThemeEvents.quantitySelectorUpdate, this.#debouncedOnChange);
-    this.addEventListener('change', this.#handleBulkSelection);
-    this.addEventListener('click', this.#handleBulkAction);
-
-    this.#bulkObserver = new MutationObserver(() => this.#syncBulkControls());
-    this.#bulkObserver.observe(this, { childList: true, subtree: true });
-    this.#syncBulkControls();
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
 
     document.removeEventListener(ThemeEvents.cartUpdate, this.#handleCartUpdate);
-    document.removeEventListener(ThemeEvents.discountUpdate, this.handleDiscountUpdate);
     document.removeEventListener(ThemeEvents.quantitySelectorUpdate, this.#debouncedOnChange);
-    this.removeEventListener('change', this.#handleBulkSelection);
-    this.removeEventListener('click', this.#handleBulkAction);
-    this.#bulkObserver?.disconnect();
-  }
-
-  #handleBulkSelection = (event) => {
-    const checkbox = event.target instanceof Element ? event.target.closest('[data-cart-item-select]') : null;
-    if (!(checkbox instanceof HTMLInputElement) || !this.contains(checkbox)) return;
-
-    const row = checkbox.closest('.cart-items__table-row');
-    row?.setAttribute('aria-selected', checkbox.checked ? 'true' : 'false');
-    this.#syncBulkControls();
-  };
-
-  #handleBulkAction = (event) => {
-    const button = event.target instanceof Element ? event.target.closest('[data-cart-bulk-action]') : null;
-    if (!(button instanceof HTMLButtonElement) || !this.contains(button) || button.disabled) return;
-
-    const action = button.dataset.cartBulkAction;
-    const removableRows = this.#getRemovableRows();
-    const rows =
-      action === 'remove-selected'
-        ? removableRows.filter((row) => row.querySelector('[data-cart-item-select]')?.checked)
-        : action === 'clear'
-          ? removableRows
-          : [];
-
-    if (!rows.length) return;
-
-    const message =
-      action === 'clear'
-        ? 'Remove all removable items from your cart? Free gifts will be adjusted automatically.'
-        : `Remove ${rows.length} selected ${rows.length === 1 ? 'item' : 'items'} from your cart?`;
-
-    if (!window.confirm(message)) return;
-    this.#removeCartRows(rows, action);
-  };
-
-  #getRemovableRows() {
-    return Array.from(
-      this.querySelectorAll('.cart-items__table-row[data-line-key]:not([data-apgo-gift-line])')
-    ).filter((row) => row.querySelector('[data-cart-item-select]:not(:disabled)'));
-  }
-
-  #syncBulkControls() {
-    const removableRows = this.#getRemovableRows();
-    const selectedCount = removableRows.filter(
-      (row) => row.querySelector('[data-cart-item-select]')?.checked
-    ).length;
-    const removeSelectedButton = this.querySelector('[data-cart-bulk-action="remove-selected"]');
-    const clearButton = this.querySelector('[data-cart-bulk-action="clear"]');
-    const count = this.querySelector('[data-cart-selected-count]');
-
-    if (removeSelectedButton instanceof HTMLButtonElement) {
-      removeSelectedButton.disabled = selectedCount === 0;
-    }
-    if (clearButton instanceof HTMLButtonElement) {
-      clearButton.disabled = removableRows.length === 0;
-    }
-    if (count instanceof HTMLElement) {
-      count.textContent = selectedCount ? `(${selectedCount})` : '';
-      count.hidden = selectedCount === 0;
-    }
-  }
-
-  #setBulkStatus(message) {
-    const status = this.querySelector('[data-cart-bulk-status]');
-    if (status instanceof HTMLElement) status.textContent = message;
-  }
-
-  async #removeCartRows(rows, action) {
-    const updates = {};
-    rows.forEach((row) => {
-      const key = row.dataset.lineKey;
-      if (key) updates[key] = 0;
-    });
-    if (!Object.keys(updates).length) return;
-
-    const marker = cartPerformance.createStartingMarker(`bulk-${action}:user-action`);
-    const cartItemsComponents = document.querySelectorAll('cart-items-component');
-    const sectionsToUpdate = new Set([this.sectionId]);
-    cartItemsComponents.forEach((item) => {
-      if (item instanceof HTMLElement && item.dataset.sectionId) sectionsToUpdate.add(item.dataset.sectionId);
-    });
-
-    this.#disableCartItems();
-    this.#setBulkStatus(action === 'clear' ? 'Clearing cart…' : 'Removing selected items…');
-
-    try {
-      const body = JSON.stringify({
-        updates,
-        sections: Array.from(sectionsToUpdate).join(','),
-        sections_url: window.location.pathname,
-      });
-      const response = await fetch(Theme.routes.cart_update_url, fetchConfig('json', { body }));
-      const parsedResponse = await response.json();
-
-      if (!response.ok || parsedResponse.errors) {
-        throw new Error(parsedResponse.errors || 'Unable to update the cart.');
-      }
-
-      const sectionHTML = parsedResponse.sections?.[this.sectionId];
-      if (!sectionHTML) throw new Error('Cart section response is missing.');
-
-      this.dispatchEvent(
-        new CartUpdateEvent(parsedResponse, this.sectionId, {
-          itemCount: parsedResponse.item_count || 0,
-          source: 'cart-bulk-actions',
-          sections: parsedResponse.sections,
-        })
-      );
-      morphSection(this.sectionId, sectionHTML);
-      resetShimmer(this);
-      this.#syncBulkControls();
-    } catch (error) {
-      console.error(error);
-      this.#setBulkStatus(error instanceof Error ? error.message : 'Unable to update the cart. Please try again.');
-    } finally {
-      this.#enableCartItems();
-      cartPerformance.measureFromMarker(marker);
-    }
   }
 
   /**
