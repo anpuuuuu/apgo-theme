@@ -56,7 +56,17 @@
      variant ids are injected into the /cart/add.js items[] array (each with
      a hidden line-item property so the theme can identify them; AIOD prices
      them to $0). Selection state is shared across both picker instances. */
-  var giftPickers = Array.prototype.slice.call(document.querySelectorAll('[data-apgo-cc-gift-picker]'));
+  /* Only THIS page's own pickers (desktop buy-column + confirm modal).
+     The cart follow-up modal (apgo-cart-gift-modal) and the GBA banner
+     modal render the same snippet globally/elsewhere — picking those up
+     here would make every v3 PDP think it requires gift selection and
+     silently block Add to cart. */
+  var giftPickers = Array.prototype.slice.call(
+    document.querySelectorAll('[data-apgo-cc-gift-picker]')
+  ).filter(function (p) {
+    return !p.closest('[data-apgo-cart-gift-modal]') &&
+           !p.closest('[data-apgo-event-gift-modal]');
+  });
   var giftPickerActive = giftPickers.length > 0;
   var giftRequired = 2;
   var giftProperty = '_gift_pick';
