@@ -44,13 +44,173 @@ class CartItemsComponent extends Component {
     document.addEventListener(ThemeEvents.cartUpdate, this.#handleCartUpdate);
     document.addEventListener(ThemeEvents.discountUpdate, this.handleDiscountUpdate);
     document.addEventListener(ThemeEvents.quantitySelectorUpdate, this.#debouncedOnChange);
+    this.addEventListener('change', this.#handleBulkSelection);
+    this.addEventListener('click', this.#handleBulkAction);
+    this.#syncBulkControls();
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
 
     document.removeEventListener(ThemeEvents.cartUpdate, this.#handleCartUpdate);
+    document.removeEventListener(ThemeEvents.discountUpdate, this.handleDiscountUpdate);
     document.removeEventListener(ThemeEvents.quantitySelectorUpdate, this.#debouncedOnChange);
+    this.removeEventListener('change', this.#handleBulkSelection);
+    this.removeEventListener('click', this.#handleBulkAction);
+  }
+
+  /**
+   * Keeps row state and bulk-action controls in sync with a real user
+   * checkbox change. Deliberately event-driven: observing DOM mutations here
+   * can create a self-triggering loop when count text is updated.
+   * @param {Event} event
+   */
+  #handleBulkSelection = (event) => {
+    const checkbox = event.target instanceof Element ? event.target.closest('[data-cart-item-select]') : null;
+    if (!(checkbox instanceof HTMLInputElement) || !this.contains(checkbox)) return;
+
+    const row = checkbox.closest('.cart-items__table-row');
+    if (row?.hasAttribute('data-apgo-gift-line') || checkbox.disabled) {
+      checkbox.checked = false;
+      row?.setAttribute('aria-selected', 'false');
+    } else {
+      row?.setAttribute('aria-selected', checkbox.checked ? 'true' : 'false');
+    }
+
+    this.#syncBulkControls();
+  };
+
+  /**
+   * Handles Remove selected and Clear cart without inline handlers.
+   * @param {Event} event
+   */
+  #handleBulkAction = (event) => {
+    const button = event.target instanceof Element ? event.target.closest('[data-cart-bulk-action]') : null;
+    if (!(button instanceof HTMLButtonElement) || !this.contains(button) || button.disabled) return;
+
+    const action = button.dataset.cartBulkAction;
+    const removableRows = this.#getRemovableRows();
+    const rows =
+      action === 'remove-selected'
+        ? removableRows.filter((row) => {
+            const checkbox = row.querySelector('[data-cart-item-select]');
+            return checkbox instanceof HTMLInputElement && checkbox.checked;
+          })
+        : action === 'clear'
+          ? removableRows
+          : [];
+
+    if (!rows.length) return;
+
+    const message =
+      action === 'clear'
+        ? 'Remove all regular items from your cart? Free gifts will be adjusted automatically.'
+        : `Remove ${rows.length} selected ${rows.length === 1 ? 'item' : 'items'} from your cart?`;
+
+    if (!window.confirm(message)) return;
+    void this.#removeCartRows(rows, action);
+  };
+
+  /** @returns {HTMLTableRowElement[]} */
+  #getRemovableRows() {
+    return Array.from(
+      this.querySelectorAll('.cart-items__table-row[data-line-key]:not([data-apgo-gift-line])')
+    ).filter((row) => {
+      const checkbox = row.querySelector('[data-cart-item-select]');
+      return row instanceof HTMLTableRowElement && checkbox instanceof HTMLInputElement && !checkbox.disabled;
+    });
+  }
+
+  #syncBulkControls = () => {
+    const removableRows = this.#getRemovableRows();
+    const selectedCount = removableRows.filter((row) => {
+      const checkbox = row.querySelector('[data-cart-item-select]');
+      return checkbox instanceof HTMLInputElement && checkbox.checked;
+    }).length;
+    const removeSelectedButton = this.querySelector('[data-cart-bulk-action="remove-selected"]');
+    const clearButton = this.querySelector('[data-cart-bulk-action="clear"]');
+    const count = this.querySelector('[data-cart-selected-count]');
+
+    if (removeSelectedButton instanceof HTMLButtonElement) {
+      const shouldDisable = selectedCount === 0;
+      if (removeSelectedButton.disabled !== shouldDisable) removeSelectedButton.disabled = shouldDisable;
+    }
+    if (clearButton instanceof HTMLButtonElement) {
+      const shouldDisable = removableRows.length === 0;
+      if (clearButton.disabled !== shouldDisable) clearButton.disabled = shouldDisable;
+    }
+    if (count instanceof HTMLElement) {
+      const text = selectedCount ? `(${selectedCount})` : '';
+      if (count.textContent !== text) count.textContent = text;
+      const shouldHide = selectedCount === 0;
+      if (count.hidden !== shouldHide) count.hidden = shouldHide;
+    }
+  };
+
+  /** @param {string} message */
+  #setBulkStatus(message) {
+    const status = this.querySelector('[data-cart-bulk-status]');
+    if (status instanceof HTMLElement && status.textContent !== message) status.textContent = message;
+  }
+
+  /**
+   * Removes line-item keys in one Shopify Cart API request. Gift rows are
+   * excluded before this method is called and are reconciled by the gift app.
+   * @param {HTMLTableRowElement[]} rows
+   * @param {string} action
+   */
+  async #removeCartRows(rows, action) {
+    const updates = {};
+    rows.forEach((row) => {
+      const key = row.dataset.lineKey;
+      if (key) updates[key] = 0;
+    });
+    if (!Object.keys(updates).length) return;
+
+    const marker = cartPerformance.createStartingMarker(`bulk-${action}:user-action`);
+    const sectionsToUpdate = new Set([this.sectionId]);
+    document.querySelectorAll('cart-items-component[data-section-id]').forEach((item) => {
+      if (item instanceof HTMLElement && item.dataset.sectionId) sectionsToUpdate.add(item.dataset.sectionId);
+    });
+
+    this.#disableCartItems();
+    this.setAttribute('aria-busy', 'true');
+    this.#setBulkStatus(action === 'clear' ? 'Clearing cart…' : 'Removing selected items…');
+
+    try {
+      const body = JSON.stringify({
+        updates,
+        sections: Array.from(sectionsToUpdate).join(','),
+        sections_url: window.location.pathname,
+      });
+      const response = await fetch(Theme.routes.cart_update_url, fetchConfig('json', { body }));
+      const parsedResponse = await response.json();
+
+      if (!response.ok || parsedResponse.errors) {
+        throw new Error(parsedResponse.errors || parsedResponse.description || 'Unable to update the cart.');
+      }
+
+      const sectionHTML = parsedResponse.sections?.[this.sectionId];
+      if (!sectionHTML) throw new Error('Cart section response is missing.');
+
+      resetShimmer(this);
+      this.dispatchEvent(
+        new CartUpdateEvent(parsedResponse, this.sectionId, {
+          itemCount: Number(parsedResponse.item_count) || 0,
+          source: 'cart-bulk-actions',
+          sections: parsedResponse.sections,
+        })
+      );
+      morphSection(this.sectionId, sectionHTML);
+    } catch (error) {
+      console.error(error);
+      this.#setBulkStatus(error instanceof Error ? error.message : 'Unable to update the cart. Please try again.');
+    } finally {
+      this.#enableCartItems();
+      this.removeAttribute('aria-busy');
+      this.#syncBulkControls();
+      cartPerformance.measureFromMarker(marker);
+    }
   }
 
   /**

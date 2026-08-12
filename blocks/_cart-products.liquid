@@ -14,6 +14,26 @@
     padding: 0 12px;
   }
 
+  .cart-products-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .cart-products-status {
+    display: none;
+    margin: -6px 12px 12px;
+    color: #ffb4ab;
+    font-size: 12px;
+    text-align: right;
+  }
+
+  .cart-products-status:not(:empty) {
+    display: block;
+  }
+
   .cart-products-title {
     font-size: 18px;
     font-weight: 600;
@@ -65,6 +85,17 @@
     box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
   }
 
+  .cart-products-action:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .cart-products-action--danger:not(:disabled):hover {
+    color: #ff8a80 !important;
+    border-color: rgba(255, 138, 128, 0.75) !important;
+  }
+
   /* 響應式設計 */
   @media (max-width: 768px) {
     .cart-products-header {
@@ -84,7 +115,18 @@
 
   @media (max-width: 480px) {
     .cart-products-header {
+      grid-template-columns: 1fr;
       gap: 8px;
+    }
+
+    .cart-products-actions {
+      width: 100%;
+      justify-content: stretch;
+    }
+
+    .cart-products-actions .cart-products-action {
+      flex: 1 1 0;
+      justify-content: center;
     }
 
     .cart-products-title {
@@ -355,6 +397,19 @@
       border: 1px solid rgba(255, 255, 255, 0.07) !important;
       border-radius: 12px !important;
     }
+    .cart-items--selectable .cart-items__table-row {
+      grid-template-columns: 24px 31% minmax(0, 1fr) !important;
+      grid-template-areas:
+        'selection media details'
+        'selection media quantity' !important;
+      column-gap: 8px !important;
+    }
+    .cart-items--selectable .cart-items__selection {
+      grid-area: selection !important;
+      align-self: start !important;
+      justify-self: start !important;
+      padding-top: 2px !important;
+    }
     /* Image cell — square thumbnail, spans both rows */
     .cart-items__media {
       grid-area: media !important;
@@ -552,6 +607,11 @@
     pointer-events: none !important;
     color: rgba(255, 255, 255, 0.55) !important;
   }
+  .apgo-cart-item--gift .cart-item-select-control {
+    cursor: not-allowed !important;
+    opacity: 0.28 !important;
+    pointer-events: none !important;
+  }
   /* Gift is mandatory — hide the remove/trash button so it can't be deleted */
   .apgo-cart-item--gift .cart-items__remove,
   .apgo-cart-item--gift button[on\:click^="/onLineItemRemove"] {
@@ -580,27 +640,35 @@
   }
 </style>
 
-<!-- 購物車商品標題 -->
+<!-- Cart product heading and bulk actions -->
 <div class="cart-products-header">
-  <h3 class="cart-products-title">{{ section.settings.header_title | default: 'Cart Item' }}</h3>
-  {% if section.settings.show_action_button %}
-    {% if section.settings.action_type == 'clear' %}
-      <button type="button" class="cart-products-action" onclick="clearCart(event)">
-        {{ section.settings.action_text | default: '清空購物車' }}
-      </button>
-    {% elsif section.settings.action_type == 'link' %}
-      <a href="{{ section.settings.action_url }}" class="cart-products-action">
-        {{ section.settings.action_text | default: '繼續購物' }}
-        <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor">
-          <path d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z"/>
-        </svg>
-      </a>
-    {% endif %}
-  {% endif %}
+  <h3 class="cart-products-title">{{ block.settings.header_title | default: 'Cart Item' }}</h3>
+  {% unless cart.empty? %}
+    <div class="cart-products-actions" aria-label="Cart item actions">
+      {% if block.settings.show_bulk_actions %}
+        <button type="button" class="cart-products-action" data-cart-bulk-action="remove-selected" disabled>
+          {{ block.settings.remove_selected_text | default: 'Remove selected' }}
+          <span data-cart-selected-count hidden></span>
+        </button>
+        <button type="button" class="cart-products-action cart-products-action--danger" data-cart-bulk-action="clear" disabled>
+          {{ block.settings.clear_cart_text | default: 'Clear cart' }}
+        </button>
+      {% endif %}
+      {% if block.settings.show_action_button and block.settings.action_type == 'link' and block.settings.action_url != blank %}
+        <a href="{{ block.settings.action_url }}" class="cart-products-action">
+          {{ block.settings.action_text | default: 'Continue shopping' }}
+          <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z"/>
+          </svg>
+        </a>
+      {% endif %}
+    </div>
+  {% endunless %}
 </div>
+<p class="cart-products-status" data-cart-bulk-status role="status" aria-live="polite"></p>
 
 <!-- 原始購物車商品內容 -->
-{% render 'cart-products' %}
+{% render 'cart-products', show_selection: block.settings.show_bulk_actions %}
 
 {%- comment -%}
   Free-gift line-item decorator. Reads /cart.js, marks rows whose
@@ -659,6 +727,23 @@
              layer had to re-decorate a row that lost its attribute. */
           if (isGift) row.setAttribute('data-apgo-gift-line', '');
           else row.removeAttribute('data-apgo-gift-line');
+
+          /* Keep gift selection locked without manufacturing a checkbox
+             change event. Synthetic change events combined with the cart
+             mutation observer can create a repeating event/render loop. */
+          var selectCheckbox = row.querySelector('[data-cart-item-select]');
+          if (selectCheckbox) {
+            selectCheckbox.disabled = isGift;
+            selectCheckbox.setAttribute('aria-disabled', isGift ? 'true' : 'false');
+            if (isGift) {
+              selectCheckbox.checked = false;
+              row.setAttribute('aria-selected', 'false');
+              selectCheckbox.setAttribute('title', 'Free gifts are adjusted automatically');
+              selectCheckbox.setAttribute('aria-label', 'Free gift cannot be removed separately');
+            } else {
+              selectCheckbox.removeAttribute('title');
+            }
+          }
 
           if (isGift) {
             var details = row.querySelector('.cart-items__details');
@@ -800,34 +885,6 @@
 })();
 </script>
 
-{% if section.settings.show_action_button and section.settings.action_type == 'clear' %}
-<script>
-  function clearCart(event) {
-    event.preventDefault();
-    
-    if (!confirm('確定要清空購物車嗎？')) {
-      return;
-    }
-    
-    // 清空購物車
-    fetch(window.Shopify.routes.root + 'cart/clear.js', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    })
-    .then(response => response.json())
-    .then(data => {
-      // 重新載入頁面或更新購物車顯示
-      window.location.reload();
-    })
-    .catch(error => {
-      console.error('清空購物車失敗:', error);
-    });
-  }
-</script>
-{% endif %}
-
 {% schema %}
 {
   "name": "購物車商品（含標題）",
@@ -842,6 +899,24 @@
       "id": "header_title",
       "label": "標題文字",
       "default": "購物車商品"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_bulk_actions",
+      "label": "Show item selection and bulk removal",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "remove_selected_text",
+      "label": "Remove selected button text",
+      "default": "Remove selected"
+    },
+    {
+      "type": "text",
+      "id": "clear_cart_text",
+      "label": "Clear cart button text",
+      "default": "Clear cart"
     },
     {
       "type": "checkbox",
