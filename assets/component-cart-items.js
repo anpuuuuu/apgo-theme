@@ -109,13 +109,26 @@ class CartItemsComponent extends Component {
       return;
     }
 
-    const rows =
+    let rows =
       action === 'remove-selected'
         ? removableRows.filter((row) => {
             const checkbox = row.querySelector('[data-cart-item-select]');
             return checkbox instanceof HTMLInputElement && checkbox.checked;
           })
         : [];
+
+    /* AIOD quantity promos can split one variant into two cart rows: a paid
+       quantity and a zero-price bonus quantity (for example detergent 6+3).
+       If the paid row is selected, remove its matching unlocked bonus row in
+       the same request so no orphaned quantity can revert to regular price. */
+    if (rows.length) {
+      const selectedVariantIds = new Set(rows.map((row) => row.dataset.variantId).filter(Boolean));
+      rows = removableRows.filter(
+        (row) =>
+          rows.includes(row) ||
+          (row.hasAttribute('data-aiod-quantity-promo-line') && selectedVariantIds.has(row.dataset.variantId))
+      );
+    }
 
     if (!rows.length) return;
 

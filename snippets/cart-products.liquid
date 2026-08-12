@@ -117,10 +117,28 @@
                 data attribute gives the JS a clean guard hook.
               {%- endcomment -%}
               {%- assign apgo_line_locked = false -%}
+              {%- assign apgo_aiod_quantity_promo_line = false -%}
               {%- if item.properties._free_gift == 'true' -%}
                 {%- assign apgo_line_locked = true -%}
               {%- elsif item.final_price == 0 and item.line_level_discount_allocations.size > 0 -%}
-                {%- assign apgo_line_locked = true -%}
+                {%- comment -%}
+                  AIOD quantity promos can split one variant into a paid row
+                  plus a free row (for example detergent 6+3). Keep both rows
+                  removable together; only lock a discounted zero-price row
+                  when there is no paid sibling of the same variant.
+                {%- endcomment -%}
+                {%- assign apgo_has_paid_sibling = false -%}
+                {%- for sibling_item in cart.items -%}
+                  {%- if sibling_item.variant_id == item.variant_id and sibling_item.final_price > 0 -%}
+                    {%- assign apgo_has_paid_sibling = true -%}
+                    {%- break -%}
+                  {%- endif -%}
+                {%- endfor -%}
+                {%- unless apgo_has_paid_sibling -%}
+                  {%- assign apgo_line_locked = true -%}
+                {%- else -%}
+                  {%- assign apgo_aiod_quantity_promo_line = true -%}
+                {%- endunless -%}
               {%- endif -%}
               <tr
                 role="row"
@@ -128,6 +146,8 @@
                 {% if apgo_line_locked %}data-apgo-gift-line{% endif %}
                 ref="cartItemRows[]"
                 {% if show_selection %}data-line-key="{{ item.key | escape }}"{% endif %}
+                data-variant-id="{{ item.variant_id }}"
+                {% if apgo_aiod_quantity_promo_line %}data-aiod-quantity-promo-line{% endif %}
                 data-line-original-cents="{{ item.original_line_price }}"
                 data-line-final-cents="{{ item.final_line_price }}"
                 data-compare-at-cents="{% if item.variant.compare_at_price > item.original_price %}{{ item.variant.compare_at_price | times: item.quantity }}{% else %}0{% endif %}"

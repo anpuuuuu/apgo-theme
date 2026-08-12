@@ -783,11 +783,18 @@
     fetch('/cart.js?_=' + Date.now(), { cache: 'no-store' })
       .then(function (r) { return r.json(); })
       .then(function (cart) {
+        var paidVariantIds = new Set((cart.items || []).filter(function (item) {
+          return Number(item.final_price) > 0;
+        }).map(function (item) {
+          return String(item.variant_id);
+        }));
+
         function isGiftLine(item) {
           if (item.properties && item.properties._free_gift === 'true') return true;
           if (Number(item.final_price) === 0 &&
               Array.isArray(item.line_level_discount_allocations) &&
-              item.line_level_discount_allocations.length > 0) return true;
+              item.line_level_discount_allocations.length > 0 &&
+              !paidVariantIds.has(String(item.variant_id))) return true;
           return false;
         }
 
@@ -803,6 +810,9 @@
           if (!item) return;
 
           var isGift = isGiftLine(item);
+          var isQuantityPromoLine = Number(item.final_price) === 0 && paidVariantIds.has(String(item.variant_id));
+          row.setAttribute('data-variant-id', String(item.variant_id));
+          row.toggleAttribute('data-aiod-quantity-promo-line', isQuantityPromoLine);
           row.classList.toggle('apgo-cart-item--gift', isGift);
           /* Mirror the server-side data attribute so the JS entry-point
              guards in component-cart-items.js keep working even if this
@@ -815,6 +825,8 @@
              mutation observer can create a repeating event/render loop. */
           var selectCheckbox = row.querySelector('[data-cart-item-select]');
           if (selectCheckbox) {
+            var selectControl = selectCheckbox.closest('.cart-item-select-control');
+            if (selectControl) selectControl.classList.toggle('cart-item-select-control--locked', isGift);
             selectCheckbox.disabled = isGift;
             selectCheckbox.setAttribute('aria-disabled', isGift ? 'true' : 'false');
             if (isGift) {
@@ -824,6 +836,7 @@
               selectCheckbox.setAttribute('aria-label', 'Free gift cannot be removed separately');
             } else {
               selectCheckbox.removeAttribute('title');
+              selectCheckbox.setAttribute('aria-label', 'Select item for removal');
             }
           }
 
@@ -855,6 +868,13 @@
                deliberately do NOT bind any "dismiss" handler, so the gift can
                never be turned off by the customer. When the triggering X is
                removed entirely, pruneStaleGifts() still drops the orphan Y. */
+          } else {
+            /* A quantity-promo row may have been decorated as a gift before
+               its paid sibling arrived. Remove stale gift-only decoration. */
+            var staleBadge = row.querySelector('.apgo-cart-gift-badge');
+            var staleSub = row.querySelector('.apgo-cart-gift-sub');
+            if (staleBadge) staleBadge.remove();
+            if (staleSub) staleSub.remove();
           }
         });
       })
