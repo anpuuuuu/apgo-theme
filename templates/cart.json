@@ -169,6 +169,7 @@
         "trigger_product_list": [
           "apgo-laundry-detergent-special-promotion-1"
         ],
+        "trigger_min_quantity": "6",
         "max_products": 12,
         "accent_color_start": "#f08418",
         "accent_color_end": "#f7931e",

@@ -316,18 +316,27 @@
   assign trigger_products = section.settings.trigger_product_list
   assign trigger_in_cart = false
   assign show_gwp_section = false
+
+  comment
+    Sum the quantity of every trigger product in the cart, then compare with
+    the minimum. Summing (rather than "any line present") is what makes
+    "buy 6 packs" work for the detergent promo: each scent is its own cart
+    line, so 2+2+2 across three scents must still count as 6. The JS in this
+    section mirrors this rule for live cart updates.
+  endcomment
+  assign trigger_min_qty = section.settings.trigger_min_quantity | default: '1' | plus: 0 | at_least: 1
+  assign trigger_qty_in_cart = 0
   if trigger_products != blank
     for trigger in trigger_products
       for item in cart.items
         if item.product_id == trigger.id
-          assign trigger_in_cart = true
-          break
+          assign trigger_qty_in_cart = trigger_qty_in_cart | plus: item.quantity
         endif
       endfor
-      if trigger_in_cart
-        break
-      endif
     endfor
+  endif
+  if trigger_qty_in_cart >= trigger_min_qty
+    assign trigger_in_cart = true
   endif
 
   if trigger_in_cart or request.design_mode
@@ -485,11 +494,22 @@
   var isDesignMode = root.hasAttribute('data-design-mode');
   var sectionEl = root.closest('.shopify-section');
 
+  /* Minimum trigger quantity: quantities of ALL trigger products are summed,
+     so "6 packs" is satisfied by any mix of scents (they are separate cart
+     lines). 1 = the old behaviour (any trigger product unlocks the offer). */
+  var minTriggerQty = {{ section.settings.trigger_min_quantity | default: '1' | plus: 0 | at_least: 1 }};
+
+  function triggerQtyInCart(cart) {
+    if (!triggerIds.length || !cart || !cart.items) return 0;
+    return cart.items.reduce(function (sum, item) {
+      return triggerIds.indexOf(Number(item.product_id)) !== -1
+        ? sum + (item.quantity || 0)
+        : sum;
+    }, 0);
+  }
+
   function cartHasTrigger(cart) {
-    if (!triggerIds.length || !cart || !cart.items) return false;
-    return cart.items.some(function (item) {
-      return triggerIds.indexOf(Number(item.product_id)) !== -1;
-    });
+    return triggerQtyInCart(cart) >= minTriggerQty;
   }
 
   function setSectionVisible(visible) {
@@ -663,6 +683,13 @@
       "label": "觸發商品 (X)",
       "limit": 12,
       "info": "可選多個商品；購物車含任一 X 才顯示本區塊加購品，不含 X 則整段隱藏（編輯器內始終可見以便設定）"
+    },
+    {
+      "type": "text",
+      "id": "trigger_min_quantity",
+      "label": "觸發最低數量",
+      "info": "購物車中「所有觸發商品」的總件數需達到此數才顯示本區塊。例如洗衣精填 6＝買滿 6 包才看得到加購。各香味是不同的購物車行，會自動加總。留 1＝只要有觸發商品就顯示（預設行為）。",
+      "default": "1"
     },
     {
       "type": "range",
