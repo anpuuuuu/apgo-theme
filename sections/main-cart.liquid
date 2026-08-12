@@ -24,6 +24,9 @@
         {% render 'apgo-cart-checkout-meta' %}
       </div>
 
+      {%- comment -%} Reload once if a discount app adds its gift line after render {%- endcomment -%}
+      {% render 'apgo-cart-resync' %}
+
       <div class="cart-page__more-blocks">
         {%- content_for 'blocks' -%}
       </div>

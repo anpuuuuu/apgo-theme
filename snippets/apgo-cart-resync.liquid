@@ -1,0 +1,63 @@
+{%- comment -%}
+  Cart page auto-resync.
+
+  Discount apps (AIOD) add their free-gift lines ASYNCHRONOUSLY: they react
+  to a cart:update event, call their own API, then POST the gift line. When
+  the customer hits "Buy now" the theme navigates to /cart immediately, so
+  the gift is still in flight — the page renders without it and the app only
+  adds it afterwards. The customer sees a cart missing their free gift until
+  they refresh by hand.
+
+  This compares the server-rendered line count against the live cart shortly
+  after load; if an app changed the cart after render, it reloads ONCE so the
+  rendered page matches reality.
+
+  Safeguards against reload loops / false positives:
+    - only ever checks in the first few seconds after load
+    - stops as soon as the customer interacts (their own qty edits re-render
+      via AJAX, which would otherwise look like a mismatch)
+    - a sessionStorage token records the count we already reloaded for, so a
+      persistent mismatch can never loop
+{%- endcomment -%}
+
+<script>
+  (function () {
+    'use strict';
+    var rendered = {{ cart.item_count | json }};
+    if (typeof rendered !== 'number') return;
+
+    var KEY = 'apgo_cart_resync';
+    var interacted = false;
+    var checks = 0;
+
+    ['pointerdown', 'keydown'].forEach(function (evt) {
+      document.addEventListener(evt, function () { interacted = true; }, { once: true, passive: true });
+    });
+
+    function check() {
+      if (interacted) return;
+      checks++;
+      fetch('/cart.js?_=' + Date.now(), { cache: 'no-store', headers: { Accept: 'application/json' } })
+        .then(function (r) { return r.json(); })
+        .then(function (cart) {
+          var live = cart && typeof cart.item_count === 'number' ? cart.item_count : rendered;
+          if (live === rendered) {
+            /* In sync — clear any stale guard so a future mismatch can act. */
+            try { sessionStorage.removeItem(KEY); } catch (e) {}
+            return;
+          }
+          /* An app changed the cart after this page rendered. Reload once. */
+          try {
+            if (sessionStorage.getItem(KEY) === String(live)) return; // already reloaded for this state
+            sessionStorage.setItem(KEY, String(live));
+          } catch (e) {}
+          window.location.reload();
+        })
+        .catch(function () {});
+    }
+
+    /* Two probes: one soon (fast apps), one later (slow round-trips). */
+    window.setTimeout(check, 1500);
+    window.setTimeout(check, 3800);
+  })();
+</script>
