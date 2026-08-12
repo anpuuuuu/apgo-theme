@@ -43,7 +43,7 @@
           "static": true,
           "settings": {
             "header_title": "Cart Item(s)",
-            "show_bulk_actions": true,
+            "show_bulk_actions": false,
             "select_all_text": "All",
             "remove_selected_text": "Remove",
             "show_action_button": false,
