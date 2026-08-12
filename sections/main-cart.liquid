@@ -207,9 +207,9 @@
 
   /* Header — "CART ITEM" → orange-bar accent + brand orange title */
   .cart-items-component .cart-page.cart-page .cart-products-header {
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
-    justify-content: space-between;
     gap: 12px;
     padding-block-end: 14px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);

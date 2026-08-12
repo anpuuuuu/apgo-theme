@@ -81,7 +81,7 @@ class CartItemsComponent extends Component {
   };
 
   /**
-   * Handles Remove selected and Clear cart without inline handlers.
+   * Handles Select all and Remove selected without inline handlers.
    * @param {Event} event
    */
   #handleBulkAction = (event) => {
@@ -90,22 +90,36 @@ class CartItemsComponent extends Component {
 
     const action = button.dataset.cartBulkAction;
     const removableRows = this.#getRemovableRows();
+
+    if (action === 'select-all') {
+      const allSelected =
+        removableRows.length > 0 &&
+        removableRows.every((row) => {
+          const checkbox = row.querySelector('[data-cart-item-select]');
+          return checkbox instanceof HTMLInputElement && checkbox.checked;
+        });
+
+      removableRows.forEach((row) => {
+        const checkbox = row.querySelector('[data-cart-item-select]');
+        if (!(checkbox instanceof HTMLInputElement)) return;
+        checkbox.checked = !allSelected;
+        row.setAttribute('aria-selected', checkbox.checked ? 'true' : 'false');
+      });
+      this.#syncBulkControls();
+      return;
+    }
+
     const rows =
       action === 'remove-selected'
         ? removableRows.filter((row) => {
             const checkbox = row.querySelector('[data-cart-item-select]');
             return checkbox instanceof HTMLInputElement && checkbox.checked;
           })
-        : action === 'clear'
-          ? removableRows
-          : [];
+        : [];
 
     if (!rows.length) return;
 
-    const message =
-      action === 'clear'
-        ? 'Remove all regular items from your cart? Free gifts will be adjusted automatically.'
-        : `Remove ${rows.length} selected ${rows.length === 1 ? 'item' : 'items'} from your cart?`;
+    const message = `Remove ${rows.length} selected ${rows.length === 1 ? 'item' : 'items'} from your cart?`;
 
     if (!window.confirm(message)) return;
     void this.#removeCartRows(rows, action);
@@ -127,17 +141,19 @@ class CartItemsComponent extends Component {
       const checkbox = row.querySelector('[data-cart-item-select]');
       return checkbox instanceof HTMLInputElement && checkbox.checked;
     }).length;
+    const selectAllButton = this.querySelector('[data-cart-bulk-action="select-all"]');
     const removeSelectedButton = this.querySelector('[data-cart-bulk-action="remove-selected"]');
-    const clearButton = this.querySelector('[data-cart-bulk-action="clear"]');
     const count = this.querySelector('[data-cart-selected-count]');
+    const allSelected = removableRows.length > 0 && selectedCount === removableRows.length;
 
+    if (selectAllButton instanceof HTMLButtonElement) {
+      const shouldDisable = removableRows.length === 0;
+      if (selectAllButton.disabled !== shouldDisable) selectAllButton.disabled = shouldDisable;
+      selectAllButton.setAttribute('aria-pressed', allSelected ? 'true' : 'false');
+    }
     if (removeSelectedButton instanceof HTMLButtonElement) {
       const shouldDisable = selectedCount === 0;
       if (removeSelectedButton.disabled !== shouldDisable) removeSelectedButton.disabled = shouldDisable;
-    }
-    if (clearButton instanceof HTMLButtonElement) {
-      const shouldDisable = removableRows.length === 0;
-      if (clearButton.disabled !== shouldDisable) clearButton.disabled = shouldDisable;
     }
     if (count instanceof HTMLElement) {
       const text = selectedCount ? `(${selectedCount})` : '';
@@ -175,7 +191,7 @@ class CartItemsComponent extends Component {
 
     this.#disableCartItems();
     this.setAttribute('aria-busy', 'true');
-    this.#setBulkStatus(action === 'clear' ? 'Clearing cart…' : 'Removing selected items…');
+    this.#setBulkStatus('Removing selected items…');
 
     try {
       const body = JSON.stringify({

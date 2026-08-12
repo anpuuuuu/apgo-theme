@@ -7,7 +7,7 @@
   /* 購物車商品標題區塊 - 使用加購區塊相同樣式 */
   .cart-products-header {
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: minmax(0, 1fr) auto;
     gap: 12px;
     align-items: center;
     margin-bottom: 16px;
@@ -20,6 +20,25 @@
     justify-content: flex-end;
     gap: 8px;
     min-width: 0;
+  }
+
+  .cart-products-bulk-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 999px;
+  }
+
+  .cart-products-bulk-actions .cart-products-action {
+    border: 0 !important;
+    border-radius: 0 !important;
+  }
+
+  .cart-products-bulk-actions .cart-products-action + .cart-products-action {
+    border-left: 1px solid rgba(255, 255, 255, 0.12) !important;
   }
 
   .cart-products-status {
@@ -96,6 +115,12 @@
     border-color: rgba(255, 138, 128, 0.75) !important;
   }
 
+  .cart-products-action--select-all[aria-pressed='true'] {
+    color: #f08418 !important;
+    border-color: #f08418 !important;
+    background: rgba(240, 132, 24, 0.12) !important;
+  }
+
   /* 響應式設計 */
   @media (max-width: 768px) {
     .cart-products-header {
@@ -115,18 +140,20 @@
 
   @media (max-width: 480px) {
     .cart-products-header {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr) auto;
       gap: 8px;
     }
 
     .cart-products-actions {
-      width: 100%;
-      justify-content: stretch;
+      width: auto;
+      justify-content: flex-end;
+      gap: 4px;
     }
 
     .cart-products-actions .cart-products-action {
-      flex: 1 1 0;
+      flex: 0 0 auto;
       justify-content: center;
+      text-transform: uppercase;
     }
 
     .cart-products-title {
@@ -348,8 +375,9 @@
        keeps a 16px page-margin grid on both sides; cancel that only for the
        list while leaving the checkout and trust panels unchanged. */
     .cart-page:not(.cart-page--empty) .cart-page__items {
-      width: calc(100% + (var(--page-margin) * 2)) !important;
-      margin-inline: calc(var(--page-margin) * -1) !important;
+      width: calc(100% + var(--page-margin) + var(--page-margin)) !important;
+      max-width: none !important;
+      margin-inline: calc(0px - var(--page-margin)) !important;
     }
 
     /* Align the cart-items area's horizontal edge with the free-shipping
@@ -375,6 +403,10 @@
     }
     .cart-products-header {
       padding: 0 !important;
+    }
+    .cart-products-header .cart-products-actions {
+      width: auto !important;
+      max-width: none !important;
     }
     .cart-products-actions .cart-products-action {
       min-width: 0 !important;
@@ -689,13 +721,20 @@
   {% unless cart.empty? %}
     <div class="cart-products-actions" aria-label="Cart item actions">
       {% if block.settings.show_bulk_actions %}
-        <button type="button" class="cart-products-action" data-cart-bulk-action="remove-selected" disabled>
-          {{ block.settings.remove_selected_text | default: 'Remove selected' }}
-          <span data-cart-selected-count hidden></span>
-        </button>
-        <button type="button" class="cart-products-action cart-products-action--danger" data-cart-bulk-action="clear" disabled>
-          {{ block.settings.clear_cart_text | default: 'Clear cart' }}
-        </button>
+        <div class="cart-products-bulk-actions" role="group" aria-label="Cart item selection actions">
+          <button
+            type="button"
+            class="cart-products-action cart-products-action--select-all"
+            data-cart-bulk-action="select-all"
+            aria-pressed="false"
+          >
+            {{ block.settings.select_all_text | default: 'All' }}
+          </button>
+          <button type="button" class="cart-products-action cart-products-action--danger" data-cart-bulk-action="remove-selected" disabled>
+            {{ block.settings.remove_selected_text | default: 'Remove' }}
+            <span data-cart-selected-count hidden></span>
+          </button>
+        </div>
       {% endif %}
       {% if block.settings.show_action_button and block.settings.action_type == 'link' and block.settings.action_url != blank %}
         <a href="{{ block.settings.action_url }}" class="cart-products-action">
@@ -951,15 +990,15 @@
     },
     {
       "type": "text",
-      "id": "remove_selected_text",
-      "label": "Remove selected button text",
-      "default": "Remove selected"
+      "id": "select_all_text",
+      "label": "Select all button text",
+      "default": "All"
     },
     {
       "type": "text",
-      "id": "clear_cart_text",
-      "label": "Clear cart button text",
-      "default": "Clear cart"
+      "id": "remove_selected_text",
+      "label": "Remove selected button text",
+      "default": "Remove"
     },
     {
       "type": "checkbox",
