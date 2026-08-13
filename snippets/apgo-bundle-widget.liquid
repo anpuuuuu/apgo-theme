@@ -252,10 +252,35 @@
             {%- if p[0] == value -%}{%- assign en_name = p[1] -%}{%- endif -%}
           {%- endfor -%}
 
+          {%- comment -%}
+            Live Shopify stock for this scent. The scent is option1, so find
+            the matching variant and read inventory_quantity (Liquid has it
+            server-side; it is stripped from the public variants JSON).
+            Only shown when inventory is actually tracked — untracked or
+            unknown variants show nothing rather than a misleading "0".
+          {%- endcomment -%}
+          {%- assign scent_variant = nil -%}
+          {%- for pv in product.variants -%}
+            {%- if pv.option1 == value -%}{%- assign scent_variant = pv -%}{%- break -%}{%- endif -%}
+          {%- endfor -%}
+          {%- assign scent_stock = nil -%}
+          {%- if scent_variant and scent_variant.inventory_management != blank and scent_variant.inventory_quantity != blank -%}
+            {%- assign scent_stock = scent_variant.inventory_quantity -%}
+          {%- endif -%}
+
           <div class="apgo-bundle__scent-row" data-apgo-bundle-scent="{{ value | escape }}">
             <span class="apgo-bundle__scent-dot" style="background:{{ hex }}"></span>
             <div class="apgo-bundle__scent-info">
-              <div class="apgo-bundle__scent-name apgo-serif">{{ value }}</div>
+              <div class="apgo-bundle__scent-name apgo-serif">
+                {{ value }}
+                {%- if scent_stock != nil -%}
+                  {%- if scent_stock > 0 -%}
+                    <span class="apgo-bundle__scent-stock">{{ scent_stock }} left</span>
+                  {%- else -%}
+                    <span class="apgo-bundle__scent-stock apgo-bundle__scent-stock--out">Sold out</span>
+                  {%- endif -%}
+                {%- endif -%}
+              </div>
               {%- if en_name != blank -%}
                 <div class="apgo-bundle__scent-en">{{ en_name }}</div>
               {%- endif -%}

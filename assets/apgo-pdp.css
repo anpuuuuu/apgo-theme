@@ -1822,6 +1822,17 @@ body.template-suffix-apgo-v1s-plus [id^="shopify-section-apgo_tactical_hub"] {
 }
 .apgo-bundle__scent-info { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
 .apgo-bundle__scent-name { font-size: 13px; font-weight: 500; color: var(--apgo-ink); }
+/* Live Shopify stock, inline after the scent name */
+.apgo-bundle__scent-stock {
+  margin-left: 6px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--apgo-sage);
+  letter-spacing: .04em;
+  white-space: nowrap;
+}
+.apgo-bundle__scent-stock--out { color: #c0563f; }
 .apgo-bundle__scent-en {
   font-family: 'JetBrains Mono', ui-monospace, monospace;
   font-size: 9px;
