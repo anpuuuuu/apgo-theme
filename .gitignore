@@ -1,0 +1,4 @@
+monitoring/node_modules/
+monitoring/test-results/
+monitoring/playwright-report/
+monitoring/results.json
