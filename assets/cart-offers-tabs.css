@@ -103,7 +103,7 @@
   white-space: nowrap;
   cursor: pointer;
   touch-action: manipulation;
-  transition: border-color 160ms ease, box-shadow 160ms ease, color 160ms ease;
+  transition: border-color 160ms ease, color 160ms ease;
 }
 
 .cart-offers-tabs__tab:hover,
@@ -113,15 +113,11 @@
   outline: none;
 }
 
-/* Outlined, not filled. The inset shadow doubles the border weight so
-   the selected tab still reads as selected when it is not being
-   hovered — hover only brightens the same single-weight outline. */
+/* Deliberately identical to :hover — orange border, white text, no fill. */
 .cart-offers-tabs__tab[aria-selected='true'] {
   border-color: var(--cart-offers-accent);
-  box-shadow: inset 0 0 0 1px var(--cart-offers-accent);
   background: transparent;
   color: #fff;
-  font-weight: 700;
 }
 
 .cart-offers-tabs__groups {
