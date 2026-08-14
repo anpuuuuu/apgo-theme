@@ -2,3 +2,8 @@ monitoring/node_modules/
 monitoring/test-results/
 monitoring/playwright-report/
 monitoring/results.json
+
+# Claude Code local files and stray nested clones — never commit
+.claude/
+/apgo-theme/
+/apgo-theme-1/
