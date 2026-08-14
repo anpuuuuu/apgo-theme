@@ -1,12 +1,18 @@
 .cart-offers-tabs {
   --cart-offers-accent: #f08418;
   --cart-offers-accent-end: #f7b447;
+  /* Same inline space every other block on the cart page uses, so the
+     card edges line up with the cart items and the shipping bar. */
+  --apgo-cart-inline-space: clamp(12px, 2.2vw, 28px);
   display: block;
   width: 100%;
   min-width: 0;
   box-sizing: border-box;
-  margin: 18px auto;
-  padding: 0 16px;
+  /* No top margin: the cart section above already ends with its own
+     bottom padding. Bottom margin does the separating from the shipping
+     bar below, which previously had almost none. */
+  margin: 0 auto 32px;
+  padding: 0;
   color: #fff;
 }
 
@@ -23,15 +29,25 @@
 
 /* No outer frame. The section sits directly on the cart page rather than
    inside a panel of its own — one less nested box between the page and
-   the products. Padding stays only on the block axis, for rhythm against
-   what sits above and below. */
+   the products. */
 .cart-offers-tabs__shell {
-  width: min(100%, 1200px);
+  width: 100%;
   min-width: 0;
   margin: 0 auto;
-  padding: 4px 0 0;
+  padding: 0 var(--apgo-cart-inline-space);
   background: transparent;
   border: none;
+}
+
+/* The cart page's two-thirds column, shared verbatim with .cart-page in
+   main-cart.liquid and .apgo-combined-goal. This section used to stretch
+   to a flat 1200px, which was the only block on the page ignoring the
+   column — invisible while it had a frame of its own, obvious once the
+   frame came off. */
+@media screen and (width >= 1024px) {
+  .cart-offers-tabs__shell {
+    max-width: min(1200px, 66vw);
+  }
 }
 
 .cart-offers-tabs__heading {
@@ -472,12 +488,7 @@
 
 @media (max-width: 749px) {
   .cart-offers-tabs {
-    margin: 12px auto;
-    padding: 0 8px;
-  }
-
-  .cart-offers-tabs__shell {
-    padding: 2px 0 0;
+    margin: 0 auto 24px;
   }
 
   .cart-offers-tabs__heading {

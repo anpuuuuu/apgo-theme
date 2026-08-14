@@ -200,9 +200,12 @@
      Scoped via .cart-page so it doesn't leak into mini-cart drawer.
      ========================================================= */
 
-  /* Outer page: a touch of breathing room above and a max-width nudge */
+  /* Outer page: a touch of breathing room above and a max-width nudge.
+     The bottom used to run to 64px, from when the cart was the last
+     thing before the footer. Four sections now follow it, so that much
+     space just reads as a gap the page forgot to fill. */
   .cart-page {
-    padding-block: clamp(16px, 4vw, 36px) clamp(24px, 5vw, 64px);
+    padding-block: clamp(16px, 4vw, 36px) clamp(16px, 2.2vw, 28px);
   }
 
   /* Header — "CART ITEM" → orange-bar accent + brand orange title */
