@@ -7454,6 +7454,16 @@ document.addEventListener('DOMContentLoaded', function() {
     {%- if apgo_pp.id == product.id -%}{%- assign apgo_promo_show = true -%}{%- break -%}{%- endif -%}
   {%- endfor -%}
 {%- endif -%}
+{%- comment -%}
+  The gift value is the one piece of copy that is currency-specific, so
+  it is per-market. SG deliberately falls back to NOTHING rather than to
+  the Malaysian field: an unfilled setting should cost a Singapore
+  shopper the value tag, not show them a ringgit price.
+{%- endcomment -%}
+{%- assign apgo_promo_value = section.settings.promo_popup_gift_value -%}
+{%- if localization.country.iso_code == 'SG' -%}
+  {%- assign apgo_promo_value = section.settings.promo_popup_gift_value_sg -%}
+{%- endif -%}
 {%- if apgo_promo_show -%}
   {%- render 'apgo-promo-popup',
     product: product,
@@ -7461,7 +7471,7 @@ document.addEventListener('DOMContentLoaded', function() {
     subtext: section.settings.promo_popup_subtext,
     gift_image: section.settings.promo_popup_image,
     gift_name: section.settings.promo_popup_gift_name,
-    gift_value: section.settings.promo_popup_gift_value,
+    gift_value: apgo_promo_value,
     cta: section.settings.promo_popup_cta,
     hours: section.settings.promo_popup_hours,
     end_at: section.settings.promo_popup_end_at,
@@ -7714,9 +7724,15 @@ document.addEventListener('DOMContentLoaded', function() {
     {
       "type": "text",
       "id": "promo_popup_gift_value",
-      "label": "Gift value",
+      "label": "Gift value (Malaysia)",
       "info": "Shown as a small tag on the gift image — keep it to a few words.",
       "default": "Worth RM15"
+    },
+    {
+      "type": "text",
+      "id": "promo_popup_gift_value_sg",
+      "label": "Gift value (Singapore)",
+      "info": "Singapore shoppers see this instead — e.g. \"Worth S$5\". No default on purpose: a converted figure guessed here would go live as a real price claim. Blank simply hides the tag in SG."
     },
     {
       "type": "text",
