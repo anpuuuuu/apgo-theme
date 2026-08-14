@@ -66,6 +66,60 @@
   if offer_variant != blank and offer_variant.available
     assign can_quick_add = true
   endif
+
+  comment
+    The saving is the whole reason this card converts, so derive it
+    rather than making the merchant type it per offer (and get it wrong
+    when a price moves). The promo price is free text — "RM 49.00",
+    "$ 24.90" — so strip the currency furniture down to a number before
+    comparing it against the variant's compare-at price in cents.
+  endcomment
+  assign discount_percent = 0
+  assign amount_saved = 0
+  if compare_price != blank and compare_price > 0
+    assign promo_cents = 0
+    if use_promo_label
+      assign promo_number = promo_label | remove: 'RM' | remove: 'MYR' | remove: 'SGD' | remove: 'S$' | remove: '$' | remove: ',' | remove: ' ' | strip | plus: 0
+      assign promo_cents = promo_number | times: 100 | round: 0
+    else
+      assign promo_cents = display_variant.price
+    endif
+    if promo_cents > 0 and compare_price > promo_cents
+      assign amount_saved = compare_price | minus: promo_cents | round: 0
+      comment
+        `times: 100.0`, not 100 — two integers make `divided_by` do
+        integer division, which floors 64.9% to 64 and quietly
+        undersells every offer by a point.
+      endcomment
+      assign discount_percent = amount_saved | times: 100.0 | divided_by: compare_price | round: 0
+    endif
+  endif
+
+  comment
+    A 0% or ~100% badge means the promo text and the variant price have
+    drifted apart — show nothing rather than something false.
+  endcomment
+  comment
+    `!= false` rather than a truthiness test: the section was saved
+    before these settings existed, so they read as nil until the merchant
+    next opens the editor — and nil should mean "on", not "off".
+  endcomment
+  assign show_discount_badge = false
+  if section.settings.show_discount_badge != false and discount_percent > 0 and discount_percent < 95
+    assign show_discount_badge = true
+  endif
+
+  assign show_savings = false
+  if section.settings.show_savings != false and amount_saved > 0
+    assign show_savings = true
+  endif
+
+  comment
+    The shop's money format carries the ISO code ("RM158.00 MYR"), which
+    is noise beside a price the shopper is meant to read at a glance.
+  endcomment
+  assign compare_display = compare_price | money | replace: ' MYR', '' | replace: ' SGD', '' | replace: 'MYR', '' | replace: 'SGD', '' | strip
+  assign saved_display = amount_saved | money_without_trailing_zeros | replace: ' MYR', '' | replace: ' SGD', '' | replace: 'MYR', '' | replace: 'SGD', '' | strip
 %}
 
 {% if offer_product != blank %}
@@ -78,6 +132,9 @@
   >
     <a class="cart-offers-tabs__card-link" href="{{ product_url }}">
       <div class="cart-offers-tabs__image cart-offers-tabs__image--{{ image_ratio }}">
+        {% if show_discount_badge %}
+          <span class="cart-offers-tabs__discount">&minus;{{ discount_percent }}%</span>
+        {% endif %}
         {% if offer_image != blank %}
           {{
             offer_image
@@ -101,15 +158,26 @@
           {% endif %}
         </h3>
 
+        {% comment %}
+          Compare price gets its own line above, not a baseline-shared
+          one beside the sale price: the strike-through is the anchor
+          that makes the deal legible, and squeezed onto the same row it
+          was small enough to disappear.
+        {% endcomment %}
         <div class="cart-offers-tabs__prices">
           {% if compare_price != blank %}
-            <span class="cart-offers-tabs__price-compare">{{ compare_price | money }}</span>
+            <span class="cart-offers-tabs__price-compare">{{ compare_display }}</span>
           {% endif %}
-          <span class="cart-offers-tabs__price-current">
-            {% if use_promo_label %}
-              {{ promo_label }}
-            {% elsif display_variant != blank %}
-              {{ display_variant.price | money }}
+          <span class="cart-offers-tabs__price-row">
+            <span class="cart-offers-tabs__price-current">
+              {% if use_promo_label %}
+                {{ promo_label }}
+              {% elsif display_variant != blank %}
+                {{ display_variant.price | money }}
+              {% endif %}
+            </span>
+            {% if show_savings %}
+              <span class="cart-offers-tabs__price-saved">save {{ saved_display }}</span>
             {% endif %}
           </span>
         </div>

@@ -50,7 +50,18 @@
       <h2 class="cart-offers-tabs__heading">{{ section.settings.section_heading }}</h2>
     {% endif %}
 
-    <div class="cart-offers-tabs__tablist" role="tablist" aria-label="{{ section.settings.section_heading | default: 'Cart offers' | escape }}">
+    {% comment %}
+      Groups are STACKED, not tabbed. Eligibility already hides a group
+      whose trigger product is not in the cart, so the overwhelmingly
+      common case is a single group — and a tab bar with one tab is pure
+      chrome. In the rarer case where two qualify, stacking shows every
+      add-on at once instead of hiding half of them behind a click.
+
+      The block type is still `tab` and the class prefix still says
+      `tabs` because both are load-bearing (saved merchant blocks, and
+      the shared stylesheet). Only the presentation changed.
+    {% endcomment %}
+    <div class="cart-offers-tabs__groups">
       {% for block in section.blocks %}
         {% if block.type == 'tab' and block.settings.enabled %}
           {% liquid
@@ -80,37 +91,12 @@
                 echo trigger_product.id
               endfor
             endcapture
-          %}
-          <button
-            type="button"
-            class="cart-offers-tabs__tab"
-            id="CartOffersTab-{{ section.id }}-{{ block.id }}"
-            role="tab"
-            aria-selected="false"
-            aria-controls="CartOffersPanel-{{ section.id }}-{{ block.id }}"
-            tabindex="-1"
-            data-offer-tab
-            data-tab-id="{{ block.id }}"
-            data-audience="{{ block.settings.audience }}"
-            data-trigger-product-ids="{{ trigger_product_ids | strip }}"
-            data-trigger-min="{{ block.settings.trigger_min_quantity | default: 1 }}"
-            {% unless tab_is_eligible or request.design_mode %}hidden{% endunless %}
-            {{ block.shopify_attributes }}
-          >
-            {{ block.settings.label }}
-          </button>
-        {% endif %}
-      {% endfor %}
-    </div>
 
-    <div class="cart-offers-tabs__panels">
-      {% for block in section.blocks %}
-        {% if block.type == 'tab' and block.settings.enabled %}
-          {% liquid
             assign active_subtitle = block.settings.subtitle_my
             if is_sg
               assign active_subtitle = block.settings.subtitle_sg | default: block.settings.subtitle_my
             endif
+
             assign matching_offer_count = 0
             for offer_block in section.blocks
               if offer_block.type == 'offer_item' and offer_block.settings.tab_slot == block.settings.slot and offer_block.settings.product != blank
@@ -119,25 +105,31 @@
             endfor
           %}
           <section
-            class="cart-offers-tabs__panel"
-            id="CartOffersPanel-{{ section.id }}-{{ block.id }}"
-            role="tabpanel"
-            aria-labelledby="CartOffersTab-{{ section.id }}-{{ block.id }}"
-            tabindex="0"
-            data-offer-panel
-            data-tab-id="{{ block.id }}"
-            hidden
+            class="cart-offers-tabs__group"
+            aria-label="{{ block.settings.label | escape }}"
+            data-offer-group
+            data-group-id="{{ block.id }}"
+            data-audience="{{ block.settings.audience }}"
+            data-trigger-product-ids="{{ trigger_product_ids | strip }}"
+            data-trigger-min="{{ block.settings.trigger_min_quantity | default: 1 }}"
+            {% unless tab_is_eligible or request.design_mode %}hidden{% endunless %}
+            {{ block.shopify_attributes }}
           >
-            {% if active_subtitle != blank or block.settings.view_all_label != blank %}
-              <div class="cart-offers-tabs__panel-head">
-                <p class="cart-offers-tabs__subtitle">{{ active_subtitle }}</p>
-                {% if block.settings.view_all_label != blank and block.settings.view_all_url != blank %}
-                  <a class="cart-offers-tabs__view-all" href="{{ block.settings.view_all_url }}">
-                    {{ block.settings.view_all_label }} →
-                  </a>
+            <div class="cart-offers-tabs__group-head">
+              <div class="cart-offers-tabs__group-titles">
+                {% if block.settings.label != blank %}
+                  <h3 class="cart-offers-tabs__group-title">{{ block.settings.label }}</h3>
+                {% endif %}
+                {% if active_subtitle != blank %}
+                  <p class="cart-offers-tabs__subtitle">{{ active_subtitle }}</p>
                 {% endif %}
               </div>
-            {% endif %}
+              {% if block.settings.view_all_label != blank and block.settings.view_all_url != blank %}
+                <a class="cart-offers-tabs__view-all" href="{{ block.settings.view_all_url }}">
+                  {{ block.settings.view_all_label }} →
+                </a>
+              {% endif %}
+            </div>
 
             <div class="cart-offers-tabs__carousel">
               <button class="cart-offers-tabs__scroll-button cart-offers-tabs__scroll-button--prev" type="button" data-carousel-prev aria-label="Previous products">‹</button>
@@ -159,7 +151,7 @@
     </div>
 
     {% if enabled_tab_count == 0 and request.design_mode %}
-      <p class="cart-offers-tabs__empty">Add and enable at least one Tab block.</p>
+      <p class="cart-offers-tabs__empty">Add and enable at least one Group block.</p>
     {% endif %}
     <p class="cart-offers-tabs__status" data-offer-status role="status" aria-live="polite" hidden></p>
   </div>
@@ -236,37 +228,60 @@
       "id": "accent_color_end",
       "label": "Accent highlight",
       "default": "#f7b447"
+    },
+    {
+      "type": "header",
+      "content": "Discount display"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_discount_badge",
+      "label": "Show discount badge on the image",
+      "info": "The percentage is calculated from the compare-at price and the promo price you enter on each offer — nothing to type. It is hidden automatically if the two do not produce a sensible discount.",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_savings",
+      "label": "Show \"save RM…\" beside the price",
+      "info": "Turn off if the discount badge alone is enough.",
+      "default": true
     }
   ],
   "blocks": [
     {
       "type": "tab",
-      "name": "Offer tab",
+      "name": "Offer group",
       "limit": 5,
       "settings": [
         {
+          "type": "paragraph",
+          "content": "Groups are stacked down the page — every eligible group is shown at once, so nothing is hidden behind a tab."
+        },
+        {
           "type": "checkbox",
           "id": "enabled",
-          "label": "Enable tab",
+          "label": "Enable group",
           "default": true
         },
         {
           "type": "select",
           "id": "slot",
-          "label": "Tab slot",
+          "label": "Group slot",
+          "info": "Offer items are assigned to a group by this slot.",
           "options": [
-            { "value": "tab_1", "label": "Tab 1" },
-            { "value": "tab_2", "label": "Tab 2" },
-            { "value": "tab_3", "label": "Tab 3" },
-            { "value": "tab_4", "label": "Tab 4" },
-            { "value": "tab_5", "label": "Tab 5" }
+            { "value": "tab_1", "label": "Group 1" },
+            { "value": "tab_2", "label": "Group 2" },
+            { "value": "tab_3", "label": "Group 3" },
+            { "value": "tab_4", "label": "Group 4" },
+            { "value": "tab_5", "label": "Group 5" }
           ],
           "default": "tab_1"
         },
         {
           "type": "text",
           "id": "label",
-          "label": "Tab name",
+          "label": "Group heading",
           "default": "Recommended"
         },
         {
@@ -323,13 +338,13 @@
         {
           "type": "select",
           "id": "tab_slot",
-          "label": "Belongs to tab",
+          "label": "Belongs to group",
           "options": [
-            { "value": "tab_1", "label": "Tab 1" },
-            { "value": "tab_2", "label": "Tab 2" },
-            { "value": "tab_3", "label": "Tab 3" },
-            { "value": "tab_4", "label": "Tab 4" },
-            { "value": "tab_5", "label": "Tab 5" }
+            { "value": "tab_1", "label": "Group 1" },
+            { "value": "tab_2", "label": "Group 2" },
+            { "value": "tab_3", "label": "Group 3" },
+            { "value": "tab_4", "label": "Group 4" },
+            { "value": "tab_5", "label": "Group 5" }
           ],
           "default": "tab_1"
         },

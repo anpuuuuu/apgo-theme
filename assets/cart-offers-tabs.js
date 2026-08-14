@@ -1,22 +1,29 @@
+/**
+ * Cart add-on offers.
+ *
+ * Groups are stacked, not tabbed: eligibility already hides a group whose
+ * trigger product is absent, so most carts show exactly one — and a tab
+ * bar with one tab is pure chrome. When two do qualify, stacking shows
+ * every add-on rather than hiding half behind a click.
+ *
+ * The element name is historical; the section, stylesheet and saved
+ * merchant blocks all still key off "tabs".
+ */
 class CartOffersTabs extends HTMLElement {
   constructor() {
     super();
     this.cart = null;
-    this.activeTabId = '';
-    this.hasUserSelectedTab = false;
     this.fetchTimer = null;
     this.fetchController = null;
     this.isAdding = false;
 
     this.handleClick = this.handleClick.bind(this);
-    this.handleKeydown = this.handleKeydown.bind(this);
     this.handleCartEvent = this.handleCartEvent.bind(this);
     this.handleResize = this.handleResize.bind(this);
   }
 
   connectedCallback() {
     this.addEventListener('click', this.handleClick);
-    this.addEventListener('keydown', this.handleKeydown);
     document.addEventListener('cart:update', this.handleCartEvent);
     document.addEventListener('cart:updated', this.handleCartEvent);
     document.addEventListener('cart:refresh', this.handleCartEvent);
@@ -26,16 +33,12 @@ class CartOffersTabs extends HTMLElement {
       track.addEventListener('scroll', () => this.updateCarouselButtons(track), { passive: true });
     });
 
-    const initiallyVisibleTabs = this.visibleTabs();
-    const initialTab = initiallyVisibleTabs.find((tab) => tab.dataset.audience === 'trigger') || initiallyVisibleTabs[0];
-    if (initialTab) this.activateTab(initialTab.dataset.tabId, { focus: false });
     requestAnimationFrame(() => this.handleResize());
     this.fetchCart(0);
   }
 
   disconnectedCallback() {
     this.removeEventListener('click', this.handleClick);
-    this.removeEventListener('keydown', this.handleKeydown);
     document.removeEventListener('cart:update', this.handleCartEvent);
     document.removeEventListener('cart:updated', this.handleCartEvent);
     document.removeEventListener('cart:refresh', this.handleCartEvent);
@@ -44,12 +47,8 @@ class CartOffersTabs extends HTMLElement {
     this.fetchController?.abort();
   }
 
-  get tabs() {
-    return Array.from(this.querySelectorAll('[data-offer-tab]'));
-  }
-
-  get panels() {
-    return Array.from(this.querySelectorAll('[data-offer-panel]'));
+  get groups() {
+    return Array.from(this.querySelectorAll('[data-offer-group]'));
   }
 
   get isDesignMode() {
@@ -57,13 +56,6 @@ class CartOffersTabs extends HTMLElement {
   }
 
   handleClick(event) {
-    const tab = event.target.closest('[data-offer-tab]');
-    if (tab && this.contains(tab)) {
-      this.hasUserSelectedTab = true;
-      this.activateTab(tab.dataset.tabId, { focus: false });
-      return;
-    }
-
     const addButton = event.target.closest('[data-offer-add]');
     if (addButton && this.contains(addButton)) {
       this.addOffer(addButton);
@@ -81,26 +73,6 @@ class CartOffersTabs extends HTMLElement {
     const gap = Number.parseFloat(getComputedStyle(track).columnGap || getComputedStyle(track).gap) || 0;
     const distance = firstCard ? firstCard.getBoundingClientRect().width + gap : track.clientWidth * 0.8;
     track.scrollBy({ left: previousButton ? -distance : distance, behavior: 'smooth' });
-  }
-
-  handleKeydown(event) {
-    const currentTab = event.target.closest('[data-offer-tab]');
-    if (!currentTab || !this.contains(currentTab)) return;
-    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
-
-    const visibleTabs = this.visibleTabs();
-    if (!visibleTabs.length) return;
-    event.preventDefault();
-
-    const currentIndex = Math.max(0, visibleTabs.indexOf(currentTab));
-    let nextIndex = currentIndex;
-    if (event.key === 'ArrowLeft') nextIndex = (currentIndex - 1 + visibleTabs.length) % visibleTabs.length;
-    if (event.key === 'ArrowRight') nextIndex = (currentIndex + 1) % visibleTabs.length;
-    if (event.key === 'Home') nextIndex = 0;
-    if (event.key === 'End') nextIndex = visibleTabs.length - 1;
-
-    this.hasUserSelectedTab = true;
-    this.activateTab(visibleTabs[nextIndex].dataset.tabId, { focus: true });
   }
 
   handleCartEvent(event) {
@@ -148,22 +120,15 @@ class CartOffersTabs extends HTMLElement {
       quantities.set(productId, (quantities.get(productId) || 0) + Number(item.quantity || 0));
     });
 
-    this.tabs.forEach((tab) => {
-      const eligible = this.isDesignMode || this.tabIsEligible(tab, quantities);
-      tab.hidden = !eligible;
+    let visibleGroups = 0;
+    this.groups.forEach((group) => {
+      const eligible = this.isDesignMode || this.groupIsEligible(group, quantities);
+      group.hidden = !eligible;
+      if (eligible) visibleGroups += 1;
     });
 
-    const visibleTabs = this.visibleTabs();
-    this.hidden = visibleTabs.length === 0;
-    if (!visibleTabs.length) return;
-
-    const currentTab = visibleTabs.find((tab) => tab.dataset.tabId === this.activeTabId);
-    if (!currentTab) {
-      const preferredTab = visibleTabs.find((tab) => tab.dataset.audience === 'trigger') || visibleTabs[0];
-      this.activateTab(preferredTab.dataset.tabId, { focus: false });
-    } else {
-      this.activateTab(currentTab.dataset.tabId, { focus: false });
-    }
+    this.hidden = visibleGroups === 0;
+    if (!visibleGroups) return;
 
     this.querySelectorAll('[data-offer-card]').forEach((card) => {
       const productQuantity = quantities.get(String(card.dataset.productId)) || 0;
@@ -182,38 +147,13 @@ class CartOffersTabs extends HTMLElement {
     requestAnimationFrame(() => this.handleResize());
   }
 
-  tabIsEligible(tab, quantities) {
-    if (tab.dataset.audience === 'all') return true;
-    const triggerIds = (tab.dataset.triggerProductIds || '').split(',').map((id) => id.trim()).filter(Boolean);
+  groupIsEligible(group, quantities) {
+    if (group.dataset.audience === 'all') return true;
+    const triggerIds = (group.dataset.triggerProductIds || '').split(',').map((id) => id.trim()).filter(Boolean);
     if (!triggerIds.length) return false;
-    const minimum = Math.max(1, Number(tab.dataset.triggerMin || 1));
+    const minimum = Math.max(1, Number(group.dataset.triggerMin || 1));
     const total = triggerIds.reduce((sum, productId) => sum + (quantities.get(productId) || 0), 0);
     return total >= minimum;
-  }
-
-  visibleTabs() {
-    return this.tabs.filter((tab) => !tab.hidden);
-  }
-
-  activateTab(tabId, { focus = false } = {}) {
-    const targetTab = this.tabs.find((tab) => tab.dataset.tabId === tabId && !tab.hidden);
-    if (!targetTab) return;
-    this.activeTabId = tabId;
-
-    this.tabs.forEach((tab) => {
-      const isActive = tab === targetTab;
-      tab.setAttribute('aria-selected', String(isActive));
-      tab.tabIndex = isActive ? 0 : -1;
-      if (isActive && focus) tab.focus({ preventScroll: true });
-    });
-
-    this.panels.forEach((panel) => {
-      panel.hidden = panel.dataset.tabId !== tabId;
-    });
-
-    const panel = this.panels.find((candidate) => candidate.dataset.tabId === tabId);
-    const track = panel?.querySelector('[data-carousel-track]');
-    if (track) requestAnimationFrame(() => this.updateCarouselButtons(track));
   }
 
   updateCarouselButtons(track) {
