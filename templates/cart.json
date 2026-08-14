@@ -74,28 +74,12 @@
     "cart_offers_tabs": {
       "type": "cart-offers-tabs",
       "blocks": {
-        "tab_recommended": {
-          "type": "tab",
-          "disabled": true,
-          "settings": {
-            "enabled": true,
-            "slot": "tab_1",
-            "label": "Recommended",
-            "subtitle_my": "More useful products picked for your cart",
-            "subtitle_sg": "More useful products picked for your cart",
-            "audience": "all",
-            "trigger_products": [],
-            "trigger_min_quantity": 1,
-            "view_all_label": "View all",
-            "view_all_url": "shopify://collections/all"
-          }
-        },
         "tab_glaze": {
           "type": "tab",
           "settings": {
             "enabled": true,
             "slot": "tab_2",
-            "label": "Glaze Special Add-on",
+            "label": "Glaze PWP",
             "subtitle_my": "Special price for Glaze Set · 1 set per product, per order",
             "subtitle_sg": "Special price for Glaze Set · 1 set per product, per order",
             "audience": "trigger",
@@ -113,7 +97,7 @@
           "settings": {
             "enabled": true,
             "slot": "tab_3",
-            "label": "Detergent Special Add-on",
+            "label": "Detergent PWP",
             "subtitle_my": "Special price for Detergent Promo · 1 set per product, per order",
             "subtitle_sg": "Special price for Detergent Promo · 1 set per product, per order",
             "audience": "trigger",
@@ -121,6 +105,29 @@
               "apgo-laundry-detergent-special-promotion-1"
             ],
             "trigger_min_quantity": 6,
+            "view_all_label": "",
+            "view_all_url": ""
+          }
+        },
+        "tab_recommended": {
+          "type": "tab",
+          "settings": {
+            "enabled": true,
+            "slot": "tab_1",
+            "label": "Boss Recommended",
+            "subtitle_my": "More useful products picked for your cart",
+            "subtitle_sg": "More useful products picked for your cart",
+            "audience": "all",
+            "trigger_products": [
+              "apgo-car-paint-headlight-care",
+              "apgo-wheel-cleaner-tyre-care-set",
+              "apgo-deep-clean-set",
+              "apgo-car-windshield-oil-film-remover-glass-cleaner-set",
+              "atomic-series-coating-refill-5-in-1-set",
+              "apgo-windshield-oil-film-remover-perfect-glass-restorer-quartz-glass-coating",
+              "apgo-pro-car-wash-towel-m-100cm-x-50cm"
+            ],
+            "trigger_min_quantity": 1,
             "view_all_label": "",
             "view_all_url": ""
           }
@@ -199,9 +206,9 @@
         }
       },
       "block_order": [
-        "tab_recommended",
         "tab_glaze",
         "tab_detergent",
+        "tab_recommended",
         "glaze_paint",
         "glaze_wheel",
         "glaze_sprayer",
@@ -217,8 +224,6 @@
         "select_options_text": "SELECT OPTIONS",
         "sold_out_text": "SOLD OUT",
         "image_ratio": "square",
-        "background_color": "#0d0d0d",
-        "card_color": "#111111",
         "accent_color": "#f08418",
         "accent_color_end": "#f7b447",
         "show_discount_badge": true,
