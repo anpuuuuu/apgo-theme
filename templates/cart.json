@@ -118,15 +118,7 @@
             "subtitle_my": "More useful products picked for your cart",
             "subtitle_sg": "More useful products picked for your cart",
             "audience": "all",
-            "trigger_products": [
-              "apgo-car-paint-headlight-care",
-              "apgo-wheel-cleaner-tyre-care-set",
-              "apgo-deep-clean-set",
-              "apgo-car-windshield-oil-film-remover-glass-cleaner-set",
-              "atomic-series-coating-refill-5-in-1-set",
-              "apgo-windshield-oil-film-remover-perfect-glass-restorer-quartz-glass-coating",
-              "apgo-pro-car-wash-towel-m-100cm-x-50cm"
-            ],
+            "trigger_products": [],
             "trigger_min_quantity": 1,
             "view_all_label": "",
             "view_all_url": ""
@@ -203,6 +195,78 @@
             "promo_price_sg": "",
             "max_quantity": 1
           }
+        },
+        "offer_item_JiQgKK": {
+          "type": "offer_item",
+          "settings": {
+            "tab_slot": "tab_1",
+            "product": "apgo-car-paint-headlight-care",
+            "variant_id": "",
+            "price_mode": "actual",
+            "promo_price_my": "",
+            "promo_price_sg": "",
+            "max_quantity": 0
+          }
+        },
+        "offer_item_fcqmcp": {
+          "type": "offer_item",
+          "settings": {
+            "tab_slot": "tab_1",
+            "product": "apgo-wheel-cleaner-tyre-care-set",
+            "variant_id": "",
+            "price_mode": "actual",
+            "promo_price_my": "",
+            "promo_price_sg": "",
+            "max_quantity": 0
+          }
+        },
+        "offer_item_dLqrjd": {
+          "type": "offer_item",
+          "settings": {
+            "tab_slot": "tab_1",
+            "product": "apgo-deep-clean-set",
+            "variant_id": "",
+            "price_mode": "actual",
+            "promo_price_my": "",
+            "promo_price_sg": "",
+            "max_quantity": 0
+          }
+        },
+        "offer_item_UcCx3d": {
+          "type": "offer_item",
+          "settings": {
+            "tab_slot": "tab_1",
+            "product": "apgo-car-windshield-oil-film-remover-glass-cleaner-set",
+            "variant_id": "",
+            "price_mode": "actual",
+            "promo_price_my": "",
+            "promo_price_sg": "",
+            "max_quantity": 0
+          }
+        },
+        "offer_item_TYdFdk": {
+          "type": "offer_item",
+          "settings": {
+            "tab_slot": "tab_1",
+            "product": "apgo-windshield-oil-film-remover-perfect-glass-restorer-quartz-glass-coating",
+            "variant_id": "",
+            "price_mode": "actual",
+            "promo_price_my": "",
+            "promo_price_sg": "",
+            "max_quantity": 0
+          }
+        },
+        "offer_item_NU8Ved": {
+          "type": "offer_item",
+          "settings": {
+            "tab_slot": "tab_1",
+            "product": "apgo-pro-car-wash-towel-m-100cm-x-50cm",
+            "variant_id": "",
+            "price_mode": "actual",
+            "promo_price_my": "",
+            "promo_price_sg": "",
+            "max_quantity": 0
+          }
         }
       },
       "block_order": [
@@ -214,7 +278,13 @@
         "glaze_sprayer",
         "detergent_tencel",
         "detergent_floor",
-        "detergent_shoe"
+        "detergent_shoe",
+        "offer_item_JiQgKK",
+        "offer_item_fcqmcp",
+        "offer_item_dLqrjd",
+        "offer_item_UcCx3d",
+        "offer_item_TYdFdk",
+        "offer_item_NU8Ved"
       ],
       "name": "Cart offers tabs",
       "settings": {
