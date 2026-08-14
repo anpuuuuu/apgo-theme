@@ -54,7 +54,7 @@
   class="cart-offers-tabs{% if is_tabbed %} is-tabbed{% endif %}"
   data-section-id="{{ section.id }}"
   data-design-mode="{{ request.design_mode }}"
-  style="--cart-offers-accent: {{ section.settings.accent_color }}; --cart-offers-accent-end: {{ section.settings.accent_color_end }}; --cart-offers-bg: {{ section.settings.background_color }}; --cart-offers-card-bg: {{ section.settings.card_color }};"
+  style="--cart-offers-accent: {{ section.settings.accent_color }}; --cart-offers-accent-end: {{ section.settings.accent_color_end }}; --cart-offers-bg: {{ section.settings.background_color }};"
   {% if eligible_tab_count == 0 and request.design_mode == false %}hidden{% endif %}
 >
   <div class="cart-offers-tabs__shell">
@@ -277,12 +277,6 @@
       "id": "background_color",
       "label": "Background",
       "default": "#0d0d0d"
-    },
-    {
-      "type": "color",
-      "id": "card_color",
-      "label": "Card background",
-      "default": "#111111"
     },
     {
       "type": "color",
