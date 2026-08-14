@@ -76,6 +76,7 @@
       "blocks": {
         "tab_recommended": {
           "type": "tab",
+          "disabled": true,
           "settings": {
             "enabled": true,
             "slot": "tab_1",
@@ -122,78 +123,6 @@
             "trigger_min_quantity": 6,
             "view_all_label": "",
             "view_all_url": ""
-          }
-        },
-        "recommended_wiper": {
-          "type": "offer_item",
-          "settings": {
-            "tab_slot": "tab_1",
-            "product": "2x-apgo-car-wiper-fluid-refill-pack-300ml",
-            "variant_id": "",
-            "price_mode": "actual",
-            "promo_price_my": "",
-            "promo_price_sg": "",
-            "max_quantity": 0
-          }
-        },
-        "recommended_oil_film": {
-          "type": "offer_item",
-          "settings": {
-            "tab_slot": "tab_1",
-            "product": "apgo-car-windshield-oil-film-remover-perfect-glass-restorer",
-            "variant_id": "",
-            "price_mode": "actual",
-            "promo_price_my": "",
-            "promo_price_sg": "",
-            "max_quantity": 0
-          }
-        },
-        "recommended_headlight": {
-          "type": "offer_item",
-          "settings": {
-            "tab_slot": "tab_1",
-            "product": "apgo-car-headlight-repair-polish-cream",
-            "variant_id": "",
-            "price_mode": "actual",
-            "promo_price_my": "",
-            "promo_price_sg": "",
-            "max_quantity": 0
-          }
-        },
-        "recommended_paint": {
-          "type": "offer_item",
-          "settings": {
-            "tab_slot": "tab_1",
-            "product": "apgo-car-paint-polish-cream-white-restorer",
-            "variant_id": "",
-            "price_mode": "actual",
-            "promo_price_my": "",
-            "promo_price_sg": "",
-            "max_quantity": 0
-          }
-        },
-        "recommended_sprayer": {
-          "type": "offer_item",
-          "settings": {
-            "tab_slot": "tab_1",
-            "product": "apgo-car-wash-foam-pressure-sprayer-version-2",
-            "variant_id": "",
-            "price_mode": "actual",
-            "promo_price_my": "",
-            "promo_price_sg": "",
-            "max_quantity": 0
-          }
-        },
-        "recommended_towel": {
-          "type": "offer_item",
-          "settings": {
-            "tab_slot": "tab_1",
-            "product": "apgo-pro-car-wash-towel-l-160cm-x-60cm",
-            "variant_id": "",
-            "price_mode": "actual",
-            "promo_price_my": "",
-            "promo_price_sg": "",
-            "max_quantity": 0
           }
         },
         "glaze_paint": {
@@ -273,12 +202,6 @@
         "tab_recommended",
         "tab_glaze",
         "tab_detergent",
-        "recommended_wiper",
-        "recommended_oil_film",
-        "recommended_headlight",
-        "recommended_paint",
-        "recommended_sprayer",
-        "recommended_towel",
         "glaze_paint",
         "glaze_wheel",
         "glaze_sprayer",
