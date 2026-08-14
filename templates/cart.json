@@ -124,6 +124,23 @@
             "view_all_url": ""
           }
         },
+        "tab_RdreJB": {
+          "type": "tab",
+          "settings": {
+            "enabled": true,
+            "slot": "tab_4",
+            "label": "Atomic PWP",
+            "subtitle_my": "Special price for Atomic Promo · 1 set per product, per order",
+            "subtitle_sg": "Special price for Atomic Promo · 1 set per product, per order",
+            "audience": "all",
+            "trigger_products": [
+              "✨atomic-coating-special-ltd-bundle-✨"
+            ],
+            "trigger_min_quantity": 1,
+            "view_all_label": "",
+            "view_all_url": ""
+          }
+        },
         "glaze_paint": {
           "type": "offer_item",
           "settings": {
@@ -267,12 +284,49 @@
             "promo_price_sg": "",
             "max_quantity": 0
           }
+        },
+        "offer_item_XVrdXC": {
+          "type": "offer_item",
+          "settings": {
+            "tab_slot": "tab_4",
+            "product": "apgo-car-interior-eco-friendly-cleaner",
+            "variant_id": "46971435679898",
+            "price_mode": "promo",
+            "promo_price_my": "RM 18.8",
+            "promo_price_sg": "$ 7.9",
+            "max_quantity": 0
+          }
+        },
+        "offer_item_X8EMPn": {
+          "type": "offer_item",
+          "settings": {
+            "tab_slot": "tab_4",
+            "product": "apgo-car-wash-shampoo-special-formula-refill-pack",
+            "variant_id": "",
+            "price_mode": "promo",
+            "promo_price_my": "RM 8.8",
+            "promo_price_sg": "$ 3.9",
+            "max_quantity": 0
+          }
+        },
+        "offer_item_HxKrDn": {
+          "type": "offer_item",
+          "settings": {
+            "tab_slot": "tab_4",
+            "product": "apgo-glass-cleaner-500ml",
+            "variant_id": "",
+            "price_mode": "promo",
+            "promo_price_my": "RM 15.8",
+            "promo_price_sg": "$ 6.9",
+            "max_quantity": 0
+          }
         }
       },
       "block_order": [
         "tab_glaze",
         "tab_detergent",
         "tab_recommended",
+        "tab_RdreJB",
         "glaze_paint",
         "glaze_wheel",
         "glaze_sprayer",
@@ -284,7 +338,10 @@
         "offer_item_dLqrjd",
         "offer_item_UcCx3d",
         "offer_item_TYdFdk",
-        "offer_item_NU8Ved"
+        "offer_item_NU8Ved",
+        "offer_item_XVrdXC",
+        "offer_item_X8EMPn",
+        "offer_item_HxKrDn"
       ],
       "name": "Cart offers tabs",
       "settings": {
