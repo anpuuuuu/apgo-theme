@@ -480,8 +480,13 @@
 }
 
 @media (max-width: 749px) {
+  /* Mobile needs a top margin of its own. main-cart.liquid clamps the
+     cart's bottom padding to a flat 12px below 750px, so relying on it
+     alone left the add-ons sitting almost against the cart. 12 + 16
+     lands on roughly the same rhythm the desktop layout gets from its
+     28px. */
   .cart-offers-tabs {
-    margin: 0 auto 24px;
+    margin: 16px auto 24px;
   }
 
   .cart-offers-tabs__heading {
