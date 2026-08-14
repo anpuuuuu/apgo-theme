@@ -22,6 +22,18 @@
         "aurora_counter_release_total": "118",
         "aurora_counter_manual_deduction": "88",
         "aurora_counter_flow_baseline": "0",
+        "promo_popup_enabled": true,
+        "promo_popup_products": [
+          "✨atomic-coating-special-ltd-bundle-✨"
+        ],
+        "promo_popup_heading": "A free gift with your order",
+        "promo_popup_image": "shopify://shop_images/photo_2026-08-08_20-05-49.jpg",
+        "promo_popup_gift_name": "APGO Car Wiper Fluid Refill Pack 300ml",
+        "promo_popup_gift_value": "Worth RM15",
+        "promo_popup_subtext": "Added to your order automatically — no code needed.",
+        "promo_popup_cta": "Shop now",
+        "promo_popup_hours": "2",
+        "promo_popup_end_at": "",
         "gift_picker_enabled": true,
         "gift_picker_products": [
           "atomic-glaze-coating-sg61-promotion",
