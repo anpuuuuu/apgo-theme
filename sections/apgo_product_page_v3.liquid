@@ -4163,6 +4163,224 @@
     showToast). No section-local toast CSS needed.
   */
 
+  /* ── ⏰ Free gift promo popup + reminder bubble ─────────────────── */
+  html.apgo-promo-lock { overflow: hidden; }
+
+  .apgo-promo-popup {
+    position: fixed;
+    inset: 0;
+    z-index: 100200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s ease;
+  }
+  .apgo-promo-popup[hidden] { display: none; }
+  .apgo-promo-popup.is-open { opacity: 1; pointer-events: auto; }
+
+  .apgo-promo-popup__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+  }
+
+  .apgo-promo-popup__panel {
+    position: relative;
+    width: 100%;
+    max-width: 340px;
+    max-height: 88vh;
+    overflow-y: auto;
+    padding: 26px 20px 20px;
+    border-radius: 20px;
+    background: linear-gradient(160deg, #1d1206 0%, #14161c 55%);
+    border: 1px solid rgba(240, 132, 24, 0.4);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+    text-align: center;
+    transform: translateY(16px) scale(0.96);
+    transition: transform .28s cubic-bezier(.22, 1, .36, 1);
+  }
+  .apgo-promo-popup.is-open .apgo-promo-popup__panel { transform: translateY(0) scale(1); }
+
+  .apgo-promo-popup__close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.75);
+    cursor: pointer;
+    padding: 0;
+  }
+  .apgo-promo-popup__close:hover { background: rgba(255, 255, 255, 0.18); color: #fff; }
+
+  .apgo-promo-popup__badge {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 999px;
+    background: var(--primary-orange);
+    color: #1a1206;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 0.14em;
+  }
+  .apgo-promo-popup__heading {
+    margin: 10px 0 4px;
+    font-size: 19px;
+    font-weight: 800;
+    line-height: 1.25;
+    color: #fff;
+  }
+  .apgo-promo-popup__img {
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
+    margin: 8px auto 4px;
+    display: block;
+  }
+  .apgo-promo-popup__gift {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.3;
+  }
+  .apgo-promo-popup__value {
+    margin: 4px 0 0;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--primary-orange);
+  }
+  .apgo-promo-popup__sub {
+    margin: 8px 0 0;
+    font-size: 11px;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .apgo-promo-popup__timer {
+    margin: 14px 0 0;
+    padding: 10px;
+    border-radius: 12px;
+    background: rgba(240, 132, 24, 0.1);
+    border: 1px solid rgba(240, 132, 24, 0.3);
+  }
+  .apgo-promo-popup__timer-label {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.6);
+  }
+  .apgo-promo-popup__timer-value {
+    display: block;
+    margin-top: 2px;
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--primary-orange);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
+  }
+  .apgo-promo-popup.is-urgent .apgo-promo-popup__timer-value {
+    animation: apgoPromoPulse 1s ease-in-out infinite;
+  }
+  @keyframes apgoPromoPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.55; }
+  }
+
+  .apgo-promo-popup__cta {
+    width: 100%;
+    margin-top: 14px;
+    padding: 14px 0;
+    border: none;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #ffb45c, var(--primary-orange));
+    color: #1a1206;
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  /* Reminder bubble. Defaults bottom-LEFT: the right edge already carries
+     the chat widget, and on mobile the sticky buy bar owns the bottom. */
+  .apgo-promo-bubble {
+    position: fixed;
+    left: 14px;
+    bottom: 96px;
+    z-index: 100150;
+    width: 62px;
+    height: 62px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    border: 1.5px solid rgba(240, 132, 24, 0.55);
+    border-radius: 50%;
+    background: #14161c;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+    cursor: grab;
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .apgo-promo-bubble[hidden] { display: none; }
+  .apgo-promo-bubble.is-dragging { cursor: grabbing; transition: none; }
+  .apgo-promo-bubble__img {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+    pointer-events: none;
+  }
+  .apgo-promo-bubble__emoji { font-size: 22px; pointer-events: none; }
+  .apgo-promo-bubble__clock {
+    font-size: 9px;
+    font-weight: 800;
+    color: var(--primary-orange);
+    font-variant-numeric: tabular-nums;
+    pointer-events: none;
+  }
+  .apgo-promo-bubble.is-urgent { border-color: var(--primary-orange); }
+  .apgo-promo-bubble__dismiss {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    width: 19px;
+    height: 19px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #3a3a3a;
+    color: #fff;
+    border: 1.5px solid #14161c;
+    cursor: pointer;
+  }
+  .apgo-promo-bubble__dismiss:hover { background: #555; }
+
+  @media (max-width: 749px) {
+    /* Clear the mobile buybar so the bubble never covers Add to cart */
+    .apgo-promo-bubble { bottom: 120px; width: 56px; height: 56px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .apgo-promo-popup,
+    .apgo-promo-popup__panel { transition: none; }
+    .apgo-promo-popup.is-urgent .apgo-promo-popup__timer-value { animation: none; }
+  }
+
   /* ── 🎁 Free gift picker ─────────────────────────────────────────── */
   .apgo-gift-picker {
     margin: 4px 0 2px;
@@ -7150,6 +7368,31 @@ document.addEventListener('DOMContentLoaded', function() {
   All chips/qty/variation are rebuilt from JS at open time so the modal always
   reflects the current page state.
 {%- endcomment -%}
+
+{%- comment -%}
+  🎁 Free-gift promo popup + reminder bubble — gated to the configured
+  promo products (same product_list gate the gift picker uses).
+{%- endcomment -%}
+{%- assign apgo_promo_show = false -%}
+{%- if section.settings.promo_popup_enabled and section.settings.promo_popup_products != blank -%}
+  {%- for apgo_pp in section.settings.promo_popup_products -%}
+    {%- if apgo_pp.id == product.id -%}{%- assign apgo_promo_show = true -%}{%- break -%}{%- endif -%}
+  {%- endfor -%}
+{%- endif -%}
+{%- if apgo_promo_show -%}
+  {%- render 'apgo-promo-popup',
+    product: product,
+    heading: section.settings.promo_popup_heading,
+    subtext: section.settings.promo_popup_subtext,
+    gift_image: section.settings.promo_popup_image,
+    gift_name: section.settings.promo_popup_gift_name,
+    gift_value: section.settings.promo_popup_gift_value,
+    cta: section.settings.promo_popup_cta,
+    hours: section.settings.promo_popup_hours,
+    bubble_label: section.settings.promo_popup_gift_name -%}
+  <script src="{{ 'apgo-promo-popup.js' | asset_url }}" defer></script>
+{%- endif -%}
+
 <aside class="apgo-cc-confirm-modal" data-apgo-cc-confirm-modal aria-hidden="true">
   <div class="apgo-cc-confirm-modal__backdrop" data-apgo-cc-confirm-close></div>
   <div class="apgo-cc-confirm-modal__panel" role="dialog" aria-modal="true" aria-label="Confirm purchase">
@@ -7353,6 +7596,68 @@ document.addEventListener('DOMContentLoaded', function() {
       "label": "Flow baseline (live auto-count)",
       "info": "Set 0 to keep the counter fully manual. To make it count down live with paid orders, enter the current apgo_campaign.aurora_paid_sets metafield value here — only orders AFTER this baseline reduce the counter. Remaining = Current release − Extra deduction − (paid orders since baseline).",
       "default": "0"
+    },
+    {
+      "type": "header",
+      "content": "⏰ Free Gift Promo Popup"
+    },
+    {
+      "type": "paragraph",
+      "content": "Popup on entering the product page + a draggable reminder bubble after it is closed. The countdown is EVERGREEN per device: it starts on the visitor's first view and continues on later visits. Once it lapses the popup and bubble stop appearing (the timer never restarts — a countdown that resets forever is a false-urgency claim). Set up the matching gift discount in AIOD."
+    },
+    {
+      "type": "checkbox",
+      "id": "promo_popup_enabled",
+      "label": "Enable promo popup",
+      "default": false
+    },
+    {
+      "type": "product_list",
+      "id": "promo_popup_products",
+      "label": "Show on these products",
+      "limit": 6
+    },
+    {
+      "type": "text",
+      "id": "promo_popup_heading",
+      "label": "Heading",
+      "default": "Order within 12 hours"
+    },
+    {
+      "type": "image_picker",
+      "id": "promo_popup_image",
+      "label": "Gift image"
+    },
+    {
+      "type": "text",
+      "id": "promo_popup_gift_name",
+      "label": "Gift name",
+      "default": "APGO Car Wiper Fluid Refill Pack 300ml"
+    },
+    {
+      "type": "text",
+      "id": "promo_popup_gift_value",
+      "label": "Gift value",
+      "default": "Worth RM15 — yours FREE"
+    },
+    {
+      "type": "text",
+      "id": "promo_popup_subtext",
+      "label": "Sub text",
+      "default": "Complete your order before the timer ends to claim this free gift."
+    },
+    {
+      "type": "text",
+      "id": "promo_popup_cta",
+      "label": "Button label",
+      "default": "Shop now"
+    },
+    {
+      "type": "text",
+      "id": "promo_popup_hours",
+      "label": "Countdown hours",
+      "info": "How long each visitor gets from their first view. Default 12.",
+      "default": "12"
     },
     {
       "type": "header",
