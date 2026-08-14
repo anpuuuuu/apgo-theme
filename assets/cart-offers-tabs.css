@@ -55,13 +55,67 @@
   background: linear-gradient(180deg, var(--cart-offers-accent), var(--cart-offers-accent-end));
 }
 
-/* Groups are stacked rather than tabbed — see the section template for
-   why. A group titles itself instead of being titled by a tab. */
+/* The tab bar appears only from the second eligible group onward — see
+   the section template for why. Until then a group titles itself. */
+.cart-offers-tabs__tablist {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0 0 14px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  overscroll-behavior-inline: contain;
+}
+
+.cart-offers-tabs__tablist::-webkit-scrollbar {
+  display: none;
+}
+
+.cart-offers-tabs__tab {
+  flex: 0 0 auto;
+  min-height: 34px;
+  padding: 8px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: border-color 160ms ease, background 160ms ease, color 160ms ease;
+}
+
+.cart-offers-tabs__tab:hover,
+.cart-offers-tabs__tab:focus-visible {
+  border-color: var(--cart-offers-accent);
+  color: #fff;
+  outline: none;
+}
+
+/* Solid, not a 20%-alpha wash: the previous selected state was barely
+   distinguishable from the unselected one. */
+.cart-offers-tabs__tab[aria-selected='true'] {
+  border-color: var(--cart-offers-accent);
+  background: var(--cart-offers-accent);
+  color: #2b1602;
+}
+
 .cart-offers-tabs__groups {
   display: flex;
   min-width: 0;
   flex-direction: column;
   gap: 28px;
+}
+
+/* With tabs on screen the group heading just repeats the active tab. */
+.cart-offers-tabs.is-tabbed .cart-offers-tabs__group-title {
+  display: none;
 }
 
 .cart-offers-tabs__group {
@@ -415,6 +469,18 @@
     font-size: 17px;
   }
 
+  .cart-offers-tabs__tablist {
+    margin-inline: -2px;
+    padding-inline: 2px;
+    padding-bottom: 12px;
+  }
+
+  .cart-offers-tabs__tab {
+    min-height: 32px;
+    padding: 7px 12px;
+    font-size: 11.5px;
+  }
+
   .cart-offers-tabs__groups {
     gap: 22px;
   }
@@ -463,6 +529,7 @@
     scroll-behavior: auto;
   }
 
+  .cart-offers-tabs__tab,
   .cart-offers-tabs__action,
   .cart-offers-tabs__select-options,
   .cart-offers-tabs__scroll-button {

@@ -1,10 +1,11 @@
 /**
  * Cart add-on offers.
  *
- * Groups are stacked, not tabbed: eligibility already hides a group whose
- * trigger product is absent, so most carts show exactly one — and a tab
- * bar with one tab is pure chrome. When two do qualify, stacking shows
- * every add-on rather than hiding half behind a click.
+ * The tab bar only exists when there is something to switch between.
+ * Eligibility already hides a group whose trigger product is absent, so
+ * most carts qualify for exactly one group — and a tab bar with one tab
+ * is pure chrome. One eligible group renders bare; two or more bring the
+ * tabs back.
  *
  * The element name is historical; the section, stylesheet and saved
  * merchant blocks all still key off "tabs".
@@ -16,14 +17,19 @@ class CartOffersTabs extends HTMLElement {
     this.fetchTimer = null;
     this.fetchController = null;
     this.isAdding = false;
+    this.isTabbed = this.classList.contains('is-tabbed');
+    this.activeGroupId = '';
+    this.eligibleGroupIds = new Set();
 
     this.handleClick = this.handleClick.bind(this);
+    this.handleKeydown = this.handleKeydown.bind(this);
     this.handleCartEvent = this.handleCartEvent.bind(this);
     this.handleResize = this.handleResize.bind(this);
   }
 
   connectedCallback() {
     this.addEventListener('click', this.handleClick);
+    this.addEventListener('keydown', this.handleKeydown);
     document.addEventListener('cart:update', this.handleCartEvent);
     document.addEventListener('cart:updated', this.handleCartEvent);
     document.addEventListener('cart:refresh', this.handleCartEvent);
@@ -33,12 +39,19 @@ class CartOffersTabs extends HTMLElement {
       track.addEventListener('scroll', () => this.updateCarouselButtons(track), { passive: true });
     });
 
+    /* Seed from what the server rendered so a tab clicked before the
+       first cart fetch lands still switches. */
+    this.eligibleGroupIds = new Set(this.visibleTabs.map((tab) => tab.dataset.groupId));
+    const initialGroup = this.groups.find((group) => !group.hidden);
+    if (initialGroup) this.activateGroup(initialGroup.dataset.groupId);
+
     requestAnimationFrame(() => this.handleResize());
     this.fetchCart(0);
   }
 
   disconnectedCallback() {
     this.removeEventListener('click', this.handleClick);
+    this.removeEventListener('keydown', this.handleKeydown);
     document.removeEventListener('cart:update', this.handleCartEvent);
     document.removeEventListener('cart:updated', this.handleCartEvent);
     document.removeEventListener('cart:refresh', this.handleCartEvent);
@@ -51,11 +64,25 @@ class CartOffersTabs extends HTMLElement {
     return Array.from(this.querySelectorAll('[data-offer-group]'));
   }
 
+  get tabs() {
+    return Array.from(this.querySelectorAll('[data-offer-tab]'));
+  }
+
+  get visibleTabs() {
+    return this.tabs.filter((tab) => !tab.hidden);
+  }
+
   get isDesignMode() {
     return this.dataset.designMode === 'true';
   }
 
   handleClick(event) {
+    const tab = event.target.closest('[data-offer-tab]');
+    if (tab && this.contains(tab)) {
+      this.activateGroup(tab.dataset.groupId);
+      return;
+    }
+
     const addButton = event.target.closest('[data-offer-add]');
     if (addButton && this.contains(addButton)) {
       this.addOffer(addButton);
@@ -73,6 +100,25 @@ class CartOffersTabs extends HTMLElement {
     const gap = Number.parseFloat(getComputedStyle(track).columnGap || getComputedStyle(track).gap) || 0;
     const distance = firstCard ? firstCard.getBoundingClientRect().width + gap : track.clientWidth * 0.8;
     track.scrollBy({ left: previousButton ? -distance : distance, behavior: 'smooth' });
+  }
+
+  handleKeydown(event) {
+    const currentTab = event.target.closest('[data-offer-tab]');
+    if (!currentTab || !this.contains(currentTab)) return;
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+
+    const tabs = this.visibleTabs;
+    if (tabs.length < 2) return;
+    event.preventDefault();
+
+    const currentIndex = Math.max(0, tabs.indexOf(currentTab));
+    let nextIndex = currentIndex;
+    if (event.key === 'ArrowLeft') nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+    if (event.key === 'ArrowRight') nextIndex = (currentIndex + 1) % tabs.length;
+    if (event.key === 'Home') nextIndex = 0;
+    if (event.key === 'End') nextIndex = tabs.length - 1;
+
+    this.activateGroup(tabs[nextIndex].dataset.groupId, { focus: true });
   }
 
   handleCartEvent(event) {
@@ -120,15 +166,25 @@ class CartOffersTabs extends HTMLElement {
       quantities.set(productId, (quantities.get(productId) || 0) + Number(item.quantity || 0));
     });
 
-    let visibleGroups = 0;
-    this.groups.forEach((group) => {
-      const eligible = this.isDesignMode || this.groupIsEligible(group, quantities);
-      group.hidden = !eligible;
-      if (eligible) visibleGroups += 1;
+    const eligibleGroups = this.groups.filter((group) => this.isDesignMode || this.groupIsEligible(group, quantities));
+    this.eligibleGroupIds = new Set(eligibleGroups.map((group) => group.dataset.groupId));
+
+    this.hidden = eligibleGroups.length === 0;
+    if (!eligibleGroups.length) return;
+
+    /* Tabs only earn their place from the second eligible group onward. */
+    this.isTabbed = eligibleGroups.length > 1;
+    this.classList.toggle('is-tabbed', this.isTabbed);
+
+    const tablist = this.querySelector('[data-offer-tablist]');
+    if (tablist) tablist.hidden = !this.isTabbed;
+    this.tabs.forEach((tab) => {
+      tab.hidden = !this.eligibleGroupIds.has(tab.dataset.groupId);
     });
 
-    this.hidden = visibleGroups === 0;
-    if (!visibleGroups) return;
+    /* Keep whatever the shopper picked, as long as it still qualifies. */
+    const stillActive = eligibleGroups.some((group) => group.dataset.groupId === this.activeGroupId);
+    this.activateGroup(stillActive ? this.activeGroupId : eligibleGroups[0].dataset.groupId);
 
     this.querySelectorAll('[data-offer-card]').forEach((card) => {
       const productQuantity = quantities.get(String(card.dataset.productId)) || 0;
@@ -145,6 +201,31 @@ class CartOffersTabs extends HTMLElement {
 
     this.showStatus('');
     requestAnimationFrame(() => this.handleResize());
+  }
+
+  activateGroup(groupId, { focus = false } = {}) {
+    if (!this.eligibleGroupIds.has(groupId)) return;
+    this.activeGroupId = groupId;
+
+    this.groups.forEach((group) => {
+      const eligible = this.eligibleGroupIds.has(group.dataset.groupId);
+      /* Untabbed, every eligible group stays on screen; tabbed, only the
+         active one does. */
+      group.hidden = !eligible || (this.isTabbed && group.dataset.groupId !== groupId);
+      group.setAttribute('role', this.isTabbed ? 'tabpanel' : 'region');
+    });
+
+    this.tabs.forEach((tab) => {
+      const isActive = tab.dataset.groupId === groupId;
+      tab.setAttribute('aria-selected', String(isActive));
+      tab.tabIndex = isActive ? 0 : -1;
+      if (isActive && focus) tab.focus({ preventScroll: true });
+    });
+
+    const track = this.groups
+      .find((group) => group.dataset.groupId === groupId)
+      ?.querySelector('[data-carousel-track]');
+    if (track) requestAnimationFrame(() => this.updateCarouselButtons(track));
   }
 
   groupIsEligible(group, quantities) {

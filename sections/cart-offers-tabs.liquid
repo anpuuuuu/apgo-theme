@@ -36,10 +36,22 @@
       endif
     endif
   endfor
+
+  comment
+    Tabs earn their place only when there is a second group to switch
+    to. In the editor always show them, so a merchant can reach every
+    group without having to fake a qualifying cart.
+  endcomment
+  assign is_tabbed = false
+  if eligible_tab_count > 1 or request.design_mode
+    assign is_tabbed = true
+  endif
+
+  assign shown_group_count = 0
 %}
 
 <cart-offers-tabs
-  class="cart-offers-tabs"
+  class="cart-offers-tabs{% if is_tabbed %} is-tabbed{% endif %}"
   data-section-id="{{ section.id }}"
   data-design-mode="{{ request.design_mode }}"
   style="--cart-offers-accent: {{ section.settings.accent_color }}; --cart-offers-accent-end: {{ section.settings.accent_color_end }}; --cart-offers-bg: {{ section.settings.background_color }}; --cart-offers-card-bg: {{ section.settings.card_color }};"
@@ -51,16 +63,56 @@
     {% endif %}
 
     {% comment %}
-      Groups are STACKED, not tabbed. Eligibility already hides a group
-      whose trigger product is not in the cart, so the overwhelmingly
-      common case is a single group — and a tab bar with one tab is pure
-      chrome. In the rarer case where two qualify, stacking shows every
-      add-on at once instead of hiding half of them behind a click.
+      The tab bar only exists when there is something to switch between.
+      Eligibility already hides a group whose trigger product is not in
+      the cart, so most carts qualify for exactly one group — and a tab
+      bar with one tab is pure chrome. One eligible group renders bare,
+      with its own heading; two or more bring the tabs back.
 
       The block type is still `tab` and the class prefix still says
       `tabs` because both are load-bearing (saved merchant blocks, and
-      the shared stylesheet). Only the presentation changed.
+      the shared stylesheet).
     {% endcomment %}
+    <div class="cart-offers-tabs__tablist" role="tablist" data-offer-tablist aria-label="{{ section.settings.section_heading | default: 'Cart offers' | escape }}" {% unless is_tabbed %}hidden{% endunless %}>
+      {% for block in section.blocks %}
+        {% if block.type == 'tab' and block.settings.enabled %}
+          {% liquid
+            assign tab_is_eligible = false
+            if block.settings.audience == 'all'
+              assign tab_is_eligible = true
+            else
+              assign trigger_quantity = 0
+              for cart_item in cart.items
+                for trigger_product in block.settings.trigger_products
+                  if cart_item.product_id == trigger_product.id
+                    assign trigger_quantity = trigger_quantity | plus: cart_item.quantity
+                  endif
+                endfor
+              endfor
+              assign trigger_minimum = block.settings.trigger_min_quantity | default: 1
+              if trigger_quantity >= trigger_minimum
+                assign tab_is_eligible = true
+              endif
+            endif
+          %}
+          <button
+            type="button"
+            class="cart-offers-tabs__tab"
+            id="CartOffersTab-{{ section.id }}-{{ block.id }}"
+            role="tab"
+            aria-selected="false"
+            aria-controls="CartOffersPanel-{{ section.id }}-{{ block.id }}"
+            tabindex="-1"
+            data-offer-tab
+            data-group-id="{{ block.id }}"
+            {% unless tab_is_eligible or request.design_mode %}hidden{% endunless %}
+          >
+            {{ block.settings.label }}
+          </button>
+        {% endif %}
+      {% endfor %}
+    </div>
+
     <div class="cart-offers-tabs__groups">
       {% for block in section.blocks %}
         {% if block.type == 'tab' and block.settings.enabled %}
@@ -103,16 +155,31 @@
                 assign matching_offer_count = matching_offer_count | plus: 1
               endif
             endfor
+
+            comment
+              Stacked when there is one group, one-at-a-time when tabs
+              are in play — so with tabs only the first eligible group
+              renders visible.
+            endcomment
+            assign group_is_visible = false
+            if tab_is_eligible or request.design_mode
+              assign shown_group_count = shown_group_count | plus: 1
+              if is_tabbed == false or shown_group_count == 1
+                assign group_is_visible = true
+              endif
+            endif
           %}
           <section
             class="cart-offers-tabs__group"
+            id="CartOffersPanel-{{ section.id }}-{{ block.id }}"
+            role="{% if is_tabbed %}tabpanel{% else %}region{% endif %}"
             aria-label="{{ block.settings.label | escape }}"
             data-offer-group
             data-group-id="{{ block.id }}"
             data-audience="{{ block.settings.audience }}"
             data-trigger-product-ids="{{ trigger_product_ids | strip }}"
             data-trigger-min="{{ block.settings.trigger_min_quantity | default: 1 }}"
-            {% unless tab_is_eligible or request.design_mode %}hidden{% endunless %}
+            {% unless group_is_visible %}hidden{% endunless %}
             {{ block.shopify_attributes }}
           >
             <div class="cart-offers-tabs__group-head">
@@ -256,7 +323,7 @@
       "settings": [
         {
           "type": "paragraph",
-          "content": "Groups are stacked down the page — every eligible group is shown at once, so nothing is hidden behind a tab."
+          "content": "A tab bar appears only when two or more groups qualify for the same cart. With one qualifying group there are no tabs — it renders on its own, under its heading."
         },
         {
           "type": "checkbox",
