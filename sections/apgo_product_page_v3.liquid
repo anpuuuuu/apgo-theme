@@ -4184,134 +4184,179 @@
   .apgo-promo-popup__backdrop {
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.72);
+    background: rgba(12, 10, 6, 0.68);
     backdrop-filter: blur(3px);
     -webkit-backdrop-filter: blur(3px);
   }
 
+  /* Cream card — deliberately light against the dark PDP so it reads as a
+     separate, gift-like object rather than another page panel. */
   .apgo-promo-popup__panel {
     position: relative;
     width: 100%;
-    max-width: 340px;
+    max-width: 330px;
     max-height: 88vh;
     overflow-y: auto;
-    padding: 26px 20px 20px;
-    border-radius: 20px;
-    background: linear-gradient(160deg, #1d1206 0%, #14161c 55%);
-    border: 1px solid rgba(240, 132, 24, 0.4);
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+    padding: 22px 22px 20px;
+    border-radius: 22px;
+    background: linear-gradient(170deg, #fffdf7 0%, #f6efe2 100%);
+    border: 1px solid rgba(240, 132, 24, 0.28);
+    box-shadow: 0 26px 70px rgba(0, 0, 0, 0.55);
+    color: #2d2a24;
     text-align: center;
-    transform: translateY(16px) scale(0.96);
-    transition: transform .28s cubic-bezier(.22, 1, .36, 1);
+    transform: translateY(18px) scale(0.96);
+    transition: transform .3s cubic-bezier(.22, 1, .36, 1);
   }
   .apgo-promo-popup.is-open .apgo-promo-popup__panel { transform: translateY(0) scale(1); }
 
   .apgo-promo-popup__close {
     position: absolute;
-    top: 8px;
-    right: 8px;
-    width: 32px;
-    height: 32px;
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
     border: none;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.08);
-    color: rgba(255, 255, 255, 0.75);
+    background: rgba(45, 42, 36, 0.07);
+    color: rgba(45, 42, 36, 0.55);
     cursor: pointer;
     padding: 0;
+    transition: background .15s ease, color .15s ease;
   }
-  .apgo-promo-popup__close:hover { background: rgba(255, 255, 255, 0.18); color: #fff; }
+  .apgo-promo-popup__close:hover { background: rgba(45, 42, 36, 0.14); color: #2d2a24; }
 
-  .apgo-promo-popup__badge {
-    display: inline-block;
-    padding: 3px 12px;
+  .apgo-promo-popup__ribbon {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 14px 5px 11px;
     border-radius: 999px;
-    background: var(--primary-orange);
-    color: #1a1206;
+    background: linear-gradient(135deg, #f6a94a, var(--primary-orange));
+    color: #fff;
     font-size: 10px;
     font-weight: 900;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    box-shadow: 0 4px 12px rgba(240, 132, 24, 0.32);
   }
+  .apgo-promo-popup__ribbon-icon { width: 13px; height: 13px; flex: 0 0 auto; }
+
   .apgo-promo-popup__heading {
-    margin: 10px 0 4px;
-    font-size: 19px;
+    margin: 12px 0 0;
+    font-size: 20px;
     font-weight: 800;
     line-height: 1.25;
-    color: #fff;
+    letter-spacing: -0.01em;
+    color: #2d2a24;
+  }
+
+  /* Gift shot on a soft radial pedestal so a plain packshot still feels
+     presented rather than pasted. */
+  .apgo-promo-popup__media {
+    position: relative;
+    margin: 12px auto 10px;
+    width: 100%;
+    max-width: 210px;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 18px;
+    background: radial-gradient(circle at 50% 42%, #ffffff 0%, #f3ebdb 62%, #ece2cf 100%);
+    box-shadow: inset 0 1px 0 #fff, 0 6px 18px rgba(45, 42, 36, 0.08);
   }
   .apgo-promo-popup__img {
-    width: 150px;
-    height: 150px;
+    width: 86%;
+    height: 86%;
     object-fit: contain;
-    margin: 8px auto 4px;
-    display: block;
+    filter: drop-shadow(0 8px 14px rgba(45, 42, 36, 0.18));
   }
+  .apgo-promo-popup__value-tag {
+    position: absolute;
+    right: -4px;
+    bottom: 6px;
+    padding: 5px 11px;
+    border-radius: 999px;
+    background: #2d2a24;
+    color: #ffd9a8;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    box-shadow: 0 5px 14px rgba(45, 42, 36, 0.3);
+  }
+
   .apgo-promo-popup__gift {
     margin: 0;
-    font-size: 13px;
-    font-weight: 700;
-    color: #fff;
-    line-height: 1.3;
-  }
-  .apgo-promo-popup__value {
-    margin: 4px 0 0;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 800;
-    color: var(--primary-orange);
+    line-height: 1.35;
+    color: #2d2a24;
   }
   .apgo-promo-popup__sub {
-    margin: 8px 0 0;
-    font-size: 11px;
-    line-height: 1.45;
-    color: rgba(255, 255, 255, 0.6);
+    margin: 7px 0 0;
+    font-size: 11.5px;
+    line-height: 1.5;
+    color: rgba(45, 42, 36, 0.6);
   }
 
   .apgo-promo-popup__timer {
-    margin: 14px 0 0;
-    padding: 10px;
-    border-radius: 12px;
-    background: rgba(240, 132, 24, 0.1);
-    border: 1px solid rgba(240, 132, 24, 0.3);
+    margin: 15px 0 0;
+    padding: 11px;
+    border-radius: 14px;
+    background: rgba(240, 132, 24, 0.09);
+    border: 1px solid rgba(240, 132, 24, 0.28);
   }
   .apgo-promo-popup__timer-label {
     display: block;
-    font-size: 10px;
-    letter-spacing: 0.12em;
+    font-size: 9.5px;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(45, 42, 36, 0.5);
+    font-weight: 700;
   }
   .apgo-promo-popup__timer-value {
     display: block;
-    margin-top: 2px;
-    font-size: 26px;
+    margin-top: 3px;
+    font-size: 27px;
     font-weight: 800;
-    color: var(--primary-orange);
+    color: #d9741a;
     font-variant-numeric: tabular-nums;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.03em;
+    line-height: 1.1;
   }
+  /* Window lapsed → the offer stays, the deadline claim goes away. */
+  .apgo-promo-popup.is-timerless .apgo-promo-popup__timer { display: none; }
+
   .apgo-promo-popup.is-urgent .apgo-promo-popup__timer-value {
     animation: apgoPromoPulse 1s ease-in-out infinite;
   }
   @keyframes apgoPromoPulse {
     0%, 100% { opacity: 1; }
-    50% { opacity: 0.55; }
+    50% { opacity: 0.5; }
   }
 
   .apgo-promo-popup__cta {
     width: 100%;
     margin-top: 14px;
-    padding: 14px 0;
+    padding: 15px 0;
     border: none;
     border-radius: 999px;
-    background: linear-gradient(135deg, #ffb45c, var(--primary-orange));
-    color: #1a1206;
+    background: linear-gradient(135deg, #f6a94a, var(--primary-orange));
+    color: #fff;
     font-size: 13px;
     font-weight: 900;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     cursor: pointer;
+    box-shadow: 0 8px 20px rgba(240, 132, 24, 0.34);
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .apgo-promo-popup__cta:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 11px 24px rgba(240, 132, 24, 0.42);
   }
 
   /* Reminder bubble. Defaults bottom-LEFT: the right edge already carries
@@ -4321,63 +4366,68 @@
     left: 14px;
     bottom: 96px;
     z-index: 100150;
-    width: 62px;
-    height: 62px;
+    width: 60px;
+    height: 60px;
     padding: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 1px;
-    border: 1.5px solid rgba(240, 132, 24, 0.55);
+    border: none;
     border-radius: 50%;
-    background: #14161c;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+    background: linear-gradient(140deg, #fffdf7 0%, #f1e7d4 100%);
+    color: var(--primary-orange);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), inset 0 0 0 1.5px rgba(240, 132, 24, 0.45);
     cursor: grab;
     touch-action: none;
     -webkit-tap-highlight-color: transparent;
   }
   .apgo-promo-bubble[hidden] { display: none; }
   .apgo-promo-bubble.is-dragging { cursor: grabbing; transition: none; }
-  .apgo-promo-bubble__img {
-    width: 30px;
-    height: 30px;
-    object-fit: contain;
+  .apgo-promo-bubble__icon {
+    width: 24px;
+    height: 24px;
     pointer-events: none;
   }
-  .apgo-promo-bubble__emoji { font-size: 22px; pointer-events: none; }
   .apgo-promo-bubble__clock {
     font-size: 9px;
     font-weight: 800;
-    color: var(--primary-orange);
+    color: #b8601a;
     font-variant-numeric: tabular-nums;
     pointer-events: none;
+    line-height: 1;
   }
-  .apgo-promo-bubble.is-urgent { border-color: var(--primary-orange); }
+  .apgo-promo-bubble__clock:empty { display: none; }
+  .apgo-promo-bubble.is-urgent {
+    box-shadow: 0 6px 20px rgba(240, 132, 24, 0.5), inset 0 0 0 2px var(--primary-orange);
+  }
   .apgo-promo-bubble__dismiss {
     position: absolute;
-    top: -3px;
-    right: -3px;
+    top: -2px;
+    right: -2px;
     width: 19px;
     height: 19px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    background: #3a3a3a;
+    background: #2d2a24;
     color: #fff;
-    border: 1.5px solid #14161c;
+    border: 1.5px solid #fffdf7;
     cursor: pointer;
   }
-  .apgo-promo-bubble__dismiss:hover { background: #555; }
+  .apgo-promo-bubble__dismiss:hover { background: #4a463c; }
 
   @media (max-width: 749px) {
     /* Clear the mobile buybar so the bubble never covers Add to cart */
-    .apgo-promo-bubble { bottom: 120px; width: 56px; height: 56px; }
+    .apgo-promo-bubble { bottom: 120px; width: 55px; height: 55px; }
+    .apgo-promo-bubble__icon { width: 22px; height: 22px; }
   }
   @media (prefers-reduced-motion: reduce) {
     .apgo-promo-popup,
-    .apgo-promo-popup__panel { transition: none; }
+    .apgo-promo-popup__panel,
+    .apgo-promo-popup__cta { transition: none; }
     .apgo-promo-popup.is-urgent .apgo-promo-popup__timer-value { animation: none; }
   }
 
@@ -7389,6 +7439,7 @@ document.addEventListener('DOMContentLoaded', function() {
     gift_value: section.settings.promo_popup_gift_value,
     cta: section.settings.promo_popup_cta,
     hours: section.settings.promo_popup_hours,
+    end_at: section.settings.promo_popup_end_at,
     bubble_label: section.settings.promo_popup_gift_name -%}
   <script src="{{ 'apgo-promo-popup.js' | asset_url }}" defer></script>
 {%- endif -%}
@@ -7603,7 +7654,7 @@ document.addEventListener('DOMContentLoaded', function() {
     },
     {
       "type": "paragraph",
-      "content": "Popup on entering the product page + a draggable reminder bubble after it is closed. The countdown is EVERGREEN per device: it starts on the visitor's first view and continues on later visits. Once it lapses the popup and bubble stop appearing (the timer never restarts — a countdown that resets forever is a false-urgency claim). Set up the matching gift discount in AIOD."
+      "content": "Popup on entering the product page + a draggable reminder bubble after it is closed. The countdown is EVERGREEN per device: it starts on the visitor's first view and continues on later visits — it never restarts. Once it lapses the popup still shows the free gift, just with NO countdown, so returning customers keep seeing the offer without ever being shown a resetting timer. Set up the matching gift discount in AIOD."
     },
     {
       "type": "checkbox",
@@ -7621,7 +7672,8 @@ document.addEventListener('DOMContentLoaded', function() {
       "type": "text",
       "id": "promo_popup_heading",
       "label": "Heading",
-      "default": "Order within 12 hours"
+      "info": "Keep it true with or without the countdown — the timer disappears once the window lapses, but this line stays.",
+      "default": "A free gift with your order"
     },
     {
       "type": "image_picker",
@@ -7638,13 +7690,15 @@ document.addEventListener('DOMContentLoaded', function() {
       "type": "text",
       "id": "promo_popup_gift_value",
       "label": "Gift value",
-      "default": "Worth RM15 — yours FREE"
+      "info": "Shown as a small tag on the gift image — keep it to a few words.",
+      "default": "Worth RM15"
     },
     {
       "type": "text",
       "id": "promo_popup_subtext",
       "label": "Sub text",
-      "default": "Complete your order before the timer ends to claim this free gift."
+      "info": "Also stays visible after the countdown lapses, so avoid wording that depends on the timer.",
+      "default": "Added to your order automatically — no code needed."
     },
     {
       "type": "text",
@@ -7656,8 +7710,14 @@ document.addEventListener('DOMContentLoaded', function() {
       "type": "text",
       "id": "promo_popup_hours",
       "label": "Countdown hours",
-      "info": "How long each visitor gets from their first view. Default 12.",
-      "default": "12"
+      "info": "How long each visitor gets from their first view. 2 hours reads as a real same-session deadline; 12 hours is long enough that most people just leave and come back.",
+      "default": "2"
+    },
+    {
+      "type": "text",
+      "id": "promo_popup_end_at",
+      "label": "Campaign end date (optional)",
+      "info": "YYYY-MM-DD (or YYYY-MM-DD HH:MM). A REAL end shared by everyone: it caps each visitor's countdown, and once it passes the popup and bubble stop showing entirely. Leave blank for an ongoing offer."
     },
     {
       "type": "header",

@@ -4,9 +4,11 @@
   Shown on the gated product only. Evergreen countdown: the deadline is
   set on the visitor's FIRST view and kept in localStorage, so returning
   to the page continues the same countdown instead of restarting it.
-  Once it lapses the popup, bubble and timer all stop appearing — the
-  gift keeps being granted by the discount app, we simply stop claiming
-  urgency (a timer that resets forever is a false-urgency claim).
+  Once it lapses the popup still appears — only the clock is removed.
+  The gift is granted by the discount app either way, so the message
+  stays true; we just stop claiming urgency (a timer that resets forever
+  is a false-urgency claim, and repeat visitors are exactly the people
+  who would notice).
 
   Accepts:
     heading   {string}  - popup heading
@@ -15,22 +17,33 @@
     gift_name {string}  - gift product name
     gift_value {string} - e.g. "Worth RM15"
     cta       {string}  - button label
-    hours     {number}  - countdown length (default 12)
+    hours     {number}  - countdown length (default 2)
+    end_at    {string}  - optional real campaign end, e.g. "2026-08-31"
     bubble_label {string} - text inside the floating bubble
 {%- endcomment -%}
 
 {%- liquid
-  assign pp_hours = hours | default: 12 | plus: 0
+  assign pp_hours = hours | default: 2 | plus: 0
   if pp_hours < 1
-    assign pp_hours = 12
+    assign pp_hours = 2
   endif
 -%}
+
+{%- comment -%}
+  Optional real campaign end (shared by everyone). When set, it caps the
+  evergreen window and ends the promo for good once passed.
+{%- endcomment -%}
+{%- assign pp_end_ts = 0 -%}
+{%- if end_at != blank -%}
+  {%- assign pp_end_ts = end_at | date: '%s' | plus: 0 | times: 1000 -%}
+{%- endif -%}
 
 <div
   class="apgo-promo-popup"
   data-apgo-promo-popup
   data-promo-key="apgo-promo-{{ product.id }}"
   data-promo-hours="{{ pp_hours }}"
+  {% if pp_end_ts > 0 %}data-promo-end-ts="{{ pp_end_ts }}"{% endif %}
   aria-hidden="true"
   hidden
 >
@@ -38,29 +51,42 @@
 
   <div class="apgo-promo-popup__panel" role="dialog" aria-modal="true" aria-label="{{ heading | default: 'Free gift offer' | escape }}">
     <button type="button" class="apgo-promo-popup__close" data-apgo-promo-close aria-label="Close">
-      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
     </button>
 
-    <span class="apgo-promo-popup__badge">{{ 'FREE GIFT' }}</span>
+    <div class="apgo-promo-popup__ribbon">
+      <svg class="apgo-promo-popup__ribbon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/>
+        <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
+      </svg>
+      <span>Free gift</span>
+    </div>
 
     {%- if heading != blank -%}
       <h3 class="apgo-promo-popup__heading">{{ heading }}</h3>
     {%- endif -%}
 
     {%- if gift_image != blank -%}
-      <img class="apgo-promo-popup__img" src="{{ gift_image | image_url: width: 520 }}" alt="{{ gift_name | default: 'Free gift' | escape }}" loading="lazy" width="240" height="240">
+      <div class="apgo-promo-popup__media">
+        <img class="apgo-promo-popup__img" src="{{ gift_image | image_url: width: 640 }}" alt="{{ gift_name | default: 'Free gift' | escape }}" loading="lazy" width="260" height="260">
+        {%- if gift_value != blank -%}
+          <span class="apgo-promo-popup__value-tag">{{ gift_value }}</span>
+        {%- endif -%}
+      </div>
     {%- endif -%}
 
     {%- if gift_name != blank -%}
       <p class="apgo-promo-popup__gift">{{ gift_name }}</p>
     {%- endif -%}
-    {%- if gift_value != blank -%}
-      <p class="apgo-promo-popup__value">{{ gift_value }}</p>
-    {%- endif -%}
     {%- if subtext != blank -%}
       <p class="apgo-promo-popup__sub">{{ subtext }}</p>
     {%- endif -%}
 
+    {%- comment -%}
+      Countdown block. JS adds .is-timerless to the popup once the window
+      has lapsed, which hides this entirely — the offer message stays, the
+      deadline claim does not.
+    {%- endcomment -%}
     <div class="apgo-promo-popup__timer" data-apgo-promo-timer>
       <span class="apgo-promo-popup__timer-label">Order within</span>
       <span class="apgo-promo-popup__timer-value" data-apgo-promo-clock>--:--:--</span>
@@ -88,10 +114,14 @@
   <span class="apgo-promo-bubble__dismiss" data-apgo-promo-bubble-dismiss role="button" tabindex="0" aria-label="Hide reminder">
     <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
   </span>
-  {%- if gift_image != blank -%}
-    <img class="apgo-promo-bubble__img" src="{{ gift_image | image_url: width: 160 }}" alt="" aria-hidden="true" loading="lazy" width="46" height="46">
-  {%- else -%}
-    <span class="apgo-promo-bubble__emoji" aria-hidden="true">🎁</span>
-  {%- endif -%}
-  <span class="apgo-promo-bubble__clock" data-apgo-promo-bubble-clock>--:--</span>
+  {%- comment -%}
+    Gift-box SVG rather than the product photo: at ~28px a bottle shot is
+    an unreadable blob, while the icon reads instantly as "a gift is
+    waiting" and follows currentColor into the urgent state.
+  {%- endcomment -%}
+  <svg class="apgo-promo-bubble__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/>
+    <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
+  </svg>
+  <span class="apgo-promo-bubble__clock" data-apgo-promo-bubble-clock></span>
 </button>
