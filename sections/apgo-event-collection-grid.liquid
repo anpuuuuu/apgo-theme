@@ -196,6 +196,28 @@
           zone_position: 2 %}
       {%- endif -%}
 
+      {%- comment -%}
+        ZONE — Mid Month promo banner. Single banner/product, no region
+        split: the same offer runs in both markets.
+
+        Its Add/Buy add straight to cart. apgo-event-cart.js only
+        diverts a zone's buttons into the gift modal when the button is
+        inside `--glaze`, so this zone is unaffected even while the
+        Glaze modal is present in the DOM.
+      {%- endcomment -%}
+      {%- if section.settings.show_midmonth_zone -%}
+        {% render 'apgo-event-linked-banner-zone',
+          heading: section.settings.midmonth_zone_heading,
+          message: section.settings.midmonth_zone_message,
+          show_counter: false,
+          banner_image: section.settings.midmonth_zone_banner,
+          product: section.settings.midmonth_zone_product,
+          variant_id: section.settings.midmonth_zone_variant_id,
+          single_cta_label: section.settings.midmonth_zone_single_cta,
+          zone_class: 'midmonth',
+          zone_position: 6 %}
+      {%- endif -%}
+
       {%- comment -%} ZONE 1 — Discount horizontal scroll {%- endcomment -%}
       {%- if section.settings.show_discount_zone -%}
         {% render 'apgo-event-scroll-zone',
@@ -607,6 +629,51 @@
       "label": "Single button label",
       "info": "When filled (e.g. \"Grab Deals Now\"), the banner shows ONE full-width button that opens the product page instead of Add to cart / Buy now. Leave empty to keep the two buttons.",
       "default": "Grab Deals Now"
+    },
+    {
+      "type": "header",
+      "content": "Mid Month Zone"
+    },
+    {
+      "type": "paragraph",
+      "content": "Renders third, right after Detergent. Single product/banner with no region split — SG and MY see the same thing. Zone hides until a banner + product are set."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_midmonth_zone",
+      "label": "Show Mid Month zone",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "midmonth_zone_heading",
+      "label": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "midmonth_zone_message",
+      "label": "Message"
+    },
+    {
+      "type": "image_picker",
+      "id": "midmonth_zone_banner",
+      "label": "Banner"
+    },
+    {
+      "type": "product",
+      "id": "midmonth_zone_product",
+      "label": "Destination product"
+    },
+    {
+      "type": "text",
+      "id": "midmonth_zone_variant_id",
+      "label": "Variant ID (optional)"
+    },
+    {
+      "type": "text",
+      "id": "midmonth_zone_single_cta",
+      "label": "Single button label",
+      "info": "Leave empty to keep the two buttons (Add to cart / Buy now), same as the 8.8 banner. Fill it (e.g. \"Grab Deals Now\") to show one full-width button that opens the product page instead."
     },
     {
       "type": "header",
