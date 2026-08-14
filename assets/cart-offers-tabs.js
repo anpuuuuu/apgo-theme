@@ -193,10 +193,17 @@ class CartOffersTabs extends HTMLElement {
       if (!button) return;
 
       const reachedLimit = maximum > 0 && productQuantity >= maximum;
+      /* Three states, not two. An offer that allows more than one unit
+         has to look different after the first add, or the click reads as
+         a no-op: ADD -> ADD ANOTHER -> ADDED. */
+      const canAddMore = !reachedLimit && productQuantity > 0;
       button.disabled = reachedLimit;
       button.classList.toggle('is-added', reachedLimit);
+      button.classList.toggle('is-more', canAddMore);
       button.classList.remove('is-loading');
-      button.textContent = reachedLimit ? button.dataset.addedLabel : button.dataset.defaultLabel;
+      if (reachedLimit) button.textContent = button.dataset.addedLabel;
+      else if (canAddMore) button.textContent = button.dataset.moreLabel || button.dataset.defaultLabel;
+      else button.textContent = button.dataset.defaultLabel;
     });
 
     this.showStatus('');
@@ -257,6 +264,9 @@ class CartOffersTabs extends HTMLElement {
     if (!variantId) return;
 
     this.isAdding = true;
+    /* Remember the label actually on screen: on failure the button has to
+       go back to what it said, which is not always the default one. */
+    const previousLabel = button.textContent;
     button.disabled = true;
     button.classList.add('is-loading');
     button.textContent = '…';
@@ -303,7 +313,7 @@ class CartOffersTabs extends HTMLElement {
     } catch (error) {
       button.disabled = false;
       button.classList.remove('is-loading');
-      button.textContent = button.dataset.defaultLabel;
+      button.textContent = previousLabel;
       this.showStatus(error?.message || 'Unable to add this product. Please try again.');
     } finally {
       this.isAdding = false;

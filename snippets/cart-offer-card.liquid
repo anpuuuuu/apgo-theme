@@ -35,6 +35,18 @@
     assign is_at_limit = true
   endif
 
+  comment
+    Third state, between ADD and ADDED: already in the cart but still
+    under its per-order limit. Without it an offer allowing two units
+    showed "ADD" before and after the first click, so a successful add
+    looked like a dead button. max_quantity 0 means no limit, which
+    lands here too — it can never reach ADDED.
+  endcomment
+  assign can_add_more = false
+  if is_at_limit == false and product_quantity_in_cart > 0
+    assign can_add_more = true
+  endif
+
   assign offer_image = display_variant.featured_image | default: offer_product.featured_image
   assign product_url = offer_product.url
   if offer_variant != blank and configured_variant_id != blank
@@ -188,15 +200,19 @@
     {% if can_quick_add %}
       <button
         type="button"
-        class="cart-offers-tabs__action{% if is_at_limit %} is-added{% endif %}"
+        class="cart-offers-tabs__action{% if is_at_limit %} is-added{% elsif can_add_more %} is-more{% endif %}"
         data-offer-add
         data-variant-id="{{ offer_variant.id }}"
+        data-max-quantity="{{ max_quantity }}"
         data-default-label="{{ section.settings.add_button_text | escape }}"
         data-added-label="{{ section.settings.added_button_text | escape }}"
+        data-more-label="{{ section.settings.add_more_button_text | default: 'ADD ANOTHER' | escape }}"
         {% if is_at_limit %}disabled{% endif %}
       >
         {% if is_at_limit %}
           {{ section.settings.added_button_text }}
+        {% elsif can_add_more %}
+          {{ section.settings.add_more_button_text | default: 'ADD ANOTHER' }}
         {% else %}
           {{ section.settings.add_button_text }}
         {% endif %}

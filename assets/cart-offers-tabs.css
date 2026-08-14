@@ -400,6 +400,23 @@
   outline: none;
 }
 
+/* In the cart, more still allowed. Stays fully actionable — only the
+   label changes — but a filled tint confirms something already happened,
+   which an unchanged outline button could not. */
+.cart-offers-tabs__action.is-more {
+  background: rgba(240, 132, 24, 0.14);
+  border-color: var(--cart-offers-accent);
+  color: var(--cart-offers-accent-end);
+}
+
+/* Declared after .is-more, which would otherwise win on source order and
+   leave the button with no hover response at all. */
+.cart-offers-tabs__action.is-more:hover,
+.cart-offers-tabs__action.is-more:focus-visible {
+  background: var(--cart-offers-accent);
+  color: #2b1602;
+}
+
 .cart-offers-tabs__action[disabled],
 .cart-offers-tabs__action.is-added,
 .cart-offers-tabs__action.is-sold-out {
