@@ -118,7 +118,6 @@
     The shop's money format carries the ISO code ("RM158.00 MYR"), which
     is noise beside a price the shopper is meant to read at a glance.
   endcomment
-  assign compare_display = compare_price | money | replace: ' MYR', '' | replace: ' SGD', '' | replace: 'MYR', '' | replace: 'SGD', '' | strip
   assign saved_display = amount_saved | money_without_trailing_zeros | replace: ' MYR', '' | replace: ' SGD', '' | replace: 'MYR', '' | replace: 'SGD', '' | strip
 %}
 
@@ -151,23 +150,25 @@
       </div>
 
       <div class="cart-offers-tabs__card-body">
-        <h3 class="cart-offers-tabs__product-title">
-          {{ offer_product.title }}
-          {% if display_variant != blank and display_variant.title != 'Default Title' %}
-            <span class="cart-offers-tabs__variant">{{ display_variant.title }}</span>
-          {% endif %}
-        </h3>
+        {% comment %}
+          The variant name is a SIBLING of the title, not a child of it.
+          Nested inside, it counted against the title's two-line clamp:
+          a title that filled both lines exactly still got an ellipsis,
+          because the hidden variant line after it made the box overflow
+          — so the last character of a complete title was eaten to make
+          room for a "…" that stood for nothing the reader could see.
+        {% endcomment %}
+        <h3 class="cart-offers-tabs__product-title">{{ offer_product.title }}</h3>
+        {% if display_variant != blank and display_variant.title != 'Default Title' %}
+          <p class="cart-offers-tabs__variant">{{ display_variant.title }}</p>
+        {% endif %}
 
         {% comment %}
-          Compare price gets its own line above, not a baseline-shared
-          one beside the sale price: the strike-through is the anchor
-          that makes the deal legible, and squeezed onto the same row it
-          was small enough to disappear.
+          No strike-through line: the discount badge and the saving
+          already carry the before/after, and a third price on the card
+          was one number too many.
         {% endcomment %}
         <div class="cart-offers-tabs__prices">
-          {% if compare_price != blank %}
-            <span class="cart-offers-tabs__price-compare">{{ compare_display }}</span>
-          {% endif %}
           <span class="cart-offers-tabs__price-row">
             <span class="cart-offers-tabs__price-current">
               {% if use_promo_label %}

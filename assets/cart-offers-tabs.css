@@ -298,9 +298,10 @@
   text-overflow: ellipsis;
 }
 
+/* Its own line now, outside the clamped title — see the snippet. */
 .cart-offers-tabs__variant {
   display: block;
-  margin-top: 3px;
+  margin: -3px 0 0;
   overflow: hidden;
   color: rgba(255, 255, 255, 0.62);
   font-size: 10px;
@@ -310,23 +311,15 @@
   white-space: nowrap;
 }
 
-/* Three stacked lines: compare, price, saving. min-height keeps the add
-   buttons on one baseline when an offer has no saving to show. */
+/* Price then saving. min-height keeps the add buttons on one baseline
+   when an offer has no saving to show. */
 .cart-offers-tabs__prices {
   display: flex;
-  min-height: 56px;
+  min-height: 40px;
   min-width: 0;
   flex-direction: column;
   gap: 1px;
   margin-top: auto;
-}
-
-.cart-offers-tabs__price-compare {
-  color: rgba(255, 255, 255, 0.42);
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 1.2;
-  text-decoration: line-through;
 }
 
 .cart-offers-tabs__price-row {
@@ -526,10 +519,6 @@
   }
 
   .cart-offers-tabs__product-title {
-    font-size: 11px;
-  }
-
-  .cart-offers-tabs__price-compare {
     font-size: 11px;
   }
 
