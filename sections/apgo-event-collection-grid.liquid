@@ -123,6 +123,29 @@
       {%- endcomment -%}
       {%- assign apgo_show_aurora_counter = section.settings.show_aurora_counter -%}
 
+      {%- comment -%}
+        ZONE — Mid Month promo banner. Runs first, above the 8.8 banner.
+        Single banner/product, no region split: the same offer runs in
+        both markets, so there is nothing to branch on.
+
+        Its Add/Buy add straight to cart. apgo-event-cart.js only
+        diverts a zone's buttons into the gift modal when the button is
+        inside `--glaze`, so this zone is unaffected even while the
+        Glaze modal is present in the DOM.
+      {%- endcomment -%}
+      {%- if section.settings.show_midmonth_zone -%}
+        {% render 'apgo-event-linked-banner-zone',
+          heading: section.settings.midmonth_zone_heading,
+          message: section.settings.midmonth_zone_message,
+          show_counter: false,
+          banner_image: section.settings.midmonth_zone_banner,
+          product: section.settings.midmonth_zone_product,
+          variant_id: section.settings.midmonth_zone_variant_id,
+          single_cta_label: section.settings.midmonth_zone_single_cta,
+          zone_class: 'midmonth',
+          zone_position: 6 %}
+      {%- endif -%}
+
       {%- comment -%} ZONE — Glaze promo banner (region-aware: SG sees SG banner+product, MY sees MY) {%- endcomment -%}
       {%- if section.settings.show_glaze_zone -%}
         {%- assign glaze_banner = section.settings.glaze_zone_banner -%}
@@ -196,27 +219,6 @@
           zone_position: 2 %}
       {%- endif -%}
 
-      {%- comment -%}
-        ZONE — Mid Month promo banner. Single banner/product, no region
-        split: the same offer runs in both markets.
-
-        Its Add/Buy add straight to cart. apgo-event-cart.js only
-        diverts a zone's buttons into the gift modal when the button is
-        inside `--glaze`, so this zone is unaffected even while the
-        Glaze modal is present in the DOM.
-      {%- endcomment -%}
-      {%- if section.settings.show_midmonth_zone -%}
-        {% render 'apgo-event-linked-banner-zone',
-          heading: section.settings.midmonth_zone_heading,
-          message: section.settings.midmonth_zone_message,
-          show_counter: false,
-          banner_image: section.settings.midmonth_zone_banner,
-          product: section.settings.midmonth_zone_product,
-          variant_id: section.settings.midmonth_zone_variant_id,
-          single_cta_label: section.settings.midmonth_zone_single_cta,
-          zone_class: 'midmonth',
-          zone_position: 6 %}
-      {%- endif -%}
 
       {%- comment -%} ZONE 1 — Discount horizontal scroll {%- endcomment -%}
       {%- if section.settings.show_discount_zone -%}
@@ -636,7 +638,7 @@
     },
     {
       "type": "paragraph",
-      "content": "Renders third, right after Detergent. Single product/banner with no region split — SG and MY see the same thing. Zone hides until a banner + product are set."
+      "content": "Renders first, above the 8.8 banner. Single product/banner with no region split — SG and MY see the same thing. Zone hides until a banner + product are set."
     },
     {
       "type": "checkbox",
