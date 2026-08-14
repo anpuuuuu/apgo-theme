@@ -71,112 +71,233 @@
         "padding-block-end": 0
       }
     },
-    "cart_gift_with_purchase": {
-      "type": "cart-gift-with-purchase",
+    "cart_offers_tabs": {
+      "type": "cart-offers-tabs",
       "blocks": {
-        "gift_item_HHYCbB": {
-          "type": "gift_item",
+        "tab_recommended": {
+          "type": "tab",
           "settings": {
+            "enabled": true,
+            "slot": "tab_1",
+            "label": "Recommended",
+            "subtitle_my": "More useful products picked for your cart",
+            "subtitle_sg": "More useful products picked for your cart",
+            "audience": "all",
+            "trigger_products": [],
+            "trigger_min_quantity": 1,
+            "view_all_label": "View all",
+            "view_all_url": "shopify://collections/all"
+          }
+        },
+        "tab_glaze": {
+          "type": "tab",
+          "settings": {
+            "enabled": true,
+            "slot": "tab_2",
+            "label": "Glaze Special Add-on",
+            "subtitle_my": "Special price for Glaze Set · 1 set per product, per order",
+            "subtitle_sg": "Special price for Glaze Set · 1 set per product, per order",
+            "audience": "trigger",
+            "trigger_products": [
+              "atomic-glaze-coating-8-8-promotion",
+              "atomic-glaze-coating-sg61-promotion"
+            ],
+            "trigger_min_quantity": 1,
+            "view_all_label": "",
+            "view_all_url": ""
+          }
+        },
+        "tab_detergent": {
+          "type": "tab",
+          "settings": {
+            "enabled": true,
+            "slot": "tab_3",
+            "label": "Detergent Special Add-on",
+            "subtitle_my": "Special price for Detergent Promo · 1 set per product, per order",
+            "subtitle_sg": "Special price for Detergent Promo · 1 set per product, per order",
+            "audience": "trigger",
+            "trigger_products": [
+              "apgo-laundry-detergent-special-promotion-1"
+            ],
+            "trigger_min_quantity": 6,
+            "view_all_label": "",
+            "view_all_url": ""
+          }
+        },
+        "recommended_wiper": {
+          "type": "offer_item",
+          "settings": {
+            "tab_slot": "tab_1",
+            "product": "2x-apgo-car-wiper-fluid-refill-pack-300ml",
+            "variant_id": "",
+            "price_mode": "actual",
+            "promo_price_my": "",
+            "promo_price_sg": "",
+            "max_quantity": 0
+          }
+        },
+        "recommended_oil_film": {
+          "type": "offer_item",
+          "settings": {
+            "tab_slot": "tab_1",
+            "product": "apgo-car-windshield-oil-film-remover-perfect-glass-restorer",
+            "variant_id": "",
+            "price_mode": "actual",
+            "promo_price_my": "",
+            "promo_price_sg": "",
+            "max_quantity": 0
+          }
+        },
+        "recommended_headlight": {
+          "type": "offer_item",
+          "settings": {
+            "tab_slot": "tab_1",
+            "product": "apgo-car-headlight-repair-polish-cream",
+            "variant_id": "",
+            "price_mode": "actual",
+            "promo_price_my": "",
+            "promo_price_sg": "",
+            "max_quantity": 0
+          }
+        },
+        "recommended_paint": {
+          "type": "offer_item",
+          "settings": {
+            "tab_slot": "tab_1",
+            "product": "apgo-car-paint-polish-cream-white-restorer",
+            "variant_id": "",
+            "price_mode": "actual",
+            "promo_price_my": "",
+            "promo_price_sg": "",
+            "max_quantity": 0
+          }
+        },
+        "recommended_sprayer": {
+          "type": "offer_item",
+          "settings": {
+            "tab_slot": "tab_1",
+            "product": "apgo-car-wash-foam-pressure-sprayer-version-2",
+            "variant_id": "",
+            "price_mode": "actual",
+            "promo_price_my": "",
+            "promo_price_sg": "",
+            "max_quantity": 0
+          }
+        },
+        "recommended_towel": {
+          "type": "offer_item",
+          "settings": {
+            "tab_slot": "tab_1",
+            "product": "apgo-pro-car-wash-towel-l-160cm-x-60cm",
+            "variant_id": "",
+            "price_mode": "actual",
+            "promo_price_my": "",
+            "promo_price_sg": "",
+            "max_quantity": 0
+          }
+        },
+        "glaze_paint": {
+          "type": "offer_item",
+          "settings": {
+            "tab_slot": "tab_2",
             "product": "apgo-car-paint-headlight-care",
             "variant_id": "",
-            "unlocked_price_label_my": "RM 49.00",
-            "unlocked_price_label_sg": "$20.90"
+            "price_mode": "promo",
+            "promo_price_my": "RM 49.00",
+            "promo_price_sg": "$20.90",
+            "max_quantity": 1
           }
         },
-        "gift_item_NbMFJA": {
-          "type": "gift_item",
+        "glaze_wheel": {
+          "type": "offer_item",
           "settings": {
+            "tab_slot": "tab_2",
             "product": "apgo-wheel-cleaner-tyre-care-set",
             "variant_id": "",
-            "unlocked_price_label_my": "RM 59.00",
-            "unlocked_price_label_sg": "$ 24.90"
+            "price_mode": "promo",
+            "promo_price_my": "RM 59.00",
+            "promo_price_sg": "$ 24.90",
+            "max_quantity": 1
           }
         },
-        "gift_item_qabcng": {
-          "type": "gift_item",
+        "glaze_sprayer": {
+          "type": "offer_item",
           "settings": {
+            "tab_slot": "tab_2",
             "product": "apgo-car-wash-foam-pressure-sprayer-version-2",
             "variant_id": "46893290848410",
-            "unlocked_price_label_my": "RM 88.00",
-            "unlocked_price_label_sg": "$ 37.90"
+            "price_mode": "promo",
+            "promo_price_my": "RM 88.00",
+            "promo_price_sg": "$ 37.90",
+            "max_quantity": 1
           }
-        }
-      },
-      "block_order": [
-        "gift_item_HHYCbB",
-        "gift_item_NbMFJA",
-        "gift_item_qabcng"
-      ],
-      "name": "Gift with Purchase",
-      "settings": {
-        "section_title": "Special add on",
-        "section_subtitle_my": "Special price for glaze Set - 8.8 Celebration: 1 set per product, per order",
-        "section_subtitle_sg": "Special price for glaze Set - SG61Celebration: 1 set per product, per order",
-        "trigger_product_list": [
-          "atomic-glaze-coating-8-8-promotion",
-          "atomic-glaze-coating-sg61-promotion"
-        ],
-        "max_products": 12,
-        "accent_color_start": "#f08418",
-        "accent_color_end": "#f7931e",
-        "text_color": "#ffffff",
-        "show_prices": true,
-        "enable_quick_add": true,
-        "image_ratio": "square"
-      }
-    },
-    "cart_gift_with_purchase_FGFNk6": {
-      "type": "cart-gift-with-purchase",
-      "blocks": {
-        "gift_item_nG3XYV": {
-          "type": "gift_item",
+        },
+        "detergent_tencel": {
+          "type": "offer_item",
           "settings": {
+            "tab_slot": "tab_3",
             "product": "apgo-tencel-special-cleaning-formula",
             "variant_id": "",
-            "unlocked_price_label_my": "RM 23.00",
-            "unlocked_price_label_sg": ""
+            "price_mode": "promo",
+            "promo_price_my": "RM 23.00",
+            "promo_price_sg": "",
+            "max_quantity": 1
           }
         },
-        "gift_item_j7Gnyy": {
-          "type": "gift_item",
+        "detergent_floor": {
+          "type": "offer_item",
           "settings": {
+            "tab_slot": "tab_3",
             "product": "apgo-floor-cleaner-made-in-taiwan",
             "variant_id": "",
-            "unlocked_price_label_my": "RM 23.00",
-            "unlocked_price_label_sg": ""
+            "price_mode": "promo",
+            "promo_price_my": "RM 23.00",
+            "promo_price_sg": "",
+            "max_quantity": 1
           }
         },
-        "gift_item_KU3L7L": {
-          "type": "gift_item",
+        "detergent_shoe": {
+          "type": "offer_item",
           "settings": {
+            "tab_slot": "tab_3",
             "product": "apgo-white-shoe-cleaner-made-in-taiwan",
             "variant_id": "",
-            "unlocked_price_label_my": "RM 17.00",
-            "unlocked_price_label_sg": ""
+            "price_mode": "promo",
+            "promo_price_my": "RM 17.00",
+            "promo_price_sg": "",
+            "max_quantity": 1
           }
         }
       },
       "block_order": [
-        "gift_item_nG3XYV",
-        "gift_item_j7Gnyy",
-        "gift_item_KU3L7L"
+        "tab_recommended",
+        "tab_glaze",
+        "tab_detergent",
+        "recommended_wiper",
+        "recommended_oil_film",
+        "recommended_headlight",
+        "recommended_paint",
+        "recommended_sprayer",
+        "recommended_towel",
+        "glaze_paint",
+        "glaze_wheel",
+        "glaze_sprayer",
+        "detergent_tencel",
+        "detergent_floor",
+        "detergent_shoe"
       ],
-      "name": "Gift with Purchase",
+      "name": "Cart offers tabs",
       "settings": {
-        "section_title": "Special add on",
-        "section_subtitle_my": "Special price for Detergent Promo : 1 set per product, per order",
-        "section_subtitle_sg": "Special price for Detergent Promo: 1 set per product, per order",
-        "trigger_product_list": [
-          "apgo-laundry-detergent-special-promotion-1"
-        ],
-        "trigger_min_quantity": "6",
-        "max_products": 12,
-        "accent_color_start": "#f08418",
-        "accent_color_end": "#f7931e",
-        "text_color": "#ffffff",
-        "show_prices": true,
-        "enable_quick_add": true,
-        "image_ratio": "square"
+        "section_heading": "Complete your cart",
+        "add_button_text": "ADD",
+        "added_button_text": "ADDED",
+        "select_options_text": "SELECT OPTIONS",
+        "sold_out_text": "SOLD OUT",
+        "image_ratio": "square",
+        "background_color": "#0d0d0d",
+        "card_color": "#111111",
+        "accent_color": "#f08418",
+        "accent_color_end": "#f7b447"
       }
     },
     "apgo_coating_products_VU6az3": {
@@ -223,59 +344,15 @@
         "show_free_shipping_progress": true,
         "sticky_progress_title": "Free shipping"
       }
-    },
-    "cart_upsell_recommendations_L4gQhn": {
-      "type": "cart-upsell-recommendations",
-      "disabled": true,
-      "name": "Recommended Items",
-      "settings": {
-        "section_title": "Frequently bought together",
-        "show_popular_button": false,
-        "button_text": "Click to see popular products",
-        "popular_items_url": "",
-        "loading_bg_color": "#000000",
-        "use_gradient": true,
-        "bg_color_start": "#000000",
-        "bg_color_end": "#000000",
-        "border_color": "#000000",
-        "use_accent_gradient": true,
-        "accent_color_start": "#f08418",
-        "accent_color_end": "#f08418",
-        "text_color": "#ffffff",
-        "text_secondary_color": "#cccccc",
-        "product_list": [
-          "2x-apgo-car-wiper-fluid-refill-pack-300ml",
-          "apgo-car-windshield-oil-film-remover-perfect-glass-restorer",
-          "apgo-car-headlight-repair-polish-cream",
-          "apgo-car-paint-polish-cream-white-restorer",
-          "apgo-car-wash-foam-pressure-sprayer-version-2",
-          "apgo-pro-car-wash-towel-l-160cm-x-60cm"
-        ],
-        "max_products": 8,
-        "show_prices": true,
-        "enable_quick_add": true,
-        "image_ratio": "square",
-        "card_width_desktop": 320,
-        "card_width_tablet": 280,
-        "card_width_mobile_large": 300,
-        "card_width_mobile": 260,
-        "button_max_width": 150,
-        "hide_button_text_mobile": false,
-        "mobile_layout": "vertical",
-        "hide_price_mobile": false,
-        "products_visible_mobile": 1.5
-      }
     }
   },
   "order": [
     "apgo_checkout_steps_x7K2pQ",
     "cart-section",
-    "cart_gift_with_purchase",
-    "cart_gift_with_purchase_FGFNk6",
+    "cart_offers_tabs",
     "apgo_coating_products_VU6az3",
     "cart_totals_Cya3eE",
     "custom_liquid_QNhCUK",
-    "cart_cta_aCdf4g",
-    "cart_upsell_recommendations_L4gQhn"
+    "cart_cta_aCdf4g"
   ]
 }

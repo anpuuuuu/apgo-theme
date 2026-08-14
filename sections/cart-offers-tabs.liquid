@@ -1,0 +1,391 @@
+{{ 'cart-offers-tabs.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'cart-offers-tabs.js' | asset_url }}" type="module"></script>
+
+{% liquid
+  assign country_code = localization.country.iso_code | default: 'MY'
+  assign is_sg = false
+  if country_code == 'SG'
+    assign is_sg = true
+  endif
+
+  assign enabled_tab_count = 0
+  assign eligible_tab_count = 0
+
+  for block in section.blocks
+    if block.type == 'tab' and block.settings.enabled
+      assign enabled_tab_count = enabled_tab_count | plus: 1
+      assign tab_is_eligible = false
+      if block.settings.audience == 'all'
+        assign tab_is_eligible = true
+      else
+        assign trigger_quantity = 0
+        for cart_item in cart.items
+          for trigger_product in block.settings.trigger_products
+            if cart_item.product_id == trigger_product.id
+              assign trigger_quantity = trigger_quantity | plus: cart_item.quantity
+            endif
+          endfor
+        endfor
+        assign trigger_minimum = block.settings.trigger_min_quantity | default: 1
+        if trigger_quantity >= trigger_minimum
+          assign tab_is_eligible = true
+        endif
+      endif
+      if tab_is_eligible
+        assign eligible_tab_count = eligible_tab_count | plus: 1
+      endif
+    endif
+  endfor
+%}
+
+<cart-offers-tabs
+  class="cart-offers-tabs"
+  data-section-id="{{ section.id }}"
+  data-design-mode="{{ request.design_mode }}"
+  style="--cart-offers-accent: {{ section.settings.accent_color }}; --cart-offers-accent-end: {{ section.settings.accent_color_end }}; --cart-offers-bg: {{ section.settings.background_color }}; --cart-offers-card-bg: {{ section.settings.card_color }};"
+  {% if eligible_tab_count == 0 and request.design_mode == false %}hidden{% endif %}
+>
+  <div class="cart-offers-tabs__shell">
+    {% if section.settings.section_heading != blank %}
+      <h2 class="cart-offers-tabs__heading">{{ section.settings.section_heading }}</h2>
+    {% endif %}
+
+    <div class="cart-offers-tabs__tablist" role="tablist" aria-label="{{ section.settings.section_heading | default: 'Cart offers' | escape }}">
+      {% for block in section.blocks %}
+        {% if block.type == 'tab' and block.settings.enabled %}
+          {% liquid
+            assign tab_is_eligible = false
+            assign trigger_quantity = 0
+            if block.settings.audience == 'all'
+              assign tab_is_eligible = true
+            else
+              for cart_item in cart.items
+                for trigger_product in block.settings.trigger_products
+                  if cart_item.product_id == trigger_product.id
+                    assign trigger_quantity = trigger_quantity | plus: cart_item.quantity
+                  endif
+                endfor
+              endfor
+              assign trigger_minimum = block.settings.trigger_min_quantity | default: 1
+              if trigger_quantity >= trigger_minimum
+                assign tab_is_eligible = true
+              endif
+            endif
+
+            capture trigger_product_ids
+              for trigger_product in block.settings.trigger_products
+                unless forloop.first
+                  echo ','
+                endunless
+                echo trigger_product.id
+              endfor
+            endcapture
+          %}
+          <button
+            type="button"
+            class="cart-offers-tabs__tab"
+            id="CartOffersTab-{{ section.id }}-{{ block.id }}"
+            role="tab"
+            aria-selected="false"
+            aria-controls="CartOffersPanel-{{ section.id }}-{{ block.id }}"
+            tabindex="-1"
+            data-offer-tab
+            data-tab-id="{{ block.id }}"
+            data-audience="{{ block.settings.audience }}"
+            data-trigger-product-ids="{{ trigger_product_ids | strip }}"
+            data-trigger-min="{{ block.settings.trigger_min_quantity | default: 1 }}"
+            {% unless tab_is_eligible or request.design_mode %}hidden{% endunless %}
+            {{ block.shopify_attributes }}
+          >
+            {{ block.settings.label }}
+          </button>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    <div class="cart-offers-tabs__panels">
+      {% for block in section.blocks %}
+        {% if block.type == 'tab' and block.settings.enabled %}
+          {% liquid
+            assign active_subtitle = block.settings.subtitle_my
+            if is_sg
+              assign active_subtitle = block.settings.subtitle_sg | default: block.settings.subtitle_my
+            endif
+            assign matching_offer_count = 0
+            for offer_block in section.blocks
+              if offer_block.type == 'offer_item' and offer_block.settings.tab_slot == block.settings.slot and offer_block.settings.product != blank
+                assign matching_offer_count = matching_offer_count | plus: 1
+              endif
+            endfor
+          %}
+          <section
+            class="cart-offers-tabs__panel"
+            id="CartOffersPanel-{{ section.id }}-{{ block.id }}"
+            role="tabpanel"
+            aria-labelledby="CartOffersTab-{{ section.id }}-{{ block.id }}"
+            tabindex="0"
+            data-offer-panel
+            data-tab-id="{{ block.id }}"
+            hidden
+          >
+            {% if active_subtitle != blank or block.settings.view_all_label != blank %}
+              <div class="cart-offers-tabs__panel-head">
+                <p class="cart-offers-tabs__subtitle">{{ active_subtitle }}</p>
+                {% if block.settings.view_all_label != blank and block.settings.view_all_url != blank %}
+                  <a class="cart-offers-tabs__view-all" href="{{ block.settings.view_all_url }}">
+                    {{ block.settings.view_all_label }} →
+                  </a>
+                {% endif %}
+              </div>
+            {% endif %}
+
+            <div class="cart-offers-tabs__carousel">
+              <button class="cart-offers-tabs__scroll-button cart-offers-tabs__scroll-button--prev" type="button" data-carousel-prev aria-label="Previous products">‹</button>
+              <div class="cart-offers-tabs__track" data-carousel-track tabindex="0">
+                {% for offer_block in section.blocks %}
+                  {% if offer_block.type == 'offer_item' and offer_block.settings.tab_slot == block.settings.slot %}
+                    {% render 'cart-offer-card', offer_block: offer_block, section: section, is_sg: is_sg, image_ratio: section.settings.image_ratio %}
+                  {% endif %}
+                {% endfor %}
+                {% if matching_offer_count == 0 and request.design_mode %}
+                  <p class="cart-offers-tabs__empty">Add Offer item blocks and assign them to {{ block.settings.label }}.</p>
+                {% endif %}
+              </div>
+              <button class="cart-offers-tabs__scroll-button cart-offers-tabs__scroll-button--next" type="button" data-carousel-next aria-label="Next products">›</button>
+            </div>
+          </section>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    {% if enabled_tab_count == 0 and request.design_mode %}
+      <p class="cart-offers-tabs__empty">Add and enable at least one Tab block.</p>
+    {% endif %}
+    <p class="cart-offers-tabs__status" data-offer-status role="status" aria-live="polite" hidden></p>
+  </div>
+</cart-offers-tabs>
+
+{% schema %}
+{
+  "name": "Cart offers tabs",
+  "tag": "section",
+  "class": "section-cart-offers-tabs",
+  "max_blocks": 40,
+  "settings": [
+    {
+      "type": "text",
+      "id": "section_heading",
+      "label": "Section heading",
+      "default": "You may also like"
+    },
+    {
+      "type": "text",
+      "id": "add_button_text",
+      "label": "Add button text",
+      "default": "ADD"
+    },
+    {
+      "type": "text",
+      "id": "added_button_text",
+      "label": "Added button text",
+      "default": "ADDED"
+    },
+    {
+      "type": "text",
+      "id": "select_options_text",
+      "label": "Select options text",
+      "default": "SELECT OPTIONS"
+    },
+    {
+      "type": "text",
+      "id": "sold_out_text",
+      "label": "Sold out text",
+      "default": "SOLD OUT"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Product image ratio",
+      "options": [
+        { "value": "square", "label": "Square" },
+        { "value": "portrait", "label": "Portrait" },
+        { "value": "landscape", "label": "Landscape" }
+      ],
+      "default": "square"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#0d0d0d"
+    },
+    {
+      "type": "color",
+      "id": "card_color",
+      "label": "Card background",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#f08418"
+    },
+    {
+      "type": "color",
+      "id": "accent_color_end",
+      "label": "Accent highlight",
+      "default": "#f7b447"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tab",
+      "name": "Offer tab",
+      "limit": 5,
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "enabled",
+          "label": "Enable tab",
+          "default": true
+        },
+        {
+          "type": "select",
+          "id": "slot",
+          "label": "Tab slot",
+          "options": [
+            { "value": "tab_1", "label": "Tab 1" },
+            { "value": "tab_2", "label": "Tab 2" },
+            { "value": "tab_3", "label": "Tab 3" },
+            { "value": "tab_4", "label": "Tab 4" },
+            { "value": "tab_5", "label": "Tab 5" }
+          ],
+          "default": "tab_1"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Tab name",
+          "default": "Recommended"
+        },
+        {
+          "type": "textarea",
+          "id": "subtitle_my",
+          "label": "Malaysia subtitle"
+        },
+        {
+          "type": "textarea",
+          "id": "subtitle_sg",
+          "label": "Singapore subtitle"
+        },
+        {
+          "type": "select",
+          "id": "audience",
+          "label": "Show to",
+          "options": [
+            { "value": "all", "label": "All customers" },
+            { "value": "trigger", "label": "Eligible cart only" }
+          ],
+          "default": "all"
+        },
+        {
+          "type": "product_list",
+          "id": "trigger_products",
+          "label": "Trigger products",
+          "limit": 12
+        },
+        {
+          "type": "range",
+          "id": "trigger_min_quantity",
+          "label": "Minimum combined trigger quantity",
+          "min": 1,
+          "max": 50,
+          "step": 1,
+          "default": 1
+        },
+        {
+          "type": "text",
+          "id": "view_all_label",
+          "label": "View all text"
+        },
+        {
+          "type": "url",
+          "id": "view_all_url",
+          "label": "View all link"
+        }
+      ]
+    },
+    {
+      "type": "offer_item",
+      "name": "Offer item",
+      "settings": [
+        {
+          "type": "select",
+          "id": "tab_slot",
+          "label": "Belongs to tab",
+          "options": [
+            { "value": "tab_1", "label": "Tab 1" },
+            { "value": "tab_2", "label": "Tab 2" },
+            { "value": "tab_3", "label": "Tab 3" },
+            { "value": "tab_4", "label": "Tab 4" },
+            { "value": "tab_5", "label": "Tab 5" }
+          ],
+          "default": "tab_1"
+        },
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "type": "text",
+          "id": "variant_id",
+          "label": "Variant ID (optional)",
+          "info": "Required for one-click add when the product has multiple variants."
+        },
+        {
+          "type": "select",
+          "id": "price_mode",
+          "label": "Displayed price",
+          "options": [
+            { "value": "actual", "label": "Shopify price" },
+            { "value": "promo", "label": "Custom promotion label" }
+          ],
+          "default": "actual"
+        },
+        {
+          "type": "text",
+          "id": "promo_price_my",
+          "label": "Malaysia promotion price"
+        },
+        {
+          "type": "text",
+          "id": "promo_price_sg",
+          "label": "Singapore promotion price"
+        },
+        {
+          "type": "range",
+          "id": "max_quantity",
+          "label": "Maximum quantity in cart",
+          "min": 0,
+          "max": 10,
+          "step": 1,
+          "default": 0,
+          "info": "0 means unlimited. Special add-ons normally use 1."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Cart offers tabs",
+      "blocks": [
+        { "type": "tab", "settings": { "slot": "tab_1", "label": "Recommended", "audience": "all" } },
+        { "type": "tab", "settings": { "slot": "tab_2", "label": "Special add-on", "audience": "trigger" } },
+        { "type": "tab", "settings": { "slot": "tab_3", "label": "More offers", "audience": "trigger" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

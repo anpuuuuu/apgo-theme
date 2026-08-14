@@ -1,0 +1,145 @@
+{% liquid
+  assign offer_product = offer_block.settings.product
+  assign configured_variant_id = offer_block.settings.variant_id | strip
+  assign offer_variant = blank
+
+  if offer_product != blank and configured_variant_id != blank
+    assign configured_variant_id_number = configured_variant_id | plus: 0
+    for product_variant in offer_product.variants
+      if product_variant.id == configured_variant_id_number
+        assign offer_variant = product_variant
+        break
+      endif
+    endfor
+  elsif offer_product != blank and offer_product.has_only_default_variant
+    assign offer_variant = offer_product.selected_or_first_available_variant
+  endif
+
+  assign display_variant = offer_variant
+  if display_variant == blank and offer_product != blank
+    assign display_variant = offer_product.selected_or_first_available_variant
+  endif
+
+  assign product_quantity_in_cart = 0
+  if offer_product != blank
+    for cart_item in cart.items
+      if cart_item.product_id == offer_product.id
+        assign product_quantity_in_cart = product_quantity_in_cart | plus: cart_item.quantity
+      endif
+    endfor
+  endif
+
+  assign max_quantity = offer_block.settings.max_quantity | default: 0
+  assign is_at_limit = false
+  if max_quantity > 0 and product_quantity_in_cart >= max_quantity
+    assign is_at_limit = true
+  endif
+
+  assign offer_image = display_variant.featured_image | default: offer_product.featured_image
+  assign product_url = offer_product.url
+  if offer_variant != blank and configured_variant_id != blank
+    assign product_url = offer_variant.url
+  endif
+
+  assign promo_label = offer_block.settings.promo_price_my
+  if is_sg
+    assign promo_label = offer_block.settings.promo_price_sg
+  endif
+
+  assign use_promo_label = false
+  if offer_block.settings.price_mode == 'promo' and promo_label != blank
+    assign use_promo_label = true
+  endif
+
+  assign compare_price = blank
+  if use_promo_label
+    if display_variant.compare_at_price > display_variant.price
+      assign compare_price = display_variant.compare_at_price
+    else
+      assign compare_price = display_variant.price
+    endif
+  elsif display_variant.compare_at_price > display_variant.price
+    assign compare_price = display_variant.compare_at_price
+  endif
+
+  assign can_quick_add = false
+  if offer_variant != blank and offer_variant.available
+    assign can_quick_add = true
+  endif
+%}
+
+{% if offer_product != blank %}
+  <article
+    class="cart-offers-tabs__card"
+    data-offer-card
+    data-product-id="{{ offer_product.id }}"
+    data-max-quantity="{{ max_quantity }}"
+    {{ offer_block.shopify_attributes }}
+  >
+    <a class="cart-offers-tabs__card-link" href="{{ product_url }}">
+      <div class="cart-offers-tabs__image cart-offers-tabs__image--{{ image_ratio }}">
+        {% if offer_image != blank %}
+          {{
+            offer_image
+            | image_url: width: 720
+            | image_tag:
+              loading: 'lazy',
+              widths: '180, 260, 360, 520, 720',
+              sizes: '(max-width: 749px) 44vw, (max-width: 989px) 30vw, 280px',
+              alt: offer_image.alt | default: offer_product.title
+          }}
+        {% else %}
+          {{ 'product-1' | placeholder_svg_tag }}
+        {% endif %}
+      </div>
+
+      <div class="cart-offers-tabs__card-body">
+        <h3 class="cart-offers-tabs__product-title">
+          {{ offer_product.title }}
+          {% if display_variant != blank and display_variant.title != 'Default Title' %}
+            <span class="cart-offers-tabs__variant">{{ display_variant.title }}</span>
+          {% endif %}
+        </h3>
+
+        <div class="cart-offers-tabs__prices">
+          {% if compare_price != blank %}
+            <span class="cart-offers-tabs__price-compare">{{ compare_price | money }}</span>
+          {% endif %}
+          <span class="cart-offers-tabs__price-current">
+            {% if use_promo_label %}
+              {{ promo_label }}
+            {% elsif display_variant != blank %}
+              {{ display_variant.price | money }}
+            {% endif %}
+          </span>
+        </div>
+      </div>
+    </a>
+
+    {% if can_quick_add %}
+      <button
+        type="button"
+        class="cart-offers-tabs__action{% if is_at_limit %} is-added{% endif %}"
+        data-offer-add
+        data-variant-id="{{ offer_variant.id }}"
+        data-default-label="{{ section.settings.add_button_text | escape }}"
+        data-added-label="{{ section.settings.added_button_text | escape }}"
+        {% if is_at_limit %}disabled{% endif %}
+      >
+        {% if is_at_limit %}
+          {{ section.settings.added_button_text }}
+        {% else %}
+          {{ section.settings.add_button_text }}
+        {% endif %}
+      </button>
+    {% elsif display_variant != blank and display_variant.available %}
+      <a class="cart-offers-tabs__select-options" href="{{ offer_product.url }}">
+        {{ section.settings.select_options_text }}
+      </a>
+    {% else %}
+      <button type="button" class="cart-offers-tabs__action is-sold-out" disabled>
+        {{ section.settings.sold_out_text }}
+      </button>
+    {% endif %}
+  </article>
+{% endif %}
