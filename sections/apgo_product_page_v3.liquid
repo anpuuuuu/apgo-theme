@@ -4165,20 +4165,23 @@
 
   /* ── ⏰ Free gift promo card + reminder bubble ──────────────────────
      Deliberately NOT a modal: most visitors land here straight from an
-     ad, so the page is what they came for. The card docks in a corner —
-     no backdrop, no dimming, no scroll lock — and the page stays fully
-     readable and clickable behind it. */
+     ad, so the page is what they came for. The card docks below the
+     header — no backdrop, no dimming, no scroll lock — and the page
+     stays fully readable and clickable behind it. */
 
+  /* Top-centre, tucked just under the sticky header group — the first
+     place the eye lands on a page opened from an ad, without covering
+     the product shot the ad promised. */
   .apgo-promo-popup {
     position: fixed;
-    left: 18px;
-    bottom: 18px;
+    top: calc(var(--header-group-height, 100px) + 12px);
+    left: 50%;
     z-index: 100200;
     display: flex;
     align-items: stretch;
     gap: 11px;
     width: calc(100vw - 36px);
-    max-width: 350px;
+    max-width: 360px;
     padding: 12px 13px;
     border-radius: 16px;
     background: linear-gradient(155deg, #fffdf7 0%, #f4ecdd 100%);
@@ -4187,12 +4190,14 @@
     color: #2d2a24;
     text-align: left;
     opacity: 0;
-    transform: translateY(14px);
+    /* Centring lives in the same transform as the entrance slide, so the
+       two have to be written together rather than composed. */
+    transform: translate(-50%, -14px);
     pointer-events: none;
     transition: opacity .22s ease, transform .28s cubic-bezier(.22, 1, .36, 1);
   }
   .apgo-promo-popup[hidden] { display: none; }
-  .apgo-promo-popup.is-open { opacity: 1; transform: none; pointer-events: auto; }
+  .apgo-promo-popup.is-open { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
 
   .apgo-promo-popup__close {
     position: absolute;
@@ -4428,9 +4433,19 @@
   .apgo-promo-bubble__dismiss:hover { background: #4a463c; }
 
   @media (max-width: 749px) {
-    /* Clear the sticky buy bar so neither element covers Add to cart */
-    .apgo-promo-popup { left: 10px; bottom: 96px; width: calc(100vw - 20px); max-width: none; }
+    /* Full width under the header rather than centred — at this size a
+       360px card centred on a ~375px screen is just an inset box. */
+    .apgo-promo-popup {
+      top: calc(var(--header-group-height, 90px) + 8px);
+      left: 10px;
+      right: 10px;
+      width: auto;
+      max-width: none;
+      transform: translateY(-14px);
+    }
+    .apgo-promo-popup.is-open { transform: none; }
     .apgo-promo-popup__media { flex-basis: 74px; width: 74px; height: 74px; }
+    /* Bubble stays low, clear of the sticky buy bar */
     .apgo-promo-bubble { bottom: 168px; width: 52px; height: 52px; }
     .apgo-promo-bubble__icon { width: 21px; height: 21px; }
   }

@@ -110,7 +110,7 @@
   /* ---------- card ----------
      Non-modal on purpose: no scroll lock, no backdrop. Ad traffic lands
      directly on this page, so the page has to stay readable and
-     clickable while the offer sits in the corner. */
+     clickable while the offer sits docked below the header. */
   function openPopup() {
     popup.removeAttribute('hidden');
     popup.setAttribute('aria-hidden', 'false');
