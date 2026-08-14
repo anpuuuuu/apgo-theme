@@ -4163,211 +4163,215 @@
     showToast). No section-local toast CSS needed.
   */
 
-  /* ── ⏰ Free gift promo popup + reminder bubble ─────────────────── */
-  html.apgo-promo-lock { overflow: hidden; }
+  /* ── ⏰ Free gift promo card + reminder bubble ──────────────────────
+     Deliberately NOT a modal: most visitors land here straight from an
+     ad, so the page is what they came for. The card docks in a corner —
+     no backdrop, no dimming, no scroll lock — and the page stays fully
+     readable and clickable behind it. */
 
   .apgo-promo-popup {
     position: fixed;
-    inset: 0;
+    left: 18px;
+    bottom: 18px;
     z-index: 100200;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
+    align-items: stretch;
+    gap: 11px;
+    width: calc(100vw - 36px);
+    max-width: 350px;
+    padding: 12px 13px;
+    border-radius: 16px;
+    background: linear-gradient(155deg, #fffdf7 0%, #f4ecdd 100%);
+    border: 1px solid rgba(240, 132, 24, 0.3);
+    box-shadow: 0 12px 34px rgba(0, 0, 0, 0.42);
+    color: #2d2a24;
+    text-align: left;
     opacity: 0;
+    transform: translateY(14px);
     pointer-events: none;
-    transition: opacity .25s ease;
+    transition: opacity .22s ease, transform .28s cubic-bezier(.22, 1, .36, 1);
   }
   .apgo-promo-popup[hidden] { display: none; }
-  .apgo-promo-popup.is-open { opacity: 1; pointer-events: auto; }
-
-  .apgo-promo-popup__backdrop {
-    position: absolute;
-    inset: 0;
-    background: rgba(12, 10, 6, 0.68);
-    backdrop-filter: blur(3px);
-    -webkit-backdrop-filter: blur(3px);
-  }
-
-  /* Cream card — deliberately light against the dark PDP so it reads as a
-     separate, gift-like object rather than another page panel. */
-  .apgo-promo-popup__panel {
-    position: relative;
-    width: 100%;
-    max-width: 330px;
-    max-height: 88vh;
-    overflow-y: auto;
-    padding: 22px 22px 20px;
-    border-radius: 22px;
-    background: linear-gradient(170deg, #fffdf7 0%, #f6efe2 100%);
-    border: 1px solid rgba(240, 132, 24, 0.28);
-    box-shadow: 0 26px 70px rgba(0, 0, 0, 0.55);
-    color: #2d2a24;
-    text-align: center;
-    transform: translateY(18px) scale(0.96);
-    transition: transform .3s cubic-bezier(.22, 1, .36, 1);
-  }
-  .apgo-promo-popup.is-open .apgo-promo-popup__panel { transform: translateY(0) scale(1); }
+  .apgo-promo-popup.is-open { opacity: 1; transform: none; pointer-events: auto; }
 
   .apgo-promo-popup__close {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 30px;
-    height: 30px;
+    top: 6px;
+    right: 6px;
+    width: 22px;
+    height: 22px;
     display: flex;
     align-items: center;
     justify-content: center;
     border: none;
     border-radius: 50%;
     background: rgba(45, 42, 36, 0.07);
-    color: rgba(45, 42, 36, 0.55);
+    color: rgba(45, 42, 36, 0.5);
     cursor: pointer;
     padding: 0;
     transition: background .15s ease, color .15s ease;
   }
-  .apgo-promo-popup__close:hover { background: rgba(45, 42, 36, 0.14); color: #2d2a24; }
+  .apgo-promo-popup__close:hover { background: rgba(45, 42, 36, 0.15); color: #2d2a24; }
 
-  .apgo-promo-popup__ribbon {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 5px 14px 5px 11px;
-    border-radius: 999px;
-    background: linear-gradient(135deg, #f6a94a, var(--primary-orange));
-    color: #fff;
-    font-size: 10px;
-    font-weight: 900;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    box-shadow: 0 4px 12px rgba(240, 132, 24, 0.32);
-  }
-  .apgo-promo-popup__ribbon-icon { width: 13px; height: 13px; flex: 0 0 auto; }
-
-  .apgo-promo-popup__heading {
-    margin: 12px 0 0;
-    font-size: 20px;
-    font-weight: 800;
-    line-height: 1.25;
-    letter-spacing: -0.01em;
-    color: #2d2a24;
-  }
-
-  /* Gift shot on a soft radial pedestal so a plain packshot still feels
+  /* Gift shot on a soft pedestal so a plain packshot still feels
      presented rather than pasted. */
   .apgo-promo-popup__media {
-    position: relative;
-    margin: 12px auto 10px;
-    width: 100%;
-    max-width: 210px;
-    aspect-ratio: 1 / 1;
+    flex: 0 0 84px;
+    align-self: center;
+    width: 84px;
+    height: 84px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 18px;
-    background: radial-gradient(circle at 50% 42%, #ffffff 0%, #f3ebdb 62%, #ece2cf 100%);
-    box-shadow: inset 0 1px 0 #fff, 0 6px 18px rgba(45, 42, 36, 0.08);
+    border-radius: 12px;
+    background: radial-gradient(circle at 50% 42%, #ffffff 0%, #f2e9d8 68%, #e9dfca 100%);
+    box-shadow: inset 0 1px 0 #fff;
   }
   .apgo-promo-popup__img {
-    width: 86%;
-    height: 86%;
+    width: 84%;
+    height: 84%;
     object-fit: contain;
-    filter: drop-shadow(0 8px 14px rgba(45, 42, 36, 0.18));
+    filter: drop-shadow(0 5px 9px rgba(45, 42, 36, 0.2));
   }
-  .apgo-promo-popup__value-tag {
-    position: absolute;
-    right: -4px;
-    bottom: 6px;
-    padding: 5px 11px;
+
+  .apgo-promo-popup__body {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding-right: 18px; /* keep text clear of the × */
+  }
+
+  .apgo-promo-popup__tags {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .apgo-promo-popup__ribbon {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 9px 3px 7px;
     border-radius: 999px;
-    background: #2d2a24;
-    color: #ffd9a8;
+    background: linear-gradient(135deg, #f6a94a, var(--primary-orange));
+    color: #fff;
+    font-size: 8.5px;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .apgo-promo-popup__ribbon-icon { width: 10px; height: 10px; flex: 0 0 auto; }
+  .apgo-promo-popup__value {
     font-size: 10px;
     font-weight: 800;
-    letter-spacing: 0.04em;
-    box-shadow: 0 5px 14px rgba(45, 42, 36, 0.3);
+    color: #b8601a;
+    white-space: nowrap;
   }
 
-  .apgo-promo-popup__gift {
-    margin: 0;
-    font-size: 14px;
+  .apgo-promo-popup__heading {
+    margin: 2px 0 0;
+    font-size: 13.5px;
     font-weight: 800;
-    line-height: 1.35;
+    line-height: 1.25;
     color: #2d2a24;
   }
+  .apgo-promo-popup__gift {
+    margin: 0;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.35;
+    color: rgba(45, 42, 36, 0.78);
+    /* Long product names must not grow the card into a block */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
   .apgo-promo-popup__sub {
-    margin: 7px 0 0;
-    font-size: 11.5px;
-    line-height: 1.5;
-    color: rgba(45, 42, 36, 0.6);
+    margin: 1px 0 0;
+    font-size: 10px;
+    line-height: 1.4;
+    color: rgba(45, 42, 36, 0.52);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
-  .apgo-promo-popup__timer {
-    margin: 15px 0 0;
-    padding: 11px;
-    border-radius: 14px;
-    background: rgba(240, 132, 24, 0.09);
-    border: 1px solid rgba(240, 132, 24, 0.28);
+  .apgo-promo-popup__foot {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
   }
-  .apgo-promo-popup__timer-label {
-    display: block;
-    font-size: 9.5px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: rgba(45, 42, 36, 0.5);
-    font-weight: 700;
+  .apgo-promo-popup__timer {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    flex: 0 0 auto;
+    padding: 5px 8px;
+    border-radius: 8px;
+    background: rgba(240, 132, 24, 0.1);
+    border: 1px solid rgba(240, 132, 24, 0.26);
+    color: #c76a17;
   }
   .apgo-promo-popup__timer-value {
-    display: block;
-    margin-top: 3px;
-    font-size: 27px;
+    font-size: 12px;
     font-weight: 800;
-    color: #d9741a;
     font-variant-numeric: tabular-nums;
-    letter-spacing: 0.03em;
-    line-height: 1.1;
+    letter-spacing: 0.02em;
+    line-height: 1;
   }
   /* Window lapsed → the offer stays, the deadline claim goes away. */
   .apgo-promo-popup.is-timerless .apgo-promo-popup__timer { display: none; }
 
-  .apgo-promo-popup.is-urgent .apgo-promo-popup__timer-value {
+  .apgo-promo-popup.is-urgent .apgo-promo-popup__timer {
     animation: apgoPromoPulse 1s ease-in-out infinite;
   }
   @keyframes apgoPromoPulse {
     0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
+    50% { opacity: 0.52; }
   }
 
   .apgo-promo-popup__cta {
-    width: 100%;
-    margin-top: 14px;
-    padding: 15px 0;
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 9px 10px;
     border: none;
     border-radius: 999px;
     background: linear-gradient(135deg, #f6a94a, var(--primary-orange));
     color: #fff;
-    font-size: 13px;
+    font-size: 10.5px;
     font-weight: 900;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.09em;
     text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     cursor: pointer;
-    box-shadow: 0 8px 20px rgba(240, 132, 24, 0.34);
+    box-shadow: 0 5px 13px rgba(240, 132, 24, 0.3);
     transition: transform .15s ease, box-shadow .15s ease;
   }
   .apgo-promo-popup__cta:hover {
     transform: translateY(-1px);
-    box-shadow: 0 11px 24px rgba(240, 132, 24, 0.42);
+    box-shadow: 0 8px 17px rgba(240, 132, 24, 0.4);
   }
 
-  /* Reminder bubble. Defaults bottom-LEFT: the right edge already carries
-     the chat widget, and on mobile the sticky buy bar owns the bottom. */
+  /* Reminder bubble. Sits FLUSH against a side edge (and snaps back to
+     the nearest one after a drag) so it reads as page furniture rather
+     than something floating loose over the content. Defaults to the left
+     edge: the right side already carries the chat widget and, on mobile,
+     the sticky buy bar. */
   .apgo-promo-bubble {
     position: fixed;
-    left: 14px;
+    left: 0;
     bottom: 96px;
     z-index: 100150;
-    width: 60px;
-    height: 60px;
+    width: 56px;
+    height: 56px;
     padding: 0;
     display: flex;
     flex-direction: column;
@@ -4378,20 +4382,21 @@
     border-radius: 50%;
     background: linear-gradient(140deg, #fffdf7 0%, #f1e7d4 100%);
     color: var(--primary-orange);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), inset 0 0 0 1.5px rgba(240, 132, 24, 0.45);
+    box-shadow: 0 5px 18px rgba(0, 0, 0, 0.42), inset 0 0 0 1.5px rgba(240, 132, 24, 0.45);
     cursor: grab;
     touch-action: none;
     -webkit-tap-highlight-color: transparent;
+    transition: left .2s ease, top .2s ease;
   }
   .apgo-promo-bubble[hidden] { display: none; }
   .apgo-promo-bubble.is-dragging { cursor: grabbing; transition: none; }
   .apgo-promo-bubble__icon {
-    width: 24px;
-    height: 24px;
+    width: 23px;
+    height: 23px;
     pointer-events: none;
   }
   .apgo-promo-bubble__clock {
-    font-size: 9px;
+    font-size: 8.5px;
     font-weight: 800;
     color: #b8601a;
     font-variant-numeric: tabular-nums;
@@ -4400,14 +4405,16 @@
   }
   .apgo-promo-bubble__clock:empty { display: none; }
   .apgo-promo-bubble.is-urgent {
-    box-shadow: 0 6px 20px rgba(240, 132, 24, 0.5), inset 0 0 0 2px var(--primary-orange);
+    box-shadow: 0 5px 18px rgba(240, 132, 24, 0.5), inset 0 0 0 2px var(--primary-orange);
   }
+  /* Inset, not overhanging: flush against the screen edge there is no
+     room outside the circle for a negative offset. */
   .apgo-promo-bubble__dismiss {
     position: absolute;
-    top: -2px;
-    right: -2px;
-    width: 19px;
-    height: 19px;
+    top: 0;
+    right: 0;
+    width: 18px;
+    height: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -4417,18 +4424,21 @@
     border: 1.5px solid #fffdf7;
     cursor: pointer;
   }
+  .apgo-promo-bubble.is-edge-right .apgo-promo-bubble__dismiss { right: auto; left: 0; }
   .apgo-promo-bubble__dismiss:hover { background: #4a463c; }
 
   @media (max-width: 749px) {
-    /* Clear the mobile buybar so the bubble never covers Add to cart */
-    .apgo-promo-bubble { bottom: 120px; width: 55px; height: 55px; }
-    .apgo-promo-bubble__icon { width: 22px; height: 22px; }
+    /* Clear the sticky buy bar so neither element covers Add to cart */
+    .apgo-promo-popup { left: 10px; bottom: 96px; width: calc(100vw - 20px); max-width: none; }
+    .apgo-promo-popup__media { flex-basis: 74px; width: 74px; height: 74px; }
+    .apgo-promo-bubble { bottom: 168px; width: 52px; height: 52px; }
+    .apgo-promo-bubble__icon { width: 21px; height: 21px; }
   }
   @media (prefers-reduced-motion: reduce) {
     .apgo-promo-popup,
-    .apgo-promo-popup__panel,
+    .apgo-promo-bubble,
     .apgo-promo-popup__cta { transition: none; }
-    .apgo-promo-popup.is-urgent .apgo-promo-popup__timer-value { animation: none; }
+    .apgo-promo-popup.is-urgent .apgo-promo-popup__timer { animation: none; }
   }
 
   /* ── 🎁 Free gift picker ─────────────────────────────────────────── */

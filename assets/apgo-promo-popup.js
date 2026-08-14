@@ -107,13 +107,15 @@
     stopTimer();
   }
 
-  /* ---------- popup ---------- */
+  /* ---------- card ----------
+     Non-modal on purpose: no scroll lock, no backdrop. Ad traffic lands
+     directly on this page, so the page has to stay readable and
+     clickable while the offer sits in the corner. */
   function openPopup() {
     popup.removeAttribute('hidden');
     popup.setAttribute('aria-hidden', 'false');
-    document.documentElement.classList.add('apgo-promo-lock');
     /* Forced reflow rather than rAF: rAF never fires in a background tab,
-       which would leave the popup stuck invisible. */
+       which would leave the card stuck invisible. */
     void popup.offsetWidth;
     popup.classList.add('is-open');
   }
@@ -122,7 +124,6 @@
     if (!popup.classList.contains('is-open')) return;
     popup.classList.remove('is-open');
     popup.setAttribute('aria-hidden', 'true');
-    document.documentElement.classList.remove('apgo-promo-lock');
     window.setTimeout(function () {
       if (!popup.classList.contains('is-open')) popup.setAttribute('hidden', '');
     }, 280);
@@ -167,13 +168,15 @@
     restorePosition();
   }
 
+  /* Horizontal travel is clamped to 0..(width - bubble) so the bubble can
+     sit FLUSH against either side; only the vertical axis keeps a margin. */
   function clampToViewport(x, y) {
-    var w = bubble.offsetWidth || 64;
-    var h = bubble.offsetHeight || 64;
-    var maxX = Math.max(0, window.innerWidth - w - 8);
+    var w = bubble.offsetWidth || 56;
+    var h = bubble.offsetHeight || 56;
+    var maxX = Math.max(0, window.innerWidth - w);
     var maxY = Math.max(0, window.innerHeight - h - 8);
     return {
-      x: Math.min(Math.max(8, x), maxX),
+      x: Math.min(Math.max(0, x), maxX),
       y: Math.min(Math.max(8, y), maxY)
     };
   }
@@ -184,14 +187,28 @@
     bubble.style.top = p.y + 'px';
     bubble.style.right = 'auto';
     bubble.style.bottom = 'auto';
+    /* The dismiss × lives inside the circle, so it has to move to the
+       inward side once the bubble is against the right edge. */
+    bubble.classList.toggle('is-edge-right', p.x + (bubble.offsetWidth || 56) / 2 > window.innerWidth / 2);
+  }
+
+  /* Released mid-screen → slide to whichever side edge is nearer, so the
+     bubble always ends up hugging the screen. */
+  function snapToEdge() {
+    var r = bubble.getBoundingClientRect();
+    var toLeft = r.left + r.width / 2 < window.innerWidth / 2;
+    applyPosition(toLeft ? 0 : window.innerWidth - r.width, r.top);
   }
 
   function restorePosition() {
     var raw = get('pos');
-    if (!raw) return; // keep the CSS default (bottom-left, clear of chat + buy bar)
+    if (!raw) return; // keep the CSS default (left edge, clear of chat + buy bar)
     try {
       var p = JSON.parse(raw);
-      if (typeof p.x === 'number' && typeof p.y === 'number') applyPosition(p.x, p.y);
+      if (typeof p.x === 'number' && typeof p.y === 'number') {
+        applyPosition(p.x, p.y);
+        snapToEdge(); // a narrower screen than last time must not leave it adrift
+      }
     } catch (e) {}
   }
 
@@ -231,6 +248,7 @@
       dragging = false;
       bubble.classList.remove('is-dragging');
       if (moved) {
+        snapToEdge();
         var r = bubble.getBoundingClientRect();
         set('pos', JSON.stringify({ x: r.left, y: r.top }));
       }
@@ -253,11 +271,13 @@
       openPopup();
     });
 
-    /* Keep it on screen when the viewport changes (rotate / resize). */
+    /* Keep it on screen — and still edge-hugging — when the viewport
+       changes (rotate / resize). */
     window.addEventListener('resize', function () {
       if (bubble.hidden) return;
       var r = bubble.getBoundingClientRect();
       applyPosition(r.left, r.top);
+      snapToEdge();
     });
   }
 })();
