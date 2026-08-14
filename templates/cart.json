@@ -132,7 +132,7 @@
             "label": "Atomic PWP",
             "subtitle_my": "Special price for Atomic Promo · 1 set per product, per order",
             "subtitle_sg": "Special price for Atomic Promo · 1 set per product, per order",
-            "audience": "all",
+            "audience": "trigger",
             "trigger_products": [
               "✨atomic-coating-special-ltd-bundle-✨"
             ],
