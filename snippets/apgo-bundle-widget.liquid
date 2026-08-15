@@ -275,7 +275,15 @@
                 {{ value }}
                 {%- if scent_stock != nil -%}
                   {%- if scent_stock > 0 -%}
-                    <span class="apgo-bundle__scent-stock">{{ scent_stock }} left</span>
+                    {%- comment -%}
+                      The remaining count is hideable from Theme settings
+                      (APGO — Bundle Widget → Show remaining stock). Sold out
+                      below is NOT gated: that one is a buying signal, not a
+                      number, so it stays visible either way.
+                    {%- endcomment -%}
+                    {%- if settings.apgo_bundle_show_scent_stock -%}
+                      <span class="apgo-bundle__scent-stock">{{ scent_stock }} left</span>
+                    {%- endif -%}
                   {%- else -%}
                     <span class="apgo-bundle__scent-stock apgo-bundle__scent-stock--out">Sold out</span>
                   {%- endif -%}

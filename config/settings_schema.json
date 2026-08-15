@@ -121,6 +121,25 @@
     ]
   },
   {
+    "name": "APGO — Bundle Widget",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Scent stock counter"
+      },
+      {
+        "type": "paragraph",
+        "content": "控制 bundle 香味清單每一列名字旁邊的剩餘數量（例：「92 left」）。關掉只是不顯示數字，售完的香味仍然會標示 Sold out 並停用 + 按鈕，庫存邏輯完全不受影響。"
+      },
+      {
+        "type": "checkbox",
+        "id": "apgo_bundle_show_scent_stock",
+        "label": "Show remaining stock next to each scent",
+        "default": true
+      }
+    ]
+  },
+  {
     "name": "t:names.logo_and_favicon",
     "settings": [
       {

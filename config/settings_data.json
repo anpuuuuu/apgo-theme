@@ -9,6 +9,7 @@
  */
 {
   "current": {
+    "apgo_bundle_show_scent_stock": false,
     "apgo_gwp_enabled": false,
     "apgo_cart_gift_enabled": true,
     "apgo_cart_gift_triggers": [
