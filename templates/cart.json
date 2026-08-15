@@ -297,6 +297,18 @@
             "max_quantity": 0
           }
         },
+        "offer_item_U3FEd8": {
+          "type": "offer_item",
+          "settings": {
+            "tab_slot": "tab_4",
+            "product": "apgo-atomic-car-nano-coating-refill-pack-standard",
+            "variant_id": "",
+            "price_mode": "promo",
+            "promo_price_my": "RM 15.9",
+            "promo_price_sg": "$ 6.9",
+            "max_quantity": 0
+          }
+        },
         "offer_item_X8EMPn": {
           "type": "offer_item",
           "settings": {
@@ -317,18 +329,6 @@
             "variant_id": "46901363081370",
             "price_mode": "promo",
             "promo_price_my": "RM 15.8",
-            "promo_price_sg": "$ 6.9",
-            "max_quantity": 0
-          }
-        },
-        "offer_item_U3FEd8": {
-          "type": "offer_item",
-          "settings": {
-            "tab_slot": "tab_4",
-            "product": "apgo-atomic-car-nano-coating-refill-pack-standard",
-            "variant_id": "",
-            "price_mode": "promo",
-            "promo_price_my": "RM 15.9",
             "promo_price_sg": "$ 6.9",
             "max_quantity": 0
           }
@@ -364,9 +364,9 @@
         "offer_item_TYdFdk",
         "offer_item_NU8Ved",
         "offer_item_XVrdXC",
+        "offer_item_U3FEd8",
         "offer_item_X8EMPn",
         "offer_item_HxKrDn",
-        "offer_item_U3FEd8",
         "offer_item_fwnJge"
       ],
       "name": "Cart offers tabs",
