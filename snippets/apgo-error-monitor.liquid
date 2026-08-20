@@ -7,7 +7,7 @@
 {%- unless request.design_mode -%}
 <script>
 !function(){try{
-var EP='APGO_ERROR_MONITOR_ENDPOINT';
+var EP='https://apgo-error-monitor.wadeyeh.workers.dev/beacon';
 if(EP.indexOf('APGO_ERROR')>-1||!window.addEventListener||!window.JSON)return;
 if(/APGO-HealthCheck/.test(navigator.userAgent))return;
 var MAX=8,n=0,seen={},sid;
