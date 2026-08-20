@@ -6,6 +6,7 @@ This file can be re-written at any time.
 {% include 'shogun-content-handler' %}
 <html class="no-js{% if request.design_mode %} shopify-design-mode{% endif %}" lang="{{ request.locale.iso_code }}">
   <head>
+    {% render 'apgo-error-monitor' %}
     {{ 'base.css' | asset_url | stylesheet_tag }}
 
     {%- if settings.favicon != blank -%}

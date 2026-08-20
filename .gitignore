@@ -2,6 +2,7 @@ monitoring/node_modules/
 monitoring/test-results/
 monitoring/playwright-report/
 monitoring/results.json
+monitoring/cloudflare/worker/.wrangler/
 
 # google-github-actions/auth temporary credential files (defence in depth)
 gha-creds-*.json

@@ -1,47 +1,44 @@
 {%- comment -%}
-  APGO Layer 3: frontend error monitor. Rendered at the very top of <head> so
-  it can catch errors from every later script. Reports ONLY errors originating
-  from this site's own assets (cdn.shopify.com/**/assets/* or same-origin
-  inline) to the Cloudflare worker — third-party scripts, browser extensions
-  and cross-origin "Script error." are dropped by design. Holds no credential.
-  Endpoint is filled in after the worker's first deploy (docs:
-  monitoring/docs/cloudflare-setup.md); until then the script exits instantly.
-  Self-test: open any page with ?apgo_em_test=1 to emit one synthetic report.
+  APGO Layer 3. Captures first-party runtime/resource failures and failed
+  Shopify cart writes. It never sends customer fields, cart tokens or query
+  strings. Synthetic APGO-HealthCheck traffic and Theme Editor previews are
+  excluded. Use ?apgo_em_test=1 once on desktop and mobile after deployment.
 {%- endcomment -%}
 {%- unless request.design_mode -%}
 <script>
 !function(){try{
-var EP='REPLACE_WITH_WORKER_URL';
-if(EP.indexOf('REPLACE')>-1)return;
-if(!window.addEventListener||!window.JSON)return;
+var EP='APGO_ERROR_MONITOR_ENDPOINT';
+if(EP.indexOf('APGO_ERROR')>-1||!window.addEventListener||!window.JSON)return;
 if(/APGO-HealthCheck/.test(navigator.userAgent))return;
-var MAX=5,n=0,mem={},sid;
+var MAX=8,n=0,seen={},sid;
 try{sid=sessionStorage.getItem('apgoEmSid');if(!sid){sid=Math.random().toString(36).slice(2,10)+Date.now().toString(36);sessionStorage.setItem('apgoEmSid',sid);}}catch(e){sid='nostore-'+Math.random().toString(36).slice(2,8);}
-function ownSrc(s){return !!s&&(s.indexOf(location.origin)===0||/cdn\.shopify\.com\/.+\/assets\//.test(s));}
-function ownStack(st){return !!st&&(st.indexOf(location.host)>-1||/cdn\.shopify\.com\/.+\/assets\//.test(st));}
-function send(m,src,line,col,stack){try{
+function own(s){return !!s&&(s.indexOf(location.origin)===0||/cdn\.shopify\.com\/.+\/(assets|files)\//.test(s));}
+function ownStack(s){return !!s&&(s.indexOf(location.host)>-1||/cdn\.shopify\.com\/.+\/assets\//.test(s));}
+function pathOnly(v){try{return new URL(v||location.href,location.origin).pathname;}catch(e){return '/';}}
+function emit(d){try{
 if(n>=MAX)return;
-var key=m+'|'+src+'|'+line;
-try{if(sessionStorage.getItem('apgoEm:'+key))return;sessionStorage.setItem('apgoEm:'+key,'1');}catch(e){if(mem[key])return;mem[key]=1;}
-n++;
-var p=JSON.stringify({v:1,sid:sid,m:String(m).slice(0,300),src:String(src||'').slice(0,300),line:line>0?line|0:0,col:col>0?col|0:0,stack:String(stack||'').slice(0,1000),url:String(location.href).split('?')[0]});
-if(navigator.sendBeacon){navigator.sendBeacon(EP,new Blob([p],{type:'text/plain'}));}
-else if(window.fetch){fetch(EP,{method:'POST',body:p,keepalive:true,headers:{'content-type':'text/plain'}}).catch(function(){});}
+var key=[d.kind,d.m,d.src,d.line,d.action,d.stage].join('|');if(seen[key])return;seen[key]=1;n++;
+d.v=2;d.sid=sid;d.url=pathOnly(location.href);
+var p=JSON.stringify(d);
+if(navigator.sendBeacon)navigator.sendBeacon(EP,new Blob([p],{type:'text/plain'}));
+else if(window.fetch)window.fetch(EP,{method:'POST',body:p,keepalive:true,headers:{'content-type':'text/plain'}}).catch(function(){});
 }catch(e){}}
+function runtime(m,src,line,col,stack,kind){emit({kind:kind||'error',m:String(m||'Unknown error').slice(0,300),src:String(src||'').slice(0,300),line:line|0,col:col|0,stack:String(stack||'').slice(0,1000)});}
 window.addEventListener('error',function(e){try{
 if(!e)return;
-var m=e.message||'',f=e.filename||'';
-if(!m||m==='Script error.'||m==='Script error')return;
-if(/^(chrome|moz|safari|ms-browser)-extension:/.test(f))return;
-if(!ownSrc(f))return;
-send(m,f,e.lineno,e.colno,e.error&&e.error.stack);
+if(e.target&&e.target!==window){var u=e.target.currentSrc||e.target.src||e.target.href||'';if(own(u))runtime('First-party resource failed to load',pathOnly(u),0,0,'','resource');return;}
+var m=e.message||'',f=e.filename||'';if(!m||m==='Script error.'||/^(chrome|moz|safari|ms-browser)-extension:/.test(f)||!own(f))return;
+runtime(m,f,e.lineno,e.colno,e.error&&e.error.stack,'error');
 }catch(x){}},true);
-window.addEventListener('unhandledrejection',function(e){try{
-var r=e&&e.reason,st=(r&&r.stack)||'';
-if(!ownStack(st))return;
-send('Unhandled rejection: '+String((r&&r.message)||r).slice(0,200),'',0,0,st);
-}catch(x){}});
-if(/[?&]apgo_em_test=1/.test(location.search)){send('apgo-em-selftest','selftest',1,1,'');}
+window.addEventListener('unhandledrejection',function(e){try{var r=e&&e.reason,st=(r&&r.stack)||'';if(ownStack(st))runtime('Unhandled rejection: '+String((r&&r.message)||r).slice(0,220),'',0,0,st,'rejection');}catch(x){}},true);
+window.apgoReportCartError=function(detail){detail=detail||{};emit({kind:'cart',m:String(detail.message||'Shopify cart request failed').slice(0,300),action:String(detail.action||'cart').slice(0,80),stage:String(detail.stage||'request').slice(0,80),status:Number(detail.status)||0,critical:!!detail.critical,src:pathOnly(detail.url||location.href),line:0,col:0,stack:''});};
+window.addEventListener('apgo:cart-error',function(e){window.apgoReportCartError(e&&e.detail);});
+if(window.fetch){var nativeFetch=window.fetch;window.fetch=function(input,init){
+var u=typeof input==='string'?input:(input&&input.url)||'',method=((init&&init.method)||(input&&input.method)||'GET').toUpperCase(),cart=/\/cart\/(add|change|update|clear)\.js(?:\?|$)/.exec(u);
+var promise=nativeFetch.apply(window,arguments);if(!cart||method==='GET')return promise;
+return promise.then(function(response){if(!response.ok)window.apgoReportCartError({message:'Cart API returned HTTP '+response.status,action:cart[1],stage:'response',status:response.status,url:u,critical:response.status>=500});return response;},function(error){window.apgoReportCartError({message:(error&&error.message)||'Cart API network error',action:cart[1],stage:'network',status:0,url:u,critical:true});throw error;});
+};}
+if(/[?&]apgo_em_test=1(?:&|$)/.test(location.search))emit({kind:'selftest',m:'apgo-em-selftest',src:'selftest',line:1,col:1,stack:''});
 window.__apgoEM=1;
 }catch(e){}}();
 </script>
