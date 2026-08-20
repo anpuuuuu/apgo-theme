@@ -3,6 +3,9 @@ monitoring/test-results/
 monitoring/playwright-report/
 monitoring/results.json
 
+# google-github-actions/auth temporary credential files (defence in depth)
+gha-creds-*.json
+
 # Claude Code local files and stray nested clones — never commit
 .claude/
 /apgo-theme/
