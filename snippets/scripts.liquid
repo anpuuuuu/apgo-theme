@@ -157,10 +157,6 @@
     type="module"
   ></script>
   <script
-    src="{{ 'component-quantity-selector.js' | asset_url }}"
-    type="module"
-  ></script>
-  <script
     src="{{ 'media-gallery.js' | asset_url }}"
     type="module"
   ></script>
@@ -169,6 +165,10 @@
     type="module"
   ></script>
 {% endunless %}
+<script
+  src="{{ 'component-quantity-selector.js' | asset_url }}"
+  type="module"
+></script>
 
 {% if localization.available_countries.size > 1 or localization.available_languages.size > 1 %}
   <script
