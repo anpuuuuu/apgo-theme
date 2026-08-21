@@ -131,7 +131,7 @@
           "settings": {
             "enabled": true,
             "slot": "tab_5",
-            "label": "Atomic PWP",
+            "label": "Merdeka PWP",
             "subtitle_my": "Special price for Atomic Promo · 2 set per product, per order",
             "subtitle_sg": "Special price for Atomic Promo · 2 set per product, per order",
             "audience": "trigger",
@@ -361,6 +361,66 @@
             "promo_price_sg": "$ 3.9",
             "max_quantity": 0
           }
+        },
+        "offer_item_cWQE7G": {
+          "type": "offer_item",
+          "settings": {
+            "tab_slot": "tab_5",
+            "product": "apgo-car-interior-eco-friendly-cleaner",
+            "variant_id": "46971435679898",
+            "price_mode": "promo",
+            "promo_price_my": "RM 18.8",
+            "promo_price_sg": "$ 7.9",
+            "max_quantity": 0
+          }
+        },
+        "offer_item_anEBA6": {
+          "type": "offer_item",
+          "settings": {
+            "tab_slot": "tab_5",
+            "product": "apgo-atomic-car-nano-coating-refill-pack-standard",
+            "variant_id": "",
+            "price_mode": "promo",
+            "promo_price_my": "RM 15.9",
+            "promo_price_sg": "$ 6.9",
+            "max_quantity": 0
+          }
+        },
+        "offer_item_VdcC9d": {
+          "type": "offer_item",
+          "settings": {
+            "tab_slot": "tab_5",
+            "product": "apgo-car-wash-shampoo-special-formula-refill-pack",
+            "variant_id": "",
+            "price_mode": "promo",
+            "promo_price_my": "RM 8.8",
+            "promo_price_sg": "$ 3.9",
+            "max_quantity": 0
+          }
+        },
+        "offer_item_9nMDRk": {
+          "type": "offer_item",
+          "settings": {
+            "tab_slot": "tab_5",
+            "product": "apgo-glass-cleaner-500ml",
+            "variant_id": "46901363081370",
+            "price_mode": "promo",
+            "promo_price_my": "RM 15.8",
+            "promo_price_sg": "$ 6.9",
+            "max_quantity": 0
+          }
+        },
+        "offer_item_Dat3yQ": {
+          "type": "offer_item",
+          "settings": {
+            "tab_slot": "tab_5",
+            "product": "apgo-microfiber-pro-car-coating-cloth-30cm-x-30cm-1-pcs",
+            "variant_id": "",
+            "price_mode": "promo",
+            "promo_price_my": "RM 9.9",
+            "promo_price_sg": "$ 3.9",
+            "max_quantity": 0
+          }
         }
       },
       "block_order": [
@@ -385,7 +445,12 @@
         "offer_item_U3FEd8",
         "offer_item_X8EMPn",
         "offer_item_HxKrDn",
-        "offer_item_fwnJge"
+        "offer_item_fwnJge",
+        "offer_item_cWQE7G",
+        "offer_item_anEBA6",
+        "offer_item_VdcC9d",
+        "offer_item_9nMDRk",
+        "offer_item_Dat3yQ"
       ],
       "name": "Cart offers tabs",
       "settings": {
