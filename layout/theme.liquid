@@ -5,7 +5,7 @@
   lang="{{ request.locale.iso_code }}"
 >
   <head>
-    {% render 'apgo-error-monitor' %}
+    {% render 'apgo-error-monitor', monitor_version: 3 %}
     {%- comment -%}
       Region lock — hides a promo product page outside its market. When a
       product carries custom.only_market ('MY' / 'SG') and the buyer's
