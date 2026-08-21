@@ -124,32 +124,10 @@
       {%- assign apgo_show_aurora_counter = section.settings.show_aurora_counter -%}
 
       {%- comment -%}
-        ZONE — Mid Month promo banner. Runs first, above the 8.8 banner.
-        Single banner/product, no region split: the same offer runs in
-        both markets, so there is nothing to branch on.
-
-        Its Add/Buy add straight to cart. apgo-event-cart.js only
-        diverts a zone's buttons into the gift modal when the button is
-        inside `--glaze`, so this zone is unaffected even while the
-        Glaze modal is present in the DOM.
-      {%- endcomment -%}
-      {%- if section.settings.show_midmonth_zone -%}
-        {% render 'apgo-event-linked-banner-zone',
-          heading: section.settings.midmonth_zone_heading,
-          message: section.settings.midmonth_zone_message,
-          show_counter: false,
-          banner_image: section.settings.midmonth_zone_banner,
-          product: section.settings.midmonth_zone_product,
-          variant_id: section.settings.midmonth_zone_variant_id,
-          single_cta_label: section.settings.midmonth_zone_single_cta,
-          zone_class: 'midmonth',
-          zone_position: 6 %}
-      {%- endif -%}
-
-      {%- comment -%}
         ZONE — Additional promo banner. MY/default and SG can use different
         banners, products, and variants. Missing SG fields fall back to the
         MY/default values so an incomplete SG setup never creates a blank zone.
+        This zone renders immediately before the Mid Month promo.
       {%- endcomment -%}
       {%- if section.settings.show_additional_promo_zone -%}
         {%- assign additional_promo_banner = section.settings.additional_promo_zone_banner -%}
@@ -175,6 +153,29 @@
           variant_id: additional_promo_variant,
           single_cta_label: section.settings.additional_promo_zone_single_cta,
           zone_class: 'additional-promo',
+          zone_position: 6 %}
+      {%- endif -%}
+
+      {%- comment -%}
+        ZONE — Mid Month promo banner. Runs after the Additional promo,
+        above the 8.8 banner. Single banner/product, no region split: the
+        same offer runs in both markets, so there is nothing to branch on.
+
+        Its Add/Buy add straight to cart. apgo-event-cart.js only
+        diverts a zone's buttons into the gift modal when the button is
+        inside `--glaze`, so this zone is unaffected even while the
+        Glaze modal is present in the DOM.
+      {%- endcomment -%}
+      {%- if section.settings.show_midmonth_zone -%}
+        {% render 'apgo-event-linked-banner-zone',
+          heading: section.settings.midmonth_zone_heading,
+          message: section.settings.midmonth_zone_message,
+          show_counter: false,
+          banner_image: section.settings.midmonth_zone_banner,
+          product: section.settings.midmonth_zone_product,
+          variant_id: section.settings.midmonth_zone_variant_id,
+          single_cta_label: section.settings.midmonth_zone_single_cta,
+          zone_class: 'midmonth',
           zone_position: 7 %}
       {%- endif -%}
 
@@ -670,7 +671,7 @@
     },
     {
       "type": "paragraph",
-      "content": "Renders first, above the 8.8 banner. Single product/banner with no region split — SG and MY see the same thing. Zone hides until a banner + product are set."
+      "content": "Renders after the Additional Promo zone, above the 8.8 banner. Single product/banner with no region split — SG and MY see the same thing. Zone hides until a banner + product are set."
     },
     {
       "type": "checkbox",
@@ -715,7 +716,7 @@
     },
     {
       "type": "paragraph",
-      "content": "Renders after the Mid Month zone. SG can use its own banner, product, and variant; blank SG fields fall back to the MY/default values. The zone stays hidden until its active market has both a banner and product."
+      "content": "Renders before the Mid Month zone. SG can use its own banner, product, and variant; blank SG fields fall back to the MY/default values. The zone stays hidden until its active market has both a banner and product."
     },
     {
       "type": "checkbox",
