@@ -78,7 +78,7 @@
         class="apgo-event-linked-banner-zone__link"
         href="{{ action_variant.url }}"
         data-apgo-campaign-promotion-link
-        data-promotion-id="golden_bull_aurora_banner"
+        data-promotion-id="golden_bull_{{ zone_class | escape }}_banner"
         data-promotion-name="{{ heading | escape }}"
         data-variant-id="{{ action_variant.id }}"
         aria-label="{{ product.title | escape }}"
