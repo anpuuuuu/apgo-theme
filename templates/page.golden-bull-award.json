@@ -271,7 +271,7 @@
         "midmonth_zone_product": "✨atomic-coating-special-ltd-bundle-✨",
         "midmonth_zone_variant_id": "",
         "midmonth_zone_single_cta": "",
-        "show_additional_promo_zone": true,
+        "show_additional_promo_zone": false,
         "additional_promo_zone_heading": "Limited Time Deals",
         "additional_promo_zone_message": "Dont say bojio, 没有就没有 liao",
         "additional_promo_zone_banner": "shopify://shop_images/banner_2.png",
