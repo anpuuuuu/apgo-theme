@@ -7,27 +7,31 @@
 {%- unless request.design_mode -%}
 <script>
 !function(){try{
-var EP='https://apgo-error-monitor.wadeyeh.workers.dev/beacon';
+var EP='https://apgo-error-monitor.wadeyeh.workers.dev/beacon',VER={{ monitor_version | default: 4 | json }};
 if(EP.indexOf('APGO_ERROR')>-1||!window.addEventListener||!window.JSON)return;
 if(window.__apgoHealthCheck||/APGO-HealthCheck/.test(navigator.userAgent)){window.__apgoEM='excluded';return;}
+if(window.__apgoEM)return;window.__apgoEM='loading';
 var MAX=8,n=0,seen={},sid;
-try{sid=sessionStorage.getItem('apgoEmSid');if(!sid){sid=Math.random().toString(36).slice(2,10)+Date.now().toString(36);sessionStorage.setItem('apgoEmSid',sid);}}catch(e){sid='nostore-'+Math.random().toString(36).slice(2,8);}
+function newSid(){try{return window.crypto&&crypto.randomUUID?crypto.randomUUID():Math.random().toString(36).slice(2,10)+Date.now().toString(36);}catch(e){return Math.random().toString(36).slice(2,10)+Date.now().toString(36);}}
+try{sid=sessionStorage.getItem('apgoEmSid');if(!sid){sid=newSid();sessionStorage.setItem('apgoEmSid',sid);}}catch(e){sid='nostore-'+newSid();}
 function own(s){return !!s&&(s.indexOf(location.origin)===0||/cdn\.shopify\.com\/.+\/(assets|files)\//.test(s));}
 function ownStack(s){return !!s&&(s.indexOf(location.host)>-1||/cdn\.shopify\.com\/.+\/assets\//.test(s));}
 function pathOnly(v){try{return new URL(v||location.href,location.origin).pathname;}catch(e){return '/';}}
+function resourceStage(t){var tag=String(t&&t.tagName||'').toLowerCase();if(tag==='script')return 'script';if(tag==='link')return 'style';if(tag==='img')return 'image';if(tag==='video'||tag==='audio'||tag==='source')return 'media';return 'other';}
+function ignoredRuntime(m){return /_AutofillCallbackHandler|window\.webkit\.messageHandlers/.test(String(m||''));}
 function emit(d){try{
 if(n>=MAX)return;
 var key=[d.kind,d.m,d.src,d.line,d.action,d.stage].join('|');if(seen[key])return;seen[key]=1;n++;
-d.v=2;d.sid=sid;d.url=pathOnly(location.href);
+d.v=VER;d.sid=sid;d.url=pathOnly(location.href);
 var p=JSON.stringify(d);
-if(navigator.sendBeacon)navigator.sendBeacon(EP,new Blob([p],{type:'text/plain'}));
-else if(window.fetch)window.fetch(EP,{method:'POST',body:p,keepalive:true,headers:{'content-type':'text/plain'}}).catch(function(){});
+var sent=false;if(navigator.sendBeacon)sent=navigator.sendBeacon(EP,new Blob([p],{type:'text/plain'}));
+if(!sent&&window.fetch)window.fetch(EP,{method:'POST',body:p,keepalive:true,headers:{'content-type':'text/plain'}}).catch(function(){});
 }catch(e){}}
-function runtime(m,src,line,col,stack,kind){emit({kind:kind||'error',m:String(m||'Unknown error').slice(0,300),src:String(src||'').slice(0,300),line:line|0,col:col|0,stack:String(stack||'').slice(0,1000)});}
+function runtime(m,src,line,col,stack,kind,stage){emit({kind:kind||'error',m:String(m||'Unknown error').slice(0,300),src:String(src||'').slice(0,300),line:line|0,col:col|0,stack:String(stack||'').slice(0,1000),stage:stage||''});}
 window.addEventListener('error',function(e){try{
 if(!e)return;
-if(e.target&&e.target!==window){var u=e.target.currentSrc||e.target.src||e.target.href||'';if(own(u))runtime('First-party resource failed to load',pathOnly(u),0,0,'','resource');return;}
-var m=e.message||'',f=e.filename||'';if(!m||m==='Script error.'||/^(chrome|moz|safari|ms-browser)-extension:/.test(f)||!own(f))return;
+if(e.target&&e.target!==window){var u=e.target.currentSrc||e.target.src||e.target.href||'';if(own(u))runtime('First-party resource failed to load',pathOnly(u),0,0,'','resource',resourceStage(e.target));return;}
+var m=e.message||'',f=e.filename||'';if(!m||m==='Script error.'||ignoredRuntime(m)||/^(chrome|moz|safari|ms-browser)-extension:/.test(f)||!own(f))return;
 runtime(m,f,e.lineno,e.colno,e.error&&e.error.stack,'error');
 }catch(x){}},true);
 window.addEventListener('unhandledrejection',function(e){try{var r=e&&e.reason,st=(r&&r.stack)||'';if(ownStack(st))runtime('Unhandled rejection: '+String((r&&r.message)||r).slice(0,220),'',0,0,st,'rejection');}catch(x){}},true);
@@ -36,10 +40,10 @@ window.addEventListener('apgo:cart-error',function(e){window.apgoReportCartError
 if(window.fetch){var nativeFetch=window.fetch;window.fetch=function(input,init){
 var u=typeof input==='string'?input:(input&&input.url)||'',method=((init&&init.method)||(input&&input.method)||'GET').toUpperCase(),cart=/\/cart\/(add|change|update|clear)\.js(?:\?|$)/.exec(u);
 var promise=nativeFetch.apply(window,arguments);if(!cart||method==='GET')return promise;
-return promise.then(function(response){if(!response.ok)window.apgoReportCartError({message:'Cart API returned HTTP '+response.status,action:cart[1],stage:'response',status:response.status,url:u,critical:response.status>=500});return response;},function(error){window.apgoReportCartError({message:(error&&error.message)||'Cart API network error',action:cart[1],stage:'network',status:0,url:u,critical:true});throw error;});
+return promise.then(function(response){if(!response.ok)window.apgoReportCartError({message:'Cart API returned HTTP '+response.status,action:cart[1],stage:'response',status:response.status,url:u});return response;},function(error){window.apgoReportCartError({message:(error&&error.message)||'Cart API network error',action:cart[1],stage:'network',status:0,url:u});throw error;});
 };}
 if(/[?&]apgo_em_test=1(?:&|$)/.test(location.search))emit({kind:'selftest',m:'apgo-em-selftest',src:'selftest',line:1,col:1,stack:''});
-window.__apgoEM=1;
+window.__apgoEM=VER;
 }catch(e){}}();
 </script>
 {%- endunless -%}
