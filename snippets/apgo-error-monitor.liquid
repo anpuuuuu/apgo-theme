@@ -9,7 +9,7 @@
 !function(){try{
 var EP='https://apgo-error-monitor.wadeyeh.workers.dev/beacon';
 if(EP.indexOf('APGO_ERROR')>-1||!window.addEventListener||!window.JSON)return;
-if(/APGO-HealthCheck/.test(navigator.userAgent))return;
+if(/APGO-HealthCheck/.test(navigator.userAgent)){window.__apgoEM='excluded';return;}
 var MAX=8,n=0,seen={},sid;
 try{sid=sessionStorage.getItem('apgoEmSid');if(!sid){sid=Math.random().toString(36).slice(2,10)+Date.now().toString(36);sessionStorage.setItem('apgoEmSid',sid);}}catch(e){sid='nostore-'+Math.random().toString(36).slice(2,8);}
 function own(s){return !!s&&(s.indexOf(location.origin)===0||/cdn\.shopify\.com\/.+\/(assets|files)\//.test(s));}
