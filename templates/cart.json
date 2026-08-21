@@ -74,6 +74,40 @@
     "cart_offers_tabs": {
       "type": "cart-offers-tabs",
       "blocks": {
+        "tab_pxghyY": {
+          "type": "tab",
+          "settings": {
+            "enabled": true,
+            "slot": "tab_5",
+            "label": "Merdeka PWP",
+            "subtitle_my": "Special price for Atomic Promo · 2 set per product, per order",
+            "subtitle_sg": "Special price for Atomic Promo · 2 set per product, per order",
+            "audience": "trigger",
+            "trigger_products": [
+              "✨atomic-coating-special-ltd-bundle-✨"
+            ],
+            "trigger_min_quantity": 1,
+            "view_all_label": "",
+            "view_all_url": ""
+          }
+        },
+        "tab_RdreJB": {
+          "type": "tab",
+          "settings": {
+            "enabled": true,
+            "slot": "tab_4",
+            "label": "Atomic PWP",
+            "subtitle_my": "Special price for Atomic Promo · 2 set per product, per order",
+            "subtitle_sg": "Special price for Atomic Promo · 2 set per product, per order",
+            "audience": "trigger",
+            "trigger_products": [
+              "✨atomic-coating-special-ltd-bundle-✨"
+            ],
+            "trigger_min_quantity": 1,
+            "view_all_label": "",
+            "view_all_url": ""
+          }
+        },
         "tab_glaze": {
           "type": "tab",
           "settings": {
@@ -105,40 +139,6 @@
               "apgo-laundry-detergent-special-promotion-1"
             ],
             "trigger_min_quantity": 6,
-            "view_all_label": "",
-            "view_all_url": ""
-          }
-        },
-        "tab_RdreJB": {
-          "type": "tab",
-          "settings": {
-            "enabled": true,
-            "slot": "tab_4",
-            "label": "Atomic PWP",
-            "subtitle_my": "Special price for Atomic Promo · 2 set per product, per order",
-            "subtitle_sg": "Special price for Atomic Promo · 2 set per product, per order",
-            "audience": "trigger",
-            "trigger_products": [
-              "✨atomic-coating-special-ltd-bundle-✨"
-            ],
-            "trigger_min_quantity": 1,
-            "view_all_label": "",
-            "view_all_url": ""
-          }
-        },
-        "tab_pxghyY": {
-          "type": "tab",
-          "settings": {
-            "enabled": true,
-            "slot": "tab_5",
-            "label": "Merdeka PWP",
-            "subtitle_my": "Special price for Atomic Promo · 2 set per product, per order",
-            "subtitle_sg": "Special price for Atomic Promo · 2 set per product, per order",
-            "audience": "trigger",
-            "trigger_products": [
-              "✨atomic-coating-special-ltd-bundle-✨"
-            ],
-            "trigger_min_quantity": 1,
             "view_all_label": "",
             "view_all_url": ""
           }
@@ -424,10 +424,10 @@
         }
       },
       "block_order": [
+        "tab_pxghyY",
+        "tab_RdreJB",
         "tab_glaze",
         "tab_detergent",
-        "tab_RdreJB",
-        "tab_pxghyY",
         "tab_recommended",
         "glaze_paint",
         "glaze_wheel",
