@@ -1,10 +1,3 @@
-{% liquid
-  assign is_cart_template = false
-  if template.name == 'cart'
-    assign is_cart_template = true
-  endif
-%}
-
 <script type="importmap">
   {
     "imports": {
@@ -69,26 +62,22 @@
   rel="modulepreload"
   href="{{ 'focus.js' | asset_url }}"
 >
-{% unless is_cart_template %}
-  <link
-    rel="modulepreload"
-    href="{{ 'recently-viewed-products.js' | asset_url }}"
-  >
-  <link
-    rel="modulepreload"
-    href="{{ 'scrolling.js' | asset_url }}"
-  >
-{% endunless %}
+<link
+  rel="modulepreload"
+  href="{{ 'recently-viewed-products.js' | asset_url }}"
+>
+<link
+  rel="modulepreload"
+  href="{{ 'scrolling.js' | asset_url }}"
+>
 <link
   rel="modulepreload"
   href="{{ 'events.js' | asset_url }}"
 >
-{% unless is_cart_template %}
-  <script
-    src="{{ 'quick-add.js' | asset_url }}"
-    type="module"
-  ></script>
-{% endunless %}
+<script
+  src="{{ 'quick-add.js' | asset_url }}"
+  type="module"
+></script>
 {% if settings.show_add_discount_code %}
   <script
     src="{{ 'cart-discount.js' | asset_url }}"
@@ -99,74 +88,72 @@
   src="{{ 'dialog.js' | asset_url }}"
   type="module"
 ></script>
-{% unless is_cart_template %}
-  <script
-    src="{{ 'variant-picker.js' | asset_url }}"
-    type="module"
-  ></script>
-  <script
-    src="{{ 'product-card.js' | asset_url }}"
-    type="module"
-  ></script>
-  <script
-    src="{{ 'product-form.js' | asset_url }}"
-    type="module"
-  ></script>
-  <script
-    src="{{ 'apgo-quick-add-fly.js' | asset_url }}"
-    defer
-  ></script>
-{% endunless %}
+<script
+  src="{{ 'variant-picker.js' | asset_url }}"
+  type="module"
+></script>
+<script
+  src="{{ 'product-card.js' | asset_url }}"
+  type="module"
+></script>
+<script
+  src="{{ 'product-form.js' | asset_url }}"
+  type="module"
+></script>
+<script
+  src="{{ 'apgo-cart-toast.js' | asset_url }}"
+  type="module"
+></script>
+<script
+  src="{{ 'apgo-quick-add-fly.js' | asset_url }}"
+  defer
+></script>
 <script
   src="{{ 'accordion-custom.js' | asset_url }}"
   type="module"
 ></script>
-{% unless is_cart_template %}
-  <script
-    src="{{ 'media.js' | asset_url }}"
-    type="module"
-  ></script>
-  <script
-    src="{{ 'product-price.js' | asset_url }}"
-    type="module"
-  ></script>
-  <script
-    src="{{ 'product-title-truncation.js' | asset_url }}"
-    type="module"
-  ></script>
-  <script
-    src="{{ 'product-inventory.js' | asset_url }}"
-    type="module"
-  ></script>
-  <script
-    src="{{ 'show-more.js' | asset_url }}"
-    type="module"
-  ></script>
-  <script
-    src="{{ 'slideshow.js' | asset_url }}"
-    type="module"
-  ></script>
-{% endunless %}
+<script
+  src="{{ 'media.js' | asset_url }}"
+  type="module"
+></script>
+<script
+  src="{{ 'product-price.js' | asset_url }}"
+  type="module"
+></script>
+<script
+  src="{{ 'product-title-truncation.js' | asset_url }}"
+  type="module"
+></script>
+<script
+  src="{{ 'product-inventory.js' | asset_url }}"
+  type="module"
+></script>
+<script
+  src="{{ 'show-more.js' | asset_url }}"
+  type="module"
+></script>
+<script
+  src="{{ 'slideshow.js' | asset_url }}"
+  type="module"
+></script>
 <script
   src="{{ 'floating-panel.js' | asset_url }}"
   type="module"
 ></script>
-{% unless is_cart_template %}
-  <script
-    src="{{ 'video-background.js' | asset_url }}"
-    type="module"
-  ></script>
-  <script
-    src="{{ 'media-gallery.js' | asset_url }}"
-    type="module"
-  ></script>
-  <script
-    src="{{ 'rte-formatter.js' | asset_url }}"
-    type="module"
-  ></script>
-{% endunless %}
+<script
+  src="{{ 'video-background.js' | asset_url }}"
+  type="module"
+></script>
 <script
   src="{{ 'component-quantity-selector.js' | asset_url }}"
+  type="module"
+></script>
+<script
+  src="{{ 'media-gallery.js' | asset_url }}"
+  type="module"
+></script>
+<script
+  src="{{ 'rte-formatter.js' | asset_url }}"
   type="module"
 ></script>
 
@@ -196,13 +183,11 @@
   defer="defer"
 ></script>
 
-{% unless is_cart_template %}
-  <script
-    defer
-    src="{{ 'placeholder-image.js' | asset_url }}"
-    type="module"
-  ></script>
-{% endunless %}
+<script
+  defer
+  src="{{ 'placeholder-image.js' | asset_url }}"
+  type="module"
+></script>
 
 <script>
   const basePath = 'https://cdn.shopify.com/static/themes/horizon/placeholders';
