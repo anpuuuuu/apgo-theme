@@ -80,11 +80,11 @@
             "enabled": true,
             "slot": "tab_5",
             "label": "Merdeka PWP",
-            "subtitle_my": "Special price for Atomic Promo · 2 set per product, per order",
-            "subtitle_sg": "Special price for Atomic Promo · 2 set per product, per order",
+            "subtitle_my": "Special price for Merdeka Promo · 2 set per product, per order",
+            "subtitle_sg": "Special price for merdeka Promo · 2 set per product, per order",
             "audience": "trigger",
             "trigger_products": [
-              "✨atomic-coating-special-ltd-bundle-✨"
+              "atomic-crystal-merdeka-set"
             ],
             "trigger_min_quantity": 1,
             "view_all_label": "",
