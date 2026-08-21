@@ -68,18 +68,6 @@
         "color_scheme": ""
       }
     },
-    "apgo_event_banner_wxUJYc": {
-      "type": "apgo-event-banner",
-      "disabled": true,
-      "name": "APGO Event Banner",
-      "settings": {
-        "image": "shopify://shop_images/quality.png",
-        "image_alt": "",
-        "link": "",
-        "desktop_width_percent": 67,
-        "color_scheme": ""
-      }
-    },
     "apgo_event_collection_grid_n3e6dm": {
       "type": "apgo-event-collection-grid",
       "blocks": {
@@ -248,14 +236,12 @@
         "aurora_counter_release_total": "88",
         "aurora_counter_manual_deduction": "88",
         "aurora_counter_flow_baseline": "0",
-        "aurora_zone_banner": "shopify://shop_images/Sold_Out.png",
-        "aurora_zone_product": "golden-bull-celebration-apgo-aurora-car-nano-coating-premium",
-        "aurora_zone_variant_id": "48809413869722",
+        "aurora_zone_product": "",
+        "aurora_zone_variant_id": "",
         "show_glaze_zone": true,
         "glaze_zone_heading": "",
         "glaze_zone_message": "",
-        "glaze_zone_banner": "shopify://shop_images/my_banner.png",
-        "glaze_zone_product": "atomic-glaze-coating-8-8-promotion",
+        "glaze_zone_product": "",
         "glaze_zone_variant_id": "",
         "glaze_zone_banner_sg": "shopify://shop_images/sg_banner.png",
         "glaze_zone_product_sg": "atomic-glaze-coating-sg61-promotion",
@@ -482,7 +468,6 @@
   "order": [
     "main",
     "apgo_event_banner_jRgaPP",
-    "apgo_event_banner_wxUJYc",
     "apgo_event_collection_grid_n3e6dm",
     "apgo_gallery_TYBKmf",
     "apgo_event_banner_jBTfGT"
