@@ -48,6 +48,7 @@
   var buybarBuyBtn = document.querySelector('[data-apgo-cc-buybar-checkout]');
   var buybarSoldOutBtn = document.querySelector('[data-apgo-cc-buybar-sold-out]');
   var qtyInput  = form.querySelector('[data-apgo-cc-qty-input]');
+  var cartRequestInFlight = false;
 
   /* ── 🎁 Free gift picker ────────────────────────────────────────────
      On the gated product the section renders one or two
@@ -515,6 +516,85 @@
     }, 4200);
   }
 
+  function showCartErrorToast(message, title) {
+    document.querySelectorAll('.apgo-cart-success-toast').forEach(function (n) { n.remove(); });
+    function esc(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+    var el = document.createElement('div');
+    el.className = 'apgo-cart-success-toast apgo-cart-success-toast--error';
+    el.setAttribute('role', 'alert');
+    el.setAttribute('aria-live', 'assertive');
+    el.innerHTML = ''
+      + '<span class="apgo-cart-success-toast__check" aria-hidden="true">!</span>'
+      + '<div class="apgo-cart-success-toast__body">'
+      + '  <span class="apgo-cart-success-toast__title">' + esc(title || 'Unable to add to cart') + '</span>'
+      + '  <span class="apgo-cart-success-toast__sub">' + esc(message || 'Please check your connection and try again.') + '</span>'
+      + '</div>'
+      + '<button type="button" class="apgo-cart-success-toast__close" aria-label="Close">'
+      + '  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L11 11M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>'
+      + '</button>';
+    el.querySelector('.apgo-cart-success-toast__close').addEventListener('click', function () { el.remove(); });
+    document.body.appendChild(el);
+    requestAnimationFrame(function () { el.classList.add('apgo-cart-success-toast--visible'); });
+    setTimeout(function () {
+      el.classList.remove('apgo-cart-success-toast--visible');
+      setTimeout(function () { el.remove(); }, 380);
+    }, 5200);
+  }
+
+  function cartErrorMessage(error) {
+    var raw = error && (error.description || error.message);
+    if (!raw || /failed to fetch|network\s*error|load failed/i.test(String(raw))) {
+      return 'Please check your connection and try again.';
+    }
+    return String(raw);
+  }
+
+  function isSilentCartError(error) {
+    return !!(error && (error.silent || error.code === 'request_in_flight' || error.description === 'choose-gifts'));
+  }
+
+  function handleCartFailure(error) {
+    if (isSilentCartError(error)) return;
+    if (error && error.description === 'Sold out') {
+      showCartErrorToast('Please choose another available option.', 'This option is sold out');
+      return;
+    }
+    showCartErrorToast(cartErrorMessage(error));
+  }
+
+  function purchaseButtons() {
+    return [addBtn, buyBtn, buybarAddBtn, buybarBuyBtn, confirmAddBtn, confirmBuyBtn].filter(function (button) {
+      return button instanceof HTMLButtonElement;
+    });
+  }
+
+  function setPurchaseRequestBusy(busy, activeButton) {
+    purchaseButtons().forEach(function (button) {
+      if (busy) {
+        if (!button.hasAttribute('data-apgo-request-lock')) {
+          button.setAttribute('data-apgo-request-lock', button.disabled ? 'disabled' : 'enabled');
+        }
+        button.disabled = true;
+      } else if (button.hasAttribute('data-apgo-request-lock')) {
+        button.disabled = button.getAttribute('data-apgo-request-lock') === 'disabled';
+        button.removeAttribute('data-apgo-request-lock');
+      }
+    });
+
+    if (!(activeButton instanceof HTMLButtonElement)) return;
+    if (busy) {
+      activeButton.setAttribute('data-apgo-request-label', activeButton.textContent || '');
+      activeButton.textContent = 'Adding…';
+    } else if (activeButton.hasAttribute('data-apgo-request-label')) {
+      activeButton.textContent = activeButton.getAttribute('data-apgo-request-label') || '';
+      activeButton.removeAttribute('data-apgo-request-label');
+    }
+  }
+
   /*
     Fly-to-cart — animate a small thumbnail of the active variant image
     from the source button to the header cart icon. Pure CSS transition,
@@ -725,6 +805,9 @@
 
   function addToCart(opts) {
     opts = opts || {};
+    if (cartRequestInFlight) {
+      return Promise.reject({ code: 'request_in_flight', silent: true });
+    }
     var activeVariant = getCurrentVariant();
     if (isVariantSoldOut(activeVariant)) {
       syncPurchaseActions(activeVariant);
@@ -737,8 +820,8 @@
     }
     var btn = opts.btn;
     var fd = new FormData(form);
-    var orig = btn ? btn.textContent : '';
-    if (btn) { btn.disabled = true; btn.textContent = 'Adding…'; }
+    cartRequestInFlight = true;
+    setPurchaseRequestBusy(true, btn);
 
     /*
       Atomic GWP: if this X is mapped to a free gift Y, submit BOTH in a
@@ -867,7 +950,6 @@
             timestamp: Date.now()
           }));
         } catch (_) {}
-        if (btn) { btn.disabled = false; btn.textContent = orig; }
         /* Fly-to-cart animation — animates a tiny "ghost" of the product
            thumbnail from the clicked button to the header cart icon for
            visual confirmation. No-op on mobile or if either DOM target
@@ -901,22 +983,31 @@
       })
       .catch(function (err) {
         console.error('[apgo-cc-pdp] add failed:', err);
-        if (btn) { btn.disabled = false; btn.textContent = orig; }
         throw err;
+      })
+      .finally(function () {
+        cartRequestInFlight = false;
+        setPurchaseRequestBusy(false, btn);
+        syncPurchaseActions(getCurrentVariant());
+        syncConfirmModal();
       });
   }
 
   if (addBtn) {
     addBtn.addEventListener('click', function (e) {
       e.preventDefault();
-      addToCart({ btn: addBtn });
+      addToCart({ btn: addBtn }).catch(function (error) {
+        handleCartFailure(error);
+      });
     });
   }
   if (buyBtn) {
     buyBtn.addEventListener('click', function () {
       addToCart({ btn: buyBtn, silent: true }).then(function () {
         window.location.href = '/cart';
-      }).catch(function () {});
+      }).catch(function (error) {
+        handleCartFailure(error);
+      });
     });
   }
 
@@ -1230,7 +1321,9 @@
     addToCart({ btn: triggerBtn, silent: intent === 'buy' }).then(function () {
       closeConfirmModal();
       if (intent === 'buy') window.location.href = '/cart';
-    }).catch(function () {});
+    }).catch(function (error) {
+      handleCartFailure(error);
+    });
   }
   if (confirmAddBtn) confirmAddBtn.addEventListener('click', function () { commitFromConfirm('add', confirmAddBtn); });
   if (confirmBuyBtn) confirmBuyBtn.addEventListener('click', function () { commitFromConfirm('buy', confirmBuyBtn); });

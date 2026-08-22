@@ -12,6 +12,19 @@ import { cartPerformance } from '@theme/performance';
 
 /** @typedef {import('./utilities').TextComponent} TextComponent */
 
+let cartRequestErrorTimer;
+
+function showCartRequestError(message) {
+  const toast = window.apgoCartToastEnsure?.();
+  if (!(toast instanceof HTMLElement)) return;
+  toast.textContent = message || 'Unable to update the cart. Please try again.';
+  toast.setAttribute('role', 'alert');
+  toast.setAttribute('aria-live', 'assertive');
+  toast.setAttribute('data-visible', '');
+  window.clearTimeout(cartRequestErrorTimer);
+  cartRequestErrorTimer = window.setTimeout(() => toast.removeAttribute('data-visible'), 5200);
+}
+
 /**
  * A custom element that displays a cart items component.
  *
@@ -233,7 +246,9 @@ class CartItemsComponent extends Component {
       morphSection(this.sectionId, sectionHTML);
     } catch (error) {
       console.error(error);
-      this.#setBulkStatus(error instanceof Error ? error.message : 'Unable to update the cart. Please try again.');
+      const message = error instanceof Error ? error.message : 'Unable to update the cart. Please try again.';
+      this.#setBulkStatus(message);
+      showCartRequestError(message);
     } finally {
       this.#enableCartItems();
       this.removeAttribute('aria-busy');
@@ -409,6 +424,16 @@ class CartItemsComponent extends Component {
       })
       .catch((error) => {
         console.error(error);
+        showCartRequestError("We couldn't update your cart. Refreshing your cart…");
+        return sectionRenderer
+          .renderSection(this.sectionId, { cache: false })
+          .then(() => {
+            showCartRequestError('Your cart has been refreshed. Please try again.');
+          })
+          .catch((renderError) => {
+            console.error(renderError);
+            showCartRequestError("We couldn't refresh your cart. Please reload the page before continuing.");
+          });
       })
       .finally(() => {
         this.#enableCartItems();
