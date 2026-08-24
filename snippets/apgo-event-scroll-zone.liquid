@@ -16,12 +16,16 @@
                                  settings.variant_id.
   @param {object[]} products   - Legacy fallback: a flat product array.
                                  Used only when card_blocks is blank.
+  @param {string} variant_ids  - Optional newline-separated variant IDs,
+                                 aligned with the ordered product list.
   @param {string} zone_class   - Modifier suffix added to the wrapper
                                  (used for analytics / per-zone CSS hooks)
   @param {number} zone_position - One-based campaign section position.
   @param {boolean} hide_compare_at - When true, hides the compare-at price.
   @param {boolean} show_scroll_cue - Shows an animated hint and next button when the track overflows.
   @param {string} section_id   - Parent section id, used for unique card ids
+  @param {boolean} show_promo_limit - Shows the translated per-product promo limit note.
+  @param {string} [block_attributes] - Shopify editor attributes for the owning block.
 {%- enddoc -%}
 
 {%- liquid
@@ -40,6 +44,7 @@
   endif
 
   assign apgo_has_items = false
+  assign apgo_variant_ids = variant_ids | default: '' | newline_to_br | split: '<br />'
   if apgo_use_blocks
     for b in card_blocks
       if b.settings.product != blank
@@ -56,12 +61,13 @@
 
 {%- if apgo_has_items -%}
   <section
-    class="apgo-event-scroll-zone apgo-event-scroll-zone--{{ zone_class }}"
+    class="apgo-event-scroll-zone apgo-event-scroll-zone--{{ zone_class }}{% if show_promo_limit %} apgo-event-scroll-zone--discount{% endif %}"
     data-apgo-campaign-section
     data-section-id="{{ zone_class | escape }}"
     data-section-name="{{ heading | escape }}"
     data-section-position="{{ zone_position }}"
-    data-promotion-id="golden_bull_{{ zone_class | escape }}"
+    data-promotion-id="{{ campaign_id | default: 'golden_bull_award' | escape }}_{{ zone_class | escape }}"
+    {{ block_attributes }}
   >
     {%- if heading != blank -%}
       <h3 class="apgo-event-scroll-zone__heading">
@@ -87,7 +93,7 @@
         <span class="apgo-event-scroll-zone__scroll-chevrons" aria-hidden="true">››</span>
       </div>
     {%- endif -%}
-    {%- if zone_class == 'discount' -%}
+    {%- if show_promo_limit -%}
       <p class="apgo-event-scroll-zone__promo-limit">
         {{ 'apgo_event.product_limit_note' | t }}
       </p>
@@ -132,9 +138,11 @@
             {%- assign apgo_pm = product.metafields.custom.only_market.value | strip | upcase -%}
             {%- if apgo_pm != blank and localization.country.iso_code != apgo_pm -%}{%- continue -%}{%- endif -%}
             {%- assign apgo_event_card_uid = section_id | append: '-' | append: zone_class | append: '-' | append: product.id -%}
+            {%- assign apgo_product_variant_id = apgo_variant_ids[forloop.index0] | strip -%}
             <div class="apgo-event-scroll-zone__card" role="listitem">
               {% render 'apgo-event-listing-card',
                 product: product,
+                variant_id: apgo_product_variant_id,
                 section_id: section_id,
                 card_uid: apgo_event_card_uid,
                 card_position: forloop.index,

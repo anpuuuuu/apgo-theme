@@ -248,111 +248,115 @@
     }
   }
 
-  /* ── 🎁 Glaze gift-picker modal ────────────────────────────────────
-     Rendered by the event grid section when the Glaze promo carries a
-     "choose N free gifts" step. The Glaze zone's Add/Buy open this modal
-     (mobile bottom sheet / desktop centered dialog via CSS) instead of
-     adding directly; the modal CTA commits main + chosen gifts in one
-     /cart/add.js items[] call (gifts tagged _gift_pick; AIOD prices $0). */
-  var giftModal = document.querySelector('[data-apgo-event-gift-modal]');
-  var giftPickerEl = giftModal ? giftModal.querySelector('[data-apgo-cc-gift-picker]') : null;
-  var giftRequired = giftPickerEl ? (parseInt(giftPickerEl.getAttribute('data-gift-count'), 10) || 2) : 2;
-  var giftProperty = giftPickerEl ? (giftPickerEl.getAttribute('data-gift-property') || '_gift_pick') : '_gift_pick';
-  var giftQty = {};         // { variantId: qty } — same gift may be taken more than once
-  var giftMainVariant = null; // pending main-product variant id
-  var giftTriggerBtn = null;  // banner button that opened the modal (fly origin)
+  /* ── Generic gift-picker controllers ───────────────────────────────
+     Every promo block owns its own modal. Keeping selection state inside
+     a controller prevents one promotion from opening or mutating another
+     promotion's gift picker when multiple gift offers are on the page. */
+  var giftControllers = {};
+  var giftControllerList = [];
 
-  function giftTotal() {
-    var n = 0;
-    for (var k in giftQty) { if (Object.prototype.hasOwnProperty.call(giftQty, k)) n += giftQty[k]; }
-    return n;
-  }
-  function giftModalReady() { return giftTotal() === giftRequired; }
+  function createGiftController(giftModal) {
+    var giftPickerEl = giftModal.querySelector('[data-apgo-cc-gift-picker]');
+    var giftRequired = giftPickerEl ? (parseInt(giftPickerEl.getAttribute('data-gift-count'), 10) || 2) : 2;
+    var giftProperty = giftPickerEl ? (giftPickerEl.getAttribute('data-gift-property') || '_gift_pick') : '_gift_pick';
+    var giftQty = {};
+    var giftMainVariant = null;
+    var giftTriggerBtn = null;
 
-  function renderGiftModal() {
-    if (!giftModal) return;
-    var total = giftTotal();
-    var atMax = total >= giftRequired;
-    var opts = giftModal.querySelectorAll('[data-apgo-cc-gift-option]');
-    Array.prototype.forEach.call(opts, function (card) {
-      var id = card.getAttribute('data-gift-variant');
-      var soldout = card.classList.contains('is-soldout');
-      var qty = giftQty[id] || 0;
-      card.classList.toggle('is-selected', qty > 0);
-      var valueEl = card.querySelector('[data-apgo-cc-gift-qty-value]');
-      if (valueEl) valueEl.textContent = String(qty);
-      var minus = card.querySelector('[data-apgo-cc-gift-step="down"]');
-      var plus = card.querySelector('[data-apgo-cc-gift-step="up"]');
-      if (minus) minus.disabled = soldout || qty < 1;
-      if (plus) plus.disabled = soldout || atMax;
-    });
-    var counter = giftModal.querySelector('[data-apgo-cc-gift-counter]');
-    if (counter) counter.textContent = total + '/' + giftRequired;
-    if (giftPickerEl) giftPickerEl.classList.toggle('is-complete', giftModalReady());
-    var addCta = giftModal.querySelector('[data-apgo-event-gift-add]');
-    var buyCta = giftModal.querySelector('[data-apgo-event-gift-buy]');
-    if (addCta) addCta.disabled = !giftModalReady();
-    if (buyCta) buyCta.disabled = !giftModalReady();
-  }
-
-  function openGiftModal(intent, variantId, triggerBtn) {
-    if (!giftModal) return;
-    giftMainVariant = variantId;
-    giftTriggerBtn = triggerBtn || null;
-    giftModal.setAttribute('data-intent', intent);
-    giftModal.removeAttribute('hidden');
-    giftModal.setAttribute('aria-hidden', 'false');
-    document.documentElement.classList.add('apgo-event-gift-lock');
-    requestAnimationFrame(function () { giftModal.classList.add('is-open'); });
-    renderGiftModal();
-  }
-
-  function closeGiftModal() {
-    if (!giftModal) return;
-    giftModal.classList.remove('is-open');
-    giftModal.setAttribute('aria-hidden', 'true');
-    document.documentElement.classList.remove('apgo-event-gift-lock');
-    window.setTimeout(function () {
-      if (!giftModal.classList.contains('is-open')) giftModal.setAttribute('hidden', '');
-    }, 280);
-  }
-
-  function commitGiftModal(intent, ctaBtn) {
-    if (!giftModal || !giftMainVariant || !giftModalReady()) return;
-    if (ctaBtn) { ctaBtn.disabled = true; ctaBtn.setAttribute('aria-busy', 'true'); }
-    var items = [{ id: parseInt(giftMainVariant, 10), quantity: 1 }];
-    for (var gid in giftQty) {
-      if (!Object.prototype.hasOwnProperty.call(giftQty, gid)) continue;
-      if (giftQty[gid] < 1) continue;
-      var props = {};
-      props[giftProperty] = 'true';
-      items.push({ id: parseInt(gid, 10), quantity: giftQty[gid], properties: props });
-    }
-    fetch('/cart/add.js', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify({ items: items })
-    }).then(function (r) {
-      if (!r.ok) return r.json().then(function (err) { throw err; });
-      return r.json();
-    }).then(function () {
-      if (intent === 'buy') {
-        window.location.href = '/cart';
-        return;
+    function giftTotal() {
+      var n = 0;
+      for (var k in giftQty) {
+        if (Object.prototype.hasOwnProperty.call(giftQty, k)) n += giftQty[k];
       }
-      closeGiftModal();
-      if (giftTriggerBtn) flyGiftBox(giftTriggerBtn);
-      refreshCartUi();
-      if (ctaBtn) { ctaBtn.disabled = false; ctaBtn.removeAttribute('aria-busy'); }
-    }).catch(function (err) {
-      if (ctaBtn) { ctaBtn.disabled = false; ctaBtn.removeAttribute('aria-busy'); }
-      var msg = (err && (err.description || err.message)) ||
-                'Could not add to cart. Please try again.';
-      window.alert(msg);
-    });
-  }
+      return n;
+    }
 
-  if (giftModal) {
+    function giftModalReady() { return giftTotal() === giftRequired; }
+
+    function renderGiftModal() {
+      var total = giftTotal();
+      var atMax = total >= giftRequired;
+      var opts = giftModal.querySelectorAll('[data-apgo-cc-gift-option]');
+      Array.prototype.forEach.call(opts, function (card) {
+        var id = card.getAttribute('data-gift-variant');
+        var soldout = card.classList.contains('is-soldout');
+        var qty = giftQty[id] || 0;
+        card.classList.toggle('is-selected', qty > 0);
+        var valueEl = card.querySelector('[data-apgo-cc-gift-qty-value]');
+        if (valueEl) valueEl.textContent = String(qty);
+        var minus = card.querySelector('[data-apgo-cc-gift-step="down"]');
+        var plus = card.querySelector('[data-apgo-cc-gift-step="up"]');
+        if (minus) minus.disabled = soldout || qty < 1;
+        if (plus) plus.disabled = soldout || atMax;
+      });
+      var counter = giftModal.querySelector('[data-apgo-cc-gift-counter]');
+      if (counter) counter.textContent = total + '/' + giftRequired;
+      if (giftPickerEl) giftPickerEl.classList.toggle('is-complete', giftModalReady());
+      var addCta = giftModal.querySelector('[data-apgo-event-gift-add]');
+      var buyCta = giftModal.querySelector('[data-apgo-event-gift-buy]');
+      if (addCta) addCta.disabled = !giftModalReady();
+      if (buyCta) buyCta.disabled = !giftModalReady();
+    }
+
+    function closeGiftModal() {
+      giftModal.classList.remove('is-open');
+      giftModal.setAttribute('aria-hidden', 'true');
+      if (!document.querySelector('[data-apgo-event-gift-modal].is-open')) {
+        document.documentElement.classList.remove('apgo-event-gift-lock');
+      }
+      window.setTimeout(function () {
+        if (!giftModal.classList.contains('is-open')) giftModal.setAttribute('hidden', '');
+      }, 280);
+    }
+
+    function openGiftModal(intent, variantId, triggerBtn) {
+      Array.prototype.forEach.call(giftControllerList, function (controller) {
+        if (controller.modal !== giftModal) controller.close();
+      });
+      giftMainVariant = variantId;
+      giftTriggerBtn = triggerBtn || null;
+      giftModal.setAttribute('data-intent', intent);
+      giftModal.removeAttribute('hidden');
+      giftModal.setAttribute('aria-hidden', 'false');
+      document.documentElement.classList.add('apgo-event-gift-lock');
+      requestAnimationFrame(function () { giftModal.classList.add('is-open'); });
+      renderGiftModal();
+    }
+
+    function commitGiftModal(intent, ctaBtn) {
+      if (!giftMainVariant || !giftModalReady()) return;
+      if (ctaBtn) { ctaBtn.disabled = true; ctaBtn.setAttribute('aria-busy', 'true'); }
+      var items = [{ id: parseInt(giftMainVariant, 10), quantity: 1 }];
+      for (var gid in giftQty) {
+        if (!Object.prototype.hasOwnProperty.call(giftQty, gid) || giftQty[gid] < 1) continue;
+        var props = {};
+        props[giftProperty] = 'true';
+        items.push({ id: parseInt(gid, 10), quantity: giftQty[gid], properties: props });
+      }
+      fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ items: items })
+      }).then(function (r) {
+        if (!r.ok) return r.json().then(function (err) { throw err; });
+        return r.json();
+      }).then(function () {
+        if (intent === 'buy') {
+          window.location.href = '/cart';
+          return;
+        }
+        closeGiftModal();
+        if (giftTriggerBtn) flyGiftBox(giftTriggerBtn);
+        refreshCartUi();
+        if (ctaBtn) { ctaBtn.disabled = false; ctaBtn.removeAttribute('aria-busy'); }
+      }).catch(function (err) {
+        if (ctaBtn) { ctaBtn.disabled = false; ctaBtn.removeAttribute('aria-busy'); }
+        var msg = (err && (err.description || err.message)) ||
+                  'Could not add to cart. Please try again.';
+        window.alert(msg);
+      });
+    }
+
     giftModal.addEventListener('click', function (e) {
       if (e.target.closest('[data-apgo-event-gift-close]')) { closeGiftModal(); return; }
       var step = e.target.closest('[data-apgo-cc-gift-step]');
@@ -375,12 +379,31 @@
       var addCta = e.target.closest('[data-apgo-event-gift-add]');
       if (addCta) { commitGiftModal('add', addCta); return; }
       var buyCta = e.target.closest('[data-apgo-event-gift-buy]');
-      if (buyCta) { commitGiftModal('buy', buyCta); return; }
+      if (buyCta) { commitGiftModal('buy', buyCta); }
     });
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && giftModal.classList.contains('is-open')) closeGiftModal();
+
+    return { modal: giftModal, open: openGiftModal, close: closeGiftModal };
+  }
+
+  function initGiftControllers(root) {
+    var scope = root || document;
+    if (!scope.querySelectorAll) return;
+    var giftModals = scope.querySelectorAll('[data-apgo-event-gift-modal]');
+    Array.prototype.forEach.call(giftModals, function (giftModal) {
+      if (!giftModal.id || giftModal.getAttribute('data-gift-controller-ready') === 'true') return;
+      giftModal.setAttribute('data-gift-controller-ready', 'true');
+      var controller = createGiftController(giftModal);
+      giftControllers[giftModal.id] = controller;
+      giftControllerList.push(controller);
     });
   }
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    Array.prototype.forEach.call(giftControllerList, function (controller) {
+      if (controller.modal.classList.contains('is-open')) controller.close();
+    });
+  });
 
   function handleClick(e) {
     var addBtn = e.target.closest(ADD_SELECTOR);
@@ -395,9 +418,12 @@
     e.stopPropagation();
     if (btn.disabled) return;
 
-    /* Glaze zone with gift picker → open the modal instead of adding. */
-    if (giftModal && btn.closest('.apgo-event-linked-banner-zone--glaze')) {
-      openGiftModal(buyBtn ? 'buy' : 'add', variantId, btn);
+    /* A gift-enabled promo opens only the modal owned by that block. */
+    var giftZone = btn.closest('[data-apgo-event-gift-modal-id]');
+    var giftModalId = giftZone ? giftZone.getAttribute('data-apgo-event-gift-modal-id') : '';
+    var giftController = giftModalId ? giftControllers[giftModalId] : null;
+    if (giftController) {
+      giftController.open(buyBtn ? 'buy' : 'add', variantId, btn);
       return;
     }
 
@@ -572,9 +598,11 @@
   }
 
   document.addEventListener('click', handleClick);
+  initGiftControllers(document);
   initScrollCues(document);
   initStockCounters(document);
   document.addEventListener('shopify:section:load', function (event) {
+    initGiftControllers(event.target);
     initScrollCues(event.target);
     initStockCounters(event.target);
   });

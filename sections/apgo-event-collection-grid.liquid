@@ -1,10 +1,6 @@
 {% comment %}
-  APGO Special Event — 3-zone curated content panel.
-    Zone 1: Discount Zone (horizontal-scroll, admin-picked products)
-    Zone 2: Buy 1 Free 1 Zone (horizontal-scroll, admin-picked products)
-    Zone 3: Featured Stage (two stacked 1280:680 banners at the bottom)
-  Cards in zones 1 + 2 reuse apgo-event-listing-card for visual consistency
-  with the rest of the page.
+  APGO Special Event block builder. Promo banners, product carousels and
+  featured stages render in the exact order selected in Theme Editor.
 {% endcomment %}
 
 {{ 'apgo-event-page.css' | asset_url | stylesheet_tag }}
@@ -16,12 +12,19 @@
   if event_grid_id == blank
     assign event_grid_id = 'apgo-event-grid-' | append: section.id
   endif
+
+  assign apgo_campaign_id = 'golden_bull_award'
+  if template.suffix == 'special-event'
+    assign apgo_campaign_id = 'apgo_birthday'
+  elsif template.suffix != 'golden-bull-award' and page.handle != blank
+    assign apgo_campaign_id = page.handle | handleize | replace: '-', '_'
+  endif
 %}
 
 <div
   id="{{ event_grid_id }}"
   data-apgo-campaign-root
-  data-campaign-id="golden_bull_award"
+  data-campaign-id="{{ apgo_campaign_id | escape }}"
   data-market="{{ localization.country.iso_code }}"
   data-currency="{{ cart.currency.iso_code }}"
   class="
@@ -105,235 +108,167 @@
     {% endif %}
 
     <div class="apgo-event-collection-grid__panel-body">
-      {%- comment -%}
-        Build per-zone block arrays. Blocks are flat in Shopify, so we
-        partition by block.type. Each card block carries one product +
-        an optional variant_id (admin pastes from product admin URL).
-      {%- endcomment -%}
-      {%- assign discount_card_blocks = section.blocks | where: 'type', 'discount_card' -%}
-      {%- assign b1f1_card_blocks     = section.blocks | where: 'type', 'b1f1_card' -%}
-      {%- assign discount_zone_banner = section.settings.discount_zone_banner -%}
-      {%- if localization.country.iso_code == 'SG' and section.settings.discount_zone_banner_sg != blank -%}
-        {%- assign discount_zone_banner = section.settings.discount_zone_banner_sg -%}
-      {%- endif -%}
-      {%- comment -%}
-        Counter visibility follows the section setting on every page (the
-        golden-bull-award force-on override was removed so the toggle in
-        the theme editor actually controls it).
-      {%- endcomment -%}
-      {%- assign apgo_show_aurora_counter = section.settings.show_aurora_counter -%}
+      {%- assign apgo_rendered_position = 0 -%}
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign apgo_market_visible = true
+          if block.settings.market_visibility == 'my' and localization.country.iso_code == 'SG'
+            assign apgo_market_visible = false
+          elsif block.settings.market_visibility == 'sg' and localization.country.iso_code != 'SG'
+            assign apgo_market_visible = false
+          endif
+        -%}
 
-      {%- comment -%}
-        ZONE — Additional promo banner. MY/default and SG can use different
-        banners, products, and variants. Missing SG fields fall back to the
-        MY/default values so an incomplete SG setup never creates a blank zone.
-        This zone renders immediately before the Mid Month promo.
-      {%- endcomment -%}
-      {%- if section.settings.show_additional_promo_zone -%}
-        {%- assign additional_promo_banner = section.settings.additional_promo_zone_banner -%}
-        {%- assign additional_promo_product = section.settings.additional_promo_zone_product -%}
-        {%- assign additional_promo_variant = section.settings.additional_promo_zone_variant_id -%}
-        {%- if localization.country.iso_code == 'SG' -%}
-          {%- if section.settings.additional_promo_zone_banner_sg != blank -%}
-            {%- assign additional_promo_banner = section.settings.additional_promo_zone_banner_sg -%}
-          {%- endif -%}
-          {%- if section.settings.additional_promo_zone_product_sg != blank -%}
-            {%- assign additional_promo_product = section.settings.additional_promo_zone_product_sg -%}
-          {%- endif -%}
-          {%- if section.settings.additional_promo_zone_variant_id_sg != blank -%}
-            {%- assign additional_promo_variant = section.settings.additional_promo_zone_variant_id_sg -%}
-          {%- endif -%}
-        {%- endif -%}
-        {% render 'apgo-event-linked-banner-zone',
-          heading: section.settings.additional_promo_zone_heading,
-          message: section.settings.additional_promo_zone_message,
-          show_counter: false,
-          banner_image: additional_promo_banner,
-          product: additional_promo_product,
-          variant_id: additional_promo_variant,
-          single_cta_label: section.settings.additional_promo_zone_single_cta,
-          zone_class: 'additional-promo',
-          zone_position: 6 %}
-      {%- endif -%}
+        {%- case block.type -%}
+          {%- when 'promo_banner' -%}
+            {%- liquid
+              assign apgo_banner = block.settings.banner
+              assign apgo_product = block.settings.product
+              assign apgo_variant = block.settings.variant_id
+              if localization.country.iso_code == 'SG'
+                if block.settings.market_visibility == 'sg'
+                  assign apgo_banner = block.settings.banner_sg
+                  assign apgo_product = block.settings.product_sg
+                  assign apgo_variant = block.settings.variant_id_sg
+                else
+                  if block.settings.banner_sg != blank
+                    assign apgo_banner = block.settings.banner_sg
+                  endif
+                  if block.settings.product_sg != blank
+                    assign apgo_product = block.settings.product_sg
+                  endif
+                  if block.settings.variant_id_sg != blank
+                    assign apgo_variant = block.settings.variant_id_sg
+                  endif
+                endif
+              endif
 
-      {%- comment -%}
-        ZONE — Mid Month promo banner. Runs after the Additional promo,
-        above the 8.8 banner. Single banner/product, no region split: the
-        same offer runs in both markets, so there is nothing to branch on.
+              assign apgo_single_cta = blank
+              if block.settings.cta_mode == 'product_link'
+                assign apgo_single_cta = block.settings.single_cta_label | default: 'View deal'
+              endif
 
-        Its Add/Buy add straight to cart. apgo-event-cart.js only
-        diverts a zone's buttons into the gift modal when the button is
-        inside `--glaze`, so this zone is unaffected even while the
-        Glaze modal is present in the DOM.
-      {%- endcomment -%}
-      {%- if section.settings.show_midmonth_zone -%}
-        {% render 'apgo-event-linked-banner-zone',
-          heading: section.settings.midmonth_zone_heading,
-          message: section.settings.midmonth_zone_message,
-          show_counter: false,
-          banner_image: section.settings.midmonth_zone_banner,
-          product: section.settings.midmonth_zone_product,
-          variant_id: section.settings.midmonth_zone_variant_id,
-          single_cta_label: section.settings.midmonth_zone_single_cta,
-          zone_class: 'midmonth',
-          zone_position: 7 %}
-      {%- endif -%}
+              assign apgo_zone_key = 'promo-' | append: block.id | handleize
+              assign apgo_gift_modal_id = blank
+              if block.settings.gift_enabled and block.settings.gift_pool != blank
+                assign apgo_gift_modal_id = 'apgo-event-gift-' | append: block.id
+              endif
+            -%}
 
-      {%- comment -%} ZONE — Glaze promo banner (region-aware: SG sees SG banner+product, MY sees MY) {%- endcomment -%}
-      {%- if section.settings.show_glaze_zone -%}
-        {%- assign glaze_banner = section.settings.glaze_zone_banner -%}
-        {%- assign glaze_product = section.settings.glaze_zone_product -%}
-        {%- assign glaze_variant = section.settings.glaze_zone_variant_id -%}
-        {%- if localization.country.iso_code == 'SG' -%}
-          {%- if section.settings.glaze_zone_banner_sg != blank -%}{%- assign glaze_banner = section.settings.glaze_zone_banner_sg -%}{%- endif -%}
-          {%- if section.settings.glaze_zone_product_sg != blank -%}{%- assign glaze_product = section.settings.glaze_zone_product_sg -%}{%- endif -%}
-          {%- assign glaze_variant = section.settings.glaze_zone_variant_id_sg -%}
-        {%- endif -%}
-        {% render 'apgo-event-linked-banner-zone',
-          heading: section.settings.glaze_zone_heading,
-          message: section.settings.glaze_zone_message,
-          show_counter: false,
-          banner_image: glaze_banner,
-          product: glaze_product,
-          variant_id: glaze_variant,
-          zone_class: 'glaze',
-          zone_position: 1 %}
-
-        {%- comment -%}
-          🎁 Glaze gift-picker modal. The Glaze promo products carry a
-          "choose N free gifts" step (same as their PDPs), so the zone's
-          Add/Buy must NOT add directly — apgo-event-cart.js intercepts
-          them when this modal is present and opens it instead (mobile:
-          bottom sheet, desktop: centered dialog — CSS media query).
-          Commit posts main + chosen gifts in one /cart/add.js items[]
-          call with the _gift_pick property; AIOD prices the gifts $0.
-        {%- endcomment -%}
-        {%- if section.settings.glaze_gift_enabled and section.settings.glaze_gift_pool != blank -%}
-          <div class="apgo-event-gift-modal" data-apgo-event-gift-modal data-intent="add" aria-hidden="true" hidden>
-            <div class="apgo-event-gift-modal__backdrop" data-apgo-event-gift-close></div>
-            <div class="apgo-event-gift-modal__panel" role="dialog" aria-modal="true" aria-label="{{ section.settings.glaze_gift_heading | default: 'Choose your free gifts' | escape }}">
-              <button type="button" class="apgo-event-gift-modal__close" data-apgo-event-gift-close aria-label="Close">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
-              </button>
-              {%- render 'apgo-cc-gift-picker',
-                pool: section.settings.glaze_gift_pool,
-                heading: section.settings.glaze_gift_heading,
-                count: section.settings.glaze_gift_count,
-                property: '_gift_pick',
-                location: 'event' -%}
-              <div class="apgo-event-gift-modal__actions">
-                <button type="button" class="apgo-event-gift-modal__cta apgo-event-gift-modal__cta--add" data-apgo-event-gift-add disabled>Add to cart</button>
-                <button type="button" class="apgo-event-gift-modal__cta apgo-event-gift-modal__cta--buy" data-apgo-event-gift-buy disabled>Buy now</button>
+            {%- if apgo_market_visible and apgo_banner != blank and apgo_product != blank -%}
+              {%- assign apgo_rendered_position = apgo_rendered_position | plus: 1 -%}
+              {% render 'apgo-event-linked-banner-zone',
+                heading: block.settings.heading,
+                message: block.settings.message,
+                show_counter: block.settings.show_counter,
+                counter_release_total: block.settings.counter_release_total,
+                counter_manual_deduction: block.settings.counter_manual_deduction,
+                counter_milestone_total: block.settings.counter_milestone_total,
+                counter_flow_baseline: block.settings.counter_flow_baseline,
+                banner_image: apgo_banner,
+                product: apgo_product,
+                variant_id: apgo_variant,
+                single_cta_label: apgo_single_cta,
+                gift_modal_id: apgo_gift_modal_id,
+                zone_class: apgo_zone_key,
+                zone_position: apgo_rendered_position,
+                campaign_id: apgo_campaign_id,
+                block_attributes: block.shopify_attributes
+              %}
+              {%- if apgo_gift_modal_id != blank -%}
+                {% render 'apgo-event-gift-modal',
+                  modal_id: apgo_gift_modal_id,
+                  pool: block.settings.gift_pool,
+                  heading: block.settings.gift_heading,
+                  count: block.settings.gift_count
+                %}
+              {%- endif -%}
+            {%- elsif request.design_mode and apgo_market_visible -%}
+              <div class="apgo-event-block-placeholder" {{ block.shopify_attributes }}>
+                <strong>{{ block.settings.heading | default: 'Promo banner' | escape }}</strong>
+                <span>Select a banner and destination product for this market.</span>
               </div>
-            </div>
-          </div>
-        {%- endif -%}
-      {%- endif -%}
+            {%- endif -%}
 
-      {%- comment -%}
-        ZONE — Detergent promo banner. MY-only promo: the product carries
-        custom.only_market=MY (SG visitors get redirected off its PDP), so
-        hide the whole zone on the SG storefront too.
-      {%- endcomment -%}
-      {%- assign apgo_show_detergent = section.settings.show_detergent_zone -%}
-      {%- if section.settings.detergent_zone_hide_sg and localization.country.iso_code == 'SG' -%}
-        {%- assign apgo_show_detergent = false -%}
-      {%- endif -%}
-      {%- if apgo_show_detergent -%}
-        {% render 'apgo-event-linked-banner-zone',
-          heading: section.settings.detergent_zone_heading,
-          message: section.settings.detergent_zone_message,
-          show_counter: false,
-          banner_image: section.settings.detergent_zone_banner,
-          product: section.settings.detergent_zone_product,
-          variant_id: section.settings.detergent_zone_variant_id,
-          single_cta_label: section.settings.detergent_zone_single_cta,
-          zone_class: 'detergent',
-          zone_position: 2 %}
-      {%- endif -%}
+          {%- when 'product_carousel' -%}
+            {%- liquid
+              assign apgo_carousel_banner = block.settings.banner
+              if localization.country.iso_code == 'SG'
+                if block.settings.market_visibility == 'sg'
+                  assign apgo_carousel_banner = block.settings.banner_sg
+                elsif block.settings.banner_sg != blank
+                  assign apgo_carousel_banner = block.settings.banner_sg
+                endif
+              endif
+              assign apgo_zone_key = 'carousel-' | append: block.id | handleize
+            -%}
+            {%- if apgo_market_visible and apgo_carousel_banner != blank and block.settings.products != blank -%}
+              {%- assign apgo_rendered_position = apgo_rendered_position | plus: 1 -%}
+              {% render 'apgo-event-scroll-zone',
+                heading: block.settings.heading,
+                banner_image: apgo_carousel_banner,
+                products: block.settings.products,
+                variant_ids: block.settings.variant_ids,
+                zone_class: apgo_zone_key,
+                zone_position: apgo_rendered_position,
+                hide_compare_at: block.settings.hide_compare_at,
+                show_scroll_cue: block.settings.show_scroll_cue,
+                show_promo_limit: block.settings.show_promo_limit,
+                section_id: section.id,
+                campaign_id: apgo_campaign_id,
+                block_attributes: block.shopify_attributes
+              %}
+            {%- elsif request.design_mode and apgo_market_visible -%}
+              <div class="apgo-event-block-placeholder" {{ block.shopify_attributes }}>
+                <strong>{{ block.settings.heading | default: 'Product carousel' | escape }}</strong>
+                <span>Select a banner and at least one product for this market.</span>
+              </div>
+            {%- endif -%}
 
-
-      {%- comment -%} ZONE 1 — Discount horizontal scroll {%- endcomment -%}
-      {%- if section.settings.show_discount_zone -%}
-        {% render 'apgo-event-scroll-zone',
-          heading: section.settings.discount_zone_heading,
-          banner_image: discount_zone_banner,
-          card_blocks: discount_card_blocks,
-          products: section.settings.discount_zone_products,
-          zone_class: 'discount',
-          zone_position: 1,
-          hide_compare_at: section.settings.discount_zone_hide_compare_at,
-          show_scroll_cue: section.settings.show_product_scroll_cue,
-          section_id: section.id %}
-      {%- endif -%}
-
-      {%- comment -%} ZONE 3 — Buy 1 Free 1 horizontal scroll {%- endcomment -%}
-      {%- if section.settings.show_b1f1_zone -%}
-        {% render 'apgo-event-scroll-zone',
-          heading: section.settings.b1f1_zone_heading,
-          banner_image: section.settings.b1f1_zone_banner,
-          card_blocks: b1f1_card_blocks,
-          products: section.settings.b1f1_zone_products,
-          zone_class: 'b1f1',
-          zone_position: 3,
-          hide_compare_at: section.settings.b1f1_zone_hide_compare_at,
-          show_scroll_cue: section.settings.show_product_scroll_cue,
-          section_id: section.id %}
-      {%- endif -%}
-
-      {%- comment -%}
-        ZONE 3 — Featured Stage banner stack.
-        Both an image AND a product must be set per slot, otherwise the
-        whole stage hides (never a half-empty pedestal).
-      {%- endcomment -%}
-      {%- assign fp1 = section.settings.featured_product_1 -%}
-      {%- assign fp2 = section.settings.featured_product_2 -%}
-      {%- assign fi1 = section.settings.featured_image_1 -%}
-      {%- assign fi2 = section.settings.featured_image_2 -%}
-      {%- if section.settings.show_featured_stage
-            and fp1 != blank and fp2 != blank
-            and fi1 != blank and fi2 != blank -%}
-        <div class="apgo-event-featured-stage">
-          {%- if section.settings.featured_heading != blank -%}
-            <h3 class="apgo-event-featured-stage__heading">
-              <span class="apgo-event-featured-stage__heading-star" aria-hidden="true">★</span>
-              {{ section.settings.featured_heading }}
-              <span class="apgo-event-featured-stage__heading-star" aria-hidden="true">★</span>
-            </h3>
-          {%- endif -%}
-          <div class="apgo-event-featured-stage__stack">
-            {% render 'apgo-event-featured-banner',
-              product: fp1,
-              image: fi1,
-              badge: section.settings.featured_badge_text,
-              cta: section.settings.featured_cta_label,
-              hide_compare_at: section.settings.featured_stage_hide_compare_at %}
-            {% render 'apgo-event-featured-banner',
-              product: fp2,
-              image: fi2,
-              badge: section.settings.featured_badge_text,
-              cta: section.settings.featured_cta_label,
-              hide_compare_at: section.settings.featured_stage_hide_compare_at %}
-          </div>
-        </div>
-      {%- endif -%}
-
-      {%- comment -%} ZONE — Aurora single-product banner (moved to after Boss Recommends) {%- endcomment -%}
-      {%- if section.settings.show_aurora_zone -%}
-        {% render 'apgo-event-linked-banner-zone',
-          heading: section.settings.aurora_zone_heading,
-          message: section.settings.aurora_zone_message,
-          show_counter: apgo_show_aurora_counter,
-          counter_release_total: section.settings.aurora_counter_release_total,
-          counter_manual_deduction: section.settings.aurora_counter_manual_deduction,
-          counter_milestone_total: section.settings.aurora_counter_milestone_total,
-          counter_flow_baseline: section.settings.aurora_counter_flow_baseline,
-          banner_image: section.settings.aurora_zone_banner,
-          product: section.settings.aurora_zone_product,
-          variant_id: section.settings.aurora_zone_variant_id,
-          zone_class: 'aurora',
-          zone_position: 5 %}
-      {%- endif -%}
+          {%- when 'featured_stage' -%}
+            {%- if block.settings.product_1 != blank and block.settings.product_2 != blank and block.settings.image_1 != blank and block.settings.image_2 != blank -%}
+              {%- assign apgo_rendered_position = apgo_rendered_position | plus: 1 -%}
+              <section
+                class="apgo-event-featured-stage"
+                data-apgo-campaign-section
+                data-section-id="featured-{{ block.id | escape }}"
+                data-section-name="{{ block.settings.heading | escape }}"
+                data-section-position="{{ apgo_rendered_position }}"
+                data-promotion-id="{{ apgo_campaign_id | escape }}_featured_{{ block.id | escape }}"
+                {{ block.shopify_attributes }}
+              >
+                {%- if block.settings.heading != blank -%}
+                  <h3 class="apgo-event-featured-stage__heading">
+                    <span class="apgo-event-featured-stage__heading-star" aria-hidden="true">★</span>
+                    {{ block.settings.heading }}
+                    <span class="apgo-event-featured-stage__heading-star" aria-hidden="true">★</span>
+                  </h3>
+                {%- endif -%}
+                <div class="apgo-event-featured-stage__stack">
+                  {% render 'apgo-event-featured-banner',
+                    product: block.settings.product_1,
+                    image: block.settings.image_1,
+                    badge: block.settings.badge_text,
+                    cta: block.settings.cta_label,
+                    hide_compare_at: block.settings.hide_compare_at
+                  %}
+                  {% render 'apgo-event-featured-banner',
+                    product: block.settings.product_2,
+                    image: block.settings.image_2,
+                    badge: block.settings.badge_text,
+                    cta: block.settings.cta_label,
+                    hide_compare_at: block.settings.hide_compare_at
+                  %}
+                </div>
+              </section>
+            {%- elsif request.design_mode -%}
+              <div class="apgo-event-block-placeholder" {{ block.shopify_attributes }}>
+                <strong>{{ block.settings.heading | default: 'Featured stage' | escape }}</strong>
+                <span>Select both images and products to display this stage.</span>
+              </div>
+            {%- endif -%}
+        {%- endcase -%}
+      {%- endfor -%}
     </div>
   </div>
 </div>
@@ -343,6 +278,7 @@
   "name": "Event Collection Grid",
   "tag": "section",
   "class": "apgo-event-collection-grid-wrapper",
+  "max_blocks": 30,
   "enabled_on": {
     "templates": ["page"]
   },
@@ -396,13 +332,6 @@
     },
     {
       "type": "checkbox",
-      "id": "show_product_scroll_cue",
-      "label": "Show product swipe cue",
-      "info": "Adds an animated swipe hint and a large next button to horizontal product lists.",
-      "default": false
-    },
-    {
-      "type": "checkbox",
       "id": "show_festive_lockup",
       "label": "Show festive heading lockup",
       "info": "Adds gold star icons either side of the heading + optional anniversary badge above.",
@@ -414,455 +343,6 @@
       "label": "Anniversary badge text",
       "info": "Small gold pill above the heading. Leave blank to hide.",
       "visible_if": "{{ section.settings.show_festive_lockup }}"
-    },
-    {
-      "type": "header",
-      "content": "Discount Zone"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_discount_zone",
-      "label": "Show discount zone",
-      "default": true
-    },
-    {
-      "type": "text",
-      "id": "discount_zone_heading",
-      "label": "Zone heading",
-      "default": "DISCOUNT DEALS"
-    },
-    {
-      "type": "image_picker",
-      "id": "discount_zone_banner",
-      "label": "Malaysia / default banner",
-      "info": "Shown in Malaysia and all non-Singapore markets. Not clickable. Leave blank to hide."
-    },
-    {
-      "type": "image_picker",
-      "id": "discount_zone_banner_sg",
-      "label": "Singapore discount banner",
-      "info": "Shown only when the selected country is Singapore. Falls back to the Malaysia / default banner when blank."
-    },
-    {
-      "type": "product_list",
-      "id": "discount_zone_products",
-      "label": "Discount products (LEGACY — use blocks below)",
-      "info": "Only used when no 'Discount card' blocks are added. Add discount cards via 'Add block' for per-variant control.",
-      "limit": 12
-    },
-    {
-      "type": "checkbox",
-      "id": "discount_zone_hide_compare_at",
-      "label": "Hide original (strikethrough) price",
-      "info": "Tick to show only the current price on Discount-zone cards.",
-      "default": false
-    },
-    {
-      "type": "header",
-      "content": "Single-product linked banner"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_aurora_zone",
-      "label": "Show linked banner zone",
-      "default": false
-    },
-    {
-      "type": "text",
-      "id": "aurora_zone_heading",
-      "label": "Zone heading"
-    },
-    {
-      "type": "text",
-      "id": "aurora_zone_message",
-      "label": "Limited-offer message"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_aurora_counter",
-      "label": "Show Aurora counter",
-      "default": false
-    },
-    {
-      "type": "text",
-      "id": "aurora_counter_milestone_total",
-      "label": "Previous sold-out milestone",
-      "info": "Display-only number for the completed first release.",
-      "default": "500",
-      "visible_if": "{{ section.settings.show_aurora_counter }}"
-    },
-    {
-      "type": "text",
-      "id": "aurora_counter_release_total",
-      "label": "Current release sets",
-      "info": "Starting allocation for this release. Remaining = this number minus the extra manual deduction.",
-      "default": "88",
-      "visible_if": "{{ section.settings.show_aurora_counter }}"
-    },
-    {
-      "type": "text",
-      "id": "aurora_counter_manual_deduction",
-      "label": "Extra deduction (manual)",
-      "info": "Sets to subtract from the current release on top of live paid orders.",
-      "default": "0",
-      "visible_if": "{{ section.settings.show_aurora_counter }}"
-    },
-    {
-      "type": "text",
-      "id": "aurora_counter_flow_baseline",
-      "label": "Flow baseline (live auto-count)",
-      "info": "Set 0 to keep the counter fully manual. To make it count down live with paid orders, enter the current apgo_campaign.aurora_paid_sets metafield value here — only orders AFTER this baseline reduce the counter. Remaining = Current release − Extra deduction − (paid orders since baseline).",
-      "default": "0",
-      "visible_if": "{{ section.settings.show_aurora_counter }}"
-    },
-    {
-      "type": "image_picker",
-      "id": "aurora_zone_banner",
-      "label": "Clickable banner",
-      "info": "The zone stays hidden until both a banner and product are selected."
-    },
-    {
-      "type": "product",
-      "id": "aurora_zone_product",
-      "label": "Banner destination product",
-      "info": "The whole banner links directly to this product page."
-    },
-    {
-      "type": "text",
-      "id": "aurora_zone_variant_id",
-      "label": "Aurora deal variant ID",
-      "info": "Optional. Paste the numeric variant ID for the promoted set. When blank, the first available variant is used."
-    },
-    {
-      "type": "header",
-      "content": "Glaze Zone (region-aware)"
-    },
-    {
-      "type": "paragraph",
-      "content": "Renders first on the page. SG storefront shows the SG banner + links to the SG product; everywhere else shows the MY banner + product. Zone hides until a banner + product are set."
-    },
-    {
-      "type": "checkbox",
-      "id": "show_glaze_zone",
-      "label": "Show Glaze zone",
-      "default": false
-    },
-    {
-      "type": "text",
-      "id": "glaze_zone_heading",
-      "label": "Heading"
-    },
-    {
-      "type": "text",
-      "id": "glaze_zone_message",
-      "label": "Message"
-    },
-    {
-      "type": "image_picker",
-      "id": "glaze_zone_banner",
-      "label": "Banner — MY (default)"
-    },
-    {
-      "type": "product",
-      "id": "glaze_zone_product",
-      "label": "Destination product — MY"
-    },
-    {
-      "type": "text",
-      "id": "glaze_zone_variant_id",
-      "label": "Variant ID — MY (optional)"
-    },
-    {
-      "type": "image_picker",
-      "id": "glaze_zone_banner_sg",
-      "label": "Banner — SG"
-    },
-    {
-      "type": "product",
-      "id": "glaze_zone_product_sg",
-      "label": "Destination product — SG"
-    },
-    {
-      "type": "text",
-      "id": "glaze_zone_variant_id_sg",
-      "label": "Variant ID — SG (optional)"
-    },
-    {
-      "type": "checkbox",
-      "id": "glaze_gift_enabled",
-      "label": "Glaze buttons open the free-gift picker",
-      "info": "When on, the zone's Add/Buy open a popup to choose the free gifts (same flow as the promo PDP) instead of adding directly. Pricing to $0 is done by AIOD.",
-      "default": false
-    },
-    {
-      "type": "product_list",
-      "id": "glaze_gift_pool",
-      "label": "Gift pool (products the customer can choose from)",
-      "limit": 12
-    },
-    {
-      "type": "text",
-      "id": "glaze_gift_count",
-      "label": "How many gifts the customer must pick",
-      "default": "2"
-    },
-    {
-      "type": "text",
-      "id": "glaze_gift_heading",
-      "label": "Gift picker heading",
-      "default": "Choose 2 gifts — FREE"
-    },
-    {
-      "type": "header",
-      "content": "Detergent Zone"
-    },
-    {
-      "type": "paragraph",
-      "content": "Renders second. Single product/banner (no region split). Zone hides until a banner + product are set."
-    },
-    {
-      "type": "checkbox",
-      "id": "show_detergent_zone",
-      "label": "Show Detergent zone",
-      "default": false
-    },
-    {
-      "type": "checkbox",
-      "id": "detergent_zone_hide_sg",
-      "label": "Hide Detergent zone on SG storefront",
-      "info": "The detergent promo is MY-only (SG visitors are redirected off its product page), so keep this on to also hide its banner from SG.",
-      "default": true
-    },
-    {
-      "type": "text",
-      "id": "detergent_zone_heading",
-      "label": "Heading"
-    },
-    {
-      "type": "text",
-      "id": "detergent_zone_message",
-      "label": "Message"
-    },
-    {
-      "type": "image_picker",
-      "id": "detergent_zone_banner",
-      "label": "Banner"
-    },
-    {
-      "type": "product",
-      "id": "detergent_zone_product",
-      "label": "Destination product"
-    },
-    {
-      "type": "text",
-      "id": "detergent_zone_variant_id",
-      "label": "Variant ID (optional)"
-    },
-    {
-      "type": "text",
-      "id": "detergent_zone_single_cta",
-      "label": "Single button label",
-      "info": "When filled (e.g. \"Grab Deals Now\"), the banner shows ONE full-width button that opens the product page instead of Add to cart / Buy now. Leave empty to keep the two buttons.",
-      "default": "Grab Deals Now"
-    },
-    {
-      "type": "header",
-      "content": "Mid Month Zone"
-    },
-    {
-      "type": "paragraph",
-      "content": "Renders after the Additional Promo zone, above the 8.8 banner. Single product/banner with no region split — SG and MY see the same thing. Zone hides until a banner + product are set."
-    },
-    {
-      "type": "checkbox",
-      "id": "show_midmonth_zone",
-      "label": "Show Mid Month zone",
-      "default": false
-    },
-    {
-      "type": "text",
-      "id": "midmonth_zone_heading",
-      "label": "Heading"
-    },
-    {
-      "type": "text",
-      "id": "midmonth_zone_message",
-      "label": "Message"
-    },
-    {
-      "type": "image_picker",
-      "id": "midmonth_zone_banner",
-      "label": "Banner"
-    },
-    {
-      "type": "product",
-      "id": "midmonth_zone_product",
-      "label": "Destination product"
-    },
-    {
-      "type": "text",
-      "id": "midmonth_zone_variant_id",
-      "label": "Variant ID (optional)"
-    },
-    {
-      "type": "text",
-      "id": "midmonth_zone_single_cta",
-      "label": "Single button label",
-      "info": "Leave empty to keep the two buttons (Add to cart / Buy now), same as the 8.8 banner. Fill it (e.g. \"Grab Deals Now\") to show one full-width button that opens the product page instead."
-    },
-    {
-      "type": "header",
-      "content": "Additional Promo Zone (region-aware)"
-    },
-    {
-      "type": "paragraph",
-      "content": "Renders before the Mid Month zone. SG can use its own banner, product, and variant; blank SG fields fall back to the MY/default values. The zone stays hidden until its active market has both a banner and product."
-    },
-    {
-      "type": "checkbox",
-      "id": "show_additional_promo_zone",
-      "label": "Show additional promo zone",
-      "default": false
-    },
-    {
-      "type": "text",
-      "id": "additional_promo_zone_heading",
-      "label": "Heading"
-    },
-    {
-      "type": "text",
-      "id": "additional_promo_zone_message",
-      "label": "Message"
-    },
-    {
-      "type": "image_picker",
-      "id": "additional_promo_zone_banner",
-      "label": "Banner — MY (default)"
-    },
-    {
-      "type": "product",
-      "id": "additional_promo_zone_product",
-      "label": "Destination product — MY"
-    },
-    {
-      "type": "text",
-      "id": "additional_promo_zone_variant_id",
-      "label": "Variant ID — MY (optional)"
-    },
-    {
-      "type": "image_picker",
-      "id": "additional_promo_zone_banner_sg",
-      "label": "Banner — SG"
-    },
-    {
-      "type": "product",
-      "id": "additional_promo_zone_product_sg",
-      "label": "Destination product — SG"
-    },
-    {
-      "type": "text",
-      "id": "additional_promo_zone_variant_id_sg",
-      "label": "Variant ID — SG (optional)"
-    },
-    {
-      "type": "text",
-      "id": "additional_promo_zone_single_cta",
-      "label": "Single button label",
-      "info": "Leave empty for Add to cart and Buy now. Fill this to show one full-width button that opens the selected market's product page."
-    },
-    {
-      "type": "header",
-      "content": "Buy 1 Free 1 Zone"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_b1f1_zone",
-      "label": "Show Buy 1 Free 1 zone",
-      "default": true
-    },
-    {
-      "type": "text",
-      "id": "b1f1_zone_heading",
-      "label": "Zone heading",
-      "default": "BUY 1 FREE 1"
-    },
-    {
-      "type": "image_picker",
-      "id": "b1f1_zone_banner",
-      "label": "Banner image (above products)",
-      "info": "Decorative image shown between the heading and the product list. Not clickable. Leave blank to hide."
-    },
-    {
-      "type": "product_list",
-      "id": "b1f1_zone_products",
-      "label": "B1F1 products (LEGACY — use blocks below)",
-      "info": "Only used when no 'Buy 1 Free 1 card' blocks are added. Add B1F1 cards via 'Add block' for per-variant control.",
-      "limit": 12
-    },
-    {
-      "type": "checkbox",
-      "id": "b1f1_zone_hide_compare_at",
-      "label": "Hide original (strikethrough) price",
-      "info": "Tick to show only the current price on B1F1-zone cards (recommended — original price next to 'Buy 1 Free 1' framing can read as a double-deal).",
-      "default": true
-    },
-    {
-      "type": "header",
-      "content": "Featured Stage (banner stack at bottom)"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_featured_stage",
-      "label": "Show featured stage",
-      "info": "Hides automatically if any banner image OR product slot is empty.",
-      "default": true
-    },
-    {
-      "type": "text",
-      "id": "featured_heading",
-      "label": "Stage heading",
-      "default": "BIRTHDAY HIGHLIGHTS"
-    },
-    {
-      "type": "product",
-      "id": "featured_product_1",
-      "label": "Hero product 01"
-    },
-    {
-      "type": "image_picker",
-      "id": "featured_image_1",
-      "label": "Banner image 01",
-      "info": "Banner frame adapts to whatever aspect ratio you upload — no cropping."
-    },
-    {
-      "type": "product",
-      "id": "featured_product_2",
-      "label": "Hero product 02"
-    },
-    {
-      "type": "image_picker",
-      "id": "featured_image_2",
-      "label": "Banner image 02",
-      "info": "Banner frame adapts to whatever aspect ratio you upload — no cropping."
-    },
-    {
-      "type": "text",
-      "id": "featured_badge_text",
-      "label": "Card pill badge (below banner)",
-      "default": "BEST VALUE"
-    },
-    {
-      "type": "text",
-      "id": "featured_cta_label",
-      "label": "Card CTA button label",
-      "default": "View deal"
-    },
-    {
-      "type": "checkbox",
-      "id": "featured_stage_hide_compare_at",
-      "label": "Hide original (strikethrough) price",
-      "info": "Tick to show only the current price on Featured Stage banner cards.",
-      "default": false
     },
     {
       "type": "header",
@@ -924,47 +404,201 @@
   ],
   "blocks": [
     {
-      "type": "discount_card",
-      "name": "Discount card",
-      "limit": 12,
+      "type": "promo_banner",
+      "name": "Promo banner",
+      "limit": 20,
       "settings": [
         {
-          "type": "paragraph",
-          "content": "One card in the Discount Zone scroll. Pick the product, then (optional) paste the specific variant ID you want the card to link to and price. Variant ID is the long number at the end of a variant's admin URL: /admin/products/.../variants/[THIS NUMBER]."
+          "type": "select",
+          "id": "market_visibility",
+          "label": "Market visibility",
+          "options": [
+            { "value": "both", "label": "Malaysia + Singapore" },
+            { "value": "my", "label": "Malaysia / default only" },
+            { "value": "sg", "label": "Singapore only" }
+          ],
+          "default": "both"
+        },
+        { "type": "text", "id": "heading", "label": "Heading" },
+        { "type": "text", "id": "message", "label": "Promotion message" },
+        { "type": "image_picker", "id": "banner", "label": "Malaysia / default banner" },
+        { "type": "product", "id": "product", "label": "Malaysia / default product" },
+        { "type": "text", "id": "variant_id", "label": "Malaysia / default variant ID (optional)" },
+        {
+          "type": "image_picker",
+          "id": "banner_sg",
+          "label": "Singapore banner",
+          "info": "Falls back to the Malaysia / default banner when blank."
         },
         {
           "type": "product",
-          "id": "product",
-          "label": "Product"
+          "id": "product_sg",
+          "label": "Singapore product",
+          "info": "Falls back to the Malaysia / default product when blank."
+        },
+        { "type": "text", "id": "variant_id_sg", "label": "Singapore variant ID (optional)" },
+        {
+          "type": "select",
+          "id": "cta_mode",
+          "label": "Button mode",
+          "options": [
+            { "value": "add_buy", "label": "Add to cart + Buy now" },
+            { "value": "product_link", "label": "Single product-page button" }
+          ],
+          "default": "add_buy"
         },
         {
           "type": "text",
-          "id": "variant_id",
-          "label": "Variant ID (optional)",
-          "info": "Leave blank to use the product's default variant."
+          "id": "single_cta_label",
+          "label": "Single button label",
+          "default": "Grab Deals Now",
+          "visible_if": "{{ block.settings.cta_mode == 'product_link' }}"
+        },
+        {
+          "type": "header",
+          "content": "Optional gift picker"
+        },
+        {
+          "type": "checkbox",
+          "id": "gift_enabled",
+          "label": "Open a free-gift picker",
+          "info": "The discount app remains responsible for pricing selected gifts at zero.",
+          "default": false
+        },
+        {
+          "type": "product_list",
+          "id": "gift_pool",
+          "label": "Gift pool",
+          "limit": 12,
+          "info": "Used only when the free-gift picker is enabled. Shopify does not support conditional visibility on product-list settings."
+        },
+        {
+          "type": "range",
+          "id": "gift_count",
+          "label": "Required gift quantity",
+          "min": 1,
+          "max": 6,
+          "step": 1,
+          "default": 2,
+          "visible_if": "{{ block.settings.gift_enabled }}"
+        },
+        {
+          "type": "text",
+          "id": "gift_heading",
+          "label": "Gift picker heading",
+          "default": "Choose your free gifts",
+          "visible_if": "{{ block.settings.gift_enabled }}"
+        },
+        {
+          "type": "header",
+          "content": "Optional stock counter"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_counter",
+          "label": "Show inventory counter",
+          "default": false
+        },
+        {
+          "type": "text",
+          "id": "counter_milestone_total",
+          "label": "Previous milestone",
+          "default": "500",
+          "visible_if": "{{ block.settings.show_counter }}"
+        },
+        {
+          "type": "text",
+          "id": "counter_release_total",
+          "label": "Release total",
+          "default": "88",
+          "visible_if": "{{ block.settings.show_counter }}"
+        },
+        {
+          "type": "text",
+          "id": "counter_manual_deduction",
+          "label": "Manual deduction",
+          "default": "0",
+          "visible_if": "{{ block.settings.show_counter }}"
+        },
+        {
+          "type": "text",
+          "id": "counter_flow_baseline",
+          "label": "Flow baseline",
+          "info": "Keep 0 for a fully manual counter.",
+          "default": "0",
+          "visible_if": "{{ block.settings.show_counter }}"
         }
       ]
     },
     {
-      "type": "b1f1_card",
-      "name": "Buy 1 Free 1 card",
-      "limit": 12,
+      "type": "product_carousel",
+      "name": "Product carousel",
+      "limit": 8,
       "settings": [
         {
-          "type": "paragraph",
-          "content": "One card in the Buy 1 Free 1 Zone scroll. Pick the product, then (optional) paste the specific variant ID you want the card to link to and price. Variant ID is the long number at the end of a variant's admin URL: /admin/products/.../variants/[THIS NUMBER]."
+          "type": "select",
+          "id": "market_visibility",
+          "label": "Market visibility",
+          "options": [
+            { "value": "both", "label": "Malaysia + Singapore" },
+            { "value": "my", "label": "Malaysia / default only" },
+            { "value": "sg", "label": "Singapore only" }
+          ],
+          "default": "both"
+        },
+        { "type": "text", "id": "heading", "label": "Heading", "default": "PROMOTION DEALS" },
+        { "type": "image_picker", "id": "banner", "label": "Malaysia / default banner" },
+        {
+          "type": "image_picker",
+          "id": "banner_sg",
+          "label": "Singapore banner",
+          "info": "Falls back to the Malaysia / default banner when blank."
         },
         {
-          "type": "product",
-          "id": "product",
-          "label": "Product"
+          "type": "product_list",
+          "id": "products",
+          "label": "Products",
+          "limit": 12
         },
         {
-          "type": "text",
-          "id": "variant_id",
-          "label": "Variant ID (optional)",
-          "info": "Leave blank to use the product's default variant."
+          "type": "textarea",
+          "id": "variant_ids",
+          "label": "Variant IDs (advanced, optional)",
+          "info": "One numeric variant ID per line, in the same order as the product list. Leave a line blank to use that product's normal listing variant."
+        },
+        {
+          "type": "checkbox",
+          "id": "hide_compare_at",
+          "label": "Hide original price",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "show_promo_limit",
+          "label": "Show promotional purchase-limit note",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "show_scroll_cue",
+          "label": "Show swipe cue and carousel arrows",
+          "default": false
         }
+      ]
+    },
+    {
+      "type": "featured_stage",
+      "name": "Featured stage",
+      "limit": 4,
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading", "default": "FEATURED HIGHLIGHTS" },
+        { "type": "product", "id": "product_1", "label": "Product 01" },
+        { "type": "image_picker", "id": "image_1", "label": "Banner image 01" },
+        { "type": "product", "id": "product_2", "label": "Product 02" },
+        { "type": "image_picker", "id": "image_2", "label": "Banner image 02" },
+        { "type": "text", "id": "badge_text", "label": "Badge", "default": "BEST VALUE" },
+        { "type": "text", "id": "cta_label", "label": "CTA label", "default": "View deal" },
+        { "type": "checkbox", "id": "hide_compare_at", "label": "Hide original price", "default": false }
       ]
     }
   ],

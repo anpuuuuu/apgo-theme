@@ -656,6 +656,8 @@
     if (!root || root.getAttribute('data-apgo-campaign-initialized') === 'true') return;
     root.setAttribute('data-apgo-campaign-initialized', 'true');
 
+    campaignId = root.getAttribute('data-campaign-id') || campaignId;
+
     var context = getCampaignContext(root);
     publish('apgo_campaign_view', Object.assign(
       {},

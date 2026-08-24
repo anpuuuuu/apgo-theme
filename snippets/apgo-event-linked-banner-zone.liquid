@@ -11,8 +11,11 @@
   @param {image} banner_image - Promotional banner image.
   @param {product} product - Product opened when the banner is selected.
   @param {string} variant_id - Optional numeric ID of the promoted product variant.
+  @param {string} [single_cta_label] - Replaces the two cart buttons with one product-page link.
   @param {string} zone_class - Modifier suffix for the zone wrapper.
   @param {number} zone_position - One-based campaign section position.
+  @param {string} [gift_modal_id] - Optional id of the gift picker controlled by this zone.
+  @param {string} [block_attributes] - Shopify editor attributes for the owning block.
 {% enddoc %}
 
 {% if banner_image != blank and product != blank %}
@@ -43,14 +46,16 @@
   %}
   <section
     class="apgo-event-linked-banner-zone apgo-event-linked-banner-zone--{{ zone_class }}"
+    {% if gift_modal_id != blank %}data-apgo-event-gift-modal-id="{{ gift_modal_id | escape }}"{% endif %}
     data-apgo-campaign-section
     data-section-id="{{ zone_class | escape }}"
     data-section-name="{{ heading | escape }}"
     data-section-position="{{ zone_position }}"
-    data-promotion-id="golden_bull_{{ zone_class | escape }}"
+    data-promotion-id="{{ campaign_id | default: 'golden_bull_award' | escape }}_{{ zone_class | escape }}"
     data-product-id="{{ product.id }}"
     data-product-name="{{ product.title | escape }}"
     data-product-handle="{{ product.handle | escape }}"
+    {{ block_attributes }}
   >
     {% if heading != blank %}
       <h3 class="apgo-event-scroll-zone__heading">
@@ -78,7 +83,7 @@
         class="apgo-event-linked-banner-zone__link"
         href="{{ action_variant.url }}"
         data-apgo-campaign-promotion-link
-        data-promotion-id="golden_bull_{{ zone_class | escape }}_banner"
+        data-promotion-id="{{ campaign_id | default: 'golden_bull_award' | escape }}_{{ zone_class | escape }}_banner"
         data-promotion-name="{{ heading | escape }}"
         data-variant-id="{{ action_variant.id }}"
         aria-label="{{ product.title | escape }}"
@@ -116,7 +121,7 @@
               class="apgo-event-linked-banner-zone__button apgo-event-linked-banner-zone__button--single"
               href="{{ action_variant.url }}"
               data-apgo-campaign-promotion-link
-              data-promotion-id="golden_bull_{{ zone_class | escape }}_cta"
+              data-promotion-id="{{ campaign_id | default: 'golden_bull_award' | escape }}_{{ zone_class | escape }}_cta"
               data-promotion-name="{{ heading | escape }}"
               aria-label="{{ single_cta_label | escape }}: {{ product.title | escape }}"
             >{{ single_cta_label }}</a>
