@@ -302,6 +302,42 @@
             "max_quantity": 0
           }
         },
+        "offer_item_7yFcX8": {
+          "type": "offer_item",
+          "settings": {
+            "tab_slot": "tab_1",
+            "product": "atomic-glaze-coating-8-8-promotion",
+            "variant_id": "",
+            "price_mode": "actual",
+            "promo_price_my": "",
+            "promo_price_sg": "",
+            "max_quantity": 0
+          }
+        },
+        "offer_item_prYgei": {
+          "type": "offer_item",
+          "settings": {
+            "tab_slot": "tab_1",
+            "product": "atomic-glaze-coating-sg61-promotion",
+            "variant_id": "",
+            "price_mode": "actual",
+            "promo_price_my": "",
+            "promo_price_sg": "",
+            "max_quantity": 0
+          }
+        },
+        "offer_item_VmzNBU": {
+          "type": "offer_item",
+          "settings": {
+            "tab_slot": "tab_1",
+            "product": "✨atomic-coating-special-ltd-bundle-✨",
+            "variant_id": "",
+            "price_mode": "actual",
+            "promo_price_my": "",
+            "promo_price_sg": "",
+            "max_quantity": 0
+          }
+        },
         "offer_item_XVrdXC": {
           "type": "offer_item",
           "settings": {
@@ -441,6 +477,9 @@
         "offer_item_UcCx3d",
         "offer_item_TYdFdk",
         "offer_item_NU8Ved",
+        "offer_item_7yFcX8",
+        "offer_item_prYgei",
+        "offer_item_VmzNBU",
         "offer_item_XVrdXC",
         "offer_item_U3FEd8",
         "offer_item_X8EMPn",
