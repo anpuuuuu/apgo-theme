@@ -84,7 +84,8 @@
             "subtitle_sg": "Special price for merdeka Promo · 2 set per product, per order",
             "audience": "trigger",
             "trigger_products": [
-              "atomic-crystal-merdeka-set"
+              "atomic-crystal-merdeka-set",
+              "jc-birthday-special-atomic-crystal-plus-promotion"
             ],
             "trigger_min_quantity": 1,
             "view_all_label": "",
