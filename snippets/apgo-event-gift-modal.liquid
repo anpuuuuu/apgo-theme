@@ -1,0 +1,37 @@
+{% doc %}
+  Renders one gift picker controlled by a promo-banner block.
+
+  @param {string} modal_id - Unique modal id, normally derived from block.id.
+  @param {product[]} pool - Products available as gifts.
+  @param {string} heading - Gift picker heading.
+  @param {number} count - Required number of selected gifts.
+{% enddoc %}
+
+{% if modal_id != blank and pool != blank %}
+  <div
+    id="{{ modal_id | escape }}"
+    class="apgo-event-gift-modal"
+    data-apgo-event-gift-modal
+    data-intent="add"
+    aria-hidden="true"
+    hidden
+  >
+    <div class="apgo-event-gift-modal__backdrop" data-apgo-event-gift-close></div>
+    <div class="apgo-event-gift-modal__panel" role="dialog" aria-modal="true" aria-label="{{ heading | default: 'Choose your free gifts' | escape }}">
+      <button type="button" class="apgo-event-gift-modal__close" data-apgo-event-gift-close aria-label="Close">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+      {% render 'apgo-cc-gift-picker',
+        pool: pool,
+        heading: heading,
+        count: count,
+        property: '_gift_pick',
+        location: 'event'
+      %}
+      <div class="apgo-event-gift-modal__actions">
+        <button type="button" class="apgo-event-gift-modal__cta apgo-event-gift-modal__cta--add" data-apgo-event-gift-add disabled>Add to cart</button>
+        <button type="button" class="apgo-event-gift-modal__cta apgo-event-gift-modal__cta--buy" data-apgo-event-gift-buy disabled>Buy now</button>
+      </div>
+    </div>
+  </div>
+{% endif %}

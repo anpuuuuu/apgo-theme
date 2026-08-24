@@ -140,6 +140,21 @@
   background: var(--apgo-event-panel-bg, #fcead8);
 }
 
+.apgo-event-block-placeholder {
+  display: grid;
+  gap: 4px;
+  margin: 12px clamp(12px, 3vw, 24px);
+  padding: 16px;
+  border: 1px dashed color-mix(in srgb, currentColor 45%, transparent);
+  border-radius: 10px;
+  text-align: center;
+  opacity: 0.78;
+}
+
+.apgo-event-block-placeholder span {
+  font-size: 0.82rem;
+}
+
 .apgo-event-collection-grid__header {
   width: 100%;
   padding: clamp(14px, 3.2vw, 20px) clamp(16px, 4vw, 24px);

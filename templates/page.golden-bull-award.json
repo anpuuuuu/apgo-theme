@@ -71,145 +71,157 @@
     "apgo_event_collection_grid_n3e6dm": {
       "type": "apgo-event-collection-grid",
       "blocks": {
-        "b1f1_card_HKHJj3": {
-          "type": "b1f1_card",
+        "promo_banner_merdeka": {
+          "type": "promo_banner",
           "settings": {
-            "product": "apgo-car-paint-headlight-care",
-            "variant_id": ""
+            "market_visibility": "both",
+            "heading": "Limited Time Deals",
+            "message": "Dont say bojio, 没有就没有 liao",
+            "banner": "shopify://shop_images/banner_2.png",
+            "product": "atomic-crystal-merdeka-set",
+            "variant_id": "",
+            "cta_mode": "add_buy",
+            "gift_enabled": false,
+            "show_counter": false
           }
         },
-        "b1f1_card_Lqf6D3": {
-          "type": "b1f1_card",
+        "promo_banner_midmonth": {
+          "type": "promo_banner",
           "settings": {
-            "product": "apgo-wheel-cleaner-tyre-care-set",
-            "variant_id": ""
+            "market_visibility": "both",
+            "heading": "",
+            "message": "",
+            "banner": "shopify://shop_images/atomic_banner.png",
+            "product": "✨atomic-coating-special-ltd-bundle-✨",
+            "variant_id": "",
+            "cta_mode": "add_buy",
+            "gift_enabled": false,
+            "show_counter": false
           }
         },
-        "b1f1_card_CbeJhU": {
-          "type": "b1f1_card",
+        "promo_banner_glaze": {
+          "type": "promo_banner",
           "settings": {
-            "product": "apgo-deep-clean-set",
-            "variant_id": ""
+            "market_visibility": "both",
+            "heading": "",
+            "message": "",
+            "banner_sg": "shopify://shop_images/sg_banner.png",
+            "product_sg": "atomic-glaze-coating-sg61-promotion",
+            "variant_id_sg": "",
+            "cta_mode": "add_buy",
+            "gift_enabled": true,
+            "gift_pool": [
+              "apgo-car-interior-eco-friendly-cleaner-500ml",
+              "apgo-car-interior-eco-friendly-coating-500ml",
+              "apgo-glass-cleaner-500ml",
+              "apgo-car-wash-shampoo-special-formula-refill-pack",
+              "apgo-car-wiper-fluid-refill-pack"
+            ],
+            "gift_count": 2,
+            "gift_heading": "Choose 2 gifts — FREE",
+            "show_counter": false
           }
         },
-        "b1f1_card_QVijhx": {
-          "type": "b1f1_card",
+        "promo_banner_detergent": {
+          "type": "promo_banner",
           "settings": {
-            "product": "apgo-car-windshield-oil-film-remover-glass-cleaner-set",
-            "variant_id": ""
+            "market_visibility": "my",
+            "heading": "",
+            "message": "",
+            "banner": "shopify://shop_images/detergent_banner_photo.png",
+            "product": "apgo-laundry-detergent-special-promotion-1",
+            "variant_id": "",
+            "cta_mode": "product_link",
+            "single_cta_label": "Grab Deals Now",
+            "gift_enabled": false,
+            "show_counter": false
           }
         },
-        "b1f1_card_3EpAUP": {
-          "type": "b1f1_card",
-          "settings": {
-            "product": "atomic-series-coating-refill-5-in-1-set",
-            "variant_id": ""
-          }
-        },
-        "b1f1_card_AzRMiV": {
-          "type": "b1f1_card",
-          "settings": {
-            "product": "apgo-windshield-oil-film-remover-perfect-glass-restorer-quartz-glass-coating",
-            "variant_id": ""
-          }
-        },
-        "b1f1_card_KRwDX9": {
-          "type": "b1f1_card",
-          "settings": {
-            "product": "apgo-pro-car-wash-towel-m-100cm-x-50cm",
-            "variant_id": ""
-          }
-        },
-        "discount_card_c3FpMG": {
-          "type": "discount_card",
+        "product_carousel_discount": {
+          "type": "product_carousel",
           "disabled": true,
           "settings": {
-            "product": "apgo-car-interior-eco-friendly-coating-500ml",
-            "variant_id": ""
+            "market_visibility": "both",
+            "heading": "thank you CELEBRATION deals",
+            "banner": "shopify://shop_images/22_d4016573-8805-471f-9527-da6101a5c4db.png",
+            "banner_sg": "shopify://shop_images/23_b0735d48-a022-4f52-b715-cc6b4454bdeb.png",
+            "products": [
+              "apgo-car-interior-eco-friendly-coating-500ml",
+              "apgo-car-interior-eco-friendly-cleaner-500ml",
+              "apgo-glass-cleaner-500ml",
+              "apgo-car-exterior-plastic-protectant-500ml",
+              "apgo-car-extreme-iron-remover-500ml",
+              "apgo-car-all-purpose-cleaner",
+              "apgo-water-stain-remover",
+              "apgo-car-wash-shampoo-special-formula-refill-pack",
+              "apgo-car-wiper-fluid-refill-pack"
+            ],
+            "variant_ids": "",
+            "hide_compare_at": false,
+            "show_promo_limit": true,
+            "show_scroll_cue": true
           }
         },
-        "discount_card_QiGfMd": {
-          "type": "discount_card",
-          "disabled": true,
+        "product_carousel_b1f1": {
+          "type": "product_carousel",
           "settings": {
-            "product": "apgo-car-interior-eco-friendly-cleaner-500ml",
-            "variant_id": ""
+            "market_visibility": "both",
+            "heading": "Dont Play Play Deals👍🏻",
+            "banner": "shopify://shop_images/6_d62a57fd-3001-4aeb-980d-4c79bebcfabc.png",
+            "products": [
+              "apgo-car-paint-headlight-care",
+              "apgo-wheel-cleaner-tyre-care-set",
+              "apgo-deep-clean-set",
+              "apgo-car-windshield-oil-film-remover-glass-cleaner-set",
+              "atomic-series-coating-refill-5-in-1-set",
+              "apgo-windshield-oil-film-remover-perfect-glass-restorer-quartz-glass-coating",
+              "apgo-pro-car-wash-towel-m-100cm-x-50cm"
+            ],
+            "variant_ids": "",
+            "hide_compare_at": true,
+            "show_promo_limit": false,
+            "show_scroll_cue": true
           }
         },
-        "discount_card_X8VrYn": {
-          "type": "discount_card",
+        "featured_stage_legacy": {
+          "type": "featured_stage",
           "disabled": true,
           "settings": {
-            "product": "apgo-glass-cleaner-500ml",
-            "variant_id": ""
+            "heading": "star product",
+            "product_1": "apgo-atomic-coloured-glaze-premium-copy",
+            "image_1": "shopify://shop_images/IMG_8900.png",
+            "product_2": "apgo-car-wash-foam-pressure-sprayer-version-2-copy",
+            "image_2": "shopify://shop_images/photo_2026-07-07_00-13-20.jpg",
+            "badge_text": "BEST VALUE",
+            "cta_label": "View deal",
+            "hide_compare_at": false
           }
         },
-        "discount_card_GmYPkf": {
-          "type": "discount_card",
-          "disabled": true,
+        "promo_banner_aurora": {
+          "type": "promo_banner",
           "settings": {
-            "product": "apgo-car-exterior-plastic-protectant-500ml",
-            "variant_id": ""
-          }
-        },
-        "discount_card_fXRHLm": {
-          "type": "discount_card",
-          "disabled": true,
-          "settings": {
-            "product": "apgo-car-extreme-iron-remover-500ml",
-            "variant_id": ""
-          }
-        },
-        "discount_card_WEXkac": {
-          "type": "discount_card",
-          "disabled": true,
-          "settings": {
-            "product": "apgo-car-all-purpose-cleaner",
-            "variant_id": ""
-          }
-        },
-        "discount_card_8gqQ9J": {
-          "type": "discount_card",
-          "disabled": true,
-          "settings": {
-            "product": "apgo-water-stain-remover",
-            "variant_id": ""
-          }
-        },
-        "discount_card_WyP3Je": {
-          "type": "discount_card",
-          "disabled": true,
-          "settings": {
-            "product": "apgo-car-wash-shampoo-special-formula-refill-pack",
-            "variant_id": ""
-          }
-        },
-        "discount_card_UnciNn": {
-          "type": "discount_card",
-          "disabled": true,
-          "settings": {
-            "product": "apgo-car-wiper-fluid-refill-pack",
-            "variant_id": ""
+            "market_visibility": "both",
+            "heading": "AURORA EXCLUSIVE DEAL",
+            "message": "",
+            "cta_mode": "add_buy",
+            "gift_enabled": false,
+            "show_counter": false,
+            "counter_milestone_total": "500",
+            "counter_release_total": "88",
+            "counter_manual_deduction": "88",
+            "counter_flow_baseline": "0"
           }
         }
       },
       "block_order": [
-        "b1f1_card_HKHJj3",
-        "b1f1_card_Lqf6D3",
-        "b1f1_card_CbeJhU",
-        "b1f1_card_QVijhx",
-        "b1f1_card_3EpAUP",
-        "b1f1_card_AzRMiV",
-        "b1f1_card_KRwDX9",
-        "discount_card_c3FpMG",
-        "discount_card_QiGfMd",
-        "discount_card_X8VrYn",
-        "discount_card_GmYPkf",
-        "discount_card_fXRHLm",
-        "discount_card_WEXkac",
-        "discount_card_8gqQ9J",
-        "discount_card_WyP3Je",
-        "discount_card_UnciNn"
+        "promo_banner_merdeka",
+        "promo_banner_midmonth",
+        "promo_banner_glaze",
+        "promo_banner_detergent",
+        "product_carousel_discount",
+        "product_carousel_b1f1",
+        "featured_stage_legacy",
+        "promo_banner_aurora"
       ],
       "name": "Event Collection Grid",
       "settings": {
@@ -219,81 +231,8 @@
         "countdown_end_at": "2026-07-07T00:00:00+08:00",
         "heading": "",
         "celebration_message": "",
-        "show_product_scroll_cue": true,
         "show_festive_lockup": true,
         "anniversary_badge": "",
-        "show_discount_zone": false,
-        "discount_zone_heading": "thank you CELEBRATION deals",
-        "discount_zone_banner": "shopify://shop_images/22_d4016573-8805-471f-9527-da6101a5c4db.png",
-        "discount_zone_banner_sg": "shopify://shop_images/23_b0735d48-a022-4f52-b715-cc6b4454bdeb.png",
-        "discount_zone_products": [],
-        "discount_zone_hide_compare_at": false,
-        "show_aurora_zone": true,
-        "aurora_zone_heading": "AURORA EXCLUSIVE DEAL",
-        "aurora_zone_message": "",
-        "show_aurora_counter": false,
-        "aurora_counter_milestone_total": "500",
-        "aurora_counter_release_total": "88",
-        "aurora_counter_manual_deduction": "88",
-        "aurora_counter_flow_baseline": "0",
-        "aurora_zone_product": "",
-        "aurora_zone_variant_id": "",
-        "show_glaze_zone": true,
-        "glaze_zone_heading": "",
-        "glaze_zone_message": "",
-        "glaze_zone_product": "",
-        "glaze_zone_variant_id": "",
-        "glaze_zone_banner_sg": "shopify://shop_images/sg_banner.png",
-        "glaze_zone_product_sg": "atomic-glaze-coating-sg61-promotion",
-        "glaze_zone_variant_id_sg": "",
-        "glaze_gift_enabled": true,
-        "glaze_gift_pool": [
-          "apgo-car-interior-eco-friendly-cleaner-500ml",
-          "apgo-car-interior-eco-friendly-coating-500ml",
-          "apgo-glass-cleaner-500ml",
-          "apgo-car-wash-shampoo-special-formula-refill-pack",
-          "apgo-car-wiper-fluid-refill-pack"
-        ],
-        "glaze_gift_count": "2",
-        "glaze_gift_heading": "Choose 2 gifts — FREE",
-        "show_detergent_zone": true,
-        "detergent_zone_hide_sg": true,
-        "detergent_zone_heading": "",
-        "detergent_zone_message": "",
-        "detergent_zone_banner": "shopify://shop_images/detergent_banner_photo.png",
-        "detergent_zone_product": "apgo-laundry-detergent-special-promotion-1",
-        "detergent_zone_variant_id": "",
-        "detergent_zone_single_cta": "Grab Deals Now",
-        "show_midmonth_zone": true,
-        "midmonth_zone_heading": "",
-        "midmonth_zone_message": "",
-        "midmonth_zone_banner": "shopify://shop_images/atomic_banner.png",
-        "midmonth_zone_product": "✨atomic-coating-special-ltd-bundle-✨",
-        "midmonth_zone_variant_id": "",
-        "midmonth_zone_single_cta": "",
-        "show_additional_promo_zone": true,
-        "additional_promo_zone_heading": "Limited Time Deals",
-        "additional_promo_zone_message": "Dont say bojio, 没有就没有 liao",
-        "additional_promo_zone_banner": "shopify://shop_images/banner_2.png",
-        "additional_promo_zone_product": "atomic-crystal-merdeka-set",
-        "additional_promo_zone_variant_id": "",
-        "additional_promo_zone_product_sg": "",
-        "additional_promo_zone_variant_id_sg": "",
-        "additional_promo_zone_single_cta": "",
-        "show_b1f1_zone": true,
-        "b1f1_zone_heading": "Dont Play Play Deals👍🏻",
-        "b1f1_zone_banner": "shopify://shop_images/6_d62a57fd-3001-4aeb-980d-4c79bebcfabc.png",
-        "b1f1_zone_products": [],
-        "b1f1_zone_hide_compare_at": true,
-        "show_featured_stage": false,
-        "featured_heading": "star product",
-        "featured_product_1": "apgo-atomic-coloured-glaze-premium-copy",
-        "featured_image_1": "shopify://shop_images/IMG_8900.png",
-        "featured_product_2": "apgo-car-wash-foam-pressure-sprayer-version-2-copy",
-        "featured_image_2": "shopify://shop_images/photo_2026-07-07_00-13-20.jpg",
-        "featured_badge_text": "BEST VALUE",
-        "featured_cta_label": "View deal",
-        "featured_stage_hide_compare_at": false,
         "overlap_enabled": false,
         "overlap_offset": 16,
         "panel_radius": 16,
