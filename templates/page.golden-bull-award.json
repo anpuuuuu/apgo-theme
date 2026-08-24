@@ -171,6 +171,7 @@
         },
         "promo_banner_glaze": {
           "type": "promo_banner",
+          "disabled": true,
           "settings": {
             "market_visibility": "sg",
             "heading": "",
