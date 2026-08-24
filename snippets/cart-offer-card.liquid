@@ -11,7 +11,13 @@
         break
       endif
     endfor
-  elsif offer_product != blank and offer_product.has_only_default_variant
+  elsif offer_product != blank and offer_product.variants.size == 1
+    comment
+      A product can have exactly one real variant whose title is not
+      "Default Title". Shopify reports has_only_default_variant=false in
+      that case, even though there is nothing for the shopper to choose.
+      Treat every true single-variant product as safe for direct add.
+    endcomment
     assign offer_variant = offer_product.selected_or_first_available_variant
   endif
 
@@ -61,6 +67,13 @@
   assign use_promo_label = false
   if offer_block.settings.price_mode == 'promo' and promo_label != blank
     assign use_promo_label = true
+  endif
+
+  assign current_price_display = blank
+  if use_promo_label
+    assign current_price_display = promo_label | replace: ' MYR', '' | replace: ' SGD', '' | replace: 'MYR', '' | replace: 'SGD', '' | strip
+  elsif display_variant != blank
+    assign current_price_display = display_variant.price | money | replace: ' MYR', '' | replace: ' SGD', '' | replace: 'MYR', '' | replace: 'SGD', '' | strip
   endif
 
   assign compare_price = blank
@@ -122,7 +135,7 @@
   endif
 
   assign show_savings = false
-  if section.settings.show_savings != false and amount_saved > 0
+  if section.settings.show_savings != false and use_promo_label and amount_saved > 0
     assign show_savings = true
   endif
 
@@ -183,11 +196,7 @@
         <div class="cart-offers-tabs__prices">
           <span class="cart-offers-tabs__price-row">
             <span class="cart-offers-tabs__price-current">
-              {% if use_promo_label %}
-                {{ promo_label }}
-              {% elsif display_variant != blank %}
-                {{ display_variant.price | money }}
-              {% endif %}
+              {{ current_price_display }}
             </span>
             {% if show_savings %}
               <span class="cart-offers-tabs__price-saved">save {{ saved_display }}</span>
