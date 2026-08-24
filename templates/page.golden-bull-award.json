@@ -80,9 +80,19 @@
             "banner": "shopify://shop_images/banner_2.png",
             "product": "atomic-crystal-merdeka-set",
             "variant_id": "",
+            "product_sg": "",
+            "variant_id_sg": "",
             "cta_mode": "add_buy",
+            "single_cta_label": "Grab Deals Now",
             "gift_enabled": false,
-            "show_counter": false
+            "gift_pool": [],
+            "gift_count": 2,
+            "gift_heading": "Choose your free gifts",
+            "show_counter": false,
+            "counter_milestone_total": "500",
+            "counter_release_total": "88",
+            "counter_manual_deduction": "0",
+            "counter_flow_baseline": "0"
           }
         },
         "promo_banner_midmonth": {
@@ -94,9 +104,19 @@
             "banner": "shopify://shop_images/atomic_banner.png",
             "product": "✨atomic-coating-special-ltd-bundle-✨",
             "variant_id": "",
+            "product_sg": "",
+            "variant_id_sg": "",
             "cta_mode": "add_buy",
+            "single_cta_label": "Grab Deals Now",
             "gift_enabled": false,
-            "show_counter": false
+            "gift_pool": [],
+            "gift_count": 2,
+            "gift_heading": "Choose your free gifts",
+            "show_counter": false,
+            "counter_milestone_total": "500",
+            "counter_release_total": "88",
+            "counter_manual_deduction": "0",
+            "counter_flow_baseline": "0"
           }
         },
         "promo_banner_glaze": {
@@ -105,10 +125,13 @@
             "market_visibility": "both",
             "heading": "",
             "message": "",
+            "product": "",
+            "variant_id": "",
             "banner_sg": "shopify://shop_images/sg_banner.png",
             "product_sg": "atomic-glaze-coating-sg61-promotion",
             "variant_id_sg": "",
             "cta_mode": "add_buy",
+            "single_cta_label": "Grab Deals Now",
             "gift_enabled": true,
             "gift_pool": [
               "apgo-car-interior-eco-friendly-cleaner-500ml",
@@ -119,7 +142,11 @@
             ],
             "gift_count": 2,
             "gift_heading": "Choose 2 gifts — FREE",
-            "show_counter": false
+            "show_counter": false,
+            "counter_milestone_total": "500",
+            "counter_release_total": "88",
+            "counter_manual_deduction": "0",
+            "counter_flow_baseline": "0"
           }
         },
         "promo_banner_detergent": {
@@ -131,10 +158,19 @@
             "banner": "shopify://shop_images/detergent_banner_photo.png",
             "product": "apgo-laundry-detergent-special-promotion-1",
             "variant_id": "",
+            "product_sg": "",
+            "variant_id_sg": "",
             "cta_mode": "product_link",
             "single_cta_label": "Grab Deals Now",
             "gift_enabled": false,
-            "show_counter": false
+            "gift_pool": [],
+            "gift_count": 2,
+            "gift_heading": "Choose your free gifts",
+            "show_counter": false,
+            "counter_milestone_total": "500",
+            "counter_release_total": "88",
+            "counter_manual_deduction": "0",
+            "counter_flow_baseline": "0"
           }
         },
         "product_carousel_discount": {
@@ -175,7 +211,10 @@
               "apgo-car-windshield-oil-film-remover-glass-cleaner-set",
               "atomic-series-coating-refill-5-in-1-set",
               "apgo-windshield-oil-film-remover-perfect-glass-restorer-quartz-glass-coating",
-              "apgo-pro-car-wash-towel-m-100cm-x-50cm"
+              "apgo-pro-car-wash-towel-m-100cm-x-50cm",
+              "atomic-glaze-coating-sg61-promotion",
+              "atomic-glaze-coating-8-8-promotion",
+              "✨atomic-coating-special-ltd-bundle-✨"
             ],
             "variant_ids": "",
             "hide_compare_at": true,
@@ -203,8 +242,16 @@
             "market_visibility": "both",
             "heading": "AURORA EXCLUSIVE DEAL",
             "message": "",
+            "product": "",
+            "variant_id": "",
+            "product_sg": "",
+            "variant_id_sg": "",
             "cta_mode": "add_buy",
+            "single_cta_label": "Grab Deals Now",
             "gift_enabled": false,
+            "gift_pool": [],
+            "gift_count": 2,
+            "gift_heading": "Choose your free gifts",
             "show_counter": false,
             "counter_milestone_total": "500",
             "counter_release_total": "88",
