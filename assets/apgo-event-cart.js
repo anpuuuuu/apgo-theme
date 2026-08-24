@@ -69,6 +69,12 @@
       .then(function (r) { return r.json(); })
       .then(function (cart) {
         var itemCount = (cart && typeof cart.item_count === 'number') ? cart.item_count : 0;
+        try {
+          sessionStorage.setItem('cart-count', JSON.stringify({
+            value: String(itemCount),
+            timestamp: Date.now()
+          }));
+        } catch (storageError) { /* storage may be unavailable */ }
         var detail = {
           data: {
             itemCount: itemCount,
@@ -89,6 +95,23 @@
         console.warn('[apgo-event] cart refresh fetch failed', err);
       });
   }
+
+  /* Buy-now still routes through the cart page so customers can verify
+     discounts and gifts. Refresh the authoritative cart count first so
+     Horizon's header badge and its sessionStorage cache do not retain the
+     pre-add value when the customer returns via browser history. */
+  function refreshCartUiThenNavigate() {
+    return refreshCartUi().then(function () {
+      window.location.href = '/cart';
+    });
+  }
+
+  /* Browser history can restore the exact pre-navigation DOM without marking
+     the pageshow event as persisted (browser-dependent). Always re-read the
+     cart on pageshow so Buy-now cannot leave a stale header badge behind. */
+  window.addEventListener('pageshow', function () {
+    refreshCartUi();
+  });
 
   /* The flying gift box itself. Inline SVG kept small + recolored to
      the page's brand palette so it reads as part of the event design
@@ -342,8 +365,7 @@
         return r.json();
       }).then(function () {
         if (intent === 'buy') {
-          window.location.href = '/cart';
-          return;
+          return refreshCartUiThenNavigate();
         }
         closeGiftModal();
         if (giftTriggerBtn) flyGiftBox(giftTriggerBtn);
@@ -433,9 +455,9 @@
       if (buyBtn) {
         /* Buy now: jump straight to the cart page (NOT /checkout, so
            the customer can still see / verify discounts before
-           committing). No need to un-busy — we're navigating away. */
-        window.location.href = '/cart';
-        return;
+           committing). Refresh first so the cart badge cache reflects
+           the successful add when the customer returns to this page. */
+        return refreshCartUiThenNavigate();
       }
       /* Add to cart: animate the gift, refresh whatever cart UI the
          theme has mounted, restore the button. */

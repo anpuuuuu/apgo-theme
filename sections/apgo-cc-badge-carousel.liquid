@@ -190,6 +190,22 @@
       width: 18px;
       background: #fff;
     }
+
+    /* Match the homepage's desktop content rhythm: the hero badge carousel
+       occupies two thirds of the available section width and stays centred.
+       Mobile remains full width so the artwork and embedded copy stay legible. */
+    @media screen and (min-width: 990px) {
+      .apgo-cc-badge {
+        width: min(66.6667%, var(--badge-maxw, 100%));
+        max-width: none;
+      }
+    }
+
+    @media screen and (max-width: 989px) {
+      .apgo-cc-badge {
+        width: 100%;
+      }
+    }
 {% endstylesheet %}
 
 {% schema %}
