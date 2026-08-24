@@ -122,6 +122,7 @@
         },
         "promo_banner_midmonth": {
           "type": "promo_banner",
+          "disabled": true,
           "settings": {
             "market_visibility": "both",
             "heading": "",
