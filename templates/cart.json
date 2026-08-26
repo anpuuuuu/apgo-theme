@@ -415,11 +415,11 @@
           "type": "offer_item",
           "settings": {
             "tab_slot": "tab_5",
-            "product": "apgo-atomic-car-nano-coating-refill-pack-standard",
+            "product": "apgo-atomic-crystal-car-nano-coating-refill-pack",
             "variant_id": "",
             "price_mode": "promo",
-            "promo_price_my": "RM 15.9",
-            "promo_price_sg": "$ 6.9",
+            "promo_price_my": "RM 19.9",
+            "promo_price_sg": "$ 8.8",
             "max_quantity": 0
           }
         },
