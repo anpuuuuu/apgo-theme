@@ -132,12 +132,6 @@
 
   popup.addEventListener('click', function (e) {
     if (e.target.closest('[data-apgo-promo-close]')) { closePopup(); return; }
-    if (e.target.closest('[data-apgo-promo-cta]')) {
-      closePopup();
-      var target = document.querySelector('.apgo-cc-pdp__cta-row') ||
-                   document.querySelector('[data-apgo-cc-add]');
-      if (target) { try { target.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (err) {} }
-    }
   });
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && popup.classList.contains('is-open')) closePopup();

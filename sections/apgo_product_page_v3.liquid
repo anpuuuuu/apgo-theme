@@ -4218,11 +4218,20 @@
   }
   .apgo-promo-popup__close:hover { background: rgba(45, 42, 36, 0.15); color: #2d2a24; }
 
+  /* Keep the urgency attached to the gift itself: the image and timer
+     form one compact left column instead of competing with the copy. */
+  .apgo-promo-popup__visual {
+    flex: 0 0 84px;
+    align-self: center;
+    width: 84px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+  }
   /* Gift shot on a soft pedestal so a plain packshot still feels
      presented rather than pasted. */
   .apgo-promo-popup__media {
-    flex: 0 0 84px;
-    align-self: center;
     width: 84px;
     height: 84px;
     display: flex;
@@ -4306,18 +4315,14 @@
     overflow: hidden;
   }
 
-  .apgo-promo-popup__foot {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 8px;
-  }
   .apgo-promo-popup__timer {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 4px;
-    flex: 0 0 auto;
-    padding: 5px 8px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 5px 4px;
     border-radius: 8px;
     background: rgba(240, 132, 24, 0.1);
     border: 1px solid rgba(240, 132, 24, 0.26);
@@ -4339,30 +4344,6 @@
   @keyframes apgoPromoPulse {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.52; }
-  }
-
-  .apgo-promo-popup__cta {
-    flex: 1 1 auto;
-    min-width: 0;
-    padding: 9px 10px;
-    border: none;
-    border-radius: 999px;
-    background: linear-gradient(135deg, #f6a94a, var(--primary-orange));
-    color: #fff;
-    font-size: 10.5px;
-    font-weight: 900;
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    cursor: pointer;
-    box-shadow: 0 5px 13px rgba(240, 132, 24, 0.3);
-    transition: transform .15s ease, box-shadow .15s ease;
-  }
-  .apgo-promo-popup__cta:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 8px 17px rgba(240, 132, 24, 0.4);
   }
 
   /* Reminder bubble. Sits FLUSH against a side edge (and snaps back to
@@ -4444,15 +4425,16 @@
       transform: translateY(-14px);
     }
     .apgo-promo-popup.is-open { transform: none; }
-    .apgo-promo-popup__media { flex-basis: 74px; width: 74px; height: 74px; }
+    .apgo-promo-popup__visual { flex-basis: 74px; width: 74px; }
+    .apgo-promo-popup__media { width: 74px; height: 74px; }
+    .apgo-promo-popup__timer-value { font-size: 10.5px; }
     /* Bubble stays low, clear of the sticky buy bar */
     .apgo-promo-bubble { bottom: 168px; width: 52px; height: 52px; }
     .apgo-promo-bubble__icon { width: 21px; height: 21px; }
   }
   @media (prefers-reduced-motion: reduce) {
     .apgo-promo-popup,
-    .apgo-promo-bubble,
-    .apgo-promo-popup__cta { transition: none; }
+    .apgo-promo-bubble { transition: none; }
     .apgo-promo-popup.is-urgent .apgo-promo-popup__timer { animation: none; }
   }
 
@@ -7472,7 +7454,6 @@ document.addEventListener('DOMContentLoaded', function() {
     gift_image: section.settings.promo_popup_image,
     gift_name: section.settings.promo_popup_gift_name,
     gift_value: apgo_promo_value,
-    cta: section.settings.promo_popup_cta,
     hours: section.settings.promo_popup_hours,
     end_at: section.settings.promo_popup_end_at,
     bubble_label: section.settings.promo_popup_gift_name -%}
@@ -7741,12 +7722,6 @@ document.addEventListener('DOMContentLoaded', function() {
       "label": "Sub text",
       "info": "Also stays visible after the countdown lapses, so avoid wording that depends on the timer.",
       "default": "Add this bundle to cart and we will include it free"
-    },
-    {
-      "type": "text",
-      "id": "promo_popup_cta",
-      "label": "Button label",
-      "default": "Shop now"
     },
     {
       "type": "text",
