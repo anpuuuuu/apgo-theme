@@ -11,9 +11,12 @@ var EP='https://apgo-error-monitor.wadeyeh.workers.dev/beacon',VER={{ monitor_ve
 if(EP.indexOf('APGO_ERROR')>-1||!window.addEventListener||!window.JSON)return;
 if(window.__apgoHealthCheck||/APGO-HealthCheck/.test(navigator.userAgent)){window.__apgoEM='excluded';return;}
 if(window.__apgoEM)return;window.__apgoEM='loading';
-var MAX=8,n=0,seen={},sid;
+var MAX=8,n=0,seen={},sid,pageLeaving=false;
 function newSid(){try{return window.crypto&&crypto.randomUUID?crypto.randomUUID():Math.random().toString(36).slice(2,10)+Date.now().toString(36);}catch(e){return Math.random().toString(36).slice(2,10)+Date.now().toString(36);}}
 try{sid=sessionStorage.getItem('apgoEmSid');if(!sid){sid=newSid();sessionStorage.setItem('apgoEmSid',sid);}}catch(e){sid='nostore-'+newSid();}
+window.addEventListener('beforeunload',function(){pageLeaving=true;},true);
+window.addEventListener('pagehide',function(){pageLeaving=true;},true);
+window.addEventListener('pageshow',function(){pageLeaving=false;},true);
 function own(s){return !!s&&(s.indexOf(location.origin)===0||/cdn\.shopify\.com\/.+\/(assets|files)\//.test(s));}
 function ownStack(s){return !!s&&(s.indexOf(location.host)>-1||/cdn\.shopify\.com\/.+\/assets\//.test(s));}
 function pathOnly(v){try{return new URL(v||location.href,location.origin).pathname;}catch(e){return '/';}}
@@ -35,12 +38,14 @@ var m=e.message||'',f=e.filename||'';if(!m||m==='Script error.'||ignoredRuntime(
 runtime(m,f,e.lineno,e.colno,e.error&&e.error.stack,'error');
 }catch(x){}},true);
 window.addEventListener('unhandledrejection',function(e){try{var r=e&&e.reason,st=(r&&r.stack)||'';if(ownStack(st))runtime('Unhandled rejection: '+String((r&&r.message)||r).slice(0,220),'',0,0,st,'rejection');}catch(x){}},true);
-window.apgoReportCartError=function(detail){detail=detail||{};emit({kind:'cart',m:String(detail.message||'Shopify cart request failed').slice(0,300),action:String(detail.action||'cart').slice(0,80),stage:String(detail.stage||'request').slice(0,80),status:Number(detail.status)||0,critical:!!detail.critical,src:pathOnly(detail.url||location.href),line:0,col:0,stack:''});};
+function cartContext(detail){detail=detail||{};return {kind:'cart',m:String(detail.message||'Shopify cart request failed').slice(0,300),action:String(detail.action||'cart').slice(0,80),stage:String(detail.stage||'request').slice(0,80),status:Number(detail.status)||0,critical:!!detail.critical,src:pathOnly(detail.url||location.href),line:0,col:0,stack:'',duration_ms:Math.max(0,Math.round(Number(detail.duration_ms)||0)),visibility:String(document.visibilityState||'unknown').slice(0,20),online:navigator.onLine===true?1:(navigator.onLine===false?0:-1),page_leaving:pageLeaving?1:0};}
+window.apgoReportCartError=function(detail){emit(cartContext(detail));};
 window.addEventListener('apgo:cart-error',function(e){window.apgoReportCartError(e&&e.detail);});
+window.addEventListener('apgo:cart-recovered',function(){var d=cartContext({message:'Cart add confirmed after lost response',action:'add',stage:'verified-success',status:0,url:'/cart/add.js'});emit(d);});
 if(window.fetch){var nativeFetch=window.fetch;window.fetch=function(input,init){
 var u=typeof input==='string'?input:(input&&input.url)||'',method=((init&&init.method)||(input&&input.method)||'GET').toUpperCase(),cart=/\/cart\/(add|change|update|clear)\.js(?:\?|$)/.exec(u);
-var promise=nativeFetch.apply(window,arguments);if(!cart||method==='GET')return promise;
-return promise.then(function(response){if(!response.ok)window.apgoReportCartError({message:'Cart API returned HTTP '+response.status,action:cart[1],stage:'response',status:response.status,url:u});return response;},function(error){window.apgoReportCartError({message:(error&&error.message)||'Cart API network error',action:cart[1],stage:'network',status:0,url:u});throw error;});
+var started=Date.now(),promise=nativeFetch.apply(window,arguments);if(!cart||method==='GET')return promise;
+return promise.then(function(response){if(!response.ok)window.apgoReportCartError({message:'Cart API returned HTTP '+response.status,action:cart[1],stage:'response',status:response.status,url:u,duration_ms:Date.now()-started});return response;},function(error){window.apgoReportCartError({message:(error&&error.message)||'Cart API network error',action:cart[1],stage:'network',status:0,url:u,duration_ms:Date.now()-started});throw error;});
 };}
 if(/[?&]apgo_em_test=1(?:&|$)/.test(location.search))emit({kind:'selftest',m:'apgo-em-selftest',src:'selftest',line:1,col:1,stack:''});
 window.__apgoEM=VER;

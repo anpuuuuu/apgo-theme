@@ -566,6 +566,59 @@
     showCartErrorToast(cartErrorMessage(error));
   }
 
+  function cartVariantQuantity(cart, variantId) {
+    var total = 0;
+    var wanted = String(variantId || '');
+    var items = cart && Array.isArray(cart.items) ? cart.items : [];
+    items.forEach(function (item) {
+      if (String(item.variant_id || item.id || '') === wanted) {
+        total += parseInt(item.quantity, 10) || 0;
+      }
+    });
+    return total;
+  }
+
+  function readCartForAddVerification() {
+    return fetch('/cart.js?_=' + Date.now(), {
+      headers: { 'Accept': 'application/json' },
+      cache: 'no-store'
+    }).then(function (response) {
+      if (!response.ok) throw new Error('Cart verification HTTP ' + response.status);
+      return response.json();
+    });
+  }
+
+  function isUncertainNetworkFailure(error) {
+    var message = String(error && (error.message || error.description) || '');
+    return error instanceof Error || /failed to fetch|load failed|network\s*(?:error|request)|connection|unexpected end of json/i.test(message);
+  }
+
+  function confirmUnknownAddOutcome(error, cartBeforeAdd, variantId, quantity) {
+    if (!cartBeforeAdd || !isUncertainNetworkFailure(error)) return Promise.reject(error);
+    var quantityBefore = cartVariantQuantity(cartBeforeAdd, variantId);
+    return readCartForAddVerification().then(function (cartAfterAdd) {
+      var quantityAfter = cartVariantQuantity(cartAfterAdd, variantId);
+      if (quantityAfter < quantityBefore + quantity) return Promise.reject(error);
+
+      /* The WebView lost the POST response, but Shopify committed the item.
+         Never retry the write: finish from the authoritative cart instead. */
+      try {
+        document.dispatchEvent(new CustomEvent('apgo:cart-recovered', {
+          detail: {
+            variantId: String(variantId),
+            quantity: quantity,
+            quantityBefore: quantityBefore,
+            quantityAfter: quantityAfter
+          }
+        }));
+      } catch (_) {}
+      console.warn('[apgo-cc-pdp] cart add response was lost; cart state confirmed the add');
+      return cartAfterAdd;
+    }, function () {
+      return Promise.reject(error);
+    });
+  }
+
   function purchaseButtons() {
     return [addBtn, buyBtn, buybarAddBtn, buybarBuyBtn, confirmAddBtn, confirmBuyBtn].filter(function (button) {
       return button instanceof HTMLButtonElement;
@@ -885,7 +938,23 @@
       };
     }
 
-    return fetch('/cart/add.js', fetchOptions)
+    var cartBeforeAdd = null;
+
+    /* Capture the target variant quantity before the write. If a WebView
+       later rejects the fetch with status 0, this baseline lets one safe
+       /cart.js read distinguish "committed but response lost" from "not
+       committed" without ever replaying the POST. If the baseline read
+       itself fails, continue with the normal add and fall back to the
+       existing retry message on an uncertain result. */
+    return readCartForAddVerification()
+      .then(function (cart) {
+        cartBeforeAdd = cart;
+      }, function () {
+        cartBeforeAdd = null;
+      })
+      .then(function () {
+        return fetch('/cart/add.js', fetchOptions);
+      })
       .then(function (r) {
         return r.json().then(function (data) {
           if (!r.ok) return Promise.reject(data);
@@ -893,7 +962,10 @@
         });
       })
       .then(function () {
-        return fetch('/cart.js?_=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); });
+        return readCartForAddVerification();
+      })
+      .catch(function (error) {
+        return confirmUnknownAddOutcome(error, cartBeforeAdd, xId, xQty);
       })
       .then(function (cart) {
         /*
