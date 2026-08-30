@@ -158,6 +158,7 @@ jobs:
           MONITOR_SPEC: ${{ matrix.spec }}
           MONITOR_LANDING_PATH: ${{ matrix.landingPath }}
           MONITOR_CHANNEL: ${{ matrix.channel }}
+          MONITOR_AD_MODE: ${{ matrix.mode }}
           MONITOR_AD_SESSIONS: ${{ matrix.sessions }}
           MONITOR_AD_ADD_TO_CARTS: ${{ matrix.addToCarts }}
           MONITOR_AD_CHECKOUTS: ${{ matrix.checkouts }}

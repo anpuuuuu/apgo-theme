@@ -79,15 +79,27 @@ export function buildAdTargets(rows, config) {
     merged.set(key, current);
   }
 
-  return [...merged.values()]
+  const ranked = [...merged.values()]
     .filter((target) => target.sessions >= minimumSessions || target.addToCarts > 0 || target.checkouts > 0)
     .sort((a, b) => (
       Number(b.checkouts > 0) - Number(a.checkouts > 0)
       || Number(b.addToCarts > 0) - Number(a.addToCarts > 0)
       || b.sessions - a.sessions
       || a.landingPath.localeCompare(b.landingPath)
-    ))
-    .slice(0, maxLandingPages)
+    ));
+
+  const selected = [];
+  for (const market of primarySite.markets || []) {
+    const top = ranked.find((target) => target.market === market.id);
+    if (top && selected.length < maxLandingPages) selected.push(top);
+  }
+  for (const target of ranked) {
+    if (selected.length >= maxLandingPages) break;
+    if (!selected.includes(target)) selected.push(target);
+  }
+
+  return selected
+    .sort((a, b) => ranked.indexOf(a) - ranked.indexOf(b))
     .map((target, index) => ({ ...target, rank: index + 1 }));
 }
 
