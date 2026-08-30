@@ -207,6 +207,7 @@ jobs:
         env:
           MONITOR_WORKER_URL: ${{ vars.MONITOR_WORKER_URL }}
           MONITOR_HEARTBEAT_TOKEN: ${{ secrets.MONITOR_HEARTBEAT_TOKEN }}
+          MONITOR_SITE_ID: apgo-my
         run: |
           test -n "$MONITOR_WORKER_URL" || { echo "::error::MONITOR_WORKER_URL is required"; exit 1; }
           test -n "$MONITOR_HEARTBEAT_TOKEN" || { echo "::error::MONITOR_HEARTBEAT_TOKEN is required"; exit 1; }
@@ -215,6 +216,7 @@ jobs:
         env:
           MONITOR_WORKER_URL: ${{ vars.MONITOR_WORKER_URL }}
           MONITOR_HEARTBEAT_TOKEN: ${{ secrets.MONITOR_HEARTBEAT_TOKEN }}
+          MONITOR_SITE_ID: apgo-my
           MONITOR_LAYER: layer2
           MONITOR_STATUS: ${{ steps.aggregate.outputs.status }}
           MONITOR_SOURCE: playwright-v2-daily

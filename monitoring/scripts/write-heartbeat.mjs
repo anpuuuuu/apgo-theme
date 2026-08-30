@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const workerUrl = (process.env.MONITOR_WORKER_URL || '').replace(/\/$/, '');
 const token = process.env.MONITOR_HEARTBEAT_TOKEN || '';
+const siteId = process.env.MONITOR_SITE_ID || '';
 const layer = process.env.MONITOR_LAYER || '';
 const requestedStatus = String(process.env.MONITOR_STATUS || 'ok').toLowerCase();
 const status = ['ok', 'passed', 'transient'].includes(requestedStatus) ? 'ok' : 'error';
@@ -10,14 +11,15 @@ if (process.env.MONITOR_DETAIL_JSON_FILE) {
   extraDetail = JSON.parse(await import('node:fs').then(({ readFileSync }) => readFileSync(process.env.MONITOR_DETAIL_JSON_FILE, 'utf8')));
 }
 
-if (!workerUrl || !token || !layer) {
-  throw new Error('MONITOR_WORKER_URL, MONITOR_HEARTBEAT_TOKEN and MONITOR_LAYER are required');
+if (!workerUrl || !token || !siteId || !layer) {
+  throw new Error('MONITOR_WORKER_URL, MONITOR_HEARTBEAT_TOKEN, MONITOR_SITE_ID and MONITOR_LAYER are required');
 }
 
 const response = await fetch(`${workerUrl}/heartbeat`, {
   method: 'POST',
   headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
   body: JSON.stringify({
+    siteId,
     layer,
     source,
     status,
