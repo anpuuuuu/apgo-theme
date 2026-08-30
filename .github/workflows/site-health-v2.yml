@@ -126,7 +126,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 55
     strategy:
-      fail-fast: false
+      # The temporary legacy runner cannot share a circuit-breaker flag across
+      # Matrix jobs. Stop queued jobs after the first confirmed failure rather
+      # than turning a Shopify rate limit into more synthetic cart traffic.
+      fail-fast: true
       max-parallel: 1
       matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
     defaults:
@@ -144,6 +147,11 @@ jobs:
           key: playwright-v2-${{ runner.os }}-${{ matrix.browser }}-${{ hashFiles('monitoring/package-lock.json') }}
       - name: Install browser engine
         run: timeout 360 npx playwright install --with-deps ${{ matrix.browser }} || npx playwright install ${{ matrix.browser }}
+      - name: Cool down before a cart-writing journey
+        if: matrix.mode == 'full'
+        run: |
+          echo "Waiting 10 minutes before the next synthetic cart/checkout write..."
+          sleep 600
       - name: Run journey and one explicit fresh-session recheck when needed
         env:
           MONITOR_V2: "1"
