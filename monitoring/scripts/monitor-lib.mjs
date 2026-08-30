@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs';
+import { findLayerHealth } from './health-response.mjs';
 
 export const config = JSON.parse(readFileSync(new URL('../alerts-config.json', import.meta.url), 'utf8'));
 export const propertyId = process.env.GA4_PROPERTY_ID || '';
@@ -7,6 +8,7 @@ export const accountId = process.env.CF_ACCOUNT_ID || '';
 export const cfToken = process.env.CF_API_TOKEN || '';
 export const databaseId = config.cloudflare.database_id;
 export const workerUrl = (process.env.MONITOR_WORKER_URL || config.cloudflare.worker_url || '').replace(/\/$/, '');
+export const siteId = process.env.MONITOR_SITE_ID || '';
 
 export function requireEnv() {
   const missing = [];
@@ -16,6 +18,7 @@ export function requireEnv() {
   if (!cfToken) missing.push('CF_API_TOKEN');
   if (!workerUrl) missing.push('MONITOR_WORKER_URL');
   if (!process.env.MONITOR_HEARTBEAT_TOKEN) missing.push('MONITOR_HEARTBEAT_TOKEN');
+  if (!siteId) missing.push('MONITOR_SITE_ID');
   if (missing.length) throw new Error(`Required monitoring configuration missing: ${missing.join(', ')}`);
 }
 
@@ -63,7 +66,7 @@ export async function heartbeat(layer, detail = {}) {
   const response = await fetch(`${workerUrl}/heartbeat`, {
     method: 'POST',
     headers: { authorization: `Bearer ${process.env.MONITOR_HEARTBEAT_TOKEN}`, 'content-type': 'application/json' },
-    body: JSON.stringify({ layer, source: 'github-actions', status: 'ok', detail: { ...detail, runUrl: process.env.RUN_URL || '' } }),
+    body: JSON.stringify({ siteId, layer, source: 'github-actions', status: 'ok', detail: { ...detail, runUrl: process.env.RUN_URL || '' } }),
   });
   if (!response.ok) throw new Error(`Heartbeat HTTP ${response.status}: ${await response.text()}`);
 }
@@ -71,7 +74,7 @@ export async function heartbeat(layer, detail = {}) {
 export async function workerHealthy() {
   const response = await fetch(`${workerUrl}/health`, { headers: { 'user-agent': 'APGO-HealthCheck/2.0 GA4' } });
   const payload = await response.json().catch(() => ({}));
-  const layer1 = payload.heartbeats?.find((row) => row.layer === 'layer1');
+  const layer1 = findLayerHealth(payload, siteId, 'layer1');
   return response.ok && payload.ok && layer1 && !layer1.stale;
 }
 

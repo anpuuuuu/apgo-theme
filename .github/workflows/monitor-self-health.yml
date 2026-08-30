@@ -31,6 +31,7 @@ jobs:
         env:
           MONITOR_WORKER_URL: ${{ vars.MONITOR_WORKER_URL }}
           MONITOR_HEARTBEAT_TOKEN: ${{ secrets.MONITOR_HEARTBEAT_TOKEN }}
+          MONITOR_SITE_ID: apgo-my
         run: |
           test -n "$MONITOR_WORKER_URL" || { echo "::error::MONITOR_WORKER_URL is required"; exit 1; }
           test -n "$MONITOR_HEARTBEAT_TOKEN" || { echo "::error::MONITOR_HEARTBEAT_TOKEN is required"; exit 1; }
@@ -38,17 +39,19 @@ jobs:
         if: inputs.rollout_validation != true
         env:
           MONITOR_WORKER_URL: ${{ vars.MONITOR_WORKER_URL }}
+          MONITOR_SITE_ID: apgo-my
         run: node monitoring/scripts/worker-health.mjs
       - name: Check scheduled workflow freshness
-        if: inputs.rollout_validation != true
+        if: always() && inputs.rollout_validation != true
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: node monitoring/scripts/github-schedule-health.mjs
       - name: Refresh Layer 3 beacon self-test
-        if: inputs.rollout_validation != true
+        if: always() && inputs.rollout_validation != true
         env:
           MONITOR_WORKER_URL: ${{ vars.MONITOR_WORKER_URL }}
           MONITOR_HEARTBEAT_TOKEN: ${{ secrets.MONITOR_HEARTBEAT_TOKEN }}
+          MONITOR_SITE_ID: apgo-my
         run: node monitoring/scripts/layer3-self-test.mjs
       - name: Notify self-monitoring failure
         if: failure()

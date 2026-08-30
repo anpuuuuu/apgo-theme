@@ -1,7 +1,10 @@
 #!/usr/bin/env node
+import { findLayerHealth } from './health-response.mjs';
+
 const workerUrl = (process.env.MONITOR_WORKER_URL || '').replace(/\/$/, '');
 const token = process.env.MONITOR_HEARTBEAT_TOKEN || '';
-if (!workerUrl || !token) throw new Error('MONITOR_WORKER_URL and MONITOR_HEARTBEAT_TOKEN are required');
+const siteId = process.env.MONITOR_SITE_ID || '';
+if (!workerUrl || !token || !siteId) throw new Error('MONITOR_WORKER_URL, MONITOR_HEARTBEAT_TOKEN and MONITOR_SITE_ID are required');
 
 // Shopify serves a separate cached document to bare script-style user agents.
 // Use a browser-shaped UA so this check verifies the same storefront document
@@ -43,7 +46,7 @@ if (response.status !== 204) throw new Error(`Layer 3 self-test beacon HTTP ${re
 
 const health = await fetch(`${workerUrl}/health`, { headers: { 'user-agent': 'APGO-Layer3-SelfTest/2.0' } });
 const body = await health.json().catch(() => ({}));
-const layer3 = body.heartbeats?.find((row) => row.layer === 'layer3');
+const layer3 = findLayerHealth(body, siteId, 'layer3');
 if (!layer3 || layer3.stale || !String(layer3.source).includes('selftest')) {
   throw new Error(`Layer 3 heartbeat was not updated: ${JSON.stringify(body)}`);
 }
