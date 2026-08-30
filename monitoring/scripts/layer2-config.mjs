@@ -439,7 +439,7 @@ export function buildLayer2Matrix(config, cadence = 'post-deploy', adTargets = [
       if (!desktop) throw new Layer2ConfigError('daily matrix needs desktop-chromium');
       for (const market of site.markets) {
         include.push(matrixItem({
-          site, market, device: desktop, journey: 'desktop-smoke', suite: 'light', spec: 'tests/hourly-v2.spec.js',
+          site, market, device: desktop, journey: 'desktop-smoke', suite: 'light', spec: 'tests/hourly-v2.spec.js', writesCart: true,
         }));
       }
     }
