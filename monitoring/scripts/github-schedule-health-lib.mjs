@@ -1,5 +1,10 @@
 const NEUTRAL_CONCLUSIONS = new Set(['cancelled', 'skipped']);
 
+export function checkWithinScope(workflow, scope = 'all') {
+  if (!['all', 'ga4-only'].includes(scope)) throw new Error('Invalid MONITOR_SELF_HEALTH_SCOPE');
+  return scope === 'all' || workflow === 'monitor-alerts.yml';
+}
+
 /**
  * GitHub concurrency keeps at most one running and one pending run. A newer
  * push can therefore replace a pending scheduled run even when
