@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { selectWorkflowFreshnessRun } from './github-schedule-health-lib.mjs';
+import { checkWithinScope, selectWorkflowFreshnessRun } from './github-schedule-health-lib.mjs';
 
 const token = process.env.GITHUB_TOKEN || '';
 const repository = process.env.GITHUB_REPOSITORY || '';
@@ -37,6 +37,10 @@ async function dispatchRecovery(check, reason) {
 }
 
 for (const check of checks) {
+  if (!checkWithinScope(check.workflow, process.env.MONITOR_SELF_HEALTH_SCOPE || 'all')) {
+    console.log(JSON.stringify({ workflow: check.workflow, status: 'owned_by_central' }));
+    continue;
+  }
   const url = `https://api.github.com/repos/${repository}/actions/workflows/${check.workflow}/runs?per_page=20`;
   const response = await fetch(url, {
     headers: githubHeaders(),
