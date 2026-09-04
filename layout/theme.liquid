@@ -302,7 +302,9 @@
     endif
 
     assign apgo_body_page_class = ''
-    if request.page_type == 'collection' and collection.handle == 'all'
+    if request.page_type == 'product'
+      assign apgo_body_page_class = ' apgo-product-page'
+    elsif request.page_type == 'collection' and collection.handle == 'all'
       assign apgo_body_page_class = ' apgo-all-products-collection'
     elsif template.name == 'page' and template.suffix == 'special-event'
       assign apgo_body_page_class = ' apgo-special-event-page'
@@ -416,6 +418,21 @@
         body.apgo-scroll-hide #shopify-section-free-shipping-popup,
         body.apgo-scroll-hide .apgo-pdp-tablist-wrap {
           transform: translateY(calc(-1 * var(--apgo-stack-h, 120px)));
+        }
+
+        body.apgo-product-page #header-group > .shopify-section.header-section,
+        body.apgo-product-page #shopify-section-free-shipping-popup {
+          position: relative;
+          top: auto;
+          transform: none !important;
+          transition: none;
+          will-change: auto;
+        }
+
+        body.apgo-product-page .apgo-pdp-tablist-wrap,
+        body.apgo-product-page .apgo-mpdp-tabs-sticky {
+          top: 0;
+          transform: none !important;
         }
       }
     </style>

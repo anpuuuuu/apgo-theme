@@ -7175,9 +7175,13 @@ document.addEventListener('DOMContentLoaded', function() {
     觀察 marquee 尺寸變化（content/locale 切換）以及視窗縮放，自動更新。
   */
   function apgoUpdateTabsStickyTop() {
+    var useViewportTop = document.body.classList.contains('apgo-product-page')
+      && window.matchMedia('(max-width: 749px)').matches;
     var marquee = document.getElementById('shopify-section-free-shipping-popup');
     var stickyTop;
-    if (marquee) {
+    if (useViewportTop) {
+      stickyTop = 0;
+    } else if (marquee) {
       var mTop = parseFloat(getComputedStyle(marquee).top) || 0;
       var mH = marquee.getBoundingClientRect().height;
       stickyTop = mTop + mH;
