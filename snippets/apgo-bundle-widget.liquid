@@ -58,7 +58,7 @@
       endif
     endfor
   else
-    assign tiers_str = '1|0|Single pack|::6|3|Buy 6 get 3 free|Best value::4|2|Buy 4 get 2 free|Top choice'
+    assign tiers_str = '1|0|Single pack|::6|3|Buy 6 get 3 free|Best value::3|1|Buy 3 get 1 free|Top choice'
   endif
   assign tiers = tiers_str | split: '::'
 
@@ -172,7 +172,29 @@
     {%- endfor -%}
   </div>
 
-  <p class="apgo-bundle__stack-note">4+2 and 6+3 promotion is limited to once per order*</p>
+  {%- comment -%}
+    Derived from the tiers, not typed. This line still read "4+2" a month
+    after that tier changed, because it was the only place in the widget
+    where the numbers were not computed from the same source the cards
+    use — so editing a tier silently left the fine print lying.
+  {%- endcomment -%}
+  {%- assign promo_pairs = "" -%}
+  {%- for t_str in tiers -%}
+    {%- assign pt = t_str | split: "|" -%}
+    {%- assign p_buy = pt[0] | plus: 0 -%}
+    {%- assign p_gift = pt[1] | plus: 0 -%}
+    {%- if p_gift > 0 -%}
+      {%- capture p_pair -%}{{ p_buy }}+{{ p_gift }}{%- endcapture -%}
+      {%- if promo_pairs == blank -%}
+        {%- assign promo_pairs = p_pair -%}
+      {%- else -%}
+        {%- assign promo_pairs = promo_pairs | append: " and " | append: p_pair -%}
+      {%- endif -%}
+    {%- endif -%}
+  {%- endfor -%}
+  {%- if promo_pairs != blank -%}
+    <p class="apgo-bundle__stack-note">{{ promo_pairs }} promotion is limited to once per order*</p>
+  {%- endif -%}
 
   {%- comment -%} ---------- Scent picker ---------- {%- endcomment -%}
   {%- if scent_option -%}
