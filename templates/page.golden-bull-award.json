@@ -77,6 +77,30 @@
             "market_visibility": "my",
             "heading": "Limited Time Deals",
             "message": "Dont say bojio, 没有就没有 liao",
+            "banner": "shopify://shop_images/atmomic_mega_promo_banner.jpg",
+            "product": "✨atomic-coating-mega-promo-✨",
+            "variant_id": "",
+            "product_sg": "",
+            "variant_id_sg": "",
+            "cta_mode": "add_buy",
+            "single_cta_label": "Grab Deals Now",
+            "gift_enabled": false,
+            "gift_pool": [],
+            "gift_count": 2,
+            "gift_heading": "Choose your free gifts",
+            "show_counter": false,
+            "counter_milestone_total": "500",
+            "counter_release_total": "88",
+            "counter_manual_deduction": "0",
+            "counter_flow_baseline": "0"
+          }
+        },
+        "promo_banner_gewygY": {
+          "type": "promo_banner",
+          "settings": {
+            "market_visibility": "my",
+            "heading": "",
+            "message": "",
             "banner": "shopify://shop_images/9.9_banner_1.png",
             "product": "atomic-crystal-merdeka-set",
             "variant_id": "",
@@ -313,6 +337,7 @@
       },
       "block_order": [
         "promo_banner_merdeka",
+        "promo_banner_gewygY",
         "promo_banner_aCnrUD",
         "promo_banner_L3JjXC",
         "promo_banner_midmonth",
