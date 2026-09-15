@@ -74,7 +74,7 @@
         "promo_banner_merdeka": {
           "type": "promo_banner",
           "settings": {
-            "market_visibility": "my",
+            "market_visibility": "both",
             "heading": "Limited Time Deals",
             "message": "Dont say bojio, 没有就没有 liao",
             "banner": "shopify://shop_images/atmomic_mega_promo_banner.jpg",
