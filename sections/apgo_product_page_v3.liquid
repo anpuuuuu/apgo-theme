@@ -7514,12 +7514,17 @@ document.addEventListener('DOMContentLoaded', function() {
           <span class="apgo-cc-confirm-modal__price-row">
             <span class="apgo-cc-confirm-modal__price" data-apgo-cc-confirm-price data-cents="{{ product.selected_or_first_available_variant.price }}">{{ product.selected_or_first_available_variant.price | money }}</span>
             {%- comment -%}
-              Usual price. Driven by the variant compare-at price, exactly
-              like the inline PDP price block — so it is per-variant, and
-              Markets converts it for SG without a second hardcoded number.
-              syncConfirmModal() hides the whole thing when compare <= price.
+              Usual price. OPT-IN per variant via the setting below, so a
+              compare-at price alone does not put it on every product —
+              only the variants listed there. The figure itself is the
+              variant compare-at, so Markets converts it for SG and there
+              is no second hardcoded number in the theme. Hidden whenever
+              compare is not above price.
             {%- endcomment -%}
-            <span class="apgo-cc-confirm-modal__usual" data-apgo-cc-confirm-usual hidden>
+            <span class="apgo-cc-confirm-modal__usual"
+                  data-apgo-cc-confirm-usual
+                  data-usual-variants="{{ section.settings.confirm_usual_variant_ids | escape }}"
+                  hidden>
               <span class="apgo-cc-confirm-modal__usual-label">Usual price</span>
               <s class="apgo-cc-confirm-modal__usual-val" data-apgo-cc-confirm-usual-val></s>
             </span>
@@ -7703,6 +7708,16 @@ document.addEventListener('DOMContentLoaded', function() {
       "label": "Flow baseline (live auto-count)",
       "info": "Set 0 to keep the counter fully manual. To make it count down live with paid orders, enter the current apgo_campaign.aurora_paid_sets metafield value here — only orders AFTER this baseline reduce the counter. Remaining = Current release − Extra deduction − (paid orders since baseline).",
       "default": "0"
+    },
+    {
+      "type": "header",
+      "content": "🏷️ Usual Price (confirm modal)"
+    },
+    {
+      "type": "textarea",
+      "id": "confirm_usual_variant_ids",
+      "label": "Show “Usual price” for these variant IDs",
+      "info": "Comma-separated numeric variant IDs. Only these show the struck-through usual price in the purchase-confirm modal — every other variant shows the selling price alone, even if it has a compare-at price. The figure shown is that variant’s compare-at price, so Singapore gets it converted automatically; leave blank to turn the feature off entirely."
     },
     {
       "type": "header",
