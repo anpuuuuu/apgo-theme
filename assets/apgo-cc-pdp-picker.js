@@ -1126,19 +1126,6 @@
   var confirmGroups     = confirmModal ? confirmModal.querySelectorAll('[data-apgo-cc-confirm-option-group]') : [];
   var confirmImageEl    = confirmModal ? confirmModal.querySelector('[data-apgo-cc-confirm-image]') : null;
   var confirmPriceEl    = confirmModal ? confirmModal.querySelector('[data-apgo-cc-confirm-price]') : null;
-  var confirmUsualEl    = confirmModal ? confirmModal.querySelector('[data-apgo-cc-confirm-usual]') : null;
-  var confirmUsualValEl = confirmModal ? confirmModal.querySelector('[data-apgo-cc-confirm-usual-val]') : null;
-  /* Opt-in allow-list of variant IDs. A compare-at price alone must not
-     turn this on everywhere — only the variants the merchant listed. */
-  var confirmUsualIds = {};
-  if (confirmUsualEl) {
-    (confirmUsualEl.getAttribute('data-usual-variants') || '')
-      .split(',')
-      .forEach(function (raw) {
-        var id = String(raw).replace(/[^0-9]/g, '');
-        if (id) confirmUsualIds[id] = true;
-      });
-  }
   var confirmStockEl    = confirmModal ? confirmModal.querySelector('[data-apgo-cc-confirm-stock]') : null;
   var confirmStockTxtEl = confirmModal ? confirmModal.querySelector('[data-apgo-cc-confirm-stock-text]') : null;
   /* APGO_LOW_STOCK_THRESHOLD already defined at the top of this IIFE next
@@ -1167,19 +1154,6 @@
       if (confirmPriceEl) {
         confirmPriceEl.setAttribute('data-cents', curV.price);
         confirmPriceEl.textContent = fmtMoney(curV.price);
-      }
-      /* Usual price — same rule as the inline PDP block: only a compare-at
-         ABOVE the selling price is a real "usual" price. Equal or lower means
-         no discount, and showing it would invent one. */
-      if (confirmUsualEl) {
-        var cmp = curV.compare_at_price;
-        var allowed = confirmUsualIds[String(curV.id)] === true;
-        if (allowed && cmp && cmp > curV.price) {
-          if (confirmUsualValEl) confirmUsualValEl.textContent = fmtMoney(cmp);
-          confirmUsualEl.hidden = false;
-        } else {
-          confirmUsualEl.hidden = true;
-        }
       }
       if (confirmImageEl) {
         var fimg = curV.featured_image || (curV.featured_media && curV.featured_media.preview_image);
