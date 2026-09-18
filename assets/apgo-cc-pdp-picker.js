@@ -1149,36 +1149,34 @@
   }
 
   /*
-    Gallery -> variant sync. ENABLED FOR THE TWO CAR INTERIOR PRODUCTS ONLY.
+    Gallery -> variant sync. ON everywhere EXCEPT the two Car Interior
+    products.
 
     Swiping the carousel selects the variant that owns the destination
-    image, which also re-prices the page. That is the wrong default: a
-    shopper moving through photos is browsing, not choosing, and the price
-    should not move under them. It ran on every product and was turned off
-    for exactly that reason.
+    image, which also re-prices the page. On most products that is
+    harmless: their images are lifestyle and spec shots that no variant
+    owns, so findVariantBySlide finds nothing and the swipe is a no-op.
 
-    On these two products it earns its place — image 1 is a banner and
-    images 2 and 3 ARE the two variants, so the gallery genuinely is a
-    second picker.
+    The two Interior pages are the exception, and the reason this needed a
+    switch at all — image 1 is a banner but images 2 and 3 ARE the two
+    variants, so every swipe past the first photo silently changed the
+    selection and the price while the shopper was only looking.
 
-    Gated on variant IDs rather than a product ID: this template emits no
+    Listed by variant ID rather than product ID: this template emits no
     product ID to read, and any page whose variant list contains one of
     these four is one of the two products.
-
-    Sliding to an image no variant owns stays a no-op, so image 1 never
-    disturbs the selection.
 
     Loop protection: refreshVariant() itself calls goToSlide at the end.
     That re-enters the wrapped goToSlide, which calls syncVariantToSlide,
     which sees v.id === window.currentVariantId (already set by the same
     refreshVariant cycle) and bails out before re-firing.
   */
-  var APGO_GALLERY_SYNC_VARIANTS = {
+  var APGO_GALLERY_SYNC_OFF_VARIANTS = {
     '46971425259674': true, '47521770668186': true, /* Interior Coating page */
     '46971435679898': true, '47521785118874': true  /* Interior Cleaner page */
   };
-  var gallerySyncEnabled = variants.some(function (vv) {
-    return APGO_GALLERY_SYNC_VARIANTS[String(vv.id)] === true;
+  var gallerySyncEnabled = !variants.some(function (vv) {
+    return APGO_GALLERY_SYNC_OFF_VARIANTS[String(vv.id)] === true;
   });
   function findVariantBySlide(idx) {
     var pos = idx + 1; /* Shopify featured_image.position is 1-indexed */
@@ -1220,7 +1218,7 @@
   */
   var carouselPatchTries = 0;
   function patchCarouselGoToSlide() {
-    if (!gallerySyncEnabled) return; /* every other product stays one-way */
+    if (!gallerySyncEnabled) return; /* the two Interior pages stay one-way */
     if (window.apgoCarousel && typeof window.apgoCarousel.goToSlide === 'function' && !window.apgoCarousel._apgoCcSyncPatched) {
       var orig = window.apgoCarousel.goToSlide.bind(window.apgoCarousel);
       window.apgoCarousel.goToSlide = function (idx) {
