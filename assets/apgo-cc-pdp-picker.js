@@ -1084,75 +1084,18 @@
   }
 
   /*
-    Bidirectional sync — swiping the main carousel triggers the matching
-    variant chip (reverse of the existing chip → image flow in refreshVariant).
-    Mechanism: monkey-patch window.apgoCarousel.goToSlide so every slide
-    change (touch swipe / dot tap / thumbnail tap / programmatic) also runs
-    syncVariantToSlide(idx) which looks up the variant whose featured_image
-    sits at that position and selects it.
+    Image -> variant sync is deliberately NOT wired up.
 
-    Only triggers when the destination slide IS a variant's featured image.
-    Sliding through gallery-only images (no variant linkage) is a no-op,
-    so navigation feels natural.
+    The flow is one-way: choosing an option moves the gallery
+    (see refreshVariant), but moving the gallery must not move the
+    option. It used to run both ways, which meant a customer swiping
+    through the photos silently changed the variant and the price under
+    them — they were browsing pictures, not choosing a product, and the
+    number they had just read would change without them touching it.
 
-    Loop protection: refreshVariant() itself calls goToSlide at the end.
-    That re-enters the wrapped goToSlide, which calls syncVariantToSlide,
-    which sees v.id === window.currentVariantId (already set by the same
-    refreshVariant cycle) and bails out before re-firing.
+    If bidirectional sync is ever wanted again, it belongs behind a
+    setting, not as the default.
   */
-  function findVariantBySlide(idx) {
-    var pos = idx + 1; /* Shopify featured_image.position is 1-indexed */
-    for (var i = 0; i < variants.length; i++) {
-      var vv = variants[i];
-      var fimg = vv.featured_image || vv.featured_media;
-      var p = fimg && (fimg.position || (fimg.preview_image && fimg.preview_image.position));
-      if (p === pos) return vv;
-    }
-    return null;
-  }
-  function syncVariantToSlide(idx) {
-    var v = findVariantBySlide(idx);
-    if (!v) return; /* slide isn't tied to any variant → leave chip as-is */
-    if (v.id === window.currentVariantId) return; /* already on this variant */
-    /* Flip radios across every option group so all options end up matching v */
-    form.querySelectorAll('[data-apgo-cc-option-group]').forEach(function (g, gi) {
-      var targetValue = (v.options || [])[gi];
-      g.querySelectorAll('input[type="radio"][data-apgo-cc-option-input]').forEach(function (r) {
-        r.checked = false;
-      });
-      if (targetValue == null) return;
-      /* CSS.escape isn't in older browsers — use attribute selector with literal value (escaped via a small helper) */
-      var radios = g.querySelectorAll('input[type="radio"][data-apgo-cc-option-input]');
-      for (var i = 0; i < radios.length; i++) {
-        if (radios[i].value === targetValue) {
-          radios[i].checked = true;
-          break;
-        }
-      }
-    });
-    refreshVariant();
-  }
-
-  /*
-    Patch carousel.goToSlide once it's mounted. Carousel boots after
-    DOMContentLoaded in v3; poll briefly until window.apgoCarousel exists.
-    Bail after ~3 seconds if it never appears (e.g. product with no images).
-  */
-  var carouselPatchTries = 0;
-  function patchCarouselGoToSlide() {
-    if (window.apgoCarousel && typeof window.apgoCarousel.goToSlide === 'function' && !window.apgoCarousel._apgoCcSyncPatched) {
-      var orig = window.apgoCarousel.goToSlide.bind(window.apgoCarousel);
-      window.apgoCarousel.goToSlide = function (idx) {
-        orig(idx);
-        try { syncVariantToSlide(idx); } catch (_) {}
-      };
-      window.apgoCarousel._apgoCcSyncPatched = true;
-      return;
-    }
-    if (++carouselPatchTries > 30) return; /* give up after 30 × 100ms = 3s */
-    setTimeout(patchCarouselGoToSlide, 100);
-  }
-  patchCarouselGoToSlide();
 
   /*
     Purchase-confirm modal — opens when bottom buybar Add/Buy is clicked.
