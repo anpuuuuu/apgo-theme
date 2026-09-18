@@ -481,20 +481,26 @@
     state, then calling refreshVariant() guarantees the section actually
     switches.
   */
+  /* Shared so the capture-phase handler below can run the same selection
+     before it opens the modal. */
+  function selectChip(chip) {
+    if (!chip) return false;
+    var input = chip.querySelector('input[type="radio"][data-apgo-cc-option-input]');
+    if (!input || input.checked) return false;
+    /* Uncheck siblings in the same option group first */
+    var group = chip.closest('[data-apgo-cc-option-group]');
+    if (group) {
+      group.querySelectorAll('input[type="radio"][data-apgo-cc-option-input]').forEach(function (r) {
+        r.checked = false;
+      });
+    }
+    input.checked = true;
+    refreshVariant();
+    return true;
+  }
+
   form.querySelectorAll('.apgo-cc-pdp__chip').forEach(function (chip) {
-    chip.addEventListener('click', function () {
-      var input = chip.querySelector('input[type="radio"][data-apgo-cc-option-input]');
-      if (!input || input.checked) return;
-      /* Uncheck siblings in the same option group first */
-      var group = chip.closest('[data-apgo-cc-option-group]');
-      if (group) {
-        group.querySelectorAll('input[type="radio"][data-apgo-cc-option-input]').forEach(function (r) {
-          r.checked = false;
-        });
-      }
-      input.checked = true;
-      refreshVariant();
-    });
+    chip.addEventListener('click', function () { selectChip(chip); });
   });
 
   /*
@@ -510,6 +516,13 @@
       if (!window.matchMedia || !window.matchMedia('(max-width: 1023px)').matches) return;
       e.preventDefault();
       e.stopPropagation();
+      /* This runs in the CAPTURE phase and stops propagation, so the chip's
+         own click handler never fires. Apply the tapped option here first —
+         otherwise the modal opens on whatever was selected before and the
+         chip the customer just pressed appears to do nothing. It has to
+         happen BEFORE the open: the modal mirrors the current variant at
+         open time. */
+      selectChip(e.target.closest('.apgo-cc-pdp__chip'));
       if (typeof window.apgoOpenConfirmModal === 'function') window.apgoOpenConfirmModal('both');
     }, true /* capture */);
   });
@@ -1212,8 +1225,8 @@
                   || (priceEl && priceEl.closest('.apgo-product-section') && (priceEl.closest('.apgo-product-section').querySelector('.apgo-hero-visual img') || {}).src)
                   || confirmImageEl.getAttribute('src');
         if (src) {
-          /* Request a small width to keep payload tiny on mobile */
-          var sized = src.replace(/(\.[a-z]+)(\?|$)/i, '_200x$1$2');
+          /* Cheap on mobile, still sharp in the 125px box on a 2x screen. */
+          var sized = src.replace(/(\.[a-z]+)(\?|$)/i, '_320x$1$2');
           if (confirmImageEl.getAttribute('src') !== sized) confirmImageEl.setAttribute('src', sized);
         }
       }
