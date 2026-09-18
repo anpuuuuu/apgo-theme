@@ -188,22 +188,25 @@
     Usual price for the Car Interior Set, hardcoded per variant.
 
     The same set is sold from two product pages, so both variant IDs map to
-    the same figures. Those figures are what the two bottles cost bought
-    separately, read per market rather than converted from each other:
+    the same figure: what the two bottles cost bought separately.
 
-      MY   Coating RM33.00 + Cleaner RM27.00  = RM60.00
-      SG   Coating S$14.90 + Cleaner S$11.90  = S$26.80
+      Coating RM35.00 + Cleaner RM29.00 = RM64.00
 
-    Deliberately NOT compare_at_price, which on these two reads RM68.00 /
-    S$26.90 — above either sum, so it would claim a bigger saving than the
-    products support.
+    Deliberately NOT compare_at_price, which on these two reads RM68.00 —
+    above the sum, so it would claim a bigger saving than the products
+    support.
 
-    A price change on either bottle makes these stale with no visible
-    symptom, so the arithmetic is written down here beside them.
+    MY only. Singapore is intentionally absent: with no SGD figure here,
+    syncUsualPrice() shows nothing there rather than guessing a conversion.
+
+    THESE GO STALE SILENTLY. Both bottles were RM33 / RM27 earlier the same
+    day this was written and the total moved RM60 -> RM64 with no visible
+    symptom on the page. Re-check the two bottle prices whenever either
+    product is repriced.
   */
   var APGO_USUAL_PRICE = {
-    '47521770668186': { MYR: 6000, SGD: 2680 }, /* Car Interior Set - Coating page */
-    '47521785118874': { MYR: 6000, SGD: 2680 }  /* Car Interior Set - Cleaner page */
+    '47521770668186': { MYR: 6400 }, /* Car Interior Set - Coating page */
+    '47521785118874': { MYR: 6400 }  /* Car Interior Set - Cleaner page */
   };
 
   /* Drives the inline PDP block and the confirm modal from one number, so
