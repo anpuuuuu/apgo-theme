@@ -3800,6 +3800,28 @@
     gap: 2px;
     min-width: 0;
   }
+  .apgo-cc-confirm-modal__price-row {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    min-width: 0;
+  }
+  .apgo-cc-confirm-modal__usual {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 4px;
+    font-size: 12px;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+  .apgo-cc-confirm-modal__usual[hidden] { display: none; }
+  .apgo-cc-confirm-modal__usual-label { color: rgba(255, 255, 255, 0.5); }
+  .apgo-cc-confirm-modal__usual-val {
+    color: rgba(255, 255, 255, 0.62);
+    text-decoration-thickness: 1px;
+  }
+
   .apgo-cc-confirm-modal__price {
     font-size: 18px;
     font-weight: 700;
@@ -7487,7 +7509,22 @@ document.addEventListener('DOMContentLoaded', function() {
                width="96" height="96">
         </div>
         <div class="apgo-cc-confirm-modal__summary-info">
-          <span class="apgo-cc-confirm-modal__price" data-apgo-cc-confirm-price data-cents="{{ product.selected_or_first_available_variant.price }}">{{ product.selected_or_first_available_variant.price | money }}</span>
+          <span class="apgo-cc-confirm-modal__price-row">
+            <span class="apgo-cc-confirm-modal__price" data-apgo-cc-confirm-price data-cents="{{ product.selected_or_first_available_variant.price }}">{{ product.selected_or_first_available_variant.price | money }}</span>
+            {%- comment -%}
+              Usual price — the two Car Interior Set variants only. The
+              figures live in APGO_USUAL_PRICE in apgo-cc-pdp-picker.js,
+              per currency, NOT in the variant compare-at price: compare-at
+              on these two reads RM68 / S$26.90, while the real cost of
+              buying the coating and the cleaner separately is RM60 /
+              S$26.80. syncConfirmModal() leaves this hidden for every
+              other variant.
+            {%- endcomment -%}
+            <span class="apgo-cc-confirm-modal__usual" data-apgo-cc-confirm-usual hidden>
+              <span class="apgo-cc-confirm-modal__usual-label">Usual price</span>
+              <s class="apgo-cc-confirm-modal__usual-val" data-apgo-cc-confirm-usual-val></s>
+            </span>
+          </span>
           {%- comment -%}
             Stock line — populated by syncConfirmModal(). Hidden when the
             variant's inventory isn't tracked or stock data is unavailable.

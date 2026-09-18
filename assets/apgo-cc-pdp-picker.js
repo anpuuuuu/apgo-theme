@@ -1126,6 +1126,31 @@
   var confirmGroups     = confirmModal ? confirmModal.querySelectorAll('[data-apgo-cc-confirm-option-group]') : [];
   var confirmImageEl    = confirmModal ? confirmModal.querySelector('[data-apgo-cc-confirm-image]') : null;
   var confirmPriceEl    = confirmModal ? confirmModal.querySelector('[data-apgo-cc-confirm-price]') : null;
+  var confirmUsualEl    = confirmModal ? confirmModal.querySelector('[data-apgo-cc-confirm-usual]') : null;
+  var confirmUsualValEl = confirmModal ? confirmModal.querySelector('[data-apgo-cc-confirm-usual-val]') : null;
+
+  /*
+    Usual price for the Car Interior Set, hardcoded per variant.
+
+    The same set is sold from two product pages, so both variant IDs map
+    to the same figures. Those figures are what the two bottles cost
+    bought separately:
+
+      MY   Coating RM33.00 + Cleaner RM27.00  = RM60.00
+      SG   Coating S$14.90 + Cleaner S$11.90  = S$26.80
+
+    Deliberately NOT the variant compare-at price, which currently reads
+    RM68.00 / S$26.90 — higher than either sum, so using it would overstate
+    the saving. Amounts are in cents, keyed by the active market currency.
+
+    A price change on either bottle makes these stale with no visible
+    symptom, so they are listed here where the arithmetic is written down
+    rather than buried in a theme setting.
+  */
+  var APGO_USUAL_PRICE = {
+    '47521770668186': { MYR: 6000, SGD: 2680 }, /* Car Interior Set - on the Coating page */
+    '47521785118874': { MYR: 6000, SGD: 2680 }  /* Car Interior Set - on the Cleaner page  */
+  };
   var confirmStockEl    = confirmModal ? confirmModal.querySelector('[data-apgo-cc-confirm-stock]') : null;
   var confirmStockTxtEl = confirmModal ? confirmModal.querySelector('[data-apgo-cc-confirm-stock-text]') : null;
   /* APGO_LOW_STOCK_THRESHOLD already defined at the top of this IIFE next
@@ -1154,6 +1179,20 @@
       if (confirmPriceEl) {
         confirmPriceEl.setAttribute('data-cents', curV.price);
         confirmPriceEl.textContent = fmtMoney(curV.price);
+      }
+      if (confirmUsualEl) {
+        var usual = APGO_USUAL_PRICE[String(curV.id)];
+        var ccy = getActiveCurrency();
+        var usualCents = usual ? usual[ccy] : null;
+        /* Only ever a real saving, and only in a market we have a figure
+           for — an unlisted currency shows nothing rather than a number
+           in the wrong denomination. */
+        if (usualCents && usualCents > curV.price) {
+          if (confirmUsualValEl) confirmUsualValEl.textContent = fmtMoney(usualCents, ccy);
+          confirmUsualEl.hidden = false;
+        } else {
+          confirmUsualEl.hidden = true;
+        }
       }
       if (confirmImageEl) {
         var fimg = curV.featured_image || (curV.featured_media && curV.featured_media.preview_image);
