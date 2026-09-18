@@ -3287,6 +3287,21 @@
     column-gap: 10px;
     row-gap: 4px;
   }
+  .apgo-cc-pdp__usual {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+    margin-top: 4px;
+    font-size: 13px;
+    line-height: 1.3;
+  }
+  .apgo-cc-pdp__usual[hidden] { display: none; }
+  .apgo-cc-pdp__usual-label { color: rgba(255, 255, 255, 0.5); }
+  .apgo-cc-pdp__usual-val {
+    color: rgba(255, 255, 255, 0.62);
+    text-decoration-thickness: 1px;
+  }
+
   .apgo-cc-pdp__price-current {
     order: 1;
     font-size: 26px;
@@ -3802,9 +3817,9 @@
   }
   .apgo-cc-confirm-modal__price-row {
     display: flex;
-    align-items: baseline;
-    flex-wrap: wrap;
-    gap: 4px 8px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
     min-width: 0;
   }
   .apgo-cc-confirm-modal__usual {
@@ -4885,6 +4900,17 @@
         {%- else -%}
           <span class="apgo-cc-pdp__price-current" data-apgo-cc-price data-cents="{{ product.price }}">{{ product.price | money }}</span>
         {%- endif -%}
+        {%- comment -%}
+          Usual price — sits BELOW the price, outside the on-sale branch so
+          it renders whether or not the variant has a compare-at price.
+          Figures come from APGO_USUAL_PRICE in apgo-cc-pdp-picker.js and
+          are shown for two variants only; syncUsualPrice() keeps this and
+          the confirm modal on the same number.
+        {%- endcomment -%}
+        <div class="apgo-cc-pdp__usual" data-apgo-cc-inline-usual hidden>
+          <span class="apgo-cc-pdp__usual-label">Usual price</span>
+          <s class="apgo-cc-pdp__usual-val" data-apgo-cc-inline-usual-val></s>
+        </div>
       </div>
 
       <form action="{{ routes.cart_add_url }}" method="post" enctype="multipart/form-data" class="apgo-cc-pdp__form" data-apgo-cc-form>
