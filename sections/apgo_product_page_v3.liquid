@@ -2652,27 +2652,29 @@
     pointer-events: none;
   }
 
-  .apgo-swipe-dots {
-    display: flex;
-    gap: 6px;
-    padding: 8px 12px;
-    background: rgba(0, 0, 0, 0.5);
+  .apgo-swipe-counter {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 2px;
+    padding: 5px 11px;
+    background: rgba(0, 0, 0, 0.55);
     border-radius: 20px;
     backdrop-filter: blur(10px);
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
   }
 
-  .apgo-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.4);
-    transition: all 0.3s ease;
+  /* Current index carries the emphasis; the total is context. */
+  .apgo-swipe-counter [data-apgo-slide-current] {
+    color: #fff;
   }
 
-  .apgo-dot.active {
-    width: 16px;
-    border-radius: 3px;
-    background: var(--primary-orange);
+  .apgo-swipe-counter__sep {
+    opacity: 0.55;
   }
 
   /* 視頻模態框 */
@@ -4676,18 +4678,20 @@
           </div>
         </div>
 
-        <!-- 輪播指示點 -->
-        <div class="apgo-swipe-indicator">
-          <div class="apgo-swipe-dots">
-            {% for image in product.images %}
-              <span
-                class="apgo-dot {% if forloop.first %}active{% endif %}"
-                data-index="{{ forloop.index0 }}"
-                onclick="apgoGoToSlide({{ forloop.index0 }})"
-              ></span>
-            {% endfor %}
+        {%- comment -%}
+          Slide counter, not dots. With eight or more images the dots
+          shrink to identical specks that say neither where you are nor how
+          much is left; "3 / 8" answers both at any image count.
+        {%- endcomment -%}
+        {% if product.images.size > 1 %}
+          <div class="apgo-swipe-indicator">
+            <div class="apgo-swipe-counter" data-apgo-slide-counter aria-live="polite" aria-atomic="true">
+              <span data-apgo-slide-current>1</span>
+              <span class="apgo-swipe-counter__sep" aria-hidden="true">/</span>
+              <span>{{ product.images.size }}</span>
+            </div>
           </div>
-        </div>
+        {% endif %}
       </div>
 
       <div class="apgo-product-badges">
@@ -6170,7 +6174,7 @@ class APGOCarousel {
     this.track = document.getElementById('apgoCarouselTrack');
     this.showcase = document.getElementById('apgoProductShowcase');
     this.slides = this.track ? this.track.querySelectorAll('.apgo-carousel-slide') : [];
-    this.dots = document.querySelectorAll('.apgo-dot');
+    this.counter = document.querySelector('[data-apgo-slide-current]');
     this.thumbnails = document.querySelectorAll('.apgo-thumbnail-item');
 
     this.currentIndex = 0;
@@ -6390,10 +6394,10 @@ class APGOCarousel {
     this.track.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
     this.track.style.transform = `translateX(-${index * w}px)`;
 
-    // 更新指示点
-    this.dots.forEach((dot, i) => {
-      dot.classList.toggle('active', i === index);
-    });
+    // 更新張數指示（第幾張 / 共幾張）
+    if (this.counter) {
+      this.counter.textContent = index + 1;
+    }
 
     // 更新缩略图
     this.thumbnails.forEach((thumb, i) => {
