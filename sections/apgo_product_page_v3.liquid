@@ -6403,6 +6403,14 @@ class APGOCarousel {
     if (navigator.vibrate) {
       navigator.vibrate(20);
     }
+
+    // Announce the change so other modules can react without wrapping this
+    // method. apgo-cc-pdp-picker.js listens for this to keep the variant
+    // chips in step with the gallery; it used to monkey-patch goToSlide and
+    // poll for this object to exist, which broke the moment either side moved.
+    document.dispatchEvent(new CustomEvent("apgo:slidechange", {
+      detail: { index: index }
+    }));
   }
 }
 

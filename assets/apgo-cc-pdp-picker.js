@@ -444,7 +444,9 @@
     var pos = fimg && (fimg.position || (fimg.preview_image && fimg.preview_image.position));
     if (pos && window.apgoCarousel && typeof window.apgoCarousel.goToSlide === 'function') {
       var slideIdx = pos - 1;
-      window.apgoCarousel.goToSlide(slideIdx);
+      drivingCarousel = true;
+      try { window.apgoCarousel.goToSlide(slideIdx); }
+      finally { drivingCarousel = false; }
       document.querySelectorAll('.apgo-thumbnail-item').forEach(function (t, i) {
         t.classList.toggle('active', i === slideIdx);
       });
@@ -514,21 +516,12 @@
     event fires, so the inline radio doesn't flip behind the user's back.
     Desktop is untouched — the inline chips remain the direct selection control.
   */
-  form.querySelectorAll('[data-apgo-cc-option-group]').forEach(function (g) {
-    g.addEventListener('click', function (e) {
-      if (!window.matchMedia || !window.matchMedia('(max-width: 1023px)').matches) return;
-      e.preventDefault();
-      e.stopPropagation();
-      /* This runs in the CAPTURE phase and stops propagation, so the chip's
-         own click handler never fires. Apply the tapped option here first —
-         otherwise the modal opens on whatever was selected before and the
-         chip the customer just pressed appears to do nothing. It has to
-         happen BEFORE the open: the modal mirrors the current variant at
-         open time. */
-      selectChip(e.target.closest('.apgo-cc-pdp__chip'));
-      if (typeof window.apgoOpenConfirmModal === 'function') window.apgoOpenConfirmModal('both');
-    }, true /* capture */);
-  });
+  /* Tapping an option used to force the purchase-confirm modal open on
+     phones. Tapping a chip is how a shopper ASKS what something costs, not
+     how they commit to it, and a modal made that question as expensive as
+     buying — it also covered the price it had just changed. Mobile now
+     behaves like desktop: the chip selects, the gallery moves to that
+     variant's image, and the modal opens only from Add to cart / Buy now. */
 
   /* Qty stepper */
   form.querySelectorAll('[data-apgo-cc-qty]').forEach(function (btn) {
@@ -1149,23 +1142,27 @@
   }
 
   /*
-    Bidirectional sync — swiping the main carousel selects the variant that
-    owns the destination image, the reverse of the chip -> image flow in
-    refreshVariant. Runs on every product.
+    Gallery -> variant sync. Runs on every product.
 
-    Mechanism: monkey-patch window.apgoCarousel.goToSlide so every slide
-    change (touch swipe / dot tap / thumbnail tap / programmatic) also runs
-    syncVariantToSlide(idx).
+    Changing the slide selects the variant that owns the destination image,
+    the reverse of the chip -> image flow in refreshVariant. Only fires when
+    the destination slide IS a variant featured image; lifestyle and spec
+    shots own no variant, so swiping past them changes nothing.
 
-    Only fires when the destination slide IS a variant featured image.
-    Most products are lifestyle and spec shots no variant owns, so those
-    swipes find nothing and change nothing — navigation stays natural.
-
-    Loop protection: refreshVariant() itself calls goToSlide at the end.
-    That re-enters the wrapped goToSlide, which calls syncVariantToSlide,
-    which sees v.id === window.currentVariantId (already set by the same
-    refreshVariant cycle) and bails out before re-firing.
+    Driven by the apgo:slidechange event the carousel emits (see goToSlide
+    in the section). This used to monkey-patch goToSlide and poll for up to
+    three seconds waiting for window.apgoCarousel to exist — both of which
+    broke silently if either side was touched.
   */
+
+  /* Set while refreshVariant is driving the carousel. goToSlide dispatches
+     synchronously, so the flag is still up when our own listener runs and
+     the round trip stops here. Previously this relied on refreshVariant
+     happening to set window.currentVariantId before calling goToSlide — a
+     contract nothing enforced, and an infinite loop if the two lines were
+     ever reordered. */
+  var drivingCarousel = false;
+
   function findVariantBySlide(idx) {
     var pos = idx + 1; /* Shopify featured_image.position is 1-indexed */
     for (var i = 0; i < variants.length; i++) {
@@ -1176,49 +1173,30 @@
     }
     return null;
   }
+
   function syncVariantToSlide(idx) {
+    if (drivingCarousel) return; /* this slide change came from us */
     var v = findVariantBySlide(idx);
-    if (!v) return; /* slide isn't tied to any variant → leave chip as-is */
-    if (v.id === window.currentVariantId) return; /* already on this variant */
+    if (!v) return;                              /* slide owns no variant */
+    if (v.id === window.currentVariantId) return; /* already on it */
     /* Flip radios across every option group so all options end up matching v */
     form.querySelectorAll('[data-apgo-cc-option-group]').forEach(function (g, gi) {
       var targetValue = (v.options || [])[gi];
-      g.querySelectorAll('input[type="radio"][data-apgo-cc-option-input]').forEach(function (r) {
-        r.checked = false;
-      });
-      if (targetValue == null) return;
-      /* CSS.escape isn't in older browsers — use attribute selector with literal value (escaped via a small helper) */
       var radios = g.querySelectorAll('input[type="radio"][data-apgo-cc-option-input]');
-      for (var i = 0; i < radios.length; i++) {
-        if (radios[i].value === targetValue) {
-          radios[i].checked = true;
-          break;
-        }
+      for (var i = 0; i < radios.length; i++) radios[i].checked = false;
+      if (targetValue == null) return;
+      for (var j = 0; j < radios.length; j++) {
+        if (radios[j].value === targetValue) { radios[j].checked = true; break; }
       }
     });
     refreshVariant();
   }
 
-  /*
-    Patch carousel.goToSlide once it's mounted. Carousel boots after
-    DOMContentLoaded in v3; poll briefly until window.apgoCarousel exists.
-    Bail after ~3 seconds if it never appears (e.g. product with no images).
-  */
-  var carouselPatchTries = 0;
-  function patchCarouselGoToSlide() {
-    if (window.apgoCarousel && typeof window.apgoCarousel.goToSlide === 'function' && !window.apgoCarousel._apgoCcSyncPatched) {
-      var orig = window.apgoCarousel.goToSlide.bind(window.apgoCarousel);
-      window.apgoCarousel.goToSlide = function (idx) {
-        orig(idx);
-        try { syncVariantToSlide(idx); } catch (_) {}
-      };
-      window.apgoCarousel._apgoCcSyncPatched = true;
-      return;
-    }
-    if (++carouselPatchTries > 30) return; /* give up after 30 × 100ms = 3s */
-    setTimeout(patchCarouselGoToSlide, 100);
-  }
-  patchCarouselGoToSlide();
+  document.addEventListener('apgo:slidechange', function (e) {
+    var idx = e && e.detail && e.detail.index;
+    if (typeof idx !== 'number') return;
+    try { syncVariantToSlide(idx); } catch (_) {}
+  });
 
   /*
     Purchase-confirm modal — opens when bottom buybar Add/Buy is clicked.
