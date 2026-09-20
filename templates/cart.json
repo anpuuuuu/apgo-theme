@@ -118,7 +118,7 @@
             "enabled": true,
             "slot": "tab_2",
             "label": "Interior Set PWP",
-            "subtitle_my": "Special price for Interior Coating · 1 set per product, per order",
+            "subtitle_my": "Special price for Interior Coating · 2 set per product, per order",
             "subtitle_sg": "",
             "audience": "trigger",
             "trigger_products": [
