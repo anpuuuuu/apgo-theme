@@ -19,12 +19,30 @@
         assign tab_is_eligible = true
       else
         assign trigger_quantity = 0
+        comment
+          An optional variant list narrows the trigger to specific variants —
+          e.g. the Interior PWP should fire on the Set, not on the single
+          bottle of the same product. Left empty it behaves as before: any
+          variant of the listed products counts.
+        
+          Compared as strings: cart_item.variant_id is a number and the
+          setting is free text.
+        endcomment
+        assign tv_raw = block.settings.trigger_variant_ids | default: '' | newline_to_br | replace: '<br />', ',' | replace: '<br/>', ',' | replace: ' ', '' | replace: ';', ','
+        assign tv_list = tv_raw | split: ','
         for cart_item in cart.items
-          for trigger_product in block.settings.trigger_products
-            if cart_item.product_id == trigger_product.id
+          if tv_raw != blank
+            assign cart_vid = cart_item.variant_id | append: ''
+            if tv_list contains cart_vid
               assign trigger_quantity = trigger_quantity | plus: cart_item.quantity
             endif
-          endfor
+          else
+            for trigger_product in block.settings.trigger_products
+              if cart_item.product_id == trigger_product.id
+                assign trigger_quantity = trigger_quantity | plus: cart_item.quantity
+              endif
+            endfor
+          endif
         endfor
         assign trigger_minimum = block.settings.trigger_min_quantity | default: 1
         if trigger_quantity >= trigger_minimum
@@ -82,12 +100,30 @@
               assign tab_is_eligible = true
             else
               assign trigger_quantity = 0
+              comment
+                An optional variant list narrows the trigger to specific variants —
+                e.g. the Interior PWP should fire on the Set, not on the single
+                bottle of the same product. Left empty it behaves as before: any
+                variant of the listed products counts.
+              
+                Compared as strings: cart_item.variant_id is a number and the
+                setting is free text.
+              endcomment
+              assign tv_raw = block.settings.trigger_variant_ids | default: '' | newline_to_br | replace: '<br />', ',' | replace: '<br/>', ',' | replace: ' ', '' | replace: ';', ','
+              assign tv_list = tv_raw | split: ','
               for cart_item in cart.items
-                for trigger_product in block.settings.trigger_products
-                  if cart_item.product_id == trigger_product.id
+                if tv_raw != blank
+                  assign cart_vid = cart_item.variant_id | append: ''
+                  if tv_list contains cart_vid
                     assign trigger_quantity = trigger_quantity | plus: cart_item.quantity
                   endif
-                endfor
+                else
+                  for trigger_product in block.settings.trigger_products
+                    if cart_item.product_id == trigger_product.id
+                      assign trigger_quantity = trigger_quantity | plus: cart_item.quantity
+                    endif
+                  endfor
+                endif
               endfor
               assign trigger_minimum = block.settings.trigger_min_quantity | default: 1
               if trigger_quantity >= trigger_minimum
@@ -122,12 +158,30 @@
             if block.settings.audience == 'all'
               assign tab_is_eligible = true
             else
+              comment
+                An optional variant list narrows the trigger to specific variants —
+                e.g. the Interior PWP should fire on the Set, not on the single
+                bottle of the same product. Left empty it behaves as before: any
+                variant of the listed products counts.
+              
+                Compared as strings: cart_item.variant_id is a number and the
+                setting is free text.
+              endcomment
+              assign tv_raw = block.settings.trigger_variant_ids | default: '' | newline_to_br | replace: '<br />', ',' | replace: '<br/>', ',' | replace: ' ', '' | replace: ';', ','
+              assign tv_list = tv_raw | split: ','
               for cart_item in cart.items
-                for trigger_product in block.settings.trigger_products
-                  if cart_item.product_id == trigger_product.id
+                if tv_raw != blank
+                  assign cart_vid = cart_item.variant_id | append: ''
+                  if tv_list contains cart_vid
                     assign trigger_quantity = trigger_quantity | plus: cart_item.quantity
                   endif
-                endfor
+                else
+                  for trigger_product in block.settings.trigger_products
+                    if cart_item.product_id == trigger_product.id
+                      assign trigger_quantity = trigger_quantity | plus: cart_item.quantity
+                    endif
+                  endfor
+                endif
               endfor
               assign trigger_minimum = block.settings.trigger_min_quantity | default: 1
               if trigger_quantity >= trigger_minimum
@@ -178,6 +232,7 @@
             data-group-id="{{ block.id }}"
             data-audience="{{ block.settings.audience }}"
             data-trigger-product-ids="{{ trigger_product_ids | strip }}"
+            data-trigger-variant-ids="{{ block.settings.trigger_variant_ids | default: '' | newline_to_br | replace: '<br />', ',' | replace: '<br/>', ',' | replace: ' ', '' | replace: ';', ',' | escape }}"
             data-trigger-min="{{ block.settings.trigger_min_quantity | default: 1 }}"
             {% unless group_is_visible %}hidden{% endunless %}
             {{ block.shopify_attributes }}
@@ -372,6 +427,12 @@
           "id": "trigger_products",
           "label": "Trigger products",
           "limit": 12
+        },
+        {
+          "type": "textarea",
+          "id": "trigger_variant_ids",
+          "label": "Trigger variant IDs (optional)",
+          "info": "Comma-separated numeric variant IDs. Fill this to fire on specific variants only — e.g. the bundle variant but not the single bottle of the same product. Leave empty and any variant of the products above counts, as before. The products above are then ignored for eligibility."
         },
         {
           "type": "range",

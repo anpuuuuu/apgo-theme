@@ -160,13 +160,20 @@ class CartOffersTabs extends HTMLElement {
     this.cart = cart;
     const quantities = new Map();
 
+    /* Variant-keyed totals too: a group may be gated on specific variants
+       rather than whole products. */
+    const variantQuantities = new Map();
+
     cart.items.forEach((item) => {
+      const qty = Number(item.quantity || 0);
       const productId = String(item.product_id || item.product?.id || '');
-      if (!productId) return;
-      quantities.set(productId, (quantities.get(productId) || 0) + Number(item.quantity || 0));
+      if (productId) quantities.set(productId, (quantities.get(productId) || 0) + qty);
+      /* In cart.js a line item's own id IS the variant id. */
+      const variantId = String(item.variant_id || item.id || '');
+      if (variantId) variantQuantities.set(variantId, (variantQuantities.get(variantId) || 0) + qty);
     });
 
-    const eligibleGroups = this.groups.filter((group) => this.isDesignMode || this.groupIsEligible(group, quantities));
+    const eligibleGroups = this.groups.filter((group) => this.isDesignMode || this.groupIsEligible(group, quantities, variantQuantities));
     this.eligibleGroupIds = new Set(eligibleGroups.map((group) => group.dataset.groupId));
 
     this.hidden = eligibleGroups.length === 0;
@@ -235,11 +242,21 @@ class CartOffersTabs extends HTMLElement {
     if (track) requestAnimationFrame(() => this.updateCarouselButtons(track));
   }
 
-  groupIsEligible(group, quantities) {
+  groupIsEligible(group, quantities, variantQuantities) {
     if (group.dataset.audience === 'all') return true;
+    const minimum = Math.max(1, Number(group.dataset.triggerMin || 1));
+
+    /* A variant list wins outright: it exists precisely to say "this
+       variant, not its siblings", so falling back to the product list
+       would re-admit the ones it was written to exclude. */
+    const variantIds = (group.dataset.triggerVariantIds || '').split(',').map((id) => id.trim()).filter(Boolean);
+    if (variantIds.length) {
+      const vTotal = variantIds.reduce((sum, id) => sum + ((variantQuantities && variantQuantities.get(id)) || 0), 0);
+      return vTotal >= minimum;
+    }
+
     const triggerIds = (group.dataset.triggerProductIds || '').split(',').map((id) => id.trim()).filter(Boolean);
     if (!triggerIds.length) return false;
-    const minimum = Math.max(1, Number(group.dataset.triggerMin || 1));
     const total = triggerIds.reduce((sum, productId) => sum + (quantities.get(productId) || 0), 0);
     return total >= minimum;
   }
