@@ -115,13 +115,12 @@
           "settings": {
             "enabled": true,
             "slot": "tab_2",
-            "label": "Glaze PWP",
-            "subtitle_my": "Special price for Glaze Set · 1 set per product, per order",
-            "subtitle_sg": "Special price for Glaze Set · 1 set per product, per order",
+            "label": "Interior PWP",
+            "subtitle_my": "Special price for Interior Coating · 1 set per product, per order",
+            "subtitle_sg": "",
             "audience": "trigger",
             "trigger_products": [
-              "atomic-glaze-coating-8-8-promotion",
-              "atomic-glaze-coating-sg61-promotion"
+              "apgo-car-interior-eco-friendly-coating"
             ],
             "trigger_min_quantity": 1,
             "view_all_label": "",
@@ -164,11 +163,11 @@
           "type": "offer_item",
           "settings": {
             "tab_slot": "tab_2",
-            "product": "apgo-car-paint-headlight-care",
+            "product": "apgo-car-wiper-fluid-refill-pack",
             "variant_id": "",
             "price_mode": "promo",
-            "promo_price_my": "RM 49.00",
-            "promo_price_sg": "$20.90",
+            "promo_price_my": "8.8",
+            "promo_price_sg": "",
             "max_quantity": 1
           }
         },
@@ -176,11 +175,11 @@
           "type": "offer_item",
           "settings": {
             "tab_slot": "tab_2",
-            "product": "apgo-wheel-cleaner-tyre-care-set",
+            "product": "apgo-pro-car-interior-dust-free-cloth",
             "variant_id": "",
             "price_mode": "promo",
-            "promo_price_my": "RM 59.00",
-            "promo_price_sg": "$ 24.90",
+            "promo_price_my": "9.9",
+            "promo_price_sg": "",
             "max_quantity": 1
           }
         },
@@ -188,11 +187,23 @@
           "type": "offer_item",
           "settings": {
             "tab_slot": "tab_2",
-            "product": "apgo-car-wash-foam-pressure-sprayer-version-2",
-            "variant_id": "46893290848410",
+            "product": "apgo-atomic-car-nano-coating-standard",
+            "variant_id": "",
             "price_mode": "promo",
-            "promo_price_my": "RM 88.00",
-            "promo_price_sg": "$ 37.90",
+            "promo_price_my": "29",
+            "promo_price_sg": "",
+            "max_quantity": 1
+          }
+        },
+        "offer_item_V8Xzyb": {
+          "type": "offer_item",
+          "settings": {
+            "tab_slot": "tab_2",
+            "product": "apgo-car-wash-shampoo-special-formula-refill-pack",
+            "variant_id": "",
+            "price_mode": "promo",
+            "promo_price_my": "9.9",
+            "promo_price_sg": "",
             "max_quantity": 1
           }
         },
@@ -470,6 +481,7 @@
         "glaze_paint",
         "glaze_wheel",
         "glaze_sprayer",
+        "offer_item_V8Xzyb",
         "detergent_tencel",
         "detergent_floor",
         "detergent_shoe",
