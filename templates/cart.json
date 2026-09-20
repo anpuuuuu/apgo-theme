@@ -87,6 +87,7 @@
               "atomic-crystal-merdeka-set",
               "jc-birthday-special-atomic-crystal-plus-promotion"
             ],
+            "trigger_variant_ids": "",
             "trigger_min_quantity": 1,
             "view_all_label": "",
             "view_all_url": ""
@@ -105,6 +106,7 @@
               "✨atomic-coating-special-ltd-bundle-✨",
               "✨atomic-coating-mega-promo-✨"
             ],
+            "trigger_variant_ids": "",
             "trigger_min_quantity": 1,
             "view_all_label": "",
             "view_all_url": ""
@@ -122,6 +124,7 @@
             "trigger_products": [
               "apgo-car-interior-eco-friendly-coating"
             ],
+            "trigger_variant_ids": "47521770668186",
             "trigger_min_quantity": 1,
             "view_all_label": "",
             "view_all_url": ""
@@ -139,6 +142,7 @@
             "trigger_products": [
               "apgo-laundry-detergent-special-promotion-1"
             ],
+            "trigger_variant_ids": "",
             "trigger_min_quantity": 6,
             "view_all_label": "",
             "view_all_url": ""
@@ -154,6 +158,7 @@
             "subtitle_sg": "More useful products picked for your cart",
             "audience": "all",
             "trigger_products": [],
+            "trigger_variant_ids": "",
             "trigger_min_quantity": 1,
             "view_all_label": "",
             "view_all_url": ""
