@@ -173,7 +173,7 @@
             "price_mode": "promo",
             "promo_price_my": "RM 8.80",
             "promo_price_sg": "",
-            "max_quantity": 1
+            "max_quantity": 2
           }
         },
         "glaze_wheel": {
@@ -185,7 +185,7 @@
             "price_mode": "promo",
             "promo_price_my": "RM  9.90",
             "promo_price_sg": "",
-            "max_quantity": 1
+            "max_quantity": 2
           }
         },
         "glaze_sprayer": {
@@ -197,7 +197,7 @@
             "price_mode": "promo",
             "promo_price_my": "RM  29.00",
             "promo_price_sg": "",
-            "max_quantity": 1
+            "max_quantity": 2
           }
         },
         "offer_item_V8Xzyb": {
@@ -209,7 +209,7 @@
             "price_mode": "promo",
             "promo_price_my": "RM 9.90",
             "promo_price_sg": "",
-            "max_quantity": 1
+            "max_quantity": 2
           }
         },
         "detergent_tencel": {
@@ -425,7 +425,7 @@
             "price_mode": "promo",
             "promo_price_my": "RM 18.8",
             "promo_price_sg": "$ 7.9",
-            "max_quantity": 0
+            "max_quantity": 2
           }
         },
         "offer_item_anEBA6": {
@@ -437,7 +437,7 @@
             "price_mode": "promo",
             "promo_price_my": "RM 19.9",
             "promo_price_sg": "$ 8.8",
-            "max_quantity": 0
+            "max_quantity": 2
           }
         },
         "offer_item_VdcC9d": {
@@ -449,7 +449,7 @@
             "price_mode": "promo",
             "promo_price_my": "RM 8.8",
             "promo_price_sg": "$ 3.9",
-            "max_quantity": 0
+            "max_quantity": 2
           }
         },
         "offer_item_9nMDRk": {
@@ -461,7 +461,7 @@
             "price_mode": "promo",
             "promo_price_my": "RM 15.8",
             "promo_price_sg": "$ 6.9",
-            "max_quantity": 0
+            "max_quantity": 2
           }
         },
         "offer_item_Dat3yQ": {
@@ -473,7 +473,7 @@
             "price_mode": "promo",
             "promo_price_my": "RM 9.9",
             "promo_price_sg": "$ 3.9",
-            "max_quantity": 0
+            "max_quantity": 2
           }
         }
       },
