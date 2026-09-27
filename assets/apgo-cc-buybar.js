@@ -195,6 +195,7 @@
     if (cart.currency) currentCartCurrency = cart.currency;
     var count = cart.item_count || 0;
     var total = cart.total_price || 0;
+    bar.classList.toggle('is-cart-empty', count === 0);
     var subtotal = cart.items_subtotal_price != null ? cart.items_subtotal_price : total;
 
     Array.prototype.forEach.call(countEls,     function (el) { el.textContent = count; });

@@ -4132,6 +4132,13 @@
   .apgo-cc-buybar.is-open .apgo-cc-buybar__top {
     display: none;
   }
+  /*
+    Nothing in the cart yet: the "View cart · 0 item(s)" row has nothing
+    to preview, so it stays hidden until the first item lands.
+  */
+  .apgo-cc-buybar.is-cart-empty .apgo-cc-buybar__top {
+    display: none;
+  }
   .apgo-cc-buybar__top-hint {
     display: inline-flex;
     align-items: center;

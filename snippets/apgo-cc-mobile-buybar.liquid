@@ -10,7 +10,7 @@
     - Dispatches cart:update / cart:updated / cart:refresh (+ Horizon CartUpdateEvent)
 {%- endcomment -%}
 
-<aside class="apgo-cc-buybar" data-apgo-cc-buybar aria-label="Add to cart">
+<aside class="apgo-cc-buybar{% if cart.item_count == 0 %} is-cart-empty{% endif %}" data-apgo-cc-buybar aria-label="Add to cart">
   <div class="apgo-cc-buybar__backdrop" data-apgo-cc-buybar-backdrop aria-hidden="true"></div>
 
   <div class="apgo-cc-buybar__panel">
