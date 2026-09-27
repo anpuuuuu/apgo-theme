@@ -171,9 +171,10 @@
   }
 
   /* The section also carries data-apgo-money-sample: 123456789 cents run through
-     Liquid's `money` filter ("RM1,234,567.89" on MY, the SGD format on SG).
+     Liquid's `money` filter with the " MYR" suffix stripped, the same way
+     snippets/price.liquid prints prices elsewhere ("RM1,234,567.89" on MY).
      Prices re-rendered here copy its prefix, separators and decimals, so they
-     read the same as the server-rendered ones. Intl followed the shopper's
+     read like every other price in the store. Intl followed the shopper's
      phone locale instead and printed "MYR 99.00" on English and Chinese phones. */
   var moneyPattern;
   function getMoneyPattern() {

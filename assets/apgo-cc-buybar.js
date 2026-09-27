@@ -52,8 +52,9 @@
   }
 
   /* Same sample as the PDP picker reads: 123456789 cents through Liquid's
-     `money` filter, so totals here match the server-rendered prices instead
-     of following the shopper's phone locale ("MYR 99.00" vs "RM99.00"). */
+     `money` filter, " MYR" stripped as in snippets/price.liquid, so totals
+     here match every other price instead of following the shopper's phone
+     locale ("MYR 99.00" vs "RM99.00"). */
   var moneyPattern;
   function getMoneyPattern() {
     if (moneyPattern !== undefined) return moneyPattern;
