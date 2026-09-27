@@ -50,8 +50,39 @@
     }
     return 'TWD';
   }
+
+  /* Same sample as the PDP picker reads: 123456789 cents through Liquid's
+     `money` filter, so totals here match the server-rendered prices instead
+     of following the shopper's phone locale ("MYR 99.00" vs "RM99.00"). */
+  var moneyPattern;
+  function getMoneyPattern() {
+    if (moneyPattern !== undefined) return moneyPattern;
+    moneyPattern = null;
+    var sec = document.querySelector('[data-apgo-money-sample]');
+    var sample = sec && sec.getAttribute('data-apgo-money-sample');
+    var num = sample && sample.match(/\d[\d.,'\s ]*\d/);
+    if (!num) return moneyPattern;
+    var dec = num[0].match(/([.,])(\d\d)$/);
+    var intPart = dec ? num[0].slice(0, -3) : num[0];
+    moneyPattern = {
+      currency: sec.dataset.apgoCurrency,
+      prefix: sample.slice(0, num.index),
+      suffix: sample.slice(num.index + num[0].length),
+      decimals: dec ? 2 : 0,
+      decimalSep: dec ? dec[1] : '',
+      groupSep: (intPart.match(/[^\d]/) || [''])[0]
+    };
+    return moneyPattern;
+  }
+
   function formatMoney(cents, currency) {
     var ccy = currency || getActiveCurrency();
+    var p = getMoneyPattern();
+    if (p && ccy === p.currency) {
+      var fixed = (Number(cents) / 100).toFixed(p.decimals).split('.');
+      return p.prefix + fixed[0].replace(/\B(?=(\d{3})+(?!\d))/g, p.groupSep) +
+        (p.decimals ? p.decimalSep + fixed[1] : '') + p.suffix;
+    }
     var noDecimal = ccy === 'TWD' || ccy === 'JPY' || ccy === 'KRW' || ccy === 'VND';
     try {
       return new Intl.NumberFormat(undefined, {

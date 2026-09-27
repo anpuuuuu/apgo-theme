@@ -3938,6 +3938,14 @@
   body.apgo-cc-confirm-open {
     overflow: hidden;
   }
+  /*
+    Shopify Inbox's floating Chat button (the <shopify-chat> host; the button
+    itself sits in its shadow root) covered the modal's variant contents list.
+    Hide it while the modal is open; it comes back as soon as it closes.
+  */
+  body.apgo-cc-confirm-open shopify-chat {
+    visibility: hidden;
+  }
 
   /* =============================================================
      Car Care Mobile Buy Bar (Block B)
@@ -4650,7 +4658,7 @@
   }
 </style>
 
-<div class="apgo-product-section" data-apgo-currency="{{ cart.currency.iso_code }}" data-apgo-pdp="v3">
+<div class="apgo-product-section" data-apgo-currency="{{ cart.currency.iso_code }}" data-apgo-money-sample="{{ 123456789 | money | strip_html | escape }}" data-apgo-pdp="v3">
   <!-- 頂部導航 -->
 
   <!-- 主內容區 -->
@@ -5466,26 +5474,30 @@
     {% endif %}
 
     <!-- 短影音展示區 -->
+    {%- comment -%}
+      apgo.demo_videos 的 metafield 型別已被確認為「List of metaobject reference」(metaobject type: apgo_demo_video)。
+      先前用 demo_raw.first.video_file 偵測會失敗：Shopify 在這裡的 list-of-metaobject Drop 上，
+      .first 取到的代理物件無法讀到內部 field（H6 confirmed via runtime probe），
+      但 `for x in demo_raw` 的 loop 變數能正確讀到。因此直接固定走 metaobject 分支。
+
+      No demo videos: the whole showcase is skipped, instead of showing a
+      "Product Showcase" heading over "No videos available".
+    {%- endcomment -%}
+    {% liquid
+      assign demo_raw = product.metafields.apgo.demo_videos.value
+      assign use_metaobject_list = false
+      assign use_file_list = false
+      if demo_raw != blank
+        assign use_metaobject_list = true
+      endif
+    %}
+    {% if demo_raw != blank %}
     <section class="apgo-video-showcase">
       <div class="apgo-video-header">
         <h3 class="apgo-video-title">{{ 'product.video_showcase' | t }}</h3>
       </div>
 
       <div class="apgo-video-scroll-container">
-        {%- comment -%}
-          apgo.demo_videos 的 metafield 型別已被確認為「List of metaobject reference」(metaobject type: apgo_demo_video)。
-          先前用 demo_raw.first.video_file 偵測會失敗：Shopify 在這裡的 list-of-metaobject Drop 上，
-          .first 取到的代理物件無法讀到內部 field（H6 confirmed via runtime probe），
-          但 `for x in demo_raw` 的 loop 變數能正確讀到。因此直接固定走 metaobject 分支。
-        {%- endcomment -%}
-        {% liquid
-          assign demo_raw = product.metafields.apgo.demo_videos.value
-          assign use_metaobject_list = false
-          assign use_file_list = false
-          if demo_raw != blank
-            assign use_metaobject_list = true
-          endif
-        %}
         {% if use_metaobject_list %}
           {% assign video_objects = demo_raw %}
           {% assign sorted_videos = video_objects | sort: 'sort_order' %}
@@ -5610,13 +5622,10 @@
               </div>
             </div>
           {% endfor %}
-        {% else %}
-          <div class="apgo-no-videos">
-            <p>{{ 'product.no_videos' | t }}</p>
-          </div>
         {% endif %}
       </div>
     </section>
+    {% endif %}
 
     {%- comment -%}
       Per-tab content-presence flags. If a tab has no content the button +
@@ -6897,13 +6906,18 @@ function updatePriceDisplay() {
   const currency =
     sectionEl && sectionEl.dataset.apgoCurrency ? sectionEl.dataset.apgoCurrency : 'TWD';
   let formatted;
-  try {
-    formatted = new Intl.NumberFormat(undefined, {
-      style: 'currency',
-      currency: currency
-    }).format(lineTotal);
-  } catch (e) {
-    formatted = String(lineTotal);
+  if (window.apgoFormatMoney) {
+    // Store money format, same as every other price on the page (apgo-cc-pdp-picker.js).
+    formatted = window.apgoFormatMoney(Math.round(lineTotal * 100));
+  } else {
+    try {
+      formatted = new Intl.NumberFormat(undefined, {
+        style: 'currency',
+        currency: currency
+      }).format(lineTotal);
+    } catch (e) {
+      formatted = String(lineTotal);
+    }
   }
   const totalEl = document.getElementById('apgoTotalPrice');
   if (totalEl) {
