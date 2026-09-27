@@ -30,7 +30,15 @@ function strFromShell(shell, key) {
   return typeof v === 'string' ? v : '';
 }
 
+/* MYR / SGD print like every other price on the site ("RM36.90", "S$36.90");
+   Intl with the shopper's locale gave "MYR 36.90" on English phones. */
 function formatMoney(cents, currency) {
+  const fixed = ((Number(cents) || 0) / 100).toLocaleString('en', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+  if (currency === 'MYR') return `RM${fixed}`;
+  if (currency === 'SGD') return `S$${fixed}`;
   try {
     return new Intl.NumberFormat(undefined, {
       style: 'currency',

@@ -15,7 +15,7 @@
                    loading="lazy"
                    style="width:100%; aspect-ratio:1/1; object-fit:cover; margin-bottom:12px; border-radius:12px;">
               <div class="apgo-serif" style="font-size:14px; margin-bottom:4px;">{{ p.title }}</div>
-              <div style="font-size:13px;">{{ p.price | money }}</div>
+              <div style="font-size:13px;">{{ p.price | money | replace: ' MYR', '' | replace: 'MYR', '' | strip }}</div>
             </a>
           {% endif %}
         {% endfor %}

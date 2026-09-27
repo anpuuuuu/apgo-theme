@@ -851,8 +851,8 @@
       var dot = fixed.lastIndexOf('.');
       var main = dot > -1 ? fixed.slice(0, dot) : fixed;
       var dec = dot > -1 ? fixed.slice(dot) : '';
-      if (currency === 'MYR') return { main: 'RM ' + main, dec: dec };
-      if (currency === 'SGD') return { main: 'S$ ' + main, dec: dec };
+      if (currency === 'MYR') return { main: 'RM' + main, dec: dec };
+      if (currency === 'SGD') return { main: 'S$' + main, dec: dec };
       try {
         var full = new Intl.NumberFormat('en', { style: 'currency', currency: currency, currencyDisplay: 'narrowSymbol' }).format(amount);
         var fullDot = full.lastIndexOf('.');

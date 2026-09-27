@@ -61,7 +61,7 @@
       >
     {%- endunless -%}
 
-    {%- assign formatted_balance = gift_card.balance | money_without_trailing_zeros | strip_html -%}
+    {%- assign formatted_balance = gift_card.balance | money | strip_html | replace: ' MYR', '' | replace: 'MYR', '' | strip -%}
 
     <title>{{ 'gift_cards.issued.title' | t: value: formatted_balance, shop: shop.name }}</title>
 
@@ -138,7 +138,7 @@
       </div>
       <div class="gift-card__price">
         <h2>
-          {{ gift_card.balance | money_with_currency }}
+          {{ gift_card.balance | money | replace: ' MYR', '' | replace: 'MYR', '' | strip }}
         </h2>
         {%- if gift_card.enabled == false or gift_card.expired -%}
           <p class="gift-card__badge gift-card__badge--expired">{{ 'gift_cards.issued.expired' | t }}</p>

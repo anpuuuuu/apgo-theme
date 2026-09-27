@@ -52,14 +52,15 @@
   // matching apgo-pdp.js + cart-totals.liquid. Currency is seeded from
   // Liquid (window.APGO_ACTIVE_CURRENCY). The .money Liquid filter does this
   // server-side; we need it client-side because tier prices are dynamic.
+  // No space after the symbol: the site prints "RM36.90" everywhere.
   function formatMoney(cents) {
     var cur = window.APGO_ACTIVE_CURRENCY
       || (window.Shopify && window.Shopify.currency && window.Shopify.currency.active)
       || 'MYR';
     var amount = (Number(cents) || 0) / 100;
     var n = amount.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    if (cur === 'MYR') return 'RM ' + n;
-    if (cur === 'SGD') return 'S$ ' + n;
+    if (cur === 'MYR') return 'RM' + n;
+    if (cur === 'SGD') return 'S$' + n;
     try {
       return new Intl.NumberFormat(undefined, {
         style: 'currency', currency: cur, minimumFractionDigits: 2, maximumFractionDigits: 2

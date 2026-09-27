@@ -120,16 +120,16 @@
             {%- endif -%}
 
             <div class="apgo-price-row">
-              <span class="apgo-serif apgo-price" data-apgo-price>{{ v.price | money }}</span>
+              <span class="apgo-serif apgo-price" data-apgo-price>{{ v.price | money | replace: ' MYR', '' | replace: 'MYR', '' | strip }}</span>
               {%- if has_compare -%}
-                <span class="apgo-price-compare" data-apgo-compare>{{ product.compare_at_price | money }}</span>
+                <span class="apgo-price-compare" data-apgo-compare>{{ product.compare_at_price | money | replace: ' MYR', '' | replace: 'MYR', '' | strip }}</span>
                 <span class="apgo-discount-pill">−{{ discount_pct }}%</span>
               {%- endif -%}
             </div>
 
             {%- if section.settings.show_installment -%}
               <div class="apgo-installment apgo-muted" data-apgo-installment>
-                3 interest-free installments · {{ v.price | divided_by: 3 | money }} each
+                3 interest-free installments · {{ v.price | divided_by: 3 | money | replace: ' MYR', '' | replace: 'MYR', '' | strip }} each
               </div>
             {%- endif -%}
 
@@ -221,7 +221,7 @@
                       data-apgo-add
                       {% unless v.available %}disabled{% endunless %}>
                 {%- if v.available -%}
-                  Add to cart · <span data-apgo-total>{{ v.price | money }}</span>
+                  Add to cart · <span data-apgo-total>{{ v.price | money | replace: ' MYR', '' | replace: 'MYR', '' | strip }}</span>
                 {%- else -%}
                   Restocking
                 {%- endif -%}
@@ -350,14 +350,14 @@
       {%- endif -%}
 
       <div class="apgo-mpdp-price-row">
-        <span class="apgo-serif apgo-mpdp-price" data-apgo-price>{{ v.price | money }}</span>
+        <span class="apgo-serif apgo-mpdp-price" data-apgo-price>{{ v.price | money | replace: ' MYR', '' | replace: 'MYR', '' | strip }}</span>
         {%- if has_compare -%}
-          <span class="apgo-mpdp-compare" data-apgo-compare>{{ product.compare_at_price | money }}</span>
+          <span class="apgo-mpdp-compare" data-apgo-compare>{{ product.compare_at_price | money | replace: ' MYR', '' | replace: 'MYR', '' | strip }}</span>
           <span class="apgo-mpdp-discount-pill">−{{ discount_pct }}%</span>
         {%- endif -%}
       </div>
       {%- if section.settings.show_installment -%}
-        <div class="apgo-mpdp-installment" data-apgo-installment>3 interest-free installments · {{ v.price | divided_by: 3 | money }} each</div>
+        <div class="apgo-mpdp-installment" data-apgo-installment>3 interest-free installments · {{ v.price | divided_by: 3 | money | replace: ' MYR', '' | replace: 'MYR', '' | strip }} each</div>
       {%- endif -%}
 
       {%- comment -%}
@@ -857,7 +857,7 @@
                 <a class="apgo-mpdp-related-item" href="{{ p.url }}">
                   <img src="{{ p.featured_image | image_url: width: 280 }}" alt="{{ p.title }}" width="{{ p.featured_image.width }}" height="{{ p.featured_image.height }}" loading="lazy">
                   <div class="apgo-serif">{{ p.title }}</div>
-                  <div>{{ p.price | money }}</div>
+                  <div>{{ p.price | money | replace: ' MYR', '' | replace: 'MYR', '' | strip }}</div>
                 </a>
               {%- endunless -%}
             {%- endfor -%}
@@ -885,7 +885,7 @@
              style="display:none;">
           <button type="button" class="apgo-mpdp-cta-secondary" data-apgo-bundle-add>Add to cart</button>
           <button type="button" class="apgo-mpdp-cta-primary" data-apgo-bundle-buy-now>
-            Buy now <span data-apgo-bundle-total>{{ 0 | money }}</span>
+            Buy now <span data-apgo-bundle-total>{{ 0 | money | replace: ' MYR', '' | replace: 'MYR', '' | strip }}</span>
           </button>
         </div>
       </div>
@@ -895,7 +895,7 @@
           {% if v.available %}Add to cart{% else %}Restocking{% endif %}
         </button>
         <button type="button" class="apgo-mpdp-cta-primary" data-apgo-buy-now {% unless v.available %}disabled{% endunless %}>
-          Buy now <span data-apgo-total>{{ v.price | money }}</span>
+          Buy now <span data-apgo-total>{{ v.price | money | replace: ' MYR', '' | replace: 'MYR', '' | strip }}</span>
         </button>
       </div>
     {%- endif -%}
@@ -926,7 +926,7 @@
           {%- endif -%}
           <div class="apgo-mpdp-confirm__meta">
             <p class="apgo-mpdp-confirm__title">{{ product.title }}</p>
-            <p class="apgo-mpdp-confirm__price" data-apgo-price>{{ v.price | money }}</p>
+            <p class="apgo-mpdp-confirm__price" data-apgo-price>{{ v.price | money | replace: ' MYR', '' | replace: 'MYR', '' | strip }}</p>
           </div>
         </div>
 

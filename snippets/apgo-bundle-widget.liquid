@@ -150,8 +150,8 @@
             ISO code ("RM39.00 MYR"), which reads doubled/cluttered here —
             strip it (market-aware: MYR on MY, SGD on SG).
           {%- endcomment -%}
-          {%- assign t_avg_fmt = t_avg_price | money_without_trailing_zeros | replace: cart.currency.iso_code, '' | strip -%}
-          {%- assign t_save_fmt = t_savings | money_without_trailing_zeros | replace: cart.currency.iso_code, '' | strip -%}
+          {%- assign t_avg_fmt = t_avg_price | money | replace: cart.currency.iso_code, '' | strip -%}
+          {%- assign t_save_fmt = t_savings | money | replace: cart.currency.iso_code, '' | strip -%}
           <div class="apgo-bundle__tier-meta">
             {{ t_total_count }} pack{% if t_total_count > 1 %}s{% endif %} · {{ t_avg_fmt }}/pack
             {%- if t_savings > 0 -%}

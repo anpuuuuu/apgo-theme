@@ -69,8 +69,26 @@
     assign use_promo_label = true
   endif
 
-  assign current_price_display = blank
+  comment
+    The promo price is free text — "RM 49.00", "RM  9.90", "RM 18.8",
+    "$ 24.90" — so strip the currency furniture down to a number, and
+    reprint that number with the store's money format so it reads
+    "RM18.80" like every other price. Anything that isn't a plain number
+    once the currency is gone (e.g. "FREE") shows as typed.
+  endcomment
+  assign promo_cents = 0
   if use_promo_label
+    assign promo_digits = promo_label | remove: 'RM' | remove: 'MYR' | remove: 'SGD' | remove: 'S$' | remove: '$' | remove: ',' | remove: ' ' | strip
+    assign promo_leftover = promo_digits | remove: '0' | remove: '1' | remove: '2' | remove: '3' | remove: '4' | remove: '5' | remove: '6' | remove: '7' | remove: '8' | remove: '9' | remove: '.'
+    if promo_digits != blank and promo_leftover == blank
+      assign promo_cents = promo_digits | plus: 0 | times: 100 | round: 0
+    endif
+  endif
+
+  assign current_price_display = blank
+  if use_promo_label and promo_cents > 0
+    assign current_price_display = promo_cents | money | replace: ' MYR', '' | replace: ' SGD', '' | replace: 'MYR', '' | replace: 'SGD', '' | strip
+  elsif use_promo_label
     assign current_price_display = promo_label | replace: ' MYR', '' | replace: ' SGD', '' | replace: 'MYR', '' | replace: 'SGD', '' | strip
   elsif display_variant != blank
     assign current_price_display = display_variant.price | money | replace: ' MYR', '' | replace: ' SGD', '' | replace: 'MYR', '' | replace: 'SGD', '' | strip
@@ -95,22 +113,18 @@
   comment
     The saving is the whole reason this card converts, so derive it
     rather than making the merchant type it per offer (and get it wrong
-    when a price moves). The promo price is free text — "RM 49.00",
-    "$ 24.90" — so strip the currency furniture down to a number before
-    comparing it against the variant's compare-at price in cents.
+    when a price moves): the promo price parsed above, in cents, against
+    the variant's compare-at price.
   endcomment
   assign discount_percent = 0
   assign amount_saved = 0
   if compare_price != blank and compare_price > 0
-    assign promo_cents = 0
-    if use_promo_label
-      assign promo_number = promo_label | remove: 'RM' | remove: 'MYR' | remove: 'SGD' | remove: 'S$' | remove: '$' | remove: ',' | remove: ' ' | strip | plus: 0
-      assign promo_cents = promo_number | times: 100 | round: 0
-    else
-      assign promo_cents = display_variant.price
-    endif
-    if promo_cents > 0 and compare_price > promo_cents
-      assign amount_saved = compare_price | minus: promo_cents | round: 0
+    assign sale_cents = promo_cents
+    unless use_promo_label
+      assign sale_cents = display_variant.price
+    endunless
+    if sale_cents > 0 and compare_price > sale_cents
+      assign amount_saved = compare_price | minus: sale_cents | round: 0
       comment
         `times: 100.0`, not 100 — two integers make `divided_by` do
         integer division, which floors 64.9% to 64 and quietly
@@ -142,8 +156,9 @@
   comment
     The shop's money format carries the ISO code ("RM158.00 MYR"), which
     is noise beside a price the shopper is meant to read at a glance.
+    `money`, not money_without_trailing_zeros: always two decimals.
   endcomment
-  assign saved_display = amount_saved | money_without_trailing_zeros | replace: ' MYR', '' | replace: ' SGD', '' | replace: 'MYR', '' | replace: 'SGD', '' | strip
+  assign saved_display = amount_saved | money | replace: ' MYR', '' | replace: ' SGD', '' | replace: 'MYR', '' | replace: 'SGD', '' | strip
 %}
 
 {% if offer_product != blank %}

@@ -906,12 +906,12 @@
     // 現在 cart-totals 也改成直接從 /cart.js 改寫，section 重渲染只負責折扣明細列。
 
     // 市場別貨幣符號（SGD → S$、MYR → RM），與 apgo-coating-products 一致，
-    // 順手修掉「小計顯示 $ 而免運條顯示 S$」的不一致。
+    // 順手修掉「小計顯示 $ 而免運條顯示 S$」的不一致。符號後不空格：全站一律 RM36.90。
     function fmtMoney(minor, currency) {
       const amount = (Number(minor) || 0) / 100;
       const fixed = amount.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      if (currency === 'MYR') return `RM ${fixed}`;
-      if (currency === 'SGD') return `S$ ${fixed}`;
+      if (currency === 'MYR') return `RM${fixed}`;
+      if (currency === 'SGD') return `S$${fixed}`;
       try {
         return new Intl.NumberFormat('en', { style: 'currency', currency, currencyDisplay: 'narrowSymbol' }).format(amount);
       } catch (_) {
