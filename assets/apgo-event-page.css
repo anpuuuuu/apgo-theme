@@ -445,12 +445,12 @@ body.apgo-special-event-page .apgo-event-listing-card__price-current {
 body.apgo-special-event-page .apgo-event-listing-card__price-int {
   /* No special rules — inherits the gradient + font-size from parent. */
 }
+/* ".00" keeps its decimal point and sits on the baseline, so the price
+   still reads RM179.00 (same treatment as the cart's sticky total). */
 body.apgo-special-event-page .apgo-event-listing-card__price-frac {
   font-size: 0.55em;
   font-weight: 700;
-  margin-left: 1px;
-  top: -0.55em; /* override default sup baseline so it sits flush with the integer top */
-  vertical-align: super;
+  vertical-align: baseline;
   letter-spacing: 0.02em;
 }
 
@@ -1478,9 +1478,7 @@ body.apgo-special-event-page .apgo-event-featured-banner__price {
 body.apgo-special-event-page .apgo-event-featured-banner__price-frac {
   font-size: 0.5em;
   font-weight: 700;
-  margin-left: 2px;
-  top: -0.6em;
-  vertical-align: super;
+  vertical-align: baseline;
   letter-spacing: 0.02em;
 }
 

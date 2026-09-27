@@ -54,7 +54,7 @@
         {%- comment -%}
           Price stack:
             1. compare-at (faded strikethrough) — shown when on sale.
-            2. current price — integer + sup decimal + gold gradient + glow.
+            2. current price — integer + smaller ".00" + gold gradient + glow.
         {%- endcomment -%}
         {%- assign apgo_fb_price_str = featured_variant.price | money | replace: ' MYR', '' | replace: 'MYR', '' -%}
         {%- assign apgo_fb_price_parts = apgo_fb_price_str | split: '.' -%}
@@ -65,7 +65,7 @@
             </span>
           {%- endif -%}
           <span class="apgo-event-featured-banner__price">
-            <span class="apgo-event-featured-banner__price-int">{{ apgo_fb_price_parts[0] }}</span>{%- if apgo_fb_price_parts[1] -%}<sup class="apgo-event-featured-banner__price-frac">{{ apgo_fb_price_parts[1] }}</sup>{%- endif -%}
+            <span class="apgo-event-featured-banner__price-int">{{ apgo_fb_price_parts[0] }}</span>{%- if apgo_fb_price_parts[1] -%}<span class="apgo-event-featured-banner__price-frac">.{{ apgo_fb_price_parts[1] }}</span>{%- endif -%}
           </span>
         </div>
         {%- if product.available -%}

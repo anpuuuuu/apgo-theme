@@ -148,7 +148,7 @@
              hide_compare_at=true (currently: B1F1 zone, where the
              original price would only confuse the 'buy one free one'
              framing)
-          2. current price — integer + sup decimal + gold gradient + glow
+          2. current price — integer + smaller ".00" + gold gradient + glow
       {%- endcomment -%}
       {%- assign apgo_card_price_cents = apgo_listing_variant.price -%}
       {%- assign apgo_card_compare_cents = apgo_listing_variant.compare_at_price -%}
@@ -166,7 +166,7 @@
             </span>
           {%- endif -%}
           <span class="apgo-event-listing-card__price-current">
-            <span class="apgo-event-listing-card__price-int">{{ apgo_card_price_parts[0] }}</span>{%- if apgo_card_price_parts[1] -%}<sup class="apgo-event-listing-card__price-frac">{{ apgo_card_price_parts[1] }}</sup>{%- endif -%}
+            <span class="apgo-event-listing-card__price-int">{{ apgo_card_price_parts[0] }}</span>{%- if apgo_card_price_parts[1] -%}<span class="apgo-event-listing-card__price-frac">.{{ apgo_card_price_parts[1] }}</span>{%- endif -%}
           </span>
         </div>
         {%- unless apgo_card_sold_out -%}
