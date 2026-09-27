@@ -143,17 +143,21 @@
   function showToast(msg) { showSuccessToast(msg, ''); }
 
   // ---------- Open / close sheet ----------
+  /* body.apgo-cc-buybar-open hides the Shopify Inbox Chat button while the
+     sheet is up (CSS in sections/apgo_product_page_v3.liquid). */
   function open() {
     bar.classList.add('is-open');
     if (sheet) sheet.setAttribute('aria-hidden', 'false');
     if (backdrop) backdrop.setAttribute('aria-hidden', 'false');
     document.documentElement.style.overflow = 'hidden';
+    document.body.classList.add('apgo-cc-buybar-open');
   }
   function close() {
     bar.classList.remove('is-open');
     if (sheet) sheet.setAttribute('aria-hidden', 'true');
     if (backdrop) backdrop.setAttribute('aria-hidden', 'true');
     document.documentElement.style.overflow = '';
+    document.body.classList.remove('apgo-cc-buybar-open');
   }
   function toggle() {
     if (bar.classList.contains('is-open')) close();

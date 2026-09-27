@@ -3940,10 +3940,12 @@
   }
   /*
     Shopify Inbox's floating Chat button (the <shopify-chat> host; the button
-    itself sits in its shadow root) covered the modal's variant contents list.
-    Hide it while the modal is open; it comes back as soon as it closes.
+    itself sits in its shadow root) covered the modal's variant contents list
+    and the buy bar's cart sheet prices. Hide it while either is open; it
+    comes back as soon as they close.
   */
-  body.apgo-cc-confirm-open shopify-chat {
+  body.apgo-cc-confirm-open shopify-chat,
+  body.apgo-cc-buybar-open shopify-chat {
     visibility: hidden;
   }
 
