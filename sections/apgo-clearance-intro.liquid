@@ -10,6 +10,17 @@
   assign apgo_intro_heading = section.settings.heading | strip
   assign apgo_intro_accent = section.settings.heading_accent | strip
   assign apgo_intro_sign = section.settings.sign | strip | upcase
+
+  # The illustration's stamp is drawn inside the SVG, centred in the free
+  # space between the boxes and the hand truck; its box grows with the text.
+  assign apgo_stamp = section.settings.stamp | strip | upcase
+  assign apgo_stamp_len = apgo_stamp | size
+  assign apgo_stamp_tall_half = apgo_stamp_len | times: 12.5 | plus: 22 | divided_by: 2.0
+  assign apgo_stamp_tall_x = 327 | minus: apgo_stamp_tall_half
+  assign apgo_stamp_tall_w = apgo_stamp_tall_half | times: 2
+  assign apgo_stamp_wide_half = apgo_stamp_len | times: 8.5 | plus: 14 | divided_by: 2.0
+  assign apgo_stamp_wide_x = 228 | minus: apgo_stamp_wide_half
+  assign apgo_stamp_wide_w = apgo_stamp_wide_half | times: 2
 -%}
 
 <div class="apgo-crate-intro">
@@ -59,6 +70,12 @@
           <circle cx="320" cy="154" r="6" stroke="#8C7A63" stroke-width="3"/>
           <rect x="292" y="104" width="40" height="42" fill="#C9A06B" stroke="#7A5A33" stroke-width="1.5"/>
           <path d="M312 104V146" stroke="#D9B37C" stroke-width="6"/>
+          {%- if apgo_stamp != blank -%}
+            <g transform="rotate(8 228 50)">
+              <rect x="{{ apgo_stamp_wide_x }}" y="37" width="{{ apgo_stamp_wide_w }}" height="26" fill="none" stroke="#F0655A" stroke-width="2"/>
+              <text class="apgo-crate-intro__svg-stamp" x="228" y="56" text-anchor="middle" font-size="14" letter-spacing="1.5" fill="#F0655A">{{ apgo_stamp | escape }}</text>
+            </g>
+          {%- endif -%}
         </svg>
         <svg class="apgo-crate-intro__svg apgo-crate-intro__svg--tall" width="566" height="420" viewBox="0 0 566 420" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
           <path d="M0 392H566" stroke="#3B2E20" stroke-width="2"/>
@@ -93,10 +110,16 @@
             <rect x="400" y="54" width="160" height="44" fill="#F3EBDC"/>
             <text class="apgo-crate-intro__sign" x="480" y="82" text-anchor="middle" font-size="15" font-weight="700" fill="#1B1712">{{ apgo_intro_sign | escape }}</text>
           {%- endif -%}
+          {%- if apgo_stamp != blank -%}
+            <g transform="rotate(8 327 112)">
+              <rect x="{{ apgo_stamp_tall_x }}" y="92" width="{{ apgo_stamp_tall_w }}" height="40" fill="none" stroke="#F0655A" stroke-width="3"/>
+              <text class="apgo-crate-intro__svg-stamp" x="327" y="120" text-anchor="middle" font-size="21" letter-spacing="2" fill="#F0655A">{{ apgo_stamp | escape }}</text>
+            </g>
+          {%- endif -%}
         </svg>
       {%- endif -%}
-      {%- if section.settings.stamp != blank -%}
-        <span class="apgo-crate-intro__stamp" aria-hidden="true">{{ section.settings.stamp | escape }}</span>
+      {%- if section.settings.image != blank and apgo_stamp != blank -%}
+        <span class="apgo-crate-intro__stamp" aria-hidden="true">{{ apgo_stamp | escape }}</span>
       {%- endif -%}
     </div>
 
