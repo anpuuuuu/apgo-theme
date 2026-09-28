@@ -2718,3 +2718,315 @@ html.apgo-event-gift-lock { overflow: hidden; }
   .apgo-event-gift-modal,
   .apgo-event-gift-modal__panel { transition: none; }
 }
+
+/* =====================================================================
+   CLEARANCE SALE SKIN — Factory Expansion Clearance (/pages/clearance-sale)
+   Template page.clearance-sale reuses the Golden Bull layout (its body
+   also carries apgo-golden-bull-page) and this block recolours it:
+   safety yellow + asphalt black + concrete grey, hazard-tape stripes and
+   a stencil display face (Saira Stencil One, loaded in layout/theme.liquid
+   for this template only). Every selector carries one more class than the
+   Golden Bull rule it overrides, so the Golden Bull page is untouched.
+   ===================================================================== */
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page {
+  --apgo-clear-yellow: #ffd500;
+  --apgo-clear-yellow-light: #ffe866;
+  --apgo-clear-concrete: #26282c;
+  --apgo-clear-line: rgba(255, 213, 0, 0.3);
+  --apgo-clear-red: #ff5a4f;
+  --apgo-clear-hazard: repeating-linear-gradient(-45deg, #ffd500 0 12px, #141414 12px 24px);
+  /* !important where used: the theme forces Poppins on body * with !important. */
+  --apgo-clear-stencil: 'Saira Stencil One', 'Poppins', sans-serif;
+
+  --apgo-award-gold-highlight: #ffe866;
+  --apgo-award-gold-core: #ffd500;
+  --apgo-award-gold-mid: #f5b800;
+  --apgo-award-gold-deep: #c98f00;
+  --apgo-event-page-bg: #141414;
+  --apgo-event-panel-bg: #1c1d1f;
+  --apgo-event-heading-bg: #1c1d1f;
+  --apgo-event-panel-bg-gradient: linear-gradient(180deg, #202124 0%, #1a1b1d 55%, #151516 100%);
+  --apgo-event-heading-gradient: linear-gradient(90deg, #ffd500, #ffd500);
+  --apgo-event-card-discount-bg: #e5322d;
+  --apgo-event-card-discount-color: #ffffff;
+  --apgo-award-card-title: #f2f2f2;
+  --apgo-award-card-muted: rgba(255, 255, 255, 0.55);
+  background-color: #141414;
+}
+
+/* Hazard tape across the top of the page, under the header. */
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page #MainContent::before {
+  content: '';
+  display: block;
+  height: 10px;
+  background: var(--apgo-clear-hazard);
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page #MainContent h1 {
+  font-family: var(--apgo-clear-stencil) !important;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: var(--apgo-clear-yellow);
+}
+
+/* Deals panel: hazard band instead of the gold confetti and rim. */
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-collection-grid__panel {
+  border: 1px solid var(--apgo-clear-line) !important;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.42);
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-collection-grid__panel::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 12px;
+  background-image: var(--apgo-clear-hazard);
+  background-size: auto;
+  opacity: 1;
+  animation: none;
+  pointer-events: none;
+  z-index: 3;
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-collection-grid__panel::after {
+  content: none;
+}
+
+/* Section title plate: a yellow-framed warehouse sign, no award stars. */
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-heading-wrap {
+  border: 2px solid var(--apgo-clear-yellow);
+  border-radius: 4px;
+  outline: 0;
+  background: #111111;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.34);
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-heading-star,
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-scroll-zone__heading-star,
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-gallery__heading-star {
+  display: none;
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-heading-text {
+  font-family: var(--apgo-clear-stencil) !important;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  animation: none;
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-heading-subtitle,
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-linked-banner-zone__message {
+  color: rgba(255, 255, 255, 0.84);
+  text-shadow: none;
+}
+
+/* Zone headings: stencil type flanked by short hazard bars. */
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-scroll-zone__heading,
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-gallery__heading,
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-gallery__region-heading {
+  font-family: var(--apgo-clear-stencil) !important;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-scroll-zone__heading::before,
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-scroll-zone__heading::after,
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-gallery__heading::before,
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-gallery__heading::after,
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-gallery__region-heading::before,
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-gallery__region-heading::after {
+  height: 6px;
+  background: var(--apgo-clear-hazard);
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-scroll-zone + .apgo-event-scroll-zone,
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-scroll-zone + .apgo-event-linked-banner-zone,
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-linked-banner-zone + .apgo-event-scroll-zone {
+  border-top: 1px dashed var(--apgo-clear-line);
+  box-shadow: none;
+}
+
+/* Product cards: concrete grey, flat yellow price, red slashed "was" price. */
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-listing-card {
+  background: var(--apgo-clear-concrete) !important;
+  color: #f2f2f2;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-listing-card__price-current {
+  /* Solid fill, not the gold gradient clipped to the text: a `background`
+     shorthand here resets background-clip and paints a yellow box. */
+  background: none;
+  -webkit-text-fill-color: var(--apgo-clear-yellow);
+  color: var(--apgo-clear-yellow);
+  filter: none;
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-listing-card__price-compare {
+  color: var(--apgo-clear-red);
+  text-decoration-color: var(--apgo-clear-red);
+  text-decoration-thickness: 2px;
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-listing-card__btn {
+  border-color: var(--apgo-clear-yellow);
+  border-radius: 4px;
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-listing-card__btn--add {
+  background: transparent;
+  color: var(--apgo-clear-yellow);
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-listing-card__btn--add:hover {
+  background: rgba(255, 213, 0, 0.12);
+  border-color: var(--apgo-clear-yellow-light);
+  color: var(--apgo-clear-yellow-light);
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-listing-card__btn--buy {
+  background: var(--apgo-clear-yellow);
+  border-color: var(--apgo-clear-yellow);
+  color: #111111;
+  box-shadow: none;
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-listing-card__btn--buy:hover {
+  background: var(--apgo-clear-yellow-light);
+  border-color: var(--apgo-clear-yellow-light);
+  box-shadow: none;
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-listing-card__btn:focus-visible {
+  outline-color: var(--apgo-clear-yellow-light);
+}
+
+/* Promo banners and their Add / Buy bar. */
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-scroll-zone__banner,
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-scroll-zone__banner.apgo-event-linked-banner-zone__offer {
+  border-color: var(--apgo-clear-line);
+  border-radius: 6px;
+  background: #111111;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.38);
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-linked-banner-zone__actions {
+  border-top-color: var(--apgo-clear-yellow);
+  background: var(--apgo-clear-yellow);
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-linked-banner-zone__button--add {
+  background: #1c1d1f;
+  color: var(--apgo-clear-yellow);
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-linked-banner-zone__button--buy {
+  background: var(--apgo-clear-yellow);
+  color: #111111;
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-scroll-zone--discount .apgo-event-scroll-zone__promo-limit {
+  border-color: var(--apgo-clear-line);
+  background: #111111;
+  color: rgba(255, 255, 255, 0.86);
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-linked-banner-zone__button--single {
+  border-color: var(--apgo-clear-yellow);
+  background: var(--apgo-clear-yellow);
+  color: #111111;
+}
+
+/* Carousel arrows and scroll cue. */
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-scroll-zone__previous,
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-scroll-zone__next {
+  border-color: var(--apgo-clear-yellow);
+  background: var(--apgo-clear-yellow);
+  color: #111111;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.48);
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-scroll-zone__scroll-chevrons {
+  text-shadow: none;
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-gallery__rail-arrow {
+  border-color: var(--apgo-clear-line);
+}
+
+/* Stock counter (off unless switched on in the editor). */
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-stock-counter {
+  border-color: var(--apgo-clear-line);
+  background: #111111;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-stock-counter::before {
+  background: var(--apgo-clear-hazard);
+  box-shadow: none;
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-stock-counter__number,
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-stock-counter.is-low .apgo-event-stock-counter__number {
+  color: var(--apgo-clear-yellow);
+  text-shadow: none;
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-stock-counter__progress {
+  border-color: var(--apgo-clear-line);
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-stock-counter__progress-fill {
+  background: var(--apgo-clear-yellow);
+  box-shadow: none;
+}
+
+/* Countdown: digits framed in hazard tape. */
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-countdown {
+  padding: 4px;
+  background: var(--apgo-clear-hazard);
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-countdown__inner {
+  background: #111111;
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-countdown__icon {
+  filter: none;
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-countdown__label {
+  font-family: var(--apgo-clear-stencil) !important;
+  font-weight: 400;
+}
+
+/* Photo gallery (styled in sections/apgo-gallery.liquid for Golden Bull). */
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-gallery {
+  border-color: var(--apgo-clear-line);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.42);
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .shopify-section.apgo-event-collection-grid-wrapper + .shopify-section.apgo-gallery-section .apgo-gallery {
+  background: var(--apgo-event-panel-bg-gradient);
+}
+
+/* Gift picker modal accents. */
+body.apgo-clearance-sale-page .apgo-event-gift-modal__cta--buy,
+body.apgo-clearance-sale-page .apgo-event-gift-modal .apgo-gift-picker.is-complete .apgo-gift-picker__counter {
+  background: var(--apgo-clear-yellow);
+  color: #111111;
+}
+
+body.apgo-clearance-sale-page .apgo-event-gift-modal .apgo-gift-picker__heading,
+body.apgo-clearance-sale-page .apgo-event-gift-modal .apgo-gift-card.is-selected .apgo-gift-card__qty-value {
+  color: var(--apgo-clear-yellow);
+}
+
+body.apgo-clearance-sale-page .apgo-event-gift-modal .apgo-gift-card.is-selected {
+  border-color: var(--apgo-clear-yellow);
+  background: rgba(255, 213, 0, 0.1);
+}
+
+body.apgo-clearance-sale-page .apgo-event-gift-modal .apgo-gift-card.is-selected .apgo-gift-card__qty {
+  border-color: rgba(255, 213, 0, 0.55);
+}

@@ -19,15 +19,6 @@
   elsif template.suffix != 'golden-bull-award' and page.handle != blank
     assign apgo_campaign_id = page.handle | handleize | replace: '-', '_'
   endif
-
-  # Clearance page (page.clearance-sale): each headed block becomes a
-  # numbered "LOT" with a shipping-label heading, rows and picks use the
-  # clearance snippets, and assets/apgo-clearance-page.css styles it all.
-  assign apgo_crate = false
-  if template.suffix == 'clearance-sale'
-    assign apgo_crate = true
-  endif
-  assign apgo_lot_count = 0
 %}
 
 <div
@@ -67,15 +58,7 @@
     {%- if section.settings.show_countdown and section.settings.countdown_end_at != blank -%}
       {%- assign apgo_show_countdown = true -%}
     {%- endif -%}
-    {%- assign apgo_show_header = false -%}
-    {%- if section.settings.heading != blank or section.settings.celebration_message != blank or apgo_show_countdown -%}
-      {%- assign apgo_show_header = true -%}
-    {%- endif -%}
-    {%- comment -%} The clearance page has its own intro and countdown sections, so it skips this header. {%- endcomment -%}
-    {%- if apgo_crate -%}
-      {%- assign apgo_show_header = false -%}
-    {%- endif -%}
-    {% if apgo_show_header %}
+    {% if section.settings.heading != blank or section.settings.celebration_message != blank or apgo_show_countdown %}
       <header class="apgo-event-collection-grid__header">
         {% if section.settings.heading != blank %}
           {%- comment -%}
@@ -173,17 +156,8 @@
             -%}
 
             {%- if apgo_market_visible and apgo_banner != blank and apgo_product != blank -%}
-              {%- liquid
-                assign apgo_rendered_position = apgo_rendered_position | plus: 1
-                assign apgo_lot = blank
-                if apgo_crate and block.settings.heading != blank
-                  assign apgo_lot_count = apgo_lot_count | plus: 1
-                  assign apgo_lot = apgo_lot_count | prepend: '0' | slice: -2, 2
-                endif
-              -%}
+              {%- assign apgo_rendered_position = apgo_rendered_position | plus: 1 -%}
               {% render 'apgo-event-linked-banner-zone',
-                crate: apgo_crate,
-                lot: apgo_lot,
                 heading: block.settings.heading,
                 message: block.settings.message,
                 show_counter: block.settings.show_counter,
@@ -227,39 +201,8 @@
                 endif
               endif
               assign apgo_zone_key = 'carousel-' | append: block.id | handleize
-
-              # Golden Bull rows need a banner; clearance rows show one only when set.
-              assign apgo_carousel_ready = false
-              if apgo_market_visible and block.settings.products != blank
-                if apgo_carousel_banner != blank or apgo_crate
-                  assign apgo_carousel_ready = true
-                endif
-              endif
             -%}
-            {%- if apgo_carousel_ready and apgo_crate -%}
-              {%- liquid
-                assign apgo_rendered_position = apgo_rendered_position | plus: 1
-                assign apgo_lot = blank
-                if block.settings.heading != blank
-                  assign apgo_lot_count = apgo_lot_count | plus: 1
-                  assign apgo_lot = apgo_lot_count | prepend: '0' | slice: -2, 2
-                endif
-              -%}
-              {% render 'apgo-clearance-scroll-zone',
-                heading: block.settings.heading,
-                banner_image: apgo_carousel_banner,
-                products: block.settings.products,
-                variant_ids: block.settings.variant_ids,
-                zone_class: apgo_zone_key,
-                zone_position: apgo_rendered_position,
-                hide_compare_at: block.settings.hide_compare_at,
-                section_id: section.id,
-                campaign_id: apgo_campaign_id,
-                lot: apgo_lot,
-                view_all_link: block.settings.view_all_link,
-                block_attributes: block.shopify_attributes
-              %}
-            {%- elsif apgo_carousel_ready -%}
+            {%- if apgo_market_visible and apgo_carousel_banner != blank and block.settings.products != blank -%}
               {%- assign apgo_rendered_position = apgo_rendered_position | plus: 1 -%}
               {% render 'apgo-event-scroll-zone',
                 heading: block.settings.heading,
@@ -278,70 +221,12 @@
             {%- elsif request.design_mode and apgo_market_visible -%}
               <div class="apgo-event-block-placeholder" {{ block.shopify_attributes }}>
                 <strong>{{ block.settings.heading | default: 'Product carousel' | escape }}</strong>
-                <span>{% if apgo_crate %}Select at least one product for this market.{% else %}Select a banner and at least one product for this market.{% endif %}</span>
+                <span>Select a banner and at least one product for this market.</span>
               </div>
             {%- endif -%}
 
           {%- when 'featured_stage' -%}
-            {%- if block.settings.product_1 != blank and block.settings.product_2 != blank and block.settings.image_1 != blank and block.settings.image_2 != blank and apgo_crate -%}
-              {%- liquid
-                assign apgo_rendered_position = apgo_rendered_position | plus: 1
-                assign apgo_lot = blank
-                assign apgo_lot_code = blank
-                assign apgo_tilt = 'tilt-left'
-                if block.settings.heading != blank
-                  assign apgo_lot_count = apgo_lot_count | plus: 1
-                  assign apgo_lot = apgo_lot_count | prepend: '0' | slice: -2, 2
-                  assign apgo_lot_code = 'LOT ' | append: apgo_lot
-                  assign apgo_lot_parity = apgo_lot_count | modulo: 2
-                  if apgo_lot_parity == 0
-                    assign apgo_tilt = 'tilt-right'
-                  endif
-                endif
-                assign apgo_pick_promotion = apgo_campaign_id | append: '_featured_' | append: block.id
-              -%}
-              <section
-                class="apgo-crate-zone apgo-crate-zone--picks"
-                data-apgo-campaign-section
-                data-section-id="featured-{{ block.id | escape }}"
-                data-section-name="{{ block.settings.heading | escape }}"
-                data-section-position="{{ apgo_rendered_position }}"
-                data-promotion-id="{{ apgo_pick_promotion | escape }}"
-                {% if apgo_lot != blank %}data-lot="{{ apgo_lot }}"{% endif %}
-                {{ block.shopify_attributes }}
-              >
-                <div class="apgo-crate-container apgo-crate-zone__inner">
-                  {% render 'apgo-clearance-label',
-                    title: block.settings.heading,
-                    note: 'PACKED BY: THE BOSS',
-                    lot: apgo_lot_code,
-                    modifier: apgo_tilt
-                  %}
-                  <div class="apgo-crate-picks">
-                    {% render 'apgo-clearance-pick-card',
-                      product: block.settings.product_1,
-                      image: block.settings.image_1,
-                      badge: block.settings.badge_text,
-                      cta: block.settings.cta_label,
-                      hide_compare_at: block.settings.hide_compare_at,
-                      index: 1,
-                      promotion_id: apgo_pick_promotion,
-                      promotion_name: block.settings.heading
-                    %}
-                    {% render 'apgo-clearance-pick-card',
-                      product: block.settings.product_2,
-                      image: block.settings.image_2,
-                      badge: block.settings.badge_text,
-                      cta: block.settings.cta_label,
-                      hide_compare_at: block.settings.hide_compare_at,
-                      index: 2,
-                      promotion_id: apgo_pick_promotion,
-                      promotion_name: block.settings.heading
-                    %}
-                  </div>
-                </div>
-              </section>
-            {%- elsif block.settings.product_1 != blank and block.settings.product_2 != blank and block.settings.image_1 != blank and block.settings.image_2 != blank -%}
+            {%- if block.settings.product_1 != blank and block.settings.product_2 != blank and block.settings.image_1 != blank and block.settings.image_2 != blank -%}
               {%- assign apgo_rendered_position = apgo_rendered_position | plus: 1 -%}
               <section
                 class="apgo-event-featured-stage"
@@ -412,7 +297,7 @@
       "type": "checkbox",
       "id": "show_countdown",
       "label": "Show countdown timer",
-      "info": "Renders a gold countdown chip at the top of the panel header. Hides itself automatically when the end time has passed. The clearance page uses its own Clearance countdown section instead.",
+      "info": "Renders a gold countdown chip at the top of the panel header. Hides itself automatically when the end time has passed.",
       "default": true
     },
     {
@@ -698,12 +583,6 @@
           "id": "show_scroll_cue",
           "label": "Show swipe cue and carousel arrows",
           "default": false
-        },
-        {
-          "type": "url",
-          "id": "view_all_link",
-          "label": "\"View all\" link",
-          "info": "Clearance page only. Shown beside the row heading."
         }
       ]
     },

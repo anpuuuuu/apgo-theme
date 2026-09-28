@@ -11,16 +11,13 @@
  *      POST /cart/add.js, then window.location = '/cart' (cart page,
  *      NOT /checkout — user verifies discounts/items first).
  *
- * Scoped to body.apgo-special-event-page (and the clearance page's
- * body.apgo-clearance-sale-page) so the click delegation doesn't
- * accidentally hijack buttons anywhere else.
+ * Scoped to body.apgo-special-event-page so the click delegation
+ * doesn't accidentally hijack buttons anywhere else.
  * --------------------------------------------------------------- */
 (function () {
   'use strict';
 
-  var bodyClasses = document.body && document.body.classList;
-  if (!bodyClasses ||
-      !(bodyClasses.contains('apgo-special-event-page') || bodyClasses.contains('apgo-clearance-sale-page'))) {
+  if (!document.body || !document.body.classList.contains('apgo-special-event-page')) {
     return;
   }
 
@@ -255,27 +252,20 @@
     }, 920);
   }
 
-  /* Keeps the button's original markup so icon-only buttons (the
-     clearance cards' cart icon) come back intact; those skip the
-     "Adding…" text, which would not fit, and rely on .is-busy. */
   function setBusy(btn, busy) {
     if (!btn) return;
     if (busy) {
-      if (btn._apgoLabelHtml === undefined) {
-        btn._apgoLabelHtml = btn.innerHTML;
+      if (!btn.dataset.originalLabel) {
+        btn.dataset.originalLabel = btn.textContent.trim();
       }
-      if (btn.textContent.trim()) {
-        btn.textContent = 'Adding…';
-      }
-      btn.classList.add('is-busy');
+      btn.textContent = 'Adding…';
       btn.disabled = true;
       btn.setAttribute('aria-busy', 'true');
     } else {
-      if (btn._apgoLabelHtml !== undefined) {
-        btn.innerHTML = btn._apgoLabelHtml;
-        delete btn._apgoLabelHtml;
+      if (btn.dataset.originalLabel) {
+        btn.textContent = btn.dataset.originalLabel;
+        delete btn.dataset.originalLabel;
       }
-      btn.classList.remove('is-busy');
       btn.disabled = false;
       btn.removeAttribute('aria-busy');
     }

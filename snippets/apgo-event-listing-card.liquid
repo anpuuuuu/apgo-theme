@@ -16,12 +16,6 @@
                                        showing an original price under a
                                        'Buy 1 Free 1' framing is confusing.
   @param {number} card_position       - One-based position within the zone.
-  @param {boolean} [crate]            - Clearance page card: a red stamp on
-                                       the photo (SOLD OUT, LAST BATCH or
-                                       the % off) instead of the theme
-                                       badges, an "Only N left" line from
-                                       real stock (20 or fewer) and an
-                                       icon-only Add to cart button.
 {%- enddoc -%}
 
 {% liquid
@@ -70,24 +64,6 @@
   endunless
   if apgo_listing_variant.inventory_management != blank and apgo_listing_variant.inventory_quantity <= 0
     assign apgo_card_sold_out = true
-  endif
-
-  assign apgo_crate_qty = 0
-  assign apgo_crate_stamp = blank
-  if crate
-    if apgo_listing_variant.inventory_management != blank
-      assign apgo_crate_qty = apgo_listing_variant.inventory_quantity | default: 0
-    endif
-    if apgo_card_sold_out
-      assign apgo_crate_stamp = 'Sold out'
-    elsif apgo_crate_qty > 0 and apgo_crate_qty <= 5
-      assign apgo_crate_stamp = 'Last batch'
-    elsif hide_compare_at != true and apgo_listing_variant.compare_at_price > apgo_listing_variant.price
-      assign apgo_crate_off = apgo_listing_variant.compare_at_price | minus: apgo_listing_variant.price | times: 100 | divided_by: apgo_listing_variant.compare_at_price
-      if apgo_crate_off >= 5
-        assign apgo_crate_stamp = apgo_crate_off | append: '% off'
-      endif
-    endif
   endif
 %}
 
@@ -148,13 +124,7 @@
           {{ 'product-1' | placeholder_svg_tag: 'product-card__placeholder-image' }}
         {% endif %}
       </a>
-      {%- if crate -%}
-        {%- if apgo_crate_stamp != blank -%}
-          <span class="apgo-crate-stamp">{{ apgo_crate_stamp }}</span>
-        {%- endif -%}
-      {%- else -%}
-        {% render 'product-card-badges', product: product %}
-      {%- endif -%}
+      {% render 'product-card-badges', product: product %}
     </div>
 
     <div class="apgo-event-listing-card__body group-block">
@@ -199,9 +169,6 @@
             <span class="apgo-event-listing-card__price-int">{{ apgo_card_price_parts[0] }}</span>{%- if apgo_card_price_parts[1] -%}<span class="apgo-event-listing-card__price-frac">.{{ apgo_card_price_parts[1] }}</span>{%- endif -%}
           </span>
         </div>
-        {%- if crate and apgo_card_sold_out == false and apgo_crate_qty > 0 and apgo_crate_qty <= 20 -%}
-          <p class="apgo-crate-stock{% if apgo_crate_qty <= 5 %} apgo-crate-stock--low{% endif %}">Only {{ apgo_crate_qty }} left</p>
-        {%- endif -%}
         {%- unless apgo_card_sold_out -%}
           <div class="apgo-event-listing-card__actions">
             <button
@@ -209,11 +176,7 @@
               class="apgo-event-listing-card__btn apgo-event-listing-card__btn--add"
               data-variant-id="{{ apgo_listing_variant.id }}"
               aria-label="Add {{ product.title | escape }} to cart">
-              {%- if crate -%}
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 8h12l-1 12H7z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></svg>
-              {%- else -%}
-                Add to cart
-              {%- endif -%}
+              Add to cart
             </button>
             <button
               type="button"

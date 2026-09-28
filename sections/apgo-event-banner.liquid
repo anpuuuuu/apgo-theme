@@ -5,15 +5,9 @@
 
 {{ 'apgo-event-page.css' | asset_url | stylesheet_tag }}
 
-{%- comment -%}
-  frame_style "crate" / "crate_simple" draw the clearance page's cardboard
-  frame (styled in apgo-clearance-page.css, which only the clearance-sale
-  template loads).
-{%- endcomment -%}
-{%- assign apgo_banner_frame = section.settings.frame_style | default: 'none' -%}
 <section
   id="apgo-event-banner-{{ section.id }}"
-  class="apgo-event-banner section section--full-width color-{{ section.settings.color_scheme }}{% if apgo_banner_frame != 'none' %} apgo-event-banner--{{ apgo_banner_frame }}{% endif %}"
+  class="apgo-event-banner section section--full-width color-{{ section.settings.color_scheme }}"
   style="--apgo-event-banner-desktop-width: {{ section.settings.desktop_width_percent }}%;"
 >
   {% if section.settings.image != blank %}
@@ -44,16 +38,6 @@
       {% if section.settings.link != blank %}
         </a>
       {% endif %}
-      {%- if apgo_banner_frame == 'crate' -%}
-        <div class="apgo-event-banner__crate-row" aria-hidden="true">
-          <span class="apgo-event-banner__crate-mark">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M8 20V6M4 10l4-4 4 4M16 20V6M12 10l4-4 4 4"/></svg>
-            This side up
-          </span>
-          <span class="apgo-event-banner__crate-mid">APGO · Old factory stock</span>
-          <span>Handle with care</span>
-        </div>
-      {%- endif -%}
     </div>
   {% elsif request.design_mode %}
     <div class="apgo-event-banner__frame">
@@ -99,18 +83,6 @@
       "unit": "%",
       "default": 67,
       "info": "手機版一律全寬貼邊；電腦版預設約 2/3 寬並置中。"
-    },
-    {
-      "type": "select",
-      "id": "frame_style",
-      "label": "外框樣式",
-      "options": [
-        { "value": "none", "label": "無" },
-        { "value": "crate", "label": "紙箱＋封箱膠帶（清倉頁）" },
-        { "value": "crate_simple", "label": "紙箱邊框（清倉頁）" }
-      ],
-      "default": "none",
-      "info": "紙箱外框只在清倉頁（clearance-sale 模板）有樣式；清倉頁的寬度固定跟內容對齊。"
     },
     {
       "type": "color_scheme",
