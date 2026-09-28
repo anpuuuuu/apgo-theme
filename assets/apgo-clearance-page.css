@@ -368,7 +368,20 @@ body.apgo-clearance-sale-page .apgo-event-banner__crate-mark svg {
   height: 14px;
 }
 
-body.apgo-clearance-sale-page .apgo-event-banner__crate-mid {
+body.apgo-clearance-sale-page .apgo-event-banner__crate-marks,
+body.apgo-clearance-sale-page .apgo-event-banner__crate-end {
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+}
+
+body.apgo-clearance-sale-page .apgo-event-banner__crate-end {
+  gap: 10px;
+}
+
+body.apgo-clearance-sale-page .apgo-event-banner__crate-mid,
+body.apgo-clearance-sale-page .apgo-event-banner__crate-mark--extra,
+body.apgo-clearance-sale-page .apgo-event-banner__crate-end .apgo-crate-handling__barcode {
   display: none;
 }
 
@@ -377,6 +390,7 @@ body.apgo-clearance-sale-page .apgo-event-banner--crate_simple {
 }
 
 body.apgo-clearance-sale-page .apgo-event-banner--crate_simple .apgo-event-banner__frame {
+  position: relative;
   border: 2px solid var(--crate-kraft);
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
 }
@@ -430,6 +444,16 @@ body.apgo-clearance-sale-page .apgo-event-banner--crate_simple .apgo-event-banne
 
   body.apgo-clearance-sale-page .apgo-event-banner__crate-mid {
     display: inline;
+  }
+
+  body.apgo-clearance-sale-page .apgo-event-banner__crate-mark--extra {
+    display: inline-flex;
+  }
+
+  body.apgo-clearance-sale-page .apgo-event-banner__crate-end .apgo-crate-handling__barcode {
+    display: block;
+    width: 56px;
+    height: 16px;
   }
 
   body.apgo-clearance-sale-page .apgo-event-banner--crate_simple .apgo-event-banner__frame {
@@ -1052,6 +1076,193 @@ body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__b
   body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__button {
     min-height: 64px;
     font-size: 15px;
+  }
+}
+
+/* ── Box details: corner guards + handling strip ───────────────────
+   Cardboard corner protectors on the banner boxes, and on each promo box
+   a strip of handling marks with a barcode and a red box-number stamp.
+   All decoration sits on the frame, never over the banner artwork. */
+body.apgo-clearance-sale-page .apgo-crate-guards {
+  position: absolute;
+  inset: -5px;
+  z-index: 3;
+  pointer-events: none;
+}
+
+body.apgo-clearance-sale-page .apgo-crate-guards i {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border: 0 solid var(--crate-kraft);
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.45));
+}
+
+body.apgo-clearance-sale-page .apgo-crate-guards i:nth-child(1) {
+  top: 0;
+  left: 0;
+  border-top-width: 4px;
+  border-left-width: 4px;
+}
+
+body.apgo-clearance-sale-page .apgo-crate-guards i:nth-child(2) {
+  top: 0;
+  right: 0;
+  border-top-width: 4px;
+  border-right-width: 4px;
+}
+
+body.apgo-clearance-sale-page .apgo-crate-guards i:nth-child(3) {
+  bottom: 0;
+  left: 0;
+  border-bottom-width: 4px;
+  border-left-width: 4px;
+}
+
+body.apgo-clearance-sale-page .apgo-crate-guards i:nth-child(4) {
+  right: 0;
+  bottom: 0;
+  border-right-width: 4px;
+  border-bottom-width: 4px;
+}
+
+/* The hero's top corners already carry tape. */
+body.apgo-clearance-sale-page .apgo-crate-guards--bottom i:nth-child(-n + 2) {
+  display: none;
+}
+
+body.apgo-clearance-sale-page .apgo-crate-handling {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 9px 12px;
+  border-top: 1px solid var(--crate-line);
+  background-color: #1e1711;
+  background-image: repeating-linear-gradient(90deg, rgba(255, 228, 186, 0.025) 0 2px, transparent 2px 6px);
+  color: var(--crate-tape);
+  line-height: 1.2;
+}
+
+body.apgo-clearance-sale-page .apgo-crate-handling__mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--crate-mono) !important;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+body.apgo-clearance-sale-page .apgo-crate-handling__mark svg {
+  flex: 0 0 auto;
+  width: 14px;
+  height: 14px;
+}
+
+body.apgo-clearance-sale-page .apgo-crate-handling__mark--extra,
+body.apgo-clearance-sale-page .apgo-crate-handling__barcode,
+body.apgo-clearance-sale-page .apgo-crate-handling__stamp-word {
+  display: none;
+}
+
+body.apgo-clearance-sale-page .apgo-crate-handling__code {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+
+body.apgo-clearance-sale-page .apgo-crate-handling__barcode {
+  width: 64px;
+  height: 18px;
+  background: repeating-linear-gradient(
+    90deg,
+    currentColor 0 2px,
+    transparent 2px 4px,
+    currentColor 4px 5px,
+    transparent 5px 8px,
+    currentColor 8px 11px,
+    transparent 11px 13px
+  );
+  opacity: 0.8;
+}
+
+body.apgo-clearance-sale-page .apgo-crate-handling__stamp,
+body.apgo-clearance-sale-page .apgo-crate-handling__stamp * {
+  font-family: var(--crate-display) !important;
+  font-weight: 400;
+}
+
+body.apgo-clearance-sale-page .apgo-crate-handling__stamp {
+  padding: 2px 7px;
+  border: 2px solid var(--crate-accent);
+  color: var(--crate-accent);
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  line-height: 1.2;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transform: rotate(-4deg);
+}
+
+@media screen and (min-width: 750px) {
+  body.apgo-clearance-sale-page .apgo-crate-handling {
+    gap: 26px;
+    padding: 11px 18px;
+  }
+
+  body.apgo-clearance-sale-page .apgo-crate-handling__mark {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+  }
+
+  body.apgo-clearance-sale-page .apgo-crate-handling__mark--extra {
+    display: inline-flex;
+  }
+
+  body.apgo-clearance-sale-page .apgo-crate-handling__barcode {
+    display: block;
+  }
+
+  body.apgo-clearance-sale-page .apgo-crate-handling__stamp-word {
+    display: inline;
+  }
+
+  body.apgo-clearance-sale-page .apgo-crate-handling__stamp {
+    padding: 3px 10px;
+    font-size: 14px;
+    letter-spacing: 2px;
+  }
+}
+
+@media screen and (min-width: 990px) {
+  body.apgo-clearance-sale-page .apgo-crate-guards {
+    inset: -6px;
+  }
+
+  body.apgo-clearance-sale-page .apgo-crate-guards i {
+    width: 26px;
+    height: 26px;
+  }
+
+  body.apgo-clearance-sale-page .apgo-crate-guards i:nth-child(1),
+  body.apgo-clearance-sale-page .apgo-crate-guards i:nth-child(2) {
+    border-top-width: 5px;
+  }
+
+  body.apgo-clearance-sale-page .apgo-crate-guards i:nth-child(3),
+  body.apgo-clearance-sale-page .apgo-crate-guards i:nth-child(4) {
+    border-bottom-width: 5px;
+  }
+
+  body.apgo-clearance-sale-page .apgo-crate-guards i:nth-child(odd) {
+    border-left-width: 5px;
+  }
+
+  body.apgo-clearance-sale-page .apgo-crate-guards i:nth-child(even) {
+    border-right-width: 5px;
   }
 }
 
