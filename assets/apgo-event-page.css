@@ -2849,11 +2849,16 @@ body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apg
 /* Product cards: concrete grey, flat yellow price, red slashed "was" price. */
 body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-listing-card {
   background: var(--apgo-clear-concrete) !important;
+  color: #f2f2f2;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-listing-card__price-current {
-  background: linear-gradient(90deg, var(--apgo-clear-yellow), var(--apgo-clear-yellow));
+  /* Solid fill, not the gold gradient clipped to the text: a `background`
+     shorthand here resets background-clip and paints a yellow box. */
+  background: none;
+  -webkit-text-fill-color: var(--apgo-clear-yellow);
+  color: var(--apgo-clear-yellow);
   filter: none;
 }
 
@@ -2924,6 +2929,29 @@ body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apg
   border-color: var(--apgo-clear-line);
   background: #111111;
   color: rgba(255, 255, 255, 0.86);
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-linked-banner-zone__button--single {
+  border-color: var(--apgo-clear-yellow);
+  background: var(--apgo-clear-yellow);
+  color: #111111;
+}
+
+/* Carousel arrows and scroll cue. */
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-scroll-zone__previous,
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-scroll-zone__next {
+  border-color: var(--apgo-clear-yellow);
+  background: var(--apgo-clear-yellow);
+  color: #111111;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.48);
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-scroll-zone__scroll-chevrons {
+  text-shadow: none;
+}
+
+body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-gallery__rail-arrow {
+  border-color: var(--apgo-clear-line);
 }
 
 /* Stock counter (off unless switched on in the editor). */
