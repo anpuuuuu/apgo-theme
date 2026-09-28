@@ -1,0 +1,549 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "blocks": {
+        "heading": {
+          "type": "text",
+          "name": "Title",
+          "settings": {
+            "text": "<h1>{{ closest.page.title }}</h1>",
+            "width": "100%",
+            "max_width": "normal",
+            "alignment": "left",
+            "type_preset": "h2",
+            "font": "var(--font-body--family)",
+            "font_size": "1rem",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "color": "var(--color-foreground)",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        },
+        "page-content": {
+          "type": "page-content",
+          "settings": {},
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "heading",
+        "page-content"
+      ],
+      "disabled": true,
+      "settings": {
+        "content_direction": "column",
+        "gap": 32,
+        "color_scheme": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26",
+        "padding-block-start": 41,
+        "padding-block-end": 80
+      }
+    },
+    "apgo_event_banner_jRgaPP": {
+      "type": "apgo-event-banner",
+      "name": "APGO Event Banner",
+      "settings": {
+        "image": "shopify://shop_images/celebrating_our_1.png",
+        "image_alt": "APGO Golden Bull Award",
+        "link": "#clearance-deals",
+        "desktop_width_percent": 67,
+        "color_scheme": ""
+      }
+    },
+    "apgo_event_collection_grid_n3e6dm": {
+      "type": "apgo-event-collection-grid",
+      "blocks": {
+        "promo_banner_merdeka": {
+          "type": "promo_banner",
+          "settings": {
+            "market_visibility": "both",
+            "heading": "Limited Time Deals",
+            "message": "Dont say bojio, 没有就没有 liao",
+            "banner": "shopify://shop_images/atmomic_mega_promo_banner.jpg",
+            "product": "✨atomic-coating-mega-promo-✨",
+            "variant_id": "",
+            "banner_sg": "shopify://shop_images/atmomic_mega_promo_banner.jpg",
+            "product_sg": "✨atomic-coating-mega-promo-✨",
+            "variant_id_sg": "",
+            "cta_mode": "add_buy",
+            "single_cta_label": "Grab Deals Now",
+            "gift_enabled": false,
+            "gift_pool": [],
+            "gift_count": 2,
+            "gift_heading": "Choose your free gifts",
+            "show_counter": false,
+            "counter_milestone_total": "500",
+            "counter_release_total": "88",
+            "counter_manual_deduction": "0",
+            "counter_flow_baseline": "0"
+          }
+        },
+        "promo_banner_gewygY": {
+          "type": "promo_banner",
+          "settings": {
+            "market_visibility": "my",
+            "heading": "",
+            "message": "",
+            "banner": "shopify://shop_images/9.9_banner_1.png",
+            "product": "atomic-crystal-merdeka-set",
+            "variant_id": "",
+            "product_sg": "",
+            "variant_id_sg": "",
+            "cta_mode": "add_buy",
+            "single_cta_label": "Grab Deals Now",
+            "gift_enabled": false,
+            "gift_pool": [],
+            "gift_count": 2,
+            "gift_heading": "Choose your free gifts",
+            "show_counter": false,
+            "counter_milestone_total": "500",
+            "counter_release_total": "88",
+            "counter_manual_deduction": "0",
+            "counter_flow_baseline": "0"
+          }
+        },
+        "promo_banner_aCnrUD": {
+          "type": "promo_banner",
+          "settings": {
+            "market_visibility": "both",
+            "heading": "",
+            "message": "",
+            "banner": "shopify://shop_images/3days_titanium_banner.jpg",
+            "product": "jc-birthday-special-titanium",
+            "variant_id": "",
+            "banner_sg": "shopify://shop_images/3days_titanium_banner.jpg",
+            "product_sg": "jc-birthday-special-titanium",
+            "variant_id_sg": "",
+            "cta_mode": "add_buy",
+            "single_cta_label": "Grab Deals Now",
+            "gift_enabled": false,
+            "gift_pool": [],
+            "gift_count": 2,
+            "gift_heading": "Choose your free gifts",
+            "show_counter": false,
+            "counter_milestone_total": "500",
+            "counter_release_total": "88",
+            "counter_manual_deduction": "0",
+            "counter_flow_baseline": "0"
+          }
+        },
+        "promo_banner_L3JjXC": {
+          "type": "promo_banner",
+          "settings": {
+            "market_visibility": "sg",
+            "heading": "",
+            "message": "",
+            "product": "",
+            "variant_id": "",
+            "banner_sg": "shopify://shop_images/3days_crystal_banner.jpg",
+            "product_sg": "jc-birthday-special-atomic-crystal-plus-promotion",
+            "variant_id_sg": "",
+            "cta_mode": "add_buy",
+            "single_cta_label": "Grab Deals Now",
+            "gift_enabled": false,
+            "gift_pool": [],
+            "gift_count": 2,
+            "gift_heading": "Choose your free gifts",
+            "show_counter": false,
+            "counter_milestone_total": "500",
+            "counter_release_total": "88",
+            "counter_manual_deduction": "0",
+            "counter_flow_baseline": "0"
+          }
+        },
+        "promo_banner_midmonth": {
+          "type": "promo_banner",
+          "disabled": true,
+          "settings": {
+            "market_visibility": "both",
+            "heading": "",
+            "message": "",
+            "banner": "shopify://shop_images/atomic_banner.png",
+            "product": "✨atomic-coating-special-ltd-bundle-✨",
+            "variant_id": "",
+            "product_sg": "",
+            "variant_id_sg": "",
+            "cta_mode": "add_buy",
+            "single_cta_label": "Grab Deals Now",
+            "gift_enabled": false,
+            "gift_pool": [],
+            "gift_count": 2,
+            "gift_heading": "Choose your free gifts",
+            "show_counter": false,
+            "counter_milestone_total": "500",
+            "counter_release_total": "88",
+            "counter_manual_deduction": "0",
+            "counter_flow_baseline": "0"
+          }
+        },
+        "promo_banner_glaze": {
+          "type": "promo_banner",
+          "disabled": true,
+          "settings": {
+            "market_visibility": "sg",
+            "heading": "",
+            "message": "",
+            "product": "",
+            "variant_id": "",
+            "banner_sg": "shopify://shop_images/sg_banner.png",
+            "product_sg": "atomic-glaze-coating-sg61-promotion",
+            "variant_id_sg": "",
+            "cta_mode": "add_buy",
+            "single_cta_label": "Grab Deals Now",
+            "gift_enabled": true,
+            "gift_pool": [
+              "apgo-car-interior-eco-friendly-cleaner-500ml",
+              "apgo-car-interior-eco-friendly-coating-500ml",
+              "apgo-glass-cleaner-500ml",
+              "apgo-car-wash-shampoo-special-formula-refill-pack",
+              "apgo-car-wiper-fluid-refill-pack"
+            ],
+            "gift_count": 2,
+            "gift_heading": "Choose 2 gifts — FREE",
+            "show_counter": false,
+            "counter_milestone_total": "500",
+            "counter_release_total": "88",
+            "counter_manual_deduction": "0",
+            "counter_flow_baseline": "0"
+          }
+        },
+        "promo_banner_detergent": {
+          "type": "promo_banner",
+          "settings": {
+            "market_visibility": "my",
+            "heading": "",
+            "message": "",
+            "banner": "shopify://shop_images/detergent_banner_photo.png",
+            "product": "apgo-laundry-detergent-special-promotion-1",
+            "variant_id": "",
+            "product_sg": "",
+            "variant_id_sg": "",
+            "cta_mode": "product_link",
+            "single_cta_label": "Grab Deals Now",
+            "gift_enabled": false,
+            "gift_pool": [],
+            "gift_count": 2,
+            "gift_heading": "Choose your free gifts",
+            "show_counter": false,
+            "counter_milestone_total": "500",
+            "counter_release_total": "88",
+            "counter_manual_deduction": "0",
+            "counter_flow_baseline": "0"
+          }
+        },
+        "product_carousel_discount": {
+          "type": "product_carousel",
+          "disabled": true,
+          "settings": {
+            "market_visibility": "both",
+            "heading": "thank you CELEBRATION deals",
+            "banner": "shopify://shop_images/22_d4016573-8805-471f-9527-da6101a5c4db.png",
+            "banner_sg": "shopify://shop_images/23_b0735d48-a022-4f52-b715-cc6b4454bdeb.png",
+            "products": [
+              "apgo-car-interior-eco-friendly-coating-500ml",
+              "apgo-car-interior-eco-friendly-cleaner-500ml",
+              "apgo-glass-cleaner-500ml",
+              "apgo-car-exterior-plastic-protectant-500ml",
+              "apgo-car-extreme-iron-remover-500ml",
+              "apgo-car-all-purpose-cleaner",
+              "apgo-water-stain-remover",
+              "apgo-car-wash-shampoo-special-formula-refill-pack",
+              "apgo-car-wiper-fluid-refill-pack"
+            ],
+            "variant_ids": "",
+            "hide_compare_at": false,
+            "show_promo_limit": true,
+            "show_scroll_cue": true
+          }
+        },
+        "product_carousel_b1f1": {
+          "type": "product_carousel",
+          "settings": {
+            "market_visibility": "both",
+            "heading": "Dont Play Play Deals👍🏻",
+            "banner": "shopify://shop_images/6_d62a57fd-3001-4aeb-980d-4c79bebcfabc.png",
+            "products": [
+              "apgo-car-paint-headlight-care",
+              "apgo-wheel-cleaner-tyre-care-set",
+              "apgo-deep-clean-set",
+              "apgo-car-windshield-oil-film-remover-glass-cleaner-set",
+              "atomic-series-coating-refill-5-in-1-set",
+              "apgo-windshield-oil-film-remover-perfect-glass-restorer-quartz-glass-coating",
+              "apgo-pro-car-wash-towel-m-100cm-x-50cm",
+              "atomic-glaze-coating-sg61-promotion",
+              "atomic-glaze-coating-8-8-promotion",
+              "✨atomic-coating-special-ltd-bundle-✨"
+            ],
+            "variant_ids": "",
+            "hide_compare_at": true,
+            "show_promo_limit": false,
+            "show_scroll_cue": true
+          }
+        },
+        "featured_stage_legacy": {
+          "type": "featured_stage",
+          "disabled": true,
+          "settings": {
+            "heading": "star product",
+            "product_1": "apgo-atomic-coloured-glaze-premium-copy",
+            "image_1": "shopify://shop_images/IMG_8900.png",
+            "product_2": "apgo-car-wash-foam-pressure-sprayer-version-2-copy",
+            "image_2": "shopify://shop_images/photo_2026-07-07_00-13-20.jpg",
+            "badge_text": "BEST VALUE",
+            "cta_label": "View deal",
+            "hide_compare_at": false
+          }
+        },
+        "promo_banner_aurora": {
+          "type": "promo_banner",
+          "settings": {
+            "market_visibility": "both",
+            "heading": "AURORA EXCLUSIVE DEAL",
+            "message": "",
+            "product": "",
+            "variant_id": "",
+            "product_sg": "",
+            "variant_id_sg": "",
+            "cta_mode": "add_buy",
+            "single_cta_label": "Grab Deals Now",
+            "gift_enabled": false,
+            "gift_pool": [],
+            "gift_count": 2,
+            "gift_heading": "Choose your free gifts",
+            "show_counter": false,
+            "counter_milestone_total": "500",
+            "counter_release_total": "88",
+            "counter_manual_deduction": "88",
+            "counter_flow_baseline": "0"
+          }
+        }
+      },
+      "block_order": [
+        "promo_banner_merdeka",
+        "promo_banner_gewygY",
+        "promo_banner_aCnrUD",
+        "promo_banner_L3JjXC",
+        "promo_banner_midmonth",
+        "promo_banner_glaze",
+        "promo_banner_detergent",
+        "product_carousel_discount",
+        "product_carousel_b1f1",
+        "featured_stage_legacy",
+        "promo_banner_aurora"
+      ],
+      "name": "Event Collection Grid",
+      "settings": {
+        "anchor_id": "clearance-deals",
+        "show_countdown": false,
+        "countdown_label": "AWARD CELEBRATION ENDS IN",
+        "countdown_end_at": "2026-07-07T00:00:00+08:00",
+        "heading": "",
+        "celebration_message": "",
+        "show_festive_lockup": true,
+        "anniversary_badge": "",
+        "overlap_enabled": false,
+        "overlap_offset": 16,
+        "panel_radius": 16,
+        "color_scheme": "scheme-3",
+        "padding-block-start": 0,
+        "padding-block-end": 0
+      }
+    },
+    "apgo_gallery_TYBKmf": {
+      "type": "apgo-gallery",
+      "blocks": {
+        "portrait_PmFb47": {
+          "type": "portrait",
+          "settings": {
+            "image": "shopify://shop_images/IMG_4802.heic",
+            "alt_text": "111",
+            "caption": ""
+          }
+        },
+        "portrait_BKtgCQ": {
+          "type": "portrait",
+          "settings": {
+            "image": "shopify://shop_images/SAN09436.jpg",
+            "alt_text": "",
+            "caption": ""
+          }
+        },
+        "portrait_g9DPNj": {
+          "type": "portrait",
+          "settings": {
+            "image": "shopify://shop_images/IMG_4497.heic",
+            "alt_text": "",
+            "caption": ""
+          }
+        },
+        "portrait_bRw6yw": {
+          "type": "portrait",
+          "settings": {
+            "image": "shopify://shop_images/IMG_4491.heic",
+            "alt_text": "",
+            "caption": ""
+          }
+        },
+        "portrait_LWnKVT": {
+          "type": "portrait",
+          "settings": {
+            "image": "shopify://shop_images/IMG_4531.heic",
+            "alt_text": "",
+            "caption": ""
+          }
+        },
+        "portrait_TeY3L8": {
+          "type": "portrait",
+          "settings": {
+            "image": "shopify://shop_images/DSC08412.jpg",
+            "alt_text": "",
+            "caption": ""
+          }
+        },
+        "landscape_7xhUqK": {
+          "type": "landscape",
+          "settings": {
+            "image": "shopify://shop_images/photo_2026-07-28_17-41-49.jpg",
+            "alt_text": "",
+            "caption": ""
+          }
+        },
+        "landscape_G38Czn": {
+          "type": "landscape",
+          "settings": {
+            "image": "shopify://shop_images/GB4A1311.jpg",
+            "alt_text": "",
+            "caption": ""
+          }
+        },
+        "landscape_cqPBxG": {
+          "type": "landscape",
+          "settings": {
+            "image": "shopify://shop_images/photo_2026-07-28_17-41-52.jpg",
+            "alt_text": "",
+            "caption": ""
+          }
+        },
+        "landscape_LayQ4g": {
+          "type": "landscape",
+          "settings": {
+            "image": "shopify://shop_images/photo_2026-07-28_17-41-53.jpg",
+            "alt_text": "",
+            "caption": ""
+          }
+        },
+        "landscape_pdzLRX": {
+          "type": "landscape",
+          "settings": {
+            "image": "shopify://shop_images/CKS08712.jpg",
+            "alt_text": "",
+            "caption": ""
+          }
+        },
+        "landscape_8a4Re7": {
+          "type": "landscape",
+          "settings": {
+            "image": "shopify://shop_images/0fa92906-3c2c-4475-ad68-ebe42529e041.png",
+            "alt_text": "",
+            "caption": ""
+          }
+        },
+        "landscape_QXFLPe": {
+          "type": "landscape",
+          "settings": {
+            "image": "shopify://shop_images/IMG_4545.heic",
+            "alt_text": "",
+            "caption": ""
+          }
+        },
+        "landscape_YXCe9w": {
+          "type": "landscape",
+          "settings": {
+            "image": "shopify://shop_images/DSC08408.jpg",
+            "alt_text": "",
+            "caption": ""
+          }
+        },
+        "landscape_b7pQXn": {
+          "type": "landscape",
+          "settings": {
+            "image": "shopify://shop_images/DSC08416.jpg",
+            "alt_text": "",
+            "caption": ""
+          }
+        }
+      },
+      "block_order": [
+        "portrait_PmFb47",
+        "portrait_BKtgCQ",
+        "portrait_g9DPNj",
+        "portrait_bRw6yw",
+        "portrait_LWnKVT",
+        "portrait_TeY3L8",
+        "landscape_7xhUqK",
+        "landscape_G38Czn",
+        "landscape_cqPBxG",
+        "landscape_LayQ4g",
+        "landscape_pdzLRX",
+        "landscape_8a4Re7",
+        "landscape_QXFLPe",
+        "landscape_YXCe9w",
+        "landscape_b7pQXn"
+      ],
+      "name": "Gallery",
+      "settings": {
+        "heading": "OUR GOLDEN MOMENT",
+        "main_image": "shopify://shop_images/GBA26_GroupPic1.jpg",
+        "main_alt": "",
+        "main_caption": "",
+        "portrait_heading": "AWARD NIGHT",
+        "landscape_heading": "",
+        "viewer_ratio": "16 / 9",
+        "show_rail_arrows": true,
+        "max_width": 1200,
+        "radius": 12,
+        "background_color": "#050505",
+        "frame_color": "#3d4148",
+        "accent_color": "#e3b34d",
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "apgo_event_banner_jBTfGT": {
+      "type": "apgo-event-banner",
+      "name": "APGO Event Banner",
+      "settings": {
+        "image": "shopify://shop_images/footer_2.png",
+        "image_alt": "",
+        "link": "",
+        "desktop_width_percent": 67,
+        "color_scheme": ""
+      }
+    }
+  },
+  "order": [
+    "main",
+    "apgo_event_banner_jRgaPP",
+    "apgo_event_collection_grid_n3e6dm",
+    "apgo_gallery_TYBKmf",
+    "apgo_event_banner_jBTfGT"
+  ]
+}

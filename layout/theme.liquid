@@ -59,6 +59,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  {%- comment -%} Stencil display face for the clearance-sale campaign page's headings only. {%- endcomment -%}
+  {%- if template.name == 'page' and template.suffix == 'clearance-sale' -%}
+    <link href="https://fonts.googleapis.com/css2?family=Saira+Stencil+One&display=swap" rel="stylesheet">
+  {%- endif %}
   <style>
     html,
     body,
@@ -310,6 +314,9 @@
       assign apgo_body_page_class = ' apgo-special-event-page'
     elsif template.name == 'page' and template.suffix == 'golden-bull-award'
       assign apgo_body_page_class = ' apgo-special-event-page apgo-golden-bull-page'
+    elsif template.name == 'page' and template.suffix == 'clearance-sale'
+      # Golden Bull layout rules, recoloured by the clearance skin in apgo-event-page.css
+      assign apgo_body_page_class = ' apgo-special-event-page apgo-golden-bull-page apgo-clearance-sale-page'
     endif
   %}
 
@@ -498,6 +505,7 @@
       or template.name == 'index'
       or template.suffix == 'special-event'
       or template.suffix == 'golden-bull-award'
+      or template.suffix == 'clearance-sale'
     %}
       {% render 'apgo-collection-variant-drawer' %}
     {% endif %}
