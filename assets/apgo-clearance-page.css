@@ -34,13 +34,13 @@ body.apgo-clearance-sale-page {
   --crate-plate: #2c2218;
   /* Accent = the clearance-stamp red: --crate-accent for text and links
      on the dark floor, --crate-red-fill for the countdown's seconds tile
-     and arrow hover. Buttons are kraft with ink text (--crate-cta). */
+     and arrow hover. Buttons are paper with ink text (--crate-cta). */
   --crate-accent: #f0655a;
   --crate-accent-hover: #ff8a7f;
   --crate-red-fill: #b8322a;
   --crate-red-fill-ink: #fff8ee;
-  --crate-cta: #c9a06b;
-  --crate-cta-hover: #d9b37c;
+  --crate-cta: #f3ebdc;
+  --crate-cta-hover: #ffffff;
   --crate-cta-ink: #1b1712;
   --crate-display: 'Anton', 'Arial Narrow', 'Poppins', sans-serif;
   --crate-mono: 'Courier Prime', 'Courier New', monospace;
