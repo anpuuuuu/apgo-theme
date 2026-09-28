@@ -1,0 +1,54 @@
+{%- comment -%}
+  Clearance page — a strip of packing tape across the page with the text
+  repeated along it. Styled in assets/apgo-clearance-page.css, which only
+  the page.clearance-sale template loads.
+{%- endcomment -%}
+
+{%- assign apgo_tape_text = section.settings.text | strip -%}
+{%- if apgo_tape_text != blank -%}
+  <div class="apgo-crate-tape apgo-crate-tape--{{ section.settings.tilt }}">
+    <p class="visually-hidden">{{ apgo_tape_text | escape }}</p>
+    <div class="apgo-crate-tape__band" aria-hidden="true">
+      {%- for i in (1..10) -%}
+        <span>{{ apgo_tape_text | escape }}</span>
+        <span class="apgo-crate-tape__dot">·</span>
+      {%- endfor -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Clearance tape",
+  "tag": "section",
+  "class": "apgo-crate-section",
+  "enabled_on": {
+    "templates": ["page"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Tape text",
+      "default": "Clearance · Everything must go",
+      "info": "Repeated along the tape. Leave blank to hide."
+    },
+    {
+      "type": "select",
+      "id": "tilt",
+      "label": "Tilt",
+      "options": [
+        { "value": "left", "label": "Rising to the right" },
+        { "value": "right", "label": "Falling to the right" }
+      ],
+      "default": "left"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Clearance tape",
+      "category": "APGO"
+    }
+  ]
+}
+{% endschema %}

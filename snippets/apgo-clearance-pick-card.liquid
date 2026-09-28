@@ -1,0 +1,82 @@
+{%- doc -%}
+  Clearance page "Boss's pick" card (featured_stage block of the Event
+  Collection Grid on page.clearance-sale): round sticker, the picked
+  image, title, hang-tag price and one button to the product page.
+  Square or portrait images sit beside the details on wide screens;
+  wider banners stay on top.
+
+  @param {product} product - Product the card links to.
+  @param {image} image - Image picked in the editor for this card.
+  @param {string} [badge] - Sticker text, e.g. "BOSS PICK".
+  @param {string} [cta] - Button label. Defaults to "View deal".
+  @param {boolean} [hide_compare_at] - Hide the struck-through original price.
+  @param {number} index - Card number within the block (1 or 2).
+  @param {string} promotion_id - GA4 promotion id prefix for the links.
+  @param {string} [promotion_name] - GA4 promotion name.
+{%- enddoc -%}
+
+{%- if image != blank and product != blank -%}
+  {%- liquid
+    assign apgo_pick_variant = product.selected_or_first_available_variant
+    assign apgo_pick_price = apgo_pick_variant.price | money | replace: ' MYR', '' | replace: 'MYR', '' | strip
+    assign apgo_pick_on_sale = false
+    if hide_compare_at != true and apgo_pick_variant.compare_at_price > apgo_pick_variant.price
+      assign apgo_pick_on_sale = true
+    endif
+    assign apgo_pick_layout = 'stack'
+    if image.aspect_ratio <= 1.25
+      assign apgo_pick_layout = 'side'
+    endif
+    assign apgo_pick_cta = cta | default: 'View deal'
+  -%}
+  <article class="apgo-crate-pick apgo-crate-pick--{{ apgo_pick_layout }}">
+    {%- if badge != blank -%}
+      <span class="apgo-crate-pick__sticker">{{ badge | escape }}</span>
+    {%- endif -%}
+    <a
+      class="apgo-crate-pick__media"
+      href="{{ product.url }}"
+      tabindex="-1"
+      aria-hidden="true"
+      data-apgo-campaign-promotion-link
+      data-promotion-id="{{ promotion_id | escape }}_{{ index }}_image"
+      data-promotion-name="{{ promotion_name | escape }}"
+    >
+      {{
+        image
+        | image_url: width: 1200
+        | image_tag:
+          class: 'apgo-crate-pick__img',
+          loading: 'lazy',
+          widths: '360, 480, 600, 800, 1000, 1200',
+          sizes: '(min-width: 1200px) 300px, (min-width: 750px) 45vw, 50vw',
+          alt: ''
+      }}
+    </a>
+    <div class="apgo-crate-pick__info">
+      <span class="apgo-crate-pick__meta">Star item 0{{ index }}</span>
+      <h3 class="apgo-crate-pick__title">
+        <a href="{{ product.url }}">{{ product.title }}</a>
+      </h3>
+      <div class="apgo-crate-pick__prices">
+        <span class="apgo-crate-tag">{{ apgo_pick_price }}</span>
+        {%- if apgo_pick_on_sale -%}
+          <s class="apgo-crate-was">{{ apgo_pick_variant.compare_at_price | money | replace: ' MYR', '' | replace: 'MYR', '' | strip }}</s>
+        {%- endif -%}
+      </div>
+      {%- if product.available -%}
+        <a
+          class="apgo-crate-pick__cta"
+          href="{{ product.url }}"
+          data-apgo-campaign-promotion-link
+          data-promotion-id="{{ promotion_id | escape }}_{{ index }}_cta"
+          data-promotion-name="{{ promotion_name | escape }}"
+        >
+          {{- apgo_pick_cta | escape -}}
+        </a>
+      {%- else -%}
+        <span class="apgo-crate-pick__cta apgo-crate-pick__cta--sold-out">{{ 'products.product.sold_out' | t }}</span>
+      {%- endif -%}
+    </div>
+  </article>
+{%- endif -%}

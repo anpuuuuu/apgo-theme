@@ -1,0 +1,129 @@
+{%- doc -%}
+  Clearance page product row (product_carousel block of the Event
+  Collection Grid on page.clearance-sale): shipping-label heading with an
+  optional "View all" link and arrow buttons, then a snap-scrolling row of
+  clearance cards that bleeds off the right edge.
+
+  The whole block is the scroll viewport so the arrows can sit in the
+  heading row; apgo-event-cart.js and apgo-campaign-tracking.js find the
+  track and arrows through the data-apgo-scroll-* hooks inside it, and
+  count cards by .apgo-event-scroll-zone__card.
+
+  @param {string} heading - Row heading; also names the section in GA4.
+  @param {image} [banner_image] - Optional banner shown above the cards.
+  @param {object[]} products - Products for the row.
+  @param {string} [variant_ids] - Newline-separated variant IDs aligned with products.
+  @param {string} zone_class - Zone key, used for GA4 ids.
+  @param {number} zone_position - One-based campaign section position.
+  @param {boolean} [hide_compare_at] - Hide the struck-through original price.
+  @param {string} section_id - Parent section id, used for unique card ids.
+  @param {string} campaign_id - GA4 campaign id.
+  @param {string} [lot] - Two-digit lot number; blank when the row has no heading.
+  @param {string} [view_all_link] - Destination of the "View all" link.
+  @param {string} [block_attributes] - Shopify editor attributes for the owning block.
+{%- enddoc -%}
+
+{%- liquid
+  assign apgo_variant_ids = variant_ids | default: '' | newline_to_br | split: '<br />'
+  assign apgo_hide_compare = false
+  if hide_compare_at == true
+    assign apgo_hide_compare = true
+  endif
+
+  assign apgo_lot_code = blank
+  assign apgo_tilt = 'tilt-left'
+  if lot != blank
+    assign apgo_lot_code = 'LOT ' | append: lot
+    assign apgo_lot_parity = lot | plus: 0 | modulo: 2
+    if apgo_lot_parity == 0
+      assign apgo_tilt = 'tilt-right'
+    endif
+  endif
+-%}
+
+{%- if products != blank and products.size > 0 -%}
+  <section
+    class="apgo-event-scroll-zone apgo-event-scroll-zone--{{ zone_class }} apgo-crate-zone apgo-crate-zone--row"
+    data-apgo-campaign-section
+    data-section-id="{{ zone_class | escape }}"
+    data-section-name="{{ heading | escape }}"
+    data-section-position="{{ zone_position }}"
+    data-promotion-id="{{ campaign_id | escape }}_{{ zone_class | escape }}"
+    {% if lot != blank %}data-lot="{{ lot }}"{% endif %}
+    {{ block_attributes }}
+  >
+    <div class="apgo-crate-zone__scroller" data-apgo-scroll-viewport>
+      <div class="apgo-crate-zone__head">
+        {% render 'apgo-clearance-label',
+          title: heading,
+          note: 'CONTENTS: MIXED STOCK · QTY LIMITED',
+          lot: apgo_lot_code,
+          modifier: apgo_tilt
+        %}
+        <div class="apgo-crate-zone__tools">
+          {%- if view_all_link != blank -%}
+            <a class="apgo-crate-zone__view-all" href="{{ view_all_link }}">
+              View all
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+          {%- endif -%}
+          <div class="apgo-crate-zone__arrows">
+            <button
+              type="button"
+              class="apgo-crate-zone__arrow apgo-crate-zone__arrow--previous"
+              data-apgo-scroll-previous
+              aria-label="{{ 'accessibility.slideshow_previous' | t }}"
+              disabled
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M15 6l-6 6 6 6"/></svg>
+            </button>
+            <button
+              type="button"
+              class="apgo-crate-zone__arrow apgo-crate-zone__arrow--next"
+              data-apgo-scroll-next
+              aria-label="{{ 'accessibility.show_more_products' | t }}"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 6l6 6-6 6"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {%- if banner_image != blank -%}
+        <div class="apgo-crate-zone__banner">
+          {{
+            banner_image
+            | image_url: width: 1600
+            | image_tag:
+              class: 'apgo-crate-zone__banner-img',
+              loading: 'lazy',
+              widths: '360, 540, 720, 960, 1200, 1600',
+              sizes: '(min-width: 1280px) 1200px, calc(100vw - 32px)',
+              alt: ''
+          }}
+        </div>
+      {%- endif -%}
+
+      <div class="apgo-crate-zone__track" role="list" data-apgo-scroll-track>
+        {%- for product in products -%}
+          {%- comment -%} Region lock: skip products market-locked away from this storefront (custom.only_market). {%- endcomment -%}
+          {%- assign apgo_pm = product.metafields.custom.only_market.value | strip | upcase -%}
+          {%- if apgo_pm != blank and localization.country.iso_code != apgo_pm -%}{%- continue -%}{%- endif -%}
+          {%- assign apgo_event_card_uid = section_id | append: '-' | append: zone_class | append: '-' | append: product.id -%}
+          {%- assign apgo_product_variant_id = apgo_variant_ids[forloop.index0] | strip -%}
+          <div class="apgo-event-scroll-zone__card apgo-crate-zone__slot" role="listitem">
+            {% render 'apgo-event-listing-card',
+              product: product,
+              variant_id: apgo_product_variant_id,
+              section_id: section_id,
+              card_uid: apgo_event_card_uid,
+              card_position: forloop.index,
+              hide_compare_at: apgo_hide_compare,
+              crate: true
+            %}
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+  </section>
+{%- endif -%}
