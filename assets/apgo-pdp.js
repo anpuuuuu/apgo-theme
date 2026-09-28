@@ -136,17 +136,17 @@
 
   function formatMoney(cents) {
     // Follow the active Shopify Markets currency (MY → MYR "RM", SG → SGD
-    // "S$"), matching the cart-totals.liquid convention. Currency is seeded
+    // "$"), matching the cart-totals.liquid convention. Currency is seeded
     // from Liquid (window.APGO_ACTIVE_CURRENCY); never hardcode TWD here or
     // MY/SG prices come out as NT$. No space after the symbol: the site
-    // prints "RM36.90" everywhere.
+    // prints "RM36.90" / "$36.90" everywhere.
     var cur = window.APGO_ACTIVE_CURRENCY
       || (window.Shopify && window.Shopify.currency && window.Shopify.currency.active)
       || 'MYR';
     var amount = (Number(cents) || 0) / 100;
     var n = amount.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     if (cur === 'MYR') return 'RM' + n;
-    if (cur === 'SGD') return 'S$' + n;
+    if (cur === 'SGD') return '$' + n;
     try {
       return new Intl.NumberFormat(undefined, {
         style: 'currency', currency: cur, minimumFractionDigits: 2, maximumFractionDigits: 2

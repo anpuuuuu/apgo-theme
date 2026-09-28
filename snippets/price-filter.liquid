@@ -32,8 +32,12 @@
     <summary class="facets__summary">
       <span class="facets__label">{{ filter.label }}</span>
       <facet-status-component class="facets__status">
-        {%- comment -%} The MY money format ends in " MYR"; the site prints "RM36.90". {%- endcomment -%}
-        <template ref="moneyFormat">{{ shop.money_format | replace: ' MYR', '' | replace: 'MYR', '' | strip }}</template>
+        {%- comment -%}
+          Symbol of the shopper's currency, not shop.money_format: that is always
+          the MYR format (ending in " MYR"), so Singapore filters read "RM".
+          The site prints "RM36.90" / "$36.90".
+        {%- endcomment -%}
+        <template ref="moneyFormat">{{ cart.currency.symbol }}{% raw %}{{amount}}{% endraw %}</template>
 
         <span
           class="hide-when-empty"

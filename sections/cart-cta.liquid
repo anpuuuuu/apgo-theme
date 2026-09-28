@@ -849,7 +849,7 @@
       var main = dot > -1 ? fixed.slice(0, dot) : fixed;
       var dec = dot > -1 ? fixed.slice(dot) : '';
       if (currency === 'MYR') return { main: 'RM' + main, dec: dec };
-      if (currency === 'SGD') return { main: 'S$' + main, dec: dec };
+      if (currency === 'SGD') return { main: '$' + main, dec: dec };
       try {
         var full = new Intl.NumberFormat('en', { style: 'currency', currency: currency, currencyDisplay: 'narrowSymbol' }).format(amount);
         var fullDot = full.lastIndexOf('.');
@@ -878,7 +878,7 @@
     }
 
     // Keep currency symbols in lock-step with apgo-coating-products and
-    // cart-totals.liquid (MYR → RM, SGD → S$).
+    // cart-totals.liquid (MYR → RM, SGD → $).
     function fmtMoney(minor, currency){
       var p = fmtMoneyParts(minor, currency);
       return p.main + p.dec;
