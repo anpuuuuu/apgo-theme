@@ -16,6 +16,9 @@
   @param {number} zone_position - One-based campaign section position.
   @param {string} [gift_modal_id] - Optional id of the gift picker controlled by this zone.
   @param {string} [block_attributes] - Shopify editor attributes for the owning block.
+  @param {boolean} [crate] - Clearance page look: shipping-label heading, content in the
+                             page container, no Aurora stock counter.
+  @param {string} [lot] - Clearance page only: two-digit lot number, blank when there is no heading.
 {% enddoc %}
 
 {% if banner_image != blank and product != blank %}
@@ -43,9 +46,23 @@
     if action_variant.inventory_management != blank and action_variant.inventory_quantity != blank and action_variant.inventory_quantity <= 0
       assign apgo_zone_sold_out = true
     endif
+
+    # Clearance page: the Aurora counter is styled for Golden Bull only.
+    if crate
+      assign apgo_counter_visible = false
+      assign apgo_lot_code = blank
+      assign apgo_tilt = 'tilt-left'
+      if lot != blank
+        assign apgo_lot_code = 'LOT ' | append: lot
+        assign apgo_lot_parity = lot | plus: 0 | modulo: 2
+        if apgo_lot_parity == 0
+          assign apgo_tilt = 'tilt-right'
+        endif
+      endif
+    endif
   %}
   <section
-    class="apgo-event-linked-banner-zone apgo-event-linked-banner-zone--{{ zone_class }}"
+    class="apgo-event-linked-banner-zone apgo-event-linked-banner-zone--{{ zone_class }}{% if crate %} apgo-crate-zone apgo-crate-zone--offer{% endif %}"
     {% if gift_modal_id != blank %}data-apgo-event-gift-modal-id="{{ gift_modal_id | escape }}"{% endif %}
     data-apgo-campaign-section
     data-section-id="{{ zone_class | escape }}"
@@ -55,9 +72,18 @@
     data-product-id="{{ product.id }}"
     data-product-name="{{ product.title | escape }}"
     data-product-handle="{{ product.handle | escape }}"
+    {% if crate and lot != blank %}data-lot="{{ lot }}"{% endif %}
     {{ block_attributes }}
   >
-    {% if heading != blank %}
+    {% if crate %}
+      <div class="apgo-crate-container apgo-crate-zone__inner">
+      {% render 'apgo-clearance-label',
+        title: heading,
+        note: 'FROM: OLD FACTORY → TO: YOUR GARAGE',
+        lot: apgo_lot_code,
+        modifier: apgo_tilt
+      %}
+    {% elsif heading != blank %}
       <h3 class="apgo-event-scroll-zone__heading">
         <span class="apgo-event-scroll-zone__heading-star" aria-hidden="true">★</span>
         {{ heading | escape }}
@@ -156,5 +182,8 @@
         {%- endif -%}
       </div>
     </div>
+    {% if crate %}
+      </div>
+    {% endif %}
   </section>
 {% endif %}

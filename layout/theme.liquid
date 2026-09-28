@@ -59,9 +59,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  {%- comment -%} Stencil display face for the clearance-sale campaign page's headings only. {%- endcomment -%}
+  {%- comment -%} Clearance-sale campaign page only: its display + label faces and its own stylesheet. {%- endcomment -%}
   {%- if template.name == 'page' and template.suffix == 'clearance-sale' -%}
-    <link href="https://fonts.googleapis.com/css2?family=Saira+Stencil+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    {{ 'apgo-clearance-page.css' | asset_url | stylesheet_tag }}
   {%- endif %}
   <style>
     html,
@@ -315,8 +316,8 @@
     elsif template.name == 'page' and template.suffix == 'golden-bull-award'
       assign apgo_body_page_class = ' apgo-special-event-page apgo-golden-bull-page'
     elsif template.name == 'page' and template.suffix == 'clearance-sale'
-      # Golden Bull layout rules, recoloured by the clearance skin in apgo-event-page.css
-      assign apgo_body_page_class = ' apgo-special-event-page apgo-golden-bull-page apgo-clearance-sale-page'
+      # Styled only by apgo-clearance-page.css; deliberately none of the event-page classes above
+      assign apgo_body_page_class = ' apgo-clearance-sale-page'
     endif
   %}
 

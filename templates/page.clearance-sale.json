@@ -65,7 +65,8 @@
         "image_alt": "APGO Golden Bull Award",
         "link": "#clearance-deals",
         "desktop_width_percent": 67,
-        "color_scheme": ""
+        "color_scheme": "",
+        "frame_style": "crate"
       }
     },
     "apgo_event_collection_grid_n3e6dm": {
@@ -367,166 +368,6 @@
         "padding-block-end": 0
       }
     },
-    "apgo_gallery_TYBKmf": {
-      "type": "apgo-gallery",
-      "blocks": {
-        "portrait_PmFb47": {
-          "type": "portrait",
-          "settings": {
-            "image": "shopify://shop_images/IMG_4802.heic",
-            "alt_text": "111",
-            "caption": ""
-          }
-        },
-        "portrait_BKtgCQ": {
-          "type": "portrait",
-          "settings": {
-            "image": "shopify://shop_images/SAN09436.jpg",
-            "alt_text": "",
-            "caption": ""
-          }
-        },
-        "portrait_g9DPNj": {
-          "type": "portrait",
-          "settings": {
-            "image": "shopify://shop_images/IMG_4497.heic",
-            "alt_text": "",
-            "caption": ""
-          }
-        },
-        "portrait_bRw6yw": {
-          "type": "portrait",
-          "settings": {
-            "image": "shopify://shop_images/IMG_4491.heic",
-            "alt_text": "",
-            "caption": ""
-          }
-        },
-        "portrait_LWnKVT": {
-          "type": "portrait",
-          "settings": {
-            "image": "shopify://shop_images/IMG_4531.heic",
-            "alt_text": "",
-            "caption": ""
-          }
-        },
-        "portrait_TeY3L8": {
-          "type": "portrait",
-          "settings": {
-            "image": "shopify://shop_images/DSC08412.jpg",
-            "alt_text": "",
-            "caption": ""
-          }
-        },
-        "landscape_7xhUqK": {
-          "type": "landscape",
-          "settings": {
-            "image": "shopify://shop_images/photo_2026-07-28_17-41-49.jpg",
-            "alt_text": "",
-            "caption": ""
-          }
-        },
-        "landscape_G38Czn": {
-          "type": "landscape",
-          "settings": {
-            "image": "shopify://shop_images/GB4A1311.jpg",
-            "alt_text": "",
-            "caption": ""
-          }
-        },
-        "landscape_cqPBxG": {
-          "type": "landscape",
-          "settings": {
-            "image": "shopify://shop_images/photo_2026-07-28_17-41-52.jpg",
-            "alt_text": "",
-            "caption": ""
-          }
-        },
-        "landscape_LayQ4g": {
-          "type": "landscape",
-          "settings": {
-            "image": "shopify://shop_images/photo_2026-07-28_17-41-53.jpg",
-            "alt_text": "",
-            "caption": ""
-          }
-        },
-        "landscape_pdzLRX": {
-          "type": "landscape",
-          "settings": {
-            "image": "shopify://shop_images/CKS08712.jpg",
-            "alt_text": "",
-            "caption": ""
-          }
-        },
-        "landscape_8a4Re7": {
-          "type": "landscape",
-          "settings": {
-            "image": "shopify://shop_images/0fa92906-3c2c-4475-ad68-ebe42529e041.png",
-            "alt_text": "",
-            "caption": ""
-          }
-        },
-        "landscape_QXFLPe": {
-          "type": "landscape",
-          "settings": {
-            "image": "shopify://shop_images/IMG_4545.heic",
-            "alt_text": "",
-            "caption": ""
-          }
-        },
-        "landscape_YXCe9w": {
-          "type": "landscape",
-          "settings": {
-            "image": "shopify://shop_images/DSC08408.jpg",
-            "alt_text": "",
-            "caption": ""
-          }
-        },
-        "landscape_b7pQXn": {
-          "type": "landscape",
-          "settings": {
-            "image": "shopify://shop_images/DSC08416.jpg",
-            "alt_text": "",
-            "caption": ""
-          }
-        }
-      },
-      "block_order": [
-        "portrait_PmFb47",
-        "portrait_BKtgCQ",
-        "portrait_g9DPNj",
-        "portrait_bRw6yw",
-        "portrait_LWnKVT",
-        "portrait_TeY3L8",
-        "landscape_7xhUqK",
-        "landscape_G38Czn",
-        "landscape_cqPBxG",
-        "landscape_LayQ4g",
-        "landscape_pdzLRX",
-        "landscape_8a4Re7",
-        "landscape_QXFLPe",
-        "landscape_YXCe9w",
-        "landscape_b7pQXn"
-      ],
-      "name": "Gallery",
-      "settings": {
-        "heading": "OUR GOLDEN MOMENT",
-        "main_image": "shopify://shop_images/GBA26_GroupPic1.jpg",
-        "main_alt": "",
-        "main_caption": "",
-        "portrait_heading": "AWARD NIGHT",
-        "landscape_heading": "",
-        "viewer_ratio": "16 / 9",
-        "show_rail_arrows": true,
-        "max_width": 1200,
-        "radius": 12,
-        "background_color": "#050505",
-        "frame_color": "#3d4148",
-        "accent_color": "#e3b34d",
-        "padding_top": 36,
-        "padding_bottom": 36
-      }
-    },
     "apgo_event_banner_jBTfGT": {
       "type": "apgo-event-banner",
       "name": "APGO Event Banner",
@@ -535,15 +376,146 @@
         "image_alt": "",
         "link": "",
         "desktop_width_percent": 67,
-        "color_scheme": ""
+        "color_scheme": "",
+        "frame_style": "crate_simple"
+      }
+    },
+    "clearance_tape_top": {
+      "type": "apgo-clearance-tape",
+      "settings": {
+        "text": "Clearance · Everything must go",
+        "tilt": "left"
+      }
+    },
+    "clearance_intro": {
+      "type": "apgo-clearance-intro",
+      "blocks": {
+        "tag_prices": {
+          "type": "tag",
+          "settings": {
+            "icon": "price_tag",
+            "text": "Clearance prices",
+            "text_sg": ""
+          }
+        },
+        "tag_stock": {
+          "type": "tag",
+          "settings": {
+            "icon": "box",
+            "text": "While stocks last",
+            "text_sg": ""
+          }
+        },
+        "tag_shipping": {
+          "type": "tag",
+          "settings": {
+            "icon": "truck",
+            "text": "Ships in 2–3 business days",
+            "text_sg": "Ships in 5–7 business days"
+          }
+        }
+      },
+      "block_order": [
+        "tag_prices",
+        "tag_stock",
+        "tag_shipping"
+      ],
+      "settings": {
+        "eyebrow": "Factory expansion · 2026",
+        "heading": "Everything",
+        "heading_accent": "must go",
+        "text": "We're moving into a bigger factory, and the old stock has to go first. Clearance prices while stocks last.",
+        "stamp": "Clearance",
+        "sign": "New factory →"
+      }
+    },
+    "clearance_countdown": {
+      "type": "apgo-clearance-countdown",
+      "settings": {
+        "label": "Last truck leaves in",
+        "end_at": "",
+        "show_end_date": true,
+        "end_prefix": "Sale ends"
+      }
+    },
+    "clearance_progress": {
+      "type": "apgo-clearance-progress",
+      "blocks": {
+        "photo_1": {
+          "type": "photo",
+          "settings": {
+            "caption": ""
+          }
+        },
+        "photo_2": {
+          "type": "photo",
+          "settings": {
+            "caption": ""
+          }
+        },
+        "photo_3": {
+          "type": "photo",
+          "settings": {
+            "caption": ""
+          }
+        },
+        "milestone_1": {
+          "type": "milestone",
+          "settings": {
+            "title": "",
+            "status": "done",
+            "note": ""
+          }
+        },
+        "milestone_2": {
+          "type": "milestone",
+          "settings": {
+            "title": "",
+            "status": "in_progress",
+            "note": ""
+          }
+        },
+        "milestone_3": {
+          "type": "milestone",
+          "settings": {
+            "title": "",
+            "status": "upcoming",
+            "note": ""
+          }
+        }
+      },
+      "block_order": [
+        "photo_1",
+        "photo_2",
+        "photo_3",
+        "milestone_1",
+        "milestone_2",
+        "milestone_3"
+      ],
+      "settings": {
+        "heading": "Where it's all going",
+        "note": "Destination: new factory",
+        "code": "Update",
+        "checklist_title": "Moving checklist"
+      }
+    },
+    "clearance_tape_bottom": {
+      "type": "apgo-clearance-tape",
+      "settings": {
+        "text": "While stocks last · Clearance",
+        "tilt": "right"
       }
     }
   },
   "order": [
     "main",
+    "clearance_tape_top",
     "apgo_event_banner_jRgaPP",
+    "clearance_intro",
+    "clearance_countdown",
     "apgo_event_collection_grid_n3e6dm",
-    "apgo_gallery_TYBKmf",
+    "clearance_progress",
+    "clearance_tape_bottom",
     "apgo_event_banner_jBTfGT"
   ]
 }
