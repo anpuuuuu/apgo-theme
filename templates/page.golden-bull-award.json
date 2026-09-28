@@ -100,8 +100,8 @@
           "type": "promo_banner",
           "settings": {
             "market_visibility": "my",
-            "heading": "",
-            "message": "",
+            "heading": "Limited Time Deals",
+            "message": "Dont say bojio, 没有就没有 liao",
             "banner": "shopify://shop_images/9.9_banner_1.png",
             "product": "atomic-crystal-merdeka-set",
             "variant_id": "",
