@@ -1,13 +1,12 @@
 {%- doc -%}
   Clearance page product row (product_carousel block of the Event
   Collection Grid on page.clearance-sale): shipping-label heading with an
-  optional "View all" link, then a snap-scrolling row of clearance cards
-  with arrow buttons on either side (tablet and up; phones swipe, and the
-  row runs to the screen edge there). apgo-clearance-page.js adds mouse
-  drag-to-scroll.
+  optional "View all" link and arrow buttons, then a snap-scrolling row of
+  clearance cards that bleeds off the right edge.
 
-  apgo-event-cart.js and apgo-campaign-tracking.js find the track and
-  arrows through the data-apgo-scroll-* hooks inside the viewport, and
+  The whole block is the scroll viewport so the arrows can sit in the
+  heading row; apgo-event-cart.js and apgo-campaign-tracking.js find the
+  track and arrows through the data-apgo-scroll-* hooks inside it, and
   count cards by .apgo-event-scroll-zone__card.
 
   @param {string} heading - Row heading; also names the section in GA4.
@@ -61,12 +60,33 @@
           lot: apgo_lot_code,
           modifier: apgo_tilt
         %}
-        {%- if view_all_link != blank -%}
-          <a class="apgo-crate-zone__view-all" href="{{ view_all_link }}">
-            View all
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-          </a>
-        {%- endif -%}
+        <div class="apgo-crate-zone__tools">
+          {%- if view_all_link != blank -%}
+            <a class="apgo-crate-zone__view-all" href="{{ view_all_link }}">
+              View all
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+          {%- endif -%}
+          <div class="apgo-crate-zone__arrows">
+            <button
+              type="button"
+              class="apgo-crate-zone__arrow apgo-crate-zone__arrow--previous"
+              data-apgo-scroll-previous
+              aria-label="{{ 'accessibility.slideshow_previous' | t }}"
+              disabled
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M15 6l-6 6 6 6"/></svg>
+            </button>
+            <button
+              type="button"
+              class="apgo-crate-zone__arrow apgo-crate-zone__arrow--next"
+              data-apgo-scroll-next
+              aria-label="{{ 'accessibility.show_more_products' | t }}"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 6l6 6-6 6"/></svg>
+            </button>
+          </div>
+        </div>
       </div>
 
       {%- if banner_image != blank -%}
@@ -84,16 +104,6 @@
         </div>
       {%- endif -%}
 
-      <div class="apgo-crate-zone__rail">
-      <button
-        type="button"
-        class="apgo-crate-zone__arrow apgo-crate-zone__arrow--previous"
-        data-apgo-scroll-previous
-        aria-label="{{ 'accessibility.slideshow_previous' | t }}"
-        disabled
-      >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M15 6l-6 6 6 6"/></svg>
-      </button>
       <div class="apgo-crate-zone__track" role="list" data-apgo-scroll-track>
         {%- for product in products -%}
           {%- comment -%} Region lock: skip products market-locked away from this storefront (custom.only_market). {%- endcomment -%}
@@ -113,15 +123,6 @@
             %}
           </div>
         {%- endfor -%}
-      </div>
-      <button
-        type="button"
-        class="apgo-crate-zone__arrow apgo-crate-zone__arrow--next"
-        data-apgo-scroll-next
-        aria-label="{{ 'accessibility.show_more_products' | t }}"
-      >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 6l6 6-6 6"/></svg>
-      </button>
       </div>
     </div>
   </section>

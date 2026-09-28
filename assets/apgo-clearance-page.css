@@ -37,27 +37,24 @@ body.apgo-clearance-sale-page {
   --crate-cta-ink: #111111;
   --crate-display: 'Anton', 'Arial Narrow', 'Poppins', sans-serif;
   --crate-mono: 'Courier Prime', 'Courier New', monospace;
-  /* Neutral hairline for boxes that hold an orange button: kraft next to
-     the APGO orange looked muddy. */
-  --crate-line: rgba(243, 235, 220, 0.16);
   --crate-gutter: 16px;
-  --crate-width: calc(100% - 2 * var(--crate-gutter));
+  --crate-max: 1200px;
+  --crate-width: min(calc(100% - 2 * var(--crate-gutter)), var(--crate-max));
   --crate-space: 34px;
   background-color: var(--crate-floor);
 }
 
-/* From tablet up the content takes two thirds of the screen, the same
-   share as the Golden Bull page. */
 @media screen and (min-width: 750px) {
   body.apgo-clearance-sale-page {
-    --crate-width: 67%;
+    --crate-gutter: 32px;
     --crate-space: 64px;
   }
 }
 
 @media screen and (min-width: 1200px) {
   body.apgo-clearance-sale-page {
-    --crate-space: 88px;
+    --crate-gutter: 40px;
+    --crate-space: 96px;
   }
 }
 
@@ -378,11 +375,6 @@ body.apgo-clearance-sale-page .apgo-event-banner--crate_simple .apgo-event-banne
 }
 
 @media screen and (min-width: 750px) {
-  /* Follows the banner's own "desktop width" setting (67% by default). */
-  body.apgo-clearance-sale-page .apgo-event-banner__frame {
-    width: var(--apgo-event-banner-desktop-width, 67%);
-  }
-
   body.apgo-clearance-sale-page .apgo-event-banner--crate {
     padding-block: 24px 56px;
   }
@@ -519,12 +511,6 @@ body.apgo-clearance-sale-page .apgo-crate-intro__sign {
   font-family: var(--crate-mono) !important;
 }
 
-/* The illustration draws its own stamp in the empty space between the
-   boxes and the hand truck; the HTML stamp is only used over a photo. */
-body.apgo-clearance-sale-page .apgo-crate-intro__svg-stamp {
-  font-family: var(--crate-display) !important;
-}
-
 body.apgo-clearance-sale-page .apgo-crate-intro__photo {
   display: block;
   width: 100%;
@@ -618,7 +604,7 @@ body.apgo-clearance-sale-page .apgo-crate-intro__tag-text {
       'copy art'
       'tags art';
     align-items: end;
-    gap: 28px 48px;
+    gap: 28px 64px;
   }
 
   body.apgo-clearance-sale-page .apgo-crate-intro__copy {
@@ -631,9 +617,8 @@ body.apgo-clearance-sale-page .apgo-crate-intro__tag-text {
     letter-spacing: 2px;
   }
 
-  /* Sized to the two-thirds column so EVERYTHING stays on one line. */
   body.apgo-clearance-sale-page .apgo-crate-intro__title {
-    font-size: clamp(56px, 6.2vw, 96px);
+    font-size: clamp(80px, 7.3vw, 104px);
     line-height: 0.92;
     letter-spacing: 1px;
   }
@@ -660,13 +645,13 @@ body.apgo-clearance-sale-page .apgo-crate-intro__tag-text {
   }
 
   body.apgo-clearance-sale-page .apgo-crate-intro__stamp {
-    top: 20px;
-    right: 20px;
+    top: 28%;
+    right: 7%;
     padding: 6px 14px;
     border-width: 3px;
-    font-size: 22px;
+    font-size: 24px;
     letter-spacing: 3px;
-    transform: rotate(8deg);
+    transform: rotate(9deg);
   }
 
   body.apgo-clearance-sale-page .apgo-crate-intro__tags {
@@ -741,9 +726,9 @@ body.apgo-clearance-sale-page .apgo-crate-countdown__tile {
   justify-content: center;
   gap: 2px;
   height: 76px;
-  background: var(--crate-paper);
+  background: var(--crate-kraft);
   box-shadow:
-    inset 0 -38px 0 rgba(0, 0, 0, 0.05),
+    inset 0 -38px 0 rgba(0, 0, 0, 0.08),
     0 4px 10px rgba(0, 0, 0, 0.35);
   color: var(--crate-paper-ink);
 }
@@ -787,15 +772,17 @@ body.apgo-clearance-sale-page .apgo-crate-countdown__note {
   }
 
   body.apgo-clearance-sale-page .apgo-crate-countdown__tiles {
+    grid-template-columns: repeat(4, 132px);
     gap: 16px;
-    max-width: 576px;
+    width: auto;
+    max-width: none;
   }
 
   body.apgo-clearance-sale-page .apgo-crate-countdown__tile {
     gap: 4px;
     height: 120px;
     box-shadow:
-      inset 0 -60px 0 rgba(0, 0, 0, 0.05),
+      inset 0 -60px 0 rgba(0, 0, 0, 0.08),
       0 6px 14px rgba(0, 0, 0, 0.4);
   }
 
@@ -891,11 +878,11 @@ body.apgo-clearance-sale-page .apgo-crate-zone__inner > :not(.apgo-crate-label) 
     content: attr(data-lot);
     position: absolute;
     top: -40px;
-    right: calc(16.5% - 20px);
+    right: max(8px, calc((100% - var(--crate-max)) / 2 - 20px));
     z-index: 0;
     color: transparent;
     font-family: var(--crate-display);
-    font-size: clamp(160px, 15vw, 220px);
+    font-size: 220px;
     font-weight: 400;
     line-height: 1;
     -webkit-text-stroke: 1.5px rgba(217, 179, 124, 0.14);
@@ -921,7 +908,7 @@ body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__o
   margin: 0;
   padding: 0;
   overflow: visible;
-  border: 1px solid var(--crate-line);
+  border: 2px solid var(--crate-kraft);
   border-radius: 0;
   background: var(--crate-card);
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
@@ -966,7 +953,7 @@ body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__a
   gap: 0;
   margin: 0;
   padding: 0;
-  border-top: 1px solid var(--crate-line);
+  border-top: 2px solid var(--crate-kraft);
   background: transparent;
 }
 
@@ -993,7 +980,7 @@ body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__b
 }
 
 body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__button--add {
-  border-right: 1px solid var(--crate-line);
+  border-right: 2px solid var(--crate-kraft);
   background: var(--crate-card);
   color: var(--crate-ink);
 }
@@ -1034,6 +1021,7 @@ body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__b
   }
 
   body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__offer {
+    border-width: 3px;
     box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
   }
 
@@ -1044,9 +1032,17 @@ body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__b
     margin-left: -70px;
   }
 
+  body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__actions {
+    border-top-width: 3px;
+  }
+
   body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__button {
     min-height: 64px;
     font-size: 15px;
+  }
+
+  body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__button--add {
+    border-right-width: 3px;
   }
 }
 
@@ -1072,12 +1068,18 @@ body.apgo-clearance-sale-page .apgo-crate-zone__head > .apgo-crate-label {
   min-width: 0;
 }
 
-body.apgo-clearance-sale-page .apgo-crate-zone__view-all {
-  display: inline-flex;
+body.apgo-clearance-sale-page .apgo-crate-zone__tools {
+  display: flex;
   flex: 0 0 auto;
   align-items: center;
-  gap: 6px;
+  gap: 20px;
   margin-left: auto;
+}
+
+body.apgo-clearance-sale-page .apgo-crate-zone__view-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   color: var(--crate-orange);
   font-size: 13px;
   font-weight: 600;
@@ -1090,103 +1092,37 @@ body.apgo-clearance-sale-page .apgo-crate-zone__view-all:hover {
   color: var(--crate-orange-hover);
 }
 
-body.apgo-clearance-sale-page .apgo-crate-zone__banner {
-  box-sizing: border-box;
-  width: var(--crate-width);
-  margin-inline: auto;
-  border: 1px solid var(--crate-line);
-  line-height: 0;
-}
-
-body.apgo-clearance-sale-page .apgo-crate-zone__banner-img {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-/* Phones: the row runs to the screen edge so the next card peeks in, and
-   it swipes. The top padding leaves room for the cards' tape strips. */
-body.apgo-clearance-sale-page .apgo-crate-zone__rail {
-  --crate-slot: clamp(146px, 40vw, 208px);
-  --crate-track-top: 10px;
-  position: relative;
-}
-
-body.apgo-clearance-sale-page .apgo-crate-zone__track {
-  display: flex;
-  gap: 12px;
-  padding: var(--crate-track-top) var(--crate-gutter) 4px;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scroll-behavior: smooth;
-  scroll-padding-inline: var(--crate-gutter);
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-}
-
-body.apgo-clearance-sale-page .apgo-crate-zone__track::-webkit-scrollbar {
+body.apgo-clearance-sale-page .apgo-crate-zone__arrows {
   display: none;
+  gap: 8px;
 }
 
-/* Mouse drag (assets/apgo-clearance-page.js). */
-body.apgo-clearance-sale-page .apgo-crate-zone__track.is-dragging {
-  cursor: grabbing;
-  scroll-behavior: auto;
-  scroll-snap-type: none;
-  user-select: none;
-}
-
-body.apgo-clearance-sale-page .apgo-crate-zone__track a,
-body.apgo-clearance-sale-page .apgo-crate-zone__track img {
-  -webkit-user-drag: none;
-}
-
-body.apgo-clearance-sale-page .apgo-crate-zone__slot {
-  display: flex;
-  flex: 0 0 var(--crate-slot);
-  min-width: 0;
-  scroll-snap-align: start;
-}
-
-/* Arrow buttons on the row's two edges, level with the card photos. */
 body.apgo-clearance-sale-page .apgo-crate-zone__arrow {
-  position: absolute;
-  top: calc(var(--crate-track-top) + var(--crate-slot) / 2 - 24px);
-  z-index: 5;
-  display: none;
+  display: grid;
   place-items: center;
   box-sizing: border-box;
   width: 48px;
   height: 48px;
   margin: 0;
   padding: 0;
-  border: 0;
+  border: 2px solid var(--crate-kraft);
   border-radius: 0;
-  background: var(--crate-paper);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
+  background: var(--crate-kraft);
   color: var(--crate-paper-ink);
   cursor: pointer;
-  transition: background-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
-}
-
-body.apgo-clearance-sale-page .apgo-crate-zone__arrow--previous {
-  left: -24px;
-}
-
-body.apgo-clearance-sale-page .apgo-crate-zone__arrow--next {
-  right: -24px;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
 body.apgo-clearance-sale-page .apgo-crate-zone__arrow:hover:not(:disabled) {
-  background: var(--crate-orange);
-  color: var(--crate-cta-ink);
+  border-color: var(--crate-tape);
+  background: var(--crate-tape);
 }
 
-/* At either end the arrow that can't move fades out. */
 body.apgo-clearance-sale-page .apgo-crate-zone__arrow:disabled {
-  opacity: 0;
-  pointer-events: none;
+  border-color: var(--crate-kraft-line);
+  background: transparent;
+  color: var(--crate-kraft-muted);
+  cursor: default;
 }
 
 body.apgo-clearance-sale-page .apgo-crate-zone__arrow[hidden] {
@@ -1203,28 +1139,45 @@ body.apgo-clearance-sale-page .apgo-crate-zone__arrow svg {
   height: 20px;
 }
 
-/* Tablet and up: the row stays inside the two-thirds column and scrolls
-   there, with the arrows; a mouse can also drag it. */
-@media screen and (min-width: 750px) {
-  body.apgo-clearance-sale-page .apgo-crate-zone__rail {
-    width: var(--crate-width);
-    margin-inline: auto;
-  }
-
-  body.apgo-clearance-sale-page .apgo-crate-zone__track {
-    padding-inline: 0;
-    scroll-padding-inline: 0;
-  }
-
-  body.apgo-clearance-sale-page .apgo-crate-zone__arrow {
-    display: grid;
-  }
+body.apgo-clearance-sale-page .apgo-crate-zone__banner {
+  box-sizing: border-box;
+  width: var(--crate-width);
+  margin-inline: auto;
+  border: 2px solid var(--crate-kraft);
+  line-height: 0;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  body.apgo-clearance-sale-page .apgo-crate-zone__track {
-    cursor: grab;
-  }
+body.apgo-clearance-sale-page .apgo-crate-zone__banner-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* The row starts on the page edge of the content and runs off the right
+   side of the screen; the top padding leaves room for the tape strips. */
+body.apgo-clearance-sale-page .apgo-crate-zone__track {
+  --crate-track-inset: max(var(--crate-gutter), calc((100% - var(--crate-max)) / 2));
+  display: flex;
+  gap: 12px;
+  padding: 10px var(--crate-track-inset) 4px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-behavior: smooth;
+  scroll-padding-inline: var(--crate-track-inset);
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+body.apgo-clearance-sale-page .apgo-crate-zone__track::-webkit-scrollbar {
+  display: none;
+}
+
+body.apgo-clearance-sale-page .apgo-crate-zone__slot {
+  display: flex;
+  flex: 0 0 clamp(146px, 40vw, 208px);
+  min-width: 0;
+  scroll-snap-align: start;
 }
 
 @media screen and (min-width: 990px) {
@@ -1240,13 +1193,21 @@ body.apgo-clearance-sale-page .apgo-crate-zone__arrow svg {
     font-size: 14px;
   }
 
-  body.apgo-clearance-sale-page .apgo-crate-zone__rail {
-    --crate-slot: 236px;
-    --crate-track-top: 16px;
+  body.apgo-clearance-sale-page .apgo-crate-zone__arrows {
+    display: flex;
+  }
+
+  body.apgo-clearance-sale-page .apgo-crate-zone__banner {
+    border-width: 3px;
   }
 
   body.apgo-clearance-sale-page .apgo-crate-zone__track {
     gap: 22px;
+    padding-top: 16px;
+  }
+
+  body.apgo-clearance-sale-page .apgo-crate-zone__slot {
+    flex-basis: 236px;
   }
 }
 
@@ -1483,14 +1444,13 @@ body.apgo-clearance-sale-page .apgo-event-listing-card__btn--add {
   flex: 0 0 44px;
   width: 44px;
   padding: 0;
-  border: 1px solid rgba(243, 235, 220, 0.32);
+  border: 1px solid var(--crate-kraft);
   background: transparent;
   color: var(--crate-ink);
 }
 
 body.apgo-clearance-sale-page .apgo-event-listing-card__btn--add:hover:not(:disabled) {
-  border-color: var(--crate-ink);
-  background: rgba(243, 235, 220, 0.08);
+  background: rgba(201, 160, 107, 0.16);
 }
 
 body.apgo-clearance-sale-page .apgo-event-listing-card__btn--add svg {
@@ -1608,7 +1568,6 @@ body.apgo-clearance-sale-page .apgo-crate-picks {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
-  container-type: inline-size;
 }
 
 body.apgo-clearance-sale-page .apgo-crate-pick {
@@ -1616,7 +1575,7 @@ body.apgo-clearance-sale-page .apgo-crate-pick {
   display: flex;
   flex-direction: column;
   min-width: 0;
-  border: 1px solid var(--crate-line);
+  border: 2px solid var(--crate-kraft);
   background: var(--crate-card);
   color: var(--crate-ink);
 }
@@ -1750,6 +1709,7 @@ body.apgo-clearance-sale-page .apgo-crate-pick__cta--sold-out {
   }
 
   body.apgo-clearance-sale-page .apgo-crate-pick {
+    border-width: 3px;
     box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
   }
 
@@ -1802,12 +1762,11 @@ body.apgo-clearance-sale-page .apgo-crate-pick__cta--sold-out {
   }
 }
 
-/* Square or portrait picks sit beside their details once each card is
-   wide enough (the pair of cards measures 1000px or more). */
-@container (min-width: 1000px) {
+/* Square or portrait picks sit beside their details once there's room. */
+@media screen and (min-width: 1200px) {
   body.apgo-clearance-sale-page .apgo-crate-pick--side {
     display: grid;
-    grid-template-columns: minmax(0, 45%) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
     align-items: stretch;
   }
 
