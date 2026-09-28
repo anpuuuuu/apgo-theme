@@ -19,7 +19,6 @@
   @param {boolean} [crate] - Clearance page look: shipping-label heading, content in the
                              page container, no Aurora stock counter.
   @param {string} [lot] - Clearance page only: two-digit lot number, blank when there is no heading.
-  @param {string} [box] - Clearance page only: two-digit box number printed on the handling strip.
 {% enddoc %}
 
 {% if banner_image != blank and product != blank %}
@@ -125,28 +124,6 @@
             alt: product.title
         }}
       </a>
-      {%- if crate -%}
-        {%- comment -%} Clearance page: cardboard corner guards and a strip of box handling marks. {%- endcomment -%}
-        <span class="apgo-crate-guards" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
-        <div class="apgo-crate-handling" aria-hidden="true">
-          <span class="apgo-crate-handling__mark">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M8 20V6M4 10l4-4 4 4M16 20V6M12 10l4-4 4 4"/></svg>
-            This side up
-          </span>
-          <span class="apgo-crate-handling__mark apgo-crate-handling__mark--extra">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M3 12a9 9 0 0 1 18 0z"/><path d="M12 12v6.5a2 2 0 0 1-4 0M12 3v0.5"/></svg>
-            Keep dry
-          </span>
-          <span class="apgo-crate-handling__mark apgo-crate-handling__mark--extra">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M7 3h10l-1.2 6.4a3.9 3.9 0 0 1-7.6 0z"/><path d="M12 13.4V20M8.5 21h7M11.5 3.5l1.3 2.4-1.2 1.4 1 1.5"/></svg>
-            Fragile
-          </span>
-          <span class="apgo-crate-handling__code">
-            <span class="apgo-crate-handling__barcode"></span>
-            <span class="apgo-crate-handling__stamp"><span class="apgo-crate-handling__stamp-word">Clearance · </span>Box {{ box | default: '01' }}</span>
-          </span>
-        </div>
-      {%- endif -%}
       <div class="apgo-event-linked-banner-zone__actions">
         {%- if single_cta_label != blank -%}
           {%- comment -%}

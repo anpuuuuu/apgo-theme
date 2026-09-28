@@ -28,7 +28,6 @@
     assign apgo_crate = true
   endif
   assign apgo_lot_count = 0
-  assign apgo_box_count = 0
 %}
 
 <div
@@ -181,13 +180,10 @@
                   assign apgo_lot_count = apgo_lot_count | plus: 1
                   assign apgo_lot = apgo_lot_count | prepend: '0' | slice: -2, 2
                 endif
-                assign apgo_box_count = apgo_box_count | plus: 1
-                assign apgo_box = apgo_box_count | prepend: '0' | slice: -2, 2
               -%}
               {% render 'apgo-event-linked-banner-zone',
                 crate: apgo_crate,
                 lot: apgo_lot,
-                box: apgo_box,
                 heading: block.settings.heading,
                 message: block.settings.message,
                 show_counter: block.settings.show_counter,
