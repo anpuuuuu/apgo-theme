@@ -81,16 +81,13 @@
           assign sticky_remaining_minor = sticky_threshold_minor | minus: sticky_fs_basis
         endif
       endif
-      # Flat shipping estimate — must mirror sections/cart-totals.liquid
-      assign sticky_flat_my_minor = 290
-      assign sticky_flat_sg_minor = 290
+      # Shipping estimate by cart weight — must mirror sections/cart-totals.liquid
       assign sticky_shipping_estimate_minor = 0
       if sticky_threshold_minor > 0 and sticky_free_shipping_unlocked == false
-        if localization.country.iso_code == 'MY'
-          assign sticky_shipping_estimate_minor = sticky_flat_my_minor
-        elsif localization.country.iso_code == 'SG'
-          assign sticky_shipping_estimate_minor = sticky_flat_sg_minor
-        endif
+        capture sticky_shipping_estimate_raw
+          render 'apgo-shipping-estimate', market: localization.country.iso_code, weight: cart.total_weight
+        endcapture
+        assign sticky_shipping_estimate_minor = sticky_shipping_estimate_raw | plus: 0
       endif
       assign sticky_estimated_total_minor = cart.total_price | plus: sticky_shipping_estimate_minor
 
@@ -919,17 +916,20 @@
         }
       }
 
-      // Estimated total = paying total + flat shipping (mirrors cart-totals).
-      // Falls back to local hardcoded rates if cart-totals JS hasn't loaded yet.
+      // Estimated total = paying total + shipping by cart weight (mirrors cart-totals).
+      // Falls back to the same weight tiers here if cart-totals JS hasn't loaded yet.
       var shipMinor = 0;
       if (typeof window.apgoEstimatedShippingMinor === 'function') {
         shipMinor = window.apgoEstimatedShippingMinor(cart) || 0;
       } else if (freeShipTagTitle) {
         shipMinor = 0;
-      } else if (ccy === 'MYR') {
-        shipMinor = basis >= 15500 ? 0 : 290;
-      } else if (ccy === 'SGD') {
-        shipMinor = basis >= 7000 ? 0 : 290;
+      } else if ((ccy === 'MYR' && basis < 15500) || (ccy === 'SGD' && basis < 7000)) {
+        var shipTiers = (window.APGO_SHIPPING_TIERS || {% render 'apgo-shipping-estimate', tiers_json: true %})[ccy].split(',');
+        for (var shipTierIdx = 0; shipTierIdx < shipTiers.length; shipTierIdx++) {
+          var shipTier = shipTiers[shipTierIdx].split(':');
+          shipMinor = Number(shipTier[1]);
+          if (Number(cart.total_weight || 0) < Number(shipTier[0])) break;
+        }
       }
       var estimatedTotal = Number(cart.total_price || 0) + shipMinor;
 

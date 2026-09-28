@@ -3,9 +3,13 @@
   Cart-totals is on every cart page in this theme, so it carries the
   free-shipping tag lookup so sibling cart sections (cart-cta sticky
   bar, cart-conditional-offer) can always read the global even when
-  the optional cart-free-shipping-goal section isn't mounted.
+  the optional cart-free-shipping-goal section isn't mounted. Same for
+  the shipping weight tiers the cart scripts price the estimate with.
 {%- endcomment -%}
 {%- render 'apgo-cart-free-shipping-lookup' -%}
+<script data-apgo-shipping-tiers>
+  window.APGO_SHIPPING_TIERS = {% render 'apgo-shipping-estimate', tiers_json: true %};
+</script>
 <div
   id="CartTotals-{{ section.id }}"
   class="cart-totals cart-totals--standalone color-{{ section.settings.color_scheme }}"
@@ -60,16 +64,13 @@
         endif
       endif
 
-      # Mobile summary — flat shipping estimate (must mirror sections/cart-cta.liquid)
-      assign apgo_flat_my_minor = section.settings.flat_shipping_my_cents | default: 290
-      assign apgo_flat_sg_minor = section.settings.flat_shipping_sg_cents | default: 290
+      # Mobile summary — shipping estimate by cart weight (must mirror sections/cart-cta.liquid)
       assign apgo_shipping_estimate_minor = 0
       if market_threshold_minor > 0 and free_shipping_unlocked == false
-        if is_my_market
-          assign apgo_shipping_estimate_minor = apgo_flat_my_minor
-        elsif is_sg_market
-          assign apgo_shipping_estimate_minor = apgo_flat_sg_minor
-        endif
+        capture apgo_shipping_estimate_raw
+          render 'apgo-shipping-estimate', market: localization.country.iso_code, weight: cart.total_weight
+        endcapture
+        assign apgo_shipping_estimate_minor = apgo_shipping_estimate_raw | plus: 0
       endif
 
       assign apgo_estimated_total_minor = cart.total_price | plus: apgo_shipping_estimate_minor
@@ -919,7 +920,21 @@
       }
     }
 
-    // Flat shipping estimate — must mirror Liquid SSR + sections/cart-cta.liquid
+    // Weight tier price, same tiers as the Liquid estimate
+    // (snippets/apgo-shipping-estimate.liquid → window.APGO_SHIPPING_TIERS).
+    function tierPriceMinor(ccy, grams) {
+      const tiers = (window.APGO_SHIPPING_TIERS || {})[ccy] || '';
+      let price = 0;
+      for (const tier of tiers.split(',')) {
+        if (!tier) continue;
+        const [below, minor] = tier.split(':').map(Number);
+        price = minor;
+        if (grams < below) break;
+      }
+      return price;
+    }
+
+    // Shipping estimate by cart weight — must mirror Liquid SSR + sections/cart-cta.liquid
     function shippingEstimateMinor(cart) {
       if (!cart) return 0;
       // Tag-unlock: any line in cart whose product_id matches the
@@ -934,8 +949,9 @@
       const basis = (typeof window.apgoCartFreeShippingBasis === 'function')
         ? window.apgoCartFreeShippingBasis(cart)
         : Number(cart.total_price || 0);
-      if (ccy === 'MYR') return basis >= 15500 ? 0 : 290;
-      if (ccy === 'SGD') return basis >= 7000 ? 0 : 290;
+      const grams = Number(cart.total_weight || 0);
+      if (ccy === 'MYR') return basis >= 15500 ? 0 : tierPriceMinor(ccy, grams);
+      if (ccy === 'SGD') return basis >= 7000 ? 0 : tierPriceMinor(ccy, grams);
       return 0;
     }
     // Exposed so cart-cta sticky bar can compute the same estimated total.
@@ -1067,9 +1083,7 @@
       { "type": "checkbox", "id": "show_installments", "label": "Show installments (uses theme settings)", "default": true },
       { "type": "color_scheme", "id": "color_scheme", "label": "Color scheme", "default": "scheme-3" },
       { "type": "header", "content": "手機運費估算 (Shipping estimate)" },
-      { "type": "paragraph", "content": "用於手機購物車明細的 Shipping 行；達免運門檻顯示 FREE，否則顯示此固定金額。Sticky 結帳列上的 Estimated total 也會加上此運費。" },
-      { "type": "number", "id": "flat_shipping_my_cents", "label": "MY 固定運費 (cents — 290 = RM 2.90)", "default": 290 },
-      { "type": "number", "id": "flat_shipping_sg_cents", "label": "SG 固定運費 (cents — 290 = S$ 2.90)", "default": 290 }
+      { "type": "paragraph", "content": "用於手機購物車明細的 Shipping 行與 Sticky 結帳列的 Estimated total：依購物車重量套用後台運費表（西馬、新加坡），達免運門檻顯示 FREE。運費表在 snippets/apgo-shipping-estimate.liquid，後台運費改了要一起改。" }
     ],
     "blocks": [],
     "presets": [{ "name": "Cart Totals (Standalone)"}]

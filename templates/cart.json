@@ -543,9 +543,7 @@
         "show_note_or_code": true,
         "show_order_breakdown": true,
         "show_installments": true,
-        "color_scheme": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26",
-        "flat_shipping_my_cents": 690,
-        "flat_shipping_sg_cents": 690
+        "color_scheme": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26"
       }
     },
     "custom_liquid_QNhCUK": {
