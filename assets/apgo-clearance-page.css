@@ -32,13 +32,16 @@ body.apgo-clearance-sale-page {
   --crate-card: #221a12;
   --crate-card-line: #3b2e20;
   --crate-plate: #2c2218;
-  /* One accent: the clearance-stamp red. --crate-accent is for text and
-     links on the dark floor, --crate-cta fills buttons. */
+  /* Accent = the clearance-stamp red: --crate-accent for text and links
+     on the dark floor, --crate-red-fill for the countdown's seconds tile
+     and arrow hover. Buttons are paper with ink text (--crate-cta). */
   --crate-accent: #f0655a;
   --crate-accent-hover: #ff8a7f;
-  --crate-cta: #b8322a;
-  --crate-cta-hover: #cc3c30;
-  --crate-cta-ink: #fff8ee;
+  --crate-red-fill: #b8322a;
+  --crate-red-fill-ink: #fff8ee;
+  --crate-cta: #f3ebdc;
+  --crate-cta-hover: #ffffff;
+  --crate-cta-ink: #1b1712;
   --crate-display: 'Anton', 'Arial Narrow', 'Poppins', sans-serif;
   --crate-mono: 'Courier Prime', 'Courier New', monospace;
   /* Neutral hairline for boxes that hold an orange button: kraft next to
@@ -381,7 +384,7 @@ body.apgo-clearance-sale-page .apgo-event-banner__crate-end {
 
 body.apgo-clearance-sale-page .apgo-event-banner__crate-mid,
 body.apgo-clearance-sale-page .apgo-event-banner__crate-mark--extra,
-body.apgo-clearance-sale-page .apgo-event-banner__crate-end .apgo-crate-handling__barcode {
+body.apgo-clearance-sale-page .apgo-event-banner__crate-end .apgo-crate-barcode {
   display: none;
 }
 
@@ -450,7 +453,7 @@ body.apgo-clearance-sale-page .apgo-event-banner--crate_simple .apgo-event-banne
     display: inline-flex;
   }
 
-  body.apgo-clearance-sale-page .apgo-event-banner__crate-end .apgo-crate-handling__barcode {
+  body.apgo-clearance-sale-page .apgo-event-banner__crate-end .apgo-crate-barcode {
     display: block;
     width: 56px;
     height: 16px;
@@ -777,8 +780,8 @@ body.apgo-clearance-sale-page .apgo-crate-countdown__tile {
 }
 
 body.apgo-clearance-sale-page .apgo-crate-countdown__tile--hot {
-  background: var(--crate-cta);
-  color: var(--crate-cta-ink);
+  background: var(--crate-red-fill);
+  color: var(--crate-red-fill-ink);
 }
 
 body.apgo-clearance-sale-page .apgo-crate-countdown__num {
@@ -957,18 +960,42 @@ body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__o
   line-height: normal;
 }
 
-body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__offer::before {
-  content: '';
+/* Packing tape across the top of each promo box, printed with its number
+   (markup: .apgo-crate-boxtape in apgo-event-linked-banner-zone). */
+body.apgo-clearance-sale-page .apgo-crate-boxtape {
   position: absolute;
-  top: -9px;
+  top: -11px;
   left: 50%;
-  z-index: 2;
-  width: 80px;
-  height: 18px;
-  margin-left: -40px;
-  background: var(--crate-tape-strip);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 14px;
+  background-color: var(--crate-tape);
+  background-image: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.07) 0 2px, transparent 2px 7px);
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -1px 0 rgba(90, 61, 28, 0.25);
+  color: var(--crate-tape-ink);
+  white-space: nowrap;
+  transform: translateX(-50%) rotate(-1.5deg);
   pointer-events: none;
+}
+
+body.apgo-clearance-sale-page .apgo-crate-boxtape span {
+  font-family: var(--crate-display) !important;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 1.5px;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+body.apgo-clearance-sale-page .apgo-crate-boxtape svg {
+  flex: 0 0 auto;
+  width: 12px;
+  height: 12px;
 }
 
 body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__link {
@@ -1048,7 +1075,7 @@ body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__b
 }
 
 body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__button:focus-visible {
-  outline: 2px solid var(--crate-ink);
+  outline: 2px solid var(--crate-accent);
   outline-offset: -5px;
 }
 
@@ -1066,11 +1093,20 @@ body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__b
     box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
   }
 
-  body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__offer::before {
-    top: -12px;
-    width: 140px;
-    height: 24px;
-    margin-left: -70px;
+  body.apgo-clearance-sale-page .apgo-crate-boxtape {
+    top: -13px;
+    gap: 8px;
+    padding: 5px 20px;
+  }
+
+  body.apgo-clearance-sale-page .apgo-crate-boxtape span {
+    font-size: 13px;
+    letter-spacing: 2px;
+  }
+
+  body.apgo-clearance-sale-page .apgo-crate-boxtape svg {
+    width: 14px;
+    height: 14px;
   }
 
   body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__button {
@@ -1079,10 +1115,9 @@ body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__b
   }
 }
 
-/* ── Box details: corner guards + handling strip ───────────────────
-   Cardboard corner protectors on the banner boxes, and on each promo box
-   a strip of handling marks with a barcode and a red box-number stamp.
-   All decoration sits on the frame, never over the banner artwork. */
+/* ── Box details: corner guards + barcode ─────────────────────────────
+   Cardboard corner protectors on the banner boxes. All decoration sits on
+   the frame, never over the banner artwork. */
 body.apgo-clearance-sale-page .apgo-crate-guards {
   position: absolute;
   inset: -5px;
@@ -1131,50 +1166,7 @@ body.apgo-clearance-sale-page .apgo-crate-guards--bottom i:nth-child(-n + 2) {
   display: none;
 }
 
-body.apgo-clearance-sale-page .apgo-crate-handling {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 9px 12px;
-  border-top: 1px solid var(--crate-line);
-  background-color: #1e1711;
-  background-image: repeating-linear-gradient(90deg, rgba(255, 228, 186, 0.025) 0 2px, transparent 2px 6px);
-  color: var(--crate-tape);
-  line-height: 1.2;
-}
-
-body.apgo-clearance-sale-page .apgo-crate-handling__mark {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-family: var(--crate-mono) !important;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-body.apgo-clearance-sale-page .apgo-crate-handling__mark svg {
-  flex: 0 0 auto;
-  width: 14px;
-  height: 14px;
-}
-
-body.apgo-clearance-sale-page .apgo-crate-handling__mark--extra,
-body.apgo-clearance-sale-page .apgo-crate-handling__barcode,
-body.apgo-clearance-sale-page .apgo-crate-handling__stamp-word {
-  display: none;
-}
-
-body.apgo-clearance-sale-page .apgo-crate-handling__code {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  margin-left: auto;
-}
-
-body.apgo-clearance-sale-page .apgo-crate-handling__barcode {
+body.apgo-clearance-sale-page .apgo-crate-barcode {
   width: 64px;
   height: 18px;
   background: repeating-linear-gradient(
@@ -1187,54 +1179,6 @@ body.apgo-clearance-sale-page .apgo-crate-handling__barcode {
     transparent 11px 13px
   );
   opacity: 0.8;
-}
-
-body.apgo-clearance-sale-page .apgo-crate-handling__stamp,
-body.apgo-clearance-sale-page .apgo-crate-handling__stamp * {
-  font-family: var(--crate-display) !important;
-  font-weight: 400;
-}
-
-body.apgo-clearance-sale-page .apgo-crate-handling__stamp {
-  padding: 2px 7px;
-  border: 2px solid var(--crate-accent);
-  color: var(--crate-accent);
-  font-size: 12px;
-  letter-spacing: 1.5px;
-  line-height: 1.2;
-  text-transform: uppercase;
-  white-space: nowrap;
-  transform: rotate(-4deg);
-}
-
-@media screen and (min-width: 750px) {
-  body.apgo-clearance-sale-page .apgo-crate-handling {
-    gap: 26px;
-    padding: 11px 18px;
-  }
-
-  body.apgo-clearance-sale-page .apgo-crate-handling__mark {
-    font-size: 11px;
-    letter-spacing: 1.5px;
-  }
-
-  body.apgo-clearance-sale-page .apgo-crate-handling__mark--extra {
-    display: inline-flex;
-  }
-
-  body.apgo-clearance-sale-page .apgo-crate-handling__barcode {
-    display: block;
-  }
-
-  body.apgo-clearance-sale-page .apgo-crate-handling__stamp-word {
-    display: inline;
-  }
-
-  body.apgo-clearance-sale-page .apgo-crate-handling__stamp {
-    padding: 3px 10px;
-    font-size: 14px;
-    letter-spacing: 2px;
-  }
 }
 
 @media screen and (min-width: 990px) {
@@ -1395,8 +1339,8 @@ body.apgo-clearance-sale-page .apgo-crate-zone__arrow--next {
 }
 
 body.apgo-clearance-sale-page .apgo-crate-zone__arrow:hover:not(:disabled) {
-  background: var(--crate-cta);
-  color: var(--crate-cta-ink);
+  background: var(--crate-red-fill);
+  color: var(--crate-red-fill-ink);
 }
 
 /* At either end the arrow that can't move fades out. */
@@ -1734,7 +1678,7 @@ body.apgo-clearance-sale-page .apgo-event-listing-card__btn--sold-out:hover {
 }
 
 body.apgo-clearance-sale-page .apgo-event-listing-card__btn:focus-visible {
-  outline: 2px solid var(--crate-ink);
+  outline: 2px solid var(--crate-accent);
   outline-offset: 2px;
 }
 
@@ -1940,7 +1884,7 @@ body.apgo-clearance-sale-page a.apgo-crate-pick__cta:hover {
 
 body.apgo-clearance-sale-page .apgo-crate-pick__cta:focus-visible,
 body.apgo-clearance-sale-page .apgo-crate-pick__title a:focus-visible {
-  outline: 2px solid var(--crate-ink);
+  outline: 2px solid var(--crate-accent);
   outline-offset: 2px;
 }
 
@@ -2283,7 +2227,7 @@ body.apgo-clearance-sale-page .apgo-event-gift-modal .apgo-gift-card.is-selected
 }
 
 body.apgo-clearance-sale-page .apgo-event-gift-modal .apgo-gift-card.is-selected {
-  border-color: var(--crate-cta);
+  border-color: var(--crate-accent);
   background: rgba(184, 50, 42, 0.12);
 }
 
