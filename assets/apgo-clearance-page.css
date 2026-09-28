@@ -34,14 +34,14 @@ body.apgo-clearance-sale-page {
   --crate-plate: #2c2218;
   /* Accent = the clearance-stamp red: --crate-accent for text and links
      on the dark floor, --crate-red-fill for the countdown's seconds tile
-     and arrow hover. Buttons are kraft with ink text (--crate-cta). */
+     and arrow hover; --crate-cta fills the (compact) Buy now buttons. */
   --crate-accent: #f0655a;
   --crate-accent-hover: #ff8a7f;
   --crate-red-fill: #b8322a;
   --crate-red-fill-ink: #fff8ee;
-  --crate-cta: #c9a06b;
-  --crate-cta-hover: #d9b37c;
-  --crate-cta-ink: #1b1712;
+  --crate-cta: #b8322a;
+  --crate-cta-hover: #cc3c30;
+  --crate-cta-ink: #fff8ee;
   --crate-display: 'Anton', 'Arial Narrow', 'Poppins', sans-serif;
   --crate-mono: 'Courier Prime', 'Courier New', monospace;
   /* Neutral hairline for boxes that hold an orange button: kraft next to
@@ -1016,13 +1016,50 @@ body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-scroll-zone__banner-i
   border-radius: 0;
 }
 
+/* Offer bar under each promo banner, laid out like a product card: name
+   and hang-tag price, then a cart icon and a compact red Buy now (a
+   full-width red bar was too loud under the artwork). */
+body.apgo-clearance-sale-page .apgo-crate-offerbar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border-top: 1px solid var(--crate-line);
+  background: var(--crate-card);
+}
+
+body.apgo-clearance-sale-page .apgo-crate-offerbar__info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+body.apgo-clearance-sale-page .apgo-crate-offerbar__title {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  color: var(--crate-ink);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+body.apgo-clearance-sale-page .apgo-crate-offerbar__prices {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+}
+
 body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__actions {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0;
+  display: flex;
+  gap: 8px;
   margin: 0;
   padding: 0;
-  border-top: 1px solid var(--crate-line);
+  border: 0;
   background: transparent;
 }
 
@@ -1031,42 +1068,47 @@ body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__b
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  min-height: 52px;
+  min-height: 44px;
   margin: 0;
-  padding: 10px 12px;
+  padding: 0 16px;
   border: 0;
   border-radius: 0;
   box-shadow: none;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.02em;
   line-height: 1.2;
   text-align: center;
   text-decoration: none;
   text-transform: none;
   cursor: pointer;
-  transition: background-color 0.15s ease, color 0.15s ease;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
 }
 
 body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__button--add {
-  border-right: 1px solid var(--crate-line);
-  background: var(--crate-card);
+  flex: 0 0 44px;
+  width: 44px;
+  padding: 0;
+  border: 1px solid rgba(243, 235, 220, 0.32);
+  background: transparent;
   color: var(--crate-ink);
 }
 
+body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__button--add svg {
+  width: 18px;
+  height: 18px;
+}
+
 body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__button--add:hover:not(:disabled) {
-  background: var(--crate-plate);
+  border-color: var(--crate-ink);
+  background: rgba(243, 235, 220, 0.08);
 }
 
 body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__button--buy,
 body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__button--single {
+  flex: 1 1 auto;
   background: var(--crate-cta);
   color: var(--crate-cta-ink);
-  font-weight: 700;
-}
-
-body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__button--single {
-  grid-column: 1 / -1;
 }
 
 body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__button--buy:hover:not(:disabled),
@@ -1074,14 +1116,48 @@ body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__b
   background: var(--crate-cta-hover);
 }
 
+body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__button.is-busy {
+  opacity: 0.55;
+  cursor: progress;
+}
+
 body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__button:focus-visible {
-  outline: 2px solid var(--crate-accent);
-  outline-offset: -5px;
+  outline: 2px solid var(--crate-ink);
+  outline-offset: 2px;
 }
 
 body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__button:disabled {
   opacity: 0.45;
   cursor: not-allowed;
+}
+
+@media screen and (min-width: 750px) {
+  body.apgo-clearance-sale-page .apgo-crate-offerbar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 14px 18px;
+  }
+
+  body.apgo-clearance-sale-page .apgo-crate-offerbar__info {
+    flex: 1 1 auto;
+  }
+
+  body.apgo-clearance-sale-page .apgo-crate-offerbar__title {
+    font-size: 15px;
+  }
+
+  body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__actions {
+    flex: 0 0 auto;
+  }
+
+  body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__button--buy,
+  body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__button--single {
+    flex: 0 0 auto;
+    min-width: 180px;
+    padding: 0 28px;
+  }
 }
 
 @media screen and (min-width: 990px) {
@@ -1110,8 +1186,24 @@ body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__b
   }
 
   body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__button {
-    min-height: 64px;
-    font-size: 15px;
+    min-height: 48px;
+    font-size: 14px;
+  }
+
+  body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__button--add {
+    flex-basis: 48px;
+    width: 48px;
+  }
+
+  body.apgo-clearance-sale-page .apgo-crate-offerbar .apgo-crate-tag {
+    padding: 4px 10px 4px 18px;
+    background: radial-gradient(circle at 11px 50%, var(--crate-card) 0 2px, transparent 2.6px) var(--crate-paper);
+    font-size: 20px;
+    clip-path: polygon(10px 0, 100% 0, 100% 100%, 10px 100%, 0 50%);
+  }
+
+  body.apgo-clearance-sale-page .apgo-crate-offerbar .apgo-crate-was {
+    font-size: 13px;
   }
 }
 
@@ -1678,7 +1770,7 @@ body.apgo-clearance-sale-page .apgo-event-listing-card__btn--sold-out:hover {
 }
 
 body.apgo-clearance-sale-page .apgo-event-listing-card__btn:focus-visible {
-  outline: 2px solid var(--crate-accent);
+  outline: 2px solid var(--crate-ink);
   outline-offset: 2px;
 }
 
@@ -1884,7 +1976,7 @@ body.apgo-clearance-sale-page a.apgo-crate-pick__cta:hover {
 
 body.apgo-clearance-sale-page .apgo-crate-pick__cta:focus-visible,
 body.apgo-clearance-sale-page .apgo-crate-pick__title a:focus-visible {
-  outline: 2px solid var(--crate-accent);
+  outline: 2px solid var(--crate-ink);
   outline-offset: 2px;
 }
 

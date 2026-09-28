@@ -132,6 +132,24 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M8 20V6M4 10l4-4 4 4M16 20V6M12 10l4-4 4 4"/></svg>
           <span>This side up · Box {{ box | default: '01' }}</span>
         </span>
+        {%- comment -%}
+          Offer bar, laid out like a product card: name and hang-tag price on
+          the left, a cart icon and a compact Buy now on the right. Single-CTA
+          promos (bought through the product page's picker) show no price,
+          since the picker decides it.
+        {%- endcomment -%}
+        <div class="apgo-crate-offerbar">
+          <div class="apgo-crate-offerbar__info">
+            <p class="apgo-crate-offerbar__title">{{ product.title | escape }}</p>
+            {%- if single_cta_label == blank -%}
+              <div class="apgo-crate-offerbar__prices">
+                <span class="apgo-crate-tag">{{ action_variant.price | money | replace: ' MYR', '' | replace: 'MYR', '' | strip }}</span>
+                {%- if action_variant.compare_at_price > action_variant.price -%}
+                  <s class="apgo-crate-was">{{ action_variant.compare_at_price | money | replace: ' MYR', '' | replace: 'MYR', '' | strip }}</s>
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+          </div>
       {%- endif -%}
       <div class="apgo-event-linked-banner-zone__actions">
         {%- if single_cta_label != blank -%}
@@ -169,11 +187,13 @@
           aria-label="{{ 'actions.add_to_cart' | t }}: {{ product.title | escape }}"
           {% if apgo_zone_sold_out %}disabled{% endif %}
         >
-          {% if apgo_zone_sold_out %}
+          {%- if crate -%}
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 8h12l-1 12H7z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></svg>
+          {%- elsif apgo_zone_sold_out -%}
             {{ 'products.product.sold_out' | t }}
-          {% else %}
+          {%- else -%}
             {{ 'actions.add_to_cart' | t }}
-          {% endif %}
+          {%- endif -%}
         </button>
         <button
           type="button"
@@ -190,6 +210,9 @@
         </button>
         {%- endif -%}
       </div>
+      {%- if crate -%}
+        </div>
+      {%- endif -%}
     </div>
     {% if crate %}
       </div>
