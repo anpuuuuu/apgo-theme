@@ -2735,6 +2735,7 @@ body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page {
   --apgo-clear-line: rgba(255, 213, 0, 0.3);
   --apgo-clear-red: #ff5a4f;
   --apgo-clear-hazard: repeating-linear-gradient(-45deg, #ffd500 0 12px, #141414 12px 24px);
+  /* !important where used: the theme forces Poppins on body * with !important. */
   --apgo-clear-stencil: 'Saira Stencil One', 'Poppins', sans-serif;
 
   --apgo-award-gold-highlight: #ffe866;
@@ -2762,7 +2763,7 @@ body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page #Mai
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page #MainContent h1 {
-  font-family: var(--apgo-clear-stencil);
+  font-family: var(--apgo-clear-stencil) !important;
   font-weight: 400;
   letter-spacing: 0.04em;
   color: var(--apgo-clear-yellow);
@@ -2807,7 +2808,7 @@ body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apg
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-heading-text {
-  font-family: var(--apgo-clear-stencil);
+  font-family: var(--apgo-clear-stencil) !important;
   font-weight: 400;
   letter-spacing: 0.06em;
   animation: none;
@@ -2823,7 +2824,7 @@ body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apg
 body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-scroll-zone__heading,
 body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-gallery__heading,
 body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-gallery__region-heading {
-  font-family: var(--apgo-clear-stencil);
+  font-family: var(--apgo-clear-stencil) !important;
   font-weight: 400;
   letter-spacing: 0.08em;
 }
@@ -2967,7 +2968,7 @@ body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apg
 }
 
 body.apgo-special-event-page.apgo-golden-bull-page.apgo-clearance-sale-page .apgo-event-countdown__label {
-  font-family: var(--apgo-clear-stencil);
+  font-family: var(--apgo-clear-stencil) !important;
   font-weight: 400;
 }
 
