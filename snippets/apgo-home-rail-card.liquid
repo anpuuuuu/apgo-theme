@@ -32,9 +32,11 @@
     endfor
   endif
 
-  assign hp_image = hp_variant.featured_image
-  if hp_image == blank and product.featured_media != blank
-    assign hp_image = product.featured_media.preview_image
+  # Always the product's first image (the one set as main in admin), not
+  # the default variant's own photo (e.g. the Rose pouch on the detergent).
+  assign hp_image = product.featured_media.preview_image
+  if hp_image == blank
+    assign hp_image = hp_variant.featured_image
   endif
 
   # Every product is APGO, and the promo sets carry sparkle emoji in their
@@ -107,7 +109,7 @@
   data-card-position="{{ position }}"
 >
   <div class="apgo-hp-card__media">
-    <a class="apgo-hp-card__image-link" href="{{ hp_variant.url }}" tabindex="-1" aria-hidden="true">
+    <a class="apgo-hp-card__image-link" href="{{ product.url }}" tabindex="-1" aria-hidden="true">
       {%- if hp_image != blank -%}
         {{
           hp_image
@@ -131,7 +133,7 @@
 
   <div class="apgo-hp-card__body">
     <h3 class="apgo-hp-card__title">
-      <a href="{{ hp_variant.url }}" draggable="false">{{ hp_title | escape }}</a>
+      <a href="{{ product.url }}" draggable="false">{{ hp_title | escape }}</a>
     </h3>
     <p class="apgo-hp-card__price">
       {%- if hp_on_sale -%}<span class="visually-hidden">Sale price</span>{%- endif -%}
