@@ -440,9 +440,7 @@ body.apgo-clearance-sale-page .apgo-crate-intro__title {
   text-transform: uppercase;
 }
 
-/* The accent words always start their own line: EVERYTHING / MUST GO. */
 body.apgo-clearance-sale-page .apgo-crate-intro__title span {
-  display: block;
   color: var(--crate-accent);
 }
 
