@@ -110,22 +110,17 @@
         "link": "/collections/best-value-picks",
         "button_label": "See all deals",
         "button_link": "/collections/best-value-picks",
-        "button_style": "solid"
+        "button_style": "solid",
+        "ghost_text": "DEALS",
+        "featured_product": "atomic-crystal-merdeka-set",
+        "featured_label": "Deal of the week",
+        "featured_note": "Limited time only · while stocks last",
+        "featured_contents": "1 Crystal, 2 Refills, 4 Shampoos, 2 Coating Cloths"
       }
     },
     "home_categories": {
       "type": "apgo-home-categories",
       "blocks": {
-        "cat_beginners": {
-          "type": "category",
-          "settings": {
-            "collection": "",
-            "icon": "book",
-            "label": "Beginner's Picks",
-            "link": "",
-            "show_on_mobile": true
-          }
-        },
         "cat_household": {
           "type": "category",
           "settings": {
@@ -214,10 +209,20 @@
             "link": "",
             "show_on_mobile": false
           }
+        },
+        "cat_featured": {
+          "type": "featured",
+          "settings": {
+            "collection": "",
+            "icon": "book",
+            "eyebrow": "New to coating?",
+            "title": "Start with Beginner's Picks",
+            "link": ""
+          }
         }
       },
       "block_order": [
-        "cat_beginners",
+        "cat_featured",
         "cat_household",
         "cat_coatings",
         "cat_deals",
@@ -253,7 +258,8 @@
         "link": "/collections/all",
         "button_label": "Shop all products",
         "button_link": "/collections/all",
-        "button_style": "outline"
+        "button_style": "outline",
+        "ghost_text": "TOP 8"
       }
     },
     "home_faq": {
@@ -306,15 +312,80 @@
         "whatsapp_number": "+60 12-270 7900",
         "background": "dark"
       }
+    },
+    "home_perks": {
+      "type": "apgo-home-perks",
+      "blocks": {
+        "perk_shipping": {
+          "type": "perk",
+          "settings": {
+            "icon": "truck",
+            "title": "Free shipping",
+            "text": "Over RM155, West Malaysia",
+            "text_sg": "Over $70 to Singapore"
+          }
+        },
+        "perk_delivery": {
+          "type": "perk",
+          "settings": {
+            "icon": "clock",
+            "title": "Fast delivery",
+            "text": "2–3 business days",
+            "text_sg": "5–7 business days"
+          }
+        },
+        "perk_factory": {
+          "type": "perk",
+          "settings": {
+            "icon": "factory",
+            "title": "Factory direct",
+            "text": "Made in our own factory",
+            "text_sg": ""
+          }
+        },
+        "perk_whatsapp": {
+          "type": "perk",
+          "settings": {
+            "icon": "whatsapp",
+            "title": "WhatsApp help",
+            "text": "Mon–Fri, 14:00–23:00",
+            "text_sg": ""
+          }
+        }
+      },
+      "block_order": [
+        "perk_shipping",
+        "perk_delivery",
+        "perk_factory",
+        "perk_whatsapp"
+      ],
+      "settings": {
+        "aria_label": "Shopping with APGO"
+      }
+    },
+    "home_newsletter": {
+      "type": "apgo-home-newsletter",
+      "settings": {
+        "eyebrow": "APGO Newsletter",
+        "heading": "Get new deals first",
+        "text": "Campaign launches and restocks, straight to your inbox.",
+        "label": "Email address",
+        "placeholder": "you@example.com",
+        "button_label": "Subscribe",
+        "small_print": "You can unsubscribe anytime.",
+        "success": "Thanks for subscribing! Watch your inbox for our next deal."
+      }
     }
   },
   "order": [
     "main",
     "home_carousel",
     "home_brand",
+    "home_perks",
     "home_deals",
     "home_categories",
     "home_best_sellers",
-    "home_faq"
+    "home_faq",
+    "home_newsletter"
   ]
 }

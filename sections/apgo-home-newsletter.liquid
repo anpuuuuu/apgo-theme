@@ -1,0 +1,137 @@
+{% comment %}
+  APGO Home — newsletter band (2026-09 homepage redesign v2). Shopify's own
+  customer form (same as the theme's email-signup block): the email is saved
+  under Customers as subscribed to email marketing, tagged "newsletter", so
+  Shopify Email can reach it. After posting, the page reloads to this form
+  and shows the success or error line in place.
+{% endcomment %}
+
+{%- assign news_form_id = 'ApgoHomeNewsletter-' | append: section.id -%}
+
+<section class="apgo-home apgo-home-news" data-apgo-home-section="newsletter">
+  <div class="apgo-hp__container apgo-home-news__layout">
+    <div class="apgo-home-news__copy">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="apgo-home-news__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      {%- endif -%}
+      <h2 class="apgo-home-news__title">{{ section.settings.heading | escape }}</h2>
+      {%- if section.settings.text != blank -%}
+        <p class="apgo-home-news__text">{{ section.settings.text | escape }}</p>
+      {%- endif -%}
+    </div>
+
+    {%- form 'customer', id: news_form_id, class: 'apgo-home-news__form' -%}
+      <input type="hidden" name="contact[tags]" value="newsletter">
+      <label class="apgo-home-news__label" for="{{ news_form_id }}-email">
+        {{- section.settings.label | default: 'Email address' | escape -}}
+      </label>
+      {%- if form.posted_successfully? -%}
+        <p class="apgo-home-news__message apgo-home-news__message--success" role="status" tabindex="-1">
+          {{- section.settings.success | escape -}}
+        </p>
+      {%- else -%}
+        <div class="apgo-home-news__row">
+          <input
+            id="{{ news_form_id }}-email"
+            class="apgo-home-news__input"
+            type="email"
+            name="contact[email]"
+            autocomplete="email"
+            autocapitalize="off"
+            autocorrect="off"
+            spellcheck="false"
+            placeholder="{{ section.settings.placeholder | escape }}"
+            required
+            {% if form.errors %}
+              aria-invalid="true"
+              aria-describedby="{{ news_form_id }}-error"
+            {% endif %}
+          >
+          <button type="submit" class="apgo-home-news__button">
+            {{- section.settings.button_label | default: 'Subscribe' | escape -}}
+          </button>
+        </div>
+        {%- if form.errors -%}
+          <p id="{{ news_form_id }}-error" class="apgo-home-news__message apgo-home-news__message--error" role="alert">
+            {{- form.errors.translated_fields.email | capitalize }}
+            {{ form.errors.messages.email -}}
+          </p>
+        {%- endif -%}
+      {%- endif -%}
+      {%- if section.settings.small_print != blank -%}
+        <p class="apgo-home-news__small">{{ section.settings.small_print | escape }}</p>
+      {%- endif -%}
+    {%- endform -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "APGO Home — Newsletter",
+  "tag": "div",
+  "class": "apgo-home-news-wrapper",
+  "enabled_on": {
+    "templates": ["index", "page"]
+  },
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Sign-ups are saved under Customers as email subscribers (tag: newsletter). Send campaigns with Shopify Email."
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "APGO Newsletter"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Get new deals first"
+    },
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Text",
+      "default": "Campaign launches and restocks, straight to your inbox."
+    },
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Field label",
+      "default": "Email address"
+    },
+    {
+      "type": "text",
+      "id": "placeholder",
+      "label": "Field placeholder",
+      "default": "you@example.com"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button",
+      "default": "Subscribe"
+    },
+    {
+      "type": "text",
+      "id": "small_print",
+      "label": "Small print",
+      "default": "You can unsubscribe anytime."
+    },
+    {
+      "type": "text",
+      "id": "success",
+      "label": "Message after signing up",
+      "default": "Thanks for subscribing! Watch your inbox for our next deal."
+    }
+  ],
+  "presets": [
+    {
+      "name": "APGO Home — Newsletter",
+      "category": "APGO"
+    }
+  ]
+}
+{% endschema %}

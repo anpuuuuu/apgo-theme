@@ -2549,3 +2549,823 @@ html:not(.apgo-home-js) .apgo-home-compare__fill {
     }
   }
 }
+
+/* ══ Homepage v2 additions (2026-09, canvas Version 35) ═══════════
+   Service strip, featured deal card, Beginner's Picks tile, newsletter
+   band, and the decoration: stripe mark before section eyebrows, outline
+   ghost words, rank numerals, carbon-weave texture on the categories. */
+
+/* ── Stripe mark before section eyebrows ── */
+.apgo-hp-head__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.apgo-hp-head__eyebrow::before {
+  content: '';
+  flex-shrink: 0;
+  width: 18px;
+  height: 12px;
+  background: linear-gradient(
+    to right,
+    var(--apgo-home-primary) 0 4px,
+    transparent 4px 7px,
+    rgba(240, 132, 24, 0.6) 7px 11px,
+    transparent 11px 14px,
+    rgba(240, 132, 24, 0.3) 14px 18px
+  );
+  transform: skewX(-20deg);
+}
+
+.apgo-home-brand .apgo-hp-head__eyebrow {
+  display: block;
+}
+
+.apgo-home-brand .apgo-hp-head__eyebrow::before {
+  content: none;
+}
+
+/* ── Outline ghost word behind a product row's heading ── */
+.apgo-home-rail__ghost {
+  position: absolute;
+  top: 4px;
+  right: -6px;
+  z-index: 0;
+  color: transparent;
+  font-size: 76px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 2px;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+  -webkit-text-stroke: 1px rgba(240, 132, 24, 0.24);
+}
+
+/* ── Rank numerals (Best Sellers) ── */
+.apgo-hp-card__badge--rank {
+  top: 2px;
+  left: 8px;
+  height: auto;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--apgo-home-primary);
+  font-size: 46px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0;
+  -webkit-text-stroke: 1.5px #000000;
+}
+
+/* ── Service strip ── */
+.apgo-home.apgo-home-perks {
+  padding-block: 0;
+  border-top: 1px solid #1f1f1f;
+  border-bottom: 1px solid #1f1f1f;
+  background: var(--apgo-hp-dark);
+}
+
+.apgo-home-perks .apgo-hp__container {
+  padding-inline: 0;
+}
+
+.apgo-home-perks__list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.apgo-home-perks__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  margin: 0;
+  padding: 14px 12px;
+}
+
+.apgo-home-perks__item:nth-child(odd) {
+  border-right: 1px solid #1f1f1f;
+}
+
+.apgo-home-perks__item:nth-child(-n + 2) {
+  border-bottom: 1px solid #1f1f1f;
+}
+
+.apgo-home-perks__icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(240, 132, 24, 0.14);
+  color: var(--apgo-home-primary);
+}
+
+.apgo-home-perks__icon .apgo-hp-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.apgo-home-perks__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.apgo-home-perks__title {
+  color: var(--apgo-home-paper);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+}
+
+.apgo-home-perks__text {
+  color: var(--apgo-hp-mute);
+  font-size: 11px;
+  line-height: 15px;
+}
+
+/* ── Featured deal card (Best Value Picks) ── */
+.apgo-home-rail__featured {
+  margin-bottom: 16px;
+}
+
+.apgo-hp-deal {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--apgo-hp-line);
+  border-radius: 14px;
+  background: var(--apgo-hp-card);
+  color: var(--apgo-home-paper);
+}
+
+.apgo-hp-deal__media {
+  position: relative;
+  aspect-ratio: 1;
+  background: var(--apgo-hp-media);
+}
+
+.apgo-hp-deal__label {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 4px;
+  background: var(--apgo-home-primary);
+  color: var(--apgo-home-ink);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.apgo-hp-deal__sticker {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--apgo-home-paper);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+  color: var(--apgo-home-ink);
+  transform: rotate(-10deg);
+  pointer-events: none;
+}
+
+.apgo-hp-deal__sticker-pct {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.apgo-hp-deal__sticker-off {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.apgo-hp-deal__body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 14px 16px;
+}
+
+.apgo-hp-deal__note {
+  margin: 0;
+  color: var(--apgo-hp-text);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+}
+
+.apgo-hp-deal__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 22px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.apgo-hp-deal__title a {
+  color: var(--apgo-home-paper);
+  text-decoration: none;
+}
+
+.apgo-hp-deal__title a:hover {
+  color: var(--apgo-home-primary);
+}
+
+.apgo-hp-deal__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.apgo-hp-deal__chip {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  margin: 0;
+  padding: 0 9px;
+  border-radius: 12px;
+  background: var(--apgo-hp-media);
+  color: #d0d0d0;
+  font-size: 11px;
+}
+
+.apgo-hp-deal__price {
+  column-gap: 8px;
+}
+
+.apgo-hp-deal__price .apgo-hp-card__now {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.apgo-hp-deal__price .apgo-hp-card__was {
+  font-size: 13px;
+}
+
+.apgo-hp-deal .apgo-hp-card__pack {
+  display: block;
+  width: 100%;
+}
+
+.apgo-hp-deal .apgo-hp-deal__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 46px;
+  margin: 0;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 23px;
+  background: var(--apgo-home-primary);
+  box-shadow: none;
+  color: var(--apgo-home-ink);
+  opacity: 1;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.apgo-hp-deal .apgo-hp-deal__btn:hover:not(:disabled) {
+  background: var(--apgo-hp-orange-hover);
+  color: var(--apgo-home-ink);
+}
+
+.apgo-hp-deal .apgo-hp-deal__btn:focus-visible {
+  outline: 2px solid var(--apgo-home-paper);
+  outline-offset: 2px;
+}
+
+.apgo-hp-deal .apgo-hp-deal__btn:disabled {
+  background: #3a3a3a;
+  color: #8a8a8a;
+  cursor: not-allowed;
+}
+
+.apgo-hp-deal .apgo-hp-deal__btn.is-busy {
+  opacity: 0.7;
+}
+
+/* ── Categories: carbon-weave texture, featured tile ── */
+.apgo-home.apgo-home-cats {
+  background-image:
+    linear-gradient(45deg, rgba(255, 255, 255, 0.03) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.03) 75%),
+    linear-gradient(45deg, rgba(255, 255, 255, 0.03) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.03) 75%);
+  background-position: 0 0, 4px 4px;
+  background-size: 8px 8px;
+}
+
+.apgo-home-cats__item--featured {
+  grid-column: 1 / -1;
+}
+
+.apgo-home-cats__feature {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-sizing: border-box;
+  height: 100%;
+  padding: 16px;
+  border: 1px solid rgba(240, 132, 24, 0.45);
+  border-radius: 14px;
+  background: #1c1409;
+  color: var(--apgo-home-paper);
+  text-decoration: none;
+  transition: border-color 0.2s ease;
+}
+
+.apgo-home-cats__feature:hover {
+  border-color: var(--apgo-home-primary);
+  color: var(--apgo-home-paper);
+}
+
+.apgo-home-cats__feature:focus-visible {
+  outline: 2px solid var(--apgo-home-primary);
+  outline-offset: 2px;
+}
+
+.apgo-home-cats__feature-icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--apgo-home-primary);
+  color: var(--apgo-home-ink);
+}
+
+.apgo-home-cats__feature-icon .apgo-hp-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.apgo-home-cats__feature-copy {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.apgo-home-cats__feature-eyebrow {
+  color: var(--apgo-home-primary);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+}
+
+.apgo-home-cats__feature-title {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 20px;
+}
+
+.apgo-home-cats__feature-count {
+  display: none;
+  color: var(--apgo-hp-mute);
+  font-size: 12px;
+}
+
+.apgo-home-cats__feature-arrow {
+  display: inline-flex;
+  color: var(--apgo-home-primary);
+}
+
+/* ── Newsletter band ── */
+.apgo-home.apgo-home-news {
+  padding-block: 32px;
+  background: var(--apgo-home-primary);
+  color: var(--apgo-home-ink);
+}
+
+.apgo-home-news__layout {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.apgo-home-news__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.apgo-home-news__eyebrow {
+  margin: 0;
+  color: #3a1f00;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2.4px;
+  text-transform: uppercase;
+}
+
+.apgo-home-news__title {
+  margin: 0;
+  color: var(--apgo-home-ink);
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.3px;
+  text-transform: none;
+}
+
+.apgo-home-news__text {
+  margin: 0;
+  color: #1f1200;
+  font-size: 14px;
+  line-height: 21px;
+}
+
+.apgo-home-news__form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+}
+
+.apgo-home-news__label {
+  color: #1f1200;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.apgo-home-news__row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.apgo-home-news__input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  height: 48px;
+  margin: 0;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 24px;
+  background: var(--apgo-home-paper);
+  box-shadow: none;
+  color: var(--apgo-home-ink);
+  font-size: 16px;
+}
+
+.apgo-home-news__input::placeholder {
+  color: #777777;
+}
+
+.apgo-home-news__input:focus-visible,
+.apgo-home-news__button:focus-visible {
+  outline: 2px solid var(--apgo-home-ink);
+  outline-offset: 2px;
+}
+
+.apgo-home-news__button {
+  height: 48px;
+  margin: 0;
+  padding: 0 28px;
+  border: 0;
+  border-radius: 24px;
+  background: var(--apgo-home-ink);
+  color: var(--apgo-home-paper);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.apgo-home-news__button:hover {
+  background: #262626;
+  color: var(--apgo-home-paper);
+}
+
+.apgo-home-news__message {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 19px;
+}
+
+.apgo-home-news__message--success {
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.12);
+  color: var(--apgo-home-ink);
+}
+
+.apgo-home-news__message--error {
+  color: #6b0a00;
+}
+
+.apgo-home-news__small {
+  margin: 0;
+  color: #3a1f00;
+  font-size: 11px;
+}
+
+/* ── Tablet ── */
+@media (min-width: 750px) {
+  .apgo-home-cats__item--featured {
+    grid-column: span 2;
+  }
+
+  .apgo-home-cats__item--no-desktop {
+    display: none;
+  }
+}
+
+/* ── Desktop ── */
+@media (min-width: 1024px) {
+  .apgo-hp-head__eyebrow::before {
+    width: 21px;
+    height: 14px;
+    background: linear-gradient(
+      to right,
+      var(--apgo-home-primary) 0 5px,
+      transparent 5px 8px,
+      rgba(240, 132, 24, 0.6) 8px 13px,
+      transparent 13px 16px,
+      rgba(240, 132, 24, 0.3) 16px 21px
+    );
+  }
+
+  .apgo-home-rail__ghost {
+    top: 40px;
+    right: 24px;
+    font-size: 180px;
+    letter-spacing: 4px;
+    -webkit-text-stroke: 1px rgba(240, 132, 24, 0.2);
+  }
+
+  .apgo-hp-card__badge--rank {
+    top: 4px;
+    left: 12px;
+    height: auto;
+    padding: 0;
+    border-radius: 0;
+    font-size: 68px;
+    -webkit-text-stroke-width: 2px;
+  }
+
+  .apgo-home-perks .apgo-hp__container {
+    padding-inline: 0;
+  }
+
+  .apgo-home-perks__list {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .apgo-home-perks__item,
+  .apgo-home-perks__item:nth-child(odd) {
+    gap: 12px;
+    padding: 22px 16px;
+    border-right: 1px solid #1f1f1f;
+  }
+
+  .apgo-home-perks__item:nth-child(-n + 2) {
+    border-bottom: 0;
+  }
+
+  .apgo-home-perks__item:last-child {
+    border-right: 0;
+  }
+
+  .apgo-home-perks__icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .apgo-home-perks__icon .apgo-hp-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .apgo-home-perks__title {
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .apgo-home-perks__text {
+    font-size: 12px;
+    line-height: 17px;
+  }
+
+  .apgo-home-rail__featured {
+    margin-bottom: 20px;
+  }
+
+  .apgo-hp-deal {
+    flex-direction: row;
+    border-radius: 16px;
+  }
+
+  .apgo-hp-deal__media {
+    flex: 0 0 42%;
+  }
+
+  .apgo-hp-deal__label {
+    top: 16px;
+    left: 16px;
+    height: 28px;
+    padding: 0 12px;
+    font-size: 11px;
+    letter-spacing: 1.4px;
+  }
+
+  .apgo-hp-deal__sticker {
+    top: 16px;
+    right: 16px;
+    width: 84px;
+    height: 84px;
+  }
+
+  .apgo-hp-deal__sticker-pct {
+    font-size: 24px;
+  }
+
+  .apgo-hp-deal__sticker-off {
+    font-size: 11px;
+    letter-spacing: 1.2px;
+  }
+
+  .apgo-hp-deal__body {
+    flex: 1 1 auto;
+    justify-content: center;
+    gap: 14px;
+    padding: 36px 40px;
+  }
+
+  .apgo-hp-deal__note {
+    font-size: 12px;
+    letter-spacing: 1.8px;
+  }
+
+  .apgo-hp-deal__title {
+    font-size: 30px;
+    line-height: 1.15;
+    letter-spacing: -0.4px;
+  }
+
+  .apgo-hp-deal__chip {
+    height: 28px;
+    padding: 0 12px;
+    border-radius: 14px;
+    font-size: 12px;
+  }
+
+  .apgo-hp-deal__price .apgo-hp-card__now {
+    font-size: 34px;
+  }
+
+  .apgo-hp-deal__price .apgo-hp-card__was {
+    font-size: 16px;
+  }
+
+  .apgo-hp-deal__action {
+    align-self: flex-start;
+  }
+
+  .apgo-hp-deal .apgo-hp-card__pack {
+    width: auto;
+  }
+
+  .apgo-hp-deal .apgo-hp-deal__btn {
+    width: auto;
+    min-height: 52px;
+    padding: 0 32px;
+    border-radius: 26px;
+    font-size: 15px;
+  }
+
+  .apgo-home-cats__feature {
+    gap: 18px;
+    padding: 24px;
+  }
+
+  .apgo-home-cats__feature-icon {
+    width: 56px;
+    height: 56px;
+  }
+
+  .apgo-home-cats__feature-icon .apgo-hp-icon {
+    width: 26px;
+    height: 26px;
+  }
+
+  .apgo-home-cats__feature-copy {
+    gap: 4px;
+  }
+
+  .apgo-home-cats__feature-eyebrow {
+    font-size: 12px;
+    letter-spacing: 1.8px;
+  }
+
+  .apgo-home-cats__feature-title {
+    font-size: 19px;
+    line-height: 26px;
+  }
+
+  .apgo-home-cats__feature-count {
+    display: block;
+  }
+
+  .apgo-home.apgo-home-news {
+    padding-block: 72px;
+  }
+
+  .apgo-home-news__layout {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 48px;
+  }
+
+  .apgo-home-news__copy {
+    flex: 1 1 auto;
+    gap: 12px;
+  }
+
+  .apgo-home-news__eyebrow {
+    font-size: 12px;
+    letter-spacing: 2.6px;
+  }
+
+  .apgo-home-news__title {
+    font-size: 40px;
+    letter-spacing: -0.4px;
+  }
+
+  .apgo-home-news__text {
+    font-size: 16px;
+    line-height: 26px;
+  }
+
+  .apgo-home-news__form {
+    flex: 0 0 min(440px, 48%);
+  }
+
+  .apgo-home-news__label {
+    font-size: 13px;
+  }
+
+  .apgo-home-news__row {
+    flex-direction: row;
+  }
+
+  .apgo-home-news__input {
+    flex: 1 1 auto;
+    height: 52px;
+    border-radius: 26px;
+  }
+
+  .apgo-home-news__button {
+    height: 52px;
+    border-radius: 26px;
+    font-size: 15px;
+  }
+
+  .apgo-home-news__small {
+    font-size: 12px;
+  }
+}

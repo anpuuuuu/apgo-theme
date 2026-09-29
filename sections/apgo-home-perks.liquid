@@ -1,0 +1,118 @@
+{% comment %}
+  APGO Home — service strip (2026-09 homepage redesign v2). A narrow band
+  under the brand video: free-shipping threshold, delivery time, factory,
+  WhatsApp hours. Phones: 2 × 2; desktop: one row of four in the
+  two-thirds column. Each item can carry a Singapore line (shown when the
+  storefront country is SG), since shipping terms differ there.
+{% endcomment %}
+
+{%- liquid
+  assign perks_is_sg = false
+  if localization.country.iso_code == 'SG'
+    assign perks_is_sg = true
+  endif
+-%}
+
+{%- if section.blocks.size > 0 -%}
+  <section
+    class="apgo-home apgo-home-perks"
+    data-apgo-home-section="perks"
+    aria-label="{{ section.settings.aria_label | default: 'Shopping with APGO' | escape }}"
+  >
+    <div class="apgo-hp__container">
+      <ul class="apgo-home-perks__list" role="list">
+        {%- for block in section.blocks -%}
+          {%- liquid
+            assign perk_text = block.settings.text
+            if perks_is_sg and block.settings.text_sg != blank
+              assign perk_text = block.settings.text_sg
+            endif
+          -%}
+          <li class="apgo-home-perks__item" {{ block.shopify_attributes }}>
+            <span class="apgo-home-perks__icon">
+              {%- render 'apgo-home-icon', name: block.settings.icon, size: 20, stroke: 1.8 -%}
+            </span>
+            <span class="apgo-home-perks__copy">
+              <span class="apgo-home-perks__title">{{ block.settings.title | escape }}</span>
+              {%- if perk_text != blank -%}
+                <span class="apgo-home-perks__text">{{ perk_text | escape }}</span>
+              {%- endif -%}
+            </span>
+          </li>
+        {%- endfor -%}
+      </ul>
+    </div>
+  </section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "APGO Home — Service strip",
+  "tag": "div",
+  "class": "apgo-home-perks-wrapper",
+  "enabled_on": {
+    "templates": ["index", "page"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "aria_label",
+      "label": "Accessible name",
+      "default": "Shopping with APGO"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "perk",
+      "name": "Item",
+      "limit": 4,
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "truck", "label": "Truck (shipping)" },
+            { "value": "clock", "label": "Clock (delivery time)" },
+            { "value": "factory", "label": "Factory" },
+            { "value": "whatsapp", "label": "Chat (WhatsApp)" },
+            { "value": "gift", "label": "Gift" },
+            { "value": "drop", "label": "Drop (coating)" }
+          ],
+          "default": "truck"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Free shipping"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Over RM155, West Malaysia"
+        },
+        {
+          "type": "text",
+          "id": "text_sg",
+          "label": "Text for Singapore (optional)",
+          "info": "Shown instead when the store is viewed from Singapore."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "APGO Home — Service strip",
+      "category": "APGO",
+      "blocks": [
+        { "type": "perk" },
+        { "type": "perk" },
+        { "type": "perk" },
+        { "type": "perk" }
+      ]
+    }
+  ]
+}
+{% endschema %}

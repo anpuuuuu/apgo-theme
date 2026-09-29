@@ -4,8 +4,8 @@
   design canvas so tiles match it one to one.
 
   @param {string} name - Icon name: book, home, drop, gift, bottle, bucket,
-    target, seat, sponge, grid, arrow-right, chevron-left, chevron-right,
-    chevron-down, whatsapp
+    target, seat, sponge, grid, truck, clock, factory, arrow-right,
+    chevron-left, chevron-right, chevron-down, whatsapp
   @param {number} [size] - Rendered width/height in px (default 24)
   @param {number} [stroke] - Stroke width (default 1.6)
   @param {string} [class] - Extra class names
@@ -48,6 +48,12 @@
       <path d="M5 6h14v12H5z"/><path d="M5 10h14M5 14h14"/>
     {%- when 'grid' -%}
       <rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>
+    {%- when 'truck' -%}
+      <path d="M3 7h11v9H3z"/><path d="M14 10h4l3 3v3h-7z"/><circle cx="7" cy="17.5" r="1.5"/><circle cx="17" cy="17.5" r="1.5"/>
+    {%- when 'clock' -%}
+      <circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>
+    {%- when 'factory' -%}
+      <path d="M3 20V10l6 4v-4l6 4V6l6 4v10z"/><path d="M3 20h18"/>
     {%- when 'arrow-right' -%}
       <path d="M5 12h14M13 6l6 6-6 6"/>
     {%- when 'chevron-left' -%}

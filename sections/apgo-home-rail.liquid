@@ -11,6 +11,11 @@
   then one full-width button. Desktop: the row stays inside the
   two-thirds column, four cards at a time. Arrows hide when every card
   already fits.
+
+  Optional featured deal (v2): the product picked as "Featured deal" is
+  drawn as one large card above the row (and left out of the row). It only
+  shows while that product is in the collection and sold in the visitor's
+  market, so its contents chips never end up on another product.
 {% endcomment %}
 
 {%- liquid
@@ -21,20 +26,48 @@
   assign rail_list_name = section.settings.heading | default: section.settings.eyebrow
   assign rail_list_id = 'home_' | append: rail_list_name | handleize | replace: '-', '_'
   assign rail_desktop = section.settings.desktop_layout
+  assign rail_featured_pick = section.settings.featured_product
+
+  capture rail_featured
+    if rail_collection != blank and rail_featured_pick != blank
+      for product in rail_collection.products limit: 50
+        if product.id != rail_featured_pick.id
+          continue
+        endif
+        assign rail_pm = product.metafields.custom.only_market.value | strip | upcase
+        if rail_pm != blank and rail_market != rail_pm
+          break
+        endif
+        render 'apgo-home-rail-card', product: product, position: 1, layout: 'deal', label: section.settings.featured_label, note: section.settings.featured_note, contents: section.settings.featured_contents
+        break
+      endfor
+    endif
+  endcapture
+  assign rail_featured = rail_featured | strip
+  assign rail_skip_id = 0
+  assign rail_count = 0
+  if rail_featured != blank
+    assign rail_skip_id = rail_featured_pick.id
+    assign rail_count = 1
+  endif
 
   capture rail_items
-    assign rail_count = 0
+    assign rail_shown = 0
     if rail_collection != blank
       for product in rail_collection.products limit: 50
+        if product.id == rail_skip_id
+          continue
+        endif
         assign rail_pm = product.metafields.custom.only_market.value | strip | upcase
         if rail_pm != blank and rail_market != rail_pm
           continue
         endif
         assign rail_count = rail_count | plus: 1
+        assign rail_shown = rail_shown | plus: 1
         echo '<li class="apgo-home-rail__slide">'
         render 'apgo-home-rail-card', product: product, position: rail_count, badge_style: section.settings.badge_style
         echo '</li>'
-        if rail_count >= rail_limit
+        if rail_shown >= rail_limit
           break
         endif
       endfor
@@ -53,6 +86,9 @@
     data-list-id="{{ rail_list_id }}"
     data-list-name="{{ rail_list_name | escape }}"
   >
+    {%- if section.settings.ghost_text != blank -%}
+      <span class="apgo-home-rail__ghost" aria-hidden="true">{{ section.settings.ghost_text | escape }}</span>
+    {%- endif -%}
     <div class="apgo-hp__container">
       <header class="apgo-hp-head">
         <div class="apgo-hp-head__text">
@@ -75,9 +111,15 @@
       </header>
     </div>
 
-    {%- if rail_count > 0 -%}
+    {%- if rail_featured != blank -%}
+      <div class="apgo-hp__container apgo-home-rail__featured">
+        {{ rail_featured }}
+      </div>
+    {%- endif -%}
+
+    {%- if rail_shown > 0 -%}
       <div class="apgo-home-rail__viewport">
-        {%- if rail_count > 1 -%}
+        {%- if rail_shown > 1 -%}
           <button
             type="button"
             class="apgo-home-rail__arrow apgo-home-rail__arrow--prev"
@@ -91,7 +133,7 @@
         <ul class="apgo-home-rail__track" data-apgo-rail-track role="list">
           {{ rail_items }}
         </ul>
-        {%- if rail_count > 1 -%}
+        {%- if rail_shown > 1 -%}
           <button
             type="button"
             class="apgo-home-rail__arrow apgo-home-rail__arrow--next"
@@ -102,7 +144,7 @@
           </button>
         {%- endif -%}
       </div>
-    {%- else -%}
+    {%- elsif rail_featured == blank -%}
       <div class="apgo-hp__container">
         <p class="apgo-home-rail__empty">Pick a collection with products for this row.</p>
       </div>
@@ -203,6 +245,40 @@
         { "value": "dark", "label": "Dark grey" }
       ],
       "default": "black"
+    },
+    {
+      "type": "text",
+      "id": "ghost_text",
+      "label": "Large outline word behind the heading",
+      "info": "Decoration, e.g. DEALS or TOP 8. Leave empty for none."
+    },
+    {
+      "type": "header",
+      "content": "Featured deal (large card)"
+    },
+    {
+      "type": "product",
+      "id": "featured_product",
+      "label": "Featured deal product",
+      "info": "Must be in the collection above. Shows as one large card above the row, only where it is sold (e.g. hidden in Singapore if not sold there)."
+    },
+    {
+      "type": "text",
+      "id": "featured_label",
+      "label": "Ribbon",
+      "default": "Deal of the week"
+    },
+    {
+      "type": "text",
+      "id": "featured_note",
+      "label": "Line above the title",
+      "default": "Limited time only · while stocks last"
+    },
+    {
+      "type": "text",
+      "id": "featured_contents",
+      "label": "What's inside",
+      "info": "Separate items with commas, e.g. 1 Crystal, 2 Refills, 4 Shampoos, 2 Coating Cloths"
     },
     {
       "type": "header",
