@@ -440,7 +440,7 @@
   }
 
   /* ── Product rows ──
-     Arrows (desktop carousel layout) move by the number of whole cards in
+     The arrows on the row's edges move by the number of whole cards in
      view and disable at either end; they hide when nothing overflows. Mouse
      users can also grab the row and drag it — same pattern as the clearance
      page: a drag longer than 6px swallows the click that follows. */
@@ -469,7 +469,7 @@
       if (!slide) return track.clientWidth * 0.8;
       var gap = parseFloat(window.getComputedStyle(track).columnGap) || 0;
       var width = slide.getBoundingClientRect().width + gap;
-      var inView = Math.max(1, Math.floor((track.clientWidth - gap) / width));
+      var inView = Math.max(1, Math.floor((track.clientWidth + gap) / width + 0.01));
       return inView * width;
     }
 

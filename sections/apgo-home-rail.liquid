@@ -1,15 +1,16 @@
 {% comment %}
   APGO Home — product rail (2026-09 homepage redesign). One section type,
-  used twice on the page: "Best Value Picks" (current deals, discount badges,
-  desktop grid of 4) and "Best Sellers" (rank badges, desktop carousel with
-  arrows). Products come from one collection, in the collection's order;
-  products locked to the other market (custom.only_market) are skipped, and
-  positions are counted after that skip so ranks stay 1, 2, 3…
+  used twice on the page: "Best Value Picks" (current deals, discount
+  badges) and "Best Sellers" (rank badges). Products come from one
+  collection, in the collection's order; products locked to the other
+  market (custom.only_market) are skipped, and positions are counted after
+  that skip so ranks stay 1, 2, 3…
 
-  Phones: a swipe rail showing ~2.5 cards, small arrows above it (next to
-  "View all", so they never cover a card), then one full-width button.
-  Desktop carousel: ~4.5 cards with arrows in the header; the arrows hide
-  when every card already fits.
+  Arrows sit on the row's left and right edges, level with the photos.
+  Phones: a swipe rail showing ~2.5 cards with small outline-free arrows,
+  then one full-width button. Desktop: the row stays inside the
+  two-thirds column, four cards at a time. Arrows hide when every card
+  already fits.
 {% endcomment %}
 
 {%- liquid
@@ -70,25 +71,36 @@
               </span>
             </a>
           {%- endif -%}
-          {%- if rail_count > 1 -%}
-            <div class="apgo-home-rail__arrows">
-              <button type="button" class="apgo-home-rail__arrow" data-apgo-rail-prev aria-label="Previous products" disabled>
-                {%- render 'apgo-home-icon', name: 'chevron-left', size: 20, stroke: 2 -%}
-              </button>
-              <button type="button" class="apgo-home-rail__arrow" data-apgo-rail-next aria-label="Next products">
-                {%- render 'apgo-home-icon', name: 'chevron-right', size: 20, stroke: 2 -%}
-              </button>
-            </div>
-          {%- endif -%}
         </div>
       </header>
     </div>
 
     {%- if rail_count > 0 -%}
       <div class="apgo-home-rail__viewport">
+        {%- if rail_count > 1 -%}
+          <button
+            type="button"
+            class="apgo-home-rail__arrow apgo-home-rail__arrow--prev"
+            data-apgo-rail-prev
+            aria-label="Previous products"
+            disabled
+          >
+            {%- render 'apgo-home-icon', name: 'chevron-left', size: 20, stroke: 2 -%}
+          </button>
+        {%- endif -%}
         <ul class="apgo-home-rail__track" data-apgo-rail-track role="list">
           {{ rail_items }}
         </ul>
+        {%- if rail_count > 1 -%}
+          <button
+            type="button"
+            class="apgo-home-rail__arrow apgo-home-rail__arrow--next"
+            data-apgo-rail-next
+            aria-label="Next products"
+          >
+            {%- render 'apgo-home-icon', name: 'chevron-right', size: 20, stroke: 2 -%}
+          </button>
+        {%- endif -%}
       </div>
     {%- else -%}
       <div class="apgo-hp__container">

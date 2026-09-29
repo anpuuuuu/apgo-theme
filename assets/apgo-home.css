@@ -1633,17 +1633,20 @@ html:not(.apgo-home-js) .apgo-home-compare__fill {
   padding-block: 32px 36px;
 }
 
+/* --rail-card is one card's width; the slides and the arrows (level with
+   the middle of the square photo) both read it. */
 .apgo-home-rail__viewport {
+  --rail-gap: 10px;
+  --rail-gaps: 2;
+  --rail-visible: 2.5;
+  --rail-pad: var(--apgo-home-gutter);
+  --rail-card: 142px;
+
   position: relative;
   container-type: inline-size;
 }
 
 .apgo-home-rail__track {
-  --rail-gap: 10px;
-  --rail-gaps: 2;
-  --rail-visible: 2.5;
-  --rail-pad: var(--apgo-home-gutter);
-
   display: flex;
   gap: var(--rail-gap);
   margin: 0;
@@ -1670,7 +1673,7 @@ html:not(.apgo-home-js) .apgo-home-compare__fill {
 
 .apgo-home-rail__slide {
   display: flex;
-  flex: 0 0 142px;
+  flex: 0 0 var(--rail-card);
   min-width: 0;
   margin: 0;
   scroll-snap-align: start;
@@ -1694,43 +1697,44 @@ html:not(.apgo-home-js) .apgo-home-compare__fill {
   width: 100%;
 }
 
-/* Phones: small arrows stacked above "View all", clear of the cards. */
-.apgo-home-rail .apgo-hp-head__side {
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 8px;
-}
-
-.apgo-home-rail__arrows {
-  display: flex;
-  gap: 6px;
-}
-
-.apgo-home-rail.is-rail-ready:not(.has-overflow) .apgo-home-rail__arrows {
-  display: none;
-}
-
+/* Arrows sit on the row's left and right edges, level with the middle of
+   the photos (square, so half a card width down). Phones: small, no
+   outline. The arrow that can't move fades out, and both hide when every
+   card already fits. */
 .apgo-home-rail__arrow {
-  position: relative;
+  position: absolute;
+  top: calc(var(--rail-card) / 2);
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   padding: 0;
-  border: 1px solid var(--apgo-home-paper);
+  border: 0;
   border-radius: 50%;
-  background: transparent;
+  background: rgba(0, 0, 0, 0.6);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
   color: var(--apgo-home-paper);
   cursor: pointer;
-  transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+  transform: translateY(-50%);
+  transition: opacity 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.apgo-home-rail__arrow--prev {
+  left: 6px;
+}
+
+.apgo-home-rail__arrow--next {
+  right: 6px;
 }
 
 .apgo-home-rail__arrow::after {
   content: '';
   position: absolute;
-  inset: -7px -3px;
+  inset: -8px;
 }
 
 .apgo-home-rail__arrow .apgo-hp-icon {
@@ -1738,19 +1742,22 @@ html:not(.apgo-home-js) .apgo-home-compare__fill {
   height: 16px;
 }
 
-.apgo-home-rail__arrow:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.apgo-home-rail__arrow:disabled {
-  border-color: var(--apgo-hp-line);
-  color: #666666;
-  cursor: default;
+.apgo-home-rail__arrow:disabled,
+.apgo-home-rail.is-rail-ready:not(.has-overflow) .apgo-home-rail__arrow {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .apgo-home-rail__arrow:focus-visible {
   outline: 2px solid var(--apgo-home-primary);
   outline-offset: 2px;
+}
+
+@media (hover: hover) {
+  .apgo-home-rail__arrow:hover:not(:disabled) {
+    background: var(--apgo-home-primary);
+    color: var(--apgo-home-ink);
+  }
 }
 
 /* ── Product card ── */
@@ -2134,14 +2141,16 @@ html:not(.apgo-home-js) .apgo-home-compare__fill {
     padding-block: 56px;
   }
 
-  .apgo-home-rail__track {
+  .apgo-home-rail__viewport {
     --rail-gap: 14px;
     --rail-gaps: 3;
     --rail-visible: 3.5;
+    --rail-card: 200px;
   }
 
-  .apgo-home-rail__slide {
-    flex-basis: 200px;
+  .apgo-home-rail__arrow {
+    width: 34px;
+    height: 34px;
   }
 
   .apgo-home-cats__grid {
@@ -2161,6 +2170,14 @@ html:not(.apgo-home-js) .apgo-home-compare__fill {
 
 /* ── Desktop ── */
 @media (min-width: 1024px) {
+  /* Every section sits in a column two thirds of the page wide, centred,
+     like the Golden Bull and clearance pages. */
+  .apgo-hp__container {
+    width: 66.6667%;
+    max-width: none;
+    padding-inline: 0;
+  }
+
   .apgo-hp-head {
     gap: 24px;
     margin-bottom: 32px;
@@ -2200,24 +2217,10 @@ html:not(.apgo-home-js) .apgo-home-compare__fill {
     gap: 6px;
   }
 
-  /* Carousel: phone-size banners take two thirds of the page width,
-     centred, as on the old homepage; a full set of 1200×420 banners fills
-     the content column instead. */
+  /* Carousel: fills the two-thirds column; a full set of 1200×420 banners
+     switches to the wide proportions. */
   .apgo-home-carousel {
     padding-block: 24px;
-  }
-
-  .apgo-home-carousel:not(.apgo-home-carousel--wide) .apgo-hp__container {
-    max-width: none;
-    padding-inline: 0;
-  }
-
-  .apgo-home-carousel__frame {
-    width: 66.6667%;
-  }
-
-  .apgo-home-carousel--wide .apgo-home-carousel__frame {
-    width: 100%;
   }
 
   .apgo-home-carousel__track {
@@ -2279,16 +2282,14 @@ html:not(.apgo-home-js) .apgo-home-compare__fill {
     width: 24px;
   }
 
-  /* Brand video: a rounded card in the content column, copy on the left. */
+  /* Brand video: a rounded card in the two-thirds column, copy bottom-left. */
   .apgo-home-brand {
     padding-block: 8px 72px;
   }
 
   .apgo-home-brand__inner {
-    box-sizing: border-box;
-    max-width: calc(var(--apgo-hp-content) + 2 * var(--apgo-home-gutter));
+    width: 66.6667%;
     margin-inline: auto;
-    padding-inline: var(--apgo-home-gutter);
   }
 
   .apgo-home-brand__stage {
@@ -2306,8 +2307,8 @@ html:not(.apgo-home-js) .apgo-home-compare__fill {
     box-sizing: border-box;
     align-items: flex-start;
     gap: 10px;
-    width: min(700px, 66%);
-    padding: 0 48px 40px;
+    width: min(760px, 82%);
+    padding: 0 44px 40px;
     text-align: left;
   }
 
@@ -2317,7 +2318,7 @@ html:not(.apgo-home-js) .apgo-home-compare__fill {
   }
 
   .apgo-home-brand__title {
-    font-size: clamp(32px, 2.9vw, 42px);
+    font-size: clamp(30px, 2.6vw, 42px);
     line-height: 1.1;
     letter-spacing: -0.8px;
   }
@@ -2353,23 +2354,31 @@ html:not(.apgo-home-js) .apgo-home-compare__fill {
     display: none;
   }
 
-  .apgo-home-rail .apgo-hp-head__side {
-    flex-direction: row;
-    align-items: center;
-    gap: 20px;
-  }
+  /* The row stays inside the two-thirds column and scrolls there, four
+     cards at a time; the arrows straddle the column edges beside the
+     photos, as on the clearance page. */
+  .apgo-home-rail__viewport {
+    --rail-gap: 20px;
+    --rail-pad: 0px;
+    --rail-card: 225px;
 
-  .apgo-home-rail__arrows {
-    gap: 8px;
-  }
-
-  .apgo-home-rail--grid .apgo-home-rail__arrows {
-    display: none;
+    width: 66.6667%;
+    margin-inline: auto;
   }
 
   .apgo-home-rail__arrow {
     width: 44px;
     height: 44px;
+    background: var(--apgo-home-ink);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+  }
+
+  .apgo-home-rail__arrow--prev {
+    left: -22px;
+  }
+
+  .apgo-home-rail__arrow--next {
+    right: -22px;
   }
 
   .apgo-home-rail__arrow .apgo-hp-icon {
@@ -2377,24 +2386,14 @@ html:not(.apgo-home-js) .apgo-home-compare__fill {
     height: 20px;
   }
 
-  .apgo-home-rail--carousel .apgo-home-rail__track {
-    --rail-gap: 20px;
-    --rail-gaps: 4;
-    --rail-visible: 4.5;
-  }
-
-  .apgo-home-rail--carousel .apgo-home-rail__slide {
-    flex-basis: 276px;
+  .apgo-home-rail--grid .apgo-home-rail__arrow {
+    display: none;
   }
 
   .apgo-home-rail--grid .apgo-home-rail__track {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 20px;
-    box-sizing: border-box;
-    max-width: calc(var(--apgo-hp-content) + 2 * var(--apgo-home-gutter));
-    margin-inline: auto;
-    padding: 0 var(--apgo-home-gutter);
     overflow: visible;
     scroll-snap-type: none;
   }
@@ -2485,11 +2484,11 @@ html:not(.apgo-home-js) .apgo-home-compare__fill {
   .apgo-home-faq__layout {
     flex-direction: row;
     align-items: flex-start;
-    gap: 80px;
+    gap: clamp(32px, 5vw, 80px);
   }
 
   .apgo-home-faq__intro {
-    flex: 0 0 400px;
+    flex: 0 0 clamp(240px, 34%, 400px);
     gap: 16px;
   }
 
@@ -2535,21 +2534,18 @@ html:not(.apgo-home-js) .apgo-home-compare__fill {
   }
 }
 
-/* Row card widths from the row's own width (container units), so ~2.5 /
-   3.5 / 4.5 cards show and the first card lines up with the heading. The
-   fixed widths above are the fallback for browsers without them. */
+/* Card width from the row's own width (container units): ~2.5 cards on
+   phones and 3.5 on tablets, with the next one peeking in; four whole
+   cards across the two-thirds column on desktop. The fixed widths above
+   are the fallback for browsers without container units. */
 @supports (width: 1cqw) {
-  .apgo-home-rail__slide {
-    flex-basis: calc((100cqw - var(--rail-pad) - var(--rail-gaps) * var(--rail-gap)) / var(--rail-visible));
+  .apgo-home-rail__viewport {
+    --rail-card: calc((100cqw - var(--rail-pad) - var(--rail-gaps) * var(--rail-gap)) / var(--rail-visible));
   }
 
   @media (min-width: 1024px) {
-    .apgo-home-rail--carousel .apgo-home-rail__track {
-      --rail-pad: max(var(--apgo-home-gutter), calc((100cqw - var(--apgo-hp-content)) / 2));
-    }
-
-    .apgo-home-rail--carousel .apgo-home-rail__slide {
-      flex-basis: calc((100cqw - var(--rail-pad) - var(--rail-gaps) * var(--rail-gap)) / var(--rail-visible));
+    .apgo-home-rail__viewport {
+      --rail-card: calc((100cqw - 3 * var(--rail-gap)) / 4);
     }
   }
 }
