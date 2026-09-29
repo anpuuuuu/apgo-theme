@@ -1,0 +1,216 @@
+{% comment %}
+  APGO Home — brand video (2026-09 homepage redesign; replaces apgo-home-hero).
+  Phones: 480px tall, video fills the frame, copy and two buttons sit on a
+  bottom gradient. Desktop: a 520px rounded card, copy on a left gradient.
+
+  The video loads after window load and pauses off screen (apgo-home.js
+  "herovideo"); skipped for reduced motion / Save-Data, where the poster or
+  the dark frame stays. Holds the page's only h1.
+{% endcomment %}
+
+{%- liquid
+  # A picked Shopify video has several MP4 renditions: desktop gets the
+  # largest up to 1080p, phones the largest up to 720p (the frame is only
+  # 480px tall there).
+  assign brand_video = section.settings.video
+  assign brand_video_src = ''
+  assign brand_video_src_mobile = ''
+  if brand_video != blank
+    assign hd_height = 0
+    assign sd_height = 0
+    for source in brand_video.sources
+      if source.format != 'mp4'
+        continue
+      endif
+      if source.height <= 1080 and source.height > hd_height
+        assign hd_height = source.height
+        assign brand_video_src = source.url
+      endif
+      if source.height <= 720 and source.height > sd_height
+        assign sd_height = source.height
+        assign brand_video_src_mobile = source.url
+      endif
+    endfor
+    if brand_video_src == blank and brand_video.sources.size > 0
+      assign brand_video_src = brand_video.sources.first.url
+    endif
+  endif
+  if brand_video_src == blank
+    assign brand_video_src = section.settings.video_url | strip
+  endif
+  if brand_video_src_mobile == blank
+    assign brand_video_src_mobile = brand_video_src
+  endif
+
+  assign brand_poster = section.settings.poster_image
+  if brand_poster == blank and brand_video != blank
+    assign brand_poster = brand_video.preview_image
+  endif
+
+  assign primary_link = section.settings.primary_link | default: '#deals'
+-%}
+
+<section
+  class="apgo-home apgo-home-brand"
+  data-apgo-home-section="brand"
+  data-apgo-home-init="herovideo"
+>
+  <div class="apgo-home-brand__inner">
+    <div class="apgo-home-brand__stage" data-apgo-video-stage>
+      <div class="apgo-home-brand__media" aria-hidden="true">
+        {%- if brand_poster != blank -%}
+          {{
+            brand_poster
+            | image_url: width: 1600
+            | image_tag:
+              class: 'apgo-home-brand__poster',
+              widths: '600, 900, 1200, 1600',
+              sizes: '(min-width: 1024px) 1200px, 100vw',
+              loading: 'lazy',
+              alt: ''
+          }}
+        {%- endif -%}
+        {%- if brand_video_src != blank -%}
+          <video
+            class="apgo-home-brand__video"
+            data-apgo-hero-video
+            data-src="{{ brand_video_src }}"
+            data-src-mobile="{{ brand_video_src_mobile }}"
+            muted
+            loop
+            playsinline
+            preload="none"
+            tabindex="-1"
+          ></video>
+        {%- endif -%}
+        <div class="apgo-home-brand__scrim"></div>
+      </div>
+
+      <div class="apgo-home-brand__content">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="apgo-hp-head__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+        {%- endif -%}
+        <h1 class="apgo-home-brand__title">
+          {{- section.settings.heading | escape }}
+          {%- if section.settings.heading_accent != blank %}
+            <span class="apgo-home-brand__accent">{{ section.settings.heading_accent | escape }}</span>
+          {%- endif -%}
+        </h1>
+        {%- if section.settings.text != blank -%}
+          <p class="apgo-home-brand__text">{{ section.settings.text | escape }}</p>
+        {%- endif -%}
+        {%- if section.settings.primary_label != blank or section.settings.secondary_label != blank -%}
+          <div class="apgo-home-brand__actions">
+            {%- if section.settings.primary_label != blank -%}
+              <a class="apgo-hp-button apgo-hp-button--solid" href="{{ primary_link }}">
+                {{- section.settings.primary_label | escape -}}
+                {%- render 'apgo-home-icon', name: 'arrow-right', size: 16, stroke: 2 -%}
+              </a>
+            {%- endif -%}
+            {%- if section.settings.secondary_label != blank and section.settings.secondary_link != blank -%}
+              <a class="apgo-hp-button apgo-hp-button--light" href="{{ section.settings.secondary_link }}">
+                {{- section.settings.secondary_label | escape -}}
+              </a>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "APGO Home — Brand video",
+  "tag": "div",
+  "class": "apgo-home-brand-wrapper",
+  "enabled_on": {
+    "templates": ["index", "page"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Video"
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "Video",
+      "info": "Best as 1920×1080, muted. Plays on a loop in the background."
+    },
+    {
+      "type": "text",
+      "id": "video_url",
+      "label": "Video URL (used when no video is picked)",
+      "default": "https:\/\/cdn.shopify.com\/videos\/c\/o\/v\/d8e8828223b342a3b6167dbdb1bda547.mp4"
+    },
+    {
+      "type": "image_picker",
+      "id": "poster_image",
+      "label": "Cover image (optional)",
+      "info": "Shows before the video starts. Defaults to the picked video's own cover."
+    },
+    {
+      "type": "header",
+      "content": "Text"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "APGO · Professional Coating Experts"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "We specialize in"
+    },
+    {
+      "type": "text",
+      "id": "heading_accent",
+      "label": "Heading, orange word",
+      "default": "coating"
+    },
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Text",
+      "default": "Because it's easier, more durable, and shinier."
+    },
+    {
+      "type": "header",
+      "content": "Buttons"
+    },
+    {
+      "type": "text",
+      "id": "primary_label",
+      "label": "Orange button label",
+      "default": "Shop deals"
+    },
+    {
+      "type": "url",
+      "id": "primary_link",
+      "label": "Orange button link",
+      "info": "Leave empty to jump to the section with the anchor ID \"deals\"."
+    },
+    {
+      "type": "text",
+      "id": "secondary_label",
+      "label": "Outline button label",
+      "default": "Our story"
+    },
+    {
+      "type": "url",
+      "id": "secondary_link",
+      "label": "Outline button link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "APGO Home — Brand video",
+      "category": "APGO"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,169 @@
+{%- doc -%}
+  Homepage product card for the Best Value Picks / Best Sellers rails
+  (sections/apgo-home-rail.liquid). Layout from the homepage design canvas:
+  square image with a corner badge, two-line title, price (compare-at struck
+  through) and one full-width outline button.
+
+  Button: sold out -> disabled; custom.hide_quick_add -> link to the product
+  page; one variant -> adds straight to the cart (handled by
+  apgo-collection-variant-drawer.js via [data-apgo-quick-add-variant]);
+  several variants -> opens the variant drawer.
+
+  Prices use the plain money filter with the currency code stripped, so they
+  read RM36.90 in Malaysia and $36.90 in Singapore.
+
+  @param {object} product - Product object
+  @param {number} position - 1-based position in the rail (rank badge, tracking)
+  @param {string} [badge_style] - 'discount' (default) or 'rank'
+{%- enddoc -%}
+
+{%- liquid
+  assign hp_variant = product.selected_or_first_available_variant
+  capture hp_lv_raw
+    render 'apgo-collection-listing-variant-id', product: product
+  endcapture
+  assign hp_lv_id = hp_lv_raw | strip | plus: 0
+  if hp_lv_id != 0 and hp_lv_id != hp_variant.id
+    for v in product.variants
+      if v.id == hp_lv_id
+        assign hp_variant = v
+        break
+      endif
+    endfor
+  endif
+
+  assign hp_image = hp_variant.featured_image
+  if hp_image == blank and product.featured_media != blank
+    assign hp_image = product.featured_media.preview_image
+  endif
+
+  # Every product is APGO, and the promo sets carry sparkle emoji in their
+  # titles; the design drops both so two short lines fit.
+  assign hp_title = product.title | remove_first: 'APGO ' | remove: '✨' | strip
+
+  assign hp_price = hp_variant.price
+  assign hp_compare = hp_variant.compare_at_price | default: 0
+  assign hp_on_sale = false
+  if hp_compare > hp_price
+    assign hp_on_sale = true
+  endif
+  assign hp_price_str = hp_price | money | remove: ' MYR' | remove: 'MYR' | remove: ' SGD' | remove: 'SGD' | strip
+  assign hp_compare_str = hp_compare | money | remove: ' MYR' | remove: 'MYR' | remove: ' SGD' | remove: 'SGD' | strip
+
+  assign hp_option_name = product.options.first | downcase | strip
+  assign hp_option_one = ''
+  assign hp_option_many = ''
+  case hp_option_name
+    when 'scent'
+      assign hp_option_one = 'scent'
+      assign hp_option_many = 'scents'
+    when 'size'
+      assign hp_option_one = 'size'
+      assign hp_option_many = 'sizes'
+    when 'colour'
+      assign hp_option_one = 'colour'
+      assign hp_option_many = 'colours'
+    when 'color'
+      assign hp_option_one = 'color'
+      assign hp_option_many = 'colors'
+    when 'bundle'
+      assign hp_option_one = 'bundle'
+      assign hp_option_many = 'bundles'
+    when 'set'
+      assign hp_option_one = 'set'
+      assign hp_option_many = 'sets'
+  endcase
+
+  assign hp_badge = ''
+  assign hp_badge_kind = 'info'
+  if badge_style == 'rank'
+    assign hp_badge = '#' | append: position
+    assign hp_badge_kind = 'rank'
+  elsif hp_on_sale
+    assign hp_pct = hp_compare | minus: hp_price | times: 100.0 | divided_by: hp_compare | round
+    if hp_pct >= 1
+      assign hp_badge = '-' | append: hp_pct | append: '%'
+      assign hp_badge_kind = 'deal'
+    endif
+  endif
+  if hp_badge == blank and product.variants.size > 1 and product.options.size == 1 and hp_option_many != blank
+    assign hp_badge = product.variants.size | append: ' ' | append: hp_option_many | upcase
+  endif
+
+  if hp_option_one != blank and product.options.size == 1
+    assign hp_choose = 'Choose ' | append: hp_option_one
+  else
+    assign hp_choose = 'Choose options'
+  endif
+-%}
+
+<article
+  class="apgo-hp-card"
+  data-apgo-home-item
+  data-product-id="{{ product.id }}"
+  data-product-name="{{ product.title | escape }}"
+  data-product-handle="{{ product.handle | escape }}"
+  data-variant-id="{{ hp_variant.id }}"
+  data-card-position="{{ position }}"
+>
+  <div class="apgo-hp-card__media">
+    <a class="apgo-hp-card__image-link" href="{{ hp_variant.url }}" tabindex="-1" aria-hidden="true">
+      {%- if hp_image != blank -%}
+        {{
+          hp_image
+          | image_url: width: 600
+          | image_tag:
+            loading: 'lazy',
+            widths: '200, 300, 400, 600',
+            sizes: '(min-width: 1024px) 290px, (min-width: 750px) 200px, 38vw',
+            alt: hp_title,
+            class: 'apgo-hp-card__image',
+            draggable: 'false'
+        }}
+      {%- else -%}
+        {{ 'product-1' | placeholder_svg_tag: 'apgo-hp-card__image apgo-hp-card__image--placeholder' }}
+      {%- endif -%}
+    </a>
+    {%- if hp_badge != blank -%}
+      <span class="apgo-hp-card__badge apgo-hp-card__badge--{{ hp_badge_kind }}">{{ hp_badge | escape }}</span>
+    {%- endif -%}
+  </div>
+
+  <div class="apgo-hp-card__body">
+    <h3 class="apgo-hp-card__title">
+      <a href="{{ hp_variant.url }}" draggable="false">{{ hp_title | escape }}</a>
+    </h3>
+    <p class="apgo-hp-card__price">
+      {%- if hp_on_sale -%}<span class="visually-hidden">Sale price</span>{%- endif -%}
+      <span class="apgo-hp-card__now">{{ hp_price_str }}</span>
+      {%- if hp_on_sale -%}
+        <s class="apgo-hp-card__was"><span class="visually-hidden">Regular price</span>{{ hp_compare_str }}</s>
+      {%- endif -%}
+    </p>
+    <div class="apgo-hp-card__action">
+      {%- if product.available == false -%}
+        <button type="button" class="apgo-hp-card__btn" disabled>Sold out</button>
+      {%- elsif product.metafields.custom.hide_quick_add.value -%}
+        <a class="apgo-hp-card__btn" href="{{ product.url }}">{{ hp_choose }}</a>
+      {%- elsif product.variants.size == 1 -%}
+        <button
+          type="button"
+          class="apgo-hp-card__btn"
+          data-apgo-quick-add-variant="{{ hp_variant.id }}"
+          data-product-id="{{ product.id }}"
+          data-product-title="{{ product.title | escape }}"
+        >
+          Add to cart
+        </button>
+      {%- else -%}
+        {%- render 'apgo-collection-variant-trigger',
+          product: product,
+          selected_variant: hp_variant,
+          label: hp_choose,
+          button_class: 'apgo-hp-card__btn',
+          pack_class: 'apgo-hp-card__pack'
+        -%}
+      {%- endif -%}
+    </div>
+  </div>
+</article>

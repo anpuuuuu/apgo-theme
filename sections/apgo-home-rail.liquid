@@ -1,0 +1,246 @@
+{% comment %}
+  APGO Home — product rail (2026-09 homepage redesign). One section type,
+  used twice on the page: "Best Value Picks" (current deals, discount badges,
+  desktop grid of 4) and "Best Sellers" (rank badges, desktop carousel with
+  arrows). Products come from one collection, in the collection's order;
+  products locked to the other market (custom.only_market) are skipped, and
+  positions are counted after that skip so ranks stay 1, 2, 3…
+
+  Phones: a swipe rail showing ~2.5 cards, then one full-width button.
+{% endcomment %}
+
+{%- liquid
+  assign rail_collection = section.settings.collection
+  assign rail_market = localization.country.iso_code
+  assign rail_limit = section.settings.max_products
+  assign rail_anchor = section.settings.anchor_id | strip | handleize
+  assign rail_list_name = section.settings.heading | default: section.settings.eyebrow
+  assign rail_list_id = 'home_' | append: rail_list_name | handleize | replace: '-', '_'
+  assign rail_desktop = section.settings.desktop_layout
+
+  capture rail_items
+    assign rail_count = 0
+    if rail_collection != blank
+      for product in rail_collection.products limit: 50
+        assign rail_pm = product.metafields.custom.only_market.value | strip | upcase
+        if rail_pm != blank and rail_market != rail_pm
+          continue
+        endif
+        assign rail_count = rail_count | plus: 1
+        echo '<li class="apgo-home-rail__slide">'
+        render 'apgo-home-rail-card', product: product, position: rail_count, badge_style: section.settings.badge_style
+        echo '</li>'
+        if rail_count >= rail_limit
+          break
+        endif
+      endfor
+    endif
+  endcapture
+-%}
+
+{%- if rail_count > 0 or request.design_mode -%}
+  <script src="{{ 'apgo-campaign-tracking.js' | asset_url }}" defer></script>
+  <section
+    {% if rail_anchor != blank %}id="{{ rail_anchor }}"{% endif %}
+    class="apgo-home apgo-home-rail apgo-home-rail--{{ rail_desktop }} apgo-home-rail--rows-{{ section.settings.desktop_rows }}{% if section.settings.background == 'dark' %} apgo-home--dark{% endif %}"
+    data-apgo-home-section="rail"
+    data-apgo-home-init="rail"
+    data-apgo-home-list
+    data-list-id="{{ rail_list_id }}"
+    data-list-name="{{ rail_list_name | escape }}"
+  >
+    <div class="apgo-hp__container">
+      <header class="apgo-hp-head">
+        <div class="apgo-hp-head__text">
+          {%- if section.settings.eyebrow != blank -%}
+            <p class="apgo-hp-head__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+          {%- endif -%}
+          <h2 class="apgo-hp-head__title">{{ section.settings.heading | escape }}</h2>
+        </div>
+        <div class="apgo-hp-head__side">
+          {%- if section.settings.link_label != blank and section.settings.link != blank -%}
+            <a class="apgo-hp-head__link" href="{{ section.settings.link }}">
+              <span class="apgo-hp-head__link-mobile">{{ section.settings.link_label | escape }}</span>
+              <span class="apgo-hp-head__link-desktop">
+                {{- section.settings.link_label_desktop | default: section.settings.link_label | escape -}}
+                {%- render 'apgo-home-icon', name: 'arrow-right', size: 16, stroke: 2 -%}
+              </span>
+            </a>
+          {%- endif -%}
+          {%- if rail_desktop == 'carousel' and rail_count > 1 -%}
+            <div class="apgo-home-rail__arrows">
+              <button type="button" class="apgo-home-rail__arrow" data-apgo-rail-prev aria-label="Previous products" disabled>
+                {%- render 'apgo-home-icon', name: 'chevron-left', size: 20, stroke: 2 -%}
+              </button>
+              <button type="button" class="apgo-home-rail__arrow" data-apgo-rail-next aria-label="Next products">
+                {%- render 'apgo-home-icon', name: 'chevron-right', size: 20, stroke: 2 -%}
+              </button>
+            </div>
+          {%- endif -%}
+        </div>
+      </header>
+    </div>
+
+    {%- if rail_count > 0 -%}
+      <div class="apgo-home-rail__viewport">
+        <ul class="apgo-home-rail__track" data-apgo-rail-track role="list">
+          {{ rail_items }}
+        </ul>
+      </div>
+    {%- else -%}
+      <div class="apgo-hp__container">
+        <p class="apgo-home-rail__empty">Pick a collection with products for this row.</p>
+      </div>
+    {%- endif -%}
+
+    {%- if section.settings.button_label != blank and section.settings.button_link != blank -%}
+      <div class="apgo-hp__container apgo-home-rail__footer">
+        <a
+          class="apgo-hp-button apgo-hp-button--{{ section.settings.button_style }}"
+          href="{{ section.settings.button_link }}"
+        >
+          {{- section.settings.button_label | escape -}}
+          {%- render 'apgo-home-icon', name: 'arrow-right', size: 16, stroke: 2 -%}
+        </a>
+      </div>
+    {%- endif -%}
+  </section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "APGO Home — Product row",
+  "tag": "div",
+  "class": "apgo-home-rail-wrapper",
+  "enabled_on": {
+    "templates": ["index", "page"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Current deals"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Best Value Picks"
+    },
+    {
+      "type": "text",
+      "id": "anchor_id",
+      "label": "Anchor ID",
+      "info": "Lets buttons jump here, e.g. \"deals\" for a #deals link."
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection",
+      "info": "Products show in the collection's order. Products only sold in the other market are hidden automatically."
+    },
+    {
+      "type": "range",
+      "id": "max_products",
+      "label": "Products to show",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "select",
+      "id": "badge_style",
+      "label": "Corner badge",
+      "options": [
+        { "value": "discount", "label": "Discount (e.g. -30%)" },
+        { "value": "rank", "label": "Rank (#1, #2…)" }
+      ],
+      "default": "discount"
+    },
+    {
+      "type": "select",
+      "id": "desktop_layout",
+      "label": "Desktop layout",
+      "options": [
+        { "value": "grid", "label": "Grid, 4 per row" },
+        { "value": "carousel", "label": "Carousel with arrows" }
+      ],
+      "default": "grid"
+    },
+    {
+      "type": "select",
+      "id": "desktop_rows",
+      "label": "Desktop grid rows",
+      "options": [
+        { "value": "1", "label": "1 row (4 products)" },
+        { "value": "2", "label": "2 rows (8 products)" }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "select",
+      "id": "background",
+      "label": "Background",
+      "options": [
+        { "value": "black", "label": "Black" },
+        { "value": "dark", "label": "Dark grey" }
+      ],
+      "default": "black"
+    },
+    {
+      "type": "header",
+      "content": "Header link"
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "Label on phones",
+      "default": "View all"
+    },
+    {
+      "type": "text",
+      "id": "link_label_desktop",
+      "label": "Label on desktop",
+      "default": "View all deals"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Button under the row (phones)"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Label",
+      "default": "See all deals"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Link"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "Style",
+      "options": [
+        { "value": "solid", "label": "Orange" },
+        { "value": "outline", "label": "Outline" }
+      ],
+      "default": "solid"
+    }
+  ],
+  "presets": [
+    {
+      "name": "APGO Home — Product row",
+      "category": "APGO"
+    }
+  ]
+}
+{% endschema %}

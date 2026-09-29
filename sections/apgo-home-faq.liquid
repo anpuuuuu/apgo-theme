@@ -1,0 +1,186 @@
+{% comment %}
+  APGO Home — "Before you order" FAQ (2026-09 homepage redesign).
+  Native <details> accordion, first question open by default. Each answer can
+  have a Singapore version (shown when the storefront country is SG).
+  Outputs FAQPage structured data from the answers the visitor sees.
+  Desktop: title, service hours and WhatsApp button on the left, questions on
+  the right. Phones: title, questions, then the WhatsApp button.
+{% endcomment %}
+
+{%- liquid
+  assign faq_is_sg = false
+  if localization.country.iso_code == 'SG'
+    assign faq_is_sg = true
+  endif
+  assign faq_wa_digits = section.settings.whatsapp_number | remove: '+' | remove: ' ' | remove: '-' | remove: '(' | remove: ')' | strip
+  assign faq_items = section.blocks | where: 'type', 'question'
+-%}
+
+<section
+  class="apgo-home apgo-home-faq{% if section.settings.background == 'dark' %} apgo-home--dark{% endif %}"
+  data-apgo-home-section="faq"
+>
+  <div class="apgo-hp__container apgo-home-faq__layout">
+    <div class="apgo-home-faq__intro">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="apgo-hp-head__eyebrow">{{ section.settings.eyebrow | escape }}</p>
+      {%- endif -%}
+      <h2 class="apgo-hp-head__title">{{ section.settings.heading | escape }}</h2>
+      {%- if section.settings.text != blank -%}
+        <p class="apgo-home-faq__text">{{ section.settings.text | escape }}</p>
+      {%- endif -%}
+      {%- if faq_wa_digits != blank -%}
+        <a
+          class="apgo-hp-button apgo-hp-button--outline apgo-home-faq__wa apgo-home-faq__wa--desktop"
+          href="https://wa.me/{{ faq_wa_digits }}"
+          target="_blank"
+          rel="noopener"
+        >
+          {%- render 'apgo-home-icon', name: 'whatsapp', size: 18, stroke: 1.8 -%}
+          {{- section.settings.whatsapp_label | escape -}}
+        </a>
+      {%- endif -%}
+    </div>
+
+    <div class="apgo-home-faq__list">
+      {%- for block in faq_items -%}
+        {%- liquid
+          assign faq_answer = block.settings.answer
+          if faq_is_sg and block.settings.answer_sg != blank
+            assign faq_answer = block.settings.answer_sg
+          endif
+        -%}
+        {%- if block.settings.question != blank and faq_answer != blank -%}
+          <details class="apgo-home-faq__item" {% if forloop.first %}open{% endif %} {{ block.shopify_attributes }}>
+            <summary class="apgo-home-faq__question">
+              <span>{{ block.settings.question | escape }}</span>
+              {%- render 'apgo-home-icon', name: 'chevron-down', size: 20, stroke: 2, class: 'apgo-home-faq__chevron' -%}
+            </summary>
+            <div class="apgo-home-faq__answer">{{ faq_answer }}</div>
+          </details>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+
+    {%- if faq_wa_digits != blank -%}
+      <a
+        class="apgo-hp-button apgo-hp-button--outline apgo-home-faq__wa apgo-home-faq__wa--phone"
+        href="https://wa.me/{{ faq_wa_digits }}"
+        target="_blank"
+        rel="noopener"
+      >
+        {%- render 'apgo-home-icon', name: 'whatsapp', size: 18, stroke: 1.8 -%}
+        {{- section.settings.whatsapp_label | escape -}}
+      </a>
+    {%- endif -%}
+  </div>
+
+  {%- if faq_items.size > 0 -%}
+    {%- capture faq_entities -%}
+      {%- assign faq_first = true -%}
+      {%- for block in faq_items -%}
+        {%- liquid
+          assign faq_answer = block.settings.answer
+          if faq_is_sg and block.settings.answer_sg != blank
+            assign faq_answer = block.settings.answer_sg
+          endif
+        -%}
+        {%- if block.settings.question != blank and faq_answer != blank -%}
+          {%- unless faq_first -%},{%- endunless -%}
+          {"@type":"Question","name":{{ block.settings.question | json }},"acceptedAnswer":{"@type":"Answer","text":{{ faq_answer | strip_html | strip | json }}}}
+          {%- assign faq_first = false -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endcapture -%}
+    {%- if faq_first == false -%}
+      <script type="application/ld+json">
+        {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{{ faq_entities }}]}
+      </script>
+    {%- endif -%}
+  {%- endif -%}
+</section>
+
+{% schema %}
+{
+  "name": "APGO Home — FAQ",
+  "tag": "div",
+  "class": "apgo-home-faq-wrapper",
+  "enabled_on": {
+    "templates": ["index", "page"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "FAQ"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Before you order"
+    },
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Service hours (desktop)",
+      "default": "Customer service is open Monday to Friday, 14:00–23:00."
+    },
+    {
+      "type": "text",
+      "id": "whatsapp_label",
+      "label": "WhatsApp button label",
+      "default": "WhatsApp 012-270 7900"
+    },
+    {
+      "type": "text",
+      "id": "whatsapp_number",
+      "label": "WhatsApp number",
+      "info": "With country code, e.g. +60 12-270 7900.",
+      "default": "+60 12-270 7900"
+    },
+    {
+      "type": "select",
+      "id": "background",
+      "label": "Background",
+      "options": [
+        { "value": "black", "label": "Black" },
+        { "value": "dark", "label": "Dark grey" }
+      ],
+      "default": "dark"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "question",
+      "name": "Question",
+      "limit": 8,
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Answer"
+        },
+        {
+          "type": "richtext",
+          "id": "answer_sg",
+          "label": "Answer for Singapore (optional)",
+          "info": "Shown instead when the store is viewed from Singapore."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "APGO Home — FAQ",
+      "category": "APGO"
+    }
+  ]
+}
+{% endschema %}

@@ -6,7 +6,10 @@
     [data-apgo-reveal]                       scroll-in reveal (adds .is-revealed)
     [data-apgo-count][data-apgo-count-to]    animated counter (starts on reveal)
     [data-apgo-hero-video][data-src]         lazy background video, fades in when playing
+                                             (data-src-mobile: smaller file for phones)
     [data-apgo-live-video]                   tap-to-play live clip, src injected near viewport
+    [data-apgo-home-init~="carousel"]        banner carousel: dots, arrows, autoplay
+    [data-apgo-home-init~="rail"]            product row: arrows + mouse drag-to-scroll
 
   Re-initializes on shopify:section:load so the Theme Editor stays live.
 */
@@ -99,11 +102,15 @@
 
     if (reducedMotion || saveData || !video.dataset.src) return;
 
-    var stage = video.closest('.apgo-home-hero__stage');
+    var stage = video.closest('[data-apgo-video-stage]') || video.closest('.apgo-home-hero__stage');
+    var src = video.dataset.src;
+    if (video.dataset.srcMobile && window.matchMedia('(max-width: 749px)').matches) {
+      src = video.dataset.srcMobile;
+    }
 
     function load() {
       if (video.src) return;
-      video.src = video.dataset.src;
+      video.src = src;
       video.muted = true;
       video.loop = true;
       video.playsInline = true;
@@ -292,12 +299,274 @@
     });
   }
 
+  /* Bind-once guard shared by the carousel and product rows. A WeakSet, for
+     the same DOM-morphing reason as the live videos above. */
+  var sectionBound = typeof WeakSet === 'function' ? new WeakSet() : null;
+  function bindOnce(el, key) {
+    if (sectionBound) {
+      if (sectionBound.has(el)) return false;
+      sectionBound.add(el);
+      return true;
+    }
+    if (el.dataset[key]) return false;
+    el.dataset[key] = '1';
+    return true;
+  }
+
+  /* ── Banner carousel ──
+     Native scroll-snap track; dots and desktop arrows jump one banner,
+     wrapping at the ends. Autoplay pauses on hover, focus, touch, when the
+     tab is hidden or the carousel is off screen, and never runs with
+     reduced motion. */
+  function initCarousel(root) {
+    if (!bindOnce(root, 'apgoCarouselBound')) return;
+    var track = root.querySelector('[data-apgo-carousel-track]');
+    var slides = root.querySelectorAll('[data-apgo-carousel-slide]');
+    if (!track || slides.length < 2) return;
+
+    var dots = root.querySelectorAll('[data-apgo-carousel-dot]');
+    var prev = root.querySelector('[data-apgo-carousel-prev]');
+    var next = root.querySelector('[data-apgo-carousel-next]');
+    var count = slides.length;
+
+    function current() {
+      var width = track.clientWidth;
+      return width ? Math.round(track.scrollLeft / width) : 0;
+    }
+
+    function goTo(index) {
+      var target = ((index % count) + count) % count;
+      track.scrollTo({ left: target * track.clientWidth, behavior: reducedMotion ? 'auto' : 'smooth' });
+    }
+
+    function syncDots() {
+      var active = current();
+      Array.prototype.forEach.call(dots, function (dot, i) {
+        var on = i === active;
+        dot.classList.toggle('is-active', on);
+        if (on) {
+          dot.setAttribute('aria-current', 'true');
+        } else {
+          dot.removeAttribute('aria-current');
+        }
+      });
+    }
+
+    var scrollFrame = 0;
+    track.addEventListener(
+      'scroll',
+      function () {
+        if (scrollFrame) return;
+        scrollFrame = requestAnimationFrame(function () {
+          scrollFrame = 0;
+          syncDots();
+        });
+      },
+      { passive: true }
+    );
+
+    var autoplay = root.getAttribute('data-autoplay') === 'true' && !reducedMotion;
+    var interval = Math.max(3000, parseInt(root.getAttribute('data-interval') || '5000', 10));
+    var timer = null;
+    var paused = false;
+    var onScreen = true;
+
+    function tick() {
+      if (!paused && onScreen && !document.hidden) goTo(current() + 1);
+    }
+    function start() {
+      if (autoplay && !timer) timer = setInterval(tick, interval);
+    }
+    function restart() {
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+      }
+      start();
+    }
+
+    Array.prototype.forEach.call(dots, function (dot) {
+      dot.addEventListener('click', function () {
+        goTo(parseInt(dot.getAttribute('data-apgo-carousel-dot'), 10) || 0);
+        restart();
+      });
+    });
+    if (prev) {
+      prev.addEventListener('click', function () {
+        goTo(current() - 1);
+        restart();
+      });
+    }
+    if (next) {
+      next.addEventListener('click', function () {
+        goTo(current() + 1);
+        restart();
+      });
+    }
+
+    root.addEventListener('pointerenter', function () { paused = true; });
+    root.addEventListener('pointerleave', function () { paused = false; });
+    root.addEventListener('focusin', function () { paused = true; });
+    root.addEventListener('focusout', function () { paused = false; });
+    track.addEventListener('touchstart', function () { paused = true; }, { passive: true });
+    track.addEventListener(
+      'touchend',
+      function () {
+        paused = false;
+        restart();
+      },
+      { passive: true }
+    );
+
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(
+        function (entries) {
+          onScreen = entries[0].isIntersecting;
+        },
+        { threshold: 0.3 }
+      ).observe(root);
+    }
+
+    var resizeFrame = 0;
+    window.addEventListener('resize', function () {
+      var index = current();
+      cancelAnimationFrame(resizeFrame);
+      resizeFrame = requestAnimationFrame(function () {
+        track.scrollTo({ left: index * track.clientWidth, behavior: 'auto' });
+      });
+    });
+
+    start();
+  }
+
+  /* ── Product rows ──
+     Arrows (desktop carousel layout) move by the number of whole cards in
+     view and disable at either end; they hide when nothing overflows. Mouse
+     users can also grab the row and drag it — same pattern as the clearance
+     page: a drag longer than 6px swallows the click that follows. */
+  function initRail(root) {
+    if (!bindOnce(root, 'apgoRailBound')) return;
+    var track = root.querySelector('[data-apgo-rail-track]');
+    if (!track) return;
+    var prev = root.querySelector('[data-apgo-rail-prev]');
+    var next = root.querySelector('[data-apgo-rail-next]');
+
+    function overflows() {
+      return track.scrollWidth > track.clientWidth + 2;
+    }
+
+    function update() {
+      var hasOverflow = overflows();
+      var maxLeft = track.scrollWidth - track.clientWidth - 2;
+      root.classList.toggle('has-overflow', hasOverflow);
+      if (prev) prev.disabled = !hasOverflow || track.scrollLeft <= 2;
+      if (next) next.disabled = !hasOverflow || track.scrollLeft >= maxLeft;
+    }
+
+    function stepSize() {
+      var slide = track.querySelector('.apgo-home-rail__slide');
+      if (!slide) return track.clientWidth * 0.8;
+      var gap = parseFloat(window.getComputedStyle(track).columnGap) || 0;
+      var width = slide.getBoundingClientRect().width + gap;
+      var inView = Math.max(1, Math.floor((track.clientWidth - gap) / width));
+      return inView * width;
+    }
+
+    function move(direction) {
+      track.scrollBy({ left: direction * stepSize(), behavior: reducedMotion ? 'auto' : 'smooth' });
+    }
+
+    if (prev) prev.addEventListener('click', function () { move(-1); });
+    if (next) next.addEventListener('click', function () { move(1); });
+
+    var frame = 0;
+    track.addEventListener(
+      'scroll',
+      function () {
+        if (frame) return;
+        frame = requestAnimationFrame(function () {
+          frame = 0;
+          update();
+        });
+      },
+      { passive: true }
+    );
+    if ('ResizeObserver' in window) {
+      new ResizeObserver(update).observe(track);
+    } else {
+      window.addEventListener('resize', update);
+    }
+    update();
+
+    /* Mouse drag-to-scroll */
+    var pointerId = null;
+    var startX = 0;
+    var startScroll = 0;
+    var moved = false;
+    var swallowClick = false;
+
+    track.addEventListener('dragstart', function (event) {
+      event.preventDefault();
+    });
+
+    track.addEventListener('pointerdown', function (event) {
+      if (event.pointerType !== 'mouse' || event.button !== 0) return;
+      if (!overflows()) return;
+      if (event.target.closest('button, input, select, textarea')) return;
+      pointerId = event.pointerId;
+      startX = event.clientX;
+      startScroll = track.scrollLeft;
+      moved = false;
+    });
+
+    track.addEventListener('pointermove', function (event) {
+      if (pointerId === null || event.pointerId !== pointerId) return;
+      var distance = event.clientX - startX;
+      if (!moved) {
+        if (Math.abs(distance) < 6) return;
+        moved = true;
+        track.classList.add('is-dragging');
+        try {
+          track.setPointerCapture(pointerId);
+        } catch (error) {}
+      }
+      track.scrollLeft = startScroll - distance;
+    });
+
+    function endDrag(event) {
+      if (pointerId === null || (event && event.pointerId !== pointerId)) return;
+      pointerId = null;
+      if (!moved) return;
+      track.classList.remove('is-dragging');
+      swallowClick = true;
+      window.setTimeout(function () {
+        swallowClick = false;
+      }, 0);
+    }
+
+    track.addEventListener('pointerup', endDrag);
+    track.addEventListener('pointercancel', endDrag);
+    track.addEventListener('lostpointercapture', endDrag);
+    track.addEventListener(
+      'click',
+      function (event) {
+        if (!swallowClick) return;
+        event.preventDefault();
+        event.stopPropagation();
+        swallowClick = false;
+      },
+      true
+    );
+  }
+
   /* ── Boot ── */
   var initializers = {
     reveal: initReveal,
     counters: initCounters,
     herovideo: initHeroVideo,
-    livevideo: initLiveVideos
+    livevideo: initLiveVideos,
+    carousel: initCarousel,
+    rail: initRail
   };
 
   function initSection(root) {

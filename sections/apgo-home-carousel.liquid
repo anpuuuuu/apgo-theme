@@ -1,0 +1,242 @@
+{% comment %}
+  APGO Home — campaign banner carousel (2026-09 homepage redesign; replaces
+  apgo-cc-badge-carousel on the homepage).
+
+  Each banner has a phone image and an optional desktop image (1200×420).
+  Desktop shows the wide images full width only when every banner has one;
+  otherwise desktop keeps the phone images at two thirds width, centred, as
+  the old carousel did. Slides share the first banner's proportions so the
+  row never jumps in height.
+
+  Every linked banner reports views/clicks through apgo-campaign-tracking.js
+  ([data-apgo-homepage-campaign-link]). The Golden Bull banner keeps its
+  original promotion id so GA4 reports continue.
+{% endcomment %}
+
+{%- liquid
+  assign banners = section.blocks | where: 'type', 'banner'
+  assign shown = 0
+  assign all_wide = true
+  assign ratio_phone = ''
+  assign ratio_wide = ''
+  for b in banners
+    if b.settings.image == blank
+      continue
+    endif
+    assign shown = shown | plus: 1
+    if ratio_phone == ''
+      assign ratio_phone = b.settings.image.aspect_ratio
+    endif
+    if b.settings.image_desktop == blank
+      assign all_wide = false
+    elsif ratio_wide == ''
+      assign ratio_wide = b.settings.image_desktop.aspect_ratio
+    endif
+  endfor
+  if ratio_wide == ''
+    assign all_wide = false
+  endif
+-%}
+
+{%- if shown > 0 -%}
+  <script src="{{ 'apgo-campaign-tracking.js' | asset_url }}" defer></script>
+  <section
+    class="apgo-home apgo-home-carousel{% if all_wide %} apgo-home-carousel--wide{% endif %}"
+    data-apgo-home-section="carousel"
+    data-apgo-home-init="carousel"
+    data-autoplay="{{ section.settings.autoplay }}"
+    data-interval="{{ section.settings.interval | times: 1000 }}"
+    aria-roledescription="carousel"
+    aria-label="{{ section.settings.aria_label | default: 'Current promotions' | escape }}"
+    style="--apgo-carousel-ratio: {{ ratio_phone }};{% if all_wide %} --apgo-carousel-ratio-wide: {{ ratio_wide }};{% endif %}"
+  >
+    <div class="apgo-hp__container">
+      <div class="apgo-home-carousel__frame">
+        <div class="apgo-home-carousel__track" data-apgo-carousel-track>
+          {%- assign position = 0 -%}
+          {%- for block in banners -%}
+            {%- if block.settings.image == blank -%}{%- continue -%}{%- endif -%}
+            {%- liquid
+              assign position = position | plus: 1
+              assign banner_link = block.settings.link
+              assign banner_alt = block.settings.alt | default: block.settings.image.alt
+              assign promo_id = block.settings.tracking_id | strip
+              assign promo_name = block.settings.alt | default: 'Homepage banner'
+              if promo_id == blank
+                if banner_link contains 'golden-bull-award'
+                  assign promo_id = 'homepage_golden_bull_award'
+                  assign promo_name = 'Golden Bull Award homepage carousel'
+                else
+                  assign promo_id = 'homepage_banner_' | append: position
+                endif
+              endif
+            -%}
+            {%- capture banner_media -%}
+              <picture>
+                {%- if all_wide -%}
+                  <source
+                    media="(min-width: 1024px)"
+                    srcset="
+                      {{ block.settings.image_desktop | image_url: width: 1200 }} 1200w,
+                      {{ block.settings.image_desktop | image_url: width: 1800 }} 1800w,
+                      {{ block.settings.image_desktop | image_url: width: 2400 }} 2400w
+                    "
+                    sizes="1200px"
+                    width="{{ block.settings.image_desktop.width }}"
+                    height="{{ block.settings.image_desktop.height }}"
+                  >
+                {%- endif -%}
+                <img
+                  class="apgo-home-carousel__img"
+                  src="{{ block.settings.image | image_url: width: 1200 }}"
+                  srcset="
+                    {{ block.settings.image | image_url: width: 600 }} 600w,
+                    {{ block.settings.image | image_url: width: 900 }} 900w,
+                    {{ block.settings.image | image_url: width: 1200 }} 1200w,
+                    {{ block.settings.image | image_url: width: 1600 }} 1600w
+                  "
+                  sizes="(min-width: 1024px) 800px, (min-width: 750px) calc(100vw - 48px), calc(100vw - 32px)"
+                  alt="{{ banner_alt | escape }}"
+                  width="{{ block.settings.image.width }}"
+                  height="{{ block.settings.image.height }}"
+                  {% if position == 1 %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}
+                  draggable="false"
+                >
+              </picture>
+            {%- endcapture -%}
+            <div
+              class="apgo-home-carousel__slide"
+              role="group"
+              aria-roledescription="slide"
+              aria-label="{{ position }} of {{ shown }}"
+              data-apgo-carousel-slide
+              {{ block.shopify_attributes }}
+            >
+              {%- if banner_link != blank -%}
+                <a
+                  class="apgo-home-carousel__link"
+                  href="{{ banner_link }}"
+                  draggable="false"
+                  data-apgo-homepage-campaign-link
+                  data-campaign-placement="homepage_badge_carousel"
+                  data-campaign-promotion-id="{{ promo_id | escape }}"
+                  data-campaign-promotion-name="{{ promo_name | escape }}"
+                  data-slide-position="{{ position }}"
+                >
+                  {{- banner_media -}}
+                </a>
+              {%- else -%}
+                {{- banner_media -}}
+              {%- endif -%}
+            </div>
+          {%- endfor -%}
+        </div>
+
+        {%- if shown > 1 -%}
+          <button type="button" class="apgo-home-carousel__arrow apgo-home-carousel__arrow--prev" data-apgo-carousel-prev aria-label="Previous banner">
+            {%- render 'apgo-home-icon', name: 'chevron-left', size: 20, stroke: 2 -%}
+          </button>
+          <button type="button" class="apgo-home-carousel__arrow apgo-home-carousel__arrow--next" data-apgo-carousel-next aria-label="Next banner">
+            {%- render 'apgo-home-icon', name: 'chevron-right', size: 20, stroke: 2 -%}
+          </button>
+        {%- endif -%}
+      </div>
+
+      {%- if shown > 1 -%}
+        <div class="apgo-home-carousel__dots" data-apgo-carousel-dots>
+          {%- for i in (1..shown) -%}
+            <button
+              type="button"
+              class="apgo-home-carousel__dot{% if forloop.first %} is-active{% endif %}"
+              data-apgo-carousel-dot="{{ forloop.index0 }}"
+              aria-label="Show banner {{ forloop.index }}"
+              {% if forloop.first %}aria-current="true"{% endif %}
+            ></button>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "APGO Home — Banners",
+  "tag": "div",
+  "class": "apgo-home-carousel-wrapper",
+  "enabled_on": {
+    "templates": ["index", "page"]
+  },
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Phone image: keep all banners the same size (now 951×591 or 1610×1000). Desktop image (optional): 1200×420. Desktop uses the wide images only when every banner has one."
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Auto-rotate",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "interval",
+      "label": "Seconds per banner",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "text",
+      "id": "aria_label",
+      "label": "Accessible name",
+      "default": "Current promotions"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "banner",
+      "name": "Banner",
+      "limit": 6,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Phone image"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_desktop",
+          "label": "Desktop image (optional)",
+          "info": "1200×420."
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        },
+        {
+          "type": "text",
+          "id": "alt",
+          "label": "Alt text",
+          "info": "Describe the banner for screen readers."
+        },
+        {
+          "type": "text",
+          "id": "tracking_id",
+          "label": "Tracking ID (optional)",
+          "info": "GA4 promotion id, e.g. homepage_clearance_sale."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "APGO Home — Banners",
+      "category": "APGO",
+      "blocks": [{ "type": "banner" }]
+    }
+  ]
+}
+{% endschema %}

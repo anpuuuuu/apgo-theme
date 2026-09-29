@@ -497,3 +497,61 @@ document.addEventListener('click', (e) => {
     closeDrawer();
   }
 });
+
+/* Homepage cards (snippets/apgo-home-rail-card.liquid): a product with a single
+   variant adds straight to the cart instead of opening the drawer. Same after-
+   effects as addToCart above: cart count, CartAddEvent, toast, gift reconcile. */
+document.addEventListener('click', async (e) => {
+  const t = e.target instanceof Element ? e.target : null;
+  const btn = /** @type {HTMLButtonElement | null} */ (t ? t.closest('[data-apgo-quick-add-variant]') : null);
+  if (!btn || btn.disabled || btn.getAttribute('aria-busy') === 'true') return;
+  e.preventDefault();
+
+  const variantId = Number(btn.getAttribute('data-apgo-quick-add-variant') || '0');
+  if (!variantId) return;
+
+  const shell = getShell();
+  const original = btn.innerHTML;
+  btn.setAttribute('aria-busy', 'true');
+  btn.classList.add('is-busy');
+  btn.textContent = strFromShell(shell, 'i18nAdding') || 'Adding…';
+
+  try {
+    const res = await fetch('/cart/add.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: variantId, quantity: 1 }),
+    });
+    if (!res.ok) throw new Error('add failed');
+    await res.json();
+
+    const cartRes = await fetch('/cart.js');
+    const cart = await cartRes.json();
+    updateAllCartCounts(cart.item_count);
+
+    btn.dispatchEvent(
+      new CartAddEvent({}, String(variantId), {
+        didError: false,
+        source: 'apgo-home-quick-add',
+        itemCount: cart.item_count,
+        productId: btn.getAttribute('data-product-id') || undefined,
+      })
+    );
+
+    showSuccessNotification(
+      btn.getAttribute('data-product-title') || '',
+      strFromShell(shell, 'i18nAddedToast'),
+      strFromShell(shell, 'i18nViewCart')
+    );
+
+    if (typeof window.apgoReconcileFreeGifts === 'function') {
+      try { window.apgoReconcileFreeGifts(); } catch (_) {}
+    }
+  } catch {
+    window.alert(strFromShell(shell, 'i18nAtcErr') || 'Could not add to cart. Please try again.');
+  } finally {
+    btn.innerHTML = original;
+    btn.removeAttribute('aria-busy');
+    btn.classList.remove('is-busy');
+  }
+});

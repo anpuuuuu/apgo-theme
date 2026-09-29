@@ -3,6 +3,9 @@
 
   @param {object} product - Product object
   @param {object} selected_variant - Variant to pre-select (e.g. listing bundle pick)
+  @param {string} [label] - Render a text button with this label instead of the + icon (homepage cards)
+  @param {string} [button_class] - Extra classes for the text button
+  @param {string} [pack_class] - Extra classes for the wrapper
 {%- enddoc -%}
 
 {%- comment -%}
@@ -40,19 +43,30 @@
 }
 {% endcapture %}
 
-<div class="apgo-coll-drawer-pack">
+<div class="apgo-coll-drawer-pack{% if pack_class != blank %} {{ pack_class }}{% endif %}">
   <script type="application/json" class="apgo-coll-drawer-json">{{ apgo_coll_drawer_json | strip }}</script>
-  <button
-    type="button"
-    class="apgo-coll-drawer-open"
-    data-apgo-collection-drawer-open
-    data-initial-variant-id="{{ selected_variant.id }}"
-    aria-label="{{ 'product.select_variant' | t }}"
-  >
-    <span class="svg-wrapper apgo-coll-drawer-open__icon" aria-hidden="true">
-      {{- 'icon-plus.svg' | inline_asset_content -}}
-    </span>
-  </button>
+  {%- if label != blank -%}
+    <button
+      type="button"
+      class="apgo-coll-drawer-open apgo-coll-drawer-open--text{% if button_class != blank %} {{ button_class }}{% endif %}"
+      data-apgo-collection-drawer-open
+      data-initial-variant-id="{{ selected_variant.id }}"
+    >
+      {{- label | escape -}}
+    </button>
+  {%- else -%}
+    <button
+      type="button"
+      class="apgo-coll-drawer-open"
+      data-apgo-collection-drawer-open
+      data-initial-variant-id="{{ selected_variant.id }}"
+      aria-label="{{ 'product.select_variant' | t }}"
+    >
+      <span class="svg-wrapper apgo-coll-drawer-open__icon" aria-hidden="true">
+        {{- 'icon-plus.svg' | inline_asset_content -}}
+      </span>
+    </button>
+  {%- endif -%}
 </div>
 
 {%- endif -%}

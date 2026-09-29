@@ -109,6 +109,11 @@
         item_variant: payload.variant_id,
         index: payload.card_position
       }];
+    } else if (name === 'apgo_item_list_view') {
+      eventName = 'view_item_list';
+      params.item_list_id = payload.section_id;
+      params.item_list_name = payload.section_name;
+      params.items = payload.items;
     } else if (name === 'apgo_campaign_exit') {
       params.transport_type = 'beacon';
     }
@@ -262,6 +267,112 @@
           promotion_name: link.getAttribute('data-campaign-promotion-name'),
           slide_position: Number(link.getAttribute('data-slide-position')),
           destination_path: link.getAttribute('href')
+        });
+      });
+    });
+  }
+
+  /* Homepage product rows (sections/apgo-home-rail.liquid): GA4
+     view_item_list once a row is on screen, select_item when a card is
+     opened, plus which card button was used. No campaign root needed. */
+  function getHomeItemContext(card) {
+    return {
+      product_id: card.getAttribute('data-product-id'),
+      product_name: card.getAttribute('data-product-name'),
+      product_handle: card.getAttribute('data-product-handle'),
+      variant_id: card.getAttribute('data-variant-id'),
+      card_position: Number(card.getAttribute('data-card-position'))
+    };
+  }
+
+  function initHomepageLists(scope) {
+    var lists = scope.querySelectorAll('[data-apgo-home-list]');
+    Array.prototype.forEach.call(lists, function (list) {
+      if (list.getAttribute('data-apgo-tracking-ready') === 'true') return;
+      list.setAttribute('data-apgo-tracking-ready', 'true');
+      var listContext = {
+        campaign_id: 'homepage',
+        source: 'homepage',
+        section_id: list.getAttribute('data-list-id'),
+        section_name: list.getAttribute('data-list-name')
+      };
+
+      function recordView() {
+        if (list.getAttribute('data-apgo-list-view-recorded') === 'true') return;
+        var cards = list.querySelectorAll('[data-apgo-home-item]');
+        if (!cards.length) return;
+        list.setAttribute('data-apgo-list-view-recorded', 'true');
+        var items = Array.prototype.map.call(cards, function (card) {
+          var item = getHomeItemContext(card);
+          return compact({
+            item_id: item.product_id,
+            item_name: item.product_name,
+            item_variant: item.variant_id,
+            index: item.card_position,
+            item_list_id: listContext.section_id,
+            item_list_name: listContext.section_name
+          });
+        });
+        publish('apgo_item_list_view', Object.assign({}, listContext, {
+          item_count: items.length,
+          items: items
+        }));
+      }
+
+      if ('IntersectionObserver' in window) {
+        var observer = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (!entry.isIntersecting) return;
+            observer.disconnect();
+            recordView();
+          });
+        }, { threshold: 0.4 });
+        observer.observe(list);
+      } else {
+        recordView();
+      }
+
+      list.addEventListener('click', function (event) {
+        var target = event.target;
+        if (!(target instanceof Element)) return;
+        var card = target.closest('[data-apgo-home-item]');
+        if (!card) return;
+        var payload = Object.assign({}, listContext, getHomeItemContext(card));
+        var cta = target.closest('.apgo-hp-card__btn');
+        if (cta) {
+          var ctaType = 'view_product';
+          if (cta.hasAttribute('data-apgo-quick-add-variant')) {
+            ctaType = 'add_to_cart';
+          } else if (cta.hasAttribute('data-apgo-collection-drawer-open')) {
+            ctaType = 'choose_options';
+          }
+          publish('apgo_home_card_cta_click', Object.assign({}, payload, { cta_type: ctaType }));
+          if (ctaType !== 'view_product') return;
+        }
+        var link = target.closest('a[href]');
+        if (link) {
+          publish('apgo_product_click', Object.assign({}, payload, {
+            destination_path: link.getAttribute('href')
+          }));
+        }
+      });
+    });
+  }
+
+  /* Homepage category tiles (sections/apgo-home-categories.liquid). */
+  function initHomepageCategories(scope) {
+    var tiles = scope.querySelectorAll('[data-apgo-home-category]');
+    Array.prototype.forEach.call(tiles, function (tile) {
+      if (tile.getAttribute('data-apgo-tracking-ready') === 'true') return;
+      tile.setAttribute('data-apgo-tracking-ready', 'true');
+      tile.addEventListener('click', function () {
+        publish('apgo_home_category_click', {
+          campaign_id: 'homepage',
+          source: 'homepage',
+          category_handle: tile.getAttribute('data-category-handle'),
+          category_name: tile.getAttribute('data-category-name'),
+          position: Number(tile.getAttribute('data-position')),
+          destination_path: tile.getAttribute('href')
         });
       });
     });
@@ -675,6 +786,8 @@
   function init(scope) {
     var target = scope && scope.querySelectorAll ? scope : document;
     initHomepageLinks(target);
+    initHomepageLists(target);
+    initHomepageCategories(target);
     initGalleryTracking(target);
     initCampaignPage(target);
   }
