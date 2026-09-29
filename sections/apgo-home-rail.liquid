@@ -6,7 +6,10 @@
   products locked to the other market (custom.only_market) are skipped, and
   positions are counted after that skip so ranks stay 1, 2, 3…
 
-  Phones: a swipe rail showing ~2.5 cards, then one full-width button.
+  Phones: a swipe rail showing ~2.5 cards, small arrows above it (next to
+  "View all", so they never cover a card), then one full-width button.
+  Desktop carousel: ~4.5 cards with arrows in the header; the arrows hide
+  when every card already fits.
 {% endcomment %}
 
 {%- liquid
@@ -67,7 +70,7 @@
               </span>
             </a>
           {%- endif -%}
-          {%- if rail_desktop == 'carousel' and rail_count > 1 -%}
+          {%- if rail_count > 1 -%}
             <div class="apgo-home-rail__arrows">
               <button type="button" class="apgo-home-rail__arrow" data-apgo-rail-prev aria-label="Previous products" disabled>
                 {%- render 'apgo-home-icon', name: 'chevron-left', size: 20, stroke: 2 -%}

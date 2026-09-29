@@ -3,9 +3,9 @@
   apgo-cc-badge-carousel on the homepage).
 
   Each banner has a phone image and an optional desktop image (1200×420).
-  Desktop shows the wide images full width only when every banner has one;
-  otherwise desktop keeps the phone images at two thirds width, centred, as
-  the old carousel did. Slides share the first banner's proportions so the
+  Desktop shows the wide images across the content column only when every
+  banner has one; otherwise desktop keeps the phone images at two thirds of
+  the page width, centred, as the old carousel did. Slides share the first banner's proportions so the
   row never jumps in height.
 
   Every linked banner reports views/clicks through apgo-campaign-tracking.js
@@ -95,7 +95,7 @@
                     {{ block.settings.image | image_url: width: 1200 }} 1200w,
                     {{ block.settings.image | image_url: width: 1600 }} 1600w
                   "
-                  sizes="(min-width: 1024px) 800px, (min-width: 750px) calc(100vw - 48px), calc(100vw - 32px)"
+                  sizes="(min-width: 1024px) 67vw, (min-width: 750px) calc(100vw - 48px), calc(100vw - 32px)"
                   alt="{{ banner_alt | escape }}"
                   width="{{ block.settings.image.width }}"
                   height="{{ block.settings.image.height }}"
