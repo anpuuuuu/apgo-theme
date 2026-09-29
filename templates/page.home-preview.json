@@ -90,7 +90,8 @@
         "primary_label": "Shop deals",
         "primary_link": "#deals",
         "secondary_label": "Our story",
-        "secondary_link": "/pages/about-us"
+        "secondary_link": "/pages/about-us",
+        "crop_letterbox": true
       }
     },
     "home_deals": {
@@ -213,7 +214,7 @@
         "cat_featured": {
           "type": "featured",
           "settings": {
-            "collection": "",
+            "collection": "beginners-picks",
             "icon": "book",
             "eyebrow": "New to coating?",
             "title": "Start with Beginner's Picks",
@@ -249,7 +250,7 @@
         "anchor_id": "best-sellers",
         "collection": "best-sellers",
         "max_products": 8,
-        "badge_style": "rank",
+        "badge_style": "none",
         "desktop_layout": "carousel",
         "desktop_rows": "1",
         "background": "black",

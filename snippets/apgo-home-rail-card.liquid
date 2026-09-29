@@ -16,7 +16,7 @@
 
   @param {object} product - Product object
   @param {number} position - 1-based position in the rail (rank badge, tracking)
-  @param {string} [badge_style] - 'discount' (default) or 'rank'
+  @param {string} [badge_style] - 'discount' (default), 'rank' or 'none'
   @param {string} [layout] - 'card' (default) or 'deal'
   @param {string} [label] - Deal layout: ribbon text, e.g. "Deal of the week"
   @param {string} [note] - Deal layout: small line above the title
@@ -84,17 +84,18 @@
       assign hp_option_many = 'sets'
   endcase
 
-  # Rank (Best Sellers) prints as a large numeral; discount as "-51%".
+  # Rank prints as a large numeral; discount as "-51%"; 'none' leaves the
+  # corner empty (Best Sellers).
   assign hp_badge = ''
   assign hp_badge_kind = 'info'
   if badge_style == 'rank'
     assign hp_badge = position | append: ''
     assign hp_badge_kind = 'rank'
-  elsif hp_pct >= 1
+  elsif badge_style != 'none' and hp_pct >= 1
     assign hp_badge = '-' | append: hp_pct | append: '%'
     assign hp_badge_kind = 'deal'
   endif
-  if hp_badge == blank and product.variants.size > 1 and product.options.size == 1 and hp_option_many != blank
+  if badge_style != 'none' and hp_badge == blank and product.variants.size > 1 and product.options.size == 1 and hp_option_many != blank
     assign hp_badge = product.variants.size | append: ' ' | append: hp_option_many | upcase
   endif
 

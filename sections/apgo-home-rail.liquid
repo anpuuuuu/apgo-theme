@@ -1,7 +1,7 @@
 {% comment %}
   APGO Home — product rail (2026-09 homepage redesign). One section type,
   used twice on the page: "Best Value Picks" (current deals, discount
-  badges) and "Best Sellers" (rank badges). Products come from one
+  badges) and "Best Sellers" (no corner badge). Products come from one
   collection, in the collection's order; products locked to the other
   market (custom.only_market) are skipped, and positions are counted after
   that skip so ranks stay 1, 2, 3…
@@ -227,7 +227,8 @@
       "label": "Corner badge",
       "options": [
         { "value": "discount", "label": "Discount (e.g. -30%)" },
-        { "value": "rank", "label": "Rank (#1, #2…)" }
+        { "value": "rank", "label": "Rank (#1, #2…)" },
+        { "value": "none", "label": "None" }
       ],
       "default": "discount"
     },

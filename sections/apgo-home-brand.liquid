@@ -6,6 +6,10 @@
   The video loads after window load and pauses off screen (apgo-home.js
   "herovideo"); skipped for reduced motion / Save-Data, where the poster or
   the dark frame stays. Holds the page's only h1.
+
+  "Crop black bars" is for a video file with bars baked in above and below
+  the picture (the current one has 40px each): the video is drawn taller
+  than the frame so the bars are cut off.
 {% endcomment %}
 
 {%- liquid
@@ -56,7 +60,10 @@
   data-apgo-home-init="herovideo"
 >
   <div class="apgo-home-brand__inner">
-    <div class="apgo-home-brand__stage" data-apgo-video-stage>
+    <div
+      class="apgo-home-brand__stage{% if section.settings.crop_letterbox %} apgo-home-brand__stage--crop{% endif %}"
+      data-apgo-video-stage
+    >
       <div class="apgo-home-brand__media" aria-hidden="true">
         {%- if brand_poster != blank -%}
           {{
@@ -149,6 +156,13 @@
       "id": "poster_image",
       "label": "Cover image (optional)",
       "info": "Shows before the video starts. Defaults to the picked video's own cover."
+    },
+    {
+      "type": "checkbox",
+      "id": "crop_letterbox",
+      "label": "Crop black bars",
+      "info": "For a video with black bars above and below the picture, like the current one. Turn off for a video without them.",
+      "default": true
     },
     {
       "type": "header",

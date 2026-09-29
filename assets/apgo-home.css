@@ -1439,8 +1439,9 @@ html:not(.apgo-home-js) .apgo-home-compare__fill {
 }
 
 /* ── Banner carousel ── */
+/* Only a slim gap before the brand video right below. */
 .apgo-home-carousel {
-  padding-block: 16px;
+  padding-block: 16px 8px;
 }
 
 .apgo-home-carousel__frame {
@@ -1559,6 +1560,16 @@ html:not(.apgo-home-js) .apgo-home-compare__fill {
 
 .apgo-home-brand__stage.is-playing .apgo-home-brand__video {
   opacity: 1;
+}
+
+/* "Crop black bars": the current video file has 40px black bars top and
+   bottom (an 852×400 picture in an 852×480 frame). Drawn 20% taller than
+   the stage, the bars fall outside it instead of reading as an empty strip
+   under the banner. */
+.apgo-home-brand__stage--crop .apgo-home-brand__poster,
+.apgo-home-brand__stage--crop .apgo-home-brand__video {
+  top: -10%;
+  height: 120%;
 }
 
 /* Copy sits low and compact so most of the video stays clear; the
@@ -2132,7 +2143,7 @@ html:not(.apgo-home-js) .apgo-home-compare__fill {
   }
 
   .apgo-home-carousel {
-    padding-block: 20px;
+    padding-block: 20px 8px;
   }
 
   .apgo-home-rail,
@@ -2220,7 +2231,7 @@ html:not(.apgo-home-js) .apgo-home-compare__fill {
   /* Carousel: fills the two-thirds column; a full set of 1200×420 banners
      switches to the wide proportions. */
   .apgo-home-carousel {
-    padding-block: 24px;
+    padding-block: 24px 16px;
   }
 
   .apgo-home-carousel__track {
@@ -2284,7 +2295,7 @@ html:not(.apgo-home-js) .apgo-home-compare__fill {
 
   /* Brand video: a rounded card in the two-thirds column, copy bottom-left. */
   .apgo-home-brand {
-    padding-block: 8px 72px;
+    padding-block: 0 72px;
   }
 
   .apgo-home-brand__inner {
