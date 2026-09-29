@@ -15,7 +15,9 @@
   Optional featured deal (v2): the product picked as "Featured deal" is
   drawn as one large card above the row (and left out of the row). It only
   shows while that product is in the collection and sold in the visitor's
-  market, so its contents chips never end up on another product.
+  market, so its contents chips never end up on another product. Singapore
+  can have its own featured product (with its own chips); ribbon and note
+  fall back to the Malaysian ones when left empty.
 {% endcomment %}
 
 {%- liquid
@@ -27,6 +29,19 @@
   assign rail_list_id = 'home_' | append: rail_list_name | handleize | replace: '-', '_'
   assign rail_desktop = section.settings.desktop_layout
   assign rail_featured_pick = section.settings.featured_product
+  assign rail_featured_label = section.settings.featured_label
+  assign rail_featured_note = section.settings.featured_note
+  assign rail_featured_contents = section.settings.featured_contents
+  if rail_market == 'SG' and section.settings.featured_product_sg != blank
+    assign rail_featured_pick = section.settings.featured_product_sg
+    assign rail_featured_contents = section.settings.featured_contents_sg
+    if section.settings.featured_label_sg != blank
+      assign rail_featured_label = section.settings.featured_label_sg
+    endif
+    if section.settings.featured_note_sg != blank
+      assign rail_featured_note = section.settings.featured_note_sg
+    endif
+  endif
 
   capture rail_featured
     if rail_collection != blank and rail_featured_pick != blank
@@ -38,7 +53,7 @@
         if rail_pm != blank and rail_market != rail_pm
           break
         endif
-        render 'apgo-home-rail-card', product: product, position: 1, layout: 'deal', label: section.settings.featured_label, note: section.settings.featured_note, contents: section.settings.featured_contents
+        render 'apgo-home-rail-card', product: product, position: 1, layout: 'deal', label: rail_featured_label, note: rail_featured_note, contents: rail_featured_contents
         break
       endfor
     endif
@@ -279,6 +294,34 @@
       "id": "featured_contents",
       "label": "What's inside",
       "info": "Separate items with commas, e.g. 1 Crystal, 2 Refills, 4 Shampoos, 2 Coating Cloths"
+    },
+    {
+      "type": "header",
+      "content": "Featured deal for Singapore (optional)"
+    },
+    {
+      "type": "product",
+      "id": "featured_product_sg",
+      "label": "Singapore featured product",
+      "info": "Shown to Singapore visitors instead. Must also be in the collection above. Empty: Singapore uses the product above where it is sold there."
+    },
+    {
+      "type": "text",
+      "id": "featured_label_sg",
+      "label": "Singapore ribbon",
+      "info": "Empty: uses the ribbon above."
+    },
+    {
+      "type": "text",
+      "id": "featured_note_sg",
+      "label": "Singapore line above the title",
+      "info": "Empty: uses the line above."
+    },
+    {
+      "type": "text",
+      "id": "featured_contents_sg",
+      "label": "Singapore what's inside",
+      "info": "Chips for the Singapore product, separated by commas. Empty: no chips."
     },
     {
       "type": "header",
