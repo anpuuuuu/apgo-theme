@@ -992,12 +992,6 @@ body.apgo-clearance-sale-page .apgo-crate-boxtape span {
   text-transform: uppercase;
 }
 
-body.apgo-clearance-sale-page .apgo-crate-boxtape svg {
-  flex: 0 0 auto;
-  width: 12px;
-  height: 12px;
-}
-
 body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__link {
   display: block;
   line-height: 0;
@@ -1178,11 +1172,6 @@ body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__b
   body.apgo-clearance-sale-page .apgo-crate-boxtape span {
     font-size: 13px;
     letter-spacing: 2px;
-  }
-
-  body.apgo-clearance-sale-page .apgo-crate-boxtape svg {
-    width: 14px;
-    height: 14px;
   }
 
   body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__button {
