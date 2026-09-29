@@ -1561,17 +1561,13 @@ html:not(.apgo-home-js) .apgo-home-compare__fill {
   opacity: 1;
 }
 
-/* Copy sits low and compact so most of the video stays clear; the
-   gradient only darkens the lower part, behind the text. */
 .apgo-home-brand__scrim {
   position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0) 42%,
-    rgba(0, 0, 0, 0.55) 68%,
-    rgba(0, 0, 0, 0.82) 100%
-  );
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 360px;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.85) 50%);
 }
 
 .apgo-home-brand__content {
@@ -1580,24 +1576,18 @@ html:not(.apgo-home-js) .apgo-home-compare__fill {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding: 0 16px 20px;
+  gap: 10px;
+  padding: 0 16px 28px;
   text-align: center;
-  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.45);
-}
-
-.apgo-home-brand__content .apgo-hp-head__eyebrow {
-  font-size: 10px;
-  letter-spacing: 2px;
 }
 
 .apgo-home-brand__title {
   margin: 0;
   color: var(--apgo-home-paper);
-  font-size: clamp(24px, 6.4vw, 30px);
+  font-size: 34px;
   font-weight: 700;
-  line-height: 1.15;
-  letter-spacing: -0.3px;
+  line-height: 1.1;
+  letter-spacing: -0.5px;
   text-transform: none;
 }
 
@@ -1607,25 +1597,22 @@ html:not(.apgo-home-js) .apgo-home-compare__fill {
 
 .apgo-home-brand__text {
   margin: 0;
-  color: #d0d0d0;
-  font-size: 13px;
-  line-height: 19px;
+  color: var(--apgo-hp-text);
+  font-size: 14px;
+  line-height: 21px;
 }
 
 .apgo-home-brand__actions {
   display: flex;
   align-self: stretch;
-  gap: 8px;
-  margin-top: 4px;
-  text-shadow: none;
+  gap: 10px;
+  margin-top: 8px;
 }
 
 .apgo-home-brand__actions .apgo-hp-button {
   flex: 1 1 0;
   min-width: 0;
-  min-height: 42px;
   padding: 0 12px;
-  font-size: 13px;
 }
 
 /* ── Product rows ── */
@@ -1694,30 +1681,18 @@ html:not(.apgo-home-js) .apgo-home-compare__fill {
   width: 100%;
 }
 
-/* Phones: small arrows stacked above "View all", clear of the cards. */
-.apgo-home-rail .apgo-hp-head__side {
-  flex-direction: column;
-  align-items: flex-end;
+.apgo-home-rail__arrows {
+  display: none;
   gap: 8px;
 }
 
-.apgo-home-rail__arrows {
-  display: flex;
-  gap: 6px;
-}
-
-.apgo-home-rail.is-rail-ready:not(.has-overflow) .apgo-home-rail__arrows {
-  display: none;
-}
-
 .apgo-home-rail__arrow {
-  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  width: 30px;
-  height: 30px;
+  width: 44px;
+  height: 44px;
   padding: 0;
   border: 1px solid var(--apgo-home-paper);
   border-radius: 50%;
@@ -1725,17 +1700,6 @@ html:not(.apgo-home-js) .apgo-home-compare__fill {
   color: var(--apgo-home-paper);
   cursor: pointer;
   transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
-}
-
-.apgo-home-rail__arrow::after {
-  content: '';
-  position: absolute;
-  inset: -7px -3px;
-}
-
-.apgo-home-rail__arrow .apgo-hp-icon {
-  width: 16px;
-  height: 16px;
 }
 
 .apgo-home-rail__arrow:hover:not(:disabled) {
@@ -2064,23 +2028,9 @@ html:not(.apgo-home-js) .apgo-home-compare__fill {
   content: '';
 }
 
-/* base.css gives every summary:hover the theme's primary-hover colour,
-   which is dark here; on phones the hover sticks after a tap, so the open
-   question turned black. Keep it white, orange on real hover only. */
-.apgo-home-faq__question:hover {
-  color: var(--apgo-home-paper);
-}
-
-@media (hover: hover) {
-  .apgo-home-faq__question:hover {
-    color: var(--apgo-home-primary);
-  }
-}
-
 .apgo-home-faq__question:focus-visible {
-  border-radius: 4px;
-  outline: 1px solid rgba(240, 132, 24, 0.6);
-  outline-offset: 4px;
+  outline: 2px solid var(--apgo-home-primary);
+  outline-offset: 2px;
 }
 
 .apgo-home-faq__chevron {
@@ -2200,16 +2150,10 @@ html:not(.apgo-home-js) .apgo-home-compare__fill {
     gap: 6px;
   }
 
-  /* Carousel: phone-size banners take two thirds of the page width,
-     centred, as on the old homepage; a full set of 1200×420 banners fills
-     the content column instead. */
+  /* Carousel: phone-size banners stay two thirds wide and centred, as on
+     the old homepage; a full set of 1200×420 banners goes full width. */
   .apgo-home-carousel {
     padding-block: 24px;
-  }
-
-  .apgo-home-carousel:not(.apgo-home-carousel--wide) .apgo-hp__container {
-    max-width: none;
-    padding-inline: 0;
   }
 
   .apgo-home-carousel__frame {
@@ -2292,54 +2236,52 @@ html:not(.apgo-home-js) .apgo-home-compare__fill {
   }
 
   .apgo-home-brand__stage {
+    justify-content: center;
     height: 520px;
     border-radius: 16px;
   }
 
   .apgo-home-brand__scrim {
-    background:
-      linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.35) 36%, rgba(0, 0, 0, 0) 60%),
-      linear-gradient(to right, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0) 50%);
+    top: 0;
+    right: auto;
+    width: min(820px, 70%);
+    height: auto;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.88) 45%, rgba(0, 0, 0, 0));
   }
 
   .apgo-home-brand__content {
     box-sizing: border-box;
     align-items: flex-start;
-    gap: 10px;
-    width: min(700px, 66%);
-    padding: 0 48px 40px;
+    gap: 16px;
+    width: min(620px, 55%);
+    padding: 0 64px;
     text-align: left;
   }
 
-  .apgo-home-brand__content .apgo-hp-head__eyebrow {
-    font-size: 12px;
-    letter-spacing: 2.6px;
-  }
-
   .apgo-home-brand__title {
-    font-size: clamp(32px, 2.9vw, 42px);
-    line-height: 1.1;
-    letter-spacing: -0.8px;
+    font-size: 52px;
+    line-height: 1.08;
+    letter-spacing: -1px;
   }
 
   .apgo-home-brand__text {
-    font-size: 15px;
-    line-height: 24px;
+    font-size: 16px;
+    line-height: 26px;
   }
 
   .apgo-home-brand__actions {
     align-self: flex-start;
     width: auto;
     gap: 12px;
-    margin-top: 8px;
+    margin-top: 12px;
   }
 
   .apgo-home-brand__actions .apgo-hp-button {
     flex: 0 0 auto;
-    min-height: 48px;
-    padding: 0 28px;
-    border-radius: 24px;
-    font-size: 14px;
+    min-height: 52px;
+    padding: 0 32px;
+    border-radius: 26px;
+    font-size: 15px;
   }
 
   /* Product rows */
@@ -2353,28 +2295,8 @@ html:not(.apgo-home-js) .apgo-home-compare__fill {
     display: none;
   }
 
-  .apgo-home-rail .apgo-hp-head__side {
-    flex-direction: row;
-    align-items: center;
-    gap: 20px;
-  }
-
-  .apgo-home-rail__arrows {
-    gap: 8px;
-  }
-
-  .apgo-home-rail--grid .apgo-home-rail__arrows {
-    display: none;
-  }
-
-  .apgo-home-rail__arrow {
-    width: 44px;
-    height: 44px;
-  }
-
-  .apgo-home-rail__arrow .apgo-hp-icon {
-    width: 20px;
-    height: 20px;
+  .apgo-home-rail--carousel .apgo-home-rail__arrows {
+    display: flex;
   }
 
   .apgo-home-rail--carousel .apgo-home-rail__track {

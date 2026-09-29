@@ -458,7 +458,6 @@
     function update() {
       var hasOverflow = overflows();
       var maxLeft = track.scrollWidth - track.clientWidth - 2;
-      root.classList.add('is-rail-ready');
       root.classList.toggle('has-overflow', hasOverflow);
       if (prev) prev.disabled = !hasOverflow || track.scrollLeft <= 2;
       if (next) next.disabled = !hasOverflow || track.scrollLeft >= maxLeft;
