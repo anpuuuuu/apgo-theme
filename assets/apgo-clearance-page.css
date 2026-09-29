@@ -341,53 +341,6 @@ body.apgo-clearance-sale-page .apgo-event-banner--crate .apgo-event-banner__fram
   transform: rotate(5deg);
 }
 
-body.apgo-clearance-sale-page .apgo-event-banner__crate-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding-top: 8px;
-  color: var(--crate-kraft);
-  line-height: 1.2;
-}
-
-body.apgo-clearance-sale-page .apgo-event-banner__crate-row span {
-  font-family: var(--crate-mono) !important;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-}
-
-body.apgo-clearance-sale-page .apgo-event-banner__crate-mark {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-body.apgo-clearance-sale-page .apgo-event-banner__crate-mark svg {
-  flex: 0 0 auto;
-  width: 14px;
-  height: 14px;
-}
-
-body.apgo-clearance-sale-page .apgo-event-banner__crate-marks,
-body.apgo-clearance-sale-page .apgo-event-banner__crate-end {
-  display: inline-flex;
-  align-items: center;
-  gap: 18px;
-}
-
-body.apgo-clearance-sale-page .apgo-event-banner__crate-end {
-  gap: 10px;
-}
-
-body.apgo-clearance-sale-page .apgo-event-banner__crate-mid,
-body.apgo-clearance-sale-page .apgo-event-banner__crate-mark--extra,
-body.apgo-clearance-sale-page .apgo-event-banner__crate-end .apgo-crate-barcode {
-  display: none;
-}
-
 body.apgo-clearance-sale-page .apgo-event-banner--crate_simple {
   padding-block: 0 var(--crate-space);
 }
@@ -431,34 +384,6 @@ body.apgo-clearance-sale-page .apgo-event-banner--crate_simple .apgo-event-banne
     transform: rotate(3deg);
   }
 
-  body.apgo-clearance-sale-page .apgo-event-banner__crate-row {
-    padding-top: 12px;
-  }
-
-  body.apgo-clearance-sale-page .apgo-event-banner__crate-row span {
-    font-size: 13px;
-    letter-spacing: 1.5px;
-  }
-
-  body.apgo-clearance-sale-page .apgo-event-banner__crate-mark svg {
-    width: 16px;
-    height: 16px;
-  }
-
-  body.apgo-clearance-sale-page .apgo-event-banner__crate-mid {
-    display: inline;
-  }
-
-  body.apgo-clearance-sale-page .apgo-event-banner__crate-mark--extra {
-    display: inline-flex;
-  }
-
-  body.apgo-clearance-sale-page .apgo-event-banner__crate-end .apgo-crate-barcode {
-    display: block;
-    width: 56px;
-    height: 16px;
-  }
-
   body.apgo-clearance-sale-page .apgo-event-banner--crate_simple .apgo-event-banner__frame {
     border-width: 3px;
   }
@@ -474,8 +399,8 @@ body.apgo-clearance-sale-page .apgo-crate-intro__grid {
   grid-template-columns: minmax(0, 1fr);
   grid-template-areas:
     'copy'
-    'art'
-    'tags';
+    'tags'
+    'art';
   gap: 18px;
 }
 
@@ -525,6 +450,70 @@ body.apgo-clearance-sale-page .apgo-crate-intro__text {
   color: var(--crate-ink-soft);
   font-size: 14px;
   line-height: 22px;
+}
+
+/* The deal in one line; bold words (set in the editor) turn red. */
+body.apgo-clearance-sale-page .apgo-crate-intro__offer {
+  margin: 0;
+  color: var(--crate-ink);
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+body.apgo-clearance-sale-page .apgo-crate-intro__offer strong,
+body.apgo-clearance-sale-page .apgo-crate-intro__offer b {
+  color: var(--crate-accent);
+  font-weight: 700;
+}
+
+body.apgo-clearance-sale-page .apgo-crate-intro__offer--hint {
+  padding: 6px 10px;
+  border: 1px dashed var(--crate-kraft-line);
+  color: var(--crate-ink-muted);
+  font-size: 13px;
+  font-weight: 400;
+}
+
+body.apgo-clearance-sale-page .apgo-crate-intro__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  box-sizing: border-box;
+  min-height: 48px;
+  margin-top: 4px;
+  padding: 0 22px;
+  background: var(--crate-cta);
+  color: var(--crate-cta-ink);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+}
+
+body.apgo-clearance-sale-page .apgo-crate-intro__cta:hover {
+  background: var(--crate-cta-hover);
+  color: var(--crate-cta-ink);
+}
+
+body.apgo-clearance-sale-page .apgo-crate-intro__cta:focus-visible {
+  outline: 2px solid var(--crate-ink);
+  outline-offset: 3px;
+}
+
+body.apgo-clearance-sale-page .apgo-crate-intro__cta svg {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+}
+
+/* Phones: skip the illustration so the offer, button and tags fit on
+   the first screen. */
+@media screen and (max-width: 749px) {
+  body.apgo-clearance-sale-page .apgo-crate-intro__art {
+    display: none;
+  }
 }
 
 body.apgo-clearance-sale-page .apgo-crate-intro__art {
@@ -672,6 +661,16 @@ body.apgo-clearance-sale-page .apgo-crate-intro__tag-text {
   body.apgo-clearance-sale-page .apgo-crate-intro__text {
     font-size: 17px;
     line-height: 28px;
+  }
+
+  body.apgo-clearance-sale-page .apgo-crate-intro__offer {
+    font-size: 20px;
+  }
+
+  body.apgo-clearance-sale-page .apgo-crate-intro__cta {
+    min-height: 52px;
+    padding: 0 28px;
+    font-size: 15px;
   }
 
   body.apgo-clearance-sale-page .apgo-crate-intro__art {
@@ -1196,7 +1195,7 @@ body.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__b
   }
 }
 
-/* ── Box details: corner guards + barcode ─────────────────────────────
+/* ── Box details: corner guards ───────────────────────────────────────
    Cardboard corner protectors on the banner boxes. All decoration sits on
    the frame, never over the banner artwork. */
 body.apgo-clearance-sale-page .apgo-crate-guards {
@@ -1245,21 +1244,6 @@ body.apgo-clearance-sale-page .apgo-crate-guards i:nth-child(4) {
 /* The hero's top corners already carry tape. */
 body.apgo-clearance-sale-page .apgo-crate-guards--bottom i:nth-child(-n + 2) {
   display: none;
-}
-
-body.apgo-clearance-sale-page .apgo-crate-barcode {
-  width: 64px;
-  height: 18px;
-  background: repeating-linear-gradient(
-    90deg,
-    currentColor 0 2px,
-    transparent 2px 4px,
-    currentColor 4px 5px,
-    transparent 5px 8px,
-    currentColor 8px 11px,
-    transparent 11px 13px
-  );
-  opacity: 0.8;
 }
 
 @media screen and (min-width: 990px) {

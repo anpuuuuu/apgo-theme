@@ -425,6 +425,10 @@
         "heading": "Everything",
         "heading_accent": "must go",
         "text": "We're moving into a bigger factory, and the old stock has to go first. Clearance prices while stocks last.",
+        "offer": "",
+        "offer_sg": "",
+        "button_label": "Shop the clearance",
+        "button_link": "#clearance-deals",
         "stamp": "Clearance",
         "sign": "New factory →"
       }
