@@ -76,22 +76,8 @@
       "settings": {
         "autoplay": true,
         "interval": 5,
-        "aria_label": "Current promotions"
-      }
-    },
-    "home_brand": {
-      "type": "apgo-home-brand",
-      "settings": {
-        "video_url": "https://cdn.shopify.com/videos/c/o/v/d8e8828223b342a3b6167dbdb1bda547.mp4",
-        "eyebrow": "APGO · Professional Coating Experts",
-        "heading": "We specialize in",
-        "heading_accent": "coating",
-        "text": "Because it's easier, more durable, and shinier.",
-        "primary_label": "Shop deals",
-        "primary_link": "#deals",
-        "secondary_label": "Our story",
-        "secondary_link": "/pages/about-us",
-        "crop_letterbox": true
+        "aria_label": "Current promotions",
+        "page_heading": "APGO · Professional Coating Experts"
       }
     },
     "home_deals": {
@@ -381,9 +367,8 @@
   "order": [
     "main",
     "home_carousel",
-    "home_brand",
-    "home_perks",
     "home_deals",
+    "home_perks",
     "home_categories",
     "home_best_sellers",
     "home_faq",

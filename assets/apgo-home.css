@@ -3380,3 +3380,26 @@ html:not(.apgo-home-js) .apgo-home-compare__fill {
     font-size: 12px;
   }
 }
+
+/* ── Product row straight under the banners (9/30) ──
+   Best Value Picks took the brand video's place; its full section padding
+   read as an empty band under the banners. */
+.apgo-home-carousel-wrapper + .apgo-home-rail-wrapper .apgo-home-rail {
+  padding-block-start: 24px;
+}
+
+@media (min-width: 750px) {
+  .apgo-home-carousel-wrapper + .apgo-home-rail-wrapper .apgo-home-rail {
+    padding-block-start: 32px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .apgo-home-carousel-wrapper + .apgo-home-rail-wrapper .apgo-home-rail {
+    padding-block-start: 40px;
+  }
+
+  .apgo-home-carousel-wrapper + .apgo-home-rail-wrapper .apgo-home-rail__ghost {
+    top: 0;
+  }
+}

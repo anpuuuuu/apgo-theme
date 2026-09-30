@@ -11,6 +11,9 @@
   Every linked banner reports views/clicks through apgo-campaign-tracking.js
   ([data-apgo-homepage-campaign-link]). The Golden Bull banner keeps its
   original promotion id so GA4 reports continue.
+
+  Also holds the page's h1, visually hidden ("Page heading"): the design has
+  no visible title at the top since the brand video section was dropped.
 {% endcomment %}
 
 {%- liquid
@@ -37,6 +40,10 @@
     assign all_wide = false
   endif
 -%}
+
+{%- if section.settings.page_heading != blank -%}
+  <h1 class="visually-hidden">{{ section.settings.page_heading | escape }}</h1>
+{%- endif -%}
 
 {%- if shown > 0 -%}
   <script src="{{ 'apgo-campaign-tracking.js' | asset_url }}" defer></script>
@@ -192,6 +199,13 @@
       "id": "aria_label",
       "label": "Accessible name",
       "default": "Current promotions"
+    },
+    {
+      "type": "text",
+      "id": "page_heading",
+      "label": "Page heading (hidden)",
+      "info": "The page's main heading for search engines and screen readers. Not shown on the page.",
+      "default": "APGO · Professional Coating Experts"
     }
   ],
   "blocks": [
