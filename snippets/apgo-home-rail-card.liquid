@@ -4,7 +4,8 @@
   square image with a corner badge, two-line title, price (compare-at struck
   through) and one full-width outline button. layout 'deal' draws the large
   "deal of the week" card instead (photo left on desktop, label ribbon,
-  discount sticker, note, contents chips, solid button).
+  discount sticker, note, contents chips, solid button). Its photo loads
+  eagerly: the row sits right under the banners, so it is on the first screen.
 
   Button: sold out -> disabled; custom.hide_quick_add -> link to the product
   page; one variant -> adds straight to the cart (handled by
@@ -162,7 +163,7 @@
             hp_image
             | image_url: width: 900
             | image_tag:
-              loading: 'lazy',
+              loading: 'eager',
               widths: '400, 600, 900',
               sizes: '(min-width: 1024px) 30vw, 100vw',
               alt: hp_title,
