@@ -3403,3 +3403,17 @@ html:not(.apgo-home-js) .apgo-home-compare__fill {
     top: 0;
   }
 }
+
+/* ── Service strip spacing on desktop (10/1) ──
+   The strip is a thin band; the full 96px section padding on both sides of
+   it read as empty space. The row above ends and the section below starts
+   closer to it. (:has() for the row above; older browsers keep 96px.) */
+@media (min-width: 1024px) {
+  .apgo-home-rail-wrapper:has(+ .apgo-home-perks-wrapper) > .apgo-home-rail {
+    padding-block-end: 48px;
+  }
+
+  .apgo-home-perks-wrapper + .shopify-section > .apgo-home {
+    padding-block-start: 48px;
+  }
+}
