@@ -509,6 +509,12 @@
       var targetIdx = (variantIdx >= 0 && variantIdx < sections.length) ? variantIdx : 0;
       sections.forEach(function (s, i) { s.classList.toggle('is-active', i === targetIdx); });
     }
+
+    /* Tell other parts of the page (e.g. the buy bar's "selected item" peek,
+       assets/apgo-cc-variant-peek.js) which variant is now selected. */
+    try {
+      document.dispatchEvent(new CustomEvent('apgo:variantchange', { detail: { variant: v } }));
+    } catch (_) {}
   }
 
   form.querySelectorAll('input[type="radio"][data-apgo-cc-option-input]').forEach(function (r) {

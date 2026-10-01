@@ -8,12 +8,66 @@
     - Fetches /cart.js, renders mini cart, updates chip + subtotal
     - Adds to cart via .apgo-cc-pdp__form (must exist on the page)
     - Dispatches cart:update / cart:updated / cart:refresh (+ Horizon CartUpdateEvent)
+
+  "Selected item" peek (2026-10): on products with many variants that have
+  their own photos, a small card floats above the bar once the gallery has
+  scrolled away: selected variant photo, name and price; tap = large photo.
+  Logic in assets/apgo-cc-variant-peek.js. On by default for 6+ variants
+  with at least 2 variant images; product tags apgo-peek-on / apgo-peek-off
+  override. It sits left of the Shopify chat button, so the two never overlap.
 {%- endcomment -%}
+
+{%- liquid
+  assign apgo_peek_img_count = 0
+  for v in product.variants
+    if v.featured_image
+      assign apgo_peek_img_count = apgo_peek_img_count | plus: 1
+    endif
+  endfor
+  assign apgo_peek_on = false
+  if product.variants.size >= 6 and apgo_peek_img_count >= 2
+    assign apgo_peek_on = true
+  endif
+  if product.tags contains 'apgo-peek-on'
+    assign apgo_peek_on = true
+  endif
+  if product.tags contains 'apgo-peek-off'
+    assign apgo_peek_on = false
+  endif
+  assign apgo_peek_v = product.selected_or_first_available_variant
+  assign apgo_peek_img = apgo_peek_v.featured_image | default: product.featured_image
+-%}
 
 <aside class="apgo-cc-buybar{% if cart.item_count == 0 %} is-cart-empty{% endif %}" data-apgo-cc-buybar aria-label="Add to cart">
   <div class="apgo-cc-buybar__backdrop" data-apgo-cc-buybar-backdrop aria-hidden="true"></div>
 
   <div class="apgo-cc-buybar__panel">
+    {%- if apgo_peek_on -%}
+      <div class="apgo-cc-peek" data-apgo-cc-peek data-default-label="Standard" hidden aria-hidden="true" inert>
+        <button type="button" class="apgo-cc-peek__btn" data-apgo-cc-peek-open tabindex="-1" aria-label="View larger photo: {{ apgo_peek_v.title | escape }}">
+          <span class="apgo-cc-peek__thumb">
+            <img
+              data-apgo-cc-peek-img
+              src="{{ apgo_peek_img | image_url: width: 160 }}"
+              alt=""
+              width="48"
+              height="48"
+              loading="lazy"
+              decoding="async"
+            >
+            <svg class="apgo-cc-peek__zoom" viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5M11 8.5v5M8.5 11h5"/></svg>
+          </span>
+          <span class="apgo-cc-peek__text">
+            <span class="apgo-cc-peek__label">Selected</span>
+            <span class="apgo-cc-peek__name" data-apgo-cc-peek-name>{{ apgo_peek_v.title | escape }}</span>
+            <span class="apgo-cc-peek__prices">
+              <span class="apgo-cc-peek__price" data-apgo-cc-peek-price>{{ apgo_peek_v.price | money | replace: ' MYR', '' | replace: 'MYR', '' | strip }}</span>
+              <s class="apgo-cc-peek__compare" data-apgo-cc-peek-compare{% unless apgo_peek_v.compare_at_price > apgo_peek_v.price %} hidden{% endunless %}>{{ apgo_peek_v.compare_at_price | money | replace: ' MYR', '' | replace: 'MYR', '' | strip }}</s>
+            </span>
+          </span>
+        </button>
+      </div>
+    {%- endif -%}
     {%- comment -%} ---- Expandable sheet ---- {%- endcomment -%}
     <div class="apgo-cc-buybar__sheet" data-apgo-cc-buybar-sheet aria-hidden="true">
       <div class="apgo-cc-buybar__sheet-head">
@@ -98,3 +152,97 @@
     </div>
   </div>
 </aside>
+
+{%- if apgo_peek_on -%}
+  <style>
+    .apgo-cc-peek[hidden] { display: none !important; }
+    .apgo-cc-peek {
+      position: absolute;
+      left: 12px;
+      right: 104px;
+      bottom: calc(100% + 10px);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translateY(8px);
+      transition: opacity .2s ease, transform .2s ease, visibility 0s linear .2s;
+    }
+    .apgo-cc-peek.is-visible {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: none;
+      transition: opacity .2s ease, transform .2s ease, visibility 0s;
+    }
+    .apgo-cc-peek__btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      margin: 0;
+      padding: 7px 12px 7px 7px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
+      background: rgba(20, 20, 20, 0.96);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      color: #fff;
+      text-align: left;
+      cursor: zoom-in;
+    }
+    .apgo-cc-peek__btn:focus-visible { outline: 2px solid #f08418; outline-offset: 2px; }
+    .apgo-cc-peek__thumb {
+      position: relative;
+      flex: 0 0 48px;
+      width: 48px;
+      height: 48px;
+      overflow: hidden;
+      border-radius: 9px;
+      background: #222;
+    }
+    .apgo-cc-peek__thumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .apgo-cc-peek__zoom {
+      position: absolute;
+      right: 3px;
+      bottom: 3px;
+      box-sizing: content-box;
+      padding: 2px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.65);
+      color: #fff;
+    }
+    .apgo-cc-peek__text { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+    .apgo-cc-peek__label {
+      color: #8a8a8a;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      line-height: 1.3;
+      text-transform: uppercase;
+    }
+    .apgo-cc-peek__name {
+      display: -webkit-box;
+      overflow: hidden;
+      font-size: 12px;
+      line-height: 1.3;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+    .apgo-cc-peek__prices { display: flex; align-items: baseline; gap: 6px; line-height: 1.3; }
+    .apgo-cc-peek__price { color: #f08418; font-size: 14px; font-weight: 700; }
+    .apgo-cc-peek__compare { color: #8a8a8a; font-size: 11px; }
+    /* The lightbox opens from the peek, above the buy bar (z-index 100000). */
+    #apgoImageLightbox { z-index: 100120; }
+    @media (max-width: 1023px) {
+      body:has(.apgo-product-section):not(.apgo-pdp-variant-sidebar-open) footer.apgo-footer {
+        padding-bottom: calc(176px + env(safe-area-inset-bottom, 0px));
+      }
+    }
+    @media (max-width: 749px) {
+      body.apgo-cc-peek-on .apgo-promo-bubble { bottom: 240px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .apgo-cc-peek, .apgo-cc-peek.is-visible { transition: none; }
+    }
+  </style>
+  <script src="{{ 'apgo-cc-variant-peek.js' | asset_url }}" defer></script>
+{%- endif -%}
