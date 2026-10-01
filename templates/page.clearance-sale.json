@@ -64,13 +64,6 @@
         "tilt": "left"
       }
     },
-    "apgo_clearance_tape_KrCzFn": {
-      "type": "apgo-clearance-tape",
-      "settings": {
-        "text": "Clearance · Everything must go",
-        "tilt": "left"
-      }
-    },
     "apgo_event_banner_jRgaPP": {
       "type": "apgo-event-banner",
       "name": "APGO Event Banner",
@@ -81,6 +74,25 @@
         "desktop_width_percent": 67,
         "frame_style": "crate",
         "color_scheme": ""
+      }
+    },
+    "apgo_event_banner_KEaR44": {
+      "type": "apgo-event-banner",
+      "name": "APGO Event Banner",
+      "settings": {
+        "image": "shopify://shop_images/3_0e3a8eb7-4b99-479d-95b3-fe95d6d18b23.jpg",
+        "image_alt": "APGO Golden Bull Award",
+        "link": "#clearance-deals",
+        "desktop_width_percent": 67,
+        "frame_style": "crate",
+        "color_scheme": ""
+      }
+    },
+    "apgo_clearance_tape_KrCzFn": {
+      "type": "apgo-clearance-tape",
+      "settings": {
+        "text": "Clearance · Everything must go",
+        "tilt": "left"
       }
     },
     "clearance_intro": {
@@ -417,6 +429,7 @@
     "main",
     "clearance_tape_top",
     "apgo_event_banner_jRgaPP",
+    "apgo_event_banner_KEaR44",
     "apgo_clearance_tape_KrCzFn",
     "clearance_intro",
     "clearance_countdown",
