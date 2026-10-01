@@ -22,7 +22,9 @@
     {%- endif -%}
 
     {{ 'base.css' | asset_url | stylesheet_tag }}
-    {{ 'apgo-site-texture.css' | asset_url | stylesheet_tag }}
+    {%- if request.page_type == 'collection' and collection.handle == 'all' -%}
+      {{ 'apgo-site-texture.css' | asset_url | stylesheet_tag }}
+    {%- endif -%}
 
     {%- if settings.favicon != blank -%}
       <link
@@ -320,13 +322,10 @@
       assign apgo_body_page_class = ' apgo-clearance-sale-page'
     endif
 
-    # Carbon-weave page ground (assets/apgo-site-texture.css) everywhere except
-    # pages that bring their own backdrop.
-    assign apgo_weave_class = ' apgo-weave'
-    if apgo_aboutus_main_class != ''
-      assign apgo_weave_class = ''
-    elsif template.suffix == 'clearance-sale' or template.suffix == 'golden-bull-award' or template.suffix == 'special-event'
-      assign apgo_weave_class = ''
+    # Carbon-weave page ground (assets/apgo-site-texture.css): All Products only.
+    assign apgo_weave_class = ''
+    if request.page_type == 'collection' and collection.handle == 'all'
+      assign apgo_weave_class = ' apgo-weave'
     endif
   %}
 

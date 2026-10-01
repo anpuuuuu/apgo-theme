@@ -1,48 +1,22 @@
 /*
-  Carbon-weave page ground, site-wide (2026-10).
+  Carbon-weave page ground for the All Products page (/collections/all).
 
-  The texture from the homepage categories section, laid wherever a page
-  paints its plain black ground: the body, Horizon section backgrounds in
-  the black colour schemes, and APGO's own full-width black sections.
-  Header, announcement bar, footer, product cards and drawers keep their
-  solid fills.
+  The texture from the homepage categories section on a #0b0b0b ground (on
+  pure black the 3% weave all but disappears). Tried site-wide on 2026-10-01;
+  the owner kept it for All Products only. layout/theme.liquid loads this
+  file and sets body.apgo-weave on that page alone.
 
-  body.apgo-weave is set in layout/theme.liquid. Pages with their own
-  backdrop leave it off: the clearance page (warehouse look), the Golden
-  Bull / special-event pages, and About Us / Find Us (particle layer).
-
-  Product page: the outer .apgo-product-section carries the texture and its
-  plain-black inner sections turn transparent, so the weave runs through
-  without seams where they start.
-
-  Ground colour: #0b0b0b, the same as the homepage categories section.
-  On pure black the 3% weave all but disappears on most screens.
+  Header, announcement bar, footer and product cards keep their solid fills.
 */
 body.apgo-weave,
 body.apgo-weave #MainContent .section-background.color-scheme-1,
 body.apgo-weave #MainContent .section-background.color-scheme-5,
 body.apgo-weave #MainContent .section-background.color-scheme-9a9df36f-52ae-4a86-948a-8b59a473eca0,
-body.apgo-weave #MainContent .section-background.color-scheme-a27d2d12-7174-40fe-a01c-a128174b4c26,
-body.apgo-weave #MainContent .apgo-home:not(.apgo-home-news),
-body.apgo-weave #MainContent .apgo-faq,
-body.apgo-weave #MainContent .apgo-product-section,
-body.apgo-weave #MainContent .apgo-tab-desc-layout {
+body.apgo-weave #MainContent .section-background.color-scheme-a27d2d12-7174-40fe-a01c-a128174b4c26 {
   background-color: #0b0b0b;
   background-image:
     linear-gradient(45deg, rgba(255, 255, 255, 0.03) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.03) 75%),
     linear-gradient(45deg, rgba(255, 255, 255, 0.03) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.03) 75%);
   background-position: 0 0, 4px 4px;
   background-size: 8px 8px;
-}
-
-body.apgo-weave #MainContent .apgo-tab-desc-layout {
-  background-color: #0f0f0f;
-}
-
-body.apgo-weave #MainContent .apgo-product-section .apgo-pdp-looping-lead,
-body.apgo-weave #MainContent .apgo-product-section .apgo-insidebox,
-body.apgo-weave #MainContent .apgo-product-section .apgo-insidebox-inner,
-body.apgo-weave #MainContent .apgo-product-section .apgo-video-showcase,
-body.apgo-weave #MainContent .apgo-product-section .apgo-pdp-tabs {
-  background-color: transparent;
 }
