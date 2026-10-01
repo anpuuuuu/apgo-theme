@@ -16,8 +16,9 @@
   drawn as one large card above the row (and left out of the row). It only
   shows while that product is in the collection and sold in the visitor's
   market, so its contents chips never end up on another product. Singapore
-  can have its own featured product (with its own chips); ribbon and note
-  fall back to the Malaysian ones when left empty.
+  fields left empty mean "same as Malaysia" (product, ribbon, line, chips).
+  One exception: with a different Singapore product and no Singapore chips,
+  the card shows no chips rather than the Malaysian product's contents.
 {% endcomment %}
 
 {%- liquid
@@ -32,14 +33,20 @@
   assign rail_featured_label = section.settings.featured_label
   assign rail_featured_note = section.settings.featured_note
   assign rail_featured_contents = section.settings.featured_contents
-  if rail_market == 'SG' and section.settings.featured_product_sg != blank
-    assign rail_featured_pick = section.settings.featured_product_sg
-    assign rail_featured_contents = section.settings.featured_contents_sg
+  if rail_market == 'SG'
+    if section.settings.featured_product_sg != blank
+      assign rail_featured_pick = section.settings.featured_product_sg
+    endif
     if section.settings.featured_label_sg != blank
       assign rail_featured_label = section.settings.featured_label_sg
     endif
     if section.settings.featured_note_sg != blank
       assign rail_featured_note = section.settings.featured_note_sg
+    endif
+    if section.settings.featured_contents_sg != blank
+      assign rail_featured_contents = section.settings.featured_contents_sg
+    elsif section.settings.featured_product_sg != blank and section.settings.featured_product_sg.id != section.settings.featured_product.id
+      assign rail_featured_contents = ''
     endif
   endif
 
@@ -311,25 +318,25 @@
       "type": "product",
       "id": "featured_product_sg",
       "label": "Singapore featured product",
-      "info": "Shown to Singapore visitors instead. Must also be in the collection above. Empty: Singapore uses the product above where it is sold there."
+      "info": "Empty: same as Malaysia (shown in Singapore only if it is sold there). A product picked here must also be in the collection above."
     },
     {
       "type": "text",
       "id": "featured_label_sg",
       "label": "Singapore ribbon",
-      "info": "Empty: uses the ribbon above."
+      "info": "Empty: same as Malaysia."
     },
     {
       "type": "text",
       "id": "featured_note_sg",
       "label": "Singapore line above the title",
-      "info": "Empty: uses the line above."
+      "info": "Empty: same as Malaysia."
     },
     {
       "type": "text",
       "id": "featured_contents_sg",
       "label": "Singapore what's inside",
-      "info": "Chips for the Singapore product, separated by commas. Empty: no chips."
+      "info": "Separated by commas. Empty: same as Malaysia; but if you picked a different Singapore product above, empty means no chips."
     },
     {
       "type": "header",
