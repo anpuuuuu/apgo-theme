@@ -44,17 +44,21 @@
         "desktop_layout": "carousel",
         "desktop_rows": "1",
         "background": "black",
+        "ghost_text": "DEALS",
+        "featured_product": "warehouse-clearance-sale-bundle",
+        "featured_label": "Deal of the week",
+        "featured_note": "Limited time only · while stocks last",
+        "featured_contents": "2 Aurora, 2 Titanium, 2  Coloured Glaze, Total 23 Product",
+        "featured_product_sg": "",
+        "featured_label_sg": "",
+        "featured_note_sg": "",
+        "featured_contents_sg": "",
         "link_label": "View all",
         "link_label_desktop": "View all deals",
         "link": "/collections/best-value-picks",
         "button_label": "See all deals",
         "button_link": "/collections/best-value-picks",
-        "button_style": "solid",
-        "ghost_text": "DEALS",
-        "featured_product": "atomic-crystal-merdeka-set",
-        "featured_label": "Deal of the week",
-        "featured_note": "Limited time only · while stocks last",
-        "featured_contents": "1 Crystal, 2 Refills, 4 Shampoos, 2 Coating Cloths"
+        "button_style": "solid"
       }
     },
     "home_perks": {
@@ -110,6 +114,16 @@
     "home_categories": {
       "type": "apgo-home-categories",
       "blocks": {
+        "cat_featured": {
+          "type": "featured",
+          "settings": {
+            "collection": "beginners-picks",
+            "icon": "book",
+            "eyebrow": "New to coating?",
+            "title": "Start with Beginner's Picks",
+            "link": ""
+          }
+        },
         "cat_household": {
           "type": "category",
           "settings": {
@@ -198,16 +212,6 @@
             "link": "",
             "show_on_mobile": false
           }
-        },
-        "cat_featured": {
-          "type": "featured",
-          "settings": {
-            "collection": "beginners-picks",
-            "icon": "book",
-            "eyebrow": "New to coating?",
-            "title": "Start with Beginner's Picks",
-            "link": ""
-          }
         }
       },
       "block_order": [
@@ -242,13 +246,21 @@
         "desktop_layout": "carousel",
         "desktop_rows": "1",
         "background": "black",
+        "ghost_text": "TOP 8",
+        "featured_product": "",
+        "featured_label": "Deal of the week",
+        "featured_note": "Limited time only · while stocks last",
+        "featured_contents": "",
+        "featured_product_sg": "",
+        "featured_label_sg": "",
+        "featured_note_sg": "",
+        "featured_contents_sg": "",
         "link_label": "View all",
         "link_label_desktop": "Shop all products",
         "link": "/collections/all",
         "button_label": "Shop all products",
         "button_link": "/collections/all",
-        "button_style": "outline",
-        "ghost_text": "TOP 8"
+        "button_style": "outline"
       }
     },
     "home_faq": {
