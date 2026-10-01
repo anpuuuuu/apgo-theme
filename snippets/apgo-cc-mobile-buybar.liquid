@@ -36,9 +36,17 @@
   endif
   assign apgo_peek_v = product.selected_or_first_available_variant
   assign apgo_peek_img = apgo_peek_v.featured_image | default: product.featured_image
+  # Direct add (2026-10): on these products the bar's Add to cart / Buy now
+  # commit the variant already chosen on the page, without the confirm sheet.
+  # Pocket-Friendly Deals has 29 options picked on the page itself. Tag
+  # apgo-direct-add turns it on for other products.
+  assign apgo_direct_add = false
+  if product.handle == 'pocket-friendly-deals' or product.tags contains 'apgo-direct-add'
+    assign apgo_direct_add = true
+  endif
 -%}
 
-<aside class="apgo-cc-buybar{% if cart.item_count == 0 %} is-cart-empty{% endif %}" data-apgo-cc-buybar aria-label="Add to cart">
+<aside class="apgo-cc-buybar{% if cart.item_count == 0 %} is-cart-empty{% endif %}" data-apgo-cc-buybar{% if apgo_direct_add %} data-apgo-cc-direct-add{% endif %} aria-label="Add to cart">
   <div class="apgo-cc-buybar__backdrop" data-apgo-cc-buybar-backdrop aria-hidden="true"></div>
 
   <div class="apgo-cc-buybar__panel">

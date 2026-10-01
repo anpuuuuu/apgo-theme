@@ -1411,6 +1411,15 @@
     /* Desktop uses inline CTA buttons in the form, not the modal. Guard here
        so any accidental call from buybar / API consumers no-ops on desktop. */
     if (window.matchMedia && window.matchMedia('(min-width: 1024px)').matches) return;
+    /* Direct add: products whose buy bar carries data-apgo-cc-direct-add
+       (snippets/apgo-cc-mobile-buybar.liquid, e.g. the 29-option
+       Pocket-Friendly Deals) commit the variant chosen on the page straight
+       away, without the sheet. A product with a free-gift picker keeps the
+       sheet, because that is where the gifts are chosen on phones. */
+    if (directAdd && !giftPickerActive) {
+      commitDirect(intent === 'buy' ? 'buy' : 'add');
+      return;
+    }
     /* Intent values:
          'add'  → show only Add to cart
          'buy'  → show only Buy now
@@ -1474,6 +1483,19 @@
       confirmQtyInput.value = n;
     });
   });
+
+  /* Direct add from the buy bar (no sheet): same commit as the sheet, with the
+     page's own quantity (1 unless something else set it). Buy now goes to the
+     cart, like the sheet's Buy now. */
+  var directAdd = !!document.querySelector('[data-apgo-cc-buybar][data-apgo-cc-direct-add]');
+  function commitDirect(intent) {
+    var trigger = document.querySelector(intent === 'buy' ? '[data-apgo-cc-buybar-checkout]' : '[data-apgo-cc-buybar-add]');
+    addToCart({ btn: trigger, silent: intent === 'buy' }).then(function () {
+      if (intent === 'buy') window.location.href = '/cart';
+    }).catch(function (error) {
+      handleCartFailure(error);
+    });
+  }
 
   /* Modal Add / Buy — write the modal qty back into the hidden form qty, then commit */
   function commitFromConfirm(intent, triggerBtn) {
