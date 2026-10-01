@@ -147,6 +147,7 @@
         },
         "cat_deals": {
           "type": "category",
+          "disabled": true,
           "settings": {
             "collection": "collections-limited-time-deals",
             "icon": "gift",
