@@ -38,7 +38,7 @@
           data-index="{{ forloop.index0 }}"
         >
           <img
-            src="{{ image | image_url: width: 150 }}"
+            src="{{ image | image_url: width: 200 }}"
             alt="{{ product.title | escape }} - {{ 'product.image_alt' | t: index: forloop.index }}"
             class="apgo-thumbnail-image"
             loading="{% if forloop.index <= 6 %}eager{% else %}lazy{% endif %}"
@@ -61,6 +61,19 @@
     }
     .apgo-product-thumbnails--added .apgo-thumbnail-item:first-child { margin-inline-start: auto; }
     .apgo-product-thumbnails--added .apgo-thumbnail-item:last-child { margin-inline-end: auto; }
+    /* Larger than the section's 52px tiles (owner, 2026-10-01). */
+    .apgo-product-thumbnails--added .apgo-thumbnails-container { gap: 8px; }
+    .apgo-product-thumbnails--added .apgo-thumbnail-item {
+      width: 64px;
+      height: 64px;
+      border-radius: 10px;
+    }
+    @media (min-width: 1024px) {
+      .apgo-product-thumbnails--added .apgo-thumbnail-item {
+        width: 72px;
+        height: 72px;
+      }
+    }
   </style>
   <script>
     (function () {

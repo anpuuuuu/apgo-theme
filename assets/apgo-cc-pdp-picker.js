@@ -1529,6 +1529,67 @@
 })();
 
 /*
+  Image lightbox: hold the page still while it is open.
+  The lightbox markup and open/close live in sections/apgo_product_page_v3.liquid
+  (too large to edit). Opening only sets body { overflow: hidden }, but
+  layout/theme.liquid gives html and body overflow-x: clip, so body's
+  overflow no longer carries over to the page scroller and on iPhone the
+  page kept scrolling behind the photo. While the lightbox has .active this
+  locks the html scroller itself, drops one-finger drags on the lightbox,
+  and on close puts the page back where it was: Safari still pans a
+  pinch-zoomed page and ignores overflow: hidden while its toolbar is
+  collapsed (and iOS 15 ignores it for touch altogether). Two-finger zoom,
+  and panning a zoomed-in view, still work.
+
+  The lock is a class with its own !important rule rather than an inline
+  style: apgo-cc-buybar.js writes html style.overflow, which would clear an
+  inline lock, and the theme's html[scroll-lock] belongs to its dialogs and
+  menu drawer, which remove it on their own.
+*/
+(function () {
+  'use strict';
+  var lightbox = document.getElementById('apgoImageLightbox');
+  if (!lightbox || !('MutationObserver' in window)) return;
+  var root = document.documentElement;
+  var locked = false;
+  var savedX = 0;
+  var savedY = 0;
+
+  var rule = document.createElement('style');
+  rule.textContent = 'html.apgo-lightbox-lock { overflow-y: hidden !important; }';
+  document.head.appendChild(rule);
+
+  function sync() {
+    var open = lightbox.classList.contains('active');
+    if (open === locked) return;
+    locked = open;
+    if (open) {
+      savedX = window.pageXOffset;
+      savedY = window.pageYOffset;
+      root.classList.add('apgo-lightbox-lock');
+      return;
+    }
+    root.classList.remove('apgo-lightbox-lock');
+    if (Math.abs(window.pageYOffset - savedY) > 1 || Math.abs(window.pageXOffset - savedX) > 1) {
+      /* Jump straight back: assets/base.css sets html { scroll-behavior: smooth }. */
+      var prevBehavior = root.style.scrollBehavior;
+      root.style.scrollBehavior = 'auto';
+      window.scrollTo(savedX, savedY);
+      root.style.scrollBehavior = prevBehavior;
+    }
+  }
+  new MutationObserver(sync).observe(lightbox, { attributes: true, attributeFilter: ['class'] });
+  sync();
+
+  lightbox.addEventListener('touchmove', function (e) {
+    if (!locked || e.touches.length !== 1) return;
+    var vv = window.visualViewport;
+    if (vv && vv.scale > 1.01) return;
+    if (e.cancelable) e.preventDefault();
+  }, { passive: false });
+})();
+
+/*
   Deal countdown — drives .apgo-cc-pdp__deal-timer
   Source:
     1) data-deal-end="<ISO>" → fixed end date/time. When reached, the badge hides.
