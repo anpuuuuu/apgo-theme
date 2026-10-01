@@ -56,7 +56,7 @@
         "link_label": "View all",
         "link_label_desktop": "View all deals",
         "link": "/collections/best-value-picks",
-        "button_label": "See all deals",
+        "button_label": "",
         "button_link": "/collections/best-value-picks",
         "button_style": "solid"
       }
