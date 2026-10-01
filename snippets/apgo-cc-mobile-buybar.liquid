@@ -15,6 +15,9 @@
   Logic in assets/apgo-cc-variant-peek.js. On by default for 6+ variants
   with at least 2 variant images; product tags apgo-peek-on / apgo-peek-off
   override. It sits left of the Shopify chat button, so the two never overlap.
+
+  Also renders snippets/apgo-cc-pdp-thumbs.liquid (thumbnail strip for
+  single products, moved under the gallery by its own script).
 {%- endcomment -%}
 
 {%- liquid
@@ -56,7 +59,7 @@
           <span class="apgo-cc-peek__thumb">
             <img
               data-apgo-cc-peek-img
-              src="{{ apgo_peek_img | image_url: width: 160 }}"
+              src="{{ apgo_peek_img | image_url: width: 800 }}"
               alt=""
               width="48"
               height="48"
@@ -254,3 +257,5 @@
   </style>
   <script src="{{ 'apgo-cc-variant-peek.js' | asset_url }}" defer></script>
 {%- endif -%}
+
+{%- render 'apgo-cc-pdp-thumbs', product: product -%}

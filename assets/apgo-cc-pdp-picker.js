@@ -480,6 +480,11 @@
     var pos = fimg && (fimg.position || (fimg.preview_image && fimg.preview_image.position));
     if (pos && window.apgoCarousel && typeof window.apgoCarousel.goToSlide === 'function') {
       var slideIdx = pos - 1;
+      /* Slides are loading="lazy" and wait off-screen until they slide into
+         view; start this photo now so it is there when the gallery lands. */
+      var slideImg = document.querySelectorAll('#apgoCarouselTrack .apgo-carousel-slide')[slideIdx];
+      slideImg = slideImg && slideImg.querySelector('img');
+      if (slideImg && slideImg.loading === 'lazy') slideImg.loading = 'eager';
       drivingCarousel = true;
       try { window.apgoCarousel.goToSlide(slideIdx); }
       finally { drivingCarousel = false; }

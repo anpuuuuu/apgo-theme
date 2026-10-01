@@ -12,6 +12,14 @@
   the 'apgo:variantchange' event dispatched at the end of refreshVariant()
   in assets/apgo-cc-pdp-picker.js; a MutationObserver on the price's
   data-cents attribute is the fallback.
+
+  Photos: the gallery slides are loading="lazy" and sit side by side
+  off-screen, so each photo used to start downloading only after a chip tap
+  slid it into view, and this card and the large view each fetched a copy
+  of their own. Now the card and the large view use the slide's own photo
+  (one download, shared), and once the page has loaded the slide photos are
+  fetched in the background, a few at a time, unless the browser asks to
+  save data.
 */
 (function () {
   'use strict';
@@ -28,9 +36,13 @@
   var defaultLabel = peek.getAttribute('data-default-label') || 'Standard';
 
   var byId = {};
+  var variantOrder = [];
   try {
     var json = document.querySelector('script[data-apgo-cc-variants]');
-    JSON.parse(json ? json.textContent : '[]').forEach(function (v) { byId[v.id] = v; });
+    JSON.parse(json ? json.textContent : '[]').forEach(function (v) {
+      byId[v.id] = v;
+      variantOrder.push(v.id);
+    });
   } catch (e) { return; }
 
   var current = null;
@@ -42,6 +54,24 @@
     if (src.indexOf('//') === 0) src = 'https:' + src;
     if (/[?&]width=\d+/.test(src)) return src.replace(/([?&])width=\d+/, '$1width=' + w);
     return src + (src.indexOf('?') > -1 ? '&' : '?') + 'width=' + w;
+  }
+
+  var slideImgs = Array.prototype.slice.call(
+    document.querySelectorAll('#apgoCarouselTrack .apgo-carousel-slide img')
+  );
+
+  /* The gallery slide showing this variant (Shopify's position is 1-based,
+     slides follow product.images order). */
+  function slideImgOf(v) {
+    var f = v.featured_image || v.featured_media;
+    var pos = f && (f.position || (f.preview_image && f.preview_image.position));
+    return (pos && slideImgs[pos - 1]) || null;
+  }
+
+  /* The slide's photo URL (width 800), so the card reuses its download. */
+  function photoOf(v) {
+    var s = slideImgOf(v);
+    return (s && s.getAttribute('src')) || withWidth(imageOf(v), 800);
   }
 
   function imageOf(v) {
@@ -70,7 +100,7 @@
     nameEl.textContent = name;
     btn.setAttribute('aria-label', 'View larger photo: ' + name);
 
-    var thumb = withWidth(imageOf(v), 160);
+    var thumb = photoOf(v);
     if (thumb && img.getAttribute('src') !== thumb) img.setAttribute('src', thumb);
 
     /* Prices need the page's own formatter (picker.js, RM36.90 / $36.90).
@@ -135,17 +165,34 @@
     }
   }
 
-  /* Tap: large photo */
+  /* Tap: large photo. It opens at once with the photo already on the card,
+     then switches to the sharper one when that has downloaded. Pressing
+     starts that download a moment before the tap lands. */
+  function largeOf(v) { return withWidth(imageOf(v), 1200); }
+  btn.addEventListener('pointerdown', function () {
+    var v = current || selectedFromPage();
+    if (v) new Image().src = largeOf(v);
+  });
   btn.addEventListener('click', function () {
     var v = current || selectedFromPage();
     if (!v) return;
     var lightbox = document.getElementById('apgoImageLightbox');
-    var large = withWidth(imageOf(v), 1200);
+    var large = largeOf(v);
+    var quick = photoOf(v) || large;
     if (large && lightbox && typeof window.apgoOpenImageLightbox === 'function') {
       var lbImg = document.getElementById('apgoLightboxImage');
       if (lbImg) lbImg.alt = nameOf(v);
       openedByPeek = true;
-      window.apgoOpenImageLightbox(large, nameOf(v));
+      window.apgoOpenImageLightbox(quick, nameOf(v));
+      if (lbImg && quick !== large) {
+        var sharp = new Image();
+        sharp.onload = function () {
+          if (lightbox.classList.contains('active') && lbImg.getAttribute('src') === quick) {
+            lbImg.src = large;
+          }
+        };
+        sharp.src = large;
+      }
       var close = lightbox.querySelector('.apgo-lightbox-close');
       if (close) { try { close.focus({ preventScroll: true }); } catch (e) { close.focus(); } }
       return;
@@ -161,6 +208,33 @@
       window.apgoCloseLightbox();
     }
   });
+
+  /* Background download of the slide photos, variants first in chip order,
+     then the rest. Switching a slide to loading="eager" makes the browser
+     fetch it into the slide itself. */
+  function warmPhotos() {
+    var c = navigator.connection;
+    if (c && (c.saveData || /(^|-)2g$/.test(c.effectiveType || ''))) return;
+    var queue = [];
+    function add(im) { if (im && queue.indexOf(im) < 0) queue.push(im); }
+    variantOrder.forEach(function (id) { add(slideImgOf(byId[id])); });
+    slideImgs.forEach(add);
+    queue = queue.filter(function (im) { return !(im.complete && im.naturalWidth); });
+
+    var active = 0;
+    function next() {
+      while (active < 3 && queue.length) {
+        var im = queue.shift();
+        if (im.complete && im.naturalWidth) continue;
+        active++;
+        var done = function () { active--; next(); };
+        im.addEventListener('load', done, { once: true });
+        im.addEventListener('error', done, { once: true });
+        im.loading = 'eager';
+      }
+    }
+    next();
+  }
 
   function start() {
     peek.removeAttribute('hidden');
@@ -180,4 +254,11 @@
   } else {
     start();
   }
+
+  function warmLater() {
+    if ('requestIdleCallback' in window) window.requestIdleCallback(warmPhotos, { timeout: 2000 });
+    else setTimeout(warmPhotos, 500);
+  }
+  if (document.readyState === 'complete') warmLater();
+  else window.addEventListener('load', warmLater, { once: true });
 })();

@@ -1,0 +1,85 @@
+{%- comment -%}
+  Thumbnail strip under the v3 product gallery, for single products.
+
+  The strip is off for every v3 product (show_thumbnails in
+  templates/product.v3.json, 2026-09-20). Some products still want it:
+  Pocket-Friendly Deals has 31 photos, one per deal, and the strip lets
+  shoppers jump straight to one. Turn it on for another product with the
+  tag apgo-thumbs-on.
+
+  sections/apgo_product_page_v3.liquid is too large to edit, so this
+  snippet prints the section's own strip markup (same classes, same
+  apgoSelectThumbnail click, so the section's CSS and carousel sync apply)
+  and the script below moves it to its usual place under the gallery while
+  the page is still loading. If the section already shows its own strip,
+  this copy removes itself.
+
+  Rendered from snippets/apgo-cc-mobile-buybar.liquid (v3 only).
+  Accepts: product
+{%- endcomment -%}
+
+{%- liquid
+  assign apgo_thumbs_on = false
+  if product.handle == 'pocket-friendly-deals' or product.tags contains 'apgo-thumbs-on'
+    assign apgo_thumbs_on = true
+  endif
+  if product.images.size < 2
+    assign apgo_thumbs_on = false
+  endif
+-%}
+
+{%- if apgo_thumbs_on -%}
+  <section class="apgo-product-thumbnails apgo-product-thumbnails--added" data-apgo-cc-thumbs hidden>
+    <div class="apgo-thumbnails-container">
+      {%- for image in product.images -%}
+        <div
+          class="apgo-thumbnail-item{% if forloop.first %} active{% endif %}"
+          onclick="apgoSelectThumbnail(this, '{{ image | image_url: width: 1200 }}')"
+          data-index="{{ forloop.index0 }}"
+        >
+          <img
+            src="{{ image | image_url: width: 150 }}"
+            alt="{{ product.title | escape }} - {{ 'product.image_alt' | t: index: forloop.index }}"
+            class="apgo-thumbnail-image"
+            loading="{% if forloop.index <= 6 %}eager{% else %}lazy{% endif %}"
+            width="{{ image.width }}"
+            height="{{ image.height }}"
+          >
+        </div>
+      {%- endfor -%}
+    </div>
+  </section>
+  <style>
+    /* Many photos overflow the row. The section centres the row, which
+       pushes the first photos past the left edge where they cannot be
+       scrolled to; auto margins centre a short row and start a long one at
+       the left. */
+    .apgo-product-thumbnails--added .apgo-thumbnails-container { justify-content: flex-start; }
+    .apgo-product-thumbnails--added .apgo-thumbnail-item:first-child { margin-inline-start: auto; }
+    .apgo-product-thumbnails--added .apgo-thumbnail-item:last-child { margin-inline-end: auto; }
+  </style>
+  <script>
+    (function () {
+      var strip = document.querySelector('[data-apgo-cc-thumbs]');
+      var hero = document.querySelector('.apgo-main-container > .apgo-hero-visual');
+      if (!strip) return;
+      if (!hero || document.querySelector('.apgo-main-container > .apgo-product-thumbnails')) {
+        strip.parentNode.removeChild(strip);
+        return;
+      }
+      hero.parentNode.insertBefore(strip, hero.nextSibling);
+      strip.hidden = false;
+
+      /* Keep the highlighted photo in view when a chip tap or a swipe
+         moves the gallery (the section only toggles the highlight). */
+      var row = strip.querySelector('.apgo-thumbnails-container');
+      document.addEventListener('apgo:slidechange', function (e) {
+        var item = row.children[e.detail && e.detail.index];
+        if (!item) return;
+        var left = row.scrollLeft + item.getBoundingClientRect().left - row.getBoundingClientRect().left -
+          (row.clientWidth - item.offsetWidth) / 2;
+        try { row.scrollTo({ left: left, behavior: 'smooth' }); } catch (_) { row.scrollLeft = left; }
+      });
+    })();
+  </script>
+{%- endif -%}
