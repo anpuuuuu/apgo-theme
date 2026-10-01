@@ -124,6 +124,7 @@
     },
     "clearance_countdown": {
       "type": "apgo-clearance-countdown",
+      "disabled": true,
       "settings": {
         "label": "Last truck leaves in",
         "end_at": "",
