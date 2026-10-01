@@ -53,8 +53,12 @@
     /* Many photos overflow the row. The section centres the row, which
        pushes the first photos past the left edge where they cannot be
        scrolled to; auto margins centre a short row and start a long one at
-       the left. */
-    .apgo-product-thumbnails--added .apgo-thumbnails-container { justify-content: flex-start; }
+       the left. The row snaps each photo to its edge; scroll padding keeps
+       the row's own 12px gap instead of snapping the first photo flush. */
+    .apgo-product-thumbnails--added .apgo-thumbnails-container {
+      justify-content: flex-start;
+      scroll-padding-inline: 12px;
+    }
     .apgo-product-thumbnails--added .apgo-thumbnail-item:first-child { margin-inline-start: auto; }
     .apgo-product-thumbnails--added .apgo-thumbnail-item:last-child { margin-inline-end: auto; }
   </style>
