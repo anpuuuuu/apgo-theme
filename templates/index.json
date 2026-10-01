@@ -45,6 +45,28 @@
             "tracking_id": ""
           }
         },
+        "banner_FGcy6A": {
+          "type": "banner",
+          "disabled": true,
+          "settings": {
+            "image": "shopify://shop_images/warehouse_sales_banneR.png",
+            "image_desktop": "shopify://shop_images/warehouse_sales_banneR.png",
+            "link": "",
+            "alt": "",
+            "tracking_id": ""
+          }
+        },
+        "banner_9GwjTp": {
+          "type": "banner",
+          "disabled": true,
+          "settings": {
+            "image": "shopify://shop_images/warehouse_sales_banner.jpg",
+            "image_desktop": "shopify://shop_images/warehouse_sales_banner.jpg",
+            "link": "",
+            "alt": "",
+            "tracking_id": ""
+          }
+        },
         "banner_golden_bull": {
           "type": "banner",
           "settings": {
@@ -59,6 +81,8 @@
         "banner_gwB9LQ",
         "banner_jin73F",
         "banner_a7egwR",
+        "banner_FGcy6A",
+        "banner_9GwjTp",
         "banner_golden_bull"
       ],
       "settings": {
