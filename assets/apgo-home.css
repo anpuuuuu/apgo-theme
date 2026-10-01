@@ -3417,3 +3417,223 @@ html:not(.apgo-home-js) .apgo-home-compare__fill {
     padding-block-start: 48px;
   }
 }
+
+/* ── Deal of the week: coupon look (10/1) ──
+   A tear-off coupon: dashed perforation between photo and copy with a
+   notch at each end, carbon-weave copy panel, checklist of what's inside,
+   orange price tag beside a wide button. The photo is never cropped: it is
+   contained on a dark ground when the copy runs taller than the photo. */
+.apgo-hp-deal {
+  position: relative;
+  border-color: rgba(255, 255, 255, 0.1);
+  background-color: #161616;
+}
+
+.apgo-hp-deal__media {
+  border-bottom: 2px dashed rgba(255, 255, 255, 0.22);
+  background: #0b0b0b;
+}
+
+.apgo-hp-deal__media .apgo-hp-card__image {
+  object-fit: contain;
+}
+
+.apgo-hp-deal__notch {
+  position: absolute;
+  z-index: 2;
+  bottom: -13px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--apgo-home-ink);
+  pointer-events: none;
+}
+
+.apgo-hp-deal__notch--a {
+  left: -12px;
+}
+
+.apgo-hp-deal__notch--b {
+  right: -12px;
+}
+
+.apgo-hp-deal__body {
+  gap: 12px;
+  padding: 18px 16px 18px;
+  background-color: #161616;
+  background-image:
+    linear-gradient(45deg, rgba(255, 255, 255, 0.03) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.03) 75%),
+    linear-gradient(45deg, rgba(255, 255, 255, 0.03) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.03) 75%);
+  background-position: 0 0, 4px 4px;
+  background-size: 8px 8px;
+}
+
+.apgo-hp-deal__note {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--apgo-home-primary);
+}
+
+.apgo-hp-deal__title {
+  padding-left: 12px;
+  border-left: 3px solid var(--apgo-home-primary);
+  border-radius: 0;
+}
+
+.apgo-hp-deal__chips {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 14px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.apgo-hp-deal__chip {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  height: auto;
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  color: #e6e6e6;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.apgo-hp-deal__chip .apgo-hp-icon {
+  margin-top: 1px;
+  color: var(--apgo-home-primary);
+}
+
+.apgo-hp-deal__buy {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.apgo-hp-deal__price {
+  flex: 0 0 auto;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 6px 12px;
+  border: 1px solid rgba(240, 132, 24, 0.55);
+  border-radius: 10px;
+  background: rgba(240, 132, 24, 0.08);
+}
+
+.apgo-hp-deal__price .apgo-hp-card__now {
+  line-height: 1.15;
+}
+
+.apgo-hp-deal__price .apgo-hp-card__was {
+  font-size: 12px;
+}
+
+.apgo-hp-deal__action {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.apgo-hp-deal__action > * {
+  flex: 1 1 auto;
+}
+
+.apgo-hp-deal .apgo-hp-deal__btn {
+  height: 100%;
+  border-radius: 12px;
+  font-weight: 700;
+}
+
+.apgo-hp-deal .apgo-hp-deal__btn:not(:disabled)::before {
+  content: '';
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 8h12l-1 12H7z'/%3E%3Cpath d='M9 8V6.5a3 3 0 0 1 6 0V8'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 8h12l-1 12H7z'/%3E%3Cpath d='M9 8V6.5a3 3 0 0 1 6 0V8'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+@media (max-width: 359px) {
+  .apgo-hp-deal__chips {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .apgo-hp-deal__media {
+    border-bottom: 0;
+    border-right: 2px dashed rgba(255, 255, 255, 0.22);
+  }
+
+  .apgo-hp-deal__notch {
+    width: 28px;
+    height: 28px;
+  }
+
+  .apgo-hp-deal__notch--a {
+    top: -14px;
+    right: -15px;
+    bottom: auto;
+    left: auto;
+  }
+
+  .apgo-hp-deal__notch--b {
+    right: -15px;
+    bottom: -14px;
+    left: auto;
+  }
+
+  .apgo-hp-deal__body {
+    gap: 16px;
+    padding: 36px 40px;
+  }
+
+  .apgo-hp-deal__title {
+    padding-left: 16px;
+    border-left-width: 4px;
+  }
+
+  .apgo-hp-deal__chips {
+    gap: 10px 18px;
+    padding: 14px 16px;
+  }
+
+  .apgo-hp-deal__chip {
+    font-size: 13px;
+    line-height: 18px;
+  }
+
+  .apgo-hp-deal__buy {
+    gap: 16px;
+  }
+
+  .apgo-hp-deal__price {
+    padding: 8px 18px;
+  }
+
+  .apgo-hp-deal__price .apgo-hp-card__was {
+    font-size: 14px;
+  }
+
+  .apgo-hp-deal__action {
+    align-self: auto;
+  }
+
+  .apgo-hp-deal .apgo-hp-card__pack {
+    width: 100%;
+  }
+
+  .apgo-hp-deal .apgo-hp-deal__btn {
+    width: 100%;
+    min-height: 58px;
+    border-radius: 12px;
+    font-size: 16px;
+  }
+}

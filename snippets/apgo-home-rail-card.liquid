@@ -3,8 +3,10 @@
   (sections/apgo-home-rail.liquid). Layout from the homepage design canvas:
   square image with a corner badge, two-line title, price (compare-at struck
   through) and one full-width outline button. layout 'deal' draws the large
-  "deal of the week" card instead (photo left on desktop, label ribbon,
-  optional discount sticker, note, contents chips, solid button). Its photo loads
+  "deal of the week" card instead, styled as a tear-off coupon (photo left on
+  desktop, dashed perforation with notches, label ribbon, optional discount
+  sticker, note, "what's inside" checklist, price tag and button). The photo
+  is never cropped (contain). Its photo loads
   eagerly: the row sits right under the banners, so it is on the first screen.
 
   Button: sold out -> disabled; custom.hide_quick_add -> link to the product
@@ -185,10 +187,15 @@
           <span class="apgo-hp-deal__sticker-off">OFF</span>
         </span>
       {%- endif -%}
+      <span class="apgo-hp-deal__notch apgo-hp-deal__notch--a" aria-hidden="true"></span>
+      <span class="apgo-hp-deal__notch apgo-hp-deal__notch--b" aria-hidden="true"></span>
     </div>
     <div class="apgo-hp-deal__body">
       {%- if note != blank -%}
-        <p class="apgo-hp-deal__note">{{ note | escape }}</p>
+        <p class="apgo-hp-deal__note">
+          {%- render 'apgo-home-icon', name: 'clock', size: 14, stroke: 2 -%}
+          <span>{{ note | escape }}</span>
+        </p>
       {%- endif -%}
       <h3 class="apgo-hp-deal__title">
         <a href="{{ product.url }}" draggable="false">{{ hp_title | escape }}</a>
@@ -199,13 +206,18 @@
           {%- for chip in hp_chips -%}
             {%- assign chip_text = chip | strip -%}
             {%- if chip_text != blank -%}
-              <li class="apgo-hp-deal__chip">{{ chip_text | escape }}</li>
+              <li class="apgo-hp-deal__chip">
+                {%- render 'apgo-home-icon', name: 'check', size: 14, stroke: 2.6 -%}
+                <span>{{ chip_text | escape }}</span>
+              </li>
             {%- endif -%}
           {%- endfor -%}
         </ul>
       {%- endif -%}
-      <p class="apgo-hp-card__price apgo-hp-deal__price">{{ hp_price_html }}</p>
-      <div class="apgo-hp-deal__action">{{ hp_action }}</div>
+      <div class="apgo-hp-deal__buy">
+        <p class="apgo-hp-card__price apgo-hp-deal__price">{{ hp_price_html }}</p>
+        <div class="apgo-hp-deal__action">{{ hp_action }}</div>
+      </div>
     </div>
   </article>
 {%- else -%}
