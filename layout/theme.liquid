@@ -289,8 +289,7 @@
     the tags inside each section produced seven copies (seven script
     executions, hence seven duplicate observers).
   {%- endcomment -%}
-  {%- comment -%} home-preview: hidden page for reviewing the 2026-09 homepage redesign before it replaces index {%- endcomment -%}
-  {%- if template.name == 'index' or template.suffix == 'home-preview' -%}
+  {%- if template.name == 'index' -%}
     {{ 'apgo-home.css' | asset_url | stylesheet_tag }}
     <script src="{{ 'apgo-home.js' | asset_url }}" defer></script>
   {%- endif -%}
@@ -507,7 +506,6 @@
       or template.suffix == 'special-event'
       or template.suffix == 'golden-bull-award'
       or template.suffix == 'clearance-sale'
-      or template.suffix == 'home-preview'
     %}
       {% render 'apgo-collection-variant-drawer' %}
     {% endif %}
