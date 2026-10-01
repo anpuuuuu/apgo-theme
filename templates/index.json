@@ -12,6 +12,16 @@
     "home_carousel": {
       "type": "apgo-home-carousel",
       "blocks": {
+        "banner_gwB9LQ": {
+          "type": "banner",
+          "settings": {
+            "image": "shopify://shop_images/1_2dc1f73a-7df9-4156-820d-8fff64687788.jpg",
+            "image_desktop": "shopify://shop_images/1_2dc1f73a-7df9-4156-820d-8fff64687788.jpg",
+            "link": "",
+            "alt": "",
+            "tracking_id": ""
+          }
+        },
         "banner_golden_bull": {
           "type": "banner",
           "settings": {
@@ -23,6 +33,7 @@
         }
       },
       "block_order": [
+        "banner_gwB9LQ",
         "banner_golden_bull"
       ],
       "settings": {
