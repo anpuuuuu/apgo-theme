@@ -64,6 +64,13 @@
         "tilt": "left"
       }
     },
+    "apgo_clearance_tape_KrCzFn": {
+      "type": "apgo-clearance-tape",
+      "settings": {
+        "text": "Clearance · Everything must go",
+        "tilt": "left"
+      }
+    },
     "apgo_event_banner_jRgaPP": {
       "type": "apgo-event-banner",
       "name": "APGO Event Banner",
@@ -410,6 +417,7 @@
     "main",
     "clearance_tape_top",
     "apgo_event_banner_jRgaPP",
+    "apgo_clearance_tape_KrCzFn",
     "clearance_intro",
     "clearance_countdown",
     "apgo_event_collection_grid_n3e6dm",
