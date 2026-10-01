@@ -68,7 +68,7 @@
       "type": "apgo-event-banner",
       "name": "APGO Event Banner",
       "settings": {
-        "image": "shopify://shop_images/celebrating_our_1.png",
+        "image": "shopify://shop_images/1_2dc1f73a-7df9-4156-820d-8fff64687788.jpg",
         "image_alt": "APGO Golden Bull Award",
         "link": "#clearance-deals",
         "desktop_width_percent": 67,
@@ -166,7 +166,7 @@
             "market_visibility": "my",
             "heading": "Limited Time Deals",
             "message": "Dont say bojio, 没有就没有 liao",
-            "banner": "shopify://shop_images/photo_2026-10-01_16-40-16.jpg",
+            "banner": "shopify://shop_images/warehouse_sales_banner.jpg",
             "product": "pocket-friendly-deals",
             "variant_id": "",
             "product_sg": "",
