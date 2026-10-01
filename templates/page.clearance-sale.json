@@ -110,16 +110,16 @@
         "tag_shipping"
       ],
       "settings": {
-        "eyebrow": "Factory expansion · 2026",
-        "heading": "Everything",
-        "heading_accent": "must go",
-        "text": "We're moving into a bigger factory, and the old stock has to go first. Clearance prices while stocks last.",
+        "eyebrow": "Clearance Sales · 2026",
+        "heading": "WAREHOUSE REALLY FULL LIAO.",
+        "heading_accent": "SO… TIME TO CLEAR!",
+        "text": "Our warehouse is packed, and with several containers of new APGO household products coming soon, we seriously need the space. Somemore several of our current products are also going to be phased out.\nInstead of paying extra for storage, transport and manpower, better don’t waste that money lah. \nWe've decided to turn those costs into bigger discounts for you!\n\nWe clear space. You save more. Win-win! 💪🏻",
         "offer": "",
         "offer_sg": "",
         "button_label": "Shop the clearance",
         "button_link": "#clearance-deals",
         "stamp": "Clearance",
-        "sign": "New factory →"
+        "sign": ""
       }
     },
     "clearance_countdown": {
