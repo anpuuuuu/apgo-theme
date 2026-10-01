@@ -264,8 +264,8 @@
           "type": "question",
           "settings": {
             "question": "Which coating should I choose?",
-            "answer": "<p>New to coating? Start with Atomic Car Nano Coating (Standard), an easy wet-application coating for everyday protection. It's in our <a href=\"/collections/beginners-picks\">Beginner's Picks</a>, along with the Atomic Coating Starter Pack: the same bottle plus a coating refill pack and two wiper fluid refill packs.</p><p>Upgrading from Standard? Atomic Crystal repels water better. Atomic Sealing holds up better to regular washing. Glaze is an all-round upgrade, and Aurora is the strongest option in the Atomic series.</p>",
-            "answer_sg": "<p>New to coating? Start with Atomic Car Nano Coating (Standard), an easy wet-application coating for everyday protection. It suits all paint colours and comes with a nozzle and a microfiber coating cloth. Find it in our <a href=\"/collections/beginners-picks\">Beginner's Picks</a>.</p><p>Upgrading from Standard? Atomic Crystal repels water better. Atomic Sealing holds up better to regular washing. Glaze is an all-round upgrade, and Aurora is the strongest option in the Atomic series.</p>"
+            "answer": "<p>New to coating? Start with <a href=\"/products/apgo-atomic-car-nano-coating-standard\">Atomic Car Nano Coating (Standard)</a>, <a href=\"/products/apgo-atomic-crystal-car-nano-coating\">Atomic Crystal</a> or <a href=\"/products/apgo-atomic-sealing-car-nano-coating\">Atomic Sealing</a>. All three are easy wet-application coatings. Standard covers everyday protection, Crystal repels water better, and Sealing holds up better to regular washing.</p>",
+            "answer_sg": ""
           }
         },
         "q_apply": {
