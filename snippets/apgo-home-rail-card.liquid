@@ -4,7 +4,7 @@
   square image with a corner badge, two-line title, price (compare-at struck
   through) and one full-width outline button. layout 'deal' draws the large
   "deal of the week" card instead (photo left on desktop, label ribbon,
-  discount sticker, note, contents chips, solid button). Its photo loads
+  optional discount sticker, note, contents chips, solid button). Its photo loads
   eagerly: the row sits right under the banners, so it is on the first screen.
 
   Button: sold out -> disabled; custom.hide_quick_add -> link to the product
@@ -22,6 +22,8 @@
   @param {string} [label] - Deal layout: ribbon text, e.g. "Deal of the week"
   @param {string} [note] - Deal layout: small line above the title
   @param {string} [contents] - Deal layout: comma-separated contents chips
+  @param {boolean} [sticker] - Deal layout: round "-80% OFF" sticker on the photo
+    (off by default; the promo photos usually print the discount already)
 {%- enddoc -%}
 
 {%- liquid
@@ -177,7 +179,7 @@
       {%- if label != blank -%}
         <span class="apgo-hp-deal__label">{{ label | escape }}</span>
       {%- endif -%}
-      {%- if hp_pct >= 1 -%}
+      {%- if sticker and hp_pct >= 1 -%}
         <span class="apgo-hp-deal__sticker">
           <span class="apgo-hp-deal__sticker-pct">-{{ hp_pct }}%</span>
           <span class="apgo-hp-deal__sticker-off">OFF</span>

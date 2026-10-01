@@ -53,7 +53,7 @@
         if rail_pm != blank and rail_market != rail_pm
           break
         endif
-        render 'apgo-home-rail-card', product: product, position: 1, layout: 'deal', label: rail_featured_label, note: rail_featured_note, contents: rail_featured_contents
+        render 'apgo-home-rail-card', product: product, position: 1, layout: 'deal', label: rail_featured_label, note: rail_featured_note, contents: rail_featured_contents, sticker: section.settings.featured_sticker
         break
       endfor
     endif
@@ -295,6 +295,13 @@
       "id": "featured_contents",
       "label": "What's inside",
       "info": "Separate items with commas, e.g. 1 Crystal, 2 Refills, 4 Shampoos, 2 Coating Cloths"
+    },
+    {
+      "type": "checkbox",
+      "id": "featured_sticker",
+      "label": "Show discount sticker on the photo",
+      "info": "Round \"-80% OFF\" sticker. Leave off when the photo already shows the discount.",
+      "default": false
     },
     {
       "type": "header",
