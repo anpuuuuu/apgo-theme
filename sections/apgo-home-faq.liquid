@@ -87,7 +87,7 @@
         -%}
         {%- if block.settings.question != blank and faq_answer != blank -%}
           {%- unless faq_first -%},{%- endunless -%}
-          {"@type":"Question","name":{{ block.settings.question | json }},"acceptedAnswer":{"@type":"Answer","text":{{ faq_answer | strip_html | strip | json }}}}
+          {"@type":"Question","name":{{ block.settings.question | json }},"acceptedAnswer":{"@type":"Answer","text":{{ faq_answer | replace: '</p>', '</p> ' | strip_html | strip | json }}}}
           {%- assign faq_first = false -%}
         {%- endif -%}
       {%- endfor -%}
