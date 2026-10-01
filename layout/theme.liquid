@@ -22,6 +22,7 @@
     {%- endif -%}
 
     {{ 'base.css' | asset_url | stylesheet_tag }}
+    {{ 'apgo-site-texture.css' | asset_url | stylesheet_tag }}
 
     {%- if settings.favicon != blank -%}
       <link
@@ -318,9 +319,18 @@
       # Styled only by apgo-clearance-page.css; deliberately none of the event-page classes above
       assign apgo_body_page_class = ' apgo-clearance-sale-page'
     endif
+
+    # Carbon-weave page ground (assets/apgo-site-texture.css) everywhere except
+    # pages that bring their own backdrop.
+    assign apgo_weave_class = ' apgo-weave'
+    if apgo_aboutus_main_class != ''
+      assign apgo_weave_class = ''
+    elsif template.suffix == 'clearance-sale' or template.suffix == 'golden-bull-award' or template.suffix == 'special-event'
+      assign apgo_weave_class = ''
+    endif
   %}
 
-  <body class="page-width-{{ settings.page_width }} card-hover-effect-{{ settings.card_hover_effect }}{{ apgo_body_page_class }}">
+  <body class="page-width-{{ settings.page_width }} card-hover-effect-{{ settings.card_hover_effect }}{{ apgo_body_page_class }}{{ apgo_weave_class }}">
     {% render 'skip-to-content-link', href: '#MainContent', text: 'accessibility.skip_to_text' %}
     <div id="header-group">
       {% sections 'header-group' %}
