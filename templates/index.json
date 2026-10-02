@@ -87,7 +87,7 @@
       ],
       "settings": {
         "autoplay": true,
-        "interval": 5,
+        "interval": 4,
         "aria_label": "Current promotions",
         "page_heading": "APGO · Professional Coating Experts"
       }
