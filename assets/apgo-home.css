@@ -3511,9 +3511,12 @@ html:not(.apgo-home-js) .apgo-home-compare__fill {
   border-radius: 0;
 }
 
+/* One item per row at every width: two columns left ~179px each even on
+   desktop, so long names ("Atomic Coloured Glaze Car Nano Coating (Premium) x2")
+   wrapped to three lines. */
 .apgo-hp-deal__chips {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 8px 14px;
   padding: 12px 14px;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -3588,12 +3591,6 @@ html:not(.apgo-home-js) .apgo-home-compare__fill {
   background: currentColor;
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 8h12l-1 12H7z'/%3E%3Cpath d='M9 8V6.5a3 3 0 0 1 6 0V8'/%3E%3C/svg%3E") center / contain no-repeat;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 8h12l-1 12H7z'/%3E%3Cpath d='M9 8V6.5a3 3 0 0 1 6 0V8'/%3E%3C/svg%3E") center / contain no-repeat;
-}
-
-@media (max-width: 359px) {
-  .apgo-hp-deal__chips {
-    grid-template-columns: minmax(0, 1fr);
-  }
 }
 
 @media (min-width: 1024px) {
