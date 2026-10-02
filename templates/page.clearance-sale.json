@@ -252,18 +252,17 @@
           "settings": {
             "market_visibility": "both",
             "heading": "Dont Play Play Deals👍🏻",
-            "banner": "shopify://shop_images/6_d62a57fd-3001-4aeb-980d-4c79bebcfabc.png",
+            "banner": "shopify://shop_images/household_banner.png",
             "products": [
-              "apgo-car-paint-headlight-care",
-              "apgo-wheel-cleaner-tyre-care-set",
-              "apgo-deep-clean-set",
-              "apgo-car-windshield-oil-film-remover-glass-cleaner-set",
-              "atomic-series-coating-refill-5-in-1-set",
-              "apgo-windshield-oil-film-remover-perfect-glass-restorer-quartz-glass-coating",
-              "apgo-pro-car-wash-towel-m-100cm-x-50cm",
-              "atomic-glaze-coating-sg61-promotion",
-              "atomic-glaze-coating-8-8-promotion",
-              "✨atomic-coating-special-ltd-bundle-✨"
+              "apgo-laundry-detergent-special-promotion-1",
+              "apgo-white-shoe-cleaner-made-in-taiwan",
+              "apgo-tencel-laundry-detergent-500ml-copy",
+              "apgo-kitchen-cleaner-refill-bag",
+              "apgo-kitchen-cleaner",
+              "apgo-laundry-whitening-salt-500g-copy",
+              "apgo-water-spot-remover",
+              "apgo-floor-cleaner-made-in-taiwan",
+              "apgo-kitchenware-burnt-marks-remover"
             ],
             "variant_ids": "",
             "hide_compare_at": true,
