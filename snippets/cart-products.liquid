@@ -327,11 +327,15 @@
                   headers="quantity"
                 >
                   {% # Here I want to pass some arguments to the quantity block so it knows which value should the input be set to. Though quantity block could be a snippet instead %}
+                  {%- comment -%} Per-order limit per option (snippets/apgo-max-per-order.liquid), 0 = none. {%- endcomment -%}
+                  {%- capture apgo_line_max_text -%}{%- render 'apgo-max-per-order', product: item.product -%}{%- endcapture -%}
+                  {%- assign apgo_line_max = apgo_line_max_text | plus: 0 -%}
                   {% render 'quantity-selector',
                     product: item.product,
                     in_cart_quantity: item.quantity,
                     line_index: item.index,
                     min: 0,
+                    max: apgo_line_max,
                     class: 'cart-primary-typography'
                   %}
 

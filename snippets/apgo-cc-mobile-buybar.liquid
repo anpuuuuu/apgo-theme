@@ -50,9 +50,15 @@
   if product.handle == 'pocket-friendly-deals' or product.tags contains 'apgo-direct-add'
     assign apgo_direct_add = true
   endif
+  # Per-order limit per option (snippets/apgo-max-per-order.liquid), read by
+  # apgo-cc-pdp-picker.js from the bar below; 0 = none.
+  capture apgo_max_per_order
+    render 'apgo-max-per-order', product: product
+  endcapture
+  assign apgo_max_per_order = apgo_max_per_order | plus: 0
 -%}
 
-<aside class="apgo-cc-buybar{% if cart.item_count == 0 %} is-cart-empty{% endif %}" data-apgo-cc-buybar{% if apgo_direct_add %} data-apgo-cc-direct-add{% endif %} aria-label="Add to cart">
+<aside class="apgo-cc-buybar{% if cart.item_count == 0 %} is-cart-empty{% endif %}" data-apgo-cc-buybar{% if apgo_direct_add %} data-apgo-cc-direct-add{% endif %}{% if apgo_max_per_order > 0 %} data-apgo-cc-max-per-order="{{ apgo_max_per_order }}"{% endif %} aria-label="Add to cart">
   <div class="apgo-cc-buybar__backdrop" data-apgo-cc-buybar-backdrop aria-hidden="true"></div>
 
   <div class="apgo-cc-buybar__panel">

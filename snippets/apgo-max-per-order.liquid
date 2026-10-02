@@ -1,0 +1,26 @@
+{%- doc -%}
+  Prints the most a shopper may put in one order of each option (variant)
+  of a product, or 0 for no limit. Single source for:
+    - the v3 product page: snippets/apgo-cc-mobile-buybar.liquid hands it to
+      assets/apgo-cc-pdp-picker.js, which checks the cart before adding;
+    - the cart page: snippets/cart-products.liquid caps the quantity box.
+  A per-order limit in the theme only: a shopper can still place another
+  order, and the cart API itself is not blocked.
+
+  Pocket-Friendly Deals: 3 (owner, 2026-10). Tag apgo-max-per-order-N sets
+  N for any other product.
+
+  @param {product} product - The product.
+{%- enddoc -%}
+{%- liquid
+  assign apgo_limit = 0
+  if product.handle == 'pocket-friendly-deals'
+    assign apgo_limit = 3
+  endif
+  for apgo_tag in product.tags
+    if apgo_tag contains 'apgo-max-per-order-'
+      assign apgo_limit = apgo_tag | remove: 'apgo-max-per-order-' | plus: 0
+    endif
+  endfor
+  echo apgo_limit
+-%}

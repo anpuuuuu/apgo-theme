@@ -6,6 +6,7 @@
   @param {number} [in_cart_quantity] - the quantity in the cart to set the input value
   @param {number} [line_index] - the index of the forloop representing the line on which the quantity selector is rendered
   @param {number} [min] - the minimum quantity the input supports
+  @param {number} [max] - APGO per-order limit (snippets/apgo-max-per-order.liquid); overrides the variant's quantity rule. Typed values over it snap back at once, since the component compares max as text ("10" < "3")
   @param {string} [class] - custom class for the quantity selector, optional
 {%- enddoc -%}
 
@@ -44,7 +45,11 @@
     {% if line_index %}
       data-cart-line="{{ line_index | plus: 1 }}"
     {% endif %}
-    {% if variant.quantity_rule.max %}
+    {% if max and max > 0 %}
+      max="{{ max }}"
+      data-apgo-max-per-order
+      oninput="if (+this.value > +this.max) this.value = this.max"
+    {% elsif variant.quantity_rule.max %}
       max="{{ variant.quantity_rule.max }}"
     {% endif %}
     step="{{ variant.quantity_rule.increment | default: 1 }}"

@@ -69,6 +69,20 @@
            !p.closest('[data-apgo-event-gift-modal]');
   });
   var giftPickerActive = giftPickers.length > 0;
+
+  /* Per-order limit per option (snippets/apgo-max-per-order.liquid, e.g.
+     Pocket-Friendly Deals: 3), printed on the buy bar. Checked against the
+     cart before every add; the quantity steppers stop there too. */
+  var maxPerOrderEl = document.querySelector('[data-apgo-cc-buybar][data-apgo-cc-max-per-order]');
+  var maxPerOrder = maxPerOrderEl ? parseInt(maxPerOrderEl.getAttribute('data-apgo-cc-max-per-order'), 10) || 0 : 0;
+  if (maxPerOrder) {
+    if (qtyInput) qtyInput.max = maxPerOrder;
+    /* Say so up front: "(27 types)" -> "(27 types · max 3 per item)". */
+    var optionCountEl = form.querySelector('.apgo-cc-pdp__option-count');
+    if (optionCountEl) {
+      optionCountEl.textContent = optionCountEl.textContent.replace(/\)\s*$/, ' · max ' + maxPerOrder + ' per item)');
+    }
+  }
   var giftRequired = 2;
   var giftProperty = '_gift_pick';
   if (giftPickerActive) {
@@ -578,6 +592,7 @@
       var n = parseInt(qtyInput.value, 10) || 1;
       n += (btn.getAttribute('data-apgo-cc-qty') === 'up' ? 1 : -1);
       if (n < 1) n = 1;
+      if (maxPerOrder && n > maxPerOrder) n = maxPerOrder;
       qtyInput.value = n;
     });
   });
@@ -665,6 +680,16 @@
 
   function handleCartFailure(error) {
     if (isSilentCartError(error)) return;
+    if (error && error.code === 'max_per_order') {
+      var left = Math.max(0, maxPerOrder - (error.inCart || 0));
+      showCartErrorToast(
+        left > 0
+          ? 'You can add ' + left + ' more of this option.'
+          : 'You already have ' + maxPerOrder + ' of this option in your cart.',
+        'Limit ' + maxPerOrder + ' per item, per order'
+      );
+      return;
+    }
     if (error && error.description === 'Sold out') {
       showCartErrorToast('Please choose another available option.', 'This option is sold out');
       return;
@@ -1059,6 +1084,13 @@
         cartBeforeAdd = null;
       })
       .then(function () {
+        /* Per-order limit: what is already in the cart plus this add. */
+        if (maxPerOrder) {
+          var inCart = cartBeforeAdd ? cartVariantQuantity(cartBeforeAdd, xId) : 0;
+          if (inCart + xQty > maxPerOrder) {
+            return Promise.reject({ code: 'max_per_order', inCart: inCart });
+          }
+        }
         return fetch('/cart/add.js', fetchOptions);
       })
       .then(function (r) {
@@ -1487,6 +1519,7 @@
       var n = parseInt(confirmQtyInput.value, 10) || 1;
       n += (btn.getAttribute('data-apgo-cc-confirm-qty') === 'up' ? 1 : -1);
       if (n < 1) n = 1;
+      if (maxPerOrder && n > maxPerOrder) n = maxPerOrder;
       confirmQtyInput.value = n;
     });
   });
