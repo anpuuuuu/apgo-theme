@@ -222,31 +222,6 @@
             "counter_flow_baseline": "0"
           }
         },
-        "promo_banner_L3JjXC": {
-          "type": "promo_banner",
-          "settings": {
-            "market_visibility": "sg",
-            "heading": "",
-            "message": "",
-            "product": "",
-            "variant_id": "",
-            "banner_sg": "shopify://shop_images/3days_crystal_banner.jpg",
-            "product_sg": "jc-birthday-special-atomic-crystal-plus-promotion",
-            "variant_id_sg": "",
-            "cta_mode": "add_buy",
-            "single_cta_label": "Grab Deals Now",
-            "show_price_range": false,
-            "gift_enabled": false,
-            "gift_pool": [],
-            "gift_count": 2,
-            "gift_heading": "Choose your free gifts",
-            "show_counter": false,
-            "counter_milestone_total": "500",
-            "counter_release_total": "88",
-            "counter_manual_deduction": "0",
-            "counter_flow_baseline": "0"
-          }
-        },
         "promo_banner_detergent": {
           "type": "promo_banner",
           "settings": {
@@ -270,32 +245,6 @@
             "counter_release_total": "88",
             "counter_manual_deduction": "0",
             "counter_flow_baseline": "0"
-          }
-        },
-        "product_carousel_discount": {
-          "type": "product_carousel",
-          "disabled": true,
-          "settings": {
-            "market_visibility": "both",
-            "heading": "thank you CELEBRATION deals",
-            "banner": "shopify://shop_images/22_d4016573-8805-471f-9527-da6101a5c4db.png",
-            "banner_sg": "shopify://shop_images/23_b0735d48-a022-4f52-b715-cc6b4454bdeb.png",
-            "products": [
-              "apgo-car-interior-eco-friendly-coating-500ml",
-              "apgo-car-interior-eco-friendly-cleaner-500ml",
-              "apgo-glass-cleaner-500ml",
-              "apgo-car-exterior-plastic-protectant-500ml",
-              "apgo-car-extreme-iron-remover-500ml",
-              "apgo-car-all-purpose-cleaner",
-              "apgo-water-stain-remover",
-              "apgo-car-wash-shampoo-special-formula-refill-pack",
-              "apgo-car-wiper-fluid-refill-pack"
-            ],
-            "variant_ids": "",
-            "hide_compare_at": false,
-            "show_promo_limit": true,
-            "show_scroll_cue": true,
-            "view_all_link": ""
           }
         },
         "product_carousel_b1f1": {
@@ -341,9 +290,7 @@
       "block_order": [
         "promo_banner_merdeka",
         "promo_banner_gewygY",
-        "promo_banner_L3JjXC",
         "promo_banner_detergent",
-        "product_carousel_discount",
         "product_carousel_b1f1",
         "featured_stage_legacy"
       ],
@@ -363,67 +310,6 @@
         "color_scheme": "scheme-3",
         "padding-block-start": 0,
         "padding-block-end": 0
-      }
-    },
-    "clearance_progress": {
-      "type": "apgo-clearance-progress",
-      "blocks": {
-        "photo_1": {
-          "type": "photo",
-          "settings": {
-            "caption": ""
-          }
-        },
-        "photo_2": {
-          "type": "photo",
-          "settings": {
-            "caption": ""
-          }
-        },
-        "photo_3": {
-          "type": "photo",
-          "settings": {
-            "caption": ""
-          }
-        },
-        "milestone_1": {
-          "type": "milestone",
-          "settings": {
-            "title": "",
-            "status": "done",
-            "note": ""
-          }
-        },
-        "milestone_2": {
-          "type": "milestone",
-          "settings": {
-            "title": "",
-            "status": "in_progress",
-            "note": ""
-          }
-        },
-        "milestone_3": {
-          "type": "milestone",
-          "settings": {
-            "title": "",
-            "status": "upcoming",
-            "note": ""
-          }
-        }
-      },
-      "block_order": [
-        "photo_1",
-        "photo_2",
-        "photo_3",
-        "milestone_1",
-        "milestone_2",
-        "milestone_3"
-      ],
-      "settings": {
-        "heading": "Where it's all going",
-        "note": "Destination: new factory",
-        "code": "Update",
-        "checklist_title": "Moving checklist"
       }
     },
     "clearance_tape_bottom": {
@@ -457,7 +343,6 @@
     "clearance_intro",
     "clearance_countdown",
     "apgo_event_collection_grid_n3e6dm",
-    "clearance_progress",
     "clearance_tape_bottom",
     "apgo_event_banner_jBTfGT"
   ]
