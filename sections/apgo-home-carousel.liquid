@@ -5,8 +5,14 @@
   Each banner has a phone image and an optional desktop image (1200×420).
   Desktop shows the wide images across the content column only when every
   banner has one; otherwise desktop keeps the phone images at two thirds of
-  the page width, centred, as the old carousel did. Slides share the first banner's proportions so the
-  row never jumps in height.
+  the page width, centred, as the old carousel did.
+
+  No cropping (2026-10): all slides share the proportions of the tallest
+  banner, so the row never jumps in height, and each image is shown whole.
+  A banner wider than that gets the card colour above and below it. (It
+  used to take the first banner's proportions and crop the rest to fit:
+  a wide 1983x793 banner placed first cut the top and bottom off the
+  1610x1000 Golden Bull banner.) Same-size images still look best.
 
   Every linked banner reports views/clicks through apgo-campaign-tracking.js
   ([data-apgo-homepage-campaign-link]). The Golden Bull banner keeps its
@@ -26,8 +32,9 @@
   assign banners = section.blocks | where: 'type', 'banner'
   assign shown = 0
   assign all_wide = true
-  assign ratio_phone = ''
-  assign ratio_wide = ''
+  # Tallest banner = smallest width / height. 999 = none seen yet.
+  assign ratio_phone = 999.0
+  assign ratio_wide = 999.0
   assign in_sg = false
   if localization.country.iso_code == 'SG'
     assign in_sg = true
@@ -51,16 +58,23 @@
     endif
     assign visible_ids = visible_ids | append: b.id | append: '|'
     assign shown = shown | plus: 1
-    if ratio_phone == ''
-      assign ratio_phone = b.settings.image.aspect_ratio
+    assign banner_ratio = b.settings.image.aspect_ratio
+    if banner_ratio and banner_ratio < ratio_phone
+      assign ratio_phone = banner_ratio
     endif
     if b.settings.image_desktop == blank
       assign all_wide = false
-    elsif ratio_wide == ''
-      assign ratio_wide = b.settings.image_desktop.aspect_ratio
+    else
+      assign banner_ratio_wide = b.settings.image_desktop.aspect_ratio
+      if banner_ratio_wide and banner_ratio_wide < ratio_wide
+        assign ratio_wide = banner_ratio_wide
+      endif
     endif
   endfor
-  if ratio_wide == ''
+  if ratio_phone == 999.0
+    assign ratio_phone = 1.61
+  endif
+  if ratio_wide == 999.0
     assign all_wide = false
   endif
 -%}
@@ -202,7 +216,7 @@
   "settings": [
     {
       "type": "paragraph",
-      "content": "Phone image: keep all banners the same size (now 951×591 or 1610×1000). Desktop image (optional): 1200×420. Desktop uses the wide images only when every banner has one."
+      "content": "Phone image: best kept all the same shape (now 1610×1000 or 951×591). A banner with a different shape is shown whole, with blank space above and below it; nothing is cropped. Desktop image (optional): 1200×420. Desktop uses the wide images only when every banner has one."
     },
     {
       "type": "checkbox",

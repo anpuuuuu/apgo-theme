@@ -1480,11 +1480,14 @@ html:not(.apgo-home-js) .apgo-home-compare__fill {
   height: 100%;
 }
 
+/* Whole image, never cropped: the slides take the tallest banner's
+   proportions (sections/apgo-home-carousel.liquid), so a wider banner sits
+   centred with the track's card colour above and below it. */
 .apgo-home-carousel__img {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   user-select: none;
   -webkit-user-drag: none;
 }
