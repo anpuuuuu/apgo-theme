@@ -73,11 +73,26 @@
         "link": "#clearance-deals",
         "desktop_width_percent": 67,
         "frame_style": "crate",
-        "color_scheme": ""
+        "color_scheme": "",
+        "autoplay": true,
+        "interval": 5
       }
     },
     "apgo_event_banner_KEaR44": {
       "type": "apgo-event-banner",
+      "blocks": {
+        "slide_xFigXR": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/2_dea55a7f-0b39-4b73-ab73-3502e8909f15.jpg",
+            "image_alt": "",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "slide_xFigXR"
+      ],
       "name": "APGO Event Banner",
       "settings": {
         "image": "shopify://shop_images/3_0e3a8eb7-4b99-479d-95b3-fe95d6d18b23.jpg",
@@ -85,7 +100,9 @@
         "link": "#clearance-deals",
         "desktop_width_percent": 67,
         "frame_style": "crate",
-        "color_scheme": ""
+        "color_scheme": "",
+        "autoplay": true,
+        "interval": 5
       }
     },
     "apgo_clearance_tape_KrCzFn": {
@@ -168,6 +185,7 @@
             "variant_id_sg": "",
             "cta_mode": "add_buy",
             "single_cta_label": "Grab Deals Now",
+            "show_price_range": false,
             "gift_enabled": false,
             "gift_pool": [],
             "gift_count": 2,
@@ -217,6 +235,7 @@
             "variant_id_sg": "",
             "cta_mode": "add_buy",
             "single_cta_label": "Grab Deals Now",
+            "show_price_range": false,
             "gift_enabled": false,
             "gift_pool": [],
             "gift_count": 2,
@@ -241,6 +260,7 @@
             "variant_id_sg": "",
             "cta_mode": "product_link",
             "single_cta_label": "Grab Deals Now",
+            "show_price_range": false,
             "gift_enabled": false,
             "gift_pool": [],
             "gift_count": 2,
@@ -422,7 +442,9 @@
         "link": "",
         "desktop_width_percent": 67,
         "frame_style": "crate_simple",
-        "color_scheme": ""
+        "color_scheme": "",
+        "autoplay": true,
+        "interval": 5
       }
     }
   },
