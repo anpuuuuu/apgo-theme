@@ -1,18 +1,28 @@
 {%- doc -%}
   Banner under the buy box on the v3 product page (2026-10). One banner for
   every product on the template (owner's choice), set in Theme settings ->
-  "APGO — Product page banner"; no image, no banner.
+  "APGO — Product page banner"; no image, no banner. With a link, a bar
+  under the image (button text + arrow, same tap area) shows it opens:
+  the owner found shoppers would not know the picture was clickable.
 
   Rendered at the end of .apgo-cc-pdp__buy-col (sections/apgo_product_page_v3.liquid):
   on desktop that is inside the right-hand buy card, under Add to cart / Buy
   now (outside the card the grid would push it below the taller gallery);
   on phones the inline buttons are hidden, so it sits under the delivery
   line, above Description.
+
+  Also on the laundry template (sections/apgo-mobile-pdp.liquid, tone
+  'light'): under the shipping card, at the bottom of the right column on
+  desktop and above the description on phones, in that page's cream and
+  ink colours.
+
+  @param {string} [tone] - 'light' for the cream laundry page; default dark.
 {%- enddoc -%}
 {%- assign apgo_pdp_banner = settings.apgo_pdp_banner_image -%}
 {%- if apgo_pdp_banner != blank -%}
   {%- assign apgo_pdp_banner_alt = settings.apgo_pdp_banner_alt | default: apgo_pdp_banner.alt -%}
-  <div class="apgo-pdp-banner">
+  {%- assign apgo_pdp_banner_cta = settings.apgo_pdp_banner_cta | strip -%}
+  <div class="apgo-pdp-banner{% if tone == 'light' %} apgo-pdp-banner--light{% endif %}">
     {%- if settings.apgo_pdp_banner_link != blank -%}
       <a class="apgo-pdp-banner__link" href="{{ settings.apgo_pdp_banner_link }}">
     {%- endif -%}
@@ -26,13 +36,78 @@
         alt: apgo_pdp_banner_alt
     }}
     {%- if settings.apgo_pdp_banner_link != blank -%}
+      {%- if apgo_pdp_banner_cta != blank -%}
+        <span class="apgo-pdp-banner__cta">
+          <span class="apgo-pdp-banner__cta-text">{{ apgo_pdp_banner_cta | escape }}</span>
+          <span class="apgo-pdp-banner__cta-arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </span>
+        </span>
+      {%- endif -%}
       </a>
     {%- endif -%}
   </div>
   <style>
     .apgo-pdp-banner { margin-top: 16px; }
-    .apgo-pdp-banner__link { display: block; border-radius: 12px; overflow: hidden; }
-    .apgo-pdp-banner__img { display: block; width: 100%; height: auto; border-radius: 12px; }
+    .apgo-pdp-banner__link {
+      display: block;
+      overflow: hidden;
+      border: 1px solid rgba(240, 132, 24, 0.35);
+      border-radius: 12px;
+      background: #141414;
+      color: #f08418;
+      text-decoration: none;
+      transition: border-color .2s ease;
+    }
+    .apgo-pdp-banner__img {
+      display: block;
+      width: 100%;
+      height: auto;
+      transition: transform .3s ease;
+    }
+    .apgo-pdp-banner__cta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 12px 10px 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      line-height: 1.2;
+    }
+    .apgo-pdp-banner__cta-arrow {
+      display: inline-grid;
+      flex: 0 0 auto;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #f08418;
+      color: #0b0b0b;
+      transition: transform .2s ease;
+    }
+    .apgo-pdp-banner__link:hover { border-color: rgba(240, 132, 24, 0.75); }
+    .apgo-pdp-banner__link:hover .apgo-pdp-banner__img { transform: scale(1.02); }
+    .apgo-pdp-banner__link:hover .apgo-pdp-banner__cta-arrow { transform: translateX(3px); }
     .apgo-pdp-banner__link:focus-visible { outline: 2px solid #f08418; outline-offset: 3px; }
+    /* Laundry page (cream): its own tokens from assets/apgo-pdp.css. */
+    .apgo-pdp-banner--light .apgo-pdp-banner__link {
+      border-color: var(--apgo-line, rgba(94, 111, 93, 0.15));
+      background: var(--apgo-bg-alt, #fdfaf2);
+      color: var(--apgo-ink, #2d2e28);
+    }
+    .apgo-pdp-banner--light .apgo-pdp-banner__link:hover { border-color: var(--apgo-sage, #5e6f5d); }
+    .apgo-pdp-banner--light .apgo-pdp-banner__cta { border-top-color: var(--apgo-line, rgba(94, 111, 93, 0.15)); }
+    .apgo-pdp-banner--light .apgo-pdp-banner__cta-arrow {
+      background: var(--apgo-ink, #2d2e28);
+      color: var(--apgo-bg, #f6f1e7);
+    }
+    .apgo-pdp-banner--light .apgo-pdp-banner__link:focus-visible { outline-color: var(--apgo-ink, #2d2e28); }
+    @media (prefers-reduced-motion: reduce) {
+      .apgo-pdp-banner__img,
+      .apgo-pdp-banner__cta-arrow { transition: none; }
+    }
   </style>
 {%- endif -%}
