@@ -2718,3 +2718,141 @@ html.apgo-event-gift-lock { overflow: hidden; }
   .apgo-event-gift-modal,
   .apgo-event-gift-modal__panel { transition: none; }
 }
+
+/* ── Event banner carousel (sections/apgo-event-banner, "輪播圖" blocks) ──
+   Native horizontal scroll with snap points, so a swipe feels like any
+   phone gallery; assets/apgo-event-banner-carousel.js adds the dots,
+   arrows and auto-rotate. Sits inside the banner frame (the clearance
+   page's cardboard box stays still while the banners slide). */
+.apgo-ebc {
+  position: relative;
+}
+
+.apgo-ebc__track {
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.apgo-ebc__track::-webkit-scrollbar {
+  display: none;
+}
+
+.apgo-ebc__slide {
+  flex: 0 0 100%;
+  min-width: 0;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+.apgo-ebc__slide .apgo-event-banner__img {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+.apgo-ebc__dots {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2px;
+  padding-top: 6px;
+  line-height: 0;
+}
+
+/* 22px tap target around a small pill. */
+.apgo-ebc__dot {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.apgo-ebc__dot::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.35);
+  transition: width 0.2s ease, background-color 0.2s ease;
+}
+
+.apgo-ebc__dot.is-active::before {
+  width: 18px;
+  background: var(--crate-cta, #f08418);
+}
+
+.apgo-ebc__dot:focus-visible {
+  outline: 2px solid #f4d482;
+  outline-offset: 0;
+  border-radius: 4px;
+}
+
+/* Arrows: mouse devices only, shown on hover. Centred on the image, which
+   sits 28px above the bottom of the carousel (the dots row). */
+.apgo-ebc__arrow {
+  position: absolute;
+  top: calc(50% - 14px);
+  z-index: 3;
+  display: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(-50%);
+  transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+
+.apgo-ebc__arrow:hover {
+  background: rgba(0, 0, 0, 0.75);
+}
+
+.apgo-ebc__arrow--prev {
+  left: 10px;
+}
+
+.apgo-ebc__arrow--next {
+  right: 10px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .apgo-ebc__arrow {
+    display: grid;
+  }
+
+  .apgo-ebc:hover .apgo-ebc__arrow,
+  .apgo-ebc__arrow:focus-visible {
+    opacity: 1;
+  }
+}
+
+.apgo-ebc__arrow:focus-visible {
+  outline: 2px solid #f4d482;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .apgo-ebc__track {
+    scroll-behavior: auto;
+  }
+
+  .apgo-ebc__dot::before {
+    transition: none;
+  }
+}

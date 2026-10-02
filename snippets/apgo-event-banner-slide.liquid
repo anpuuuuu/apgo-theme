@@ -1,0 +1,53 @@
+{%- doc -%}
+  One slide of the APGO Event Banner carousel (sections/apgo-event-banner.liquid).
+
+  @param {image} image - Slide image.
+  @param {string} [alt] - Alt text; falls back to the image's own alt.
+  @param {string} [link] - Optional link for the whole slide.
+  @param {number} position - One-based slide number.
+  @param {number} total - Number of slides.
+  @param {boolean} [eager] - Load at once (first slide of the first section).
+  @param {string} [promo_id] - GA4 promotion id for the link.
+  @param {string} [promo_name] - GA4 promotion name for the link.
+  @param {string} [attributes] - Theme editor attributes of the owning block.
+{%- enddoc -%}
+<div
+  class="apgo-ebc__slide"
+  role="group"
+  aria-roledescription="slide"
+  aria-label="{{ position }} / {{ total }}"
+  data-apgo-ebc-slide
+  {{ attributes }}
+>
+  {%- if link != blank -%}
+    <a
+      href="{{ link }}"
+      class="apgo-event-banner__link"
+      draggable="false"
+      {%- if promo_id != blank %}
+        data-apgo-campaign-promotion-link
+        data-promotion-id="{{ promo_id | escape }}"
+        data-promotion-name="{{ promo_name | escape }}"
+      {%- endif %}
+    >
+  {%- endif -%}
+  <img
+    class="apgo-event-banner__img"
+    src="{{ image | image_url: width: 2400 }}"
+    srcset="
+      {{ image | image_url: width: 750 }} 750w,
+      {{ image | image_url: width: 1200 }} 1200w,
+      {{ image | image_url: width: 1800 }} 1800w,
+      {{ image | image_url: width: 2400 }} 2400w
+    "
+    sizes="(min-width: 750px) 67vw, 100vw"
+    alt="{{ alt | default: image.alt | escape }}"
+    width="{{ image.width }}"
+    height="{{ image.height }}"
+    loading="{% if eager %}eager{% else %}lazy{% endif %}"
+    draggable="false"
+  >
+  {%- if link != blank -%}
+    </a>
+  {%- endif -%}
+</div>

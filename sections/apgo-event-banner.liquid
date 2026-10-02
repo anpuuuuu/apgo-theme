@@ -1,6 +1,11 @@
 {% comment %}
   APGO Special Event — full-width banner image (no crop).
   Mobile: edge-to-edge. Desktop: configurable width (default 2/3).
+
+  Carousel (2026-10): "輪播圖" blocks add more banners after the section's
+  own image. With two or more, they slide inside the same frame (swipe,
+  dots, arrows on desktop, auto-rotate); assets/apgo-event-banner-carousel.js.
+  With none, the section prints exactly the single banner it always did.
 {% endcomment %}
 
 {{ 'apgo-event-page.css' | asset_url | stylesheet_tag }}
@@ -10,13 +15,122 @@
   frame (styled in apgo-clearance-page.css, which only the clearance-sale
   template loads).
 {%- endcomment -%}
-{%- assign apgo_banner_frame = section.settings.frame_style | default: 'none' -%}
+{%- liquid
+  assign apgo_banner_frame = section.settings.frame_style | default: 'none'
+
+  assign apgo_slide_count = 0
+  if section.settings.image != blank
+    assign apgo_slide_count = 1
+  endif
+  for block in section.blocks
+    if block.type == 'slide' and block.settings.image != blank
+      assign apgo_slide_count = apgo_slide_count | plus: 1
+    endif
+  endfor
+
+  assign apgo_promo_base = blank
+  assign apgo_promo_name = blank
+  if template.suffix == 'golden-bull-award'
+    assign apgo_promo_base = 'golden_bull_hero'
+    assign apgo_promo_name = 'Golden Bull Award hero'
+  elsif template.suffix == 'clearance-sale'
+    assign apgo_promo_base = 'clearance_sale_hero'
+    assign apgo_promo_name = 'Factory Expansion Clearance hero'
+  endif
+-%}
 <section
   id="apgo-event-banner-{{ section.id }}"
   class="apgo-event-banner section section--full-width color-{{ section.settings.color_scheme }}{% if apgo_banner_frame != 'none' %} apgo-event-banner--{{ apgo_banner_frame }}{% endif %}"
   style="--apgo-event-banner-desktop-width: {{ section.settings.desktop_width_percent }}%;"
 >
-  {% if section.settings.image != blank %}
+  {% if apgo_slide_count > 1 %}
+    {%- comment -%}
+      Carousel. Slide 1 is the section's own image (keeps its GA4 id), then
+      each 輪播圖 block in order (ids get _2, _3, ...).
+    {%- endcomment -%}
+    <div class="apgo-event-banner__frame">
+      <div
+        class="apgo-ebc"
+        data-apgo-ebc
+        data-autoplay="{{ section.settings.autoplay }}"
+        data-interval="{{ section.settings.interval | times: 1000 }}"
+        role="region"
+        aria-roledescription="carousel"
+        aria-label="Promotions"
+      >
+        <div class="apgo-ebc__track" data-apgo-ebc-track>
+          {%- assign apgo_position = 0 -%}
+          {%- if section.settings.image != blank -%}
+            {%- assign apgo_position = 1 -%}
+            {%- assign apgo_first_eager = false -%}
+            {%- if section.index == 1 -%}{%- assign apgo_first_eager = true -%}{%- endif -%}
+            {% render 'apgo-event-banner-slide',
+              image: section.settings.image,
+              alt: section.settings.image_alt,
+              link: section.settings.link,
+              position: 1,
+              total: apgo_slide_count,
+              eager: apgo_first_eager,
+              promo_id: apgo_promo_base,
+              promo_name: apgo_promo_name
+            %}
+          {%- endif -%}
+          {%- for block in section.blocks -%}
+            {%- if block.type != 'slide' or block.settings.image == blank -%}{%- continue -%}{%- endif -%}
+            {%- liquid
+              assign apgo_position = apgo_position | plus: 1
+              assign apgo_slide_promo = blank
+              if apgo_promo_base != blank
+                if apgo_position == 1
+                  assign apgo_slide_promo = apgo_promo_base
+                else
+                  assign apgo_slide_promo = apgo_promo_base | append: '_' | append: apgo_position
+                endif
+              endif
+              assign apgo_slide_eager = false
+              if section.index == 1 and apgo_position == 1
+                assign apgo_slide_eager = true
+              endif
+            -%}
+            {% render 'apgo-event-banner-slide',
+              image: block.settings.image,
+              alt: block.settings.image_alt,
+              link: block.settings.link,
+              position: apgo_position,
+              total: apgo_slide_count,
+              eager: apgo_slide_eager,
+              promo_id: apgo_slide_promo,
+              promo_name: apgo_promo_name,
+              attributes: block.shopify_attributes
+            %}
+          {%- endfor -%}
+        </div>
+        <button type="button" class="apgo-ebc__arrow apgo-ebc__arrow--prev" data-apgo-ebc-prev aria-label="Previous banner">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <button type="button" class="apgo-ebc__arrow apgo-ebc__arrow--next" data-apgo-ebc-next aria-label="Next banner">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+        <div class="apgo-ebc__dots">
+          {%- for i in (1..apgo_slide_count) -%}
+            <button
+              type="button"
+              class="apgo-ebc__dot{% if forloop.first %} is-active{% endif %}"
+              data-apgo-ebc-dot="{{ forloop.index0 }}"
+              aria-label="Show banner {{ forloop.index }}"
+              {% if forloop.first %}aria-current="true"{% endif %}
+            ></button>
+          {%- endfor -%}
+        </div>
+      </div>
+      {%- if apgo_banner_frame == 'crate' -%}
+        <span class="apgo-crate-guards apgo-crate-guards--bottom" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      {%- elsif apgo_banner_frame == 'crate_simple' -%}
+        <span class="apgo-crate-guards" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      {%- endif -%}
+    </div>
+    <script src="{{ 'apgo-event-banner-carousel.js' | asset_url }}" defer></script>
+  {% elsif section.settings.image != blank %}
     <div class="apgo-event-banner__frame">
       {% if section.settings.link != blank %}
         <a
@@ -112,6 +226,50 @@
       "id": "color_scheme",
       "label": "Color scheme",
       "default": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26"
+    },
+    {
+      "type": "header",
+      "content": "輪播",
+      "info": "加了「輪播圖」區塊才會輪播：上面的 Banner 圖片是第 1 張，輪播圖依序接在後面。圖片請用同樣尺寸。"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "自動輪播",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "interval",
+      "label": "每張停留秒數",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "unit": "s",
+      "default": 5
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "輪播圖",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "圖片"
+        },
+        {
+          "type": "text",
+          "id": "image_alt",
+          "label": "圖片替代文字（選填）"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "點擊連結（選填）"
+        }
+      ]
     }
   ],
   "presets": [
