@@ -6,7 +6,7 @@
   @param {string} [link] - Optional link for the whole slide.
   @param {number} position - One-based slide number.
   @param {number} total - Number of slides.
-  @param {boolean} [eager] - Load at once (first slide of the first section).
+  @param {boolean} [eager] - Load at once, first (first slide of a banner near the top).
   @param {string} [promo_id] - GA4 promotion id for the link.
   @param {string} [promo_name] - GA4 promotion name for the link.
   @param {string} [attributes] - Theme editor attributes of the owning block.
@@ -44,7 +44,7 @@
     alt="{{ alt | default: image.alt | escape }}"
     width="{{ image.width }}"
     height="{{ image.height }}"
-    loading="{% if eager %}eager{% else %}lazy{% endif %}"
+    {% if eager %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}
     draggable="false"
   >
   {%- if link != blank -%}

@@ -229,6 +229,7 @@
           if (link.getAttribute('data-apgo-homepage-view-recorded') === 'true') return;
           link.setAttribute('data-apgo-homepage-view-recorded', 'true');
           publish('apgo_homepage_campaign_view', {
+            campaign_id: 'homepage',
             source: 'homepage',
             placement: link.getAttribute('data-campaign-placement') || 'homepage_carousel',
             promotion_id: link.getAttribute('data-campaign-promotion-id'),
@@ -249,6 +250,7 @@
       } else if (link.getAttribute('data-slide-position') === '1') {
         link.setAttribute('data-apgo-homepage-view-recorded', 'true');
         publish('apgo_homepage_campaign_view', {
+          campaign_id: 'homepage',
           source: 'homepage',
           placement: link.getAttribute('data-campaign-placement') || 'homepage_carousel',
           promotion_id: link.getAttribute('data-campaign-promotion-id'),
@@ -261,6 +263,7 @@
         var placement = link.getAttribute('data-campaign-placement') || 'homepage_carousel';
         writeEntrySource('homepage_carousel', placement);
         publish('apgo_homepage_campaign_click', {
+          campaign_id: 'homepage',
           source: 'homepage',
           placement: placement,
           promotion_id: link.getAttribute('data-campaign-promotion-id'),

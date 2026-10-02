@@ -16,9 +16,22 @@
   desktop and above the description on phones, in that page's cream and
   ink colours.
 
+  Left out where its link would be hidden (snippets/apgo-market-only-pages.liquid):
+  the clearance sale is Malaysia only, so Singapore shoppers don't get it.
+
   @param {string} [tone] - 'light' for the cream laundry page; default dark.
 {%- enddoc -%}
-{%- assign apgo_pdp_banner = settings.apgo_pdp_banner_image -%}
+{%- liquid
+  assign apgo_pdp_banner = settings.apgo_pdp_banner_image
+  if settings.apgo_pdp_banner_link != blank
+    capture apgo_pdp_banner_market
+      render 'apgo-market-only-pages', part: 'check', url: settings.apgo_pdp_banner_link
+    endcapture
+    if apgo_pdp_banner_market contains 'hidden'
+      assign apgo_pdp_banner = blank
+    endif
+  endif
+-%}
 {%- if apgo_pdp_banner != blank -%}
   {%- assign apgo_pdp_banner_alt = settings.apgo_pdp_banner_alt | default: apgo_pdp_banner.alt -%}
   {%- assign apgo_pdp_banner_cta = settings.apgo_pdp_banner_cta | strip -%}

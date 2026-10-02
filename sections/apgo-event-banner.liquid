@@ -28,6 +28,14 @@
     endif
   endfor
 
+  # Banners near the top load at once, the very first one first: on the
+  # clearance page they follow a tape strip, so they are not section 1
+  # (lazy loading kept the ad landing's main picture waiting).
+  assign apgo_eager = false
+  if section.index <= 3
+    assign apgo_eager = true
+  endif
+
   assign apgo_promo_base = blank
   assign apgo_promo_name = blank
   if template.suffix == 'golden-bull-award'
@@ -62,15 +70,13 @@
           {%- assign apgo_position = 0 -%}
           {%- if section.settings.image != blank -%}
             {%- assign apgo_position = 1 -%}
-            {%- assign apgo_first_eager = false -%}
-            {%- if section.index == 1 -%}{%- assign apgo_first_eager = true -%}{%- endif -%}
             {% render 'apgo-event-banner-slide',
               image: section.settings.image,
               alt: section.settings.image_alt,
               link: section.settings.link,
               position: 1,
               total: apgo_slide_count,
-              eager: apgo_first_eager,
+              eager: apgo_eager,
               promo_id: apgo_promo_base,
               promo_name: apgo_promo_name
             %}
@@ -88,7 +94,7 @@
                 endif
               endif
               assign apgo_slide_eager = false
-              if section.index == 1 and apgo_position == 1
+              if apgo_eager and apgo_position == 1
                 assign apgo_slide_eager = true
               endif
             -%}
@@ -150,10 +156,17 @@
       <img
         class="apgo-event-banner__img"
         src="{{ section.settings.image | image_url: width: 2400 }}"
+        srcset="
+          {{ section.settings.image | image_url: width: 750 }} 750w,
+          {{ section.settings.image | image_url: width: 1200 }} 1200w,
+          {{ section.settings.image | image_url: width: 1800 }} 1800w,
+          {{ section.settings.image | image_url: width: 2400 }} 2400w
+        "
+        sizes="(min-width: 750px) {{ section.settings.desktop_width_percent | default: 67 }}vw, 100vw"
         alt="{{ section.settings.image_alt | default: section.settings.image.alt | escape }}"
         width="{{ section.settings.image.width }}"
         height="{{ section.settings.image.height }}"
-        loading="{% if section.index == 1 %}eager{% else %}lazy{% endif %}"
+        {% if apgo_eager %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}
       >
       {% if section.settings.link != blank %}
         </a>
