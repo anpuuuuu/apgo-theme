@@ -1482,14 +1482,40 @@ html:not(.apgo-home-js) .apgo-home-compare__fill {
 
 /* Whole image, never cropped: the slides take the tallest banner's
    proportions (sections/apgo-home-carousel.liquid), so a wider banner sits
-   centred with the track's card colour above and below it. */
+   centred. Behind it, a blurred and enlarged copy of the same banner fills
+   the space above and below (only printed for such banners). */
 .apgo-home-carousel__img {
+  position: relative;
+  z-index: 1;
   display: block;
   width: 100%;
   height: 100%;
   object-fit: contain;
   user-select: none;
   -webkit-user-drag: none;
+}
+
+/* Every slide is the positioning box for its own fill, so the blur never
+   spills into the next slide. */
+.apgo-home-carousel__slide {
+  position: relative;
+  overflow: hidden;
+}
+
+.apgo-home-carousel__fill {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.apgo-home-carousel__fill img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(18px) brightness(0.92);
+  transform: scale(1.25);
 }
 
 .apgo-home-carousel__arrow {

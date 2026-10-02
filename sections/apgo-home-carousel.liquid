@@ -9,10 +9,12 @@
 
   No cropping (2026-10): all slides share the proportions of the tallest
   banner, so the row never jumps in height, and each image is shown whole.
-  A banner wider than that gets the card colour above and below it. (It
-  used to take the first banner's proportions and crop the rest to fit:
-  a wide 1983x793 banner placed first cut the top and bottom off the
-  1610x1000 Golden Bull banner.) Same-size images still look best.
+  A banner wider than that sits centred over a blurred, enlarged copy of
+  itself that fills the space above and below (owner's choice over plain
+  bands). Only such banners get the copy; same-shape ones are unchanged.
+  (It used to take the first banner's proportions and crop the rest to
+  fit: a wide 1983x793 banner placed first cut the top and bottom off the
+  1610x1000 Golden Bull banner.) Same-shape images still look best.
 
   Every linked banner reports views/clicks through apgo-campaign-tracking.js
   ([data-apgo-homepage-campaign-link]). The Golden Bull banner keeps its
@@ -116,6 +118,19 @@
                   assign promo_id = 'homepage_banner_' | append: position
                 endif
               endif
+
+              # Wider than the shared shape: blurred copy behind it.
+              assign needs_fill = false
+              assign shape_gap = block.settings.image.aspect_ratio | minus: ratio_phone
+              if shape_gap > 0.02
+                assign needs_fill = true
+              endif
+              if all_wide
+                assign shape_gap_wide = block.settings.image_desktop.aspect_ratio | minus: ratio_wide
+                if shape_gap_wide > 0.02
+                  assign needs_fill = true
+                endif
+              endif
             -%}
             {%- capture banner_media -%}
               <picture>
@@ -158,6 +173,23 @@
               data-apgo-carousel-slide
               {{ block.shopify_attributes }}
             >
+              {%- if needs_fill -%}
+                <span class="apgo-home-carousel__fill" aria-hidden="true">
+                  <picture>
+                    {%- if all_wide -%}
+                      <source media="(min-width: 1024px)" srcset="{{ block.settings.image_desktop | image_url: width: 600 }}">
+                    {%- endif -%}
+                    <img
+                      src="{{ block.settings.image | image_url: width: 400 }}"
+                      alt=""
+                      width="{{ block.settings.image.width }}"
+                      height="{{ block.settings.image.height }}"
+                      {% if position == 1 %}loading="eager"{% else %}loading="lazy"{% endif %}
+                      draggable="false"
+                    >
+                  </picture>
+                </span>
+              {%- endif -%}
               {%- if banner_link != blank -%}
                 <a
                   class="apgo-home-carousel__link"
@@ -216,7 +248,7 @@
   "settings": [
     {
       "type": "paragraph",
-      "content": "Phone image: best kept all the same shape (now 1610×1000 or 951×591). A banner with a different shape is shown whole, with blank space above and below it; nothing is cropped. Desktop image (optional): 1200×420. Desktop uses the wide images only when every banner has one."
+      "content": "Phone image: best kept all the same shape (now 1610×1000 or 951×591). A banner with a different shape is shown whole over a blurred copy of itself; nothing is cropped. Desktop image (optional): 1200×420. Desktop uses the wide images only when every banner has one."
     },
     {
       "type": "checkbox",
