@@ -12,9 +12,48 @@
   Per-product opt-out: products with metafield custom.hide_quick_add = true
   render NO + trigger (e.g. the detergent bundle promo, which must be
   bought through its PDP scent/tier picker, not a bare variant add).
+
+  Straight to the product page (2026-10): for products with too many
+  options for the drawer, the + (or the homepage text button) is a link
+  to the product page instead. Pocket-Friendly Deals has 27 options; in
+  the drawer the photo sits above a long list and is out of view while
+  shoppers pick, while its product page has the selected-item card, the
+  thumbnail strip and preloaded photos. Tag apgo-plus-to-pdp does the
+  same for another product.
 {%- endcomment -%}
+{%- liquid
+  assign apgo_plus_to_pdp = false
+  if product.handle == 'pocket-friendly-deals' or product.tags contains 'apgo-plus-to-pdp'
+    assign apgo_plus_to_pdp = true
+  endif
+  assign apgo_plus_href = product.url
+  if selected_variant != blank
+    assign apgo_plus_href = selected_variant.url
+  endif
+-%}
 {%- if product.metafields.custom.hide_quick_add.value -%}
   {%- comment -%} quick add disabled for this product {%- endcomment -%}
+{%- elsif apgo_plus_to_pdp -%}
+<div class="apgo-coll-drawer-pack{% if pack_class != blank %} {{ pack_class }}{% endif %}">
+  {%- if label != blank -%}
+    <a
+      class="apgo-coll-drawer-open apgo-coll-drawer-open--text{% if button_class != blank %} {{ button_class }}{% endif %}"
+      href="{{ apgo_plus_href }}"
+    >
+      {{- label | escape -}}
+    </a>
+  {%- else -%}
+    <a
+      class="apgo-coll-drawer-open"
+      href="{{ apgo_plus_href }}"
+      aria-label="{{ 'product.select_variant' | t }}: {{ product.title | escape }}"
+    >
+      <span class="svg-wrapper apgo-coll-drawer-open__icon" aria-hidden="true">
+        {{- 'icon-plus.svg' | inline_asset_content -}}
+      </span>
+    </a>
+  {%- endif -%}
+</div>
 {%- else -%}
 {% capture apgo_coll_drawer_json %}
 {
@@ -79,6 +118,8 @@
 
   .apgo-coll-drawer-open {
     --apgo-atc-orange: #f08418;
+
+    text-decoration: none;
 
     display: inline-grid;
     place-items: center;

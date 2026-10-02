@@ -264,6 +264,26 @@ function buildModalMarkup(data, initialVariantId) {
   `;
 }
 
+/* Chat button: hidden while the drawer is open (CSS:
+   body.apgo-collection-chat-hidden). On close it comes back after the
+   drawer's 0.3s slide-down, so it doesn't pop up over the closing drawer. */
+const CHAT_RETURN_MS = 300;
+let chatTimer = 0;
+
+function hideChat() {
+  window.clearTimeout(chatTimer);
+  document.body.classList.add('apgo-collection-chat-hidden');
+}
+
+function showChatAfterClose() {
+  window.clearTimeout(chatTimer);
+  chatTimer = window.setTimeout(() => {
+    if (!getShell()?.classList.contains('active')) {
+      document.body.classList.remove('apgo-collection-chat-hidden');
+    }
+  }, CHAT_RETURN_MS);
+}
+
 function openDrawer(data, initialVariantId) {
   const shell = getShell();
   const modal = document.getElementById('apgoCollectionVariantModal');
@@ -275,6 +295,7 @@ function openDrawer(data, initialVariantId) {
   shell.classList.add('active');
   shell.setAttribute('aria-hidden', 'false');
   document.body.classList.add('apgo-collection-variant-open');
+  hideChat();
 
   /*
     鎖住背景捲動。iOS Safari 對 body{overflow:hidden} 不生效，需要 position:fixed
@@ -312,6 +333,7 @@ function closeDrawer() {
   shell.classList.remove('active');
   shell.setAttribute('aria-hidden', 'true');
   document.body.classList.remove('apgo-collection-variant-open');
+  showChatAfterClose();
 
   /* 還原 iOS scroll 鎖（記得在移除 position:fixed 之後 scrollTo 還原 Y）。
      base.css 對 <html> 設了 scroll-behavior: smooth，全域 scrollTo 會被瀏覽器

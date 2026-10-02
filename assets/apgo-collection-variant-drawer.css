@@ -785,3 +785,13 @@ body.apgo-collection-variant-open.apgo-collection-variant-ios-lock {
 html:has(body.apgo-collection-variant-open) {
   overflow: hidden;
 }
+
+/*
+  Shopify Inbox's Chat button (<shopify-chat>, z-index 2147483000) sat on
+  top of the drawer and covered its lower right corner (the Total row).
+  Hidden while the drawer is open; apgo-collection-variant-drawer.js keeps
+  it hidden until the 0.3s slide-down has finished.
+*/
+body.apgo-collection-chat-hidden shopify-chat {
+  visibility: hidden;
+}
