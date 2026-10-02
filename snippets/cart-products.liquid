@@ -946,9 +946,10 @@
       return parseInt(input && input.getAttribute('max'), 10) || 0;
     }
 
-    /* + pressed while the line is already at the limit. Capture phase, so
-       the value is read before the component steps it. */
-    document.addEventListener('click', function (e) {
+    /* + pressed while the line is already at the limit. On window, capture
+       phase: the theme's own delegated handlers (assets/component.js) sit on
+       document, capture phase, and would step the value up first. */
+    window.addEventListener('click', function (e) {
       var btn = e.target instanceof Element ? e.target.closest('quantity-selector-component button[name="plus"]') : null;
       if (!btn) return;
       var input = btn.closest('quantity-selector-component').querySelector('input[data-apgo-max-per-order]');
