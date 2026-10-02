@@ -45,23 +45,23 @@
             "market_visibility": "my"
           }
         },
-        "banner_FGcy6A": {
-          "type": "banner",
-          "settings": {
-            "image": "shopify://shop_images/warehouse_sales_banneR.png",
-            "image_desktop": "shopify://shop_images/warehouse_sales_banneR.png",
-            "link": "shopify://pages/clearance-sale",
-            "alt": "",
-            "tracking_id": "",
-            "market_visibility": "my"
-          }
-        },
         "banner_9GwjTp": {
           "type": "banner",
           "settings": {
             "image": "shopify://shop_images/warehouse_sales_banner.jpg",
             "image_desktop": "shopify://shop_images/warehouse_sales_banner.jpg",
-            "link": "shopify://pages/clearance-sale",
+            "link": "shopify://products/warehouse-clearance-sale-bundle",
+            "alt": "",
+            "tracking_id": "",
+            "market_visibility": "my"
+          }
+        },
+        "banner_FGcy6A": {
+          "type": "banner",
+          "settings": {
+            "image": "shopify://shop_images/warehouse_sales_banneR.png",
+            "image_desktop": "shopify://shop_images/warehouse_sales_banneR.png",
+            "link": "shopify://products/pocket-friendly-deals",
             "alt": "",
             "tracking_id": "",
             "market_visibility": "my"
@@ -93,8 +93,8 @@
         "banner_gwB9LQ",
         "banner_jin73F",
         "banner_a7egwR",
-        "banner_FGcy6A",
         "banner_9GwjTp",
+        "banner_FGcy6A",
         "banner_9NBpHW",
         "banner_golden_bull"
       ],
