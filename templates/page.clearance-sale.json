@@ -155,7 +155,7 @@
           "settings": {
             "market_visibility": "my",
             "heading": "Pocket Friendly Deals",
-            "message": "Satu Ringgit onwards, 没有就没有 liao",
+            "message": "Friendly for the wallet👍🏻 Satu Ringgit onwards~",
             "banner": "shopify://shop_images/warehouse_sales_banner_2.jpg",
             "product": "pocket-friendly-deals",
             "variant_id": "",
@@ -180,7 +180,7 @@
           "settings": {
             "market_visibility": "my",
             "heading": "MEGA LAUNDRY DEAL",
-            "message": "Dont say bojio, 没有就没有 liao",
+            "message": "Buy More, Save More! Safe & suitable for babies and elderly",
             "banner": "shopify://shop_images/detergent_banner_photo.png",
             "product": "apgo-laundry-detergent-special-promotion-1",
             "variant_id": "",
@@ -204,7 +204,7 @@
           "type": "product_carousel",
           "settings": {
             "market_visibility": "both",
-            "heading": "Dont Play Play Deals👍🏻",
+            "heading": "APGO HOUSEHOLD CARE",
             "banner": "shopify://shop_images/household_banner.png",
             "products": [
               "apgo-laundry-detergent-special-promotion-1",
