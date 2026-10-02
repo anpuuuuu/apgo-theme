@@ -18,7 +18,7 @@
           "settings": {
             "image": "shopify://shop_images/1_2dc1f73a-7df9-4156-820d-8fff64687788.jpg",
             "image_desktop": "shopify://shop_images/1_2dc1f73a-7df9-4156-820d-8fff64687788.jpg",
-            "link": "",
+            "link": "shopify://pages/clearance-sale",
             "alt": "",
             "tracking_id": ""
           }
@@ -29,7 +29,7 @@
           "settings": {
             "image": "shopify://shop_images/3_0e3a8eb7-4b99-479d-95b3-fe95d6d18b23.jpg",
             "image_desktop": "shopify://shop_images/3_0e3a8eb7-4b99-479d-95b3-fe95d6d18b23.jpg",
-            "link": "",
+            "link": "shopify://pages/clearance-sale",
             "alt": "",
             "tracking_id": ""
           }
@@ -40,7 +40,7 @@
           "settings": {
             "image": "shopify://shop_images/2_dea55a7f-0b39-4b73-ab73-3502e8909f15.jpg",
             "image_desktop": "shopify://shop_images/2_dea55a7f-0b39-4b73-ab73-3502e8909f15.jpg",
-            "link": "",
+            "link": "shopify://pages/clearance-sale",
             "alt": "",
             "tracking_id": ""
           }
@@ -51,7 +51,7 @@
           "settings": {
             "image": "shopify://shop_images/warehouse_sales_banneR.png",
             "image_desktop": "shopify://shop_images/warehouse_sales_banneR.png",
-            "link": "",
+            "link": "shopify://pages/clearance-sale",
             "alt": "",
             "tracking_id": ""
           }
@@ -62,7 +62,7 @@
           "settings": {
             "image": "shopify://shop_images/warehouse_sales_banner.jpg",
             "image_desktop": "shopify://shop_images/warehouse_sales_banner.jpg",
-            "link": "",
+            "link": "shopify://pages/clearance-sale",
             "alt": "",
             "tracking_id": ""
           }
