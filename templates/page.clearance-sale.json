@@ -176,8 +176,8 @@
           "type": "promo_banner",
           "settings": {
             "market_visibility": "my",
-            "heading": "Limited Time Deals",
-            "message": "Dont say bojio, 没有就没有 liao",
+            "heading": "CLEARANCE BUNDLE",
+            "message": "Yes, we earn 80% lesser but it's OK. We get the space and you get good products :)",
             "banner": "shopify://shop_images/warehouse_sales_banneR.png",
             "product": "warehouse-clearance-sale-bundle",
             "variant_id": "",
@@ -201,8 +201,8 @@
           "type": "promo_banner",
           "settings": {
             "market_visibility": "my",
-            "heading": "Limited Time Deals",
-            "message": "Dont say bojio, 没有就没有 liao",
+            "heading": "Pocket Friendly Deals",
+            "message": "Satu Ringgit onwards, 没有就没有 liao",
             "banner": "shopify://shop_images/warehouse_sales_banner_2.jpg",
             "product": "pocket-friendly-deals",
             "variant_id": "",
@@ -226,7 +226,7 @@
           "type": "promo_banner",
           "settings": {
             "market_visibility": "my",
-            "heading": "Limited Time Deals",
+            "heading": "MEGA LAUNDRY DEAL",
             "message": "Dont say bojio, 没有就没有 liao",
             "banner": "shopify://shop_images/detergent_banner_photo.png",
             "product": "apgo-laundry-detergent-special-promotion-1",
