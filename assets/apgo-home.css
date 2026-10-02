@@ -1495,6 +1495,7 @@ html:not(.apgo-home-js) .apgo-home-compare__fill {
 
 .apgo-home-carousel__dots {
   display: flex;
+  flex-wrap: wrap; /* no banner limit: past ~28 dots they wrap instead of running off a phone screen */
   align-items: center;
   justify-content: center;
   gap: 6px;
