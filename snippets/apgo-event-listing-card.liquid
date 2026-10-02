@@ -54,12 +54,23 @@
     endif
   endunless
 
-  assign apgo_card_image = apgo_listing_variant.featured_image
-  if apgo_card_image == blank
-    assign apgo_card_image = apgo_listing_variant.image
+  # Photo and link (2026-10, the homepage cards' rule from 37accb7): the
+  # product's first image and its plain product URL, not the default
+  # variant's (a laundry card showed the Rose pack). Only a variant picked in
+  # the block's "Variant IDs" setting keeps its own photo and ?variant= link,
+  # since the card then sells that variant. Price and the cart buttons still
+  # use apgo_listing_variant either way.
+  assign apgo_card_image = blank
+  assign apgo_card_url = product.url
+  if apgo_resolved_from_block
+    assign apgo_card_image = apgo_listing_variant.featured_image
+    assign apgo_card_url = apgo_listing_variant.url
   endif
   if apgo_card_image == blank and product.featured_media != blank
     assign apgo_card_image = product.featured_media.preview_image
+  endif
+  if apgo_card_image == blank
+    assign apgo_card_image = apgo_listing_variant.featured_image
   endif
 
   assign apgo_card_link_id = 'apgo-event-card-' | append: card_uid | append: '-' | append: product.id
@@ -103,7 +114,7 @@
 >
   <a
     id="{{ apgo_card_link_id | md5 }}"
-    href="{{ apgo_listing_variant.url }}"
+    href="{{ apgo_card_url }}"
     class="product-card__link"
     ref="productCardLink"
   >
@@ -134,7 +145,7 @@
     "
   >
     <div class="card-gallery card-gallery--square apgo-event-listing-card__gallery">
-      <a href="{{ apgo_listing_variant.url }}" class="card-gallery__link">
+      <a href="{{ apgo_card_url }}" class="card-gallery__link">
         {% if apgo_card_image != blank %}
           <img
             src="{{ apgo_card_image | image_url: width: 600 }}"
@@ -159,7 +170,7 @@
 
     <div class="apgo-event-listing-card__body group-block">
       <h3 class="h5 apgo-event-listing-card__title">
-        <a href="{{ apgo_listing_variant.url }}">{{ product.title }}</a>
+        <a href="{{ apgo_card_url }}">{{ product.title }}</a>
       </h3>
       {%- comment -%}
         Footer layout:
