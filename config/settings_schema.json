@@ -140,6 +140,31 @@
     ]
   },
   {
+    "name": "APGO — Product page banner",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "One banner on every product page that uses the v3 template: under Add to cart / Buy now on desktop, under the delivery line (above Description) on phones. Leave the image empty to show nothing."
+      },
+      {
+        "type": "image_picker",
+        "id": "apgo_pdp_banner_image",
+        "label": "Banner image"
+      },
+      {
+        "type": "url",
+        "id": "apgo_pdp_banner_link",
+        "label": "Link (optional)"
+      },
+      {
+        "type": "text",
+        "id": "apgo_pdp_banner_alt",
+        "label": "Alt text (optional)",
+        "info": "Describes the banner for screen readers."
+      }
+    ]
+  },
+  {
     "name": "t:names.logo_and_favicon",
     "settings": [
       {
