@@ -11,14 +11,17 @@
   already pays the 2–3 kg rate — hence "less than". Past the last tier
   checkout offers no rate; the estimate keeps the top price.
 
-  Update both lists whenever the rates change in the admin.
+  Update both lists whenever the rates change in the admin. Last checked
+  against the admin (Admin API, General profile) on 2026-10-02: West
+  Malaysia had gone up (under 2 kg RM2.90 -> RM4.80, ...); Singapore was
+  unchanged.
 
   @param {string} [market] - 'MY' or 'SG': prints the estimate in minor units
   @param {number} [weight] - cart weight in grams (cart.total_weight)
   @param {boolean} [tiers_json] - prints the tiers as a JSON object keyed by currency, for the cart scripts
 {%- enddoc -%}
 {%- liquid
-  assign tiers_myr = '2000:290,3000:350,4000:450,5000:550,9000:650,15000:1500'
+  assign tiers_myr = '2000:480,3000:650,4000:750,5000:850,9000:950,15000:1500'
   assign tiers_sgd = '1000:348,1500:396,2000:456,2500:516,3000:576,3500:636,4000:696,4500:756,5000:816,5500:936,6000:996,6500:1056,7000:1116,7500:1176,8000:1236,10500:1536,13500:1896,17000:2016'
 
   if tiers_json
