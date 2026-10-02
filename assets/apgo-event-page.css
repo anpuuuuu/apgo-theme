@@ -461,6 +461,10 @@ body.apgo-special-event-page .apgo-event-listing-card__actions {
   width: 100%;
 }
 
+body.apgo-special-event-page .apgo-event-listing-card__btn--choose {
+  text-decoration: none;
+}
+
 body.apgo-special-event-page .apgo-event-listing-card__btn {
   display: inline-flex;
   align-items: center;

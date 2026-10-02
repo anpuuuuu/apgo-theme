@@ -1749,6 +1749,19 @@ body.apgo-clearance-sale-page .apgo-event-listing-card__btn--buy:hover:not(:disa
   background: var(--crate-cta-hover);
 }
 
+/* "Choose scent" link on cards that need a choice first (the card snippet). */
+body.apgo-clearance-sale-page .apgo-event-listing-card__btn--choose {
+  flex: 1 1 100%;
+  background: var(--crate-cta);
+  color: var(--crate-cta-ink);
+  text-decoration: none;
+}
+
+body.apgo-clearance-sale-page .apgo-event-listing-card__btn--choose:hover {
+  background: var(--crate-cta-hover);
+  color: var(--crate-cta-ink);
+}
+
 body.apgo-clearance-sale-page .apgo-event-listing-card__btn--sold-out,
 body.apgo-clearance-sale-page .apgo-event-listing-card__btn--sold-out:hover {
   flex: 1 1 100%;

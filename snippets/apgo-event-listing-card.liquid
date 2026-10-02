@@ -75,6 +75,23 @@
 
   assign apgo_card_link_id = 'apgo-event-card-' | append: card_uid | append: '-' | append: product.id
 
+  # Products that need a choice first (custom.hide_quick_add, e.g. the
+  # laundry scents) get a "Choose scent" link to their page, like the
+  # homepage and collection cards, instead of buttons that silently add the
+  # default option (the laundry card added Rose). A variant picked in the
+  # block's "Variant IDs" setting is a deliberate choice and keeps them.
+  assign apgo_card_choose = blank
+  if product.metafields.custom.hide_quick_add.value and apgo_resolved_from_block == false
+    assign apgo_card_choose = 'Choose options'
+    if product.options.size == 1
+      assign apgo_card_option = product.options.first | downcase | strip
+      case apgo_card_option
+        when 'scent', 'size', 'colour', 'color', 'bundle', 'set'
+          assign apgo_card_choose = 'Choose ' | append: apgo_card_option
+      endcase
+    endif
+  endif
+
   assign apgo_card_sold_out = false
   unless apgo_listing_variant.available
     assign apgo_card_sold_out = true
@@ -215,6 +232,9 @@
         {%- endif -%}
         {%- unless apgo_card_sold_out -%}
           <div class="apgo-event-listing-card__actions">
+            {%- if apgo_card_choose != blank -%}
+            <a class="apgo-event-listing-card__btn apgo-event-listing-card__btn--choose" href="{{ apgo_card_url }}">{{ apgo_card_choose }}</a>
+            {%- else -%}
             <button
               type="button"
               class="apgo-event-listing-card__btn apgo-event-listing-card__btn--add"
@@ -233,6 +253,7 @@
               aria-label="Buy {{ product.title | escape }} now">
               Buy now
             </button>
+            {%- endif -%}
           </div>
         {%- else -%}
           <div class="apgo-event-listing-card__actions">

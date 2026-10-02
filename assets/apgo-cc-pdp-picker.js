@@ -678,10 +678,16 @@
     return !!(error && (error.silent || error.code === 'request_in_flight' || error.description === 'choose-gifts'));
   }
 
-  function handleCartFailure(error) {
+  function handleCartFailure(error, intent) {
     if (isSilentCartError(error)) return;
     if (error && error.code === 'max_per_order') {
       var left = Math.max(0, maxPerOrder - (error.inCart || 0));
+      /* Buy now with this option already at the limit: the cart is where
+         the shopper was heading anyway. */
+      if (intent === 'buy' && left === 0) {
+        window.location.href = '/cart';
+        return;
+      }
       showCartErrorToast(
         left > 0
           ? 'You can add ' + left + ' more of this option.'
@@ -1174,7 +1180,13 @@
           var titleEl = document.querySelector('.apgo-product-name')
                        || document.querySelector('.apgo-cc-pdp__title');
           var name = (titleEl && titleEl.textContent.trim()) || 'Item';
-          showAddedToCartToast(name, 'Added to cart');
+          /* Direct add has no confirm sheet: name the option that went in
+             (phones show only the first line). */
+          if (directAdd && variants.length > 1 && activeVariant && activeVariant.title) {
+            showAddedToCartToast(activeVariant.title, 'Added to cart · ' + name);
+          } else {
+            showAddedToCartToast(name, 'Added to cart');
+          }
         }
         /*
           When X had a gift mapping, X+Y were added atomically in the
@@ -1216,10 +1228,18 @@
       addToCart({ btn: buyBtn, silent: true }).then(function () {
         window.location.href = '/cart';
       }).catch(function (error) {
-        handleCartFailure(error);
+        handleCartFailure(error, 'buy');
       });
     });
   }
+
+  /* Enter in the quantity box would post this form natively (it has no
+     submit button), skipping the per-order limit, the sold-out check and
+     the gift picker: send it through Add to cart instead. */
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (addBtn && !addBtn.disabled && !addBtn.hidden && addBtn.offsetParent !== null) addBtn.click();
+  });
 
   /*
     Gallery -> variant sync. Runs on every product.
@@ -1259,7 +1279,10 @@
     var v = findVariantBySlide(idx);
     if (!v) return;                              /* slide owns no variant */
     if (v.id === window.currentVariantId) return; /* already on it */
-    if (isVariantSoldOut(v)) return;              /* sold-out chips can't be picked */
+    /* A sold-out option's photo selects it too (the bar then says Sold out,
+       as on its ?variant= link): otherwise Add to cart would add the
+       previous option while the gallery shows this one. Tapping its chip
+       still does nothing. */
     /* Flip radios across every option group so all options end up matching v */
     form.querySelectorAll('[data-apgo-cc-option-group]').forEach(function (g, gi) {
       var targetValue = (v.options || [])[gi];
@@ -1533,7 +1556,7 @@
     addToCart({ btn: trigger, silent: intent === 'buy' }).then(function () {
       if (intent === 'buy') window.location.href = '/cart';
     }).catch(function (error) {
-      handleCartFailure(error);
+      handleCartFailure(error, intent);
     });
   }
 
@@ -1544,7 +1567,7 @@
       closeConfirmModal();
       if (intent === 'buy') window.location.href = '/cart';
     }).catch(function (error) {
-      handleCartFailure(error);
+      handleCartFailure(error, intent);
     });
   }
   if (confirmAddBtn) confirmAddBtn.addEventListener('click', function () { commitFromConfirm('add', confirmAddBtn); });
@@ -1576,6 +1599,11 @@
   collapsed (and iOS 15 ignores it for touch altogether). Two-finger zoom,
   and panning a zoomed-in view, still work.
 
+  The phone's back button closes the photo rather than leaving the page
+  (Android, and the Facebook / Instagram in-app browsers ad visitors land
+  in): opening adds a same-URL history entry; closing another way takes it
+  back off.
+
   The lock is a class with its own !important rule rather than an inline
   style: apgo-cc-buybar.js writes html style.overflow, which would clear an
   inline lock, and the theme's html[scroll-lock] belongs to its dialogs and
@@ -1594,6 +1622,8 @@
   rule.textContent = 'html.apgo-lightbox-lock { overflow-y: hidden !important; }';
   document.head.appendChild(rule);
 
+  var historyEntry = false;
+
   function sync() {
     var open = lightbox.classList.contains('active');
     if (open === locked) return;
@@ -1602,9 +1632,17 @@
       savedX = window.pageXOffset;
       savedY = window.pageYOffset;
       root.classList.add('apgo-lightbox-lock');
+      try {
+        history.pushState({ apgoLightbox: true }, '');
+        historyEntry = true;
+      } catch (_) {}
       return;
     }
     root.classList.remove('apgo-lightbox-lock');
+    if (historyEntry) {
+      historyEntry = false;
+      if (history.state && history.state.apgoLightbox) history.back();
+    }
     if (Math.abs(window.pageYOffset - savedY) > 1 || Math.abs(window.pageXOffset - savedX) > 1) {
       /* Jump straight back: assets/base.css sets html { scroll-behavior: smooth }. */
       var prevBehavior = root.style.scrollBehavior;
@@ -1615,6 +1653,14 @@
   }
   new MutationObserver(sync).observe(lightbox, { attributes: true, attributeFilter: ['class'] });
   sync();
+
+  window.addEventListener('popstate', function (e) {
+    if (!historyEntry || (e.state && e.state.apgoLightbox)) return;
+    historyEntry = false; /* the back press used our entry up */
+    if (lightbox.classList.contains('active') && typeof window.apgoCloseLightbox === 'function') {
+      window.apgoCloseLightbox();
+    }
+  });
 
   lightbox.addEventListener('touchmove', function (e) {
     if (!locked || e.touches.length !== 1) return;

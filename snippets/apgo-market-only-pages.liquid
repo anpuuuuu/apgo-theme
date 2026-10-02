@@ -22,16 +22,19 @@
   if localization.country.iso_code != 'MY'
     assign outside_my = true
   endif
+  # Shopify serves /pages/Clearance-Sale too, so compare in lower case.
+  assign apgo_mo_path = request.path | downcase
+  assign apgo_mo_url = url | downcase
 -%}
 {%- if outside_my -%}
   {%- if part == 'check' -%}
     {%- for path in my_only_paths -%}
-      {%- if url contains path -%}hidden{%- break -%}{%- endif -%}
+      {%- if apgo_mo_url contains path -%}hidden{%- break -%}{%- endif -%}
     {%- endfor -%}
   {%- elsif part == 'head' -%}
     {%- unless request.design_mode -%}
       {%- for path in my_only_paths -%}
-        {%- if request.path contains path -%}
+        {%- if apgo_mo_path contains path -%}
           <script>window.location.replace({{ routes.root_url | json }});</script>
           {%- break -%}
         {%- endif -%}
@@ -44,9 +47,9 @@
     {%- endcomment -%}
     <style>
       {%- for path in my_only_paths %}
-      a[href*="{{ path }}"] { display: none !important; }
-      li:has(> a[href*="{{ path }}"]) { display: none !important; }
-      .predictive-search-results__card:has(a[href*="{{ path }}"]) { display: none !important; }
+      a[href*="{{ path }}" i] { display: none !important; }
+      li:has(> a[href*="{{ path }}" i]) { display: none !important; }
+      .predictive-search-results__card:has(a[href*="{{ path }}" i]) { display: none !important; }
       {%- endfor %}
     </style>
   {%- endif -%}

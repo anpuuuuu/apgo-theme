@@ -64,9 +64,10 @@
         endif
       endif
 
-      # Mobile summary — shipping estimate by cart weight (must mirror sections/cart-cta.liquid)
+      # Mobile summary — shipping estimate by cart weight (must mirror sections/cart-cta.liquid).
+      # An empty cart ships nothing (it showed "Estimated total RM4.80").
       assign apgo_shipping_estimate_minor = 0
-      if market_threshold_minor > 0 and free_shipping_unlocked == false
+      if market_threshold_minor > 0 and free_shipping_unlocked == false and cart.item_count > 0
         capture apgo_shipping_estimate_raw
           render 'apgo-shipping-estimate', market: localization.country.iso_code, weight: cart.total_weight
         endcapture
@@ -936,7 +937,7 @@
 
     // Shipping estimate by cart weight — must mirror Liquid SSR + sections/cart-cta.liquid
     function shippingEstimateMinor(cart) {
-      if (!cart) return 0;
+      if (!cart || !cart.item_count) return 0;
       // Tag-unlock: any line in cart whose product_id matches the
       // free-shipping lookup zeroes shipping regardless of subtotal.
       const lookup = window.APGO_FREE_SHIPPING_LINE_LOOKUP || {};
