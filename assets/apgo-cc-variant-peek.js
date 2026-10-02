@@ -48,6 +48,13 @@
   var current = null;
   var galleryGone = false;
   var openedByPeek = false;
+  /* After the cart sheet closes, wait for it to fold away (0.3s, buy bar
+     snippet CSS) before the card comes back; it used to fade in on top of
+     the still-tall panel and ride down with it. */
+  var SHEET_CLOSE_MS = 320;
+  var sheetWasOpen = false;
+  var holdAfterClose = false;
+  var holdTimer = null;
 
   function withWidth(src, w) {
     if (!src) return '';
@@ -121,8 +128,19 @@
 
   function render() {
     var lightbox = document.getElementById('apgoImageLightbox');
+    var sheetOpen = isOpen(buybar, 'is-open');
+    if (sheetWasOpen && !sheetOpen) {
+      holdAfterClose = true;
+      clearTimeout(holdTimer);
+      holdTimer = setTimeout(function () { holdAfterClose = false; render(); }, SHEET_CLOSE_MS);
+    } else if (sheetOpen) {
+      holdAfterClose = false;
+      clearTimeout(holdTimer);
+    }
+    sheetWasOpen = sheetOpen;
     var show = galleryGone &&
-      !isOpen(buybar, 'is-open') &&
+      !sheetOpen &&
+      !holdAfterClose &&
       !isOpen(document.body, 'apgo-cc-confirm-open') &&
       !isOpen(lightbox, 'active');
     peek.classList.toggle('is-visible', show);

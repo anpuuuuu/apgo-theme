@@ -144,8 +144,14 @@
 
   // ---------- Open / close sheet ----------
   /* body.apgo-cc-buybar-open hides the Shopify Inbox Chat button while the
-     sheet is up (CSS in sections/apgo_product_page_v3.liquid). */
+     sheet is up (CSS in sections/apgo_product_page_v3.liquid). The Chat
+     button sits above everything (z-index 2147483000), so on close it waits
+     until the sheet has folded away (0.3s, see the buy bar snippet's CSS);
+     otherwise it popped up on top of the still-closing sheet. */
+  var CLOSE_MS = 300;
+  var chatTimer = null;
   function open() {
+    clearTimeout(chatTimer);
     bar.classList.add('is-open');
     if (sheet) sheet.setAttribute('aria-hidden', 'false');
     if (backdrop) backdrop.setAttribute('aria-hidden', 'false');
@@ -157,7 +163,10 @@
     if (sheet) sheet.setAttribute('aria-hidden', 'true');
     if (backdrop) backdrop.setAttribute('aria-hidden', 'true');
     document.documentElement.style.overflow = '';
-    document.body.classList.remove('apgo-cc-buybar-open');
+    clearTimeout(chatTimer);
+    chatTimer = setTimeout(function () {
+      if (!bar.classList.contains('is-open')) document.body.classList.remove('apgo-cc-buybar-open');
+    }, CLOSE_MS);
   }
   function toggle() {
     if (bar.classList.contains('is-open')) close();

@@ -18,6 +18,9 @@
 
   Also renders snippets/apgo-cc-pdp-thumbs.liquid (thumbnail strip for
   single products, moved under the gallery by its own script).
+
+  Open / close motion (2026-10): the sheet and the "View cart" row fold
+  together in one movement. See the <style> after </aside>.
 {%- endcomment -%}
 
 {%- liquid
@@ -81,6 +84,7 @@
     {%- endif -%}
     {%- comment -%} ---- Expandable sheet ---- {%- endcomment -%}
     <div class="apgo-cc-buybar__sheet" data-apgo-cc-buybar-sheet aria-hidden="true">
+      <div class="apgo-cc-buybar__sheet-inner">
       <div class="apgo-cc-buybar__sheet-head">
         <button type="button"
                 class="apgo-cc-buybar__collapse"
@@ -111,10 +115,13 @@
           {{ 0 | money | replace: ' MYR', '' | replace: 'MYR', '' | strip }}
         </span>
       </div>
+      </div>
     </div>
 
     {%- comment -%} ---- Bottom CTA bar (always visible on mobile) ---- {%- endcomment -%}
     <div class="apgo-cc-buybar__bar">
+      <div class="apgo-cc-buybar__top-wrap">
+      <div class="apgo-cc-buybar__top-clip">
       <button type="button"
               class="apgo-cc-buybar__top"
               data-apgo-cc-buybar-handle
@@ -131,6 +138,8 @@
           <span data-apgo-cc-buybar-chip-total>{{ 0 | money | replace: ' MYR', '' | replace: 'MYR', '' | strip }}</span>
         </span>
       </button>
+      </div>
+      </div>
       {%- assign apgo_buybar_variant = product.selected_or_first_available_variant -%}
       {%- assign apgo_buybar_sold_out = false -%}
       {%- unless apgo_buybar_variant.available -%}
@@ -164,6 +173,74 @@
   </div>
 </aside>
 
+<style>
+  /*
+    Open / close in one movement (2026-10). The section's CSS
+    (sections/apgo_product_page_v3.liquid, too large to edit) animated the
+    sheet's max-height between 0 and 65vh and showed or hid the "View cart"
+    row instantly. On close the row popped back first, so the whole panel
+    jumped up ~40px, then sat still while max-height ran down from 65vh to
+    the real height, then dropped: it looked like it closed twice.
+    Now the sheet and the row each fold through a grid row (0fr <-> 1fr),
+    which animates the real height, on the same timing, so the panel top
+    moves once, smoothly, in either direction.
+  */
+  .apgo-cc-buybar .apgo-cc-buybar__sheet {
+    display: grid;
+    grid-template-rows: 0fr;
+    max-height: none;
+    overflow: hidden;
+    visibility: hidden;
+    transition: grid-template-rows .3s ease, visibility 0s linear .3s;
+  }
+  .apgo-cc-buybar.is-open .apgo-cc-buybar__sheet {
+    grid-template-rows: 1fr;
+    max-height: none;
+    overflow: hidden;
+    visibility: visible;
+    transition: grid-template-rows .3s ease, visibility 0s;
+  }
+  .apgo-cc-buybar__sheet-inner {
+    min-height: 0;
+    max-height: 65vh;
+    overflow: hidden;
+  }
+  .apgo-cc-buybar.is-open .apgo-cc-buybar__sheet-inner {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+  /* "View cart" row: folds away while the sheet is open. The negative
+     margin takes back the bar's 8px gap so the open panel keeps its height.
+     The clip has no padding of its own, so the row can fold to 0 (the
+     button's padding would otherwise hold it at 8px). */
+  .apgo-cc-buybar__top-wrap {
+    display: grid;
+    grid-template-rows: 1fr;
+    transition: grid-template-rows .3s ease, margin-bottom .3s ease;
+  }
+  .apgo-cc-buybar__top-clip {
+    min-height: 0;
+    overflow: hidden;
+  }
+  .apgo-cc-buybar.is-open .apgo-cc-buybar__top-wrap {
+    grid-template-rows: 0fr;
+    margin-bottom: -8px;
+  }
+  .apgo-cc-buybar.is-open .apgo-cc-buybar__top {
+    display: flex;
+    visibility: hidden;
+    transition: visibility 0s linear .3s;
+  }
+  .apgo-cc-buybar.is-cart-empty .apgo-cc-buybar__top-wrap { display: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .apgo-cc-buybar .apgo-cc-buybar__sheet,
+    .apgo-cc-buybar.is-open .apgo-cc-buybar__sheet,
+    .apgo-cc-buybar__top-wrap,
+    .apgo-cc-buybar.is-open .apgo-cc-buybar__top { transition: none; }
+  }
+</style>
+
 {%- if apgo_peek_on -%}
   <style>
     .apgo-cc-peek[hidden] { display: none !important; }
@@ -185,6 +262,9 @@
       transform: none;
       transition: opacity .2s ease, transform .2s ease, visibility 0s;
     }
+    /* Gone at once when the cart sheet opens, instead of fading while it
+       rides up with the growing panel. */
+    .apgo-cc-buybar.is-open .apgo-cc-peek { transition: none; }
     .apgo-cc-peek__btn {
       display: flex;
       align-items: center;
