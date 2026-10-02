@@ -12,6 +12,7 @@
   @param {product} product - Product opened when the banner is selected.
   @param {string} variant_id - Optional numeric ID of the promoted product variant.
   @param {string} [single_cta_label] - Replaces the two cart buttons with one product-page link.
+  @param {boolean} [price_range] - Clearance look: show the in-stock options' lowest to highest price.
   @param {string} zone_class - Modifier suffix for the zone wrapper.
   @param {number} zone_position - One-based campaign section position.
   @param {string} [gift_modal_id] - Optional id of the gift picker controlled by this zone.
@@ -46,6 +47,47 @@
     endunless
     if action_variant.inventory_management != blank and action_variant.inventory_quantity != blank and action_variant.inventory_quantity <= 0
       assign apgo_zone_sold_out = true
+    endif
+
+    # Price range (block setting "Show lowest to highest price", 2026-10):
+    # lowest to highest price among the options still in stock, by the same
+    # sold-out rule as above, so a sold-out RM1.00 option is not advertised.
+    # With none left it falls back to all options. In single-button mode the
+    # button then follows the whole product: sold out only when every option
+    # is, not just the one the link preselects.
+    if price_range
+      assign apgo_range_min = 999999999
+      assign apgo_range_max = -1
+      for range_variant in product.variants
+        assign apgo_range_out = false
+        unless range_variant.available
+          assign apgo_range_out = true
+        endunless
+        if range_variant.inventory_management != blank and range_variant.inventory_quantity != blank and range_variant.inventory_quantity <= 0
+          assign apgo_range_out = true
+        endif
+        unless apgo_range_out
+          if range_variant.price < apgo_range_min
+            assign apgo_range_min = range_variant.price
+          endif
+          if range_variant.price > apgo_range_max
+            assign apgo_range_max = range_variant.price
+          endif
+        endunless
+      endfor
+      assign apgo_range_in_stock = true
+      if apgo_range_max == -1
+        assign apgo_range_in_stock = false
+        assign apgo_range_min = product.price_min
+        assign apgo_range_max = product.price_max
+      endif
+      if single_cta_label != blank
+        if apgo_range_in_stock
+          assign apgo_zone_sold_out = false
+        else
+          assign apgo_zone_sold_out = true
+        endif
+      endif
     endif
 
     # Clearance page: the Aurora counter is styled for Golden Bull only.
@@ -135,12 +177,20 @@
           Offer bar, laid out like a product card: name and hang-tag price on
           the left, a cart icon and a compact Buy now on the right. Single-CTA
           promos (bought through the product page's picker) show no price,
-          since the picker decides it.
+          since the picker decides it, unless the block asks for the price
+          range (price_range), e.g. Pocket-Friendly Deals: RM1.00 – RM158.00.
         {%- endcomment -%}
         <div class="apgo-crate-offerbar">
           <div class="apgo-crate-offerbar__info">
             <p class="apgo-crate-offerbar__title">{{ product.title | escape }}</p>
-            {%- if single_cta_label == blank -%}
+            {%- if price_range -%}
+              <div class="apgo-crate-offerbar__prices">
+                <span class="apgo-crate-tag">
+                  {{- apgo_range_min | money | replace: ' MYR', '' | replace: 'MYR', '' | strip -}}
+                  {%- if apgo_range_max > apgo_range_min %} – {{ apgo_range_max | money | replace: ' MYR', '' | replace: 'MYR', '' | strip }}{% endif -%}
+                </span>
+              </div>
+            {%- elsif single_cta_label == blank -%}
               <div class="apgo-crate-offerbar__prices">
                 <span class="apgo-crate-tag">{{ action_variant.price | money | replace: ' MYR', '' | replace: 'MYR', '' | strip }}</span>
                 {%- if action_variant.compare_at_price > action_variant.price -%}

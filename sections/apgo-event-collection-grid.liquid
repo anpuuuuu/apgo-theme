@@ -199,6 +199,7 @@
                 product: apgo_product,
                 variant_id: apgo_variant,
                 single_cta_label: apgo_single_cta,
+                price_range: block.settings.show_price_range,
                 gift_modal_id: apgo_gift_modal_id,
                 zone_class: apgo_zone_key,
                 zone_position: apgo_rendered_position,
@@ -572,6 +573,13 @@
           "label": "Single button label",
           "default": "Grab Deals Now",
           "visible_if": "{{ block.settings.cta_mode == 'product_link' }}"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_price_range",
+          "label": "Show lowest to highest price",
+          "info": "Clearance look. Shows the lowest to highest price of the options still in stock (e.g. RM1.00 – RM158.00) instead of one option's price.",
+          "default": false
         },
         {
           "type": "header",
