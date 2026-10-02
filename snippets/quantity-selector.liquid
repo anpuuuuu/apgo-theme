@@ -48,7 +48,7 @@
     {% if max and max > 0 %}
       max="{{ max }}"
       data-apgo-max-per-order
-      oninput="if (+this.value > +this.max) this.value = this.max"
+      oninput="if (+this.value > +this.max) { this.value = this.max; this.dispatchEvent(new CustomEvent('apgo:max-per-order', { bubbles: true })); }"
     {% elsif variant.quantity_rule.max %}
       max="{{ variant.quantity_rule.max }}"
     {% endif %}

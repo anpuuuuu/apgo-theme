@@ -902,3 +902,64 @@
     display: inline;
   }
 {% endstylesheet %}
+
+{% javascript %}
+  /*
+    Per-order limit per option on the cart page (snippets/apgo-max-per-order.liquid,
+    e.g. Pocket-Friendly Deals: 3). The quantity box of such a line carries
+    max and data-apgo-max-per-order (snippets/quantity-selector.liquid); here
+    the shopper is told why + stops there, with the same toast the product
+    page shows (styles: snippets/apgo-cart-toast.liquid). Bound once: this
+    block ships once per page however often the snippet renders.
+  */
+  (function () {
+    if (window.apgoMaxPerOrderCartBound) return;
+    window.apgoMaxPerOrderCartBound = true;
+
+    function limitToast(max) {
+      document.querySelectorAll('.apgo-cart-success-toast').forEach(function (n) { n.remove(); });
+      var el = document.createElement('div');
+      el.className = 'apgo-cart-success-toast apgo-cart-success-toast--error';
+      el.setAttribute('role', 'alert');
+      el.setAttribute('aria-live', 'assertive');
+      el.innerHTML = ''
+        + '<span class="apgo-cart-success-toast__check" aria-hidden="true">!</span>'
+        + '<div class="apgo-cart-success-toast__body">'
+        + '  <span class="apgo-cart-success-toast__title"></span>'
+        + '  <span class="apgo-cart-success-toast__sub"></span>'
+        + '</div>'
+        + '<button type="button" class="apgo-cart-success-toast__close" aria-label="Close">'
+        + '  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L11 11M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>'
+        + '</button>';
+      el.querySelector('.apgo-cart-success-toast__title').textContent = 'Limit ' + max + ' per item, per order';
+      el.querySelector('.apgo-cart-success-toast__sub').textContent = 'You already have ' + max + ' of this option in your cart.';
+      el.querySelector('.apgo-cart-success-toast__close').addEventListener('click', function () { el.remove(); });
+      document.body.appendChild(el);
+      requestAnimationFrame(function () { el.classList.add('apgo-cart-success-toast--visible'); });
+      setTimeout(function () {
+        el.classList.remove('apgo-cart-success-toast--visible');
+        setTimeout(function () { el.remove(); }, 380);
+      }, 4200);
+    }
+
+    function limitOf(input) {
+      return parseInt(input && input.getAttribute('max'), 10) || 0;
+    }
+
+    /* + pressed while the line is already at the limit. Capture phase, so
+       the value is read before the component steps it. */
+    document.addEventListener('click', function (e) {
+      var btn = e.target instanceof Element ? e.target.closest('quantity-selector-component button[name="plus"]') : null;
+      if (!btn) return;
+      var input = btn.closest('quantity-selector-component').querySelector('input[data-apgo-max-per-order]');
+      var max = limitOf(input);
+      if (max && (parseInt(input.value, 10) || 0) >= max) limitToast(max);
+    }, true);
+
+    /* A typed number over the limit (the box has already snapped back). */
+    document.addEventListener('apgo:max-per-order', function (e) {
+      var max = limitOf(e.target);
+      if (max) limitToast(max);
+    });
+  })();
+{% endjavascript %}
