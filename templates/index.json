@@ -12,16 +12,6 @@
     "home_carousel": {
       "type": "apgo-home-carousel",
       "blocks": {
-        "banner_9NBpHW": {
-          "type": "banner",
-          "settings": {
-            "image": "shopify://shop_images/household_banner.png",
-            "image_desktop": "shopify://shop_images/household_banner.png",
-            "link": "shopify://products/apgo-laundry-detergent-special-promotion-1",
-            "alt": "",
-            "tracking_id": ""
-          }
-        },
         "banner_gwB9LQ": {
           "type": "banner",
           "disabled": true,
@@ -77,6 +67,16 @@
             "tracking_id": ""
           }
         },
+        "banner_9NBpHW": {
+          "type": "banner",
+          "settings": {
+            "image": "shopify://shop_images/household_banner.png",
+            "image_desktop": "shopify://shop_images/household_banner.png",
+            "link": "shopify://products/apgo-laundry-detergent-special-promotion-1",
+            "alt": "",
+            "tracking_id": ""
+          }
+        },
         "banner_golden_bull": {
           "type": "banner",
           "settings": {
@@ -88,12 +88,12 @@
         }
       },
       "block_order": [
-        "banner_9NBpHW",
         "banner_gwB9LQ",
         "banner_jin73F",
         "banner_a7egwR",
         "banner_FGcy6A",
         "banner_9GwjTp",
+        "banner_9NBpHW",
         "banner_golden_bull"
       ],
       "settings": {
