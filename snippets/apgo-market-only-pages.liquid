@@ -1,0 +1,53 @@
+{%- doc -%}
+  Malaysia-only pages (2026-10). Shoppers outside Malaysia (Singapore) don't
+  get them: the page itself sends them to the home page, and links to it are
+  left out. The list is my_only_paths below; today just the clearance sale.
+  Region-locked products use custom.only_market instead (layout/theme.liquid).
+
+  part 'head'  : in <head> of layout/theme.liquid. On a listed page, the
+                 redirect (not in the theme editor, so the page can still be
+                 edited while previewing Singapore). On every page, CSS that
+                 hides links to the listed pages: menu items (header, mobile
+                 drawer, footer), search suggestions and any other link.
+  part 'check' : prints "hidden" when url points to a listed page. Homepage
+                 banners (sections/apgo-home-carousel.liquid) use it to drop
+                 the whole slide, so the slide count and dots stay right.
+
+  @param {string} part - 'head' or 'check'.
+  @param {string} [url] - The link to check, for part 'check'.
+{%- enddoc -%}
+{%- liquid
+  assign my_only_paths = '/pages/clearance-sale' | split: ','
+  assign outside_my = false
+  if localization.country.iso_code != 'MY'
+    assign outside_my = true
+  endif
+-%}
+{%- if outside_my -%}
+  {%- if part == 'check' -%}
+    {%- for path in my_only_paths -%}
+      {%- if url contains path -%}hidden{%- break -%}{%- endif -%}
+    {%- endfor -%}
+  {%- elsif part == 'head' -%}
+    {%- unless request.design_mode -%}
+      {%- for path in my_only_paths -%}
+        {%- if request.path contains path -%}
+          <script>window.location.replace({{ routes.root_url | json }});</script>
+          {%- break -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endunless -%}
+    {%- comment -%}
+      One rule per selector: a browser without :has() drops a whole rule
+      when any selector in it is unknown, which would take the plain link
+      rule down with it.
+    {%- endcomment -%}
+    <style>
+      {%- for path in my_only_paths %}
+      a[href*="{{ path }}"] { display: none !important; }
+      li:has(> a[href*="{{ path }}"]) { display: none !important; }
+      .predictive-search-results__card:has(a[href*="{{ path }}"]) { display: none !important; }
+      {%- endfor %}
+    </style>
+  {%- endif -%}
+{%- endif -%}

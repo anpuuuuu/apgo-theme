@@ -14,6 +14,12 @@
 
   Also holds the page's h1, visually hidden ("Page heading"): the design has
   no visible title at the top since the brand video section was dropped.
+
+  Markets (2026-10): each banner has "Show to" (both / Malaysia only /
+  Singapore only). Banners linking to a Malaysia-only page (the clearance
+  sale, see snippets/apgo-market-only-pages.liquid) are left out in
+  Singapore whatever that setting says. Left-out banners don't count toward
+  the slides, dots or the shared proportions.
 {% endcomment %}
 
 {%- liquid
@@ -22,10 +28,28 @@
   assign all_wide = true
   assign ratio_phone = ''
   assign ratio_wide = ''
+  assign in_sg = false
+  if localization.country.iso_code == 'SG'
+    assign in_sg = true
+  endif
+  assign visible_ids = '|'
   for b in banners
     if b.settings.image == blank
       continue
     endif
+    if b.settings.market_visibility == 'my' and in_sg
+      continue
+    endif
+    if b.settings.market_visibility == 'sg' and in_sg == false
+      continue
+    endif
+    capture link_hidden
+      render 'apgo-market-only-pages', part: 'check', url: b.settings.link
+    endcapture
+    if link_hidden contains 'hidden'
+      continue
+    endif
+    assign visible_ids = visible_ids | append: b.id | append: '|'
     assign shown = shown | plus: 1
     if ratio_phone == ''
       assign ratio_phone = b.settings.image.aspect_ratio
@@ -62,7 +86,8 @@
         <div class="apgo-home-carousel__track" data-apgo-carousel-track>
           {%- assign position = 0 -%}
           {%- for block in banners -%}
-            {%- if block.settings.image == blank -%}{%- continue -%}{%- endif -%}
+            {%- assign visible_key = '|' | append: block.id | append: '|' -%}
+            {%- unless visible_ids contains visible_key -%}{%- continue -%}{%- endunless -%}
             {%- liquid
               assign position = position | plus: 1
               assign banner_link = block.settings.link
@@ -240,6 +265,18 @@
           "id": "tracking_id",
           "label": "Tracking ID (optional)",
           "info": "GA4 promotion id, e.g. homepage_clearance_sale."
+        },
+        {
+          "type": "select",
+          "id": "market_visibility",
+          "label": "Show to",
+          "options": [
+            { "value": "both", "label": "Malaysia + Singapore" },
+            { "value": "my", "label": "Malaysia only" },
+            { "value": "sg", "label": "Singapore only" }
+          ],
+          "default": "both",
+          "info": "Banners that link to the clearance sale are hidden in Singapore anyway."
         }
       ]
     }

@@ -20,6 +20,12 @@
         <script>window.location.replace({{ routes.root_url | json }});</script>
       {%- endif -%}
     {%- endif -%}
+    {%- comment -%}
+      Malaysia-only pages (2026-10, the clearance sale): the same redirect
+      outside Malaysia, plus CSS that hides links to them (menus, search
+      suggestions). The page list lives in the snippet.
+    {%- endcomment -%}
+    {%- render 'apgo-market-only-pages', part: 'head' -%}
 
     {{ 'base.css' | asset_url | stylesheet_tag }}
     {%- if request.page_type == 'collection' and collection.handle == 'all' -%}
