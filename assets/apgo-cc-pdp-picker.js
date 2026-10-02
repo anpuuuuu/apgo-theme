@@ -538,7 +538,8 @@
   function selectChip(chip) {
     if (!chip) return false;
     var input = chip.querySelector('input[type="radio"][data-apgo-cc-option-input]');
-    if (!input || input.checked) return false;
+    /* Sold-out chips are disabled radios (crossed out, see the section). */
+    if (!input || input.checked || input.disabled) return false;
     /* Uncheck siblings in the same option group first */
     var group = chip.closest('[data-apgo-cc-option-group]');
     if (group) {
@@ -1226,6 +1227,7 @@
     var v = findVariantBySlide(idx);
     if (!v) return;                              /* slide owns no variant */
     if (v.id === window.currentVariantId) return; /* already on it */
+    if (isVariantSoldOut(v)) return;              /* sold-out chips can't be picked */
     /* Flip radios across every option group so all options end up matching v */
     form.querySelectorAll('[data-apgo-cc-option-group]').forEach(function (g, gi) {
       var targetValue = (v.options || [])[gi];

@@ -175,6 +175,32 @@
 
 <style>
   /*
+    Product page option chips, sold out (2026-10): sections/apgo_product_page_v3.liquid
+    (too large to grow its CSS) prints them with .is-sold-out and a disabled
+    input / button instead of hiding them; this is their look, on phones and
+    desktop alike: red frame, red cross, struck-through name.
+  */
+  .apgo-cc-pdp__chip.is-sold-out,
+  .apgo-cc-pdp__chip.is-sold-out:hover {
+    border-color: rgba(229, 72, 77, 0.65);
+    background: rgba(229, 72, 77, 0.08);
+    color: rgba(255, 255, 255, 0.4);
+    cursor: not-allowed;
+  }
+  .apgo-cc-pdp__chip.is-sold-out::before {
+    content: '\2715';
+    margin-right: 6px;
+    color: #e5484d;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .apgo-cc-pdp__chip.is-sold-out > span:not(.visually-hidden) {
+    text-decoration: line-through;
+    text-decoration-color: rgba(229, 72, 77, 0.85);
+  }
+
+  /*
     Open / close in one movement (2026-10). The section's CSS
     (sections/apgo_product_page_v3.liquid, too large to edit) animated the
     sheet's max-height between 0 and 65vh and showed or hid the "View cart"
