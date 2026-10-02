@@ -389,6 +389,20 @@ body.apgo-clearance-sale-page .apgo-event-banner--crate_simple .apgo-event-banne
   }
 }
 
+/* A boxed banner directly above a tape strip: the gap below it matches the
+   gap above (tape strip to banner, 22px / 44px) instead of the wider gap
+   that separates two banners. Measured at the strip's centre; the strip
+   is tilted, so its ends sit a little higher and lower. */
+body.apgo-clearance-sale-page .apgo-event-banner-wrapper:has(+ .shopify-section .apgo-crate-tape) .apgo-event-banner--crate {
+  padding-bottom: 6px;
+}
+
+@media screen and (min-width: 750px) {
+  body.apgo-clearance-sale-page .apgo-event-banner-wrapper:has(+ .shopify-section .apgo-crate-tape) .apgo-event-banner--crate {
+    padding-bottom: 22px;
+  }
+}
+
 /* ── Intro (sections/apgo-clearance-intro) ─────────────────────────── */
 body.apgo-clearance-sale-page .apgo-crate-intro {
   padding-block: 0 var(--crate-space);
