@@ -5,7 +5,10 @@
   The link chosen as "Red button" stands out; links to Malaysia-only pages
   are left out for Singapore (snippets/apgo-market-only-pages.liquid), like
   the header menu. From 750px up the header shows its own menu and this row
-  hides. Lives in the header group (sections/header-group.json).
+  hides. Lives in the header group (sections/header-group.json), AFTER the
+  category bar section: header.liquid styles whatever section comes right
+  after the header (sticky, black, 2.75rem tall on /collections/all), so
+  placed first this row took over the category bar's sticky slot.
 
   Same items as the header (snippets/header-menu.liquid, header-drawer.liquid):
   "Category" is skipped, "Contact" shows as About Us, and Find Us follows it.
