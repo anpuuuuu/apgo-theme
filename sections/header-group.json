@@ -89,7 +89,6 @@
     },
     "apgo_mobile_menu_row": {
       "type": "apgo-mobile-menu-row",
-      "disabled": true,
       "settings": {
         "menu": "main-menu",
         "highlight_link": "shopify://pages/clearance-sale"
