@@ -1,6 +1,6 @@
 {% comment %}
   Find Us：緊接在 About Us（Contact 改名或 about-us 頁連結）之後，供 header-menu / header-drawer 共用。
-  @param layout {String} 'menu' | 'drawer'
+  @param layout {String} 'menu' | 'drawer' | 'row'（手機選單列 sections/apgo-mobile-menu-row.liquid）
   @param drawer_animation_index {Number} 選填，drawer 用 CSS 動畫序
 {% endcomment %}
 {% liquid
@@ -36,6 +36,18 @@
       ref="menuitem"
     >
       <span class="menu-list__link-title">{{ 'general.find_us' | t }}</span>
+    </a>
+  </li>
+{% elsif layout == 'row' %}
+  <li>
+    <a
+      href="{{ find_us_url }}"
+      class="apgo-menu-row__link"
+      {% if find_us_active %}
+        aria-current="page"
+      {% endif %}
+    >
+      {{- 'general.find_us' | t -}}
     </a>
   </li>
 {% else %}

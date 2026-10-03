@@ -6,33 +6,74 @@
   are left out for Singapore (snippets/apgo-market-only-pages.liquid), like
   the header menu. From 750px up the header shows its own menu and this row
   hides. Lives in the header group (sections/header-group.json).
+
+  Same items as the header (snippets/header-menu.liquid, header-drawer.liquid):
+  "Category" is skipped, "Contact" shows as About Us, and Find Us follows it.
 {%- endcomment -%}
 {%- liquid
   assign apgo_mr_menu = linklists[section.settings.menu]
   assign apgo_mr_hot = section.settings.highlight_link | default: '' | downcase
+  assign apgo_mr_find_us_done = false
 -%}
 {%- if apgo_mr_menu.links.size > 0 -%}
   <nav class="apgo-menu-row" aria-label="{{ apgo_mr_menu.title | escape }}">
     <ul class="apgo-menu-row__list" role="list">
       {%- for link in apgo_mr_menu.links -%}
         {%- liquid
+          assign apgo_mr_title = link.title | downcase | strip
+          assign apgo_mr_handle = link.handle | downcase | strip
+          assign apgo_mr_skip = false
+          if apgo_mr_title == 'category' or apgo_mr_title == 'categories' or apgo_mr_title == '分類'
+            assign apgo_mr_skip = true
+          endif
+          if apgo_mr_handle == 'category' or apgo_mr_handle == 'categories'
+            assign apgo_mr_skip = true
+          endif
+          assign apgo_mr_link_url = link.url
+          assign apgo_mr_label = link.title
+          assign apgo_mr_current = link.current
+          if apgo_mr_title == 'contact'
+            assign apgo_mr_link_url = '/pages/about-us'
+            assign apgo_mr_label = 'About Us'
+            assign apgo_mr_current = false
+            if request.path contains '/pages/about-us'
+              assign apgo_mr_current = true
+            endif
+          endif
           capture apgo_mr_hidden
-            render 'apgo-market-only-pages', part: 'check', url: link.url
+            render 'apgo-market-only-pages', part: 'check', url: apgo_mr_link_url
           endcapture
-          assign apgo_mr_url = link.url | downcase
+          if apgo_mr_hidden contains 'hidden'
+            assign apgo_mr_skip = true
+          endif
+          assign apgo_mr_url = apgo_mr_link_url | downcase
         -%}
-        {%- unless apgo_mr_hidden contains 'hidden' -%}
+        {%- unless apgo_mr_skip -%}
           <li>
             <a
               class="apgo-menu-row__link{% if apgo_mr_hot != blank and apgo_mr_url == apgo_mr_hot %} apgo-menu-row__link--hot{% endif %}"
-              href="{{ link.url }}"
-              {% if link.current %}
+              href="{{ apgo_mr_link_url }}"
+              {% if apgo_mr_current %}
                 aria-current="page"
               {% endif %}
             >
-              {{- link.title | escape -}}
+              {{- apgo_mr_label | escape -}}
             </a>
           </li>
+          {%- liquid
+            assign apgo_mr_do_find_us = false
+            if apgo_mr_find_us_done == false
+              if apgo_mr_title == 'contact'
+                assign apgo_mr_do_find_us = true
+              elsif link.object != blank and link.object.handle == 'about-us'
+                assign apgo_mr_do_find_us = true
+              endif
+            endif
+            if apgo_mr_do_find_us
+              render 'apgo-header-find-us-nav', layout: 'row'
+              assign apgo_mr_find_us_done = true
+            endif
+          -%}
         {%- endunless -%}
       {%- endfor -%}
     </ul>
