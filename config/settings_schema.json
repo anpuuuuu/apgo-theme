@@ -144,12 +144,19 @@
     "settings": [
       {
         "type": "paragraph",
-        "content": "One banner on every v3 product page (under Add to cart / Buy now on desktop, under the delivery line on phones) and on the laundry product pages (under the shipping card). Leave the image empty to show nothing."
+        "content": "One banner on v3 product pages (under Add to cart / Buy now on desktop, under the delivery line on phones) and on the laundry product pages (under the shipping card). Leave the image empty to show nothing."
       },
       {
         "type": "image_picker",
         "id": "apgo_pdp_banner_image",
         "label": "Banner image"
+      },
+      {
+        "type": "product_list",
+        "id": "apgo_pdp_banner_products",
+        "label": "Show only on these products",
+        "limit": 50,
+        "info": "Pick the product pages that show the banner. Leave empty to show it on every product page above."
       },
       {
         "type": "url",

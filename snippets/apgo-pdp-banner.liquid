@@ -19,11 +19,27 @@
   Left out where its link would be hidden (snippets/apgo-market-only-pages.liquid):
   the clearance sale is Malaysia only, so Singapore shoppers don't get it.
 
+  "Show only on these products" (2026-10, owner's request): with products
+  picked, only their pages show it; empty keeps every page. Uses the
+  template's own product object, which rendered snippets can read.
+
   @param {string} [tone] - 'light' for the cream laundry page; default dark.
 {%- enddoc -%}
 {%- liquid
   assign apgo_pdp_banner = settings.apgo_pdp_banner_image
-  if settings.apgo_pdp_banner_link != blank
+  if apgo_pdp_banner != blank and settings.apgo_pdp_banner_products.size > 0
+    assign apgo_pdp_banner_here = false
+    for apgo_pdp_banner_product in settings.apgo_pdp_banner_products
+      if apgo_pdp_banner_product.id == product.id
+        assign apgo_pdp_banner_here = true
+        break
+      endif
+    endfor
+    unless apgo_pdp_banner_here
+      assign apgo_pdp_banner = blank
+    endunless
+  endif
+  if apgo_pdp_banner != blank and settings.apgo_pdp_banner_link != blank
     capture apgo_pdp_banner_market
       render 'apgo-market-only-pages', part: 'check', url: settings.apgo_pdp_banner_link
     endcapture
