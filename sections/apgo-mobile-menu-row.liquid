@@ -1,0 +1,152 @@
+{%- comment -%}
+  Phones only: the menu as one swipeable row of buttons under the header
+  (2026-10, owner's request). Under 750px the header folds its menu into
+  the ☰ drawer, so shoppers arriving from ads never saw "Clearance Sales".
+  The link chosen as "Red button" stands out; links to Malaysia-only pages
+  are left out for Singapore (snippets/apgo-market-only-pages.liquid), like
+  the header menu. From 750px up the header shows its own menu and this row
+  hides. Lives in the header group (sections/header-group.json).
+{%- endcomment -%}
+{%- liquid
+  assign apgo_mr_menu = linklists[section.settings.menu]
+  assign apgo_mr_hot = section.settings.highlight_link | default: '' | downcase
+-%}
+{%- if apgo_mr_menu.links.size > 0 -%}
+  <nav class="apgo-menu-row" aria-label="{{ apgo_mr_menu.title | escape }}">
+    <ul class="apgo-menu-row__list" role="list">
+      {%- for link in apgo_mr_menu.links -%}
+        {%- liquid
+          capture apgo_mr_hidden
+            render 'apgo-market-only-pages', part: 'check', url: link.url
+          endcapture
+          assign apgo_mr_url = link.url | downcase
+        -%}
+        {%- unless apgo_mr_hidden contains 'hidden' -%}
+          <li>
+            <a
+              class="apgo-menu-row__link{% if apgo_mr_hot != blank and apgo_mr_url == apgo_mr_hot %} apgo-menu-row__link--hot{% endif %}"
+              href="{{ link.url }}"
+              {% if link.current %}
+                aria-current="page"
+              {% endif %}
+            >
+              {{- link.title | escape -}}
+            </a>
+          </li>
+        {%- endunless -%}
+      {%- endfor -%}
+    </ul>
+  </nav>
+  <script>
+    /* Bring the current page's button into view when the row scrolls. */
+    (function () {
+      var nav = document.currentScript && document.currentScript.previousElementSibling;
+      var list = nav && nav.querySelector('.apgo-menu-row__list');
+      var current = list && list.querySelector('[aria-current="page"]');
+      if (current && current.offsetLeft + current.offsetWidth > list.clientWidth) {
+        list.scrollLeft = current.offsetLeft - 16;
+      }
+    })();
+  </script>
+{%- endif -%}
+
+{% stylesheet %}
+  .apgo-menu-row {
+    padding: 0 0 6px;
+    background: #000;
+  }
+
+  .apgo-menu-row__list {
+    position: relative;
+    display: flex;
+    gap: 8px;
+    margin: 0;
+    padding: 4px 16px;
+    list-style: none;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .apgo-menu-row__list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .apgo-menu-row__list > li {
+    flex: 0 0 auto;
+    margin: 0;
+  }
+
+  .apgo-menu-row__link {
+    display: inline-flex;
+    align-items: center;
+    height: 32px;
+    padding: 0 14px;
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    border-radius: 999px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+    text-decoration: none;
+  }
+
+  .apgo-menu-row__link[aria-current='page'] {
+    border-color: #f08418;
+    color: #f08418;
+  }
+
+  .apgo-menu-row__link--hot,
+  .apgo-menu-row__link--hot[aria-current='page'] {
+    border-color: #e0352b;
+    background: #e0352b;
+    color: #fff;
+  }
+
+  .apgo-menu-row__link:focus-visible {
+    outline: 2px solid #f08418;
+    outline-offset: 1px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .apgo-menu-row {
+      display: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "APGO menu row (phone)",
+  "class": "apgo-menu-row-section",
+  "enabled_on": {
+    "groups": ["header"]
+  },
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Phones only (under 750px wide): the menu as one row of buttons under the header, swipeable sideways. Larger screens show the header's own menu."
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "url",
+      "id": "highlight_link",
+      "label": "Red button",
+      "info": "The menu link shown as a red button, e.g. the clearance sale page. Leave empty for none."
+    }
+  ],
+  "presets": [
+    {
+      "name": "APGO menu row (phone)",
+      "category": "APGO"
+    }
+  ]
+}
+{% endschema %}

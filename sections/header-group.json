@@ -87,6 +87,13 @@
         "collection_color_scheme": "inverse"
       }
     },
+    "apgo_mobile_menu_row": {
+      "type": "apgo-mobile-menu-row",
+      "settings": {
+        "menu": "main-menu",
+        "highlight_link": "shopify://pages/clearance-sale"
+      }
+    },
     "17764240905b8adb55": {
       "type": "_blocks",
       "blocks": {
@@ -168,6 +175,7 @@
   },
   "order": [
     "header_section",
+    "apgo_mobile_menu_row",
     "17764240905b8adb55"
   ]
 }
