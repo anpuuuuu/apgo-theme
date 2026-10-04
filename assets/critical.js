@@ -156,9 +156,12 @@ class OverflowList extends DeclarativeShadowElement {
   }
 
   get schedule() {
+    // Called as this.schedule(cb): a bare requestAnimationFrame would run with the
+    // element as `this` ("Illegal invocation") whenever utilities.js hasn't set up
+    // Theme.utilities.scheduler yet, leaving #scheduled stuck and the list frozen.
     return typeof Theme?.utilities?.scheduler?.schedule === 'function'
       ? Theme.utilities.scheduler.schedule
-      : requestAnimationFrame;
+      : (callback) => requestAnimationFrame(callback);
   }
 
   #scheduled = false;
