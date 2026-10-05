@@ -71,16 +71,42 @@
   var giftPickerActive = giftPickers.length > 0;
 
   /* Per-order limit per option (snippets/apgo-max-per-order.liquid, e.g.
-     Pocket-Friendly Deals: 3), printed on the buy bar. Checked against the
-     cart before every add; the quantity steppers stop there too. */
+     Pocket-Friendly Deals: 3), printed on the buy bar, plus "id:limit" pairs
+     for options whose own limit differs (its RM1 wiper fluid: 2). Checked
+     against the cart before every add; the quantity steppers stop there
+     too. syncQtyLimit (from refreshVariant) follows the chosen option. */
   var maxPerOrderEl = document.querySelector('[data-apgo-cc-buybar][data-apgo-cc-max-per-order]');
   var maxPerOrder = maxPerOrderEl ? parseInt(maxPerOrderEl.getAttribute('data-apgo-cc-max-per-order'), 10) || 0 : 0;
-  if (maxPerOrder) {
-    if (qtyInput) qtyInput.max = maxPerOrder;
-    /* Say so up front: "(27 types)" -> "(27 types · max 3 per item)". */
-    var optionCountEl = form.querySelector('.apgo-cc-pdp__option-count');
+  var maxPerVariantEl = document.querySelector('[data-apgo-cc-buybar][data-apgo-cc-max-per-variant]');
+  var maxPerVariant = {};
+  if (maxPerVariantEl) {
+    maxPerVariantEl.getAttribute('data-apgo-cc-max-per-variant').split(',').forEach(function (pair) {
+      var parts = pair.split(':');
+      if (parts.length === 2) maxPerVariant[parts[0]] = parseInt(parts[1], 10) || 0;
+    });
+  }
+  function maxFor(variantId) {
+    var key = String(variantId || '');
+    return Object.prototype.hasOwnProperty.call(maxPerVariant, key) ? maxPerVariant[key] : maxPerOrder;
+  }
+  var qtyInputMax = qtyInput ? qtyInput.getAttribute('max') : null;
+  var optionCountEl = form.querySelector('.apgo-cc-pdp__option-count');
+  var optionCountText = optionCountEl ? optionCountEl.textContent : '';
+  function syncQtyLimit(v) {
+    if (!maxPerOrder && !maxPerVariantEl) return;
+    var max = maxFor(v && v.id);
+    if (qtyInput) {
+      if (max) qtyInput.max = max;
+      else if (qtyInputMax === null) qtyInput.removeAttribute('max');
+      else qtyInput.max = qtyInputMax;
+      if (max && (parseInt(qtyInput.value, 10) || 1) > max) qtyInput.value = max;
+    }
+    if (max && confirmQtyInput && (parseInt(confirmQtyInput.value, 10) || 1) > max) confirmQtyInput.value = max;
+    /* Say so up front: "(27 types)" -> "(27 types · max 3 per item)", or
+       "· max 2 for this item" while an option with its own limit is chosen. */
     if (optionCountEl) {
-      optionCountEl.textContent = optionCountEl.textContent.replace(/\)\s*$/, ' · max ' + maxPerOrder + ' per item)');
+      var note = !max ? '' : (max === maxPerOrder ? ' · max ' + max + ' per item' : ' · max ' + max + ' for this item');
+      optionCountEl.textContent = optionCountText.replace(/\)\s*$/, note + ')');
     }
   }
   var giftRequired = 2;
@@ -453,6 +479,7 @@
 
     /* Keep desktop + mobile purchase actions aligned with actual stock. */
     syncPurchaseActions(v);
+    syncQtyLimit(v);
 
     /*
       Inline shipping-row stock indicator (right of "2–3 business days").
@@ -592,7 +619,8 @@
       var n = parseInt(qtyInput.value, 10) || 1;
       n += (btn.getAttribute('data-apgo-cc-qty') === 'up' ? 1 : -1);
       if (n < 1) n = 1;
-      if (maxPerOrder && n > maxPerOrder) n = maxPerOrder;
+      var max = maxFor(idInput && idInput.value);
+      if (max && n > max) n = max;
       qtyInput.value = n;
     });
   });
@@ -681,7 +709,8 @@
   function handleCartFailure(error, intent) {
     if (isSilentCartError(error)) return;
     if (error && error.code === 'max_per_order') {
-      var left = Math.max(0, maxPerOrder - (error.inCart || 0));
+      var max = error.max || maxPerOrder;
+      var left = Math.max(0, max - (error.inCart || 0));
       /* Buy now with this option already at the limit: the cart is where
          the shopper was heading anyway. */
       if (intent === 'buy' && left === 0) {
@@ -691,8 +720,8 @@
       showCartErrorToast(
         left > 0
           ? 'You can add ' + left + ' more of this option.'
-          : 'You already have ' + maxPerOrder + ' of this option in your cart.',
-        'Limit ' + maxPerOrder + ' per item, per order'
+          : 'You already have ' + max + ' of this option in your cart.',
+        'Limit ' + max + ' per item, per order'
       );
       return;
     }
@@ -1091,10 +1120,11 @@
       })
       .then(function () {
         /* Per-order limit: what is already in the cart plus this add. */
-        if (maxPerOrder) {
+        var max = maxFor(xId);
+        if (max) {
           var inCart = cartBeforeAdd ? cartVariantQuantity(cartBeforeAdd, xId) : 0;
-          if (inCart + xQty > maxPerOrder) {
-            return Promise.reject({ code: 'max_per_order', inCart: inCart });
+          if (inCart + xQty > max) {
+            return Promise.reject({ code: 'max_per_order', inCart: inCart, max: max });
           }
         }
         return fetch('/cart/add.js', fetchOptions);
@@ -1542,7 +1572,8 @@
       var n = parseInt(confirmQtyInput.value, 10) || 1;
       n += (btn.getAttribute('data-apgo-cc-confirm-qty') === 'up' ? 1 : -1);
       if (n < 1) n = 1;
-      if (maxPerOrder && n > maxPerOrder) n = maxPerOrder;
+      var max = maxFor(idInput && idInput.value);
+      if (max && n > max) n = max;
       confirmQtyInput.value = n;
     });
   });

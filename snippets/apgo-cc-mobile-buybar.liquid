@@ -56,9 +56,23 @@
     render 'apgo-max-per-order', product: product
   endcapture
   assign apgo_max_per_order = apgo_max_per_order | plus: 0
+  # Options whose own limit differs, as "variant_id:limit,...".
+  assign apgo_max_per_variant = ''
+  unless product.has_only_default_variant
+    for apgo_mpo_variant in product.variants
+      capture apgo_mpo_limit
+        render 'apgo-max-per-order', product: product, variant: apgo_mpo_variant
+      endcapture
+      assign apgo_mpo_limit = apgo_mpo_limit | plus: 0
+      if apgo_mpo_limit != apgo_max_per_order
+        assign apgo_max_per_variant = apgo_max_per_variant | append: ',' | append: apgo_mpo_variant.id | append: ':' | append: apgo_mpo_limit
+      endif
+    endfor
+  endunless
+  assign apgo_max_per_variant = apgo_max_per_variant | remove_first: ','
 -%}
 
-<aside class="apgo-cc-buybar{% if cart.item_count == 0 %} is-cart-empty{% endif %}" data-apgo-cc-buybar{% if apgo_direct_add %} data-apgo-cc-direct-add{% endif %}{% if apgo_max_per_order > 0 %} data-apgo-cc-max-per-order="{{ apgo_max_per_order }}"{% endif %} aria-label="Add to cart">
+<aside class="apgo-cc-buybar{% if cart.item_count == 0 %} is-cart-empty{% endif %}" data-apgo-cc-buybar{% if apgo_direct_add %} data-apgo-cc-direct-add{% endif %}{% if apgo_max_per_order > 0 %} data-apgo-cc-max-per-order="{{ apgo_max_per_order }}"{% endif %}{% if apgo_max_per_variant != blank %} data-apgo-cc-max-per-variant="{{ apgo_max_per_variant }}"{% endif %} aria-label="Add to cart">
   <div class="apgo-cc-buybar__backdrop" data-apgo-cc-buybar-backdrop aria-hidden="true"></div>
 
   <div class="apgo-cc-buybar__panel">

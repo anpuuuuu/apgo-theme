@@ -8,9 +8,12 @@
   order, and the cart API itself is not blocked.
 
   Pocket-Friendly Deals: 3 (owner, 2026-10). Tag apgo-max-per-order-N sets
-  N for any other product.
+  N for any other product. Given a variant, one option can have a limit of
+  its own: the deal's Car Wiper Fluid 200ml (RM1) is 2 (owner, 2026-10-05),
+  whatever the product's limit or tag says.
 
   @param {product} product - The product.
+  @param {variant} [variant] - One option of it, for an option's own limit.
 {%- enddoc -%}
 {%- liquid
   assign apgo_limit = 0
@@ -22,5 +25,9 @@
       assign apgo_limit = apgo_tag | remove: 'apgo-max-per-order-' | plus: 0
     endif
   endfor
+  # Pocket-Friendly Deals: APGO Car Wiper Fluid 200ml.
+  if variant.id == 67638526705818
+    assign apgo_limit = 2
+  endif
   echo apgo_limit
 -%}
