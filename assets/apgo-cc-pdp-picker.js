@@ -72,7 +72,7 @@
 
   /* Per-order limit per option (snippets/apgo-max-per-order.liquid, e.g.
      Pocket-Friendly Deals: 3), printed on the buy bar, plus "id:limit" pairs
-     for options whose own limit differs (its RM1 wiper fluid: 2). Checked
+     for options whose own limit differs (its RM1 wiper fluid: 1). Checked
      against the cart before every add; the quantity steppers stop there
      too. syncQtyLimit (from refreshVariant) follows the chosen option. */
   var maxPerOrderEl = document.querySelector('[data-apgo-cc-buybar][data-apgo-cc-max-per-order]');

@@ -9,8 +9,8 @@
 
   Pocket-Friendly Deals: 3 (owner, 2026-10). Tag apgo-max-per-order-N sets
   N for any other product. Given a variant, one option can have a limit of
-  its own: the deal's Car Wiper Fluid 200ml (RM1) is 2 (owner, 2026-10-05),
-  whatever the product's limit or tag says.
+  its own: the deal's Car Wiper Fluid 200ml (RM1) is 1 (owner, 2026-10-06;
+  2 from 10-05), whatever the product's limit or tag says.
 
   @param {product} product - The product.
   @param {variant} [variant] - One option of it, for an option's own limit.
@@ -27,7 +27,7 @@
   endfor
   # Pocket-Friendly Deals: APGO Car Wiper Fluid 200ml.
   if variant.id == 67638526705818
-    assign apgo_limit = 2
+    assign apgo_limit = 1
   endif
   echo apgo_limit
 -%}
