@@ -338,6 +338,17 @@
                     max: apgo_line_max,
                     class: 'cart-primary-typography'
                   %}
+                  {%- if apgo_line_max > 0 -%}
+                    <span
+                      hidden
+                      data-apgo-line-limit
+                      data-key="{{ item.key }}"
+                      data-variant="{{ item.variant_id }}"
+                      data-qty="{{ item.quantity }}"
+                      data-max="{{ apgo_line_max }}"
+                      data-title="{{ item.variant.title | default: item.product.title | escape }}"
+                    ></span>
+                  {%- endif -%}
 
                   <button
                     class="button button--tertiary cart-items__remove"
@@ -916,7 +927,7 @@
     if (window.apgoMaxPerOrderCartBound) return;
     window.apgoMaxPerOrderCartBound = true;
 
-    function limitToast(max) {
+    function limitToast(max, title, sub) {
       document.querySelectorAll('.apgo-cart-success-toast').forEach(function (n) { n.remove(); });
       var el = document.createElement('div');
       el.className = 'apgo-cart-success-toast apgo-cart-success-toast--error';
@@ -931,8 +942,8 @@
         + '<button type="button" class="apgo-cart-success-toast__close" aria-label="Close">'
         + '  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L11 11M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>'
         + '</button>';
-      el.querySelector('.apgo-cart-success-toast__title').textContent = 'Limit ' + max + ' per item, per order';
-      el.querySelector('.apgo-cart-success-toast__sub').textContent = 'You already have ' + max + ' of this option in your cart.';
+      el.querySelector('.apgo-cart-success-toast__title').textContent = title || 'Limit ' + max + ' per item, per order';
+      el.querySelector('.apgo-cart-success-toast__sub').textContent = sub || 'You already have ' + max + ' of this option in your cart.';
       el.querySelector('.apgo-cart-success-toast__close').addEventListener('click', function () { el.remove(); });
       document.body.appendChild(el);
       requestAnimationFrame(function () { el.classList.add('apgo-cart-success-toast--visible'); });
@@ -962,5 +973,97 @@
       var max = limitOf(e.target);
       if (max) limitToast(max);
     });
+
+    /* Lines already over the limit (2026-10-06): "Buy again" in the customer
+       account copies an old order's quantities into the cart and lands here,
+       and a cart filled before a limit was lowered keeps its quantities;
+       three RM1 wiper fluids per order got through both ways. Each limited
+       line prints a [data-apgo-line-limit] mark; over the limit, the cart is
+       set back to it, the page reloads and the toast says what changed.
+       Checkout itself still does not check. */
+    var FIXED_KEY = 'apgoMaxPerOrderFixed';
+
+    function overLimitFix() {
+      var lines = {};
+      /* The drawer and the cart page can both list the same line. */
+      document.querySelectorAll('[data-apgo-line-limit]').forEach(function (m) {
+        lines[m.getAttribute('data-key')] = m;
+      });
+      var byVariant = {};
+      Object.keys(lines).forEach(function (key) {
+        var m = lines[key];
+        var variant = m.getAttribute('data-variant');
+        (byVariant[variant] = byVariant[variant] || []).push({
+          key: key,
+          qty: parseInt(m.getAttribute('data-qty'), 10) || 0,
+          max: parseInt(m.getAttribute('data-max'), 10) || 0,
+          title: m.getAttribute('data-title') || ''
+        });
+      });
+      var updates = {};
+      var notes = [];
+      Object.keys(byVariant).forEach(function (variant) {
+        var group = byVariant[variant];
+        var max = group[0].max;
+        var excess = group.reduce(function (n, line) { return n + line.qty; }, 0) - max;
+        if (!max || excess <= 0) return;
+        for (var i = group.length - 1; i >= 0 && excess > 0; i--) {
+          var cut = Math.min(group[i].qty, excess);
+          updates[group[i].key] = group[i].qty - cut;
+          excess -= cut;
+        }
+        notes.push({ title: group[0].title, max: max });
+      });
+      return notes.length ? { updates: updates, notes: notes } : null;
+    }
+
+    function fixOverLimit() {
+      var fix = overLimitFix();
+      if (!fix) return;
+      /* Tried a moment ago and still over: stop rather than reload in a loop. */
+      try {
+        if (Date.now() - (parseInt(sessionStorage.getItem(FIXED_KEY + 'At'), 10) || 0) < 15000) return;
+        sessionStorage.setItem(FIXED_KEY + 'At', String(Date.now()));
+      } catch (e) {}
+      fetch('/cart/update.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ updates: fix.updates })
+      }).then(function (r) {
+        if (!r.ok) return;
+        try { sessionStorage.setItem(FIXED_KEY, JSON.stringify(fix.notes)); } catch (e) {}
+        window.location.reload();
+      }).catch(function () {});
+    }
+
+    function showFixedNote() {
+      var notes = null;
+      try {
+        notes = JSON.parse(sessionStorage.getItem(FIXED_KEY) || 'null');
+        sessionStorage.removeItem(FIXED_KEY);
+      } catch (e) {}
+      if (!notes || !notes.length) return;
+      limitToast(
+        notes[0].max,
+        notes.length === 1 ? null : 'Per-order limits',
+        'We changed ' + notes.map(function (n) { return n.title + ' to ' + n.max; }).join(', ') + ' in your cart.'
+      );
+    }
+
+    function start() {
+      showFixedNote();
+      fixOverLimit();
+      /* The drawer re-renders its lines after every cart change. */
+      var timer = 0;
+      var watch = new MutationObserver(function () {
+        clearTimeout(timer);
+        timer = setTimeout(fixOverLimit, 300);
+      });
+      document.querySelectorAll('cart-items-component').forEach(function (el) {
+        watch.observe(el, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-qty'] });
+      });
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+    else start();
   })();
 {% endjavascript %}
