@@ -6,6 +6,11 @@
   own image. With two or more, they slide inside the same frame (swipe,
   dots, arrows on desktop, auto-rotate); assets/apgo-event-banner-carousel.js.
   With none, the section prints exactly the single banner it always did.
+
+  Malaysia / Singapore (2026-10-08, owner's request): Singapore shoppers
+  get the "新加坡版" picture (and its alt text and link) when one is set,
+  else the same one as Malaysia. Each 輪播圖 can also have a Singapore
+  picture and be shown to both markets, Malaysia only or Singapore only.
 {% endcomment %}
 
 {{ 'apgo-event-page.css' | asset_url | stylesheet_tag }}
@@ -18,12 +23,44 @@
 {%- liquid
   assign apgo_banner_frame = section.settings.frame_style | default: 'none'
 
+  assign apgo_is_sg = false
+  if localization.country.iso_code == 'SG'
+    assign apgo_is_sg = true
+  endif
+
+  assign apgo_main_image = section.settings.image
+  assign apgo_main_alt = section.settings.image_alt
+  assign apgo_main_link = section.settings.link
+  if apgo_is_sg and section.settings.image_sg != blank
+    assign apgo_main_image = section.settings.image_sg
+    assign apgo_main_alt = section.settings.image_alt_sg
+    if section.settings.link_sg != blank
+      assign apgo_main_link = section.settings.link_sg
+    endif
+  endif
+
+  # A 輪播圖 counts when it is meant for this market and has a picture
+  # for it (same rule as the loop that prints them below).
   assign apgo_slide_count = 0
-  if section.settings.image != blank
+  if apgo_main_image != blank
     assign apgo_slide_count = 1
   endif
   for block in section.blocks
-    if block.type == 'slide' and block.settings.image != blank
+    if block.type != 'slide'
+      continue
+    endif
+    assign apgo_vis = block.settings.market_visibility | default: 'all'
+    if apgo_vis == 'my' and apgo_is_sg
+      continue
+    endif
+    if apgo_vis == 'sg' and apgo_is_sg == false
+      continue
+    endif
+    assign apgo_block_image = block.settings.image
+    if apgo_is_sg and block.settings.image_sg != blank
+      assign apgo_block_image = block.settings.image_sg
+    endif
+    if apgo_block_image != blank
       assign apgo_slide_count = apgo_slide_count | plus: 1
     endif
   endfor
@@ -68,12 +105,12 @@
       >
         <div class="apgo-ebc__track" data-apgo-ebc-track>
           {%- assign apgo_position = 0 -%}
-          {%- if section.settings.image != blank -%}
+          {%- if apgo_main_image != blank -%}
             {%- assign apgo_position = 1 -%}
             {% render 'apgo-event-banner-slide',
-              image: section.settings.image,
-              alt: section.settings.image_alt,
-              link: section.settings.link,
+              image: apgo_main_image,
+              alt: apgo_main_alt,
+              link: apgo_main_link,
               position: 1,
               total: apgo_slide_count,
               eager: apgo_eager,
@@ -82,8 +119,30 @@
             %}
           {%- endif -%}
           {%- for block in section.blocks -%}
-            {%- if block.type != 'slide' or block.settings.image == blank -%}{%- continue -%}{%- endif -%}
             {%- liquid
+              if block.type != 'slide'
+                continue
+              endif
+              assign apgo_vis = block.settings.market_visibility | default: 'all'
+              if apgo_vis == 'my' and apgo_is_sg
+                continue
+              endif
+              if apgo_vis == 'sg' and apgo_is_sg == false
+                continue
+              endif
+              assign apgo_block_image = block.settings.image
+              assign apgo_block_alt = block.settings.image_alt
+              assign apgo_block_link = block.settings.link
+              if apgo_is_sg and block.settings.image_sg != blank
+                assign apgo_block_image = block.settings.image_sg
+                assign apgo_block_alt = block.settings.image_alt_sg
+                if block.settings.link_sg != blank
+                  assign apgo_block_link = block.settings.link_sg
+                endif
+              endif
+              if apgo_block_image == blank
+                continue
+              endif
               assign apgo_position = apgo_position | plus: 1
               assign apgo_slide_promo = blank
               if apgo_promo_base != blank
@@ -99,9 +158,9 @@
               endif
             -%}
             {% render 'apgo-event-banner-slide',
-              image: block.settings.image,
-              alt: block.settings.image_alt,
-              link: block.settings.link,
+              image: apgo_block_image,
+              alt: apgo_block_alt,
+              link: apgo_block_link,
               position: apgo_position,
               total: apgo_slide_count,
               eager: apgo_slide_eager,
@@ -136,11 +195,11 @@
       {%- endif -%}
     </div>
     <script src="{{ 'apgo-event-banner-carousel.js' | asset_url }}" defer></script>
-  {% elsif section.settings.image != blank %}
+  {% elsif apgo_main_image != blank %}
     <div class="apgo-event-banner__frame">
-      {% if section.settings.link != blank %}
+      {% if apgo_main_link != blank %}
         <a
-          href="{{ section.settings.link }}"
+          href="{{ apgo_main_link }}"
           class="apgo-event-banner__link"
           {% if template.suffix == 'golden-bull-award' %}
             data-apgo-campaign-promotion-link
@@ -155,20 +214,20 @@
       {% endif %}
       <img
         class="apgo-event-banner__img"
-        src="{{ section.settings.image | image_url: width: 2400 }}"
+        src="{{ apgo_main_image | image_url: width: 2400 }}"
         srcset="
-          {{ section.settings.image | image_url: width: 750 }} 750w,
-          {{ section.settings.image | image_url: width: 1200 }} 1200w,
-          {{ section.settings.image | image_url: width: 1800 }} 1800w,
-          {{ section.settings.image | image_url: width: 2400 }} 2400w
+          {{ apgo_main_image | image_url: width: 750 }} 750w,
+          {{ apgo_main_image | image_url: width: 1200 }} 1200w,
+          {{ apgo_main_image | image_url: width: 1800 }} 1800w,
+          {{ apgo_main_image | image_url: width: 2400 }} 2400w
         "
         sizes="(min-width: 750px) {{ section.settings.desktop_width_percent | default: 67 }}vw, 100vw"
-        alt="{{ section.settings.image_alt | default: section.settings.image.alt | escape }}"
-        width="{{ section.settings.image.width }}"
-        height="{{ section.settings.image.height }}"
+        alt="{{ apgo_main_alt | default: apgo_main_image.alt | escape }}"
+        width="{{ apgo_main_image.width }}"
+        height="{{ apgo_main_image.height }}"
         {% if apgo_eager %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}
       >
-      {% if section.settings.link != blank %}
+      {% if apgo_main_link != blank %}
         </a>
       {% endif %}
       {%- if apgo_banner_frame == 'crate' -%}
@@ -199,7 +258,8 @@
     {
       "type": "image_picker",
       "id": "image",
-      "label": "Banner 圖片"
+      "label": "Banner 圖片",
+      "info": "馬來西亞看這張；新加坡沒放新加坡版時也看這張。"
     },
     {
       "type": "text",
@@ -210,6 +270,27 @@
       "type": "url",
       "id": "link",
       "label": "點擊連結（選填）"
+    },
+    {
+      "type": "header",
+      "content": "新加坡版",
+      "info": "新加坡訪客看這張；沒放圖就跟馬來西亞看同一張。"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_sg",
+      "label": "新加坡版 Banner 圖片"
+    },
+    {
+      "type": "text",
+      "id": "image_alt_sg",
+      "label": "新加坡版圖片替代文字（選填）"
+    },
+    {
+      "type": "url",
+      "id": "link_sg",
+      "label": "新加坡版點擊連結（選填）",
+      "info": "留空就用上面的點擊連結。"
     },
     {
       "type": "range",
@@ -281,6 +362,34 @@
           "type": "url",
           "id": "link",
           "label": "點擊連結（選填）"
+        },
+        {
+          "type": "select",
+          "id": "market_visibility",
+          "label": "顯示給",
+          "options": [
+            { "value": "all", "label": "馬來西亞和新加坡" },
+            { "value": "my", "label": "只有馬來西亞" },
+            { "value": "sg", "label": "只有新加坡" }
+          ],
+          "default": "all"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_sg",
+          "label": "新加坡版圖片（選填）",
+          "info": "新加坡訪客看這張；留空就看上面那張。"
+        },
+        {
+          "type": "text",
+          "id": "image_alt_sg",
+          "label": "新加坡版圖片替代文字（選填）"
+        },
+        {
+          "type": "url",
+          "id": "link_sg",
+          "label": "新加坡版點擊連結（選填）",
+          "info": "留空就用上面的點擊連結。"
         }
       ]
     }
