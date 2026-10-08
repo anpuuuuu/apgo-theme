@@ -228,7 +228,7 @@
         "product_carousel_b1f1": {
           "type": "product_carousel",
           "settings": {
-            "market_visibility": "both",
+            "market_visibility": "my",
             "heading": "APGO HOUSEHOLD CARE",
             "banner": "shopify://shop_images/household_banner.png",
             "products": [
