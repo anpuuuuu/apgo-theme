@@ -153,7 +153,7 @@
             "icon": "clock",
             "title": "Fast delivery",
             "text": "2–3 business days",
-            "text_sg": "5–7 business days"
+            "text_sg": "3–5 business days"
           }
         },
         "perk_factory": {
@@ -347,7 +347,7 @@
           "settings": {
             "question": "How much is shipping?",
             "answer": "<p>Free on orders over RM155 to West Malaysia. Orders usually arrive in 2–3 business days. Below that, shipping is weight-based and shown at checkout before you pay.</p>",
-            "answer_sg": "<p>Free on orders over $70 to Singapore. Orders usually arrive in 5–7 business days. Below that, shipping is weight-based and shown at checkout before you pay.</p>"
+            "answer_sg": "<p>Free on orders over $70 to Singapore. Orders usually arrive in 3–5 business days. Below that, shipping is weight-based and shown at checkout before you pay.</p>"
           }
         },
         "q_choose": {
