@@ -74,6 +74,24 @@
     "cart_offers_tabs": {
       "type": "cart-offers-tabs",
       "blocks": {
+        "tab_f4GpTw": {
+          "type": "tab",
+          "settings": {
+            "enabled": true,
+            "slot": "tab_1",
+            "label": "Warehouse Sales PWP",
+            "subtitle_my": "",
+            "subtitle_sg": "",
+            "audience": "trigger",
+            "trigger_products": [
+              "warehouse-clearance-sale-bundle-sg"
+            ],
+            "trigger_variant_ids": "",
+            "trigger_min_quantity": 1,
+            "view_all_label": "",
+            "view_all_url": ""
+          }
+        },
         "tab_pxghyY": {
           "type": "tab",
           "settings": {
@@ -146,6 +164,102 @@
             "trigger_min_quantity": 6,
             "view_all_label": "",
             "view_all_url": ""
+          }
+        },
+        "offer_item_YNpXn3": {
+          "type": "offer_item",
+          "settings": {
+            "tab_slot": "tab_1",
+            "product": "wh-sales-pwp-apgo-shoe-cleaner-300ml",
+            "variant_id": "",
+            "price_mode": "promo",
+            "promo_price_my": "",
+            "promo_price_sg": "$5.90",
+            "max_quantity": 2
+          }
+        },
+        "offer_item_ibrDCq": {
+          "type": "offer_item",
+          "settings": {
+            "tab_slot": "tab_1",
+            "product": "wh-sales-pwp-apgo-shoe-cleaner-30ml",
+            "variant_id": "",
+            "price_mode": "promo",
+            "promo_price_my": "",
+            "promo_price_sg": "$2.90",
+            "max_quantity": 2
+          }
+        },
+        "offer_item_tU8Njp": {
+          "type": "offer_item",
+          "settings": {
+            "tab_slot": "tab_1",
+            "product": "wh-sales-pwp-apgo-gloss-tire-dressing-300ml-copy",
+            "variant_id": "",
+            "price_mode": "promo",
+            "promo_price_my": "",
+            "promo_price_sg": "$9.90",
+            "max_quantity": 2
+          }
+        },
+        "offer_item_99RWBL": {
+          "type": "offer_item",
+          "settings": {
+            "tab_slot": "tab_1",
+            "product": "wh-sales-pwp-apgo-gloss-tire-dressing-300ml-3",
+            "variant_id": "",
+            "price_mode": "promo",
+            "promo_price_my": "",
+            "promo_price_sg": "$19.90",
+            "max_quantity": 2
+          }
+        },
+        "offer_item_VD9gnr": {
+          "type": "offer_item",
+          "settings": {
+            "tab_slot": "tab_1",
+            "product": "wh-sales-pwp-apgo-magnetic-clay-lubricant-clay-bar-set-300ml",
+            "variant_id": "",
+            "price_mode": "promo",
+            "promo_price_my": "",
+            "promo_price_sg": "$8.80",
+            "max_quantity": 2
+          }
+        },
+        "offer_item_4dHqk4": {
+          "type": "offer_item",
+          "settings": {
+            "tab_slot": "tab_1",
+            "product": "wh-sales-pwp-apgo-magnetic-clay-lubricant-clay-bar-set-300ml-3",
+            "variant_id": "",
+            "price_mode": "promo",
+            "promo_price_my": "",
+            "promo_price_sg": "$19.90",
+            "max_quantity": 2
+          }
+        },
+        "offer_item_D7g6Dj": {
+          "type": "offer_item",
+          "settings": {
+            "tab_slot": "tab_1",
+            "product": "apgo-car-glass-oil-film-remover-200ml-copy",
+            "variant_id": "",
+            "price_mode": "promo",
+            "promo_price_my": "",
+            "promo_price_sg": "$15.90",
+            "max_quantity": 2
+          }
+        },
+        "offer_item_YGLnQ9": {
+          "type": "offer_item",
+          "settings": {
+            "tab_slot": "tab_1",
+            "product": "wh-sales-pwp-apgo-car-glass-oil-film-remover-200ml-2",
+            "variant_id": "",
+            "price_mode": "promo",
+            "promo_price_my": "",
+            "promo_price_sg": "$24.90",
+            "max_quantity": 2
           }
         },
         "glaze_paint": {
@@ -354,10 +468,19 @@
         }
       },
       "block_order": [
+        "tab_f4GpTw",
         "tab_pxghyY",
         "tab_RdreJB",
         "tab_glaze",
         "tab_detergent",
+        "offer_item_YNpXn3",
+        "offer_item_ibrDCq",
+        "offer_item_tU8Njp",
+        "offer_item_99RWBL",
+        "offer_item_VD9gnr",
+        "offer_item_4dHqk4",
+        "offer_item_D7g6Dj",
+        "offer_item_YGLnQ9",
         "glaze_paint",
         "glaze_wheel",
         "glaze_sprayer",
