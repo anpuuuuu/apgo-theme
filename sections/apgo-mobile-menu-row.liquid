@@ -91,6 +91,22 @@
         list.scrollLeft = current.offsetLeft - 16;
       }
     })();
+    /* The row scrolls away while the header and the shipping marquee stay
+       pinned. --header-group-height counts the row, so the marquee's sticky
+       top (sections/free-shipping-popup.liquid) takes this height off again;
+       without it a row-high gap opened under the header (2026-10-08). 0 from
+       750px up, where the row is hidden. */
+    (function () {
+      var nav = document.querySelector('.apgo-menu-row');
+      var row = nav && (nav.closest('.shopify-section') || nav);
+      if (!row) return;
+      function setHeight() {
+        document.body.style.setProperty('--apgo-menu-row-h', row.offsetHeight + 'px');
+      }
+      setHeight();
+      if (window.ResizeObserver) new ResizeObserver(setHeight).observe(row);
+      else window.addEventListener('resize', setHeight);
+    })();
   </script>
 {%- endif -%}
 

@@ -160,8 +160,11 @@
       可視底部實際落在 viewport y = 主 header 高度 - 1。/collections/all 有 ::before 30px 填縫遮住這 1px，
       其他頁沒有次選單也就沒這塊填縫，會露出 1px 縫。扣掉這 1px 正好貼齊；在 all 頁則是跑馬燈與次選單黑底
       重疊 1px，肉眼看不見。
+
+      手機的選單橫排（sections/apgo-mobile-menu-row.liquid）也在 header-group 裡，但它不吸頂，
+      所以再扣掉它的高度 --apgo-menu-row-h（由該 section 量測；電腦版為 0），跑馬燈才會緊貼 header。
     */
-    top: calc(var(--header-group-height, 100px) - 1px + env(safe-area-inset-top, 0px));
+    top: calc(var(--header-group-height, 100px) - var(--apgo-menu-row-h, 0px) - 1px + env(safe-area-inset-top, 0px));
     z-index: calc(var(--layer-sticky, 8) - 1);
     width: 100%;
     background: var(--color-background);
