@@ -1,7 +1,9 @@
 {%- doc -%}
   Malaysia-only pages (2026-10). Shoppers outside Malaysia (Singapore) don't
   get them: the page itself sends them to the home page, and links to it are
-  left out. The list is my_only_paths below; today just the clearance sale.
+  left out. The list is my_only_paths below; empty since 2026-10-08, when
+  the owner opened the clearance sale to Singapore too (it was the only
+  entry). Add a path to make a page Malaysia-only again.
   Region-locked products use custom.only_market instead (layout/theme.liquid).
 
   part 'head'  : in <head> of layout/theme.liquid. On a listed page, the
@@ -17,7 +19,7 @@
   @param {string} [url] - The link to check, for part 'check'.
 {%- enddoc -%}
 {%- liquid
-  assign my_only_paths = '/pages/clearance-sale' | split: ','
+  assign my_only_paths = '' | split: ','
   assign outside_my = false
   if localization.country.iso_code != 'MY'
     assign outside_my = true
@@ -26,7 +28,7 @@
   assign apgo_mo_path = request.path | downcase
   assign apgo_mo_url = url | downcase
 -%}
-{%- if outside_my -%}
+{%- if outside_my and my_only_paths.size > 0 -%}
   {%- if part == 'check' -%}
     {%- for path in my_only_paths -%}
       {%- if apgo_mo_url contains path -%}hidden{%- break -%}{%- endif -%}
