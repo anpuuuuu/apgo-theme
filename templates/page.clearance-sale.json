@@ -150,6 +150,32 @@
             "counter_flow_baseline": "0"
           }
         },
+        "promo_banner_YyRgPN": {
+          "type": "promo_banner",
+          "disabled": true,
+          "settings": {
+            "market_visibility": "sg",
+            "heading": "CLEARANCE BUNDLE",
+            "message": "Yes, we take 80% lesser but it's OK. We get the space and you get great savings :) 🫶🏻",
+            "product": "",
+            "variant_id": "",
+            "banner_sg": "shopify://shop_images/warehouse_sales_banner_sg.jpg",
+            "product_sg": "warehouse-clearance-sale-bundle-sg",
+            "variant_id_sg": "",
+            "cta_mode": "add_buy",
+            "single_cta_label": "Grab Deals Now",
+            "show_price_range": false,
+            "gift_enabled": false,
+            "gift_pool": [],
+            "gift_count": 2,
+            "gift_heading": "Choose your free gifts",
+            "show_counter": false,
+            "counter_milestone_total": "500",
+            "counter_release_total": "88",
+            "counter_manual_deduction": "0",
+            "counter_flow_baseline": "0"
+          }
+        },
         "promo_banner_gewygY": {
           "type": "promo_banner",
           "settings": {
@@ -242,6 +268,7 @@
       },
       "block_order": [
         "promo_banner_merdeka",
+        "promo_banner_YyRgPN",
         "promo_banner_gewygY",
         "promo_banner_detergent",
         "product_carousel_b1f1",
