@@ -152,7 +152,6 @@
         },
         "promo_banner_YyRgPN": {
           "type": "promo_banner",
-          "disabled": true,
           "settings": {
             "market_visibility": "sg",
             "heading": "CLEARANCE BUNDLE",
