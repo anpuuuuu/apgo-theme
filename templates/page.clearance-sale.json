@@ -71,6 +71,9 @@
         "image": "shopify://shop_images/1_2dc1f73a-7df9-4156-820d-8fff64687788.jpg",
         "image_alt": "APGO Warehouse Clearance Sales: deals starting from RM1, while stocks last",
         "link": "#clearance-deals",
+        "image_sg": "shopify://shop_images/clearance-edited.png",
+        "image_alt_sg": "APGO Warehouse Clearance Sales: deals starting from RM1, while stocks last",
+        "link_sg": "",
         "desktop_width_percent": 67,
         "frame_style": "crate",
         "color_scheme": "",
@@ -86,7 +89,10 @@
           "settings": {
             "image": "shopify://shop_images/2_dea55a7f-0b39-4b73-ab73-3502e8909f15.jpg",
             "image_alt": "一场搬运，一次回馈：APGO MY 仓库清货",
-            "link": ""
+            "link": "",
+            "market_visibility": "all",
+            "image_alt_sg": "",
+            "link_sg": ""
           }
         }
       },
@@ -98,6 +104,8 @@
         "image": "shopify://shop_images/3_0e3a8eb7-4b99-479d-95b3-fe95d6d18b23.jpg",
         "image_alt": "Warehouse full liao, time to clear! APGO makes space for new stock and passes the savings to you",
         "link": "#clearance-deals",
+        "image_alt_sg": "",
+        "link_sg": "",
         "desktop_width_percent": 67,
         "frame_style": "crate",
         "color_scheme": "",
