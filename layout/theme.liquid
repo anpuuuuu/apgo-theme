@@ -158,6 +158,25 @@
       header-component svg {
         color: #2d2e28 !important;
       }
+      /* Phone menu row (sections/apgo-mobile-menu-row.liquid) is in
+         #header-group too, so the rule above turned its labels ink on its
+         black strip (2026-10-09 cross-device check). Cream strip with ink
+         outlines here; the red button keeps white text. */
+      #header-group .apgo-menu-row {
+        background: #f6f1e7 !important;
+      }
+      #header-group .apgo-menu-row__link {
+        border-color: rgba(45, 46, 40, 0.24) !important;
+      }
+      #header-group .apgo-menu-row__link[aria-current='page'] {
+        border-color: #f08418 !important;
+        color: #f08418 !important;
+      }
+      #header-group .apgo-menu-row__link--hot,
+      #header-group .apgo-menu-row__link--hot[aria-current='page'] {
+        border-color: #e0352b !important;
+        color: #fff !important;
+      }
 
       /* Free-shipping marquee: its promo text is hardcoded #fff (line ~229
          of free-shipping-popup.liquid), so creaming only the background

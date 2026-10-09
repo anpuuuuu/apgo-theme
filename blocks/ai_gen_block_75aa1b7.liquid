@@ -21,12 +21,23 @@
 {% if show_apgo_secondary_nav %}
 {% style %}
   /* 吸頂由 header.liquid 對 header-group 內「主 header 下一個 section」統一處理，避免雙層 sticky */
+  /*
+    Tablet widths (750px to about 1000px, e.g. iPad portrait): the links are
+    wider than the screen. Plain `center` pushed the first link off the left
+    edge where scrolling cannot reach it, and the bar widened the whole page
+    (sideways scroll). Width is held to the screen at every size, and `safe
+    center` centres only when the links fit, else starts at the left and
+    scrolls (2026-10-09 cross-device check; older browsers keep `center`).
+  */
   .ai-secondary-menu-{{ ai_gen_id }} {
     position: relative;
     z-index: 1;
     background-color: {{ block.settings.background_color }};
     border-bottom: {{ block.settings.border_width }}px solid {{ block.settings.border_color }};
     width: 100%;
+    max-width: 100vw;
+    box-sizing: border-box;
+    overflow: hidden;
     display: block;
   }
 
@@ -35,6 +46,7 @@
     margin: 0 auto;
     display: flex;
     justify-content: center;
+    justify-content: safe center;
     overflow-x: auto;
     overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
