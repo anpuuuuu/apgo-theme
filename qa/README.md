@@ -63,6 +63,8 @@
 | R8 | SG 运送天数显示 3–5 天，没有旧的 5–7 天 | e7a68d1 | — |
 | R9 | 清仓页对 SG 开放 | d5746d6 | — |
 
+另外 `node qa/laundry-sg.js`：洗衣精 promotion 页。MY 照旧（6+3、MY 主图）；SG 用 SG 图、没有 6+3、预设 3+1、4 包 $50.70、满 6 包不出现 Detergent PWP、满 9 包不送 Floor Cleaner；MY 满 9 包照送。来源 e80f963、3dab173；改到图片标记、bundle 选项、购物车加购分页或 AIOD 洗衣精折扣时要跑。
+
 人工（脚本做不到，改到相关地方时要做）：
 
 - **付款**：查 Fiuu（TNG/FPX）最近有没有成功的订单。10/1–10/3 曾整个停摆，修法是在 Fiuu App 按 Re-authorize。
