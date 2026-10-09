@@ -22,8 +22,10 @@ const PAGES = [
 const FLOW = ['iphone15-safari', 'iphone-facebook', 'android-chrome', 'android-facebook', 'desktop-chrome', 'desktop-safari'];
 const FLOW_OPTION = 'Shoe Cleaner 30ml';
 
-// Errors caused by the tracker blocking in lib.js, not by the theme.
-const NOISE = /access control checks|importScripts|Failed to fetch|Load failed|NetworkError|ERR_FAILED/i;
+// Not theme bugs: errors caused by the tracker blocking in lib.js, and
+// Chromium's "Transition was skipped" when a page-change animation is cut
+// short by the next click or navigation (seen in the add-to-cart flow).
+const NOISE = /access control checks|importScripts|Failed to fetch|Load failed|NetworkError|ERR_FAILED|Transition was skipped/i;
 
 async function visibleFirst(page, selectors) {
   for (const s of selectors) {
