@@ -1,3 +1,4 @@
 # Local dev / tooling — not part of Online Store theme runtime
 scripts/
 monitoring/
+qa/

@@ -1,0 +1,14 @@
+{
+  "name": "apgo-my-qa",
+  "private": true,
+  "description": "Storefront checks for apgo.my — see README.md",
+  "scripts": {
+    "static": "node static.js",
+    "regression": "node regression.js",
+    "devices": "node devices.js"
+  },
+  "dependencies": {
+    "acorn": "8.14.0",
+    "playwright": "1.62.0"
+  }
+}
