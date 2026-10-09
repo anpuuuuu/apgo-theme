@@ -243,6 +243,9 @@ class CartOffersTabs extends HTMLElement {
   }
 
   groupIsEligible(group, quantities, variantQuantities) {
+    /* 'off': the group is set to the other market (its discount would not
+       apply here), so no cart makes it eligible. */
+    if (group.dataset.audience === 'off') return false;
     if (group.dataset.audience === 'all') return true;
     const minimum = Math.max(1, Number(group.dataset.triggerMin || 1));
 

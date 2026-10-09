@@ -245,7 +245,7 @@
             aria-label="{{ block.settings.label | escape }}"
             data-offer-group
             data-group-id="{{ block.id }}"
-            data-audience="{{ block.settings.audience }}"
+            data-audience="{% if tab_market == 'my' and is_sg %}off{% elsif tab_market == 'sg' and is_sg == false %}off{% else %}{{ block.settings.audience }}{% endif %}"
             data-trigger-product-ids="{{ trigger_product_ids | strip }}"
             data-trigger-variant-ids="{{ block.settings.trigger_variant_ids | default: '' | newline_to_br | replace: '<br />', ',' | replace: '<br/>', ',' | replace: ' ', '' | replace: ';', ',' | escape }}"
             data-trigger-min="{{ block.settings.trigger_min_quantity | default: 1 }}"
