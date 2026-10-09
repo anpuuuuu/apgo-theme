@@ -1,7 +1,8 @@
 // Laundry promotion in Singapore without 6+3 (e80f963): Malaysia keeps its
-// page as it was, Singapore gets its own images and no 6+3. If the product
-// is still locked to Malaysia (custom.only_market), the redirect is stripped
-// from the page so Singapore's version can be looked at.
+// page as it was, Singapore gets its own images and no 6+3. Singapore has
+// been open since 2026-10-09; if the product gets locked to one market again
+// (custom.only_market), the redirect is stripped so the other checks still
+// run, and the "opens directly" check fails.
 //   node laundry-sg.js                         live
 //   THEME_ID=188964503706 node laundry-sg.js   staging
 const fs = require('fs');
@@ -97,8 +98,16 @@ const check = (name, ok, detail) => { results.push({ name, ok }); console.log(`$
     await browser.close();
   }
 
-  // 2. Singapore on the theme under test.
-  console.log('\n新加坡（测试主题）');
+  // 2. Singapore. Open since 2026-10-09: no redirect to the home page.
+  console.log('\n新加坡');
+  {
+    const { browser, page } = await open('iphone15-safari');
+    await page.goto(url('/', { country: 'SG' }), { waitUntil: 'load', timeout: 60000 });
+    await page.goto(url(PDP, { country: 'SG' }), { waitUntil: 'load', timeout: 60000 });
+    await sleep(2500);
+    check('SG 能直接打开商品页（没被导回首页）', page.url().includes(PDP), page.url());
+    await browser.close();
+  }
   for (const device of ['desktop-chrome', 'iphone15-safari']) {
     const { browser, page } = await openPage(device, 'SG');
     await page.goto(url(PDP, { country: 'SG' }), { waitUntil: 'load', timeout: 60000 });
