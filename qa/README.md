@@ -41,7 +41,7 @@
 ### staging 预览主题
 
 - **一次性设定（店主在后台做）**：Shopify 后台 → 线上商店 → 主题 → 新增主题 → 从 GitHub 连接 → `anpuuuuu/apgo-theme`，分支选 `staging`。
-  会多出一个**未发布**的主题，顾客看不到。
+  会多出一个**未发布**的主题，顾客看不到。2026-10-09 已连好：`apgo-theme/staging`，主题 id `188964503706`。
 - **每次使用**：把 `staging` 重设成「`main` ＋这次改动」，推上去，等 Shopify 同步完，再跑
   `THEME_ID=<预览主题 id> node qa/regression.js`（`devices.js` 也一样用法）。
 - `staging` 只拿来测，**不要在这个主题的编辑器里改东西**，下次重设就会被盖掉。
@@ -78,7 +78,7 @@ PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm install   # 第一次
 node static.js                                   # 第 0 级
 node regression.js                               # 全部回归，或 node regression.js R5 R6
 node devices.js                                  # 9 种装置，或 node devices.js iphone15-safari desktop-chrome
-THEME_ID=123456 node regression.js               # 对 staging 预览主题跑
+THEME_ID=188964503706 node regression.js         # 对 staging 预览主题跑
 ```
 
 - 截图和结果在 `qa/out/`（不进 git）。
