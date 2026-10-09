@@ -146,6 +146,25 @@
   {% endfor %}
 
   {% liquid
+    # Images tagged for the other market are left out
+    # (snippets/apgo-market-media.liquid).
+    capture apgo_hidden_media
+      render 'apgo-market-media', product: product
+    endcapture
+    if apgo_hidden_media != blank
+      assign apgo_kept_media = all_media | where: 'id', 0
+      for apgo_m in all_media
+        assign apgo_mkey = ',' | append: apgo_m.id | append: ','
+        unless apgo_hidden_media contains apgo_mkey
+          assign apgo_one = all_media | where: 'id', apgo_m.id
+          assign apgo_kept_media = apgo_kept_media | concat: apgo_one
+        endunless
+      endfor
+      assign all_media = apgo_kept_media
+      assign selected_variant_image = all_media.first.preview_image.src
+      assign selected_variant_image_index = 0
+    endif
+
     # Sort media so selected variant image comes first
     assign selected_media = all_media | where: 'src', selected_variant_image
     assign other_media = all_media | reject: 'src', selected_variant_image

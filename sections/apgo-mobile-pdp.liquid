@@ -28,6 +28,34 @@
     assign has_compare = true
     assign discount_pct = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price
   endif
+
+  # Images tagged for the other market are left out (snippets/
+  # apgo-market-media.liquid), and the main image is the first one left.
+  capture apgo_hidden_media
+    render 'apgo-market-media', product: product
+  endcapture
+  assign apgo_main_media = product.featured_media
+  assign apgo_media_count = product.media.size
+  if apgo_hidden_media != blank
+    capture apgo_main_media_id
+      render 'apgo-market-media', product: product, first: true
+    endcapture
+    assign apgo_main_media_id = apgo_main_media_id | plus: 0
+    assign apgo_main_media = product.media | where: 'id', apgo_main_media_id | first
+    assign apgo_hidden_count = apgo_hidden_media | remove_first: ',' | split: ',' | size
+    assign apgo_media_count = apgo_media_count | minus: apgo_hidden_count
+  endif
+
+  # Singapore doesn't get the 6+3 offer (owner, 2026-10-09): its discount
+  # only applies to Malaysian addresses. The bundle picker drops the tier
+  # (snippets/apgo-bundle-widget.liquid); the subtitle drops its mention.
+  assign apgo_subtitle = product.metafields.apgo.subtitle.value
+  if localization.country.iso_code == 'SG' and apgo_subtitle contains '6+3'
+    assign apgo_subtitle = apgo_subtitle | remove: '6+3 and ' | remove: ' and 6+3'
+    if apgo_subtitle contains '6+3'
+      assign apgo_subtitle = blank
+    endif
+  endif
 -%}
 
 <section class="apgo-mpdp" data-section-id="{{ section.id }}">
@@ -54,12 +82,12 @@
           {%- comment -%} Left column: main image + thumb rail {%- endcomment -%}
           <div class="apgo-hero-left">
             <div class="apgo-main-media">
-              {%- if product.featured_media -%}
+              {%- if apgo_main_media -%}
                 <img class="apgo-main-img"
-                     src="{{ product.featured_media | image_url: width: 1400 }}"
-                     alt="{{ product.featured_media.alt | default: product.title }}"
-                     width="{{ product.featured_media.preview_image.width }}"
-                     height="{{ product.featured_media.preview_image.height }}"
+                     src="{{ apgo_main_media | image_url: width: 1400 }}"
+                     alt="{{ apgo_main_media.alt | remove_first: '[MY]' | remove_first: '[SG]' | strip | default: product.title }}"
+                     width="{{ apgo_main_media.preview_image.width }}"
+                     height="{{ apgo_main_media.preview_image.height }}"
                      loading="eager"
                      data-apgo-main-img>
               {%- else -%}
@@ -77,17 +105,21 @@
                   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
                 </button>
                 <div class="apgo-thumb-rail" data-apgo-thumb-rail>
-                  {%- if product.media.size > 0 -%}
+                  {%- if apgo_media_count > 0 -%}
+                    {%- assign apgo_i = 0 -%}
                     {%- for m in product.media -%}
+                      {%- assign apgo_mkey = ',' | append: m.id | append: ',' -%}
+                      {%- if apgo_hidden_media contains apgo_mkey -%}{%- continue -%}{%- endif -%}
                       <button type="button"
-                              class="apgo-thumb {% if forloop.first %}active{% endif %}"
-                              data-apgo-thumb-idx="{{ forloop.index0 }}"
+                              class="apgo-thumb {% if apgo_i == 0 %}active{% endif %}"
+                              data-apgo-thumb-idx="{{ apgo_i }}"
                               data-apgo-image-id="{{ m.preview_image.id | default: m.id }}"
-                              aria-label="Show image {{ forloop.index }}">
+                              aria-label="Show image {{ apgo_i | plus: 1 }}">
                         <img src="{{ m | image_url: width: 200 }}"
-                             alt="{{ m.alt | default: product.title }}"
+                             alt="{{ m.alt | remove_first: '[MY]' | remove_first: '[SG]' | strip | default: product.title }}"
                              loading="lazy" width="80" height="80">
                       </button>
+                      {%- assign apgo_i = apgo_i | plus: 1 -%}
                     {%- endfor -%}
                   {%- endif -%}
                 </div>
@@ -107,8 +139,8 @@
 
             <h1 class="apgo-title apgo-serif">{{ product.title }}</h1>
 
-            {%- if product.metafields.apgo.subtitle != blank -%}
-              <p class="apgo-subtitle">{{ product.metafields.apgo.subtitle }}</p>
+            {%- if apgo_subtitle != blank -%}
+              <p class="apgo-subtitle">{{ apgo_subtitle }}</p>
             {%- endif -%}
 
             {%- if section.settings.show_rating -%}
@@ -298,11 +330,15 @@
             </div>
           </div>
         {%- endif -%}
-        {%- if product.media.size > 0 -%}
+        {%- if apgo_media_count > 0 -%}
+          {%- assign apgo_i = 0 -%}
           {%- for m in product.media -%}
+            {%- assign apgo_mkey = ',' | append: m.id | append: ',' -%}
+            {%- if apgo_hidden_media contains apgo_mkey -%}{%- continue -%}{%- endif -%}
             <div class="apgo-mpdp-slide" data-apgo-image-id="{{ m.preview_image.id | default: m.id }}">
-              <img src="{{ m | image_url: width: 900 }}" alt="{{ m.alt | default: product.title }}" width="{{ m.preview_image.width }}" height="{{ m.preview_image.height }}" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
+              <img src="{{ m | image_url: width: 900 }}" alt="{{ m.alt | remove_first: '[MY]' | remove_first: '[SG]' | strip | default: product.title }}" width="{{ m.preview_image.width }}" height="{{ m.preview_image.height }}" loading="{% if apgo_i == 0 %}eager{% else %}lazy{% endif %}">
             </div>
+            {%- assign apgo_i = apgo_i | plus: 1 -%}
           {%- endfor -%}
         {%- endif -%}
       </div>
@@ -313,19 +349,23 @@
     </div>
 
     {%- comment -%} Mobile thumbnail rail — click to jump carousel; swipeable; ◀ ▶ to step {%- endcomment -%}
-    {%- if section.settings.show_thumb_rail and product.media.size > 1 -%}
+    {%- if section.settings.show_thumb_rail and apgo_media_count > 1 -%}
       <div class="apgo-mpdp-thumb-rail-wrap">
         <button type="button" class="apgo-mpdp-thumb-nav apgo-mpdp-thumb-nav--prev" data-apgo-mthumb-nav="prev" aria-label="Previous">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
         </button>
         <div class="apgo-mpdp-thumb-rail" data-apgo-mthumb-rail>
+          {%- assign apgo_i = 0 -%}
           {%- for m in product.media -%}
+            {%- assign apgo_mkey = ',' | append: m.id | append: ',' -%}
+            {%- if apgo_hidden_media contains apgo_mkey -%}{%- continue -%}{%- endif -%}
             <button type="button"
-                    class="apgo-mpdp-thumb {% if forloop.first %}active{% endif %}"
-                    data-apgo-mthumb-idx="{{ forloop.index0 }}"
-                    aria-label="Show image {{ forloop.index }}">
+                    class="apgo-mpdp-thumb {% if apgo_i == 0 %}active{% endif %}"
+                    data-apgo-mthumb-idx="{{ apgo_i }}"
+                    aria-label="Show image {{ apgo_i | plus: 1 }}">
               <img src="{{ m | image_url: width: 160 }}" alt="" width="{{ m.preview_image.width }}" height="{{ m.preview_image.height }}" loading="lazy">
             </button>
+            {%- assign apgo_i = apgo_i | plus: 1 -%}
           {%- endfor -%}
         </div>
         <button type="button" class="apgo-mpdp-thumb-nav apgo-mpdp-thumb-nav--next" data-apgo-mthumb-nav="next" aria-label="Next">
@@ -340,8 +380,8 @@
         <div class="apgo-mpdp-kicker">{{ section.settings.kicker }}</div>
       {%- endif -%}
       <h1 class="apgo-mpdp-title apgo-serif">{{ product.title }}</h1>
-      {%- if product.metafields.apgo.subtitle != blank -%}
-        <div class="apgo-mpdp-subtitle">{{ product.metafields.apgo.subtitle }}</div>
+      {%- if apgo_subtitle != blank -%}
+        <div class="apgo-mpdp-subtitle">{{ apgo_subtitle }}</div>
       {%- endif -%}
 
       {%- if section.settings.show_rating -%}
@@ -925,9 +965,9 @@
         </button>
 
         <div class="apgo-mpdp-confirm__summary">
-          {%- if product.featured_media -%}
+          {%- if apgo_main_media -%}
             <div class="apgo-mpdp-confirm__thumb">
-              <img src="{{ product.featured_media | image_url: width: 200 }}" alt="{{ product.title | escape }}" width="72" height="72" loading="lazy">
+              <img src="{{ apgo_main_media | image_url: width: 200 }}" alt="{{ product.title | escape }}" width="72" height="72" loading="lazy">
             </div>
           {%- endif -%}
           <div class="apgo-mpdp-confirm__meta">

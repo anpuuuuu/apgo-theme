@@ -1,0 +1,42 @@
+{%- doc -%}
+  Product images for one market only (2026-10, the laundry promotion: its
+  "Buy 6 get 3 free" images are Malaysia's, and Singapore gets images of its
+  own). Start an image's alt text with [MY] or [SG] in the admin and
+  shoppers in the other market don't see it — not on the product page, the
+  product cards or as the share image. Images without a tag show in both.
+
+  Prints the ids of this product's images to hide here as ",id,id,", or
+  nothing when there are none, so a caller can skip an image when the list
+  contains "," | append: media.id | append: ",". With first: true, prints
+  the id of the first image to show here instead, and nothing when no image
+  is hidden (the product's own first image then stands).
+
+  @param {product} product - The product.
+  @param {boolean} [first] - Print the first image to show here.
+{%- enddoc -%}
+{%- liquid
+  assign apgo_mm_here = localization.country.iso_code | default: 'MY'
+  assign apgo_mm_hidden = ''
+  assign apgo_mm_first = ''
+  for apgo_mm in product.media
+    assign apgo_mm_tag = apgo_mm.alt | slice: 0, 4 | upcase
+    assign apgo_mm_hide = false
+    if apgo_mm_tag == '[MY]' and apgo_mm_here != 'MY'
+      assign apgo_mm_hide = true
+    elsif apgo_mm_tag == '[SG]' and apgo_mm_here != 'SG'
+      assign apgo_mm_hide = true
+    endif
+    if apgo_mm_hide
+      assign apgo_mm_hidden = apgo_mm_hidden | append: ',' | append: apgo_mm.id
+    elsif apgo_mm_first == ''
+      assign apgo_mm_first = apgo_mm.id | append: ''
+    endif
+  endfor
+  if apgo_mm_hidden != blank
+    if first
+      echo apgo_mm_first
+    else
+      echo apgo_mm_hidden | append: ','
+    endif
+  endif
+-%}

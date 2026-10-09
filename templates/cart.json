@@ -154,6 +154,7 @@
             "enabled": true,
             "slot": "tab_3",
             "label": "Detergent PWP",
+            "market_visibility": "my",
             "subtitle_my": "Special price for Detergent Promo · 1 set per product, per order",
             "subtitle_sg": "Special price for Detergent Promo · 1 set per product, per order",
             "audience": "trigger",

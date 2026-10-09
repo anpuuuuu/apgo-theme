@@ -68,6 +68,15 @@
   endif
   if apgo_card_image == blank and product.featured_media != blank
     assign apgo_card_image = product.featured_media.preview_image
+    # Or the first one for this market (snippets/apgo-market-media.liquid).
+    capture apgo_market_media_id
+      render 'apgo-market-media', product: product, first: true
+    endcapture
+    if apgo_market_media_id != blank
+      assign apgo_market_media_id = apgo_market_media_id | plus: 0
+      assign apgo_market_media = product.media | where: 'id', apgo_market_media_id | first
+      assign apgo_card_image = apgo_market_media.preview_image
+    endif
   endif
   if apgo_card_image == blank
     assign apgo_card_image = apgo_listing_variant.featured_image

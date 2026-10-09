@@ -15,7 +15,12 @@
     if block.type == 'tab' and block.settings.enabled
       assign enabled_tab_count = enabled_tab_count | plus: 1
       assign tab_is_eligible = false
-      if block.settings.audience == 'all'
+      assign tab_market = block.settings.market_visibility | default: 'all'
+      if tab_market == 'my' and is_sg
+        # Malaysia-only group, e.g. Detergent PWP (its discount is Malaysia-only).
+      elsif tab_market == 'sg' and is_sg == false
+        # Singapore-only group.
+      elsif block.settings.audience == 'all'
         assign tab_is_eligible = true
       else
         assign trigger_quantity = 0
@@ -96,7 +101,12 @@
         {% if block.type == 'tab' and block.settings.enabled %}
           {% liquid
             assign tab_is_eligible = false
-            if block.settings.audience == 'all'
+            assign tab_market = block.settings.market_visibility | default: 'all'
+            if tab_market == 'my' and is_sg
+              # Malaysia-only group, e.g. Detergent PWP (its discount is Malaysia-only).
+            elsif tab_market == 'sg' and is_sg == false
+              # Singapore-only group.
+            elsif block.settings.audience == 'all'
               assign tab_is_eligible = true
             else
               assign trigger_quantity = 0
@@ -155,7 +165,12 @@
           {% liquid
             assign tab_is_eligible = false
             assign trigger_quantity = 0
-            if block.settings.audience == 'all'
+            assign tab_market = block.settings.market_visibility | default: 'all'
+            if tab_market == 'my' and is_sg
+              # Malaysia-only group, e.g. Detergent PWP (its discount is Malaysia-only).
+            elsif tab_market == 'sg' and is_sg == false
+              # Singapore-only group.
+            elsif block.settings.audience == 'all'
               assign tab_is_eligible = true
             else
               comment
@@ -381,6 +396,18 @@
           "id": "enabled",
           "label": "Enable group",
           "default": true
+        },
+        {
+          "type": "select",
+          "id": "market_visibility",
+          "label": "顯示給",
+          "info": "Pick one market when the group's discount only works there, e.g. Detergent PWP is Malaysia-only.",
+          "options": [
+            { "value": "all", "label": "馬來西亞和新加坡" },
+            { "value": "my", "label": "只有馬來西亞" },
+            { "value": "sg", "label": "只有新加坡" }
+          ],
+          "default": "all"
         },
         {
           "type": "select",

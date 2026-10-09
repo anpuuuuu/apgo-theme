@@ -52,6 +52,20 @@
   content="{{ og_description | escape }}"
 >
 
+{%- liquid
+  # A product's share image follows its images for this market
+  # (snippets/apgo-market-media.liquid).
+  if request.page_type == 'product'
+    capture apgo_share_media_id
+      render 'apgo-market-media', product: product, first: true
+    endcapture
+    if apgo_share_media_id != blank
+      assign apgo_share_media_id = apgo_share_media_id | plus: 0
+      assign apgo_share_media = product.media | where: 'id', apgo_share_media_id | first
+      assign page_image = apgo_share_media.preview_image
+    endif
+  endif
+-%}
 {%- if page_image -%}
   <meta
     property="og:image"

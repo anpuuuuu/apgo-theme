@@ -63,6 +63,28 @@
   assign tiers = tiers_str | split: '::'
 
   comment
+    Singapore doesn't get 6+3 (owner, 2026-10-09): its discount, "Detergent
+    Promo 6+3", only applies to Malaysian addresses, and the owner keeps
+    the tier's Floor Cleaner gift to Malaysia too. Dropping it here drops it from the
+    "x+y promotion" note below, and the 2nd tier (3+1) becomes the default.
+  endcomment
+  if localization.country.iso_code == 'SG'
+    assign sg_tiers_str = ''
+    for t_str in tiers
+      assign t = t_str | split: '|'
+      if t[0] == '6' and t[1] == '3'
+        continue
+      endif
+      if sg_tiers_str == ''
+        assign sg_tiers_str = t_str
+      else
+        assign sg_tiers_str = sg_tiers_str | append: '::' | append: t_str
+      endif
+    endfor
+    assign tiers = sg_tiers_str | split: '::'
+  endif
+
+  comment
     Single-pack price from Shopify. product.price returns the lowest
     variant price (or the selected variant's price). Stored in cents.
   endcomment
