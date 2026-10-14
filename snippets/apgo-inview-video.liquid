@@ -4,8 +4,9 @@
   the page must not get slower). It starts over when it ends.
 
   Nothing but the poster loads with the page: the sources sit in data-src
-  until the video first comes into view. preload="none" alone is not enough,
-  Chrome's built-in HLS player fetched ~6 MB of a video still off screen.
+  until the video first comes into view, and nothing starts before the page
+  has finished loading. preload="none" alone is not enough, Chrome's
+  built-in HLS player fetched ~6 MB of a video still off screen.
 
   Sources are written out here rather than with video_tag, which only gives
   the 1080p mp4 (7.2 Mbps, ~90 MB for a 98-second video): the adaptive HLS
@@ -286,8 +287,11 @@
       });
     }
 
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', watch);
-    else watch();
+    // Not before the page itself has loaded: on desktop the bundles' video
+    // sits half in the first screen, and must not hold up the page's own
+    // images and scripts.
+    if (document.readyState === 'complete') watch();
+    else window.addEventListener('load', watch);
     document.addEventListener('shopify:section:load', watch);
   })();
 {% endjavascript %}
