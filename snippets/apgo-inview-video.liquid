@@ -15,7 +15,13 @@
 
   @param {media} video - A video file or product media video.
 {%- enddoc -%}
-<div class="apgo-inview-video" data-apgo-inview-video>
+<div
+  class="apgo-inview-video"
+  data-apgo-inview-video
+  {% if video.aspect_ratio > 0 %}
+    style="--apgo-video-ratio: {{ video.aspect_ratio }};"
+  {% endif %}
+>
   {{- video | video_tag: controls: true, muted: true, playsinline: true, preload: 'none' -}}
 </div>
 
@@ -23,18 +29,36 @@
   .apgo-inview-video {
     width: 100%;
   }
+
+  /* Its shape from the start, so nothing jumps when it loads, and never
+     taller than the screen: a portrait video on a wide page fits whole,
+     with bars at the sides. */
+  .apgo-inview-video video {
+    aspect-ratio: var(--apgo-video-ratio, auto);
+    max-height: 85vh;
+    max-height: 85svh;
+  }
 {% endstylesheet %}
 
 {% javascript %}
   (function () {
     if (!('IntersectionObserver' in window)) return;
 
+    // "On screen": half of the video showing, or, for one taller than the
+    // screen, half of the screen filled by it. A ratio threshold alone
+    // never fires for a tall portrait video on a wide page.
+    function onScreen(entry) {
+      var screen = entry.rootBounds ? entry.rootBounds.height : window.innerHeight;
+      var need = Math.min(entry.boundingClientRect.height, screen) / 2;
+      return entry.intersectionRect.height >= need && need > 0;
+    }
+
     var observer = new IntersectionObserver(
       function (entries) {
         entries.forEach(function (entry) {
           var video = entry.target;
-          if (entry.isIntersecting) {
-            if (video.dataset.apgoUserPaused) return;
+          if (onScreen(entry)) {
+            if (!video.paused || video.dataset.apgoUserPaused) return;
             var playing = video.play();
             if (playing && playing.catch) playing.catch(function () {});
           } else if (!video.paused) {
@@ -43,7 +67,7 @@
           }
         });
       },
-      { threshold: 0.5 }
+      { threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1] }
     );
 
     function watch() {
