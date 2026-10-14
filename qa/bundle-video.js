@@ -25,20 +25,21 @@ const video = (page, fn) => page.evaluate((f) => {
     for (const device of ['iphone15-safari', 'desktop-chrome']) {
       console.log(`\n${p.country} ${p.handle} · ${device}`);
       const { browser, page } = await open(device);
-      // Every event the snippet publishes, from the start.
+      // Every event the snippet publishes, from the start. Shopify swaps its
+      // analytics object while the page loads, so keep hooking the current one.
       await page.addInitScript(() => {
         window.__apgoPub = [];
-        const hook = setInterval(() => {
+        setInterval(() => {
           const an = window.Shopify && Shopify.analytics;
-          if (!an || !an.publish || an.__apgoHooked) return;
+          if (!an || !an.publish || an.publish.__apgoHook) return;
           const orig = an.publish.bind(an);
-          an.publish = (name, data) => {
+          const hooked = (name, data) => {
             if (String(name).startsWith('apgo_video')) window.__apgoPub.push(name);
             return orig(name, data);
           };
-          an.__apgoHooked = true;
-          clearInterval(hook);
-        }, 20);
+          hooked.__apgoHook = true;
+          an.publish = hooked;
+        }, 10);
       });
       await page.goto(url('/', { country: p.country }), { waitUntil: 'load', timeout: 60000 });
 
@@ -85,7 +86,7 @@ const video = (page, fn) => page.evaluate((f) => {
       await video(page, `v.currentTime = v.duration * 0.55;`);
       await sleep(3000);
       await video(page, `v.currentTime = Math.max(0, v.duration - 1);`);
-      for (let i = 0; i < 12 && !pub.includes('apgo_video_complete'); i++) {
+      for (let i = 0; i < 25 && !pub.includes('apgo_video_complete'); i++) {
         await sleep(1000);
         pub = await page.evaluate(() => window.__apgoPub);
       }
