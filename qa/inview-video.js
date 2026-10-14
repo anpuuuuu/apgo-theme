@@ -85,12 +85,23 @@ const check = (name, ok, detail) => { results.push(ok); console.log(`${ok ? '✓
 
     await page.evaluate(async () => {
       const v = document.querySelector('[data-apgo-inview-video] video');
+      window.__apgoEv = [];
+      ['ended', 'seeked', 'playing', 'pause', 'waiting'].forEach((n) => v.addEventListener(n, () => window.__apgoEv.push(`${n}@${v.currentTime.toFixed(1)}`)));
       await v.play();
       v.currentTime = Math.max(0, v.duration - 0.6);
     });
-    await sleep(3000);
+    // HLS needs about a second per seek (to the end, then back to the start).
+    let restarted = false;
+    for (let i = 0; i < 12 && !restarted; i++) {
+      await sleep(1000);
+      restarted = await page.evaluate(() => {
+        const v = document.querySelector('[data-apgo-inview-video] video');
+        return window.__apgoEv.some((e) => e.startsWith('ended')) && !v.paused && v.currentTime < 8;
+      });
+    }
     s = await state();
-    check('播完自动从头开始', !s.paused && s.t < 3, `现在 ${s.t}s`);
+    const ev = await page.evaluate(() => window.__apgoEv.join(' '));
+    check('播完自动从头开始', restarted, `现在 ${s.t}s，paused=${s.paused}；${ev}`);
     await browser.close();
   }
   const failed = results.filter((ok) => !ok).length;
