@@ -5399,14 +5399,7 @@
                 {% for mf in tab_desc_media %}
                   {% assign mf_mt = mf.media_type | default: '' | downcase %}
                   {% if mf_mt contains 'video' %}
-                    {{
-                      mf
-                      | video_tag:
-                        controls: true,
-                        muted: false,
-                        playsinline: true,
-                        preload: 'metadata'
-                    }}
+                    {% render 'apgo-inview-video', video: mf %}
                   {% else %}
                     <img
                       src="{{ mf | image_url: width: 1200 }}"

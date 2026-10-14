@@ -1,0 +1,77 @@
+{%- doc -%}
+  A product video that plays by itself, muted, while it is on screen, and
+  pauses once it scrolls away (owner, 2026-10-14: no tap needed, and opening
+  the page must not get slower). Only the poster loads with the page
+  (preload none); the video downloads once it comes into view, from
+  Shopify's own renditions (adaptive HLS where the browser has it, else the
+  mp4 rendition), never the original upload. It starts over when it ends.
+
+  Controls stay, so shoppers can turn the sound on or go full screen, and a
+  video they pause themselves stays paused. Browsers only autoplay muted
+  video; where they refuse (e.g. iPhone Low Power Mode) the poster and play
+  button show instead.
+
+  Used by the v3 product page for videos in custom.tab_description_images.
+
+  @param {media} video - A video file or product media video.
+{%- enddoc -%}
+<div class="apgo-inview-video" data-apgo-inview-video>
+  {{- video | video_tag: controls: true, muted: true, playsinline: true, preload: 'none' -}}
+</div>
+
+{% stylesheet %}
+  .apgo-inview-video {
+    width: 100%;
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  (function () {
+    if (!('IntersectionObserver' in window)) return;
+
+    var observer = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          var video = entry.target;
+          if (entry.isIntersecting) {
+            if (video.dataset.apgoUserPaused) return;
+            var playing = video.play();
+            if (playing && playing.catch) playing.catch(function () {});
+          } else if (!video.paused) {
+            video.dataset.apgoSelfPause = '1';
+            video.pause();
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    function watch() {
+      document.querySelectorAll('[data-apgo-inview-video] video').forEach(function (video) {
+        if (video.dataset.apgoInview) return;
+        video.dataset.apgoInview = '1';
+        // Set as a property too: some browsers only autoplay when it is.
+        video.muted = true;
+        video.addEventListener('pause', function () {
+          if (video.dataset.apgoSelfPause) delete video.dataset.apgoSelfPause;
+          else if (!video.ended) video.dataset.apgoUserPaused = '1';
+        });
+        video.addEventListener('play', function () {
+          delete video.dataset.apgoUserPaused;
+        });
+        // Starts over by hand: the loop attribute would make Shopify drop
+        // the adaptive (HLS) source.
+        video.addEventListener('ended', function () {
+          video.currentTime = 0;
+          var playing = video.play();
+          if (playing && playing.catch) playing.catch(function () {});
+        });
+        observer.observe(video);
+      });
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', watch);
+    else watch();
+    document.addEventListener('shopify:section:load', watch);
+  })();
+{% endjavascript %}
