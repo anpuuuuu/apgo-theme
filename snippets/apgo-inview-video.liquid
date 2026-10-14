@@ -2,27 +2,80 @@
   A product video that plays by itself, muted, while it is on screen, and
   pauses once it scrolls away (owner, 2026-10-14: no tap needed, and opening
   the page must not get slower). Only the poster loads with the page
-  (preload none); the video downloads once it comes into view, from
-  Shopify's own renditions (adaptive HLS where the browser has it, else the
-  mp4 rendition), never the original upload. It starts over when it ends.
+  (preload none); the video downloads once it comes into view. It starts
+  over when it ends.
+
+  Sources are written out here rather than with video_tag, which only gives
+  the 1080p mp4 (7.2 Mbps, ~90 MB for a 98-second video): the adaptive HLS
+  stream first, which steps down on a slow phone connection, then the 720p
+  mp4 for browsers without HLS.
 
   Controls stay, so shoppers can turn the sound on or go full screen, and a
   video they pause themselves stays paused. Browsers only autoplay muted
   video; where they refuse (e.g. iPhone Low Power Mode) the poster and play
   button show instead.
 
+  Tracking (owner, 2026-10-14: how many watch it, and do they buy): events
+  go out like apgo-campaign-tracking.js, to Shopify.analytics (the GA4 app
+  pixel forwards them) and gtag when present:
+    apgo_video_view        played 3 seconds (autoplay counts)
+    apgo_video_engage      the shopper turned the sound on, went full
+                           screen, or pressed play themselves (once each)
+    apgo_video_progress    reached 50% and 100% (percent)
+  A view also adds the product handle to the cart attribute
+  "apgo_video_watched", so orders show whether the buyer watched it.
+
   Used by the v3 product page for videos in custom.tab_description_images.
 
   @param {media} video - A video file or product media video.
+  @param {product} [product] - The product the video is about, for tracking.
 {%- enddoc -%}
+{%- liquid
+  assign apgo_v_hls = video.sources | where: 'format', 'm3u8' | first
+  assign apgo_v_mp4s = video.sources | where: 'format', 'mp4' | sort: 'height'
+  assign apgo_v_mp4 = apgo_v_mp4s | first
+  for apgo_v_source in apgo_v_mp4s
+    if apgo_v_source.height <= 720
+      assign apgo_v_mp4 = apgo_v_source
+    endif
+  endfor
+-%}
 <div
   class="apgo-inview-video"
   data-apgo-inview-video
+  data-video-id="{{ video.id }}"
+  {% if product %}
+    data-product-id="{{ product.id }}"
+    data-product-handle="{{ product.handle }}"
+    data-product-title="{{ product.title | escape }}"
+  {% endif %}
   {% if video.aspect_ratio > 0 %}
     style="--apgo-video-ratio: {{ video.aspect_ratio }};"
   {% endif %}
 >
-  {{- video | video_tag: controls: true, muted: true, playsinline: true, preload: 'none' -}}
+  {%- if apgo_v_hls or apgo_v_mp4 -%}
+    <video
+      controls
+      muted
+      playsinline
+      preload="none"
+      {% if video.preview_image %}
+        poster="{{ video.preview_image | image_url: width: 1280 }}"
+      {% endif %}
+      {% if video.alt != blank %}
+        aria-label="{{ video.alt | escape }}"
+      {% endif %}
+    >
+      {%- if apgo_v_hls -%}
+        <source src="{{ apgo_v_hls.url }}" type="{{ apgo_v_hls.mime_type }}">
+      {%- endif -%}
+      {%- if apgo_v_mp4 -%}
+        <source src="{{ apgo_v_mp4.url }}" type="{{ apgo_v_mp4.mime_type }}">
+      {%- endif -%}
+    </video>
+  {%- else -%}
+    {{- video | video_tag: controls: true, muted: true, playsinline: true, preload: 'none' -}}
+  {%- endif -%}
 </div>
 
 {% stylesheet %}
@@ -44,6 +97,49 @@
   (function () {
     if (!('IntersectionObserver' in window)) return;
 
+    function publish(video, name, data) {
+      var box = video.closest('[data-apgo-inview-video]');
+      var payload = {
+        video_id: box.dataset.videoId,
+        product_id: box.dataset.productId,
+        product_handle: box.dataset.productHandle,
+        product_title: box.dataset.productTitle,
+        video_duration: Math.round(video.duration) || undefined,
+        country: window.Shopify && Shopify.country,
+        page_path: location.pathname
+      };
+      Object.keys(data || {}).forEach(function (key) { payload[key] = data[key]; });
+      try {
+        var analytics = window.Shopify && Shopify.analytics;
+        if (analytics && analytics.publish) {
+          var sent = analytics.publish(name, payload);
+          if (sent && sent.catch) sent.catch(function () {});
+        }
+        if (typeof window.gtag === 'function') window.gtag('event', name, payload);
+      } catch (error) {}
+    }
+
+    // Orders then show whether the buyer watched: cart attribute
+    // "apgo_video_watched", a comma-separated list of product handles.
+    function markCart(handle) {
+      if (!handle) return;
+      var key = 'apgoVideoWatched:' + handle;
+      try { if (sessionStorage.getItem(key)) return; sessionStorage.setItem(key, '1'); } catch (error) {}
+      fetch('/cart.js', { headers: { Accept: 'application/json' } })
+        .then(function (r) { return r.json(); })
+        .then(function (cart) {
+          var list = ((cart.attributes || {}).apgo_video_watched || '').split(',').filter(Boolean);
+          if (list.indexOf(handle) !== -1) return;
+          list.push(handle);
+          return fetch('/cart/update.js', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify({ attributes: { apgo_video_watched: list.join(',') } })
+          });
+        })
+        .catch(function () {});
+    }
+
     // "On screen": half of the video showing, or, for one taller than the
     // screen, half of the screen filled by it. A ratio threshold alone
     // never fires for a tall portrait video on a wide page.
@@ -59,8 +155,9 @@
           var video = entry.target;
           if (onScreen(entry)) {
             if (!video.paused || video.dataset.apgoUserPaused) return;
+            video.dataset.apgoSelfPlay = '1';
             var playing = video.play();
-            if (playing && playing.catch) playing.catch(function () {});
+            if (playing && playing.catch) playing.catch(function () { delete video.dataset.apgoSelfPlay; });
           } else if (!video.paused) {
             video.dataset.apgoSelfPause = '1';
             video.pause();
@@ -76,17 +173,46 @@
         video.dataset.apgoInview = '1';
         // Set as a property too: some browsers only autoplay when it is.
         video.muted = true;
+        var sent = {};
+        var once = function (key, name, data) {
+          if (sent[key]) return;
+          sent[key] = true;
+          publish(video, name, data);
+        };
+        var box = video.closest('[data-apgo-inview-video]');
+
         video.addEventListener('pause', function () {
           if (video.dataset.apgoSelfPause) delete video.dataset.apgoSelfPause;
           else if (!video.ended) video.dataset.apgoUserPaused = '1';
         });
         video.addEventListener('play', function () {
           delete video.dataset.apgoUserPaused;
+          if (video.dataset.apgoSelfPlay) delete video.dataset.apgoSelfPlay;
+          else if (!video.dataset.apgoRestart) once('play', 'apgo_video_engage', { action: 'play' });
+          delete video.dataset.apgoRestart;
         });
-        // Starts over by hand: the loop attribute would make Shopify drop
-        // the adaptive (HLS) source.
+        video.addEventListener('volumechange', function () {
+          if (!video.muted && video.volume > 0) once('sound', 'apgo_video_engage', { action: 'sound_on' });
+        });
+        video.addEventListener('webkitbeginfullscreen', function () {
+          once('fullscreen', 'apgo_video_engage', { action: 'fullscreen' });
+        });
+        document.addEventListener('fullscreenchange', function () {
+          if (document.fullscreenElement === video) once('fullscreen', 'apgo_video_engage', { action: 'fullscreen' });
+        });
+        video.addEventListener('timeupdate', function () {
+          if (!video.duration) return;
+          if (video.currentTime >= 3 && !sent.view) {
+            once('view', 'apgo_video_view', {});
+            markCart(box.dataset.productHandle);
+          }
+          if (video.currentTime / video.duration >= 0.5) once('half', 'apgo_video_progress', { percent: 50 });
+        });
+        // Starts over by hand: the loop attribute would rule out HLS.
         video.addEventListener('ended', function () {
+          once('end', 'apgo_video_progress', { percent: 100 });
           video.currentTime = 0;
+          video.dataset.apgoRestart = '1';
           var playing = video.play();
           if (playing && playing.catch) playing.catch(function () {});
         });
