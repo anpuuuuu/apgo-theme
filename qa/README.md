@@ -63,6 +63,15 @@
 | R8 | SG 运送天数显示 3–5 天，没有旧的 5–7 天 | e7a68d1 | — |
 | R9 | 清仓页对 SG 开放 | d5746d6 | — |
 
+另外 `node qa/bundle-video.js`：两个清仓 Bundle（MY、SG）商品页的影片。会检查：
+- 来源依序是 HLS、720p、1080p。
+- 页面载入完成前、还没捲到之前都不下载影片。
+- 会自动静音播放。
+- 3 秒、10 秒、一半、看完、开声音、自己按播放的事件各只送一次。
+- 购物车属性 `apgo_video_watched` 记下看到最远的一步。
+
+来源 c746541、eb9c5fa、cc71c12。改到影片追踪或 Bundle 页面时要跑。
+
 另外 `node qa/inview-video.js`：v3 商品页 Description 区的影片（`custom.tab_description_images`）捲到画面上自动静音播放、捲走暂停、顾客按暂停后不会自己再播、播完从头开始，而且没出现在画面上之前不下载影片。来源 cb6e059、0f84326；改到 `snippets/apgo-inview-video.liquid` 时要跑。
 
 另外 `node qa/laundry-sg.js`：洗衣精 promotion 页。MY 照旧（6+3、MY 主图）；SG 用 SG 图、没有 6+3、预设 3+1、4 包 $50.70、满 6 包不出现 Detergent PWP、满 9 包不送 Floor Cleaner；MY 满 9 包照送。来源 e80f963、3dab173；改到图片标记、bundle 选项、购物车加购分页或 AIOD 洗衣精折扣时要跑。
