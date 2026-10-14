@@ -38,8 +38,8 @@ const check = (name, ok, detail) => { results.push(ok); console.log(`${ok ? '✓
       // taller than the screen, the case the snippet caps at 85% of it.
       wrap.style.setProperty('--apgo-video-ratio', '0.5625');
       wrap.innerHTML = `<video controls muted playsinline preload="none" style="width:100%">
-        <source src="${base}.m3u8?v=0" type="application/x-mpegURL">
-        <source src="${base}.HD-1080p-7.2Mbps-89377407.mp4?v=0" type="video/mp4"></video>`;
+        <source data-src="${base}.m3u8?v=0" type="application/x-mpegURL">
+        <source data-src="${base}.HD-1080p-7.2Mbps-89377407.mp4?v=0" type="video/mp4"></video>`;
       const after = document.createElement('div');
       after.style.height = '3000px';
       document.body.append(spacer, wrap, after);

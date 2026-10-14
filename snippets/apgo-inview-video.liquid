@@ -1,9 +1,11 @@
 {%- doc -%}
   A product video that plays by itself, muted, while it is on screen, and
   pauses once it scrolls away (owner, 2026-10-14: no tap needed, and opening
-  the page must not get slower). Only the poster loads with the page
-  (preload none); the video downloads once it comes into view. It starts
-  over when it ends.
+  the page must not get slower). It starts over when it ends.
+
+  Nothing but the poster loads with the page: the sources sit in data-src
+  until the video first comes into view. preload="none" alone is not enough,
+  Chrome's built-in HLS player fetched ~6 MB of a video still off screen.
 
   Sources are written out here rather than with video_tag, which only gives
   the 1080p mp4 (7.2 Mbps, ~90 MB for a 98-second video): the adaptive HLS
@@ -15,15 +17,20 @@
   video; where they refuse (e.g. iPhone Low Power Mode) the poster and play
   button show instead.
 
-  Tracking (owner, 2026-10-14: how many watch it, and do they buy): events
-  go out like apgo-campaign-tracking.js, to Shopify.analytics (the GA4 app
-  pixel forwards them) and gtag when present:
-    apgo_video_view        played 3 seconds (autoplay counts)
-    apgo_video_engage      the shopper turned the sound on, went full
-                           screen, or pressed play themselves (once each)
-    apgo_video_progress    reached 50% and 100% (percent)
-  A view also adds the product handle to the cart attribute
-  "apgo_video_watched", so orders show whether the buyer watched it.
+  Tracking (owner, 2026-10-14: how many watch, how far, and do they buy).
+  One event name per step, so GA4 counts them without custom dimensions;
+  each is sent once per page view, like apgo-campaign-tracking.js, to
+  Shopify.analytics (the GA4 app pixel forwards it) and gtag when present:
+    apgo_video_view         watched 3 seconds (autoplay counts)
+    apgo_video_10s          watched 10 seconds
+    apgo_video_half         reached the middle
+    apgo_video_complete     reached the end
+    apgo_video_sound_on     the shopper turned the sound on
+    apgo_video_fullscreen   the shopper went full screen
+    apgo_video_play_click   the shopper pressed play themselves
+  Seconds are time actually played, not skipped to. The furthest step also
+  goes on the cart attribute "apgo_video_watched" ("handle=10s,..."), so
+  orders show how much of the video the buyer watched.
 
   Used by the v3 product page for videos in custom.tab_description_images.
 
@@ -32,13 +39,28 @@
 {%- enddoc -%}
 {%- liquid
   assign apgo_v_hls = video.sources | where: 'format', 'm3u8' | first
-  assign apgo_v_mp4s = video.sources | where: 'format', 'mp4' | sort: 'height'
-  assign apgo_v_mp4 = apgo_v_mp4s | first
-  for apgo_v_source in apgo_v_mp4s
-    if apgo_v_source.height <= 720
-      assign apgo_v_mp4 = apgo_v_source
+  assign apgo_v_mp4 = blank
+  assign apgo_v_mp4_h = 0
+  assign apgo_v_any_mp4 = blank
+  for apgo_v_source in video.sources
+    if apgo_v_source.format == 'mp4'
+      if apgo_v_any_mp4 == blank
+        assign apgo_v_any_mp4 = apgo_v_source
+      endif
+      # Height as a number; from the file name ("HD-720p-...") if missing.
+      assign apgo_v_h = apgo_v_source.height | plus: 0
+      if apgo_v_h == 0
+        assign apgo_v_h = apgo_v_source.url | split: 'p-' | first | split: '-' | last | plus: 0
+      endif
+      if apgo_v_h <= 720 and apgo_v_h > apgo_v_mp4_h
+        assign apgo_v_mp4 = apgo_v_source
+        assign apgo_v_mp4_h = apgo_v_h
+      endif
     endif
   endfor
+  if apgo_v_mp4 == blank
+    assign apgo_v_mp4 = apgo_v_any_mp4
+  endif
 -%}
 <div
   class="apgo-inview-video"
@@ -67,10 +89,10 @@
       {% endif %}
     >
       {%- if apgo_v_hls -%}
-        <source src="{{ apgo_v_hls.url }}" type="{{ apgo_v_hls.mime_type }}">
+        <source data-src="{{ apgo_v_hls.url }}" type="{{ apgo_v_hls.mime_type }}">
       {%- endif -%}
       {%- if apgo_v_mp4 -%}
-        <source src="{{ apgo_v_mp4.url }}" type="{{ apgo_v_mp4.mime_type }}">
+        <source data-src="{{ apgo_v_mp4.url }}" type="{{ apgo_v_mp4.mime_type }}">
       {%- endif -%}
     </video>
   {%- else -%}
@@ -95,9 +117,22 @@
 
 {% javascript %}
   (function () {
-    if (!('IntersectionObserver' in window)) return;
+    var STEPS = ['3s', '10s', 'half', 'complete'];
+    var STEP_EVENT = { '3s': 'apgo_video_view', '10s': 'apgo_video_10s', half: 'apgo_video_half', complete: 'apgo_video_complete' };
 
-    function publish(video, name, data) {
+    // Sources go in when the video is first on screen (see the doc).
+    function attach(video) {
+      if (video.dataset.apgoAttached) return;
+      video.dataset.apgoAttached = '1';
+      var sources = video.querySelectorAll('source[data-src]');
+      sources.forEach(function (source) {
+        source.src = source.dataset.src;
+        source.removeAttribute('data-src');
+      });
+      if (sources.length) video.load();
+    }
+
+    function publish(video, name, extra) {
       var box = video.closest('[data-apgo-inview-video]');
       var payload = {
         video_id: box.dataset.videoId,
@@ -108,7 +143,7 @@
         country: window.Shopify && Shopify.country,
         page_path: location.pathname
       };
-      Object.keys(data || {}).forEach(function (key) { payload[key] = data[key]; });
+      Object.keys(extra || {}).forEach(function (key) { payload[key] = extra[key]; });
       try {
         var analytics = window.Shopify && Shopify.analytics;
         if (analytics && analytics.publish) {
@@ -119,22 +154,34 @@
       } catch (error) {}
     }
 
-    // Orders then show whether the buyer watched: cart attribute
-    // "apgo_video_watched", a comma-separated list of product handles.
-    function markCart(handle) {
+    // Furthest step per product on the cart attribute apgo_video_watched
+    // ("handle=step,..."). Writes go one after another so 3s and 10s
+    // cannot overwrite each other.
+    var cartWrites = Promise.resolve();
+    function markCart(handle, step) {
       if (!handle) return;
+      var rank = STEPS.indexOf(step);
       var key = 'apgoVideoWatched:' + handle;
-      try { if (sessionStorage.getItem(key)) return; sessionStorage.setItem(key, '1'); } catch (error) {}
-      fetch('/cart.js', { headers: { Accept: 'application/json' } })
-        .then(function (r) { return r.json(); })
+      try {
+        if (STEPS.indexOf(sessionStorage.getItem(key)) >= rank) return;
+        sessionStorage.setItem(key, step);
+      } catch (error) {}
+      cartWrites = cartWrites
+        .then(function () { return fetch('/cart.js', { headers: { Accept: 'application/json' } }); })
+        .then(function (response) { return response.json(); })
         .then(function (cart) {
-          var list = ((cart.attributes || {}).apgo_video_watched || '').split(',').filter(Boolean);
-          if (list.indexOf(handle) !== -1) return;
-          list.push(handle);
+          var seen = {};
+          ((cart.attributes || {}).apgo_video_watched || '').split(',').forEach(function (pair) {
+            var parts = pair.split('=');
+            if (parts[0]) seen[parts[0]] = parts[1] || '3s';
+          });
+          if (STEPS.indexOf(seen[handle]) >= rank) return;
+          seen[handle] = step;
+          var value = Object.keys(seen).map(function (h) { return h + '=' + seen[h]; }).join(',');
           return fetch('/cart/update.js', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-            body: JSON.stringify({ attributes: { apgo_video_watched: list.join(',') } })
+            body: JSON.stringify({ attributes: { apgo_video_watched: value } })
           });
         })
         .catch(function () {});
@@ -149,15 +196,19 @@
       return entry.intersectionRect.height >= need && need > 0;
     }
 
-    var observer = new IntersectionObserver(
+    function play(video) {
+      video.dataset.apgoSelfPlay = '1';
+      var playing = video.play();
+      if (playing && playing.catch) playing.catch(function () { delete video.dataset.apgoSelfPlay; });
+    }
+
+    var observer = 'IntersectionObserver' in window && new IntersectionObserver(
       function (entries) {
         entries.forEach(function (entry) {
           var video = entry.target;
           if (onScreen(entry)) {
-            if (!video.paused || video.dataset.apgoUserPaused) return;
-            video.dataset.apgoSelfPlay = '1';
-            var playing = video.play();
-            if (playing && playing.catch) playing.catch(function () { delete video.dataset.apgoSelfPlay; });
+            attach(video);
+            if (video.paused && !video.dataset.apgoUserPaused) play(video);
           } else if (!video.paused) {
             video.dataset.apgoSelfPause = '1';
             video.pause();
@@ -173,13 +224,22 @@
         video.dataset.apgoInview = '1';
         // Set as a property too: some browsers only autoplay when it is.
         video.muted = true;
+        if (!observer) { attach(video); return; }
+
+        var handle = video.closest('[data-apgo-inview-video]').dataset.productHandle;
         var sent = {};
-        var once = function (key, name, data) {
-          if (sent[key]) return;
-          sent[key] = true;
-          publish(video, name, data);
-        };
-        var box = video.closest('[data-apgo-inview-video]');
+        var watched = 0;
+        var last = null;
+        function once(name, extra) {
+          if (sent[name]) return;
+          sent[name] = true;
+          publish(video, name, extra);
+        }
+        function step(name) {
+          if (sent[STEP_EVENT[name]]) return;
+          once(STEP_EVENT[name], { watched_seconds: Math.round(watched) });
+          markCart(handle, name);
+        }
 
         video.addEventListener('pause', function () {
           if (video.dataset.apgoSelfPause) delete video.dataset.apgoSelfPause;
@@ -188,33 +248,32 @@
         video.addEventListener('play', function () {
           delete video.dataset.apgoUserPaused;
           if (video.dataset.apgoSelfPlay) delete video.dataset.apgoSelfPlay;
-          else if (!video.dataset.apgoRestart) once('play', 'apgo_video_engage', { action: 'play' });
+          else if (!video.dataset.apgoRestart) once('apgo_video_play_click');
           delete video.dataset.apgoRestart;
         });
         video.addEventListener('volumechange', function () {
-          if (!video.muted && video.volume > 0) once('sound', 'apgo_video_engage', { action: 'sound_on' });
+          if (!video.muted && video.volume > 0) once('apgo_video_sound_on');
         });
-        video.addEventListener('webkitbeginfullscreen', function () {
-          once('fullscreen', 'apgo_video_engage', { action: 'fullscreen' });
-        });
+        video.addEventListener('webkitbeginfullscreen', function () { once('apgo_video_fullscreen'); });
         document.addEventListener('fullscreenchange', function () {
-          if (document.fullscreenElement === video) once('fullscreen', 'apgo_video_engage', { action: 'fullscreen' });
+          if (document.fullscreenElement === video) once('apgo_video_fullscreen');
         });
+        video.addEventListener('seeking', function () { last = null; });
         video.addEventListener('timeupdate', function () {
-          if (!video.duration) return;
-          if (video.currentTime >= 3 && !sent.view) {
-            once('view', 'apgo_video_view', {});
-            markCart(box.dataset.productHandle);
-          }
-          if (video.currentTime / video.duration >= 0.5) once('half', 'apgo_video_progress', { percent: 50 });
+          var now = video.currentTime;
+          // Played time only: small steps between updates, not jumps.
+          if (last !== null && now > last && now - last < 1.5) watched += now - last;
+          last = now;
+          if (watched >= 3) step('3s');
+          if (watched >= 10) step('10s');
+          if (video.duration && now / video.duration >= 0.5) step('half');
         });
         // Starts over by hand: the loop attribute would rule out HLS.
         video.addEventListener('ended', function () {
-          once('end', 'apgo_video_progress', { percent: 100 });
-          video.currentTime = 0;
+          step('complete');
           video.dataset.apgoRestart = '1';
-          var playing = video.play();
-          if (playing && playing.catch) playing.catch(function () {});
+          video.currentTime = 0;
+          play(video);
         });
         observer.observe(video);
       });
