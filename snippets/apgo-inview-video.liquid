@@ -10,7 +10,7 @@
   Sources are written out here rather than with video_tag, which only gives
   the 1080p mp4 (7.2 Mbps, ~90 MB for a 98-second video): the adaptive HLS
   stream first, which steps down on a slow phone connection, then the 720p
-  mp4 for browsers without HLS.
+  mp4 for browsers without HLS, then the 1080p one.
 
   Controls stay, so shoppers can turn the sound on or go full screen, and a
   video they pause themselves stays paused. Browsers only autoplay muted
@@ -39,27 +39,31 @@
 {%- enddoc -%}
 {%- liquid
   assign apgo_v_hls = video.sources | where: 'format', 'm3u8' | first
-  assign apgo_v_mp4 = blank
-  assign apgo_v_mp4_h = 0
-  assign apgo_v_any_mp4 = blank
+  assign apgo_v_small = ''
+  assign apgo_v_small_h = 0
+  assign apgo_v_large = ''
   for apgo_v_source in video.sources
     if apgo_v_source.format == 'mp4'
-      if apgo_v_any_mp4 == blank
-        assign apgo_v_any_mp4 = apgo_v_source
-      endif
       # Height as a number; from the file name ("HD-720p-...") if missing.
       assign apgo_v_h = apgo_v_source.height | plus: 0
       if apgo_v_h == 0
         assign apgo_v_h = apgo_v_source.url | split: 'p-' | first | split: '-' | last | plus: 0
       endif
-      if apgo_v_h <= 720 and apgo_v_h > apgo_v_mp4_h
-        assign apgo_v_mp4 = apgo_v_source
-        assign apgo_v_mp4_h = apgo_v_h
+      if apgo_v_h <= 720
+        if apgo_v_h > apgo_v_small_h
+          assign apgo_v_small = apgo_v_source.url
+          assign apgo_v_small_h = apgo_v_h
+        endif
+      elsif apgo_v_large == ''
+        assign apgo_v_large = apgo_v_source.url
       endif
     endif
   endfor
-  if apgo_v_mp4 == blank
-    assign apgo_v_mp4 = apgo_v_any_mp4
+  # Liquid only lists the 1080p mp4 (and the HLS stream), though Shopify
+  # also makes a 720p one under the same name (Admin API, 2026-10-14). Ask
+  # for it first; were it missing, the browser moves on to the 1080p one.
+  if apgo_v_small == '' and apgo_v_large contains 'HD-1080p-7.2Mbps'
+    assign apgo_v_small = apgo_v_large | replace: 'HD-1080p-7.2Mbps', 'HD-720p-4.5Mbps'
   endif
 -%}
 <div
@@ -75,7 +79,7 @@
     style="--apgo-video-ratio: {{ video.aspect_ratio }};"
   {% endif %}
 >
-  {%- if apgo_v_hls or apgo_v_mp4 -%}
+  {%- if apgo_v_hls or apgo_v_small != '' or apgo_v_large != '' -%}
     <video
       controls
       muted
@@ -91,8 +95,11 @@
       {%- if apgo_v_hls -%}
         <source data-src="{{ apgo_v_hls.url }}" type="{{ apgo_v_hls.mime_type }}">
       {%- endif -%}
-      {%- if apgo_v_mp4 -%}
-        <source data-src="{{ apgo_v_mp4.url }}" type="{{ apgo_v_mp4.mime_type }}">
+      {%- if apgo_v_small != '' -%}
+        <source data-src="{{ apgo_v_small }}" type="video/mp4">
+      {%- endif -%}
+      {%- if apgo_v_large != '' -%}
+        <source data-src="{{ apgo_v_large }}" type="video/mp4">
       {%- endif -%}
     </video>
   {%- else -%}

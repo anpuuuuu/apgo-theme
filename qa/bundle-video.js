@@ -44,10 +44,10 @@ const video = (page, fn, arg) => page.evaluate(([f, a]) => {
 
       await video(page, `
         window.__apgoPub = [];
-        const a = window.Shopify && Shopify.analytics;
-        if (a && a.publish) {
-          const orig = a.publish.bind(a);
-          a.publish = (name, data) => { window.__apgoPub.push(name + (data && data.watched_seconds !== undefined ? '(' + data.watched_seconds + 's)' : '')); return orig(name, data); };
+        const an = window.Shopify && Shopify.analytics;
+        if (an && an.publish) {
+          const orig = an.publish.bind(an);
+          an.publish = (name, data) => { window.__apgoPub.push(name + (data && data.watched_seconds !== undefined ? '(' + data.watched_seconds + 's)' : '')); return orig(name, data); };
         }
         v.scrollIntoView({ block: 'center' });`);
       await sleep(13000);
