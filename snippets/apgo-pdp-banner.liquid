@@ -16,7 +16,9 @@
   desktop and above the description on phones, in that page's cream and
   ink colours.
 
-  Left out where its link would be hidden (snippets/apgo-market-only-pages.liquid):
+  Left out where its link would be hidden (snippets/apgo-market-only-pages.liquid),
+  or goes to a product the shopper's market can't buy (all_products is empty
+  for it there):
   the clearance sale is Malaysia only, so Singapore shoppers don't get it.
 
   "Show only on these products" (2026-10, owner's request): with products
@@ -44,6 +46,15 @@
       render 'apgo-market-only-pages', part: 'check', url: settings.apgo_pdp_banner_link
     endcapture
     if apgo_pdp_banner_market contains 'hidden'
+      assign apgo_pdp_banner = blank
+    endif
+  endif
+  # Nor where it links to a product this market can't buy (2026-10-19: the
+  # Malaysian bundle, a 404 for Singapore shoppers on the laundry page).
+  if apgo_pdp_banner != blank and settings.apgo_pdp_banner_link contains '/products/'
+    assign apgo_pdp_banner_handle = settings.apgo_pdp_banner_link | split: '/products/' | last | split: '?' | first | split: '#' | first
+    assign apgo_pdp_banner_target = all_products[apgo_pdp_banner_handle]
+    if apgo_pdp_banner_target == blank or apgo_pdp_banner_target.id == blank
       assign apgo_pdp_banner = blank
     endif
   endif
