@@ -208,6 +208,81 @@
             "counter_flow_baseline": "0"
           }
         },
+        "promo_banner_eg9AQ7": {
+          "type": "promo_banner",
+          "settings": {
+            "market_visibility": "both",
+            "heading": "Pocket Friendly Deals",
+            "message": "Friendly for the wallet👍🏻 Satu Ringgit onwards~",
+            "banner": "shopify://shop_images/premium_special_acg_banner_2.jpg",
+            "product": "atomic-coloured-glaze",
+            "variant_id": "",
+            "product_sg": "",
+            "variant_id_sg": "",
+            "cta_mode": "add_buy",
+            "single_cta_label": "Learn More",
+            "show_price_range": true,
+            "gift_enabled": false,
+            "gift_pool": [],
+            "gift_count": 2,
+            "gift_heading": "Choose your free gifts",
+            "show_counter": false,
+            "counter_milestone_total": "500",
+            "counter_release_total": "88",
+            "counter_manual_deduction": "0",
+            "counter_flow_baseline": "0"
+          }
+        },
+        "promo_banner_NjNfLQ": {
+          "type": "promo_banner",
+          "settings": {
+            "market_visibility": "both",
+            "heading": "Pocket Friendly Deals",
+            "message": "Friendly for the wallet👍🏻 Satu Ringgit onwards~",
+            "banner": "shopify://shop_images/premium_special_aurora_banner_2.jpg",
+            "product": "apgo-aurora-car-nano-coating-premium",
+            "variant_id": "",
+            "product_sg": "",
+            "variant_id_sg": "",
+            "cta_mode": "add_buy",
+            "single_cta_label": "Learn More",
+            "show_price_range": true,
+            "gift_enabled": false,
+            "gift_pool": [],
+            "gift_count": 2,
+            "gift_heading": "Choose your free gifts",
+            "show_counter": false,
+            "counter_milestone_total": "500",
+            "counter_release_total": "88",
+            "counter_manual_deduction": "0",
+            "counter_flow_baseline": "0"
+          }
+        },
+        "promo_banner_WbDHwD": {
+          "type": "promo_banner",
+          "settings": {
+            "market_visibility": "both",
+            "heading": "Pocket Friendly Deals",
+            "message": "Friendly for the wallet👍🏻 Satu Ringgit onwards~",
+            "banner": "shopify://shop_images/atomic_sealing_promo_banner.jpg",
+            "product": "atomic-sealing-coating-promotion",
+            "variant_id": "",
+            "product_sg": "",
+            "variant_id_sg": "",
+            "cta_mode": "add_buy",
+            "single_cta_label": "Learn More",
+            "show_price_range": true,
+            "gift_enabled": false,
+            "gift_pool": [],
+            "gift_count": 2,
+            "gift_heading": "Choose your free gifts",
+            "show_counter": false,
+            "counter_milestone_total": "500",
+            "counter_release_total": "88",
+            "counter_manual_deduction": "0",
+            "counter_flow_baseline": "0"
+          }
+        },
         "promo_banner_detergent": {
           "type": "promo_banner",
           "settings": {
@@ -277,6 +352,9 @@
         "promo_banner_merdeka",
         "promo_banner_YyRgPN",
         "promo_banner_gewygY",
+        "promo_banner_eg9AQ7",
+        "promo_banner_NjNfLQ",
+        "promo_banner_WbDHwD",
         "promo_banner_detergent",
         "product_carousel_b1f1",
         "featured_stage_legacy"
