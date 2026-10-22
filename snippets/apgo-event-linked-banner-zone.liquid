@@ -12,7 +12,8 @@
   @param {product} product - Product opened when the banner is selected.
   @param {string} variant_id - Optional numeric ID of the promoted product variant.
   @param {string} [single_cta_label] - Replaces the two cart buttons with one product-page link.
-  @param {boolean} [price_range] - Clearance look: show the in-stock options' lowest to highest price.
+  @param {boolean} [price_range] - Clearance look: show the in-stock options' lowest to highest price
+                                   (ignored when variant_id names an option: its price shows).
   @param {string} zone_class - Modifier suffix for the zone wrapper.
   @param {number} zone_position - One-based campaign section position.
   @param {string} [gift_modal_id] - Optional id of the gift picker controlled by this zone.
@@ -28,13 +29,22 @@
     assign action_variant = product.selected_or_first_available_variant
     assign requested_variant_id = variant_id | default: '' | strip | plus: 0
     assign apgo_counter_visible = show_counter
+    assign apgo_variant_picked = false
     if requested_variant_id != 0
       for candidate_variant in product.variants
         if candidate_variant.id == requested_variant_id
           assign action_variant = candidate_variant
+          assign apgo_variant_picked = true
           break
         endif
       endfor
+    endif
+
+    # A block that names its variant sells only that option, so it shows that
+    # option's price, not the product's range (owner, 2026-10-22: the Coloured
+    # Glaze box read RM166.00 - RM238.00 while adding the RM166.00 set).
+    if apgo_variant_picked
+      assign price_range = false
     endif
 
     # Sold-out state. The promoted product may use inventory policy
@@ -190,7 +200,7 @@
                   {%- if apgo_range_max > apgo_range_min %} – {{ apgo_range_max | money | replace: ' MYR', '' | replace: 'MYR', '' | strip }}{% endif -%}
                 </span>
               </div>
-            {%- elsif single_cta_label == blank -%}
+            {%- elsif single_cta_label == blank or apgo_variant_picked -%}
               <div class="apgo-crate-offerbar__prices">
                 <span class="apgo-crate-tag">{{ action_variant.price | money | replace: ' MYR', '' | replace: 'MYR', '' | strip }}</span>
                 {%- if action_variant.compare_at_price > action_variant.price -%}
