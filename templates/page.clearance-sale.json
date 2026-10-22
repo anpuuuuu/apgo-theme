@@ -261,7 +261,7 @@
         "promo_banner_WbDHwD": {
           "type": "promo_banner",
           "settings": {
-            "market_visibility": "sg",
+            "market_visibility": "both",
             "heading": "Pocket Friendly Deals",
             "message": "Friendly for the wallet👍🏻 Satu Ringgit onwards~",
             "banner": "shopify://shop_images/atomic_sealing_promo_banner.jpg",
