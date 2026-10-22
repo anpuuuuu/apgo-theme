@@ -212,7 +212,7 @@
           "type": "promo_banner",
           "settings": {
             "market_visibility": "both",
-            "heading": "Pocket Friendly Deals",
+            "heading": "Dry Coating Special",
             "message": "APGO Strongest Dry Series Coating. Now with discount!😉",
             "banner": "shopify://shop_images/premium_special_acg_banner_2.jpg",
             "product": "atomic-coloured-glaze",
@@ -237,8 +237,8 @@
           "type": "promo_banner",
           "settings": {
             "market_visibility": "both",
-            "heading": "Pocket Friendly Deals",
-            "message": "Friendly for the wallet👍🏻 Satu Ringgit onwards~",
+            "heading": "Wet Coating Special",
+            "message": "30% off + free gifts + free shipping. No results? Return it!✨",
             "banner": "shopify://shop_images/premium_special_aurora_banner_2.jpg",
             "product": "apgo-aurora-car-nano-coating-premium",
             "variant_id": "",
@@ -262,8 +262,8 @@
           "type": "promo_banner",
           "settings": {
             "market_visibility": "both",
-            "heading": "Pocket Friendly Deals",
-            "message": "Friendly for the wallet👍🏻 Satu Ringgit onwards~",
+            "heading": "Atomic Sealing Promo",
+            "message": "9 items for only RM99.00. Limited time, while stocks last!🔥",
             "banner": "shopify://shop_images/atomic_sealing_promo_banner.jpg",
             "product": "atomic-sealing-coating-promotion",
             "variant_id": "",
@@ -287,8 +287,8 @@
           "type": "promo_banner",
           "settings": {
             "market_visibility": "both",
-            "heading": "Pocket Friendly Deals",
-            "message": "Friendly for the wallet👍🏻 Satu Ringgit onwards~",
+            "heading": "Limited Time Deals",
+            "message": "11 items for only $55.00, free shipping included🚚",
             "banner": "shopify://shop_images/crystal_coating_limited_time_banner.jpg",
             "product": "jc-birthday-special-atomic-crystal-plus-promotion",
             "variant_id": "",
