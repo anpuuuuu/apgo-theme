@@ -78,6 +78,16 @@
 
 另外 `node qa/laundry-sg.js`：洗衣精 promotion 页。MY 照旧（6+3、MY 主图）；SG 用 SG 图、没有 6+3、预设 3+1、4 包 $50.70、满 6 包不出现 Detergent PWP、满 9 包不送 Floor Cleaner；MY 满 9 包照送。来源 e80f963、3dab173；改到图片标记、bundle 选项、购物车加购分页或 AIOD 洗衣精折扣时要跑。
 
+另外 `node qa/sale-1111.js`：11.11 活动页（`templates/page.double-11.json`，「ticket」皮肤：`snippets/apgo-event-skin.liquid` + `assets/apgo-ticket-skin.css`）。MY、SG 各用手机、iPad、电脑看：
+- body 同时有 `apgo-clearance-sale-page` 和 `apgo-ticket-page` 两个 class，`apgo-ticket-skin.css` 有载入。
+- 页面上没有 LOT、Clearance · Box、OLD FACTORY 这些清仓字样。
+- 浅色底、倒计时有出现、商品列有出现。
+- 主视觉左右两半和两个按钮的连结，在页面上找得到对应的区块；点下去不会被 header 盖住。
+- 没有横向卷轴、画面上没有破图、加入购物车有效（跑完会清空购物车）。
+- 截图存在 `qa/out/sale-1111/`。
+
+11.11 页还没建在后台之前，可以把模板套在别页预览：`VIEW_ON=/pages/clearance-sale`（网址加 `?view=double-11`）。在 Git Bash 跑要加 `MSYS_NO_PATHCONV=1`，不然 `/pages/...` 会被转成 Windows 路径。改到 clearance 共用的区块（`apgo-event-linked-banner-zone`、`apgo-clearance-scroll-zone`、`apgo-event-listing-card`、`apgo-event-banner`、`apgo-event-collection-grid`、`apgo-clearance-intro`）时，这个跟清仓页（`regression.js`、`devices.js`）都要跑。
+
 人工（脚本做不到，改到相关地方时要做）：
 
 - **付款**：查 Fiuu（TNG/FPX）最近有没有成功的订单。10/1–10/3 曾整个停摆，修法是在 Fiuu App 按 Re-authorize。

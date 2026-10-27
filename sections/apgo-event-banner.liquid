@@ -403,12 +403,22 @@
     opacity: 0.75;
   }
 
+  /* Two lines at most, so "Household Deals" fits half a phone. */
   .apgo-event-banner__jump-label {
+    display: -webkit-box;
     overflow: hidden;
     font-size: 13px;
     font-weight: 700;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    line-height: 1.15;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  /* Narrow phones: no icon, the label gets the room. */
+  @media screen and (max-width: 419px) {
+    .apgo-event-banner__jump-icon {
+      display: none;
+    }
   }
 
   .apgo-event-banner__jump-arrow {
