@@ -157,46 +157,11 @@
               "apgo-car-interior-eco-friendly-coating",
               "apgo-car-tire-gloss-dressing-and-protectant",
               "apgo-car-windshield-oil-film-remover-perfect-glass-restorer",
-              "apgo-car-wheel-rim-cleaner",
+              "apgo-car-paint-polish-cream-white-restorer",
               "apgo-car-headlight-repair-polish-cream",
-              "apgo-car-exterior-plastic-protectant"
-            ],
-            "variant_ids": "",
-            "hide_compare_at": true,
-            "show_promo_limit": false,
-            "show_scroll_cue": true,
-            "view_all_link": ""
-          }
-        },
-        "row_3for1111": {
-          "type": "product_carousel",
-          "settings": {
-            "market_visibility": "my",
-            "heading": "3 for RM11.11",
-            "anchor_id": "",
-            "badge_text": "3 FOR RM11.11",
-            "products": [
+              "apgo-car-exterior-plastic-protectant",
               "apgo-car-wash-shampoo-special-formula-refill-pack",
               "apgo-car-wiper-fluid-refill-pack"
-            ],
-            "variant_ids": "",
-            "hide_compare_at": true,
-            "show_promo_limit": false,
-            "show_scroll_cue": true,
-            "view_all_link": ""
-          }
-        },
-        "row_b1f2": {
-          "type": "product_carousel",
-          "settings": {
-            "market_visibility": "both",
-            "heading": "Buy 1 Free 2",
-            "anchor_id": "",
-            "badge_text": "BUY 1 FREE 2",
-            "products": [
-              "apgo-atomic-car-nano-coating-refill-pack-standard",
-              "apgo-atomic-crystal-car-nano-coating-refill-pack",
-              "apgo-atomic-crystal-car-nano-coating-refill-pack-standard-300ml-copy"
             ],
             "variant_ids": "",
             "hide_compare_at": true,
@@ -236,8 +201,6 @@
         "deal_boss",
         "deal_aurora",
         "row_b1f1",
-        "row_3for1111",
-        "row_b1f2",
         "row_household"
       ],
       "name": "Event Collection Grid",
