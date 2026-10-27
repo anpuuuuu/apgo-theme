@@ -149,6 +149,8 @@
           "settings": {
             "market_visibility": "both",
             "heading": "11.11 Mega Deals",
+            "message": "Buy 1 Free 1 and more on everyday car care favourites. Pick your deal below.",
+            "sub_label": "Buy 1 Free 1",
             "anchor_id": "mega-deals",
             "badge_text": "",
             "badge_texts": "BUY 1 FREE 1\nBUY 1 FREE 1\nBUY 1 FREE 1\nBUY 1 FREE 1\nBUY 1 FREE 1\nBUY 1 FREE 1\nBUY 1 FREE 1\n3 FOR RM11.11\n3 FOR RM11.11",

@@ -25,6 +25,8 @@
   @param {string} [anchor_id] - Optional id on the row so a link can jump to it.
   @param {string} [badge_text] - Optional badge on every card, e.g. "BUY 1 FREE 1".
   @param {string} [badge_texts] - Optional newline-separated badges aligned with products; a blank line falls back to badge_text.
+  @param {string} [message] - Optional promotion message under the heading, styled like a promo block's.
+  @param {string} [sub_label] - Optional label between the banner and the cards, e.g. "BUY 1 FREE 1".
   @param {string} [block_attributes] - Shopify editor attributes for the owning block.
 {%- enddoc -%}
 
@@ -82,6 +84,10 @@
         {%- endif -%}
       </div>
 
+      {%- if message != blank -%}
+        <p class="apgo-event-linked-banner-zone__message apgo-crate-zone__message">{{ message | escape }}</p>
+      {%- endif -%}
+
       {%- if banner_image != blank -%}
         <div class="apgo-crate-zone__banner">
           {{
@@ -95,6 +101,10 @@
               alt: ''
           }}
         </div>
+      {%- endif -%}
+
+      {%- if sub_label != blank -%}
+        <p class="apgo-crate-zone__sublabel"><span>{{ sub_label | escape }}</span></p>
       {%- endif -%}
 
       <div class="apgo-crate-zone__rail">

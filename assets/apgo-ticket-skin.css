@@ -276,18 +276,21 @@ body.apgo-ticket-page.apgo-clearance-sale-page .apgo-event-banner.apgo-event-ban
   transform-origin: left;
 }
 
-/* Product rows: the heading is a red tier tag, e.g. BUY 1 FREE 1. */
-.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone--row .apgo-crate-label__lot {
-  display: none;
-}
-
-.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone--row .apgo-crate-label__title {
+/* Product rows take the same stamp + title heading as the coupons; their
+   optional "Label under the banner" is a red tier tag, e.g. BUY 1 FREE 1. */
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__sublabel span {
+  display: inline-block;
   padding: 6px 14px;
   border-radius: 6px;
   background: var(--ticket-red);
   color: var(--ticket-white);
+  font-family: var(--crate-display) !important;
   font-size: 18px;
+  font-weight: 400;
   line-height: 1.1;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  transform: skewX(-8deg);
 }
 
 @media screen and (min-width: 990px) {
@@ -310,11 +313,10 @@ body.apgo-ticket-page.apgo-clearance-sale-page .apgo-event-banner.apgo-event-ban
     font-size: 40px;
   }
 
-  .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone--row .apgo-crate-label__title {
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__sublabel span {
     padding: 7px 18px;
     font-size: 22px;
   }
-
 }
 
 /* ── Big outlined "11.11" watermarks (design option D) ────────────────

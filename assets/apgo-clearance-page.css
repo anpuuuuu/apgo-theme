@@ -1313,6 +1313,19 @@ body.apgo-clearance-sale-page .apgo-crate-zone__head > .apgo-crate-label {
   min-width: 0;
 }
 
+/* Optional row message and "Label under the banner" (product_carousel
+   settings), laid in the page column like the head. */
+body.apgo-clearance-sale-page .apgo-crate-zone .apgo-crate-zone__message,
+body.apgo-clearance-sale-page .apgo-crate-zone .apgo-crate-zone__sublabel {
+  box-sizing: border-box;
+  width: var(--crate-width);
+  margin-inline: auto;
+}
+
+body.apgo-clearance-sale-page .apgo-crate-zone__sublabel {
+  margin-block: 0;
+}
+
 body.apgo-clearance-sale-page .apgo-crate-zone__view-all {
   display: inline-flex;
   flex: 0 0 auto;

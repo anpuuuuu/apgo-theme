@@ -277,6 +277,8 @@
                 anchor_id: block.settings.anchor_id,
                 badge_text: block.settings.badge_text,
                 badge_texts: block.settings.badge_texts,
+                message: block.settings.message,
+                sub_label: block.settings.sub_label,
                 block_attributes: block.shopify_attributes
               %}
             {%- elsif apgo_carousel_ready -%}
@@ -713,6 +715,18 @@
           "default": "both"
         },
         { "type": "text", "id": "heading", "label": "Heading", "default": "PROMOTION DEALS" },
+        {
+          "type": "text",
+          "id": "message",
+          "label": "Promotion message (optional)",
+          "info": "Clearance and 11.11 pages. Shown under the heading, like a promo banner's message."
+        },
+        {
+          "type": "text",
+          "id": "sub_label",
+          "label": "Label under the banner (optional)",
+          "info": "Clearance and 11.11 pages. A tag between the banner and the cards, e.g. BUY 1 FREE 1."
+        },
         {
           "type": "text",
           "id": "anchor_id",
