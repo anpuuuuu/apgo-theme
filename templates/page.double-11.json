@@ -256,6 +256,7 @@
         "eyebrow": "",
         "heading": "Miss it,",
         "heading_accent": "Wait another year!",
+        "alignment": "center",
         "text": "While stocks last.",
         "button_label": "Back to top deals",
         "button_link": "#deals",

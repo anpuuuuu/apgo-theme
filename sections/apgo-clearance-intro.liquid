@@ -48,7 +48,7 @@
   assign apgo_intro_timer = apgo_intro_timer | strip
 -%}
 
-<div class="apgo-crate-intro{% unless apgo_show_art %} apgo-crate-intro--no-art{% endunless %}{% if apgo_intro_timer != blank %} apgo-crate-intro--timer{% endif %}">
+<div class="apgo-crate-intro{% unless apgo_show_art %} apgo-crate-intro--no-art{% endunless %}{% if apgo_intro_timer != blank %} apgo-crate-intro--timer{% endif %}{% if section.settings.alignment == 'center' %} apgo-crate-intro--center{% endif %}">
   <div class="apgo-crate-container apgo-crate-intro__grid">
     <div class="apgo-crate-intro__copy">
       {%- if section.settings.eyebrow != blank -%}
@@ -232,6 +232,17 @@
       "id": "heading_accent",
       "label": "Heading, orange part",
       "default": "must go"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Centre" }
+      ],
+      "default": "left",
+      "info": "11.11 page only, e.g. centre the closing line at the bottom."
     },
     {
       "type": "textarea",

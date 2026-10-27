@@ -1013,6 +1013,24 @@ body.apgo-ticket-page.apgo-clearance-sale-page .apgo-event-banner.apgo-event-ban
   outline-color: var(--ticket-red);
 }
 
+/* Centred intro (setting "Alignment"), e.g. the closing line. */
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-intro--center .apgo-crate-intro__copy {
+  align-items: center;
+  text-align: center;
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-intro--center .apgo-crate-intro__title {
+  transform-origin: center;
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-intro--center .apgo-crate-intro__text {
+  margin-inline: auto;
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-intro--center .apgo-crate-intro__tags {
+  justify-content: center;
+}
+
 /* Tags become red outlined chips. */
 .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-intro__tags {
   display: flex;
