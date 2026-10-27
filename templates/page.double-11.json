@@ -20,6 +20,7 @@
       "type": "apgo-event-banner",
       "name": "APGO Event Banner",
       "settings": {
+        "image": "shopify://shop_images/apgo-1111-shopping-festival.jpg",
         "image_alt": "APGO 11.11 Shopping Festival: buy 1 free 1, buy 1 free 2, 80% off, free shipping",
         "link": "#deals",
         "image_alt_sg": "",
@@ -102,6 +103,7 @@
             "heading": "Boss Exclusive Bundle",
             "message": "Atomic Coloured Glaze ×3 + Star Edge Coating ×2, with a full care set. Free shipping.",
             "anchor_id": "car-care",
+            "banner": "shopify://shop_images/apgo-1111-boss-exclusive.jpg",
             "variant_id": "",
             "variant_id_sg": "",
             "cta_mode": "add_buy",
@@ -124,6 +126,7 @@
             "heading": "Atomic Aurora Bundle",
             "message": "Buy 1 Atomic Aurora Coating, get 2 refill packs free. Free shipping.",
             "anchor_id": "",
+            "banner": "shopify://shop_images/apgo-1111-aurora-bundle.jpg",
             "variant_id": "",
             "variant_id_sg": "",
             "cta_mode": "add_buy",
@@ -146,6 +149,7 @@
             "heading": "Buy 1 Free 1",
             "anchor_id": "mega-deals",
             "badge_text": "BUY 1 FREE 1",
+            "banner": "shopify://shop_images/apgo-1111-mega-deals.jpg",
             "products": [
               "apgo-car-interior-eco-friendly-cleaner",
               "apgo-car-interior-eco-friendly-coating",
