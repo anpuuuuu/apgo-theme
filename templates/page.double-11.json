@@ -76,7 +76,7 @@
       "settings": {
         "eyebrow": "APGO · 11.11",
         "heading": "11.11",
-        "heading_accent": "Shopping Festival",
+        "heading_accent": "Shopping|Festival",
         "text": "Beyond your imagination. Car care and household deals, all on one page.",
         "button_label": "",
         "button_link": "",
@@ -255,7 +255,7 @@
       "settings": {
         "eyebrow": "",
         "heading": "Miss it,",
-        "heading_accent": "Wait another year!",
+        "heading_accent": "|Wait another year!",
         "alignment": "center",
         "text": "While stocks last.",
         "button_label": "Back to top deals",

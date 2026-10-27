@@ -56,8 +56,8 @@
       {%- endif -%}
       {%- if apgo_intro_heading != blank or apgo_intro_accent != blank -%}
         <h1 class="apgo-crate-intro__title">
-          {{- apgo_intro_heading | escape -}}
-          {%- if apgo_intro_accent != blank %} <span>{{ apgo_intro_accent | escape }}</span>{%- endif -%}
+          {{- apgo_intro_heading | escape | replace: '|', '<br>' -}}
+          {%- if apgo_intro_accent != blank %} <span>{{ apgo_intro_accent | escape | replace: '|', '<br>' }}</span>{%- endif -%}
         </h1>
       {%- endif -%}
       {%- if section.settings.text != blank -%}
@@ -231,7 +231,8 @@
       "type": "text",
       "id": "heading_accent",
       "label": "Heading, orange part",
-      "default": "must go"
+      "default": "must go",
+      "info": "Type | for a line break, in either part. On the 11.11 page the two parts share a line unless you break it, e.g. 11.11 + Shopping|Festival."
     },
     {
       "type": "select",

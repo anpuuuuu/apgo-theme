@@ -62,9 +62,12 @@ body.apgo-ticket-page.apgo-clearance-sale-page {
   }
 }
 
-/* Plain paper ground: no warehouse dot grid or shelf lines. */
+/* Paper ground with a few faint red sparkles (no warehouse dot grid or
+   shelf lines). The big outlined "11.11" watermarks are further down. */
 .apgo-ticket-page.apgo-clearance-sale-page #MainContent {
-  background-image: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='560' viewBox='0 0 420 560'%3E%3Cg fill='%23d9001b' fill-opacity='.16'%3E%3Cpath d='M60 70l3 9 9 3-9 3-3 9-3-9-9-3 9-3z'/%3E%3Cpath d='M352 160l2 6 6 2-6 2-2 6-2-6-6-2 6-2z'/%3E%3Cpath d='M214 318l3.5 10.5 10.5 3.5-10.5 3.5-3.5 10.5-3.5-10.5-10.5-3.5 10.5-3.5z'/%3E%3Cpath d='M390 460l2 6 6 2-6 2-2 6-2-6-6-2 6-2z'/%3E%3Cpath d='M34 430l2.5 7.5 7.5 2.5-7.5 2.5-2.5 7.5-2.5-7.5-7.5-2.5 7.5-2.5z'/%3E%3C/g%3E%3C/svg%3E");
+  background-position: 0 0;
+  background-size: 420px 560px;
 }
 
 /* Links on the page (hero halves, buttons) land below the sticky header. */
@@ -312,9 +315,75 @@ body.apgo-ticket-page.apgo-clearance-sale-page .apgo-event-banner.apgo-event-ban
     font-size: 22px;
   }
 
-  /* No big outlined lot number behind the headings. */
-  .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone[data-lot]::before {
-    content: none;
+}
+
+/* ── Big outlined "11.11" watermarks (design option D) ────────────────
+   One behind each headed deal block, alternating left and right, one at
+   the right of the intro and one centred behind the closing line. Very
+   faint red outline only, so cards and text stay on plain paper. The
+   text is the campaign's: change both content lines for another event. */
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone[data-lot]::before,
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-intro::before {
+  content: '11.11';
+  content: '11.11' / '';
+  position: absolute;
+  top: -28px;
+  right: auto;
+  left: -7%;
+  z-index: 0;
+  color: transparent;
+  font-family: var(--crate-display) !important;
+  font-size: clamp(170px, 52vw, 340px);
+  font-weight: 400;
+  line-height: 1;
+  white-space: nowrap;
+  -webkit-text-stroke: 2px rgba(217, 0, 27, 0.1);
+  transform: skewX(-8deg);
+  pointer-events: none;
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone[data-lot]:nth-child(even)::before,
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-intro::before {
+  right: -7%;
+  left: auto;
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-intro--center::before {
+  top: 50%;
+  right: auto;
+  left: 50%;
+  transform: translate(-50%, -50%) skewX(-8deg);
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-intro {
+  position: relative;
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-intro > * {
+  position: relative;
+  z-index: 1;
+}
+
+@media screen and (min-width: 990px) {
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone[data-lot]::before,
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-intro::before {
+    top: -60px;
+    left: 2%;
+    color: transparent;
+    font-size: clamp(260px, 24vw, 380px);
+    -webkit-text-stroke: 2.5px rgba(217, 0, 27, 0.09);
+  }
+
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone[data-lot]:nth-child(even)::before,
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-intro::before {
+    right: 2%;
+    left: auto;
+  }
+
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-intro--center::before {
+    top: 50%;
+    right: auto;
+    left: 50%;
   }
 }
 
@@ -989,7 +1058,10 @@ body.apgo-ticket-page.apgo-clearance-sale-page .apgo-event-banner.apgo-event-ban
   transform-origin: left;
 }
 
+/* The two parts share a line (11.11 SHOPPING / FESTIVAL); a | in either
+   setting breaks the line where wanted. */
 .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-intro__title span {
+  display: inline;
   color: var(--ticket-ink);
 }
 
