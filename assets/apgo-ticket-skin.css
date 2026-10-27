@@ -524,6 +524,22 @@ body.apgo-ticket-page.apgo-clearance-sale-page .apgo-event-banner.apgo-event-ban
   border-radius: 10px;
 }
 
+/* Phones: the row's banner runs edge to edge, no frame, so it isn't tiny. */
+@media screen and (max-width: 749px) {
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__banner {
+    width: 100%;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+  }
+
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__banner-img {
+    border-radius: 0;
+  }
+}
+
 /* Phones too: the row sits inside the page margins (white space at both
    edges) and shows two and a half cards. */
 .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__rail {
