@@ -122,8 +122,10 @@ body.apgo-ticket-page.apgo-clearance-sale-page {
   }
 }
 
-/* ── Hero: red band, white frame, receipt zigzag (frame_style "ticket") ── */
-.apgo-ticket-page.apgo-clearance-sale-page .apgo-event-banner--ticket {
+/* ── Hero: red band, white frame, receipt zigzag (frame_style "ticket") ──
+   The band's selector names body and both banner classes: base.css clears
+   the background of any colour-schemed .section with a (0,4,0) selector. */
+body.apgo-ticket-page.apgo-clearance-sale-page .apgo-event-banner.apgo-event-banner--ticket {
   position: relative;
   padding: 14px 0 28px;
   /* Red down to the zigzag; the zigzag strip below shows the paper through its teeth. */
@@ -141,6 +143,16 @@ body.apgo-ticket-page.apgo-clearance-sale-page {
     linear-gradient(135deg, var(--ticket-red) 25%, transparent 25%) 0 0 / 24px 24px repeat-x,
     linear-gradient(225deg, var(--ticket-red) 25%, transparent 25%) 0 0 / 24px 24px repeat-x;
   pointer-events: none;
+}
+
+/* No picture set yet: no empty red band either. */
+body.apgo-ticket-page.apgo-clearance-sale-page .apgo-event-banner.apgo-event-banner--ticket:not(:has(.apgo-event-banner__frame)) {
+  padding: 0;
+  background: none;
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-event-banner--ticket:not(:has(.apgo-event-banner__frame))::after {
+  content: none;
 }
 
 .apgo-ticket-page.apgo-clearance-sale-page .apgo-event-banner--ticket .apgo-event-banner__frame {
@@ -185,7 +197,7 @@ body.apgo-ticket-page.apgo-clearance-sale-page {
 }
 
 @media screen and (min-width: 750px) {
-  .apgo-ticket-page.apgo-clearance-sale-page .apgo-event-banner--ticket {
+  body.apgo-ticket-page.apgo-clearance-sale-page .apgo-event-banner.apgo-event-banner--ticket {
     padding: 36px 0 48px;
     background-size: 100% calc(100% - 14px);
   }
