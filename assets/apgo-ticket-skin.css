@@ -132,16 +132,17 @@ body.apgo-ticket-page.apgo-clearance-sale-page .apgo-event-banner.apgo-event-ban
   background: linear-gradient(var(--ticket-red), var(--ticket-red)) top / 100% calc(100% - 12px) no-repeat;
 }
 
+/* Zigzag: one SVG tooth per tile, with a 1px red strip on top that
+   overlaps the band, so phones (fractional pixel ratios) show no hairline
+   between the band and the teeth or between two teeth. */
 .apgo-ticket-page.apgo-clearance-sale-page .apgo-event-banner--ticket::after {
   content: '';
   position: absolute;
   right: 0;
   bottom: 0;
   left: 0;
-  height: 12px;
-  background:
-    linear-gradient(135deg, var(--ticket-red) 25%, transparent 25%) 0 0 / 24px 24px repeat-x,
-    linear-gradient(225deg, var(--ticket-red) 25%, transparent 25%) 0 0 / 24px 24px repeat-x;
+  height: 13px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 13' preserveAspectRatio='none'%3E%3Cpath d='M0 0H24V1L12 13L0 1Z' fill='%23d9001b'/%3E%3C/svg%3E") 0 0 / 24px 13px repeat-x;
   pointer-events: none;
 }
 
@@ -203,8 +204,8 @@ body.apgo-ticket-page.apgo-clearance-sale-page .apgo-event-banner.apgo-event-ban
   }
 
   .apgo-ticket-page.apgo-clearance-sale-page .apgo-event-banner--ticket::after {
-    height: 14px;
-    background-size: 28px 28px, 28px 28px;
+    height: 15px;
+    background-size: 28px 15px;
   }
 
   .apgo-ticket-page.apgo-clearance-sale-page .apgo-event-banner--ticket .apgo-event-banner__frame {
@@ -524,19 +525,20 @@ body.apgo-ticket-page.apgo-clearance-sale-page .apgo-event-banner.apgo-event-ban
   border-radius: 10px;
 }
 
-/* Phones: the row's banner runs edge to edge, no frame, so it isn't tiny. */
+/* Phones: the row banner's white frame runs edge to edge, so the picture
+   is as wide as it can be. */
 @media screen and (max-width: 749px) {
   .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__banner {
     width: 100%;
-    padding: 0;
+    padding: 6px;
     border: 0;
+    border-block: 1px solid var(--ticket-line);
     border-radius: 0;
-    background: none;
     box-shadow: none;
   }
 
   .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__banner-img {
-    border-radius: 0;
+    border-radius: 8px;
   }
 }
 
