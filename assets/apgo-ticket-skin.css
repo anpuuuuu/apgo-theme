@@ -524,26 +524,141 @@ body.apgo-ticket-page.apgo-clearance-sale-page .apgo-event-banner.apgo-event-ban
   border-radius: 10px;
 }
 
+/* Phones too: the row sits inside the page margins (white space at both
+   edges) and shows two and a half cards. */
 .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__rail {
   --crate-track-top: 4px;
+  --crate-slot: calc((100% - 2 * 10px) / 2.5);
+  width: var(--crate-width);
+  margin-inline: auto;
 }
 
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__track {
+  gap: 10px;
+  padding-inline: 0;
+  scroll-padding-inline: 0;
+}
+
+/* Arrows level with the middle of the cards. Phones get small, see-through
+   ones that sit on the cards' edge; tablet and up the full-size ones. */
 .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__arrow {
-  width: 40px;
-  height: 40px;
-  border: 1.5px solid var(--ticket-line);
+  top: 50%;
+  display: grid;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--ticket-line);
   border-radius: 50%;
-  background: var(--ticket-white);
-  box-shadow: 0 4px 12px rgba(163, 0, 20, 0.12);
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 2px 8px rgba(163, 0, 20, 0.12);
   color: var(--ticket-red);
+  transform: translateY(-50%);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__arrow svg {
+  width: 16px;
+  height: 16px;
 }
 
 .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__arrow--previous {
-  left: -20px;
+  left: -8px;
 }
 
 .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__arrow--next {
-  right: -20px;
+  right: -8px;
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__arrow[hidden] {
+  display: none;
+}
+
+/* Scroll bar under the row: a thin line with a red thumb, inside a taller
+   strip that is easy to grab with a thumb. */
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__scrollbar {
+  position: relative;
+  box-sizing: border-box;
+  width: var(--crate-width);
+  height: 20px;
+  margin: -8px auto 0;
+  cursor: pointer;
+  touch-action: none;
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__scrollbar[hidden] {
+  display: none;
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__scrollbar::before,
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__scrollbar-thumb::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 0;
+  left: 0;
+  height: 4px;
+  margin-top: -2px;
+  border-radius: 2px;
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__scrollbar::before {
+  background: var(--ticket-line);
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__scrollbar-thumb {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 40%;
+  cursor: grab;
+  touch-action: none;
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__scrollbar-thumb::before {
+  background: var(--ticket-red);
+  transition: height 0.15s ease, margin-top 0.15s ease;
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__scrollbar:hover .apgo-crate-zone__scrollbar-thumb::before,
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__scrollbar.is-dragging .apgo-crate-zone__scrollbar-thumb::before {
+  height: 6px;
+  margin-top: -3px;
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__scrollbar.is-dragging .apgo-crate-zone__scrollbar-thumb {
+  cursor: grabbing;
+}
+
+@media screen and (min-width: 750px) {
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__rail {
+    --crate-slot: calc((100% - 2 * 16px) / 3.3);
+  }
+
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__track {
+    gap: 16px;
+  }
+
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__arrow {
+    width: 40px;
+    height: 40px;
+    border-width: 1.5px;
+    background: var(--ticket-white);
+    box-shadow: 0 4px 12px rgba(163, 0, 20, 0.12);
+  }
+
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__arrow svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__arrow--previous {
+    left: -20px;
+  }
+
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__arrow--next {
+    right: -20px;
+  }
 }
 
 .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__arrow:hover:not(:disabled) {
@@ -559,6 +674,11 @@ body.apgo-ticket-page.apgo-clearance-sale-page .apgo-event-banner.apgo-event-ban
 @media screen and (min-width: 990px) {
   .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__rail {
     --crate-track-top: 6px;
+    --crate-slot: calc((100% - 4 * 18px) / 4.5);
+  }
+
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__track {
+    gap: 18px;
   }
 }
 
