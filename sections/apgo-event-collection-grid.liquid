@@ -276,6 +276,7 @@
                 skin: apgo_skin,
                 anchor_id: block.settings.anchor_id,
                 badge_text: block.settings.badge_text,
+                badge_texts: block.settings.badge_texts,
                 block_attributes: block.shopify_attributes
               %}
             {%- elsif apgo_carousel_ready -%}
@@ -723,6 +724,12 @@
           "id": "badge_text",
           "label": "Badge on every card (optional)",
           "info": "Clearance and 11.11 pages, e.g. BUY 1 FREE 1. Replaces the automatic % off / Last batch badge; Sold out still shows."
+        },
+        {
+          "type": "textarea",
+          "id": "badge_texts",
+          "label": "Badge per card (optional)",
+          "info": "One line per product, in the same order as the product list, e.g. BUY 1 FREE 1 or 3 FOR RM11.11. A blank or missing line uses the badge above."
         },
         { "type": "image_picker", "id": "banner", "label": "Malaysia / default banner" },
         {

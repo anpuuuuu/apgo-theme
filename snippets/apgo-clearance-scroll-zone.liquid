@@ -24,11 +24,13 @@
   @param {string} [skin] - 'ticket' on the 11.11 page: plain heading (no shipping-label note or barcode).
   @param {string} [anchor_id] - Optional id on the row so a link can jump to it.
   @param {string} [badge_text] - Optional badge on every card, e.g. "BUY 1 FREE 1".
+  @param {string} [badge_texts] - Optional newline-separated badges aligned with products; a blank line falls back to badge_text.
   @param {string} [block_attributes] - Shopify editor attributes for the owning block.
 {%- enddoc -%}
 
 {%- liquid
   assign apgo_variant_ids = variant_ids | default: '' | newline_to_br | split: '<br />'
+  assign apgo_badges = badge_texts | default: '' | newline_to_br | split: '<br />'
   assign apgo_hide_compare = false
   if hide_compare_at == true
     assign apgo_hide_compare = true
@@ -112,6 +114,8 @@
           {%- if apgo_pm != blank and localization.country.iso_code != apgo_pm -%}{%- continue -%}{%- endif -%}
           {%- assign apgo_event_card_uid = section_id | append: '-' | append: zone_class | append: '-' | append: product.id -%}
           {%- assign apgo_product_variant_id = apgo_variant_ids[forloop.index0] | strip -%}
+          {%- assign apgo_card_badge = apgo_badges[forloop.index0] | strip -%}
+          {%- if apgo_card_badge == blank -%}{%- assign apgo_card_badge = badge_text -%}{%- endif -%}
           <div class="apgo-event-scroll-zone__card apgo-crate-zone__slot" role="listitem">
             {% render 'apgo-event-listing-card',
               product: product,
@@ -121,7 +125,7 @@
               card_position: forloop.index,
               hide_compare_at: apgo_hide_compare,
               crate: true,
-              badge_text: badge_text
+              badge_text: apgo_card_badge
             %}
           </div>
         {%- endfor -%}
