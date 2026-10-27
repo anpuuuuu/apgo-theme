@@ -23,10 +23,18 @@
   # Clearance page (page.clearance-sale): each headed block becomes a
   # numbered "LOT" with a shipping-label heading, rows and picks use the
   # clearance snippets, and assets/apgo-clearance-page.css styles it all.
+  # The 11.11 page (skin "ticket") uses the same markup with numbered
+  # stamps and coupon labels instead of the warehouse wording, restyled by
+  # assets/apgo-ticket-skin.css.
+  capture apgo_skin
+    render 'apgo-event-skin'
+  endcapture
+  assign apgo_skin = apgo_skin | strip
   assign apgo_crate = false
-  if template.suffix == 'clearance-sale'
+  if apgo_skin != blank
     assign apgo_crate = true
   endif
+  assign apgo_coupon_label = section.settings.coupon_label | strip | default: 'Coupon'
   assign apgo_lot_count = 0
   assign apgo_box_count = 0
 %}
@@ -186,6 +194,9 @@
               -%}
               {% render 'apgo-event-linked-banner-zone',
                 crate: apgo_crate,
+                skin: apgo_skin,
+                coupon_label: apgo_coupon_label,
+                anchor_id: block.settings.anchor_id,
                 lot: apgo_lot,
                 box: apgo_box,
                 heading: block.settings.heading,
@@ -262,6 +273,9 @@
                 campaign_id: apgo_campaign_id,
                 lot: apgo_lot,
                 view_all_link: block.settings.view_all_link,
+                skin: apgo_skin,
+                anchor_id: block.settings.anchor_id,
+                badge_text: block.settings.badge_text,
                 block_attributes: block.shopify_attributes
               %}
             {%- elsif apgo_carousel_ready -%}
@@ -298,6 +312,9 @@
                   assign apgo_lot_count = apgo_lot_count | plus: 1
                   assign apgo_lot = apgo_lot_count | prepend: '0' | slice: -2, 2
                   assign apgo_lot_code = 'LOT ' | append: apgo_lot
+                  if apgo_skin == 'ticket'
+                    assign apgo_lot_code = apgo_lot
+                  endif
                   assign apgo_lot_parity = apgo_lot_count | modulo: 2
                   if apgo_lot_parity == 0
                     assign apgo_tilt = 'tilt-right'
@@ -316,12 +333,20 @@
                 {{ block.shopify_attributes }}
               >
                 <div class="apgo-crate-container apgo-crate-zone__inner">
-                  {% render 'apgo-clearance-label',
-                    title: block.settings.heading,
-                    note: 'PACKED BY: THE BOSS',
-                    lot: apgo_lot_code,
-                    modifier: apgo_tilt
-                  %}
+                  {%- if apgo_skin == 'ticket' -%}
+                    {% render 'apgo-clearance-label',
+                      title: block.settings.heading,
+                      lot: apgo_lot_code,
+                      barcode: false
+                    %}
+                  {%- else -%}
+                    {% render 'apgo-clearance-label',
+                      title: block.settings.heading,
+                      note: 'PACKED BY: THE BOSS',
+                      lot: apgo_lot_code,
+                      modifier: apgo_tilt
+                    %}
+                  {%- endif -%}
                   <div class="apgo-crate-picks">
                     {% render 'apgo-clearance-pick-card',
                       product: block.settings.product_1,
@@ -408,6 +433,13 @@
       "id": "anchor_id",
       "label": "Section anchor ID",
       "info": "Optional target used by page links. Use letters, numbers, and hyphens."
+    },
+    {
+      "type": "text",
+      "id": "coupon_label",
+      "label": "Coupon label",
+      "default": "11.11 Coupon",
+      "info": "11.11 page only. Printed above each promo's product name as \"11.11 Coupon · Deal 01\"."
     },
     {
       "type": "header",
@@ -541,6 +573,12 @@
         },
         { "type": "text", "id": "heading", "label": "Heading" },
         { "type": "text", "id": "message", "label": "Promotion message" },
+        {
+          "type": "text",
+          "id": "anchor_id",
+          "label": "Anchor ID (optional)",
+          "info": "Lets a link jump here, e.g. car-care for #car-care. Letters, numbers and hyphens."
+        },
         { "type": "image_picker", "id": "banner", "label": "Malaysia / default banner" },
         { "type": "product", "id": "product", "label": "Malaysia / default product" },
         { "type": "text", "id": "variant_id", "label": "Malaysia / default variant ID (optional)" },
@@ -674,6 +712,18 @@
           "default": "both"
         },
         { "type": "text", "id": "heading", "label": "Heading", "default": "PROMOTION DEALS" },
+        {
+          "type": "text",
+          "id": "anchor_id",
+          "label": "Anchor ID (optional)",
+          "info": "Clearance and 11.11 pages. Lets a link jump here, e.g. household for #household."
+        },
+        {
+          "type": "text",
+          "id": "badge_text",
+          "label": "Badge on every card (optional)",
+          "info": "Clearance and 11.11 pages, e.g. BUY 1 FREE 1. Replaces the automatic % off / Last batch badge; Sold out still shows."
+        },
         { "type": "image_picker", "id": "banner", "label": "Malaysia / default banner" },
         {
           "type": "image_picker",

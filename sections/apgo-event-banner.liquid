@@ -11,6 +11,11 @@
   get the "新加坡版" picture (and its alt text and link) when one is set,
   else the same one as Malaysia. Each 輪播圖 can also have a Singapore
   picture and be shown to both markets, Malaysia only or Singapore only.
+
+  Left / right links (2026-10, the 11.11 page): with both "左半邊連結" and
+  "右半邊連結" set, a single banner's left and right halves link to
+  different places (e.g. #car-care and #household on the same page), and
+  "顯示兩個按鈕" adds the same two links as buttons under it.
 {% endcomment %}
 
 {{ 'apgo-event-page.css' | asset_url | stylesheet_tag }}
@@ -73,6 +78,11 @@
     assign apgo_eager = true
   endif
 
+  capture apgo_skin
+    render 'apgo-event-skin'
+  endcapture
+  assign apgo_skin = apgo_skin | strip
+
   assign apgo_promo_base = blank
   assign apgo_promo_name = blank
   if template.suffix == 'golden-bull-award'
@@ -81,6 +91,17 @@
   elsif template.suffix == 'clearance-sale'
     assign apgo_promo_base = 'clearance_sale_hero'
     assign apgo_promo_name = 'Factory Expansion Clearance hero'
+  elsif apgo_skin == 'ticket'
+    assign apgo_promo_base = template.suffix | handleize | replace: '-', '_' | append: '_hero'
+    assign apgo_promo_name = page.title | append: ' hero'
+  endif
+
+  # Left / right links: only for a single banner (not the carousel).
+  assign apgo_split_left = section.settings.split_left_link
+  assign apgo_split_right = section.settings.split_right_link
+  assign apgo_split = false
+  if apgo_split_left != blank and apgo_split_right != blank and apgo_slide_count <= 1
+    assign apgo_split = true
   endif
 -%}
 <section
@@ -196,19 +217,15 @@
     </div>
     <script src="{{ 'apgo-event-banner-carousel.js' | asset_url }}" defer></script>
   {% elsif apgo_main_image != blank %}
-    <div class="apgo-event-banner__frame">
-      {% if apgo_main_link != blank %}
+    <div class="apgo-event-banner__frame{% if apgo_split %} apgo-event-banner__frame--split{% endif %}">
+      {% if apgo_main_link != blank and apgo_split == false %}
         <a
           href="{{ apgo_main_link }}"
           class="apgo-event-banner__link"
-          {% if template.suffix == 'golden-bull-award' %}
+          {% if apgo_promo_base != blank %}
             data-apgo-campaign-promotion-link
-            data-promotion-id="golden_bull_hero"
-            data-promotion-name="Golden Bull Award hero"
-          {% elsif template.suffix == 'clearance-sale' %}
-            data-apgo-campaign-promotion-link
-            data-promotion-id="clearance_sale_hero"
-            data-promotion-name="Factory Expansion Clearance hero"
+            data-promotion-id="{{ apgo_promo_base }}"
+            data-promotion-name="{{ apgo_promo_name | escape }}"
           {% endif %}
         >
       {% endif %}
@@ -227,15 +244,85 @@
         height="{{ apgo_main_image.height }}"
         {% if apgo_eager %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}
       >
-      {% if apgo_main_link != blank %}
+      {% if apgo_main_link != blank and apgo_split == false %}
         </a>
       {% endif %}
+      {%- if apgo_split -%}
+        {%- comment -%} Two see-through links over the picture, one per half. {%- endcomment -%}
+        {%- for apgo_side in (1..2) -%}
+          {%- liquid
+            if forloop.first
+              assign apgo_side_key = 'left'
+              assign apgo_side_link = apgo_split_left
+              assign apgo_side_label = section.settings.split_left_label
+            else
+              assign apgo_side_key = 'right'
+              assign apgo_side_link = apgo_split_right
+              assign apgo_side_label = section.settings.split_right_label
+            endif
+          -%}
+          <a
+            href="{{ apgo_side_link }}"
+            class="apgo-event-banner__hotspot apgo-event-banner__hotspot--{{ apgo_side_key }}"
+            aria-label="{{ apgo_side_label | default: apgo_main_alt | escape }}"
+            {% if apgo_promo_base != blank %}
+              data-apgo-campaign-promotion-link
+              data-promotion-id="{{ apgo_promo_base }}_{{ apgo_side_key }}"
+              data-promotion-name="{{ apgo_promo_name | escape }} ({{ apgo_side_key }})"
+            {% endif %}
+          ></a>
+        {%- endfor -%}
+      {%- endif -%}
       {%- if apgo_banner_frame == 'crate' -%}
         <span class="apgo-crate-guards apgo-crate-guards--bottom" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
       {%- elsif apgo_banner_frame == 'crate_simple' -%}
         <span class="apgo-crate-guards" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
       {%- endif -%}
     </div>
+    {%- if apgo_split and section.settings.show_split_buttons -%}
+      <div class="apgo-event-banner__jumps">
+        {%- for apgo_side in (1..2) -%}
+          {%- liquid
+            if forloop.first
+              assign apgo_side_key = 'left'
+              assign apgo_side_link = apgo_split_left
+              assign apgo_side_label = section.settings.split_left_label
+              assign apgo_side_icon = section.settings.split_left_icon
+            else
+              assign apgo_side_key = 'right'
+              assign apgo_side_link = apgo_split_right
+              assign apgo_side_label = section.settings.split_right_label
+              assign apgo_side_icon = section.settings.split_right_icon
+            endif
+          -%}
+          <a
+            href="{{ apgo_side_link }}"
+            class="apgo-event-banner__jump apgo-event-banner__jump--{{ apgo_side_key }}"
+            {% if apgo_promo_base != blank %}
+              data-apgo-campaign-promotion-link
+              data-promotion-id="{{ apgo_promo_base }}_{{ apgo_side_key }}_button"
+              data-promotion-name="{{ apgo_promo_name | escape }} ({{ apgo_side_key }} button)"
+            {% endif %}
+          >
+            {%- case apgo_side_icon -%}
+              {%- when 'car' -%}
+                <svg class="apgo-event-banner__jump-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 16V12l2-5h10l2 5v4z"/><circle cx="8" cy="16.5" r="1.6"/><circle cx="16" cy="16.5" r="1.6"/><path d="M5 12h14"/></svg>
+              {%- when 'home' -%}
+                <svg class="apgo-event-banner__jump-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 11l8-6 8 6"/><path d="M6 10v9h12v-9"/><path d="M10 19v-5h4v5"/></svg>
+            {%- endcase -%}
+            <span class="apgo-event-banner__jump-text">
+              {%- if section.settings.split_button_kicker != blank -%}
+                <span class="apgo-event-banner__jump-kicker">{{ section.settings.split_button_kicker | escape }}</span>
+              {%- endif -%}
+              <span class="apgo-event-banner__jump-label">{{ apgo_side_label | escape }}</span>
+            </span>
+            <span class="apgo-event-banner__jump-arrow" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M9 6l6 6-6 6"/></svg>
+            </span>
+          </a>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
   {% elsif request.design_mode %}
     <div class="apgo-event-banner__frame">
       <div class="apgo-event-banner__placeholder">
@@ -245,6 +332,126 @@
     </div>
   {% endif %}
 </section>
+
+{% stylesheet %}
+  /* Left / right links over a single banner, and the optional two buttons
+     under it. Page skins (e.g. apgo-ticket-skin.css) restyle the buttons. */
+  .apgo-event-banner__frame--split {
+    position: relative;
+  }
+
+  .apgo-event-banner__hotspot {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    z-index: 2;
+    width: 50%;
+  }
+
+  .apgo-event-banner__hotspot--left {
+    left: 0;
+  }
+
+  .apgo-event-banner__hotspot--right {
+    right: 0;
+  }
+
+  .apgo-event-banner__hotspot:focus-visible {
+    outline: 3px solid currentColor;
+    outline-offset: -3px;
+  }
+
+  .apgo-event-banner__jumps {
+    display: flex;
+    gap: 8px;
+    box-sizing: border-box;
+    width: 100%;
+    margin-inline: auto;
+    padding: 12px 16px;
+  }
+
+  .apgo-event-banner__jump {
+    display: flex;
+    flex: 1 1 0;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    min-height: 48px;
+    padding: 0 8px 0 12px;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #1c1b1f;
+    text-decoration: none;
+  }
+
+  .apgo-event-banner__jump-icon {
+    flex: 0 0 auto;
+  }
+
+  .apgo-event-banner__jump-text {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+    line-height: 1.15;
+  }
+
+  .apgo-event-banner__jump-kicker {
+    font-size: 9px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    opacity: 0.75;
+  }
+
+  .apgo-event-banner__jump-label {
+    overflow: hidden;
+    font-size: 13px;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .apgo-event-banner__jump-arrow {
+    display: grid;
+    flex: 0 0 auto;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  .apgo-event-banner__jump-arrow svg {
+    color: #ffffff;
+  }
+
+  @media screen and (min-width: 750px) {
+    .apgo-event-banner__jumps {
+      gap: 16px;
+      width: var(--apgo-event-banner-desktop-width, 67%);
+      padding-inline: 0;
+    }
+
+    .apgo-event-banner__jump {
+      gap: 12px;
+      min-height: 62px;
+      padding: 0 10px 0 20px;
+    }
+
+    .apgo-event-banner__jump-kicker {
+      font-size: 11px;
+    }
+
+    .apgo-event-banner__jump-label {
+      font-size: 17px;
+    }
+
+    .apgo-event-banner__jump-arrow {
+      width: 38px;
+      height: 38px;
+    }
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
@@ -310,10 +517,74 @@
       "options": [
         { "value": "none", "label": "無" },
         { "value": "crate", "label": "紙箱＋封箱膠帶（清倉頁）" },
-        { "value": "crate_simple", "label": "紙箱邊框（清倉頁）" }
+        { "value": "crate_simple", "label": "紙箱邊框（清倉頁）" },
+        { "value": "ticket", "label": "紅色底帶＋鋸齒邊（11.11 頁）" }
       ],
       "default": "none",
-      "info": "紙箱外框只在清倉頁（clearance-sale 模板）有樣式；清倉頁的寬度固定跟內容對齊。"
+      "info": "紙箱外框只在清倉頁（clearance-sale 模板）有樣式，紅色底帶只在 11.11 頁（double-11 模板）有樣式；這兩頁的寬度固定跟內容對齊。"
+    },
+    {
+      "type": "header",
+      "content": "左右分區連結（選填）",
+      "info": "兩個連結都填了，Banner 左半邊和右半邊會分別連到不同地方，例如 #car-care 和 #household（下方區塊的錨點 ID），上面的「點擊連結」就不用了。只對單張 Banner 有效，輪播時不用。"
+    },
+    {
+      "type": "url",
+      "id": "split_left_link",
+      "label": "左半邊連結"
+    },
+    {
+      "type": "text",
+      "id": "split_left_label",
+      "label": "左半邊名稱",
+      "default": "Car Care Deals",
+      "info": "按鈕上的字，也給螢幕閱讀器念。"
+    },
+    {
+      "type": "select",
+      "id": "split_left_icon",
+      "label": "左邊按鈕圖示",
+      "options": [
+        { "value": "none", "label": "無" },
+        { "value": "car", "label": "汽車" },
+        { "value": "home", "label": "房子" }
+      ],
+      "default": "car"
+    },
+    {
+      "type": "url",
+      "id": "split_right_link",
+      "label": "右半邊連結"
+    },
+    {
+      "type": "text",
+      "id": "split_right_label",
+      "label": "右半邊名稱",
+      "default": "Household Deals"
+    },
+    {
+      "type": "select",
+      "id": "split_right_icon",
+      "label": "右邊按鈕圖示",
+      "options": [
+        { "value": "none", "label": "無" },
+        { "value": "car", "label": "汽車" },
+        { "value": "home", "label": "房子" }
+      ],
+      "default": "home"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_split_buttons",
+      "label": "在 Banner 下面顯示兩個按鈕",
+      "default": false,
+      "info": "按鈕連到跟左右半邊一樣的地方。"
+    },
+    {
+      "type": "text",
+      "id": "split_button_kicker",
+      "label": "按鈕上的小字",
+      "default": "Shop"
     },
     {
       "type": "color_scheme",

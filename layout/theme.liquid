@@ -68,10 +68,23 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  {%- comment -%} Clearance-sale campaign page only: its display + label faces and its own stylesheet. {%- endcomment -%}
-  {%- if template.name == 'page' and template.suffix == 'clearance-sale' -%}
-    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+  {%- comment -%}
+    Campaign pages built on the clearance page (snippets/apgo-event-skin):
+    the clearance stylesheet and display faces, plus the 11.11 "ticket"
+    skin on top of it, which needs Anton only.
+  {%- endcomment -%}
+  {%- capture apgo_skin -%}{%- render 'apgo-event-skin' -%}{%- endcapture -%}
+  {%- assign apgo_skin = apgo_skin | strip -%}
+  {%- if apgo_skin != blank -%}
+    {%- if apgo_skin == 'ticket' -%}
+      <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+    {%- else -%}
+      <link href="https://fonts.googleapis.com/css2?family=Anton&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    {%- endif -%}
     {{ 'apgo-clearance-page.css' | asset_url | stylesheet_tag }}
+    {%- if apgo_skin == 'ticket' -%}
+      {{ 'apgo-ticket-skin.css' | asset_url | stylesheet_tag }}
+    {%- endif -%}
     <script src="{{ 'apgo-clearance-page.js' | asset_url }}" defer></script>
   {%- endif %}
   <style>
@@ -342,9 +355,13 @@
       assign apgo_body_page_class = ' apgo-special-event-page'
     elsif template.name == 'page' and template.suffix == 'golden-bull-award'
       assign apgo_body_page_class = ' apgo-special-event-page apgo-golden-bull-page'
-    elsif template.name == 'page' and template.suffix == 'clearance-sale'
+    elsif apgo_skin == 'crate'
       # Styled only by apgo-clearance-page.css; deliberately none of the event-page classes above
       assign apgo_body_page_class = ' apgo-clearance-sale-page'
+    elsif apgo_skin == 'ticket'
+      # The 11.11 page keeps the clearance class (its layout, apgo-event-cart.js)
+      # and adds apgo-ticket-page, which apgo-ticket-skin.css restyles.
+      assign apgo_body_page_class = ' apgo-clearance-sale-page apgo-ticket-page'
     endif
 
     # Carbon-weave page ground (assets/apgo-site-texture.css): All Products only.
@@ -539,7 +556,7 @@
       or template.name == 'index'
       or template.suffix == 'special-event'
       or template.suffix == 'golden-bull-award'
-      or template.suffix == 'clearance-sale'
+      or apgo_skin != blank
     %}
       {% render 'apgo-collection-variant-drawer' %}
     {% endif %}

@@ -22,6 +22,10 @@
                              page container, no Aurora stock counter.
   @param {string} [lot] - Clearance page only: two-digit lot number, blank when there is no heading.
   @param {string} [box] - Clearance page only: two-digit box number printed on the tape across the top.
+  @param {string} [skin] - 'ticket' on the 11.11 page (with crate): a numbered stamp instead of the
+                           shipping label wording, and a coupon line instead of the box tape.
+  @param {string} [coupon_label] - Ticket skin: words before the deal number, e.g. "11.11 Coupon".
+  @param {string} [anchor_id] - Optional id on the zone so a link can jump to it.
 {% enddoc %}
 
 {% if banner_image != blank and product != blank %}
@@ -107,6 +111,9 @@
       assign apgo_tilt = 'tilt-left'
       if lot != blank
         assign apgo_lot_code = 'LOT ' | append: lot
+        if skin == 'ticket'
+          assign apgo_lot_code = lot
+        endif
         assign apgo_lot_parity = lot | plus: 0 | modulo: 2
         if apgo_lot_parity == 0
           assign apgo_tilt = 'tilt-right'
@@ -115,6 +122,7 @@
     endif
   %}
   <section
+    {% if anchor_id != blank %}id="{{ anchor_id | handleize }}"{% endif %}
     class="apgo-event-linked-banner-zone apgo-event-linked-banner-zone--{{ zone_class }}{% if crate %} apgo-crate-zone apgo-crate-zone--offer{% endif %}"
     {% if gift_modal_id != blank %}data-apgo-event-gift-modal-id="{{ gift_modal_id | escape }}"{% endif %}
     data-apgo-campaign-section
@@ -130,12 +138,16 @@
   >
     {% if crate %}
       <div class="apgo-crate-container apgo-crate-zone__inner">
-      {% render 'apgo-clearance-label',
-        title: heading,
-        note: 'FROM: OLD FACTORY → TO: YOUR GARAGE',
-        lot: apgo_lot_code,
-        modifier: apgo_tilt
-      %}
+      {%- if skin == 'ticket' -%}
+        {% render 'apgo-clearance-label', title: heading, lot: apgo_lot_code, barcode: false %}
+      {%- else -%}
+        {% render 'apgo-clearance-label',
+          title: heading,
+          note: 'FROM: OLD FACTORY → TO: YOUR GARAGE',
+          lot: apgo_lot_code,
+          modifier: apgo_tilt
+        %}
+      {%- endif -%}
     {% elsif heading != blank %}
       <h3 class="apgo-event-scroll-zone__heading">
         <span class="apgo-event-scroll-zone__heading-star" aria-hidden="true">★</span>
@@ -179,10 +191,12 @@
       </a>
       {%- if crate -%}
         {%- comment -%} Clearance page: cardboard corner guards, and the tape across the top printed with the box number. {%- endcomment -%}
-        <span class="apgo-crate-guards" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
-        <span class="apgo-crate-boxtape" aria-hidden="true">
-          <span>Clearance · Box {{ box | default: '01' }}</span>
-        </span>
+        {%- unless skin == 'ticket' -%}
+          <span class="apgo-crate-guards" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+          <span class="apgo-crate-boxtape" aria-hidden="true">
+            <span>Clearance · Box {{ box | default: '01' }}</span>
+          </span>
+        {%- endunless -%}
         {%- comment -%}
           Offer bar, laid out like a product card: name and hang-tag price on
           the left, a cart icon and a compact Buy now on the right. Single-CTA
@@ -192,6 +206,9 @@
         {%- endcomment -%}
         <div class="apgo-crate-offerbar">
           <div class="apgo-crate-offerbar__info">
+            {%- if skin == 'ticket' -%}
+              <p class="apgo-ticket-kicker">{{ coupon_label | default: 'Coupon' | escape }} · Deal {{ box | default: '01' }}</p>
+            {%- endif -%}
             <p class="apgo-crate-offerbar__title">{{ product.title | escape }}</p>
             {%- if price_range -%}
               <div class="apgo-crate-offerbar__prices">

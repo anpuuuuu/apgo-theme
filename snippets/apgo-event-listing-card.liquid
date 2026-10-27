@@ -22,6 +22,10 @@
                                        badges, an "Only N left" line from
                                        real stock (20 or fewer) and an
                                        icon-only Add to cart button.
+  @param {string} [badge_text]        - Crate only. Fixed stamp text for the
+                                       whole row (e.g. "BUY 1 FREE 1"); it
+                                       replaces LAST BATCH and the % off,
+                                       but SOLD OUT still wins.
 {%- enddoc -%}
 
 {% liquid
@@ -117,6 +121,8 @@
     endif
     if apgo_card_sold_out
       assign apgo_crate_stamp = 'Sold out'
+    elsif badge_text != blank
+      assign apgo_crate_stamp = badge_text | strip
     elsif apgo_crate_qty > 0 and apgo_crate_qty <= 5
       assign apgo_crate_stamp = 'Last batch'
     elsif hide_compare_at != true and apgo_listing_variant.compare_at_price > apgo_listing_variant.price

@@ -1,0 +1,286 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "tape_top": {
+      "type": "apgo-clearance-tape",
+      "settings": {
+        "text": "11.11 Shopping Festival · Free Shipping · Miss it, wait another year",
+        "tilt": "left"
+      }
+    },
+    "hero": {
+      "type": "apgo-event-banner",
+      "name": "APGO Event Banner",
+      "settings": {
+        "image_alt": "APGO 11.11 Shopping Festival: buy 1 free 1, buy 1 free 2, 80% off, free shipping",
+        "link": "#deals",
+        "image_alt_sg": "",
+        "link_sg": "",
+        "desktop_width_percent": 67,
+        "frame_style": "ticket",
+        "split_left_link": "#car-care",
+        "split_left_label": "Car Care Deals",
+        "split_left_icon": "car",
+        "split_right_link": "#household",
+        "split_right_label": "Household Deals",
+        "split_right_icon": "home",
+        "show_split_buttons": true,
+        "split_button_kicker": "Shop",
+        "color_scheme": "",
+        "autoplay": true,
+        "interval": 5
+      }
+    },
+    "intro": {
+      "type": "apgo-clearance-intro",
+      "blocks": {
+        "tag_shipping": {
+          "type": "tag",
+          "settings": {
+            "icon": "truck",
+            "text": "Free shipping",
+            "text_sg": ""
+          }
+        },
+        "tag_b1f2": {
+          "type": "tag",
+          "settings": {
+            "icon": "gift",
+            "text": "Buy 1 Free 2",
+            "text_sg": ""
+          }
+        },
+        "tag_return": {
+          "type": "tag",
+          "settings": {
+            "icon": "shield",
+            "text": "No results? Return it!",
+            "text_sg": ""
+          }
+        }
+      },
+      "block_order": [
+        "tag_shipping",
+        "tag_b1f2",
+        "tag_return"
+      ],
+      "settings": {
+        "eyebrow": "APGO · 11.11",
+        "heading": "11.11",
+        "heading_accent": "Shopping Festival",
+        "text": "Beyond your imagination. Car care and household deals, all on one page.",
+        "button_label": "",
+        "button_link": "",
+        "stamp": "",
+        "sign": ""
+      }
+    },
+    "countdown": {
+      "type": "apgo-clearance-countdown",
+      "settings": {
+        "label": "11.11 ends in",
+        "end_at": "2026-11-11T23:59:59+08:00",
+        "show_end_date": false,
+        "end_prefix": "Sale ends"
+      }
+    },
+    "deals": {
+      "type": "apgo-event-collection-grid",
+      "blocks": {
+        "deal_boss": {
+          "type": "promo_banner",
+          "settings": {
+            "market_visibility": "both",
+            "heading": "Boss Exclusive Bundle",
+            "message": "Atomic Coloured Glaze ×3 + Star Edge Coating ×2, with a full care set. Free shipping.",
+            "anchor_id": "car-care",
+            "variant_id": "",
+            "variant_id_sg": "",
+            "cta_mode": "add_buy",
+            "single_cta_label": "Grab Deals Now",
+            "show_price_range": false,
+            "gift_enabled": false,
+            "gift_count": 2,
+            "gift_heading": "Choose your free gifts",
+            "show_counter": false,
+            "counter_milestone_total": "500",
+            "counter_release_total": "88",
+            "counter_manual_deduction": "0",
+            "counter_flow_baseline": "0"
+          }
+        },
+        "deal_aurora": {
+          "type": "promo_banner",
+          "settings": {
+            "market_visibility": "both",
+            "heading": "Atomic Aurora Bundle",
+            "message": "Buy 1 Atomic Aurora Coating, get 2 refill packs free. Free shipping.",
+            "anchor_id": "",
+            "variant_id": "",
+            "variant_id_sg": "",
+            "cta_mode": "add_buy",
+            "single_cta_label": "Grab Deals Now",
+            "show_price_range": false,
+            "gift_enabled": false,
+            "gift_count": 2,
+            "gift_heading": "Choose your free gifts",
+            "show_counter": false,
+            "counter_milestone_total": "500",
+            "counter_release_total": "88",
+            "counter_manual_deduction": "0",
+            "counter_flow_baseline": "0"
+          }
+        },
+        "row_b1f1": {
+          "type": "product_carousel",
+          "settings": {
+            "market_visibility": "both",
+            "heading": "Buy 1 Free 1",
+            "anchor_id": "mega-deals",
+            "badge_text": "BUY 1 FREE 1",
+            "products": [
+              "apgo-car-interior-eco-friendly-cleaner",
+              "apgo-car-interior-eco-friendly-coating",
+              "apgo-car-tire-gloss-dressing-and-protectant",
+              "apgo-car-windshield-oil-film-remover-perfect-glass-restorer",
+              "apgo-car-wheel-rim-cleaner",
+              "apgo-car-headlight-repair-polish-cream",
+              "apgo-car-exterior-plastic-protectant"
+            ],
+            "variant_ids": "",
+            "hide_compare_at": true,
+            "show_promo_limit": false,
+            "show_scroll_cue": true,
+            "view_all_link": ""
+          }
+        },
+        "row_3for1111": {
+          "type": "product_carousel",
+          "settings": {
+            "market_visibility": "my",
+            "heading": "3 for RM11.11",
+            "anchor_id": "",
+            "badge_text": "3 FOR RM11.11",
+            "products": [
+              "apgo-car-wash-shampoo-special-formula-refill-pack",
+              "apgo-car-wiper-fluid-refill-pack"
+            ],
+            "variant_ids": "",
+            "hide_compare_at": true,
+            "show_promo_limit": false,
+            "show_scroll_cue": true,
+            "view_all_link": ""
+          }
+        },
+        "row_b1f2": {
+          "type": "product_carousel",
+          "settings": {
+            "market_visibility": "both",
+            "heading": "Buy 1 Free 2",
+            "anchor_id": "",
+            "badge_text": "BUY 1 FREE 2",
+            "products": [
+              "apgo-atomic-car-nano-coating-refill-pack-standard",
+              "apgo-atomic-crystal-car-nano-coating-refill-pack",
+              "apgo-atomic-crystal-car-nano-coating-refill-pack-standard-300ml-copy"
+            ],
+            "variant_ids": "",
+            "hide_compare_at": true,
+            "show_promo_limit": false,
+            "show_scroll_cue": true,
+            "view_all_link": ""
+          }
+        },
+        "row_household": {
+          "type": "product_carousel",
+          "settings": {
+            "market_visibility": "my",
+            "heading": "Household Deals",
+            "anchor_id": "household",
+            "badge_text": "",
+            "products": [
+              "apgo-laundry-detergent-special-promotion-1",
+              "apgo-tencel-laundry-detergent-500ml-copy",
+              "apgo-white-shoe-cleaner-made-in-taiwan",
+              "apgo-tencel-special-cleaning-formula",
+              "apgo-kitchen-cleaner-refill-bag",
+              "apgo-laundry-whitening-salt-500g-copy",
+              "apgo-floor-cleaner-made-in-taiwan",
+              "apgo-kitchen-cleaner",
+              "apgo-kitchenware-burnt-marks-remover",
+              "apgo-water-spot-remover"
+            ],
+            "variant_ids": "",
+            "hide_compare_at": true,
+            "show_promo_limit": false,
+            "show_scroll_cue": true,
+            "view_all_link": ""
+          }
+        }
+      },
+      "block_order": [
+        "deal_boss",
+        "deal_aurora",
+        "row_b1f1",
+        "row_3for1111",
+        "row_b1f2",
+        "row_household"
+      ],
+      "name": "Event Collection Grid",
+      "settings": {
+        "anchor_id": "deals",
+        "coupon_label": "11.11 Coupon",
+        "show_countdown": false,
+        "countdown_label": "",
+        "countdown_end_at": "",
+        "heading": "",
+        "celebration_message": "",
+        "show_festive_lockup": false,
+        "anniversary_badge": "",
+        "overlap_enabled": false,
+        "overlap_offset": 16,
+        "panel_radius": 16,
+        "color_scheme": "scheme-3",
+        "padding-block-start": 0,
+        "padding-block-end": 0
+      }
+    },
+    "closing": {
+      "type": "apgo-clearance-intro",
+      "settings": {
+        "eyebrow": "",
+        "heading": "Miss it,",
+        "heading_accent": "Wait another year!",
+        "text": "While stocks last.",
+        "button_label": "Back to top deals",
+        "button_link": "#deals",
+        "stamp": "",
+        "sign": ""
+      }
+    },
+    "tape_bottom": {
+      "type": "apgo-clearance-tape",
+      "settings": {
+        "text": "While stocks last · 11.11 only · Free shipping",
+        "tilt": "right"
+      }
+    }
+  },
+  "order": [
+    "tape_top",
+    "hero",
+    "intro",
+    "countdown",
+    "deals",
+    "closing",
+    "tape_bottom"
+  ]
+}

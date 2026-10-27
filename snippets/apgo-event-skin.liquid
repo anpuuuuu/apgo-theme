@@ -1,0 +1,19 @@
+{%- doc -%}
+  Prints which campaign skin this page template uses, or nothing.
+  Capture it: {% capture apgo_skin %}{% render 'apgo-event-skin' %}{% endcapture %}
+
+  - crate:  page.clearance-sale (assets/apgo-clearance-page.css)
+  - ticket: page.double-11, the 11.11 "Red Ticket" page
+            (assets/apgo-clearance-page.css + assets/apgo-ticket-skin.css)
+
+  Both skins share the clearance page's markup, cart buttons and variant
+  drawer, so a page using either one gets them all. To give another
+  campaign page the ticket look, add its template suffix below.
+{%- enddoc -%}
+
+{%- if template.name == 'page' -%}
+  {%- case template.suffix -%}
+    {%- when 'clearance-sale' -%}crate
+    {%- when 'double-11' -%}ticket
+  {%- endcase -%}
+{%- endif -%}

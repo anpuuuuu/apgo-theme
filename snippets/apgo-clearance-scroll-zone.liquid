@@ -21,6 +21,9 @@
   @param {string} campaign_id - GA4 campaign id.
   @param {string} [lot] - Two-digit lot number; blank when the row has no heading.
   @param {string} [view_all_link] - Destination of the "View all" link.
+  @param {string} [skin] - 'ticket' on the 11.11 page: plain heading (no shipping-label note or barcode).
+  @param {string} [anchor_id] - Optional id on the row so a link can jump to it.
+  @param {string} [badge_text] - Optional badge on every card, e.g. "BUY 1 FREE 1".
   @param {string} [block_attributes] - Shopify editor attributes for the owning block.
 {%- enddoc -%}
 
@@ -35,6 +38,9 @@
   assign apgo_tilt = 'tilt-left'
   if lot != blank
     assign apgo_lot_code = 'LOT ' | append: lot
+    if skin == 'ticket'
+      assign apgo_lot_code = lot
+    endif
     assign apgo_lot_parity = lot | plus: 0 | modulo: 2
     if apgo_lot_parity == 0
       assign apgo_tilt = 'tilt-right'
@@ -44,6 +50,7 @@
 
 {%- if products != blank and products.size > 0 -%}
   <section
+    {% if anchor_id != blank %}id="{{ anchor_id | handleize }}"{% endif %}
     class="apgo-event-scroll-zone apgo-event-scroll-zone--{{ zone_class }} apgo-crate-zone apgo-crate-zone--row"
     data-apgo-campaign-section
     data-section-id="{{ zone_class | escape }}"
@@ -55,12 +62,16 @@
   >
     <div class="apgo-crate-zone__scroller" data-apgo-scroll-viewport>
       <div class="apgo-crate-zone__head">
-        {% render 'apgo-clearance-label',
-          title: heading,
-          note: 'CONTENTS: MIXED STOCK · QTY LIMITED',
-          lot: apgo_lot_code,
-          modifier: apgo_tilt
-        %}
+        {%- if skin == 'ticket' -%}
+          {% render 'apgo-clearance-label', title: heading, lot: apgo_lot_code, barcode: false %}
+        {%- else -%}
+          {% render 'apgo-clearance-label',
+            title: heading,
+            note: 'CONTENTS: MIXED STOCK · QTY LIMITED',
+            lot: apgo_lot_code,
+            modifier: apgo_tilt
+          %}
+        {%- endif -%}
         {%- if view_all_link != blank -%}
           <a class="apgo-crate-zone__view-all" href="{{ view_all_link }}">
             View all
@@ -109,7 +120,8 @@
               card_uid: apgo_event_card_uid,
               card_position: forloop.index,
               hide_compare_at: apgo_hide_compare,
-              crate: true
+              crate: true,
+              badge_text: badge_text
             %}
           </div>
         {%- endfor -%}

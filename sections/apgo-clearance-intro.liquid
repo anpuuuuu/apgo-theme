@@ -28,9 +28,20 @@
   assign apgo_stamp_wide_half = apgo_stamp_len | times: 8.5 | plus: 14 | divided_by: 2.0
   assign apgo_stamp_wide_x = 228 | minus: apgo_stamp_wide_half
   assign apgo_stamp_wide_w = apgo_stamp_wide_half | times: 2
+
+  # The 11.11 page (skin "ticket") has no warehouse illustration: the art
+  # column shows only when a photo is set.
+  capture apgo_skin
+    render 'apgo-event-skin'
+  endcapture
+  assign apgo_skin = apgo_skin | strip
+  assign apgo_show_art = true
+  if apgo_skin == 'ticket' and section.settings.image == blank
+    assign apgo_show_art = false
+  endif
 -%}
 
-<div class="apgo-crate-intro">
+<div class="apgo-crate-intro{% unless apgo_show_art %} apgo-crate-intro--no-art{% endunless %}">
   <div class="apgo-crate-container apgo-crate-intro__grid">
     <div class="apgo-crate-intro__copy">
       {%- if section.settings.eyebrow != blank -%}
@@ -58,6 +69,7 @@
       {%- endif -%}
     </div>
 
+    {%- if apgo_show_art -%}
     <div class="apgo-crate-intro__art">
       {%- if section.settings.image != blank -%}
         {{
@@ -140,6 +152,7 @@
         <span class="apgo-crate-intro__stamp" aria-hidden="true">{{ apgo_stamp | escape }}</span>
       {%- endif -%}
     </div>
+    {%- endif -%}
 
     {%- if section.blocks.size > 0 -%}
       <ul class="apgo-crate-intro__tags" role="list">
@@ -163,6 +176,10 @@
                     <circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>
                   {%- when 'percent' -%}
                     <path d="M5 19L19 5"/><circle cx="7" cy="7" r="2.2"/><circle cx="17" cy="17" r="2.2"/>
+                  {%- when 'gift' -%}
+                    <path d="M4 11h16v10H4zM3 7h18v4H3zM12 7v14"/><path d="M12 7c-2-4-6-3-5 0M12 7c2-4 6-3 5 0"/>
+                  {%- when 'shield' -%}
+                    <path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>
                   {%- else -%}
                     <path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1.4"/>
                 {%- endcase -%}
@@ -273,7 +290,9 @@
             { "value": "box", "label": "Box" },
             { "value": "truck", "label": "Truck" },
             { "value": "clock", "label": "Clock" },
-            { "value": "percent", "label": "Percent" }
+            { "value": "percent", "label": "Percent" },
+            { "value": "gift", "label": "Gift" },
+            { "value": "shield", "label": "Shield (guarantee)" }
           ],
           "default": "price_tag"
         },
