@@ -765,6 +765,37 @@ body.apgo-ticket-page.apgo-clearance-sale-page .apgo-event-banner.apgo-event-ban
 
 .apgo-ticket-page.apgo-clearance-sale-page .apgo-event-listing-card__btn {
   border-radius: 10px;
+  white-space: nowrap;
+}
+
+/* Phones fit two and a half cards, so the buttons slim down to keep
+   "Buy now" on one line. */
+@media screen and (max-width: 749px) {
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-event-listing-card__body {
+    padding: 10px 8px 10px;
+  }
+
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-event-listing-card__actions {
+    gap: 5px;
+  }
+
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-event-listing-card__btn {
+    height: 38px;
+    min-height: 38px;
+    padding: 0 6px;
+    font-size: 12px;
+  }
+
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-event-listing-card__btn--add {
+    flex: 0 0 36px;
+    width: 36px;
+    padding: 0;
+  }
+
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-event-listing-card__btn--add svg {
+    width: 16px;
+    height: 16px;
+  }
 }
 
 .apgo-ticket-page.apgo-clearance-sale-page .apgo-event-listing-card__btn--add {
