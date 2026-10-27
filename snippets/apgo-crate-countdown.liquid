@@ -1,0 +1,109 @@
+{%- doc -%}
+  The clearance-style countdown: days / hours / minutes / seconds tiles,
+  with the end date printed underneath if asked. Renders nothing until
+  end_at is in the future, and hides itself once that time has passed.
+  Used by sections/apgo-clearance-countdown (its own strip) and
+  sections/apgo-clearance-intro (beside the heading, e.g. on the 11.11
+  page). Styled in assets/apgo-clearance-page.css (+ apgo-ticket-skin.css).
+
+  @param {string} end_at - End time, YYYY-MM-DDTHH:MM:SS+08:00.
+  @param {string} [label] - Line above the tiles.
+  @param {boolean} [show_end_date] - Print the end date under the tiles.
+  @param {string} [end_prefix] - Words before that date.
+  @param {boolean} [contained] - Lay the inner box in the page-width container (the countdown section).
+  @param {boolean} [editor_hint] - In the theme editor, say why nothing shows.
+{%- enddoc -%}
+
+{%- liquid
+  assign apgo_cd_end = end_at | strip
+  assign apgo_cd_end_ts = 0
+  if apgo_cd_end != blank
+    assign apgo_cd_end_ts = apgo_cd_end | date: '%s' | plus: 0
+  endif
+  assign apgo_cd_now_ts = 'now' | date: '%s' | plus: 0
+-%}
+
+{%- if apgo_cd_end_ts > apgo_cd_now_ts -%}
+  <div class="apgo-crate-countdown" data-apgo-crate-countdown data-end="{{ apgo_cd_end_ts }}">
+    <div class="{% if contained %}apgo-crate-container {% endif %}apgo-crate-countdown__inner">
+      {%- if label != blank -%}
+        <p class="apgo-crate-countdown__label">{{ label | escape }}</p>
+      {%- endif -%}
+      <div class="apgo-crate-countdown__tiles" role="timer">
+        <div class="apgo-crate-countdown__tile">
+          <span class="apgo-crate-countdown__num" data-part="d">--</span>
+          <span class="apgo-crate-countdown__unit">Days</span>
+        </div>
+        <div class="apgo-crate-countdown__tile">
+          <span class="apgo-crate-countdown__num" data-part="h">--</span>
+          <span class="apgo-crate-countdown__unit">Hours</span>
+        </div>
+        <div class="apgo-crate-countdown__tile">
+          <span class="apgo-crate-countdown__num" data-part="m">--</span>
+          <span class="apgo-crate-countdown__unit">Minutes</span>
+        </div>
+        <div class="apgo-crate-countdown__tile apgo-crate-countdown__tile--hot">
+          <span class="apgo-crate-countdown__num" data-part="s">--</span>
+          <span class="apgo-crate-countdown__unit">Seconds</span>
+        </div>
+      </div>
+      {%- if show_end_date -%}
+        <p class="apgo-crate-countdown__note">
+          {{- end_prefix | escape }} {{ apgo_cd_end | date: '%-d %b %Y, %-I:%M %p' -}}
+        </p>
+      {%- endif -%}
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      function pad(n) { return n < 10 ? '0' + n : String(n); }
+
+      function start(root) {
+        if (!root || root.getAttribute('data-ready') === 'true') return;
+        var end = Number(root.getAttribute('data-end')) * 1000;
+        if (!end) return;
+        root.setAttribute('data-ready', 'true');
+
+        var parts = {};
+        ['d', 'h', 'm', 's'].forEach(function (key) {
+          parts[key] = root.querySelector('[data-part="' + key + '"]');
+        });
+        var timer = null;
+
+        function tick() {
+          var left = end - Date.now();
+          if (left <= 0) {
+            root.hidden = true;
+            if (timer) window.clearInterval(timer);
+            return false;
+          }
+          var seconds = Math.floor(left / 1000);
+          parts.d.textContent = pad(Math.floor(seconds / 86400));
+          parts.h.textContent = pad(Math.floor((seconds % 86400) / 3600));
+          parts.m.textContent = pad(Math.floor((seconds % 3600) / 60));
+          parts.s.textContent = pad(seconds % 60);
+          return true;
+        }
+
+        if (tick()) timer = window.setInterval(tick, 1000);
+      }
+
+      function init(scope) {
+        var nodes = (scope || document).querySelectorAll('[data-apgo-crate-countdown]');
+        Array.prototype.forEach.call(nodes, start);
+      }
+
+      init(document);
+      document.addEventListener('shopify:section:load', function (event) { init(event.target); });
+    })();
+  </script>
+{%- elsif editor_hint and request.design_mode -%}
+  <div class="{% if contained %}apgo-crate-container {% endif %}apgo-crate-placeholder">
+    {%- if apgo_cd_end_ts > 0 -%}
+      This countdown has ended, so it is hidden. Set a new end time to show it again.
+    {%- else -%}
+      Set "Sale ends at" to show the countdown.
+    {%- endif -%}
+  </div>
+{%- endif -%}

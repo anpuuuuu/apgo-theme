@@ -80,17 +80,10 @@
         "text": "Beyond your imagination. Car care and household deals, all on one page.",
         "button_label": "",
         "button_link": "",
+        "countdown_end_at": "2026-11-11T23:59:59+08:00",
+        "countdown_label": "11.11 ends in",
         "stamp": "",
         "sign": ""
-      }
-    },
-    "countdown": {
-      "type": "apgo-clearance-countdown",
-      "settings": {
-        "label": "11.11 ends in",
-        "end_at": "2026-11-11T23:59:59+08:00",
-        "show_end_date": false,
-        "end_prefix": "Sale ends"
       }
     },
     "deals": {
@@ -282,7 +275,6 @@
     "tape_top",
     "hero",
     "intro",
-    "countdown",
     "deals",
     "closing",
     "tape_bottom"

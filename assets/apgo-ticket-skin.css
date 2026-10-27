@@ -782,6 +782,24 @@ body.apgo-ticket-page.apgo-clearance-sale-page .apgo-event-banner.apgo-event-ban
   gap: 16px;
 }
 
+/* Countdown inside the intro (setting "Countdown ends at"): under the tags
+   on phones, beside the heading on computers. */
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-intro--no-art.apgo-crate-intro--timer .apgo-crate-intro__grid {
+  grid-template-areas:
+    'copy'
+    'tags'
+    'timer';
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-intro__timer {
+  grid-area: timer;
+  min-width: 0;
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-intro__timer .apgo-crate-countdown {
+  padding: 4px 0 0;
+}
+
 .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-intro__chip {
   padding: 0;
   background: none;
@@ -874,6 +892,38 @@ body.apgo-ticket-page.apgo-clearance-sale-page .apgo-event-banner.apgo-event-ban
       'copy'
       'tags';
     gap: 20px;
+  }
+
+  /* Heading and tags on the left, the countdown ticket on the right. */
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-intro--no-art.apgo-crate-intro--timer .apgo-crate-intro__grid {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'copy timer'
+      'tags timer';
+    align-items: center;
+    gap: 20px 48px;
+  }
+
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-intro__timer .apgo-crate-countdown {
+    padding: 0;
+  }
+
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-intro__timer .apgo-crate-countdown__inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 22px 26px;
+  }
+
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-intro__timer .apgo-crate-countdown__label {
+    max-width: none;
+    font-size: 24px;
+  }
+
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-intro__timer .apgo-crate-countdown__tiles {
+    flex: 0 0 auto;
+    width: 340px;
+    max-width: none;
   }
 
   .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-intro__copy {

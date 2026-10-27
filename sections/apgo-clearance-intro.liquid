@@ -39,9 +39,16 @@
   if apgo_skin == 'ticket' and section.settings.image == blank
     assign apgo_show_art = false
   endif
+
+  # Optional countdown beside the heading (computers) / under the tags
+  # (phones), so the page needs no separate countdown strip.
+  capture apgo_intro_timer
+    render 'apgo-crate-countdown', end_at: section.settings.countdown_end_at, label: section.settings.countdown_label
+  endcapture
+  assign apgo_intro_timer = apgo_intro_timer | strip
 -%}
 
-<div class="apgo-crate-intro{% unless apgo_show_art %} apgo-crate-intro--no-art{% endunless %}">
+<div class="apgo-crate-intro{% unless apgo_show_art %} apgo-crate-intro--no-art{% endunless %}{% if apgo_intro_timer != blank %} apgo-crate-intro--timer{% endif %}">
   <div class="apgo-crate-container apgo-crate-intro__grid">
     <div class="apgo-crate-intro__copy">
       {%- if section.settings.eyebrow != blank -%}
@@ -190,6 +197,10 @@
         {%- endfor -%}
       </ul>
     {%- endif -%}
+
+    {%- if apgo_intro_timer != blank -%}
+      <div class="apgo-crate-intro__timer">{{ apgo_intro_timer }}</div>
+    {%- endif -%}
   </div>
 </div>
 
@@ -251,6 +262,23 @@
       "id": "button_link",
       "label": "Button link",
       "info": "Use #clearance-deals to jump to the deals on this page."
+    },
+    {
+      "type": "header",
+      "content": "Countdown (optional)",
+      "info": "Shows the countdown beside the heading on computers and under the tags on phones. Hidden while blank and once the time is up."
+    },
+    {
+      "type": "text",
+      "id": "countdown_end_at",
+      "label": "Countdown ends at (GMT+8)",
+      "info": "Format: YYYY-MM-DDTHH:MM:SS+08:00, e.g. 2026-11-11T23:59:59+08:00."
+    },
+    {
+      "type": "text",
+      "id": "countdown_label",
+      "label": "Countdown label",
+      "default": "Ends in"
     },
     {
       "type": "header",
