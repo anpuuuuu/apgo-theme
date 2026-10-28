@@ -143,12 +143,12 @@
       },
       {
         "type": "paragraph",
-        "content": "打開後，bundle 選項只剩 Single pack 和「任選 N 包一個價」，取代原本的買幾送幾。價錢只影響頁面顯示，實際折扣、贈品、免運要在 Shopify 折扣／AIOD 設定好。新加坡沒填價錢就只顯示 Single pack。"
+        "content": "只在馬來西亞生效，新加坡維持原本的 Single pack + 3+1。打開後，馬來西亞的 bundle 選項只剩 Single pack 和「任選 N 包一個價」，取代原本的買幾送幾。價錢只影響頁面顯示，實際折扣、贈品、免運要在 Shopify 折扣／AIOD 設定好（限馬來西亞）。"
       },
       {
         "type": "checkbox",
         "id": "apgo_bundle_set_on",
-        "label": "Use the set offer",
+        "label": "Use the set offer (Malaysia)",
         "default": false
       },
       {
@@ -169,12 +169,6 @@
       },
       {
         "type": "text",
-        "id": "apgo_bundle_set_price_sg",
-        "label": "Set price, Singapore ($)",
-        "info": "Number only. Blank = Singapore shows Single pack only."
-      },
-      {
-        "type": "text",
         "id": "apgo_bundle_set_chip",
         "label": "Chip on the set card",
         "default": "Flash Deal"
@@ -182,28 +176,16 @@
       {
         "type": "text",
         "id": "apgo_bundle_set_gifts_my",
-        "label": "Free gifts line, Malaysia",
+        "label": "Free gifts line",
         "default": "Free 1× Floor Cleaner 30ml + 2× White Shoe Cleaner 30ml",
         "info": "Blank hides the line."
       },
       {
-        "type": "text",
-        "id": "apgo_bundle_set_gifts_sg",
-        "label": "Free gifts line, Singapore",
-        "info": "Blank hides the line in Singapore."
-      },
-      {
         "type": "checkbox",
         "id": "apgo_bundle_set_free_ship_my",
-        "label": "Free shipping with a set, Malaysia",
+        "label": "Free shipping with a set",
         "default": true,
         "info": "Shows Free shipping on the set card, and the cart counts shipping as free once the cart holds a full set. The real free shipping comes from AIOD."
-      },
-      {
-        "type": "checkbox",
-        "id": "apgo_bundle_set_free_ship_sg",
-        "label": "Free shipping with a set, Singapore",
-        "default": false
       },
       {
         "type": "text",
@@ -215,15 +197,9 @@
       {
         "type": "text",
         "id": "apgo_bundle_set_subtitle_my",
-        "label": "Product subtitle while the set offer is on, Malaysia",
+        "label": "Product subtitle while the set offer is on",
         "default": "Select any 3 scents for RM99.00, with free gifts and free shipping!",
         "info": "Replaces the product's apgo.subtitle (which still talks about 6+3 / 3+1) while the set offer is on. Blank hides the subtitle."
-      },
-      {
-        "type": "text",
-        "id": "apgo_bundle_set_subtitle_sg",
-        "label": "Product subtitle while the set offer is on, Singapore",
-        "info": "Blank hides the subtitle in Singapore."
       }
     ]
   },

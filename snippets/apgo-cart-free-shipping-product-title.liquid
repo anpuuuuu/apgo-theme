@@ -16,8 +16,8 @@
   from the Shopify Products page without touching theme code.
 
   Also qualifies: a full set of the bundle picker's set offer (any 3 for
-  RM99, theme settings → APGO — Bundle Widget → Set offer) when that
-  market's "Free shipping with a set" is ticked. Packs of every
+  RM99, theme settings → APGO — Bundle Widget → Set offer, Malaysia
+  only) when "Free shipping with a set" is ticked. Packs of every
   bundle-enabled product count together; free gift lines don't count.
   The JS side of the same rule is in snippets/apgo-cart-free-shipping-lookup.
 {%- enddoc -%}
@@ -34,11 +34,7 @@
     capture apgo_fs_set_on
       render 'apgo-bundle-set-offer'
     endcapture
-    assign apgo_fs_set_ship = settings.apgo_bundle_set_free_ship_my
-    if localization.country.iso_code == 'SG'
-      assign apgo_fs_set_ship = settings.apgo_bundle_set_free_ship_sg
-    endif
-    if apgo_fs_set_on == 'on' and apgo_fs_set_ship
+    if apgo_fs_set_on == 'on' and settings.apgo_bundle_set_free_ship_my
       assign apgo_fs_packs = 0
       assign apgo_fs_set_title = ''
       for line in cart.items

@@ -119,7 +119,7 @@ const check = (name, ok, detail) => { results.push({ name, ok }); console.log(`$
     await browser.close();
   }
 
-  // 2. Singapore: no set price yet → Single pack only, no free shipping.
+  // 2. Singapore keeps Single pack + 3+1 (owner, 2026-10-28): the offer is Malaysia only.
   console.log(ON ? '\n新加坡' : '\n新加坡（预览）');
   {
     const { browser, page } = await open('iphone15-safari');
@@ -129,7 +129,12 @@ const check = (name, ok, detail) => { results.push({ name, ok }); console.log(`$
     await goto(page, PDP, 'SG');
     await sleep(1500);
     const r = await readPdp(page);
-    check('SG 选项（没填价钱 → 只有单包）', !!r && JSON.stringify(r.tiers) === JSON.stringify(['Single pack']), r && r.tiers.join(' / '));
+    check('SG 选项照旧（单包 + 3+1）', !!r && JSON.stringify(r.tiers) === JSON.stringify(['Single pack', 'Buy 3 get 1 free']), r && r.tiers.join(' / '));
+    if (r) {
+      check('SG 预设选 3+1', r.active === 'Buy 3 get 1 free', r.active);
+      check('SG 说明照旧', r.note.trim() === '3+1 promotion is limited to once per order*', r.note.trim());
+      check('SG 副标照旧', r.subtitle.trim() === '3+1 promotion is limited to once per order*', r.subtitle.trim());
+    }
     await cartPost(page, '/cart/add.js', { items: SCENTS.map((id) => ({ id, quantity: 1 })) });
     await goto(page, '/cart', 'SG');
     await sleep(3000);

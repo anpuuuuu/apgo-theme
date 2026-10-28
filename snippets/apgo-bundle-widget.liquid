@@ -96,7 +96,8 @@
     one fixed-price set. The set price comes from the settings, not from
     product.price, so it is the one number on the card that is typed; the
     real price cut, gifts and free shipping are the admin discount's / AIOD's.
-    A market without a set price shows Single pack only.
+    Malaysia only (the snippet stays off in Singapore, which keeps 3+1).
+    No set price shows Single pack only.
   endcomment
   capture set_on
     render 'apgo-bundle-set-offer'
@@ -105,15 +106,9 @@
   assign set_price = 0
   if set_on == 'on'
     assign set_count = settings.apgo_bundle_set_count | default: 3
-    if localization.country.iso_code == 'SG'
-      assign set_price = settings.apgo_bundle_set_price_sg | strip | times: 100 | round
-      assign set_gifts = settings.apgo_bundle_set_gifts_sg
-      assign set_free_ship = settings.apgo_bundle_set_free_ship_sg
-    else
-      assign set_price = settings.apgo_bundle_set_price_my | strip | times: 100 | round
-      assign set_gifts = settings.apgo_bundle_set_gifts_my
-      assign set_free_ship = settings.apgo_bundle_set_free_ship_my
-    endif
+    assign set_price = settings.apgo_bundle_set_price_my | strip | times: 100 | round
+    assign set_gifts = settings.apgo_bundle_set_gifts_my
+    assign set_free_ship = settings.apgo_bundle_set_free_ship_my
     assign tiers_str = '1|0|Single pack|'
     if set_price > 0
       assign set_price_fmt = set_price | money | replace: cart.currency.iso_code, '' | strip
