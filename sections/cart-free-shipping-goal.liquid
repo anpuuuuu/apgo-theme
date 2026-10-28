@@ -118,20 +118,13 @@
     const formatMoney = (minor, currency) =>
       new Intl.NumberFormat(document.documentElement.lang || 'en', { style: 'currency', currency }).format((minor || 0) / 100);
 
-    /* Find a tag-unlocked product in the live cart. Uses the
-       per-section global APGO_FREE_SHIPPING_LINE_LOOKUP (populated by
-       the Liquid <script> at the top of this section). Returns the
+    /* Find a tag-unlocked product (or a full bundle set) in the live
+       cart, via apgoFreeShippingTitle (from the lookup <script> at the
+       top of this section). Returns the
        title to surface in the "🎁 You got free shipping with X"
        message, or null if no qualifying line is present. */
-    const findTagUnlock = (cart) => {
-      const lookup = window.APGO_FREE_SHIPPING_LINE_LOOKUP || {};
-      if (!cart || !Array.isArray(cart.items)) return null;
-      for (const line of cart.items) {
-        const title = lookup[line.product_id];
-        if (title) return title;
-      }
-      return null;
-    };
+    const findTagUnlock = (cart) =>
+      window.apgoFreeShippingTitle ? window.apgoFreeShippingTitle(cart) : null;
 
     const render = (subtotalMinor, cart) => {
       const rule = getRule(country);

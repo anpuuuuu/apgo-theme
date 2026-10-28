@@ -14,10 +14,47 @@
 
   Tag is hardcoded so admins can drop it on any product / variant
   from the Shopify Products page without touching theme code.
+
+  Also qualifies: a full set of the bundle picker's set offer (any 3 for
+  RM99, theme settings → APGO — Bundle Widget → Set offer) when that
+  market's "Free shipping with a set" is ticked. Packs of every
+  bundle-enabled product count together; free gift lines don't count.
+  The JS side of the same rule is in snippets/apgo-cart-free-shipping-lookup.
 {%- enddoc -%}
-{%- for line in cart.items -%}
-  {%- if line.product.tags contains 'free-shipping' -%}
-    {{- line.product.title -}}
-    {%- break -%}
-  {%- endif -%}
-{%- endfor -%}
+{%- liquid
+  assign apgo_fs_out = ''
+  for line in cart.items
+    if line.product.tags contains 'free-shipping'
+      assign apgo_fs_out = line.product.title
+      break
+    endif
+  endfor
+
+  if apgo_fs_out == blank
+    capture apgo_fs_set_on
+      render 'apgo-bundle-set-offer'
+    endcapture
+    assign apgo_fs_set_ship = settings.apgo_bundle_set_free_ship_my
+    if localization.country.iso_code == 'SG'
+      assign apgo_fs_set_ship = settings.apgo_bundle_set_free_ship_sg
+    endif
+    if apgo_fs_set_on == 'on' and apgo_fs_set_ship
+      assign apgo_fs_packs = 0
+      assign apgo_fs_set_title = ''
+      for line in cart.items
+        if line.product.metafields.apgo.bundle_enabled and line.properties._free_gift != 'true' and line.final_price > 0
+          assign apgo_fs_packs = apgo_fs_packs | plus: line.quantity
+          if apgo_fs_set_title == blank
+            assign apgo_fs_set_title = line.product.title
+          endif
+        endif
+      endfor
+      assign apgo_fs_set_count = settings.apgo_bundle_set_count | default: 3
+      if apgo_fs_packs >= apgo_fs_set_count
+        assign apgo_fs_out = apgo_fs_set_title
+      endif
+    endif
+  endif
+
+  echo apgo_fs_out
+-%}

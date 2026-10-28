@@ -91,6 +91,42 @@
   assign single_price = product.price | default: 0
 
   comment
+    Set offer (theme settings → APGO — Bundle Widget → Set offer, e.g. any
+    3 for RM99, 2026-10-29): replaces the tiers above with Single pack plus
+    one fixed-price set. The set price comes from the settings, not from
+    product.price, so it is the one number on the card that is typed; the
+    real price cut, gifts and free shipping are the admin discount's / AIOD's.
+    A market without a set price shows Single pack only.
+  endcomment
+  capture set_on
+    render 'apgo-bundle-set-offer'
+  endcapture
+  assign set_count = 0
+  assign set_price = 0
+  if set_on == 'on'
+    assign set_count = settings.apgo_bundle_set_count | default: 3
+    if localization.country.iso_code == 'SG'
+      assign set_price = settings.apgo_bundle_set_price_sg | strip | times: 100 | round
+      assign set_gifts = settings.apgo_bundle_set_gifts_sg
+      assign set_free_ship = settings.apgo_bundle_set_free_ship_sg
+    else
+      assign set_price = settings.apgo_bundle_set_price_my | strip | times: 100 | round
+      assign set_gifts = settings.apgo_bundle_set_gifts_my
+      assign set_free_ship = settings.apgo_bundle_set_free_ship_my
+    endif
+    assign tiers_str = '1|0|Single pack|'
+    if set_price > 0
+      assign set_price_fmt = set_price | money | replace: cart.currency.iso_code, '' | strip
+      assign tiers_str = tiers_str | append: '::' | append: set_count | append: '|0|Any ' | append: set_count | append: ' for ' | append: set_price_fmt | append: '|' | append: settings.apgo_bundle_set_chip
+    endif
+    assign tiers = tiers_str | split: '::'
+  endif
+  assign default_tier = 2
+  if tiers.size < 2
+    assign default_tier = 1
+  endif
+
+  comment
     Chinese → English subtitle map for scent rows.
     Phase D will move this onto the scent metaobject as a name_en field.
   endcomment
@@ -136,6 +172,11 @@
           avg_per_pack= total_price / total_count
       {%- endcomment -%}
       {%- assign t_total_price = single_price | times: t_buy -%}
+      {%- assign t_is_set = false -%}
+      {%- if set_price > 0 and t_buy == set_count and t_gift == 0 -%}
+        {%- assign t_is_set = true -%}
+        {%- assign t_total_price = set_price -%}
+      {%- endif -%}
       {%- assign t_was_price = single_price | times: t_total_count -%}
       {%- assign t_savings = t_was_price | minus: t_total_price -%}
       {%- assign t_avg_price = 0 -%}
@@ -144,7 +185,7 @@
       {%- endif -%}
 
       {%- assign is_default = false -%}
-      {%- if forloop.index == 2 -%}{%- assign is_default = true -%}{%- endif -%}
+      {%- if forloop.index == default_tier -%}{%- assign is_default = true -%}{%- endif -%}
 
       <label class="apgo-bundle__tier{% if is_default %} is-active{% endif %}"
              data-apgo-bundle-tier
@@ -186,6 +227,20 @@
               <span>Free Floor Cleaner 30ml included</span>
             </div>
           {%- endif -%}
+          {%- if t_is_set -%}
+            {%- if set_gifts != blank -%}
+              <div class="apgo-bundle__tier-bonus">
+                <svg class="apgo-bundle__tier-bonus-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+                <span>{{ set_gifts | escape }}</span>
+              </div>
+            {%- endif -%}
+            {%- if set_free_ship -%}
+              <div class="apgo-bundle__tier-bonus">
+                <svg class="apgo-bundle__tier-bonus-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                <span>Free shipping</span>
+              </div>
+            {%- endif -%}
+          {%- endif -%}
         </div>
         <div class="apgo-bundle__tier-price-area">
           <div class="apgo-bundle__tier-price">{{ t_total_price | money | replace: cart.currency.iso_code, '' | strip }}</div>
@@ -214,7 +269,11 @@
       {%- endif -%}
     {%- endif -%}
   {%- endfor -%}
-  {%- if promo_pairs != blank -%}
+  {%- if set_on == 'on' -%}
+    {%- if set_price > 0 and settings.apgo_bundle_set_note != blank -%}
+      <p class="apgo-bundle__stack-note">{{ settings.apgo_bundle_set_note | escape }}</p>
+    {%- endif -%}
+  {%- elsif promo_pairs != blank -%}
     <p class="apgo-bundle__stack-note">{{ promo_pairs }} promotion is limited to once per order*</p>
   {%- endif -%}
 
@@ -348,7 +407,7 @@
 
       <div class="apgo-bundle__min-note">
         Choose <span data-apgo-bundle-max-note>3</span> scent packs
-        · includes <span data-apgo-bundle-gift-note>1</span> free gift pack
+        <span data-apgo-bundle-gift-part{% if set_on == 'on' %} hidden{% endif %}>· includes <span data-apgo-bundle-gift-note>1</span> free gift pack</span>
       </div>
     </div>
   {%- endif -%}

@@ -56,6 +56,22 @@
       assign apgo_subtitle = blank
     endif
   endif
+
+  # While the bundle picker's set offer is on (any 3 for RM99), the
+  # subtitle comes from the theme settings: the product's own still
+  # talks about 6+3 / 3+1.
+  if product.metafields.apgo.bundle_enabled
+    capture apgo_set_on
+      render 'apgo-bundle-set-offer'
+    endcapture
+    if apgo_set_on == 'on'
+      if localization.country.iso_code == 'SG'
+        assign apgo_subtitle = settings.apgo_bundle_set_subtitle_sg
+      else
+        assign apgo_subtitle = settings.apgo_bundle_set_subtitle_my
+      endif
+    endif
+  endif
 -%}
 
 <section class="apgo-mpdp" data-section-id="{{ section.id }}">

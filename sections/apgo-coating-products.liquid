@@ -180,19 +180,12 @@
       }
     };
 
-    /* Tag-unlock detector — any cart line whose product_id matches
-       APGO_FREE_SHIPPING_LINE_LOOKUP wins regardless of subtotal.
-       Lookup is populated by the apgo-cart-free-shipping-lookup
+    /* Tag-unlock detector — a 'free-shipping' product (or a full set
+       of the bundle set offer) wins regardless of subtotal.
+       apgoFreeShippingTitle comes from the apgo-cart-free-shipping-lookup
        snippet rendered from sibling cart sections. */
-    const findTagUnlock = (cart) => {
-      const lookup = window.APGO_FREE_SHIPPING_LINE_LOOKUP || {};
-      if (!cart || !Array.isArray(cart.items)) return null;
-      for (const line of cart.items) {
-        const title = lookup[line.product_id];
-        if (title) return title;
-      }
-      return null;
-    };
+    const findTagUnlock = (cart) =>
+      window.apgoFreeShippingTitle ? window.apgoFreeShippingTitle(cart) : null;
 
     const render = (subtotalMinor, cart) => {
       const rule = getRule(country);

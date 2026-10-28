@@ -131,6 +131,8 @@
     $$('[data-apgo-bundle-max]').forEach(function (el) { el.textContent = maxN; });
     $$('[data-apgo-bundle-max-note]').forEach(function (el) { el.textContent = maxN; });
     $$('[data-apgo-bundle-gift-note]').forEach(function (el) { el.textContent = giftN; });
+    // A set-price tier (any 3 for RM99) has no free packs: drop "includes 0 free gift pack".
+    $$('[data-apgo-bundle-gift-part]').forEach(function (el) { el.hidden = giftN === 0; });
 
     // 3) Per-row qty num + disabled buttons + out-of-stock state
     $$('[data-apgo-bundle-scent]').forEach(function (row) {

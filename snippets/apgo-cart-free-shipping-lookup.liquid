@@ -1,7 +1,17 @@
 {%- doc -%}
   Emits a small <script> tag that populates
   window.APGO_FREE_SHIPPING_LINE_LOOKUP with a {product_id: title} map
-  of all currently-in-cart products carrying the 'free-shipping' tag.
+  of all currently-in-cart products carrying the 'free-shipping' tag,
+  and window.apgoFreeShippingTitle(cart): the title to show in "You got
+  free shipping with X", or null. The cart sections call that function
+  with the live /cart.js cart instead of walking the lookup themselves.
+
+  It also knows the bundle picker's set offer (any 3 for RM99, theme
+  settings → APGO — Bundle Widget → Set offer): with that market's "Free
+  shipping with a set" ticked, a cart holding a full set of
+  bundle-enabled products qualifies too. Pack counts come from the live
+  cart, so changing a quantity on the cart page updates at once. Same
+  rule as snippets/apgo-cart-free-shipping-product-title (server side).
 
   Idempotent — calling it from multiple cart sections is fine; the
   last one to run wins and the result is identical regardless. Each
@@ -14,6 +24,15 @@
   change, the new HTML carries an updated script tag, and the JS-side
   threshold logic picks up the fresh lookup on its next tick.
 {%- enddoc -%}
+{%- liquid
+  capture apgo_fsl_set_on
+    render 'apgo-bundle-set-offer'
+  endcapture
+  assign apgo_fsl_set_ship = settings.apgo_bundle_set_free_ship_my
+  if localization.country.iso_code == 'SG'
+    assign apgo_fsl_set_ship = settings.apgo_bundle_set_free_ship_sg
+  endif
+-%}
 <script data-apgo-free-shipping-lookup>
   window.APGO_FREE_SHIPPING_LINE_LOOKUP = {};
   {%- for line in cart.items -%}
@@ -21,4 +40,34 @@
       window.APGO_FREE_SHIPPING_LINE_LOOKUP["{{ line.product.id }}"] = {{ line.product.title | json }};
     {%- endif -%}
   {%- endfor -%}
+  window.APGO_FREE_SHIPPING_SET = null;
+  {%- if apgo_fsl_set_on == 'on' and apgo_fsl_set_ship -%}
+    window.APGO_FREE_SHIPPING_SET = { count: {{ settings.apgo_bundle_set_count | default: 3 }}, ids: {} };
+    {%- for line in cart.items -%}
+      {%- if line.product.metafields.apgo.bundle_enabled -%}
+        window.APGO_FREE_SHIPPING_SET.ids["{{ line.product.id }}"] = {{ line.product.title | json }};
+      {%- endif -%}
+    {%- endfor -%}
+    {%- comment -%} On the product page the product may not be in the cart yet. {%- endcomment -%}
+    {%- if product.metafields.apgo.bundle_enabled -%}
+      window.APGO_FREE_SHIPPING_SET.ids["{{ product.id }}"] = {{ product.title | json }};
+    {%- endif -%}
+  {%- endif -%}
+  window.apgoFreeShippingTitle = function (cart) {
+    if (!cart || !Array.isArray(cart.items)) return null;
+    var tags = window.APGO_FREE_SHIPPING_LINE_LOOKUP || {};
+    var set = window.APGO_FREE_SHIPPING_SET;
+    var packs = 0;
+    var setTitle = null;
+    for (var i = 0; i < cart.items.length; i++) {
+      var line = cart.items[i];
+      if (tags[line.product_id]) return tags[line.product_id];
+      var isGift = (line.properties && line.properties._free_gift === 'true') || Number(line.final_price) === 0;
+      if (set && set.ids[line.product_id] && !isGift) {
+        packs += Number(line.quantity) || 0;
+        setTitle = setTitle || set.ids[line.product_id];
+      }
+    }
+    return set && packs >= set.count ? setTitle : null;
+  };
 </script>

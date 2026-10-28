@@ -1,0 +1,14 @@
+{%- doc -%}
+  Prints "on" while the bundle picker's set offer (theme settings →
+  APGO — Bundle Widget → Set offer, e.g. any 3 for RM99) replaces the
+  buy-x-get-y tiers, else nothing. Capture it:
+  {% capture apgo_set_on %}{% render 'apgo-bundle-set-offer' %}{% endcapture %}
+
+  A cart attribute _apgo_preview_set_offer = 1 turns it on for that cart
+  only, so the offer can be checked on the live site before the switch
+  (POST /cart/update.js {"attributes": {"_apgo_preview_set_offer": "1"}}).
+  Used by snippets/apgo-bundle-widget, sections/apgo-mobile-pdp (subtitle)
+  and the cart free-shipping snippets.
+{%- enddoc -%}
+
+{%- if settings.apgo_bundle_set_on or cart.attributes['_apgo_preview_set_offer'] == '1' -%}on{%- endif -%}

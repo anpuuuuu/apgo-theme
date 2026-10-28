@@ -341,15 +341,8 @@
     /* Same tag-unlock helper as cart-free-shipping-goal: any line in
        the live cart whose product_id is in the per-section lookup
        wins, regardless of subtotal vs threshold. */
-    const findTagUnlock = (cart) => {
-      const lookup = window.APGO_FREE_SHIPPING_LINE_LOOKUP || {};
-      if (!cart || !Array.isArray(cart.items)) return null;
-      for (const line of cart.items) {
-        const title = lookup[line.product_id];
-        if (title) return title;
-      }
-      return null;
-    };
+    const findTagUnlock = (cart) =>
+      window.apgoFreeShippingTitle ? window.apgoFreeShippingTitle(cart) : null;
 
     const render = (subtotalMinor, cart) => {
       const marketCountry = (wrapper.dataset.marketCountry || '').toUpperCase();

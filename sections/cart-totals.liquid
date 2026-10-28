@@ -938,14 +938,9 @@
     // Shipping estimate by cart weight — must mirror Liquid SSR + sections/cart-cta.liquid
     function shippingEstimateMinor(cart) {
       if (!cart || !cart.item_count) return 0;
-      // Tag-unlock: any line in cart whose product_id matches the
-      // free-shipping lookup zeroes shipping regardless of subtotal.
-      const lookup = window.APGO_FREE_SHIPPING_LINE_LOOKUP || {};
-      if (Array.isArray(cart.items)) {
-        for (const line of cart.items) {
-          if (lookup[line.product_id]) return 0;
-        }
-      }
+      // Tag-unlock (a 'free-shipping' product, or a full set of the
+      // bundle set offer) zeroes shipping regardless of subtotal.
+      if (window.apgoFreeShippingTitle && window.apgoFreeShippingTitle(cart)) return 0;
       const ccy = cart.currency;
       const basis = (typeof window.apgoCartFreeShippingBasis === 'function')
         ? window.apgoCartFreeShippingBasis(cart)
