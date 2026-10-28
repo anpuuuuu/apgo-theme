@@ -151,7 +151,7 @@
         "tab_detergent": {
           "type": "tab",
           "settings": {
-            "enabled": true,
+            "enabled": false,
             "slot": "tab_3",
             "label": "Detergent PWP",
             "market_visibility": "my",
