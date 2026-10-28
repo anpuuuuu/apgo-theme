@@ -1376,7 +1376,10 @@
       var checked = sourceGroup.querySelector('input[type="radio"]:checked');
       var currentVal = checked ? checked.value : '';
       var curEl = g.querySelector('[data-apgo-cc-confirm-option-current]');
-      if (curEl) curEl.textContent = currentVal;
+      /* Single-variant products: show the chip's label (theme setting, e.g.
+         "Standard") instead of Shopify's "Default Title" (2026-10-29). */
+      var curChipLabel = currentVal === 'Default Title' && g.querySelector('[data-apgo-cc-confirm-chip] span');
+      if (curEl) curEl.textContent = curChipLabel ? curChipLabel.textContent : currentVal;
       g.querySelectorAll('[data-apgo-cc-confirm-chip]').forEach(function (chip) {
         var val = chip.getAttribute('data-option-value');
         chip.classList.toggle('is-active', val === currentVal);
