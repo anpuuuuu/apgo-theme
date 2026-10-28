@@ -28,6 +28,13 @@
     if featured_media_url == blank
       assign featured_media_url = resource.featured_media.preview_image | image_url: width: image_width
     endif
+    capture apgo_market_url
+      render 'apgo-market-first-image-url', product: resource, width: image_width
+    endcapture
+    assign apgo_market_url = apgo_market_url | strip
+    if apgo_market_url != blank
+      assign featured_media_url = apgo_market_url
+    endif
   endif
 %}
 

@@ -10,6 +10,13 @@
     if featured_media_url == blank
       assign featured_media_url = product.featured_media.preview_image | image_url: width: 500
     endif
+    capture apgo_market_url
+      render 'apgo-market-first-image-url', product: product, width: 500
+    endcapture
+    assign apgo_market_url = apgo_market_url | strip
+    if apgo_market_url != blank
+      assign featured_media_url = apgo_market_url
+    endif
   endif
 
   assign url = product.selected_or_first_available_variant.url

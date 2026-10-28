@@ -1,0 +1,26 @@
+{%- doc -%}
+  The image URL a product card hands to the product page when it is tapped
+  (theme setting "transition to main product"), when the product has images
+  tagged for one market only (snippets/apgo-market-media.liquid). Prints
+  nothing when no image is hidden here, so the caller keeps its own URL.
+
+  The card itself already shows this market's first image (card-gallery),
+  but the hand-off used product.media.first: in Singapore, tapping the
+  laundry card or coming back to the collection flashed the Malaysia-only
+  "3 for RM99" image (2026-10-29).
+
+  @param {product} product - The product.
+  @param {number} width - Image width for image_url.
+{%- enddoc -%}
+{%- liquid
+  capture apgo_mfi_id
+    render 'apgo-market-media', product: product, first: true
+  endcapture
+  if apgo_mfi_id != blank
+    assign apgo_mfi_id = apgo_mfi_id | plus: 0
+    assign apgo_mfi_media = product.media | where: 'id', apgo_mfi_id | first
+    if apgo_mfi_media != blank
+      echo apgo_mfi_media.preview_image | image_url: width: width
+    endif
+  endif
+-%}
