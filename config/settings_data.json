@@ -30,6 +30,7 @@
     "apgo_promo_banner_headline": "APGO Birthday Exclusive",
     "apgo_promo_banner_body": "Free 300ml Car Wash Shampoo  included with the Sprayer Special.",
     "apgo_bundle_show_scent_stock": false,
+    "apgo_bundle_set_on": true,
     "apgo_pdp_banner_image": "shopify://shop_images/warehouse-sales-rm388-last-2-day.png",
     "apgo_pdp_banner_products": [
       "pocket-friendly-deals",
