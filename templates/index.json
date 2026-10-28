@@ -69,6 +69,7 @@
         },
         "banner_9NBpHW": {
           "type": "banner",
+          "disabled": true,
           "settings": {
             "image": "shopify://shop_images/detergent_banner_photo_54820153-4cbc-4048-9895-3fe5a9f2b299.png",
             "image_desktop": "shopify://shop_images/detergent_banner_photo_54820153-4cbc-4048-9895-3fe5a9f2b299.png",
