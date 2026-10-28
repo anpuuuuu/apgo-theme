@@ -157,6 +157,13 @@ const check = (name, ok, detail) => { results.push({ name, ok }); console.log(`$
         return box ? [...box.querySelectorAll('img')].map((i) => (i.currentSrc || i.src).split('?')[0].split('/').pop()) : null;
       });
       check('SG 搜寻结果卡片用 SG 主图', card !== null && card[0] === SG_MAIN && !card.some((f) => MY_ONLY.includes(f)), card ? card.slice(0, 3).join('、') : '搜不到这个商品');
+      // Tapping a card hands its image to the product page; it flashed Malaysia's image in Singapore (847ca91).
+      await page.goto(url('/collections/all', { country: 'SG' }), { waitUntil: 'load', timeout: 60000 });
+      const handoff = await page.evaluate(() => {
+        const l = document.querySelector('[data-featured-media-url][data-product-id="9085513072794"]');
+        return l && l.dataset.featuredMediaUrl.split('?')[0].split('/').pop();
+      });
+      check('SG 卡片点进商品页时用 SG 主图', handoff === SG_MAIN, handoff || '找不到卡片');
     }
     await browser.close();
   }
