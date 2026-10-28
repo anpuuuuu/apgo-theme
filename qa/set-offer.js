@@ -45,7 +45,7 @@ async function readPdp(page) {
       setChip: set && (set.querySelector('.apgo-bundle__tier-chip') || {}).textContent,
       note: (widget.querySelector('.apgo-bundle__stack-note') || {}).textContent || '',
       giftPartShown: !!giftPart && !giftPart.hidden,
-      subtitle: ([...document.querySelectorAll('.apgo-subtitle')].find(visible) || {}).textContent || '',
+      subtitle: ([...document.querySelectorAll('.apgo-subtitle, .apgo-mpdp-subtitle')].find(visible) || {}).textContent || '',
     };
   });
 }
