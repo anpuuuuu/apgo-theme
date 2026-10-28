@@ -8,9 +8,13 @@
   adds it afterwards. The customer sees a cart missing their free gift until
   they refresh by hand.
 
-  This compares the server-rendered line count against the live cart shortly
-  after load; if an app changed the cart after render, it reloads ONCE so the
-  rendered page matches reality.
+  This compares the server-rendered lines (key, quantity, price) against the
+  live cart shortly after load; if an app changed the cart after render, it
+  reloads ONCE so the rendered page matches reality. Lines, not just the item
+  count: going from 5 to 6 detergent packs (2026-10-28), the page rendered
+  while AIOD's second Floor Cleaner sat on its own unpriced row (RM15), then
+  AIOD merged it into the gift row (×2, RM0). Same item count, so a
+  count-only check kept showing a RM15 row that wasn't in the cart.
 
   Safeguards against reload loops / false positives:
     - only ever checks in the first few seconds after load
@@ -23,8 +27,13 @@
 <script>
   (function () {
     'use strict';
-    var rendered = {{ cart.item_count | json }};
-    if (typeof rendered !== 'number') return;
+    {%- capture apgo_resync_lines -%}
+      {%- for item in cart.items -%}{{ item.key }}:{{ item.quantity }}:{{ item.final_line_price }}|{%- endfor -%}
+    {%- endcapture %}
+    function signature(lines) {
+      return lines.split('|').filter(Boolean).sort().join('|');
+    }
+    var rendered = signature({{ apgo_resync_lines | json }});
 
     var KEY = 'apgo_cart_resync';
     var interacted = false;
@@ -40,7 +49,10 @@
       fetch('/cart.js?_=' + Date.now(), { cache: 'no-store', headers: { Accept: 'application/json' } })
         .then(function (r) { return r.json(); })
         .then(function (cart) {
-          var live = cart && typeof cart.item_count === 'number' ? cart.item_count : rendered;
+          if (!cart || !Array.isArray(cart.items)) return;
+          var live = signature(cart.items.map(function (i) {
+            return i.key + ':' + i.quantity + ':' + i.final_line_price;
+          }).join('|'));
           if (live === rendered) {
             /* In sync — clear any stale guard so a future mismatch can act. */
             try { sessionStorage.removeItem(KEY); } catch (e) {}
@@ -48,16 +60,17 @@
           }
           /* An app changed the cart after this page rendered. Reload once. */
           try {
-            if (sessionStorage.getItem(KEY) === String(live)) return; // already reloaded for this state
-            sessionStorage.setItem(KEY, String(live));
+            if (sessionStorage.getItem(KEY) === live) return; // already reloaded for this state
+            sessionStorage.setItem(KEY, live);
           } catch (e) {}
           window.location.reload();
         })
         .catch(function () {});
     }
 
-    /* Two probes: one soon (fast apps), one later (slow round-trips). */
+    /* Probes: one soon (fast apps), later ones for slow round-trips. */
     window.setTimeout(check, 1500);
     window.setTimeout(check, 3800);
+    window.setTimeout(check, 7000);
   })();
 </script>
