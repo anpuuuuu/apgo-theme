@@ -102,6 +102,12 @@
           </thead>
 
           <tbody role="rowgroup">
+            {%- comment -%}
+              Bundle lines whose set offer comes with AIOD gifts in this market
+              (snippets/apgo-bundle-set-offer.liquid) are marked
+              data-apgo-gift-trigger for snippets/apgo-cart-settling.liquid.
+            {%- endcomment -%}
+            {%- capture apgo_cart_set_on -%}{%- render 'apgo-bundle-set-offer' -%}{%- endcapture -%}
             {% for item in cart.items %}
               {%- comment -%}
                 Free-gift lockdown detection — a line is treated as an
@@ -147,6 +153,7 @@
                 ref="cartItemRows[]"
                 {% if show_selection %}data-line-key="{{ item.key | escape }}"{% endif %}
                 data-variant-id="{{ item.variant_id }}"
+                {% if apgo_cart_set_on == 'on' and item.product.metafields.apgo.bundle_enabled %}data-apgo-gift-trigger{% endif %}
                 {% if apgo_aiod_quantity_promo_line %}data-aiod-quantity-promo-line{% endif %}
                 data-line-original-cents="{{ item.original_line_price }}"
                 data-line-final-cents="{{ item.final_line_price }}"

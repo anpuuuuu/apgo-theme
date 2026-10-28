@@ -1,0 +1,164 @@
+{%- comment -%}
+  Cart page: "Updating your free gifts…" while AIOD catches up (2026-10-29).
+
+  After the shopper changes a quantity, AIOD needs a few seconds to add or
+  remove its free gifts, and on the cart page it reloads the page to show
+  them. Until then the page lists the new quantity with the old gifts (6
+  laundry packs with one set of gifts), and checking out in that gap could
+  miss gifts. So, after a quantity change or removal on a line that drives
+  gifts (a bundle product while its set offer is on in this market, marked
+  data-apgo-gift-trigger in snippets/cart-products.liquid) or while the cart
+  holds AIOD gifts:
+    - the cart lines dim and a note shows;
+    - checkout is held;
+    - both stay until the cart has stopped changing (same lines on two reads
+      in a row), at least MIN_MS have passed, and no AIOD gift line is still
+      waiting to be priced free. A sessionStorage stamp carries this across
+      AIOD's reload. Never longer than MAX_MS.
+  Tagging gifts as they are added (snippets/apgo-aiod-gift-tag.liquid) keeps
+  this to one reload.
+{%- endcomment -%}
+<div class="apgo-cart-settling" data-apgo-cart-settling role="status" aria-live="polite" hidden>
+  <span class="apgo-cart-settling__spinner" aria-hidden="true"></span>
+  <span>Updating your free gifts…</span>
+</div>
+<script>
+  (function () {
+    'use strict';
+    /* The cart section re-renders after changes; the listeners below are on
+       document, so they are set up once and the note is looked up each time. */
+    if (window.apgoCartSettlingReady) return;
+    window.apgoCartSettlingReady = true;
+    var KEY = 'apgo_cart_settling';
+    var MIN_MS = 5000;
+    var MAX_MS = 15000;
+    var POLL_MS = 800;
+    var running = false;
+
+    function since() {
+      try { return Date.now() - (parseInt(sessionStorage.getItem(KEY), 10) || 0); } catch (e) { return Infinity; }
+    }
+    function show(on) {
+      document.documentElement.classList.toggle('apgo-cart-is-settling', on);
+      document.querySelectorAll('[data-apgo-cart-settling]').forEach(function (note) { note.hidden = !on; });
+    }
+    function stop() {
+      try { sessionStorage.removeItem(KEY); } catch (e) {}
+      running = false;
+      show(false);
+    }
+    function signature(cart) {
+      return cart.items.map(function (i) { return i.key + ':' + i.quantity + ':' + i.final_line_price; }).sort().join('|');
+    }
+    /* An AIOD gift not yet priced free, or not yet tagged with its rule. */
+    function giftPending(cart) {
+      return cart.items.some(function (i) {
+        var p = i.properties || {};
+        if (String(p._aiod_free_gift) !== 'true') return false;
+        var tag = '_aiod_gift_' + String(p._aiod_rule_id || '').trim();
+        return i.final_line_price > 0 || !Object.prototype.hasOwnProperty.call(p, tag);
+      });
+    }
+    function watch() {
+      if (running) return;
+      running = true;
+      show(true);
+      var last = null;
+      var same = 0;
+      (function poll() {
+        if (!running) return;
+        if (since() > MAX_MS) return stop();
+        fetch('/cart.js?_=' + Date.now(), { cache: 'no-store', headers: { Accept: 'application/json' } })
+          .then(function (r) { return r.json(); })
+          .then(function (cart) {
+            var s = signature(cart);
+            same = s === last ? same + 1 : 0;
+            last = s;
+            if (same >= 1 && since() >= MIN_MS && !giftPending(cart) && !window.isAiodGiftProcessing) return stop();
+            setTimeout(poll, POLL_MS);
+          })
+          .catch(function () { setTimeout(poll, POLL_MS); });
+      })();
+    }
+    function start() {
+      try { sessionStorage.setItem(KEY, String(Date.now())); } catch (e) { return; }
+      watch();
+    }
+    function drivesGifts(row) {
+      if (!row || row.hasAttribute('data-apgo-gift-line')) return false;
+      return row.hasAttribute('data-apgo-gift-trigger') || !!document.querySelector('tr.cart-items__table-row[data-apgo-gift-line]');
+    }
+
+    /* Carry the hold across AIOD's reload. */
+    if (since() < MAX_MS) watch();
+
+    document.addEventListener('click', function (e) {
+      var t = e.target instanceof Element ? e.target : null;
+      if (!t) return;
+      if (document.documentElement.classList.contains('apgo-cart-is-settling') && t.closest('button[name="checkout"]')) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+      var hit = t.closest('quantity-selector-component button, .cart-items__remove');
+      if (hit && drivesGifts(hit.closest('tr.cart-items__table-row'))) start();
+    }, true);
+    document.addEventListener('change', function (e) {
+      var t = e.target instanceof Element ? e.target : null;
+      if (t && t.matches('quantity-selector-component input') && drivesGifts(t.closest('tr.cart-items__table-row'))) start();
+    }, true);
+    document.addEventListener('submit', function (e) {
+      if (document.documentElement.classList.contains('apgo-cart-is-settling')) e.preventDefault();
+    }, true);
+  })();
+</script>
+<style>
+  .apgo-cart-settling {
+    position: fixed;
+    top: 42%;
+    left: 50%;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 18px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.88);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+    transform: translate(-50%, -50%);
+  }
+  .apgo-cart-settling[hidden] {
+    display: none;
+  }
+  .apgo-cart-settling__spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #f08418;
+    border-radius: 50%;
+    animation: apgo-cart-settling-spin 0.8s linear infinite;
+  }
+  @keyframes apgo-cart-settling-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .apgo-cart-settling__spinner {
+      animation: none;
+    }
+  }
+  html.apgo-cart-is-settling .cart-page__items {
+    opacity: 0.45;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  html.apgo-cart-is-settling button[name='checkout'] {
+    opacity: 0.5;
+    cursor: progress;
+  }
+</style>

@@ -27,6 +27,9 @@
       {%- comment -%} Reload once if a discount app adds its gift line after render {%- endcomment -%}
       {% render 'apgo-cart-resync' %}
 
+      {%- comment -%} Hold checkout while AIOD updates gifts after a quantity change {%- endcomment -%}
+      {% render 'apgo-cart-settling' %}
+
       <div class="cart-page__more-blocks">
         {%- content_for 'blocks' -%}
       </div>

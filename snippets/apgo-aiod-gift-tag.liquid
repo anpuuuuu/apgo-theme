@@ -1,0 +1,43 @@
+{%- comment -%}
+  Tags AIOD free gifts with their rule as they are added (2026-10-29).
+
+  AIOD adds a gift line with { _aiod_free_gift, _aiod_rule_id } only. Its
+  discount prices a gift at RM0 once the line also carries
+  "_aiod_gift_<rule id>": "true", which AIOD adds afterwards, one line per
+  cart read, with another /cart/change.js. On the cart page every AIOD cart
+  write reloads the page, so going from 5 to 6 laundry packs showed a
+  second, full-price Floor Cleaner row (RM15) and reloaded twice before the
+  gifts settled. Adding the tag in the add request itself gives the line the
+  same properties AIOD ends up with: it joins the existing gift line and is
+  free at once, and AIOD finds nothing left to tag.
+
+  Only JSON /cart/add requests whose items carry _aiod_free_gift and
+  _aiod_rule_id are touched. Placed before content_for_header so the wrapper
+  is in place before AIOD's scripts run.
+{%- endcomment -%}
+<script>
+  (function () {
+    var nativeFetch = window.fetch;
+    if (typeof nativeFetch !== 'function') return;
+    window.fetch = function (input, init) {
+      try {
+        var url = typeof input === 'string' ? input : (input && input.url) || '';
+        if (/\/cart\/add(\.js)?(\?|$)/.test(url) && init && typeof init.body === 'string') {
+          var body = JSON.parse(init.body);
+          var tagged = false;
+          (body.items || []).forEach(function (item) {
+            var p = item && item.properties;
+            if (!p || String(p._aiod_free_gift) !== 'true' || !p._aiod_rule_id) return;
+            var key = '_aiod_gift_' + String(p._aiod_rule_id).trim();
+            if (!Object.prototype.hasOwnProperty.call(p, key)) {
+              p[key] = 'true';
+              tagged = true;
+            }
+          });
+          if (tagged) init = Object.assign({}, init, { body: JSON.stringify(body) });
+        }
+      } catch (e) {}
+      return nativeFetch.call(window, input, init);
+    };
+  })();
+</script>
