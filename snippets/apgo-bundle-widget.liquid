@@ -212,7 +212,7 @@
           {%- assign t_save_fmt = t_savings | money | replace: cart.currency.iso_code, '' | strip -%}
           <div class="apgo-bundle__tier-meta">
             {{ t_total_count }} pack{% if t_total_count > 1 %}s{% endif %} · {{ t_avg_fmt }}/pack
-            {%- if t_savings > 0 -%}
+            {% if t_savings > 0 -%}
               <span class="apgo-bundle__tier-savings">· Save {{ t_save_fmt }}</span>
             {%- endif -%}
           </div>
