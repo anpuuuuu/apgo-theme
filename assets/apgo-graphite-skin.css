@@ -311,8 +311,22 @@ body.apgo-ticket-page.apgo-clearance-sale-page .apgo-event-banner.apgo-event-ban
   transform: skewX(-8deg);
 }
 
+/* Card price: the same red race-number tag as the coupons, a size smaller. */
 .apgo-ticket-page.apgo-clearance-sale-page .apgo-event-listing-card__price-current {
-  color: var(--graphite-red-text);
+  margin-left: 2px;
+  padding: 2px 9px;
+  border-radius: 4px;
+  background: var(--graphite-red);
+  color: #ffffff;
+  font-size: 17px;
+  transform: skewX(-8deg);
+}
+
+@media screen and (min-width: 990px) {
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-event-listing-card__price-current {
+    padding: 2px 10px;
+    font-size: 20px;
+  }
 }
 
 .apgo-ticket-page.apgo-clearance-sale-page .apgo-event-listing-card__price-compare {
