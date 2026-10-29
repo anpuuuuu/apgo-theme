@@ -1,0 +1,395 @@
+/* =====================================================================
+   APGO 11.11 "Graphite Grey" skin — /pages/11-11-sale (page.double-11).
+   A dark grey garage instead of white paper: red works like racing
+   stripes (ribbon, tags, buttons) and the headings take the chrome silver
+   of the banners' "11.11".
+
+   It loads after assets/apgo-ticket-skin.css and only recolours it, so
+   the Red Ticket layout (stamps, rows, watermarks, intro and countdown
+   placement) stays. Same selectors as the ticket file, so the later file
+   wins. To go back to Red Ticket, stop loading this file in
+   layout/theme.liquid.
+
+   Design: claude.ai artifact "APGO 11.11 Event Page Style", row D.
+   ===================================================================== */
+
+body.apgo-ticket-page.apgo-clearance-sale-page {
+  --graphite-ground: #1f2023;
+  --graphite-top: #2a2b2f;
+  --graphite-panel: #2b2d31;
+  --graphite-panel-soft: #26282c;
+  --graphite-well: #232528;
+  --graphite-raised: #34373c;
+  --graphite-line: #3d4046;
+  --graphite-line-strong: #5a5e66;
+  --graphite-text: #ffffff;
+  --graphite-silver: #a9adb4;
+  --graphite-faint: #8d9198;
+  --graphite-red: #d9001b;
+  --graphite-red-deep: #8e0612;
+  --graphite-red-text: #ff3b4e;
+  --graphite-chrome: linear-gradient(180deg, #ffffff 0%, #e3e6ea 45%, #9aa0a8 100%);
+
+  /* The ticket file's tokens, re-pointed at graphite. */
+  --ticket-paper: var(--graphite-ground);
+  --ticket-white: var(--graphite-panel);
+  --ticket-red: var(--graphite-red);
+  --ticket-red-deep: #b30016;
+  --ticket-ink: var(--graphite-text);
+  --ticket-muted: var(--graphite-silver);
+  --ticket-line: var(--graphite-line);
+  --ticket-tear: var(--graphite-line);
+  --ticket-photo: var(--graphite-raised);
+  --ticket-shadow: inset 0 3px 0 var(--graphite-red);
+
+  --crate-floor: var(--graphite-ground);
+  --crate-kraft-muted: var(--graphite-faint);
+  --crate-tape-ink: #ffffff;
+  --crate-red-ink: var(--graphite-red-text);
+  --crate-red-fill-ink: #ffffff;
+  --crate-cta-ink: #ffffff;
+}
+
+/* Graphite ground, a shade lighter at the top, with faint white sparkles. */
+.apgo-ticket-page.apgo-clearance-sale-page #MainContent {
+  background-color: var(--graphite-ground);
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='560' viewBox='0 0 420 560'%3E%3Cg fill='%23ffffff' fill-opacity='.07'%3E%3Cpath d='M60 70l3 9 9 3-9 3-3 9-3-9-9-3 9-3z'/%3E%3Cpath d='M352 160l2 6 6 2-6 2-2 6-2-6-6-2 6-2z'/%3E%3Cpath d='M214 318l3.5 10.5 10.5 3.5-10.5 3.5-3.5 10.5-3.5-10.5-10.5-3.5 10.5-3.5z'/%3E%3Cpath d='M390 460l2 6 6 2-6 2-2 6-2-6-6-2 6-2z'/%3E%3Cpath d='M34 430l2.5 7.5 7.5 2.5-7.5 2.5-2.5 7.5-2.5-7.5-7.5-2.5 7.5-2.5z'/%3E%3C/g%3E%3C/svg%3E"),
+    linear-gradient(180deg, var(--graphite-top) 0, var(--graphite-ground) 1200px);
+  background-position: 0 0, 0 0;
+  background-repeat: repeat, no-repeat;
+  background-size: 420px 560px, 100% 100%;
+}
+
+/* ── Ribbon: solid red, no tear lines ──────────────────────────────── */
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-tape__band,
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-tape--right .apgo-crate-tape__band {
+  background-image: none;
+  color: #ffffff;
+}
+
+/* ── Hero: no red band or zigzag; the picture sits in a graphite panel
+   with a red top edge. ───────────────────────────────────────────── */
+body.apgo-ticket-page.apgo-clearance-sale-page .apgo-event-banner.apgo-event-banner--ticket {
+  background: transparent;
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-event-banner--ticket::after {
+  content: none;
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-event-banner--ticket .apgo-event-banner__frame {
+  border: 1px solid var(--graphite-line);
+  background: var(--graphite-panel);
+  box-shadow: inset 0 4px 0 var(--graphite-red);
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-event-banner__hotspot:focus-visible {
+  outline-color: var(--graphite-text);
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-event-banner__jump {
+  border: 1px solid var(--graphite-line);
+  background: var(--graphite-panel);
+  color: var(--graphite-text);
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-event-banner__jump-icon {
+  color: var(--graphite-red-text);
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-event-banner__jump-kicker {
+  color: var(--graphite-silver);
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-event-banner__jump-arrow {
+  background: var(--graphite-red);
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-event-banner__jump:hover .apgo-event-banner__jump-arrow {
+  background: var(--ticket-red-deep);
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-event-banner__jump:focus-visible {
+  outline-color: var(--graphite-text);
+}
+
+/* ── Headings: red number tag like a race number, chrome title ─────── */
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-label__lot {
+  width: auto;
+  min-width: 46px;
+  padding: 0 10px;
+  border-radius: 4px;
+  box-shadow: none;
+  color: #ffffff;
+  transform: skewX(-8deg);
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-label__title {
+  background: var(--graphite-chrome);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__sublabel span {
+  color: #ffffff;
+}
+
+@media screen and (min-width: 990px) {
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-label__lot {
+    width: auto;
+    min-width: 58px;
+    padding: 0 12px;
+    border-radius: 5px;
+  }
+}
+
+/* Watermark "11.11": a faint white outline on graphite. */
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone[data-lot]::before,
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-intro::before {
+  -webkit-text-stroke-color: rgba(255, 255, 255, 0.06);
+}
+
+/* ── Promo coupons: graphite card, red top edge, offer in a darker well
+   under the picture, red race-number price tag. ───────────────────── */
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__offer {
+  padding: 10px;
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-offerbar {
+  margin: 10px 0 0;
+  padding: 14px;
+  border-radius: 10px;
+  background: var(--graphite-well);
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-offerbar::before {
+  content: none;
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-ticket-kicker {
+  color: var(--graphite-red-text);
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-tag,
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-offerbar .apgo-crate-tag {
+  align-self: flex-start;
+  padding: 3px 12px;
+  border-radius: 4px;
+  background: var(--graphite-red);
+  color: #ffffff;
+  font-size: 24px;
+  transform: skewX(-8deg);
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-was,
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-offerbar .apgo-crate-was {
+  color: var(--graphite-faint);
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__button--buy,
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__button--single {
+  box-shadow: 0 3px 0 var(--graphite-red-deep);
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__button--add {
+  border: 1.5px solid var(--graphite-line-strong);
+  background: transparent;
+  color: var(--graphite-text);
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__button--add:hover:not(:disabled) {
+  border-color: var(--graphite-text);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+@media screen and (min-width: 750px) {
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-offerbar {
+    padding: 16px 18px;
+  }
+}
+
+/* Computers: the offer stays under the picture as one row (name and
+   price, then the buttons), not the ticket's sideways stub. */
+@media screen and (min-width: 990px) {
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__offer {
+    display: block;
+    padding: 14px;
+    border-radius: 18px;
+    box-shadow: inset 0 4px 0 var(--graphite-red);
+  }
+
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-offerbar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    align-self: auto;
+    margin: 14px 0 0;
+    padding: 16px 18px;
+    border-radius: 12px;
+    background: var(--graphite-well);
+  }
+
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-offerbar__info {
+    flex: 1 1 auto;
+  }
+
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-offerbar__title {
+    font-size: 18px;
+    -webkit-line-clamp: 2;
+  }
+
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-tag,
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-offerbar .apgo-crate-tag {
+    padding: 3px 14px;
+    font-size: 28px;
+  }
+
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__button {
+    min-height: 54px;
+    font-size: 17px;
+  }
+
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__button--add {
+    flex: 0 0 54px;
+    width: 54px;
+  }
+
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__button--buy,
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone .apgo-event-linked-banner-zone__button--single {
+    flex: 0 0 auto;
+    min-width: 180px;
+    padding: 0 40px;
+  }
+}
+
+/* ── Product rows and cards ────────────────────────────────────────── */
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__banner {
+  box-shadow: inset 0 3px 0 var(--graphite-red);
+}
+
+@media screen and (max-width: 749px) {
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__banner {
+    box-shadow: none;
+  }
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__arrow {
+  background: rgba(43, 45, 49, 0.88);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  color: var(--graphite-text);
+}
+
+@media screen and (min-width: 750px) {
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__arrow {
+    background: var(--graphite-panel);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  }
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__arrow:hover:not(:disabled) {
+  border-color: var(--graphite-red);
+  background: var(--graphite-red);
+  color: #ffffff;
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-stamp {
+  color: #ffffff;
+  transform: skewX(-8deg);
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-event-listing-card__price-current {
+  color: var(--graphite-red-text);
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-event-listing-card__price-compare {
+  color: var(--graphite-faint);
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-stock--low {
+  color: var(--graphite-red-text);
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-event-listing-card__btn--add {
+  border: 1.5px solid var(--graphite-line-strong);
+  background: transparent;
+  color: var(--graphite-text);
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-event-listing-card__btn--add:hover:not(:disabled) {
+  border-color: var(--graphite-text);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-event-listing-card__btn--sold-out,
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-event-listing-card__btn--sold-out:hover {
+  background: var(--graphite-raised);
+  color: var(--graphite-faint);
+}
+
+/* ── Countdown: dashboard tiles with a red underline ───────────────── */
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-countdown__inner {
+  background: var(--graphite-panel-soft);
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-countdown__label {
+  color: var(--graphite-red-text);
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-countdown__tile,
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-countdown__tile--hot {
+  border-bottom: 3px solid var(--graphite-red);
+  background: var(--graphite-panel);
+  color: #ffffff;
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-countdown__unit {
+  color: var(--graphite-silver);
+  opacity: 1;
+}
+
+/* ── Intro and closing line ────────────────────────────────────────── */
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-intro__chip {
+  color: var(--graphite-red-text);
+}
+
+/* First part in signal red (11.11, MISS IT,), the second part chrome. */
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-intro__title {
+  color: var(--graphite-red-text);
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-intro__title span {
+  background: var(--graphite-chrome);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-intro__tag {
+  border: 1px solid var(--graphite-line);
+  background: var(--graphite-panel);
+  color: var(--graphite-text);
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-intro__tag-icon {
+  color: var(--graphite-red-text);
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-intro__cta {
+  border: 0;
+  background: var(--graphite-raised);
+  color: var(--graphite-text);
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-intro__cta:hover {
+  background: var(--graphite-red);
+  color: #ffffff;
+}
+
+.apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-intro__cta:focus-visible {
+  outline-color: var(--graphite-text);
+}

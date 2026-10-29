@@ -90,6 +90,8 @@
     {{ 'apgo-clearance-page.css' | asset_url | stylesheet_tag }}
     {%- if apgo_skin == 'ticket' -%}
       {{ 'apgo-ticket-skin.css' | asset_url | stylesheet_tag }}
+      {%- comment -%} Graphite Grey recolour of the ticket skin; drop this line for Red Ticket. {%- endcomment -%}
+      {{ 'apgo-graphite-skin.css' | asset_url | stylesheet_tag }}
     {%- endif -%}
     <script src="{{ 'apgo-clearance-page.js' | asset_url }}" defer></script>
   {%- endif %}
