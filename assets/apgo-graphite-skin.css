@@ -14,14 +14,14 @@
    ===================================================================== */
 
 body.apgo-ticket-page.apgo-clearance-sale-page {
-  --graphite-ground: #141518;
-  --graphite-top: #1e1f23;
-  --graphite-panel: #23252a;
-  --graphite-panel-soft: #1f2125;
-  --graphite-well: #1a1b1e;
-  --graphite-raised: #2c2e33;
-  --graphite-line: #34373d;
-  --graphite-line-strong: #50545c;
+  --graphite-ground: #0d0e10;
+  --graphite-top: #16171a;
+  --graphite-panel: #1b1c20;
+  --graphite-panel-soft: #17181b;
+  --graphite-well: #121315;
+  --graphite-raised: #24262a;
+  --graphite-line: #2c2e33;
+  --graphite-line-strong: #474a51;
   --graphite-text: #ffffff;
   --graphite-silver: #a9adb4;
   --graphite-faint: #8d9198;
@@ -288,7 +288,7 @@ body.apgo-ticket-page.apgo-clearance-sale-page .apgo-event-banner.apgo-event-ban
 }
 
 .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__arrow {
-  background: rgba(35, 37, 42, 0.88);
+  background: rgba(27, 28, 32, 0.88);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
   color: var(--graphite-text);
 }
