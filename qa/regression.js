@@ -137,6 +137,9 @@ const CHECKS = [
       const adds = await page.locator('cart-offers-tabs button', { hasText: /^ADD$/ }).count();
       out.push({ ok: adds > 0, detail: `购物车 PWP 区块 ${adds} 个 ADD 按钮` });
       await page.screenshot({ path: path.join(OUT, 'R6.png') });
+      // Off the cart page first: changed under it through the API, the cart
+      // page reloads to match (snippets/apgo-cart-resync) and cuts off the read.
+      await goto(page, '/', { country: 'SG' });
       await cartPost(page, '/cart/change.js', { id: String(SG_BUNDLE), quantity: 0 });
       c = await cart(page);
       out.push({ ok: !!line(SG_PWP_SHOE300) && line(SG_PWP_SHOE300).final_line_price === 990, detail: `拿掉 Bundle：Shoe 300ml $${((line(SG_PWP_SHOE300) || {}).final_line_price / 100).toFixed(2)}（应为 $9.90）` });
