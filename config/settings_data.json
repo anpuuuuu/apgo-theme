@@ -10,7 +10,7 @@
 {
   "current": {
     "apgo_gwp_enabled": false,
-    "apgo_cart_gift_enabled": true,
+    "apgo_cart_gift_enabled": false,
     "apgo_cart_gift_triggers": [
       "atomic-glaze-coating-8-8-promotion",
       "atomic-glaze-coating-sg61-promotion"

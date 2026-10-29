@@ -64,7 +64,12 @@
     {% render 'apgo-aboutus-page-particles' %}
   
   {% render 'shogun-head' %}
-  {% render 'abpilot-ui-sdk' %}
+  {%- comment -%}
+    AB Pilot (A/B testing) came over with the Taiwan theme. The Malaysia store
+    has no AB Pilot config, yet abpilot-ui-sdk loaded script.abpilot.io
+    synchronously on every page (0.5–0.6 s with the page stalled). Removed
+    2026-10-29; render 'abpilot-ui-sdk' here again to bring it back.
+  {%- endcomment -%}
   <meta name="google-site-verification" content="1M5qttF-zRS-f4aDnJxbTBz-JOhpRaFQWohNRCHKXdY" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -580,17 +585,5 @@
     {% if settings.quick_add or settings.mobile_quick_add %}
       {% render 'quick-add-modal' %}
     {% endif %}
-    
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const video = document.getElementById('brandVideo');
-    if (!video) return;
-    video.setAttribute('tabindex', '-1');
-    video.addEventListener('pointerdown', () => video.blur());
-    video.addEventListener('click', () => video.blur());
-    video.addEventListener('focus', () => video.blur());
-  });
-</script>
-
   </body>
 </html>

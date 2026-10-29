@@ -56,7 +56,9 @@
   .cart-products-title {
     font-size: 18px;
     font-weight: 600;
-    color: var(--text-primary, #000000);
+    /* White, as it has always rendered: --text-primary came from the Taiwan
+       AKO block on the cart page (disabled 2026-10-29), not from the theme. */
+    color: var(--text-primary, #ffffff);
     margin: 0;
     position: relative;
     padding-left: 12px;
