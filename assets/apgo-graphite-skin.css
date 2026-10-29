@@ -27,7 +27,7 @@ body.apgo-ticket-page.apgo-clearance-sale-page {
   --graphite-faint: #8d9198;
   --graphite-red: #d9001b;
   --graphite-red-deep: #8e0612;
-  --graphite-red-text: #ff3b4e;
+  --graphite-red-text: #ff5c6b; /* #ff3b4e in the design, lifted to 4.5:1 on the panels */
   --graphite-chrome: linear-gradient(180deg, #ffffff 0%, #e3e6ea 45%, #9aa0a8 100%);
 
   /* The ticket file's tokens, re-pointed at graphite. */
