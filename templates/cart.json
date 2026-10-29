@@ -78,6 +78,7 @@
           "type": "tab",
           "settings": {
             "enabled": true,
+            "market_visibility": "all",
             "slot": "tab_1",
             "label": "Warehouse Sales PWP",
             "subtitle_my": "",
@@ -96,6 +97,7 @@
           "type": "tab",
           "settings": {
             "enabled": true,
+            "market_visibility": "all",
             "slot": "tab_5",
             "label": "Crystal PWP",
             "subtitle_my": "Special price for Merdeka Promo · 2 set per product, per order",
@@ -115,6 +117,7 @@
           "type": "tab",
           "settings": {
             "enabled": true,
+            "market_visibility": "all",
             "slot": "tab_4",
             "label": "Atomic PWP",
             "subtitle_my": "Special price for Atomic Promo · 2 set per product, per order",
@@ -134,6 +137,7 @@
           "type": "tab",
           "settings": {
             "enabled": true,
+            "market_visibility": "all",
             "slot": "tab_2",
             "label": "Interior Set PWP",
             "subtitle_my": "Special price for Interior Coating · 2 set per product, per order",
@@ -152,9 +156,9 @@
           "type": "tab",
           "settings": {
             "enabled": false,
+            "market_visibility": "my",
             "slot": "tab_3",
             "label": "Detergent PWP",
-            "market_visibility": "my",
             "subtitle_my": "Special price for Detergent Promo · 1 set per product, per order",
             "subtitle_sg": "Special price for Detergent Promo · 1 set per product, per order",
             "audience": "trigger",
@@ -552,7 +556,7 @@
       "type": "cart-cta",
       "name": "Cart CTA (Standalone)",
       "settings": {
-        "show_accelerated": true,
+        "show_accelerated": false,
         "color_scheme": "scheme-9a9df36f-52ae-4a86-948a-8b59a473eca0",
         "show_sticky_mobile": true,
         "show_free_shipping_progress": true,
