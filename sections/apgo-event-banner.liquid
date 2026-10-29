@@ -97,8 +97,17 @@
   endif
 
   # Left / right links: only for a single banner (not the carousel).
+  # Singapore can point a half elsewhere, e.g. where a section is MY-only.
   assign apgo_split_left = section.settings.split_left_link
   assign apgo_split_right = section.settings.split_right_link
+  if apgo_is_sg
+    if section.settings.split_left_link_sg != blank
+      assign apgo_split_left = section.settings.split_left_link_sg
+    endif
+    if section.settings.split_right_link_sg != blank
+      assign apgo_split_right = section.settings.split_right_link_sg
+    endif
+  endif
   assign apgo_split = false
   if apgo_split_left != blank and apgo_split_right != blank and apgo_slide_count <= 1
     assign apgo_split = true
@@ -582,6 +591,18 @@
         { "value": "home", "label": "房子" }
       ],
       "default": "home"
+    },
+    {
+      "type": "url",
+      "id": "split_left_link_sg",
+      "label": "新加坡：左半邊連結（選填）",
+      "info": "新加坡客人點左半邊會到這裡，例如 #mega-deals。不填就跟上面一樣。"
+    },
+    {
+      "type": "url",
+      "id": "split_right_link_sg",
+      "label": "新加坡：右半邊連結（選填）",
+      "info": "不填就跟上面一樣。"
     },
     {
       "type": "checkbox",

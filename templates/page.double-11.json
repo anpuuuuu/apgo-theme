@@ -33,6 +33,7 @@
         "split_right_link": "#household",
         "split_right_label": "Household Deals",
         "split_right_icon": "home",
+        "split_left_link_sg": "#mega-deals",
         "show_split_buttons": false,
         "split_button_kicker": "Shop",
         "color_scheme": "",
