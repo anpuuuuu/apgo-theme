@@ -14,14 +14,14 @@
    ===================================================================== */
 
 body.apgo-ticket-page.apgo-clearance-sale-page {
-  --graphite-ground: #1f2023;
-  --graphite-top: #2a2b2f;
-  --graphite-panel: #2b2d31;
-  --graphite-panel-soft: #26282c;
-  --graphite-well: #232528;
-  --graphite-raised: #34373c;
-  --graphite-line: #3d4046;
-  --graphite-line-strong: #5a5e66;
+  --graphite-ground: #141518;
+  --graphite-top: #1e1f23;
+  --graphite-panel: #23252a;
+  --graphite-panel-soft: #1f2125;
+  --graphite-well: #1a1b1e;
+  --graphite-raised: #2c2e33;
+  --graphite-line: #34373d;
+  --graphite-line-strong: #50545c;
   --graphite-text: #ffffff;
   --graphite-silver: #a9adb4;
   --graphite-faint: #8d9198;
@@ -146,10 +146,20 @@ body.apgo-ticket-page.apgo-clearance-sale-page .apgo-event-banner.apgo-event-ban
   }
 }
 
-/* Watermark "11.11": a faint white outline on graphite. */
+/* Watermark "11.11": a clear white outline with a hint of fill, still
+   behind the cards and text. */
 .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone[data-lot]::before,
 .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-intro::before {
-  -webkit-text-stroke-color: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.03);
+  -webkit-text-stroke: 2.5px rgba(255, 255, 255, 0.16);
+}
+
+@media screen and (min-width: 990px) {
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone[data-lot]::before,
+  .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-intro::before {
+    color: rgba(255, 255, 255, 0.03);
+    -webkit-text-stroke: 3px rgba(255, 255, 255, 0.16);
+  }
 }
 
 /* ── Promo coupons: graphite card, red top edge, offer in a darker well
@@ -278,7 +288,7 @@ body.apgo-ticket-page.apgo-clearance-sale-page .apgo-event-banner.apgo-event-ban
 }
 
 .apgo-ticket-page.apgo-clearance-sale-page .apgo-crate-zone__arrow {
-  background: rgba(43, 45, 49, 0.88);
+  background: rgba(35, 37, 42, 0.88);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
   color: var(--graphite-text);
 }
