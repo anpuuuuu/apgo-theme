@@ -30,7 +30,7 @@
 .aurora-offer__topline { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 6px; min-width: 0; }
 .aurora-offer__reason { min-width: 0; margin: 0; color: #ff9eac; font-size: 11px; font-weight: 600; line-height: 16px; }
 .aurora-offer__sparkle { display: inline-block; margin-right: 2px; animation: aurora-offer-twinkle 2.2s ease-in-out infinite; }
-.aurora-offer__heading { margin: 0; color: #fff6f1; font-size: 13px; font-weight: 600; line-height: 19px; letter-spacing: 0; text-transform: none; overflow-wrap: break-word; }
+.aurora-offer__heading { grid-column: 1 / -1; min-width: 0; margin: 0; color: #fff6f1; font-size: clamp(10px, 3.3vw, 14px); font-weight: 600; line-height: 19px; letter-spacing: 0; text-transform: none; white-space: nowrap; }
 .aurora-offer__worth { color: #ffbbc6; white-space: nowrap; }
 .aurora-offer__exclusivity { margin: 0; color: #efbcc5; font-size: 10px; line-height: 15px; }
 .aurora-offer__prices { display: flex; align-items: center; gap: 6px; min-width: 0; white-space: nowrap; }

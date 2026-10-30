@@ -36,13 +36,13 @@
             <span class="aurora-offer__timer" role="timer" aria-label="Time remaining" aria-live="off"><span data-offer-minutes>10</span><span>:</span><span data-offer-seconds>00</span></span>
           </div>
         </div>
+        <h2 class="aurora-offer__heading" id="AuroraOfferTitle" title="{{ offer_product.title | escape }} — {{ offer_variant.title | escape }}">Add {{ offer_price_minor | money | replace: cart.currency.iso_code, '' | strip | replace: '.00', '' }} for Interior Clean &amp; Coat <span class="aurora-offer__worth">worth RM70++</span></h2>
         <div class="aurora-offer__image-wrap">
           {% if offer_image != blank %}
             {{ offer_image | image_url: width: 216 | image_tag: class: 'aurora-offer__image', widths: '72, 144, 216', sizes: '(max-width: 749px) 56px, 64px', loading: 'lazy', alt: offer_product.title }}
           {% endif %}
         </div>
         <div class="aurora-offer__details">
-          <h2 class="aurora-offer__heading" id="AuroraOfferTitle" title="{{ offer_product.title | escape }} — {{ offer_variant.title | escape }}">Add {{ offer_price_minor | money | replace: cart.currency.iso_code, '' | strip | replace: '.00', '' }} for Interior Clean &amp; Coat <span class="aurora-offer__worth">worth RM70++</span></h2>
           <div class="aurora-offer__prices">
             <strong class="aurora-offer__price">{{ offer_price_minor | money | replace: cart.currency.iso_code, '' | strip | replace: '.00', '' }}</strong>
             {% if reference_price_minor > offer_price_minor %}
