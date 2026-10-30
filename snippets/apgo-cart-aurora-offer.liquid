@@ -26,7 +26,13 @@
           {% endif %}
         </div>
         <div class="aurora-offer__details">
-          <p class="aurora-offer__reason"><span class="aurora-offer__sparkle" aria-hidden="true">✦</span> Aurora Bundle exclusive</p>
+          <div class="aurora-offer__topline">
+            <p class="aurora-offer__reason"><span class="aurora-offer__sparkle" aria-hidden="true">✦</span> Aurora Bundle exclusive</p>
+            <div class="aurora-offer__urgency">
+              <span class="aurora-offer__timer-label">Ends in</span>
+              <span class="aurora-offer__timer" role="timer" aria-label="Time remaining" aria-live="off"><span data-offer-minutes>10</span><span>:</span><span data-offer-seconds>00</span></span>
+            </div>
+          </div>
           <h2 class="aurora-offer__heading" id="AuroraOfferTitle" title="{{ offer_product.title | escape }}">Interior Coating 200ml · B1F1</h2>
           <div class="aurora-offer__prices">
             <strong class="aurora-offer__price">{{ offer_price_minor | money | replace: cart.currency.iso_code, '' | strip | replace: '.00', '' }}</strong>
@@ -36,10 +42,6 @@
             {% if offer_savings_minor > 0 %}
               <span class="aurora-offer__saving">Save {{ offer_savings_minor | money | replace: cart.currency.iso_code, '' | strip | replace: '.00', '' }}</span>
             {% endif %}
-          </div>
-          <div class="aurora-offer__urgency">
-            <span class="aurora-offer__timer-label">Ends in</span>
-            <span class="aurora-offer__timer" role="timer" aria-label="Time remaining" aria-live="off"><span data-offer-minutes>10</span><span>:</span><span data-offer-seconds>00</span></span>
             <span class="aurora-offer__preview" id="AuroraOfferPreviewNote" title="UI preview only. No item will be added or discounted.">Preview</span>
           </div>
         </div>
