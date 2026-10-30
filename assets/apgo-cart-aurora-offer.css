@@ -1,0 +1,85 @@
+.aurora-offer {
+  display: block;
+  min-width: 0;
+  padding-inline: var(--apgo-cart-inline-space, 12px);
+  margin-block: 12px 8px;
+  font-family: 'Poppins', Arial, sans-serif;
+  color: #fff;
+}
+.aurora-offer__card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: 18px;
+  border: 1px solid #b87724;
+  border-radius: 18px;
+  background: radial-gradient(ellipse at 100% 0%, #51301465, transparent 65%), linear-gradient(135deg, #1e180f, #100f0c 60%, #17130e);
+  box-shadow: 0 0 22px #ed9d1610, inset 0 1px 0 #ffd68a26;
+}
+.aurora-offer__card::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: -100% -60%;
+  pointer-events: none;
+  background: linear-gradient(115deg, transparent 43%, #ffe7ae0c 49%, #ffe7ae18 50%, transparent 57%);
+  transform: translateX(-55%);
+  animation: aurora-offer-shimmer 7s ease-in-out infinite;
+}
+.aurora-offer__topline { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.aurora-offer__eyebrow { display: inline-flex; align-items: center; gap: 6px; color: #ffbf58; font-size: 10px; letter-spacing: 1px; font-weight: 700; }
+.aurora-offer__eyebrow > span { font-size: 17px; animation: aurora-offer-twinkle 3.5s ease-in-out infinite; }
+.aurora-offer__preview { flex-shrink: 0; color: #bfb2a0; font-size: 8px; letter-spacing: .6px; border: 1px solid #ffffff24; border-radius: 4px; padding: 3px 5px; }
+.aurora-offer__heading { margin: 12px 0 6px; font-size: 19px; line-height: 1.3; font-weight: 700; color: #fff4df; letter-spacing: -.4px; }
+.aurora-offer__reason { margin: 0; font-size: 11px; line-height: 1.6; color: #bfb5a6; }
+.aurora-offer__reason strong { color: #f4cf91; font-weight: 600; }
+.aurora-offer__product { display: grid; grid-template-columns: 96px minmax(0, 1fr); align-items: center; gap: 14px; margin-top: 18px; }
+.aurora-offer__image-wrap { position: relative; align-self: start; aspect-ratio: 1; border-radius: 10px; overflow: hidden; background: #151515; border: 1px solid #ffc97735; }
+.aurora-offer__image { display: block; width: 100%; height: 100%; object-fit: contain; }
+.aurora-offer__image-label { position: absolute; inset: auto 0 0; padding: 4px 2px; text-align: center; background: #17110ce8; color: #f4cd8b; font-size: 7px; letter-spacing: .7px; font-weight: 700; }
+.aurora-offer__details { min-width: 0; }
+.aurora-offer__product-name { margin: 0 0 8px; font-size: 12px; line-height: 1.45; color: #eee8df; font-weight: 600; }
+.aurora-offer__price-label { margin: 0; color: #bdb2a1; font-size: 9px; }
+.aurora-offer__prices { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; }
+.aurora-offer__price { color: #ffbe5c; font-size: 29px; line-height: 1.3; letter-spacing: -1px; font-weight: 750; }
+.aurora-offer__original { font-size: 12px; color: #9a9083; }
+.aurora-offer__saving { display: inline-block; padding: 3px 6px; margin-top: 3px; border-radius: 4px; background: #ffb83e14; color: #f8d397; font-size: 9px; line-height: 1.5; }
+.aurora-offer__pending { color: #b3a28d; font-size: 9px; line-height: 1.4; }
+.aurora-offer__footer { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 14px; border-top: 1px solid #e4bc7730; margin-top: 16px; padding-top: 14px; }
+.aurora-offer__urgency { display: flex; flex-direction: column; gap: 4px; }
+.aurora-offer__timer-label { display: inline-flex; align-items: center; gap: 5px; color: #d5b787; font-size: 9px; }
+.aurora-offer__live-dot { width: 5px; height: 5px; flex-shrink: 0; border-radius: 50%; background: #ffb83e; box-shadow: 0 0 8px #ffb83e66; }
+.aurora-offer__timer { display: flex; align-items: center; gap: 4px; color: #ffe6b9; font-size: 19px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: 1px; line-height: 1; }
+.aurora-offer__timer > [data-offer-minutes], .aurora-offer__timer > [data-offer-seconds] { padding: 5px; border: 1px solid #e4bc7740; background: #0004; border-radius: 5px; }
+.aurora-offer__colon { color: #d0a467; }
+.aurora-offer__button:disabled { display: flex; justify-content: center; align-items: center; gap: 7px; min-height: 44px; width: 100%; border: 1px solid #ffd88a80; border-radius: 8px; padding: 10px 8px; background: linear-gradient(110deg, #e99528, #ffcc76); color: #251607; font: inherit; font-size: 12px; font-weight: 750; opacity: 1; cursor: default; box-shadow: 0 3px 16px #eb9b201a; }
+.aurora-offer__button > span:last-child { font-size: 20px; line-height: 1; }
+.aurora-offer__note { margin: 10px 0 0; text-align: center; font-size: 8px; line-height: 1.5; color: #a99b87; }
+.aurora-offer[data-expired] .aurora-offer__card::after, .aurora-offer[data-expired] .aurora-offer__eyebrow > span { animation: none; }
+.aurora-offer[data-expired] .aurora-offer__button:disabled { background: #302a22; color: #b9ad9b; border-color: #655039; box-shadow: none; }
+@keyframes aurora-offer-shimmer { 0%, 60% { transform: translateX(-55%); } 90%, 100% { transform: translateX(55%); } }
+@keyframes aurora-offer-twinkle { 0%, 100% { opacity: .55; } 50% { opacity: 1; text-shadow: 0 0 10px #ffd89b80; } }
+@media (min-width: 750px) {
+  .aurora-offer__card { padding: 22px 26px; }
+  .aurora-offer__heading { font-size: 24px; }
+  .aurora-offer__reason { font-size: 12px; }
+  .aurora-offer__product { grid-template-columns: 116px minmax(0, 1fr); gap: 20px; }
+  .aurora-offer__product-name { font-size: 16px; }
+  .aurora-offer__price { font-size: 34px; }
+  .aurora-offer__saving, .aurora-offer__price-label, .aurora-offer__pending { font-size: 11px; }
+  .aurora-offer__footer { grid-template-columns: 1fr minmax(220px, .6fr); }
+  .aurora-offer__urgency { flex-direction: row; align-items: center; gap: 12px; }
+  .aurora-offer__timer-label { font-size: 11px; }
+  .aurora-offer__button:disabled { font-size: 14px; }
+  .aurora-offer__note { font-size: 10px; }
+}
+@media (max-width: 359px) {
+  .aurora-offer__card { padding: 14px; }
+  .aurora-offer__eyebrow { font-size: 8px; letter-spacing: .6px; }
+  .aurora-offer__product { grid-template-columns: 80px minmax(0, 1fr); gap: 10px; }
+  .aurora-offer__heading { font-size: 18px; }
+  .aurora-offer__footer { gap: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .aurora-offer__card::after, .aurora-offer__eyebrow > span { animation: none; }
+}

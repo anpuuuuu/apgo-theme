@@ -20,6 +20,10 @@
         {%- content_for 'block', id: 'cart-page-items', type: '_cart-products' %}
       </div>
 
+      {% if section.settings.aurora_offer_preview %}
+        {% render 'apgo-cart-aurora-offer', original_price: section.settings.aurora_offer_original_price %}
+      {% endif %}
+
       {%- comment -%} Reload once if a discount app adds its gift line after render {%- endcomment -%}
       {% render 'apgo-cart-resync' %}
 
@@ -32,6 +36,9 @@
     </div>
   </div>
 </cart-items-component>
+
+{{ 'apgo-cart-aurora-offer.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'apgo-cart-aurora-offer.js' | asset_url }}" defer></script>
 
 {% stylesheet %}
   .cart-page {
@@ -475,6 +482,24 @@
     }
   ],
   "settings": [
+    {
+      "type": "header",
+      "content": "Aurora add-on UI preview"
+    },
+    {
+      "type": "checkbox",
+      "id": "aurora_offer_preview",
+      "label": "Show conditional add-on preview",
+      "default": true,
+      "info": "UI only. Appears with the Aurora trigger variant in MY carts. No discount or add-to-cart action is connected."
+    },
+    {
+      "type": "number",
+      "id": "aurora_offer_original_price",
+      "label": "Preview original price (RM)",
+      "default": 0,
+      "info": "Leave 0 until the reference price is confirmed. The preview offer is RM39."
+    },
     {
       "type": "select",
       "id": "section_width",
