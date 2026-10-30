@@ -20,45 +20,30 @@
 {%- if aurora_eligible and offer_variant != blank and cart.currency.iso_code == 'MYR' -%}
   <apgo-aurora-offer class="aurora-offer" data-duration="600" data-timer-key="apgo:aurora-addon:preview:MYR" aria-labelledby="AuroraOfferTitle">
     <div class="aurora-offer__card">
-      <div class="aurora-offer__topline">
-        <span class="aurora-offer__eyebrow"><span aria-hidden="true">✦</span> EXCLUSIVE CART UNLOCK</span>
-        <span class="aurora-offer__preview">UI PREVIEW</span>
-      </div>
-      <div class="aurora-offer__intro">
-        <h2 class="aurora-offer__heading" id="AuroraOfferTitle">Your bundle unlocked a little extra.</h2>
-        <p class="aurora-offer__reason">Because you added the <strong>Atomic Aurora Bundle</strong>, this special add-on is just for you.</p>
-      </div>
-      <div class="aurora-offer__product">
         <div class="aurora-offer__image-wrap">
           {% if offer_image != blank %}
-            {{ offer_image | image_url: width: 360 | image_tag: class: 'aurora-offer__image', widths: '120, 240, 360', sizes: '(max-width: 749px) 96px, 116px', loading: 'lazy', alt: offer_product.title }}
+            {{ offer_image | image_url: width: 216 | image_tag: class: 'aurora-offer__image', widths: '72, 144, 216', sizes: '(max-width: 749px) 56px, 64px', loading: 'lazy', alt: offer_product.title }}
           {% endif %}
-          <span class="aurora-offer__image-label">BUNDLE EXTRA</span>
         </div>
         <div class="aurora-offer__details">
-          <p class="aurora-offer__product-name">{{ offer_product.title | escape }}</p>
-          <p class="aurora-offer__price-label">Your unlocked price</p>
+          <p class="aurora-offer__reason"><span class="aurora-offer__sparkle" aria-hidden="true">✦</span> Aurora Bundle exclusive</p>
+          <h2 class="aurora-offer__heading" id="AuroraOfferTitle" title="{{ offer_product.title | escape }}">Interior Coating 200ml · B1F1</h2>
           <div class="aurora-offer__prices">
-            <strong class="aurora-offer__price">{{ offer_price_minor | money | replace: cart.currency.iso_code, '' | strip }}</strong>
+            <strong class="aurora-offer__price">{{ offer_price_minor | money | replace: cart.currency.iso_code, '' | strip | replace: '.00', '' }}</strong>
             {% if reference_price_minor > offer_price_minor %}
-              <s class="aurora-offer__original">{{ reference_price_minor | money | replace: cart.currency.iso_code, '' | strip }}</s>
+              <s class="aurora-offer__original">{{ reference_price_minor | money | replace: cart.currency.iso_code, '' | strip | replace: '.00', '' }}</s>
+            {% endif %}
+            {% if offer_savings_minor > 0 %}
+              <span class="aurora-offer__saving">Save {{ offer_savings_minor | money | replace: cart.currency.iso_code, '' | strip | replace: '.00', '' }}</span>
             {% endif %}
           </div>
-          {% if offer_savings_minor > 0 %}
-            <span class="aurora-offer__saving">Save {{ offer_savings_minor | money | replace: cart.currency.iso_code, '' | strip }} with your bundle</span>
-          {% else %}
-            <span class="aurora-offer__pending">Original price pending confirmation</span>
-          {% endif %}
+          <div class="aurora-offer__urgency">
+            <span class="aurora-offer__timer-label">Ends in</span>
+            <span class="aurora-offer__timer" role="timer" aria-label="Time remaining" aria-live="off"><span data-offer-minutes>10</span><span>:</span><span data-offer-seconds>00</span></span>
+            <span class="aurora-offer__preview" id="AuroraOfferPreviewNote" title="UI preview only. No item will be added or discounted.">Preview</span>
+          </div>
         </div>
-      </div>
-      <div class="aurora-offer__footer">
-        <div class="aurora-offer__urgency">
-          <span class="aurora-offer__timer-label"><span class="aurora-offer__live-dot" aria-hidden="true"></span>Offer ends in</span>
-          <span class="aurora-offer__timer" role="timer" aria-label="Time remaining" aria-live="off"><span data-offer-minutes>10</span><span class="aurora-offer__colon">:</span><span data-offer-seconds>00</span></span>
-        </div>
-        <button class="aurora-offer__button" type="button" disabled aria-describedby="AuroraOfferPreviewNote"><span data-offer-button-label>Unlock for {{ offer_price_minor | money | replace: cart.currency.iso_code, '' | strip }}</span><span aria-hidden="true">＋</span></button>
-      </div>
-      <p class="aurora-offer__note" id="AuroraOfferPreviewNote">UI preview only · No item will be added or discounted.</p>
+        <button class="aurora-offer__button" type="button" disabled aria-describedby="AuroraOfferPreviewNote"><span class="visually-hidden" data-offer-button-label>Add for {{ offer_price_minor | money | replace: cart.currency.iso_code, '' | strip }} (UI preview only)</span><span aria-hidden="true">＋</span></button>
     </div>
   </apgo-aurora-offer>
 {%- endif -%}
