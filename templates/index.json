@@ -15,9 +15,18 @@
         "banner_gwB9LQ": {
           "type": "banner",
           "settings": {
-            "image": "shopify://shop_images/1_2dc1f73a-7df9-4156-820d-8fff64687788.jpg",
-            "image_desktop": "shopify://shop_images/1_2dc1f73a-7df9-4156-820d-8fff64687788.jpg",
-            "link": "shopify://pages/clearance-sale",
+            "image": "shopify://shop_images/main_banner_1920_x_1080.jpg",
+            "link": "shopify://pages/11-11-sale",
+            "alt": "",
+            "tracking_id": "",
+            "market_visibility": "both"
+          }
+        },
+        "banner_a7egwR": {
+          "type": "banner",
+          "settings": {
+            "image": "shopify://shop_images/Boss_exclusive_1920_x_1080.jpg",
+            "link": "shopify://products/11-11-boss-exclusive-coating-bundle",
             "alt": "",
             "tracking_id": "",
             "market_visibility": "my"
@@ -26,42 +35,18 @@
         "banner_jin73F": {
           "type": "banner",
           "settings": {
-            "image": "shopify://shop_images/3_0e3a8eb7-4b99-479d-95b3-fe95d6d18b23.jpg",
-            "image_desktop": "shopify://shop_images/3_0e3a8eb7-4b99-479d-95b3-fe95d6d18b23.jpg",
-            "link": "shopify://pages/clearance-sale",
+            "image": "shopify://shop_images/mega_deals_1920_x_1080.jpg",
+            "link": "shopify://pages/11-11-sale",
             "alt": "",
             "tracking_id": "",
-            "market_visibility": "my"
-          }
-        },
-        "banner_a7egwR": {
-          "type": "banner",
-          "settings": {
-            "image": "shopify://shop_images/2_dea55a7f-0b39-4b73-ab73-3502e8909f15.jpg",
-            "image_desktop": "shopify://shop_images/2_dea55a7f-0b39-4b73-ab73-3502e8909f15.jpg",
-            "link": "shopify://pages/clearance-sale",
-            "alt": "",
-            "tracking_id": "",
-            "market_visibility": "my"
+            "market_visibility": "both"
           }
         },
         "banner_9GwjTp": {
           "type": "banner",
           "settings": {
-            "image": "shopify://shop_images/warehouse_sales_banner.jpg",
-            "image_desktop": "shopify://shop_images/warehouse_sales_banner.jpg",
-            "link": "shopify://products/warehouse-clearance-sale-bundle",
-            "alt": "",
-            "tracking_id": "",
-            "market_visibility": "my"
-          }
-        },
-        "banner_FGcy6A": {
-          "type": "banner",
-          "settings": {
-            "image": "shopify://shop_images/warehouse_sales_banneR.png",
-            "image_desktop": "shopify://shop_images/warehouse_sales_banneR.png",
-            "link": "shopify://products/pocket-friendly-deals",
+            "image": "shopify://shop_images/Aurora_1920_x_1080.jpg",
+            "link": "shopify://products/apgo-11-11aurora-car-nano-coating-300ml-b1f2",
             "alt": "",
             "tracking_id": "",
             "market_visibility": "my"
@@ -69,14 +54,12 @@
         },
         "banner_9NBpHW": {
           "type": "banner",
-          "disabled": true,
           "settings": {
-            "image": "shopify://shop_images/detergent_banner_photo_54820153-4cbc-4048-9895-3fe5a9f2b299.png",
-            "image_desktop": "shopify://shop_images/detergent_banner_photo_54820153-4cbc-4048-9895-3fe5a9f2b299.png",
-            "link": "shopify://products/apgo-laundry-detergent-special-promotion-1",
+            "image": "shopify://shop_images/household_banner.png",
+            "link": "shopify://pages/11-11-sale",
             "alt": "",
             "tracking_id": "",
-            "market_visibility": "my"
+            "market_visibility": "both"
           }
         },
         "banner_golden_bull": {
@@ -86,16 +69,15 @@
             "link": "/pages/golden-bull-award#golden-bull-promos",
             "alt": "Golden Bull Award: your trust, our gratitude. Tap to enjoy our gifts.",
             "tracking_id": "",
-            "market_visibility": "both"
+            "market_visibility": "sg"
           }
         }
       },
       "block_order": [
         "banner_gwB9LQ",
-        "banner_jin73F",
         "banner_a7egwR",
+        "banner_jin73F",
         "banner_9GwjTp",
-        "banner_FGcy6A",
         "banner_9NBpHW",
         "banner_golden_bull"
       ],
@@ -119,15 +101,15 @@
         "desktop_rows": "1",
         "background": "black",
         "ghost_text": "DEALS",
-        "featured_product": "warehouse-clearance-sale-bundle",
+        "featured_product": "11-11-boss-exclusive-coating-bundle",
         "featured_label": "Deal of the week",
         "featured_note": "Limited time only · while stocks last",
-        "featured_contents": "Atomic Aurora Car Nano Coating (Premium) x2,Titanium Car Nano Coating (Premium) x2,Atomic Coloured Glaze Car Nano Coating (Premium) x2,Atomic Coating Series Bottles & Refills x6,Cleaning & Care Essentials x15,30ml Trial Packs x3",
+        "featured_contents": "",
         "featured_sticker": false,
-        "featured_product_sg": "warehouse-clearance-sale-bundle-sg",
+        "featured_product_sg": "atomic-coloured-glaze",
         "featured_label_sg": "Deal of the week",
         "featured_note_sg": "Limited time only · while stocks last",
-        "featured_contents_sg": "Titanium Car Nano Coating (Premium) x2,Atomic Coloured Glaze Car Nano Coating (Premium) x2,Atomic Coating Series Bottles & Refills x8,Cleaning & Care Essentials x10,30ml Trial Packs x3",
+        "featured_contents_sg": "",
         "link_label": "View all",
         "link_label_desktop": "View all deals",
         "link": "/collections/best-value-picks",
