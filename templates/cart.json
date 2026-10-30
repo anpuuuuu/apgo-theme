@@ -24,6 +24,7 @@
       "blocks": {
         "cart-page-title": {
           "type": "_cart-title",
+          "disabled": true,
           "static": true,
           "settings": {
             "title": "Cart",
