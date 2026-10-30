@@ -180,36 +180,6 @@
             "view_all_link": ""
           }
         },
-        "row_household": {
-          "type": "product_carousel",
-          "settings": {
-            "market_visibility": "my",
-            "heading": "Household Deals",
-            "message": "",
-            "sub_label": "",
-            "anchor_id": "household",
-            "badge_text": "",
-            "badge_texts": "",
-            "banner": "shopify://shop_images/household_banner.png",
-            "products": [
-              "apgo-laundry-detergent-special-promotion-1",
-              "apgo-tencel-laundry-detergent-500ml-copy",
-              "apgo-white-shoe-cleaner-made-in-taiwan",
-              "apgo-tencel-special-cleaning-formula",
-              "apgo-kitchen-cleaner-refill-bag",
-              "apgo-laundry-whitening-salt-500g-copy",
-              "apgo-floor-cleaner-made-in-taiwan",
-              "apgo-kitchen-cleaner",
-              "apgo-kitchenware-burnt-marks-remover",
-              "apgo-water-spot-remover"
-            ],
-            "variant_ids": "",
-            "hide_compare_at": true,
-            "show_promo_limit": false,
-            "show_scroll_cue": true,
-            "view_all_link": ""
-          }
-        },
         "sg_deal_acg": {
           "type": "promo_banner",
           "settings": {
@@ -289,6 +259,36 @@
             "counter_release_total": "88",
             "counter_manual_deduction": "0",
             "counter_flow_baseline": "0"
+          }
+        },
+        "row_household": {
+          "type": "product_carousel",
+          "settings": {
+            "market_visibility": "both",
+            "heading": "Household Deals",
+            "message": "",
+            "sub_label": "",
+            "anchor_id": "household",
+            "badge_text": "",
+            "badge_texts": "",
+            "banner": "shopify://shop_images/household_banner.png",
+            "products": [
+              "apgo-laundry-detergent-special-promotion-1",
+              "apgo-tencel-laundry-detergent-500ml-copy",
+              "apgo-white-shoe-cleaner-made-in-taiwan",
+              "apgo-tencel-special-cleaning-formula",
+              "apgo-kitchen-cleaner-refill-bag",
+              "apgo-laundry-whitening-salt-500g-copy",
+              "apgo-floor-cleaner-made-in-taiwan",
+              "apgo-kitchen-cleaner",
+              "apgo-kitchenware-burnt-marks-remover",
+              "apgo-water-spot-remover"
+            ],
+            "variant_ids": "",
+            "hide_compare_at": true,
+            "show_promo_limit": false,
+            "show_scroll_cue": true,
+            "view_all_link": ""
           }
         }
       },
