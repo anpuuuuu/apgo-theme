@@ -34,6 +34,7 @@
         "split_right_label": "Household Deals",
         "split_right_icon": "home",
         "split_left_link_sg": "#mega-deals",
+        "split_right_link_sg": "",
         "show_split_buttons": false,
         "split_button_kicker": "Shop",
         "color_scheme": "",
@@ -189,6 +190,7 @@
             "anchor_id": "household",
             "badge_text": "",
             "badge_texts": "",
+            "banner": "shopify://shop_images/household_banner.png",
             "products": [
               "apgo-laundry-detergent-special-promotion-1",
               "apgo-tencel-laundry-detergent-500ml-copy",
