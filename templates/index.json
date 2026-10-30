@@ -71,18 +71,17 @@
             "link": "shopify://pages/11-11-sale",
             "alt": "",
             "tracking_id": "",
-            "market_visibility": "my"
+            "market_visibility": "both"
           }
         },
         "banner_golden_bull": {
           "type": "banner",
-          "disabled": true,
           "settings": {
             "image": "shopify://shop_images/celebrating_our_1.png",
             "link": "/pages/golden-bull-award#golden-bull-promos",
             "alt": "Golden Bull Award: your trust, our gratitude. Tap to enjoy our gifts.",
             "tracking_id": "",
-            "market_visibility": "both"
+            "market_visibility": "sg"
           }
         }
       },
