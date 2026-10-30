@@ -76,6 +76,7 @@
         },
         "banner_golden_bull": {
           "type": "banner",
+          "disabled": true,
           "settings": {
             "image": "shopify://shop_images/celebrating_our_1.png",
             "link": "/pages/golden-bull-award#golden-bull-promos",
