@@ -26,11 +26,13 @@
 .aurora-offer__border .aurora-offer__beam-core { stroke: #fff1f5; stroke-width: 1.1px; stroke-dasharray: var(--beam-core) calc(100 - var(--beam-core)); animation-name: aurora-offer-border-core; }
 .aurora-offer__image-wrap { aspect-ratio: 1; overflow: hidden; border-radius: 6px; border: 1px solid #f1d9d233; background: #151515; }
 .aurora-offer__image { display: block; width: 100%; height: 100%; object-fit: contain; }
-.aurora-offer__details { display: grid; gap: 2px; min-width: 0; }
-.aurora-offer__topline { display: flex; align-items: center; justify-content: space-between; gap: 6px; min-width: 0; }
-.aurora-offer__reason { min-width: 0; margin: 0; color: #ff9eac; font-size: 10px; line-height: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.aurora-offer__details { display: grid; gap: 5px; min-width: 0; }
+.aurora-offer__topline { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 6px; min-width: 0; }
+.aurora-offer__reason { min-width: 0; margin: 0; color: #ff9eac; font-size: 11px; font-weight: 600; line-height: 16px; }
 .aurora-offer__sparkle { display: inline-block; margin-right: 2px; animation: aurora-offer-twinkle 2.2s ease-in-out infinite; }
-.aurora-offer__heading { margin: 0; color: #fff6f1; font-size: 13px; font-weight: 600; line-height: 18px; letter-spacing: 0; text-transform: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.aurora-offer__heading { margin: 0; color: #fff6f1; font-size: 13px; font-weight: 600; line-height: 19px; letter-spacing: 0; text-transform: none; overflow-wrap: break-word; }
+.aurora-offer__worth { color: #ffbbc6; white-space: nowrap; }
+.aurora-offer__exclusivity { margin: 0; color: #efbcc5; font-size: 10px; line-height: 15px; }
 .aurora-offer__prices { display: flex; align-items: center; gap: 6px; min-width: 0; white-space: nowrap; }
 .aurora-offer__price { padding: 0 7px; border-radius: 3px; background: var(--aurora-sale-red); color: #fff; font-size: 20px; line-height: 25px; font-weight: 700; }
 .aurora-offer__original { color: #aa999d; font-size: 11px; line-height: 14px; }
@@ -49,12 +51,13 @@
 @keyframes aurora-offer-beam-breathe { 0%, 16%, 90%, 100% { opacity: 0; } 28% { opacity: .45; } 42%, 58% { opacity: 1; } 74% { opacity: .3; } }
 @media (min-width: 750px) {
   .aurora-offer__card { grid-template-columns: 64px minmax(0, 1fr) 36px; gap: 12px; padding: 12px 14px; }
-  .aurora-offer__reason { font-size: 11px; line-height: 15px; }
+  .aurora-offer__reason { font-size: 12px; line-height: 18px; }
   .aurora-offer__heading { font-size: 14px; line-height: 20px; }
   .aurora-offer__price { font-size: 22px; line-height: 27px; }
   .aurora-offer__original { font-size: 12px; }
   .aurora-offer__saving, .aurora-offer__urgency { font-size: 11px; }
   .aurora-offer__timer { font-size: 18px; line-height: 22px; }
+  .aurora-offer__exclusivity { font-size: 11px; line-height: 16px; }
   .aurora-offer__button:disabled { width: 36px; height: 36px; }
 }
 @media (max-width: 749px) {
