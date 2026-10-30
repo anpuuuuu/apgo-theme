@@ -20,7 +20,15 @@
 {%- if aurora_eligible and offer_variant != blank and cart.currency.iso_code == 'MYR' -%}
   <apgo-aurora-offer class="aurora-offer" data-duration="600" data-timer-key="apgo:aurora-addon:preview:MYR" aria-labelledby="AuroraOfferTitle">
     <div class="aurora-offer__card">
-        <svg class="aurora-offer__border" aria-hidden="true" focusable="false"><rect width="100%" height="100%" rx="9" pathLength="100" /></svg>
+        <svg class="aurora-offer__border" aria-hidden="true" focusable="false">
+          {% for beam in (1..6) %}
+            <g class="aurora-offer__beam">
+              <rect class="aurora-offer__beam-halo" width="100%" height="100%" rx="9" pathLength="100" />
+              <rect class="aurora-offer__beam-tail" width="100%" height="100%" rx="9" pathLength="100" />
+              <rect class="aurora-offer__beam-core" width="100%" height="100%" rx="9" pathLength="100" />
+            </g>
+          {% endfor %}
+        </svg>
         <div class="aurora-offer__image-wrap">
           {% if offer_image != blank %}
             {{ offer_image | image_url: width: 216 | image_tag: class: 'aurora-offer__image', widths: '72, 144, 216', sizes: '(max-width: 749px) 56px, 64px', loading: 'lazy', alt: offer_product.title }}

@@ -8,11 +8,22 @@
 }
 .aurora-offer__card::after {
   content: ''; position: absolute; z-index: -1; inset: -100% -60%; pointer-events: none;
-  background: linear-gradient(115deg, transparent 40%, #ffc7d018 47%, #fff4f538 50%, #ffc7d018 53%, transparent 60%);
-  transform: translateX(-55%); animation: aurora-offer-shimmer 4.2s ease-in-out infinite;
+  background: linear-gradient(115deg, transparent 40%, #ffc7d00c 47%, #fff4f520 50%, #ffc7d00c 53%, transparent 60%);
+  transform: translateX(-55%); animation: aurora-offer-shimmer 7.2s ease-in-out infinite;
 }
 .aurora-offer__border { position: absolute; inset: 1px; width: calc(100% - 2px); height: calc(100% - 2px); overflow: visible; z-index: 2; pointer-events: none; }
-.aurora-offer__border rect { fill: none; stroke: #ffd3dc; stroke-width: 1.8px; stroke-linecap: round; stroke-dasharray: 14 86; filter: drop-shadow(0 0 3px #ff365d); animation: aurora-offer-border-flow 3.8s linear infinite; }
+/* Six short, unevenly spaced glints. Each fades on its own rhythm;
+   a diffuse halo, pink tail and fine white core give each glint depth. */
+.aurora-offer__beam { --beam-start: 0; --beam-length: 2.5; --beam-core: 1; animation: aurora-offer-beam-breathe 6.4s ease-in-out -.8s infinite; }
+.aurora-offer__beam:nth-child(2) { --beam-start: -16; --beam-length: 1.8; --beam-core: .8; animation-duration: 7.1s; animation-delay: -3.4s; }
+.aurora-offer__beam:nth-child(3) { --beam-start: -31; --beam-length: 2.2; --beam-core: .9; animation-duration: 6.8s; animation-delay: -5.1s; }
+.aurora-offer__beam:nth-child(4) { --beam-start: -50; --beam-length: 1.5; --beam-core: .7; animation-duration: 7.6s; animation-delay: -1.9s; }
+.aurora-offer__beam:nth-child(5) { --beam-start: -68; --beam-length: 2.4; --beam-core: 1; animation-duration: 6.1s; animation-delay: -4.3s; }
+.aurora-offer__beam:nth-child(6) { --beam-start: -85; --beam-length: 1.8; --beam-core: .8; animation-duration: 7.3s; animation-delay: -6.2s; }
+.aurora-offer__border rect { fill: none; stroke-linecap: round; stroke-dasharray: var(--beam-length) calc(100 - var(--beam-length)); animation: aurora-offer-border-flow 16s linear infinite; }
+.aurora-offer__beam-halo { stroke: #ff335a; stroke-width: 3.6px; opacity: .45; filter: blur(1.5px); }
+.aurora-offer__beam-tail { stroke: #ff7994; stroke-width: 1.5px; opacity: .8; }
+.aurora-offer__border .aurora-offer__beam-core { stroke: #fff1f5; stroke-width: 1.1px; stroke-dasharray: var(--beam-core) calc(100 - var(--beam-core)); animation-name: aurora-offer-border-core; }
 .aurora-offer__image-wrap { aspect-ratio: 1; overflow: hidden; border-radius: 6px; border: 1px solid #f1d9d233; background: #151515; }
 .aurora-offer__image { display: block; width: 100%; height: 100%; object-fit: contain; }
 .aurora-offer__details { display: grid; gap: 2px; min-width: 0; }
@@ -33,7 +44,9 @@
 .aurora-offer[data-expired] .aurora-offer__button:disabled { background: #352329; color: #baa5ab; border-color: #65404a; }
 @keyframes aurora-offer-shimmer { 0%, 25% { transform: translateX(-55%); } 85%, 100% { transform: translateX(55%); } }
 @keyframes aurora-offer-twinkle { 0%, 100% { opacity: .5; } 50% { opacity: 1; text-shadow: 0 0 10px #ffb3c0cc; } }
-@keyframes aurora-offer-border-flow { to { stroke-dashoffset: -100; } }
+@keyframes aurora-offer-border-flow { from { stroke-dashoffset: var(--beam-start); } to { stroke-dashoffset: calc(var(--beam-start) - 100); } }
+@keyframes aurora-offer-border-core { from { stroke-dashoffset: calc(var(--beam-start) - 1); } to { stroke-dashoffset: calc(var(--beam-start) - 101); } }
+@keyframes aurora-offer-beam-breathe { 0%, 16%, 90%, 100% { opacity: 0; } 28% { opacity: .45; } 42%, 58% { opacity: 1; } 74% { opacity: .3; } }
 @media (min-width: 750px) {
   .aurora-offer__card { grid-template-columns: 64px minmax(0, 1fr) 36px; gap: 12px; padding: 12px 14px; }
   .aurora-offer__reason { font-size: 11px; line-height: 15px; }
@@ -55,6 +68,6 @@
   .aurora-offer__prices { gap: 4px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .aurora-offer__card::after, .aurora-offer__sparkle, .aurora-offer__border rect { animation: none; }
+  .aurora-offer__card::after, .aurora-offer__sparkle, .aurora-offer__beam, .aurora-offer__border rect { animation: none; }
   .aurora-offer__border { display: none; }
 }
