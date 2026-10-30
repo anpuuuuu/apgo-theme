@@ -1,7 +1,7 @@
-{%- comment -%}
-  Trust signals for cart page (mobile only, below cart items).
-  Tax disclaimer lives under the sticky bar — see sections/cart-cta.liquid.
-{%- endcomment -%}
+{% doc %}
+  Mobile checkout reassurance below the standalone cart totals.
+  Desktop reassurance is rendered below the button in cart-cta.
+{% enddoc %}
 {%- unless cart == empty -%}
   <div class="apgo-cart-checkout-meta" aria-label="Checkout information">
     <p class="apgo-cart-checkout-meta__trust-title">{{ 'content.checkout_redirect_notice' | t }}</p>
@@ -29,3 +29,55 @@
     </ul>
   </div>
 {%- endunless -%}
+
+{% stylesheet %}
+  .apgo-cart-checkout-meta {
+    display: none;
+  }
+  @media (max-width: 749px) {
+    .apgo-cart-checkout-meta {
+      display: block;
+      margin-block: 16px 4px;
+      font-family: 'Poppins', 'Microsoft JhengHei', Arial, sans-serif;
+      text-align: center;
+    }
+    .apgo-cart-checkout-meta__trust-title {
+      margin: 10px 0 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.85);
+      text-align: center;
+      line-height: 1.35;
+    }
+    .apgo-cart-checkout-meta__trust {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 4px 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.6);
+      line-height: 1.35;
+      text-align: center;
+    }
+    .apgo-cart-checkout-meta__trust-item {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+    .apgo-cart-checkout-meta__trust-icon {
+      display: inline-flex;
+      align-items: center;
+      color: #f08418;
+      flex-shrink: 0;
+    }
+    .apgo-cart-checkout-meta__trust-sep {
+      color: rgba(255, 255, 255, 0.25);
+      user-select: none;
+    }
+  }
+{% endstylesheet %}
