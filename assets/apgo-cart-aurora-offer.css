@@ -40,6 +40,8 @@
 .aurora-offer__urgency { display: flex; flex-shrink: 0; align-items: center; gap: 4px; color: #d8b9bf; font-size: 10px; line-height: 14px; white-space: nowrap; }
 .aurora-offer__timer { display: inline-flex; align-items: baseline; font-size: 16px; line-height: 20px; font-variant-numeric: tabular-nums; color: #fff6f1; font-weight: 700; }
 .aurora-offer[hidden] { display: none; }
+.aurora-offer[data-offer-transition] { overflow: hidden; will-change: height, opacity, transform; }
+.aurora-offer[inert] { pointer-events: none; }
 .aurora-offer__button { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; min-width: 32px; min-height: 32px; padding: 0; border: 1px solid #f35a6d; border-radius: 7px; background: var(--aurora-sale-red); color: #fff; font: inherit; font-size: 23px; line-height: 1; opacity: 1; cursor: pointer; }
 .aurora-offer__button:disabled { cursor: default; }
 .aurora-offer__button:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
