@@ -337,6 +337,9 @@
                   {%- comment -%} Per-order limit per option (snippets/apgo-max-per-order.liquid), 0 = none. {%- endcomment -%}
                   {%- capture apgo_line_max_text -%}{%- render 'apgo-max-per-order', product: item.product, variant: item.variant -%}{%- endcapture -%}
                   {%- assign apgo_line_max = apgo_line_max_text | plus: 0 -%}
+                  {%- if item.variant_id == 47521770668186 and item.properties._apgo_aurora_pwp == 'aurora-39' -%}
+                    {%- assign apgo_line_max = 1 -%}
+                  {%- endif -%}
                   {% render 'quantity-selector',
                     product: item.product,
                     in_cart_quantity: item.quantity,

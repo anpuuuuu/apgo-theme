@@ -1,0 +1,61 @@
+{% doc %}
+  Conditional Aurora add-on card. Checkout pricing is controlled by AIOD.
+  @param {number} [original_price] - Confirmed reference price in MYR major units, or 0 when pending.
+{% enddoc %}
+{%- liquid
+  assign aurora_eligible = false
+  for item in cart.items
+    if item.variant_id == 67976724512922 and item.quantity > 0
+      assign aurora_eligible = true
+      break
+    endif
+  endfor
+  assign offer_product = all_products['apgo-car-interior-eco-friendly-coating']
+  assign offer_variant = offer_product.variants | where: 'id', 47521770668186 | first
+  assign offer_image = offer_variant.featured_image | default: offer_product.featured_image
+  assign offer_price_minor = 3000
+  assign reference_price_minor = original_price | default: 60 | times: 100 | round
+  assign offer_savings_minor = reference_price_minor | minus: offer_price_minor
+-%}
+{%- if aurora_eligible and offer_variant != blank and localization.country.iso_code == 'MY' and cart.currency.iso_code == 'MYR' -%}
+  <apgo-aurora-offer class="aurora-offer" data-available="{{ offer_variant.available }}" aria-labelledby="AuroraOfferTitle">
+    <div class="aurora-offer__card">
+        <svg class="aurora-offer__border" aria-hidden="true" focusable="false">
+          {% for beam in (1..6) %}
+            <g class="aurora-offer__beam">
+              <rect class="aurora-offer__beam-halo" width="100%" height="100%" rx="9" pathLength="100" />
+              <rect class="aurora-offer__beam-tail" width="100%" height="100%" rx="9" pathLength="100" />
+              <rect class="aurora-offer__beam-core" width="100%" height="100%" rx="9" pathLength="100" />
+            </g>
+          {% endfor %}
+        </svg>
+        <div class="aurora-offer__topline">
+          <p class="aurora-offer__reason"><span class="aurora-offer__sparkle" aria-hidden="true">✦</span> Specially made for this order</p>
+          <div class="aurora-offer__urgency">
+            <span class="aurora-offer__timer-label">Ends in</span>
+            <span class="aurora-offer__timer" role="timer" aria-label="Time remaining" aria-live="off"><span data-offer-minutes>10</span><span>:</span><span data-offer-seconds>00</span></span>
+          </div>
+        </div>
+        <h2 class="aurora-offer__heading" id="AuroraOfferTitle" title="{{ offer_product.title | escape }} — {{ offer_variant.title | escape }}">Add {{ offer_price_minor | money | replace: cart.currency.iso_code, '' | strip | replace: '.00', '' }} for Interior Clean &amp; Coat <span class="aurora-offer__worth">worth {{ reference_price_minor | money | replace: cart.currency.iso_code, '' | strip | replace: '.00', '' }}</span></h2>
+        <div class="aurora-offer__image-wrap">
+          {% if offer_image != blank %}
+            {{ offer_image | image_url: width: 216 | image_tag: class: 'aurora-offer__image', widths: '72, 144, 216', sizes: '(max-width: 749px) 56px, 64px', loading: 'lazy', alt: offer_product.title }}
+          {% endif %}
+        </div>
+        <div class="aurora-offer__details">
+          <div class="aurora-offer__prices">
+            <strong class="aurora-offer__price">{{ offer_price_minor | money | replace: cart.currency.iso_code, '' | strip | replace: '.00', '' }}</strong>
+            {% if reference_price_minor > offer_price_minor %}
+              <s class="aurora-offer__original">{{ reference_price_minor | money | replace: cart.currency.iso_code, '' | strip | replace: '.00', '' }}</s>
+            {% endif %}
+            {% if offer_savings_minor > 0 %}
+              <span class="aurora-offer__saving">Save {{ offer_savings_minor | money | replace: cart.currency.iso_code, '' | strip | replace: '.00', '' }}</span>
+            {% endif %}
+          </div>
+          <p class="aurora-offer__exclusivity"><em>Exclusive 1 set for this order only</em></p>
+        </div>
+        <button class="aurora-offer__button" type="button" disabled aria-describedby="AuroraOfferStatus"><span class="visually-hidden" data-offer-button-label>{{ 'actions.add_to_cart' | t }} — {{ offer_variant.title | escape }}</span><span data-offer-button-icon aria-hidden="true">＋</span></button>
+        <p class="aurora-offer__status" id="AuroraOfferStatus" data-offer-status role="status" aria-live="polite" hidden></p>
+    </div>
+  </apgo-aurora-offer>
+{%- endif -%}

@@ -20,6 +20,10 @@
         {%- content_for 'block', id: 'cart-page-items', type: '_cart-products' %}
       </div>
 
+      {% if section.settings.aurora_offer_preview %}
+        {% render 'apgo-cart-aurora-offer', original_price: section.settings.aurora_offer_original_price %}
+      {% endif %}
+
       {%- comment -%} Reload once if a discount app adds its gift line after render {%- endcomment -%}
       {% render 'apgo-cart-resync' %}
 
@@ -32,6 +36,8 @@
     </div>
   </div>
 </cart-items-component>
+
+{{ 'apgo-cart-aurora-offer.css' | asset_url | stylesheet_tag }}
 
 {% stylesheet %}
   .cart-page {
@@ -475,6 +481,24 @@
     }
   ],
   "settings": [
+    {
+      "type": "header",
+      "content": "Aurora add-on"
+    },
+    {
+      "type": "checkbox",
+      "id": "aurora_offer_preview",
+      "label": "Show conditional Aurora add-on",
+      "default": true,
+      "info": "Appears with the Aurora trigger variant in MY carts. The RM30 checkout price requires a separate AIOD discount."
+    },
+    {
+      "type": "number",
+      "id": "aurora_offer_original_price",
+      "label": "Original price (RM)",
+      "default": 60,
+      "info": "Reference price shown on the card. Configure the actual RM30 price separately in AIOD."
+    },
     {
       "type": "select",
       "id": "section_width",

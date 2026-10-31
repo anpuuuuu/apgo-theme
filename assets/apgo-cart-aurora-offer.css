@@ -1,0 +1,81 @@
+.aurora-offer { --aurora-sale-red: #d9001b; display: block; min-width: 0; padding-inline: calc(var(--apgo-cart-inline-space, 12px) + 15px); margin-block: 8px; font-family: 'Poppins', Arial, sans-serif; color: #fff; }
+.aurora-offer__card {
+  display: grid; grid-template-columns: 56px minmax(0, 1fr) 32px; align-items: center; gap: 8px;
+  position: relative; isolation: isolate; overflow: hidden; padding: 10px;
+  border: 1px solid var(--aurora-sale-red); border-radius: 10px;
+  background: radial-gradient(ellipse at 100% 0%, #d9001b1c, transparent 65%), linear-gradient(115deg, #241316, #141215);
+  box-shadow: inset 0 1px 0 #ffb9c414;
+}
+.aurora-offer__card::after {
+  content: ''; position: absolute; z-index: -1; inset: -100% -60%; pointer-events: none;
+  background: linear-gradient(115deg, transparent 40%, #ffc7d00c 47%, #fff4f520 50%, #ffc7d00c 53%, transparent 60%);
+  transform: translateX(-55%); animation: aurora-offer-shimmer 7.2s ease-in-out infinite;
+}
+.aurora-offer__border { position: absolute; inset: 1px; width: calc(100% - 2px); height: calc(100% - 2px); overflow: visible; z-index: 2; pointer-events: none; }
+/* Six short, unevenly spaced glints. Each fades on its own rhythm;
+   a diffuse halo, pink tail and fine white core give each glint depth. */
+.aurora-offer__beam { --beam-delay: 0s; --beam-length: 2.5; --beam-core: 1; animation: aurora-offer-beam-breathe 6.4s ease-in-out -.8s infinite; }
+.aurora-offer__beam:nth-child(2) { --beam-delay: -2.56s; --beam-length: 1.8; --beam-core: .8; animation-duration: 7.1s; animation-delay: -3.4s; }
+.aurora-offer__beam:nth-child(3) { --beam-delay: -4.96s; --beam-length: 2.2; --beam-core: .9; animation-duration: 6.8s; animation-delay: -5.1s; }
+.aurora-offer__beam:nth-child(4) { --beam-delay: -8s; --beam-length: 1.5; --beam-core: .7; animation-duration: 7.6s; animation-delay: -1.9s; }
+.aurora-offer__beam:nth-child(5) { --beam-delay: -10.88s; --beam-length: 2.4; --beam-core: 1; animation-duration: 6.1s; animation-delay: -4.3s; }
+.aurora-offer__beam:nth-child(6) { --beam-delay: -13.6s; --beam-length: 1.8; --beam-core: .8; animation-duration: 7.3s; animation-delay: -6.2s; }
+.aurora-offer__border rect { fill: none; stroke-linecap: round; stroke-dasharray: var(--beam-length) calc(100 - var(--beam-length)); animation: aurora-offer-border-flow 16s linear var(--beam-delay) infinite; }
+.aurora-offer__beam-halo { stroke: #ff335a; stroke-width: 3.6px; opacity: .45; filter: blur(1.5px); }
+.aurora-offer__beam-tail { stroke: #ff7994; stroke-width: 1.5px; opacity: .8; }
+.aurora-offer__border .aurora-offer__beam-core { stroke: #fff1f5; stroke-width: 1.1px; stroke-dasharray: var(--beam-core) calc(100 - var(--beam-core)); animation-name: aurora-offer-border-core; }
+.aurora-offer__image-wrap { aspect-ratio: 1; overflow: hidden; border-radius: 6px; border: 1px solid #f1d9d233; background: #151515; }
+.aurora-offer__image { display: block; width: 100%; height: 100%; object-fit: contain; }
+.aurora-offer__details { display: grid; gap: 5px; min-width: 0; }
+.aurora-offer__topline { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 6px; min-width: 0; }
+.aurora-offer__reason { min-width: 0; margin: 0; color: #ff9eac; font-size: 11px; font-weight: 600; line-height: 16px; }
+.aurora-offer__sparkle { display: inline-block; margin-right: 2px; animation: aurora-offer-twinkle 2.2s ease-in-out infinite; }
+.aurora-offer__heading { grid-column: 1 / -1; min-width: 0; margin: 0; color: #fff6f1; font-size: clamp(10px, 3.3vw, 14px); font-weight: 600; line-height: 19px; letter-spacing: 0; text-transform: none; white-space: nowrap; }
+.aurora-offer__worth { color: #ffbbc6; white-space: nowrap; }
+.aurora-offer__exclusivity { margin: 0; color: #efbcc5; font-size: 10px; line-height: 15px; }
+.aurora-offer__prices { display: flex; align-items: center; gap: 6px; min-width: 0; white-space: nowrap; }
+.aurora-offer__price { padding: 0 7px; border-radius: 3px; background: var(--aurora-sale-red); color: #fff; font-size: 20px; line-height: 25px; font-weight: 700; }
+.aurora-offer__original { color: #aa999d; font-size: 11px; line-height: 14px; }
+.aurora-offer__saving { color: #ffb7c2; font-size: 10px; line-height: 13px; }
+.aurora-offer__urgency { display: flex; flex-shrink: 0; align-items: center; gap: 4px; color: #d8b9bf; font-size: 10px; line-height: 14px; white-space: nowrap; }
+.aurora-offer__timer { display: inline-flex; align-items: baseline; font-size: 16px; line-height: 20px; font-variant-numeric: tabular-nums; color: #fff6f1; font-weight: 700; }
+.aurora-offer[hidden] { display: none; }
+.aurora-offer__button { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; min-width: 32px; min-height: 32px; padding: 0; border: 1px solid #f35a6d; border-radius: 7px; background: var(--aurora-sale-red); color: #fff; font: inherit; font-size: 23px; line-height: 1; opacity: 1; cursor: pointer; }
+.aurora-offer__button:disabled { cursor: default; }
+.aurora-offer__button:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.aurora-offer[data-state='loading'] .aurora-offer__button { opacity: .7; cursor: wait; }
+.aurora-offer__status { grid-column: 1 / -1; margin: 0; color: #ffbbc6; font-size: 11px; line-height: 16px; }
+.aurora-offer__status[hidden] { display: none; }
+@keyframes aurora-offer-shimmer { 0%, 25% { transform: translateX(-55%); } 85%, 100% { transform: translateX(55%); } }
+@keyframes aurora-offer-twinkle { 0%, 100% { opacity: .5; } 50% { opacity: 1; text-shadow: 0 0 10px #ffb3c0cc; } }
+@keyframes aurora-offer-border-flow { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -100; } }
+@keyframes aurora-offer-border-core { from { stroke-dashoffset: -1; } to { stroke-dashoffset: -101; } }
+@keyframes aurora-offer-beam-breathe { 0%, 16%, 90%, 100% { opacity: 0; } 28% { opacity: .45; } 42%, 58% { opacity: 1; } 74% { opacity: .3; } }
+@media (min-width: 750px) {
+  .aurora-offer__card { grid-template-columns: 64px minmax(0, 1fr) 36px; gap: 12px; padding: 12px 14px; }
+  .aurora-offer__reason { font-size: 12px; line-height: 18px; }
+  .aurora-offer__heading { font-size: 14px; line-height: 20px; }
+  .aurora-offer__price { font-size: 22px; line-height: 27px; }
+  .aurora-offer__original { font-size: 12px; }
+  .aurora-offer__saving, .aurora-offer__urgency { font-size: 11px; }
+  .aurora-offer__timer { font-size: 18px; line-height: 22px; }
+  .aurora-offer__exclusivity { font-size: 11px; line-height: 16px; }
+  .aurora-offer__button { width: 36px; height: 36px; }
+}
+@media (max-width: 749px) {
+  /* Match the product rows' 2px table inset on each side. */
+  .cart-page:not(.cart-page--empty) .aurora-offer { width: calc(100% + var(--page-margin) + var(--page-margin) - 4px); max-width: none; margin-inline: calc(2px - var(--page-margin)); padding-inline: 0; }
+}
+@media (max-width: 359px) {
+  .aurora-offer__card { grid-template-columns: 48px minmax(0, 1fr) 30px; gap: 6px; padding: 8px; }
+  .aurora-offer__button { width: 30px; height: 30px; min-width: 30px; min-height: 30px; }
+  .aurora-offer__saving { font-size: 9px; }
+  .aurora-offer__original { font-size: 10px; }
+  .aurora-offer__prices { gap: 4px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .aurora-offer__card::after, .aurora-offer__sparkle, .aurora-offer__beam, .aurora-offer__border rect { animation: none; }
+  .aurora-offer__border { display: none; }
+}
+
+

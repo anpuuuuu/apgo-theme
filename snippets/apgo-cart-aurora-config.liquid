@@ -1,0 +1,21 @@
+{% doc %}
+  Supplies market context for the Aurora add-on controller across storefront pages.
+{% enddoc %}
+<script type="application/json" id="apgo-aurora-config">
+  {
+    "country": {{ localization.country.iso_code | json }},
+    "triggerVariant": 67976724512922,
+    "offerVariant": 47521770668186,
+    "property": "_apgo_aurora_pwp",
+    "propertyValue": "aurora-39",
+    "duration": 600000,
+    "messages": {
+      "adding": {{ 'product.adding_to_cart' | t | json }},
+      "added": {{ 'actions.added' | t | json }},
+      "error": {{ 'products.product.add_to_cart_error' | t | json }},
+      "soldOut": {{ 'products.product.sold_out' | t | json }},
+      "limit": {{ 'apgo_order_limit_reached' | t: limit: 1 | json }}
+    }
+  }
+</script>
+<script src="{{ 'apgo-cart-aurora-offer.js' | asset_url }}" defer></script>
