@@ -104,7 +104,20 @@ async function run() {
       assert.equal(test.count(), 1);
       assert.equal(controls.posts, 1);
       assert.equal(await page.locator('.aurora-offer__button').isDisabled(), true);
+      assert.equal(await page.locator('apgo-aurora-offer').isHidden(), true);
       assert.equal(cart.items.find(item => item.variant_id === OFFER).final_line_price, 6000);
+      await page.reload();
+      await page.waitForFunction(() => window.apgoAuroraOffer?.cart);
+      assert.equal(await page.locator('apgo-aurora-offer').isHidden(), true);
+      const removalDeadline = await page.evaluate(() => window.apgoAuroraOffer.deadline);
+      cart.items = cart.items.filter(item => item.variant_id !== OFFER);
+      await test.refresh();
+      assert.equal(await page.locator('apgo-aurora-offer').isVisible(), true);
+      assert.equal(await page.locator('.aurora-offer__button').isEnabled(), true);
+      assert.equal(await page.evaluate(() => window.apgoAuroraOffer.deadline), removalDeadline);
+      await test.add(); await test.waitDone();
+      assert.equal(test.count(), 1);
+      assert.equal(await page.locator('apgo-aurora-offer').isHidden(), true);
       const originalDeadline = await page.evaluate(() => window.apgoAuroraOffer.deadline);
       cart.items = cart.items.filter(item => item.variant_id !== TRIGGER);
       await test.refresh();
@@ -115,7 +128,7 @@ async function run() {
       assert.ok(await page.evaluate(previous => window.apgoAuroraOffer.deadline > previous, originalDeadline));
       assert.equal(await page.locator('[data-offer-minutes]').innerText(), '10');
       assert.deepEqual(controls.errors, []);
-      check(`${width}px: refresh continues timer; zero keeps add and animations; repeat clicks add one; trigger removal cleans up and resets timer; checkout price remains server controlled`);
+      check(`${width}px: add hides card across reload; remove restores card and same timer; refresh continues timer; zero keeps add and animations; repeat clicks add one; trigger removal cleans up and resets timer; checkout price remains server controlled`);
       await test.context.close();
     }
     for (const country of ['MY', 'SG']) {
