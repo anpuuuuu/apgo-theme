@@ -131,10 +131,16 @@
   {%- elsif product.metafields.custom.hide_quick_add.value -%}
     <a class="{{ hp_btn_class }}" href="{{ product.url }}">{{ hp_choose }}</a>
   {%- elsif product.variants.size == 1 -%}
+    {%- capture hp_limit_text -%}
+      {%- render 'apgo-max-per-order', product: product, variant: hp_variant -%}
+    {%- endcapture -%}
+    {%- assign hp_limit = hp_limit_text | plus: 0 -%}
     <button
       type="button"
       class="{{ hp_btn_class }}"
       data-apgo-quick-add-variant="{{ hp_variant.id }}"
+      data-apgo-max-per-order="{{ hp_limit }}"
+      data-apgo-limit-message="{{ 'apgo_order_limit_reached' | t: limit: hp_limit | escape }}"
       data-product-id="{{ product.id }}"
       data-product-title="{{ product.title | escape }}"
     >
