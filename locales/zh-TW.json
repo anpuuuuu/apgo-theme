@@ -8,6 +8,7 @@
  * ------------------------------------------------------------
  */
 {
+  "apgo_order_limit_reached": "每筆訂單每款商品最多購買 {{ limit }} 份。",
   "blocks": {
     "load_video": "載入影片：{{ description }}",
     "sold_out": "售罄",

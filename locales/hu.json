@@ -1,4 +1,5 @@
 {
+  "apgo_order_limit_reached": "Termékenként legfeljebb {{ limit }} darab rendelésenként.",
   "blocks": {
     "load_video": "Videó betöltése: {{ description }}",
     "sold_out": "Elfogyott",

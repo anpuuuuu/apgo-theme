@@ -1,4 +1,5 @@
 {
+  "apgo_order_limit_reached": "Največ {{ limit }} kosa vsakega izdelka na naročilo.",
   "blocks": {
     "load_video": "Naloži videoposnetek: {{ description }}",
     "sold_out": "Razprodano",

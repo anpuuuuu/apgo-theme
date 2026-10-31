@@ -42,7 +42,26 @@
            document.querySelector('cart-icon');
   }
 
-  function postAdd(variantId) {
+  var pendingLimitedVariants = {};
+
+  function postAdd(variantId, limit, limitMessage) {
+    if (limit) {
+      return fetch('/cart.js?_=' + Date.now(), {
+        headers: { Accept: 'application/json' },
+        cache: 'no-store'
+      }).then(function (r) {
+        if (!r.ok) throw new Error('Could not verify cart quantity. Please try again.');
+        return r.json();
+      }).then(function (cart) {
+        var quantity = (cart.items || []).reduce(function (total, item) {
+          return total + (String(item.variant_id) === String(variantId) ? item.quantity : 0);
+        }, 0);
+        if (quantity >= limit) {
+          throw { code: 'max_per_order', description: limitMessage };
+        }
+        return postAdd(variantId);
+      });
+    }
     var fd = new FormData();
     fd.append('id', String(variantId));
     fd.append('quantity', '1');
@@ -450,6 +469,11 @@
     e.stopPropagation();
     if (btn.disabled) return;
 
+    var limitedCard = btn.closest('[data-apgo-event-limit]');
+    var limit = limitedCard ? parseInt(limitedCard.getAttribute('data-apgo-event-limit'), 10) || 0 : 0;
+    var limitMessage = limitedCard ? limitedCard.getAttribute('data-apgo-event-limit-message') : '';
+    if (limit && pendingLimitedVariants[variantId]) return;
+
     /* A gift-enabled promo opens only the modal owned by that block. */
     var giftZone = btn.closest('[data-apgo-event-gift-modal-id]');
     var giftModalId = giftZone ? giftZone.getAttribute('data-apgo-event-gift-modal-id') : '';
@@ -460,8 +484,9 @@
     }
 
     setBusy(btn, true);
+    if (limit) pendingLimitedVariants[variantId] = true;
 
-    postAdd(variantId).then(function () {
+    postAdd(variantId, limit, limitMessage).then(function () {
       if (buyBtn) {
         /* Buy now: jump straight to the cart page (NOT /checkout, so
            the customer can still see / verify discounts before
@@ -475,8 +500,13 @@
       refreshCartUi();
       setBusy(btn, false);
     }).catch(function (err) {
-      console.error('[apgo-event] add to cart failed', err);
       setBusy(btn, false);
+      if (err && err.code === 'max_per_order') {
+        if (buyBtn) return refreshCartUiThenNavigate();
+        window.alert(err.description);
+        return;
+      }
+      console.error('[apgo-event] add to cart failed', err);
       var msg = (err && (err.description || err.message)) ||
                 'Could not add to cart. Please try again.';
       try {
@@ -489,6 +519,8 @@
         }));
       } catch (eventError) {}
       window.alert(msg);
+    }).finally(function () {
+      if (limit) delete pendingLimitedVariants[variantId];
     });
   }
 

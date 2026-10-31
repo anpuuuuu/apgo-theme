@@ -1,4 +1,5 @@
 {
+  "apgo_order_limit_reached": "Højst {{ limit }} af hver vare pr. ordre.",
   "blocks": {
     "load_video": "Indlæs video: {{ description }}",
     "sold_out": "Udsolgt",

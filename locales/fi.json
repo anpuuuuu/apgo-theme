@@ -1,4 +1,5 @@
 {
+  "apgo_order_limit_reached": "Enintään {{ limit }} kutakin tuotetta tilausta kohden.",
   "blocks": {
     "load_video": "Lataa video: {{ description }}",
     "sold_out": "Loppuunmyyty",

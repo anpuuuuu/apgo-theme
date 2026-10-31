@@ -1,4 +1,5 @@
 {
+  "apgo_order_limit_reached": "Maximum {{ limit }} din fiecare produs pe comandă.",
   "blocks": {
     "load_video": "Încarcă clipul video: {{ description }}",
     "sold_out": "Stoc epuizat",

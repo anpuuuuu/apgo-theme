@@ -8,6 +8,7 @@
  * ------------------------------------------------------------
  */
 {
+  "apgo_order_limit_reached": "Limit {{ limit }} per item, per order.",
   "accessibility": {
     "account": "Open account menu",
     "cart": "Cart",

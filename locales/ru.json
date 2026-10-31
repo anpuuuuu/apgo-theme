@@ -1,4 +1,5 @@
 {
+  "apgo_order_limit_reached": "Не более {{ limit }} единиц каждого товара в одном заказе.",
   "blocks": {
     "load_video": "Загрузить видео: {{ description }}",
     "sold_out": "Продано",

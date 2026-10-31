@@ -1,4 +1,5 @@
 {
+  "apgo_order_limit_reached": "Najviac {{ limit }} kusy každého produktu na objednávku.",
   "blocks": {
     "load_video": "Načítať video: {{ description }}",
     "sold_out": "Vypredané",

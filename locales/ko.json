@@ -1,4 +1,5 @@
 {
+  "apgo_order_limit_reached": "주문당 각 상품은 최대 {{ limit }}개까지 구매할 수 있습니다.",
   "blocks": {
     "load_video": "동영상 로드: {{ description }}",
     "sold_out": "품절",
