@@ -148,10 +148,11 @@
               {%- endif -%}
               <tr
                 role="row"
+                id="CartItem-{{ section.id }}-{{ item.key | replace: ':', '-' | escape }}"
                 class="cart-items__table-row{% if apgo_line_locked %} apgo-cart-item--gift{% endif %}"
                 {% if apgo_line_locked %}data-apgo-gift-line{% endif %}
                 ref="cartItemRows[]"
-                {% if show_selection %}data-line-key="{{ item.key | escape }}"{% endif %}
+                data-line-key="{{ item.key | escape }}"
                 data-variant-id="{{ item.variant_id }}"
                 {% if apgo_cart_set_on == 'on' and item.product.metafields.apgo.bundle_enabled %}data-apgo-gift-trigger{% endif %}
                 {% if apgo_aiod_quantity_promo_line %}data-aiod-quantity-promo-line{% endif %}

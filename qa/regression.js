@@ -24,6 +24,11 @@ async function goto(page, pathname, params) {
 
 const CHECKS = [
   {
+    id: 'R13',
+    title: '购物车删除：快速/慢速响应、失败恢复、同规格拆行、抽屉同步（实际主题模块，本地模拟 API）',
+    async run() { return require('./cart-row-removal').run(); },
+  },
+  {
     id: 'R12',
     title: 'Aurora PWP 条件加购、移除联动、重复请求、MY/SG、倒计时和失败恢复（本地模拟）',
     until: 'Aurora PWP 活动结束',
