@@ -247,8 +247,8 @@
     disconnectedCallback() { window.clearInterval(this.timer); }
 
     update(controller) {
-      this.hidden = controller.cart ? !controller.eligible(controller.cart) : false;
       const added = controller.offerQuantity(controller.cart) > 0;
+      if (controller.cart) this.hidden = !controller.eligible(controller.cart) || added;
       const unavailable = this.dataset.available !== 'true';
       this.dataset.state = added ? 'added' : controller.busy ? 'loading' : 'available';
       const button = this.querySelector('.aurora-offer__button');

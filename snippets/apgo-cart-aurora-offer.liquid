@@ -4,10 +4,12 @@
 {% enddoc %}
 {%- liquid
   assign aurora_eligible = false
+  assign aurora_offer_in_cart = false
   for item in cart.items
     if item.variant_id == 67976724512922 and item.quantity > 0
       assign aurora_eligible = true
-      break
+    elsif item.variant_id == 47521770668186 and item.quantity > 0
+      assign aurora_offer_in_cart = true
     endif
   endfor
   assign offer_product = all_products['apgo-car-interior-eco-friendly-coating']
@@ -18,7 +20,7 @@
   assign offer_savings_minor = reference_price_minor | minus: offer_price_minor
 -%}
 {%- if aurora_eligible and offer_variant != blank and localization.country.iso_code == 'MY' and cart.currency.iso_code == 'MYR' -%}
-  <apgo-aurora-offer class="aurora-offer" data-available="{{ offer_variant.available }}" aria-labelledby="AuroraOfferTitle">
+  <apgo-aurora-offer class="aurora-offer" data-available="{{ offer_variant.available }}" aria-labelledby="AuroraOfferTitle"{% if aurora_offer_in_cart %} hidden{% endif %}>
     <div class="aurora-offer__card">
         <svg class="aurora-offer__border" aria-hidden="true" focusable="false">
           {% for beam in (1..6) %}
