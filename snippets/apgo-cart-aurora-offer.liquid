@@ -13,8 +13,8 @@
   assign offer_product = all_products['apgo-car-interior-eco-friendly-coating']
   assign offer_variant = offer_product.variants | where: 'id', 47521770668186 | first
   assign offer_image = offer_variant.featured_image | default: offer_product.featured_image
-  assign offer_price_minor = 3900
-  assign reference_price_minor = original_price | default: 49 | times: 100 | round
+  assign offer_price_minor = 3000
+  assign reference_price_minor = original_price | default: 60 | times: 100 | round
   assign offer_savings_minor = reference_price_minor | minus: offer_price_minor
 -%}
 {%- if aurora_eligible and offer_variant != blank and localization.country.iso_code == 'MY' and cart.currency.iso_code == 'MYR' -%}
@@ -36,7 +36,7 @@
             <span class="aurora-offer__timer" role="timer" aria-label="Time remaining" aria-live="off"><span data-offer-minutes>10</span><span>:</span><span data-offer-seconds>00</span></span>
           </div>
         </div>
-        <h2 class="aurora-offer__heading" id="AuroraOfferTitle" title="{{ offer_product.title | escape }} — {{ offer_variant.title | escape }}">Add {{ offer_price_minor | money | replace: cart.currency.iso_code, '' | strip | replace: '.00', '' }} for Interior Clean &amp; Coat <span class="aurora-offer__worth">worth RM70++</span></h2>
+        <h2 class="aurora-offer__heading" id="AuroraOfferTitle" title="{{ offer_product.title | escape }} — {{ offer_variant.title | escape }}">Add {{ offer_price_minor | money | replace: cart.currency.iso_code, '' | strip | replace: '.00', '' }} for Interior Clean &amp; Coat <span class="aurora-offer__worth">worth {{ reference_price_minor | money | replace: cart.currency.iso_code, '' | strip | replace: '.00', '' }}</span></h2>
         <div class="aurora-offer__image-wrap">
           {% if offer_image != blank %}
             {{ offer_image | image_url: width: 216 | image_tag: class: 'aurora-offer__image', widths: '72, 144, 216', sizes: '(max-width: 749px) 56px, 64px', loading: 'lazy', alt: offer_product.title }}

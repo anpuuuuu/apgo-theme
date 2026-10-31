@@ -20,7 +20,7 @@ liquid.registerFilter('t', (key, ...args) => {
 });
 const source = file => fs.readFileSync(path.join(ROOT, file), 'utf8');
 const cleanLiquid = text => text.replace(/{%-?\s*doc\s*-?%}[\s\S]*?{%-?\s*enddoc\s*-?%}/g, '');
-const line = (variant_id, quantity = 1, properties = {}, key) => ({ variant_id, id: variant_id, quantity, properties, key: key || `${variant_id}:${JSON.stringify(properties)}`, final_line_price: quantity * (variant_id === OFFER ? 4900 : 11100) });
+const line = (variant_id, quantity = 1, properties = {}, key) => ({ variant_id, id: variant_id, quantity, properties, key: key || `${variant_id}:${JSON.stringify(properties)}`, final_line_price: quantity * (variant_id === OFFER ? 6000 : 11100) });
 const marked = (quantity = 1, key) => line(OFFER, quantity, { [PROP]: MARKER }, key);
 
 async function run() {
@@ -35,7 +35,7 @@ async function run() {
     const page = await context.newPage();
     page.on('pageerror', error => controls.errors.push(error.message));
     const render = async () => {
-      const data = { cart: { ...cart, currency: { iso_code: cart.currency } }, localization: { country: { iso_code: country } }, original_price: 49, all_products: { 'apgo-car-interior-eco-friendly-coating': { title: 'Interior Set', variants: [{ id: OFFER, title: 'Car Interior Set', available }] } } };
+      const data = { cart: { ...cart, currency: { iso_code: cart.currency } }, localization: { country: { iso_code: country } }, original_price: 60, all_products: { 'apgo-car-interior-eco-friendly-coating': { title: 'Interior Set', variants: [{ id: OFFER, title: 'Car Interior Set', available }] } } };
       const config = await liquid.parseAndRender(cleanLiquid(source('snippets/apgo-cart-aurora-config.liquid')), data);
       const card = noCard ? '' : await liquid.parseAndRender(cleanLiquid(source('snippets/apgo-cart-aurora-offer.liquid')), data);
       return `<!doctype html><html><head><style>body{background:#000;color:#fff;font-family:Arial}.cart-page{max-width:700px;margin:auto}.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}</style><link rel="stylesheet" href="/assets/apgo-cart-aurora-offer.css"></head><body><cart-items-component data-section-id="main"><div class="cart-page">${card}</div></cart-items-component><button name="checkout">Checkout</button>${config}</body></html>`;
@@ -104,7 +104,7 @@ async function run() {
       assert.equal(test.count(), 1);
       assert.equal(controls.posts, 1);
       assert.equal(await page.locator('.aurora-offer__button').isDisabled(), true);
-      assert.equal(cart.items.find(item => item.variant_id === OFFER).final_line_price, 4900);
+      assert.equal(cart.items.find(item => item.variant_id === OFFER).final_line_price, 6000);
       const originalDeadline = await page.evaluate(() => window.apgoAuroraOffer.deadline);
       cart.items = cart.items.filter(item => item.variant_id !== TRIGGER);
       await test.refresh();
@@ -115,7 +115,7 @@ async function run() {
       assert.ok(await page.evaluate(previous => window.apgoAuroraOffer.deadline > previous, originalDeadline));
       assert.equal(await page.locator('[data-offer-minutes]').innerText(), '10');
       assert.deepEqual(controls.errors, []);
-      check(`${width}px: refresh continues timer; zero keeps add and animations; repeat clicks add one; trigger removal cleans up and resets timer; no fake RM39 pricing`);
+      check(`${width}px: refresh continues timer; zero keeps add and animations; repeat clicks add one; trigger removal cleans up and resets timer; checkout price remains server controlled`);
       await test.context.close();
     }
     for (const country of ['MY', 'SG']) {
