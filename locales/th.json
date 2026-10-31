@@ -1,4 +1,5 @@
 {
+  "apgo_order_limit_reached": "สินค้าประเภทละไม่เกิน {{ limit }} ชิ้นต่อคำสั่งซื้อ",
   "blocks": {
     "load_video": "โหลดวิดีโอ: {{ description }}",
     "sold_out": "ขายหมดแล้ว",

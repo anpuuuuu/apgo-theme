@@ -1,4 +1,5 @@
 {
+  "apgo_order_limit_reached": "Maksimal {{ limit }} untuk setiap produk per pesanan.",
   "blocks": {
     "load_video": "Muat video: {{ description }}",
     "sold_out": "Habis",

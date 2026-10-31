@@ -1,4 +1,5 @@
 {
+  "apgo_order_limit_reached": "Maximal {{ limit }} je Artikel und Bestellung.",
   "blocks": {
     "load_video": "Video laden: {{ description }}",
     "sold_out": "Ausverkauft",

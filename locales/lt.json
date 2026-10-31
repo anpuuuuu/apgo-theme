@@ -1,4 +1,5 @@
 {
+  "apgo_order_limit_reached": "Viename užsakyme – ne daugiau kaip {{ limit }} kiekvienos prekės.",
   "blocks": {
     "load_video": "Įkelti vaizdo įrašą „{{ description }}“",
     "sold_out": "Išparduota",

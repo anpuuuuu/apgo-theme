@@ -1,4 +1,5 @@
 {
+  "apgo_order_limit_reached": "每笔订单每款商品最多购买 {{ limit }} 份。",
   "blocks": {
     "load_video": "加载视频：{{ description }}",
     "sold_out": "售罄",

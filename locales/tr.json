@@ -1,4 +1,5 @@
 {
+  "apgo_order_limit_reached": "Sipariş başına her üründen en fazla {{ limit }} adet.",
   "blocks": {
     "load_video": "Videoyu yükle: {{ description }}",
     "sold_out": "Tükendi",

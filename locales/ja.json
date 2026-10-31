@@ -1,4 +1,5 @@
 {
+  "apgo_order_limit_reached": "1回の注文につき、各商品は{{ limit }}点までです。",
   "blocks": {
     "load_video": "ビデオを読み込む: {{ description }}",
     "sold_out": "売り切れ",

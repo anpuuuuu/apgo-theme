@@ -4,6 +4,7 @@
     - the v3 product page: snippets/apgo-cc-mobile-buybar.liquid hands it to
       assets/apgo-cc-pdp-picker.js, which checks the cart before adding;
     - the cart page: snippets/cart-products.liquid caps the quantity box.
+    - event listing cards: assets/apgo-event-cart.js checks before adding.
   A per-order limit in the theme only: a shopper can still place another
   order, and the cart API itself is not blocked.
 
@@ -11,6 +12,8 @@
   N for any other product. Given a variant, one option can have a limit of
   its own: the deal's Car Wiper Fluid 200ml (RM1) is 1 (owner, 2026-10-06;
   2 from 10-05), whatever the product's limit or tag says.
+  The 11.11 shampoo and wiper refill three-pack products are each limited
+  to 2 sets per order (owner, 2026-10-31).
 
   @param {product} product - The product.
   @param {variant} [variant] - One option of it, for an option's own limit.
@@ -25,6 +28,9 @@
       assign apgo_limit = apgo_tag | remove: 'apgo-max-per-order-' | plus: 0
     endif
   endfor
+  if product.id == 15468443173018 or product.id == 15468456673434
+    assign apgo_limit = 2
+  endif
   # Pocket-Friendly Deals: APGO Car Wiper Fluid 200ml.
   if variant.id == 67638526705818
     assign apgo_limit = 1

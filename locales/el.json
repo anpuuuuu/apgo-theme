@@ -1,4 +1,5 @@
 {
+  "apgo_order_limit_reached": "Έως {{ limit }} ανά προϊόν σε κάθε παραγγελία.",
   "blocks": {
     "load_video": "Φόρτωση βίντεο: {{ description }}",
     "sold_out": "Εξαντλήθηκε",

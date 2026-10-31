@@ -197,6 +197,73 @@ const CHECKS = [
     },
   },
   {
+    id: 'R10',
+    title: '11.11 洗车精、雨刷精每单各限 2 套，活动页重复加购及旧购物车',
+    until: '11.11 三包装活动结束',
+    async run() {
+      const products = [
+        { id: 15468443173018, variant: 67986611273882, handle: 'apgo-car-wash-shampoo-refill-pack-300ml-copy' },
+        { id: 15468456673434, variant: 67986732351642, handle: 'apgo-car-wiper-fluid-refill-pack-300ml-copy' },
+      ];
+      const out = [];
+      const { browser, page } = await open('android-chrome');
+      const dialogs = [];
+      page.on('dialog', async (dialog) => { dialogs.push(dialog.message()); await dialog.accept(); });
+      const quantities = (c) => products.map((p) => c.items.filter((i) => i.variant_id === p.variant).reduce((n, i) => n + i.quantity, 0));
+      const waitQuantities = async (wanted) => {
+        for (let attempt = 0; attempt < 20; attempt++) {
+          const actual = quantities(await cart(page));
+          if (actual.every((q, i) => q === wanted[i])) return actual;
+          await sleep(500);
+        }
+        throw new Error('Unexpected cart quantities: ' + quantities(await cart(page)).join(','));
+      };
+      try {
+        for (const p of products) {
+          await goto(page, '/products/' + p.handle, { country: 'MY' });
+          const limit = await page.locator('[data-apgo-cc-buybar]').getAttribute('data-apgo-cc-max-per-order');
+          out.push({ ok: limit === '2', detail: `${p.handle}: 商品页限额 ${limit}` });
+        }
+        await clearCart(page);
+        await cartPost(page, '/cart/add.js', { items: products.map((p) => ({ id: p.variant, quantity: 1 })) });
+        await goto(page, '/pages/11-11-sale', { country: 'MY' });
+        for (const p of products) {
+          const card = page.locator(`product-card[data-product-id="${p.id}"]`).first();
+          out.push({ ok: await card.getAttribute('data-apgo-event-limit') === '2', detail: `${p.handle}: 活动页限额 2` });
+          const add = card.locator('.apgo-event-listing-card__btn--add');
+          await add.click({ force: true });
+          await page.waitForFunction((id) => !document.querySelector(`product-card[data-product-id="${id}"] .apgo-event-listing-card__btn--add`).disabled, p.id);
+          await add.click({ force: true });
+          await page.waitForFunction((id) => !document.querySelector(`product-card[data-product-id="${id}"] .apgo-event-listing-card__btn--add`).disabled, p.id);
+        }
+        await waitQuantities([2, 2]);
+        out.push({ ok: dialogs.length === 2 && dialogs.every((m) => m.includes('Limit 2') && !m.includes('Translation missing')), detail: `第三套被拦截，两款各保留 2；提示 ${JSON.stringify(dialogs)}` });
+        const firstCard = page.locator(`product-card[data-product-id="${products[0].id}"]`).first();
+        await firstCard.locator('.apgo-event-listing-card__btn--buy').click({ force: true });
+        await page.waitForURL(/\/cart(?:\?|$)/);
+        await waitQuantities([2, 2]);
+        out.push({ ok: true, detail: '满额后 Buy now 进入购物车，没有多加一套' });
+        await goto(page, '/');
+        await clearCart(page);
+        await cartPost(page, '/cart/add.js', { items: products.flatMap((p) => [
+          { id: p.variant, quantity: 2 },
+          { id: p.variant, quantity: 2, properties: { _qa_limit: 'split' } },
+        ]) });
+        await goto(page, '/cart');
+        await waitQuantities([2, 2]);
+        await page.waitForFunction(() => document.querySelectorAll('input[data-apgo-max-per-order]').length === 2);
+        const maxes = await page.locator('input[data-apgo-max-per-order]').evaluateAll((inputs) => inputs.map((input) => input.max));
+        out.push({ ok: maxes.length === 2 && maxes.every((m) => m === '2'), detail: `同款分行超量自动降至各 2，数量输入框上限 ${maxes.join(',')}` });
+        await page.screenshot({ path: path.join(OUT, 'R10.png') });
+      } finally {
+        await goto(page, '/').catch(() => {});
+        await clearCart(page).catch(() => {});
+        await browser.close();
+      }
+      return out;
+    },
+  },
+  {
     id: 'R9',
     title: '清仓页对新加坡开放（10/8 重新开放）',
     async run() {

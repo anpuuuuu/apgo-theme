@@ -134,12 +134,21 @@
   endif
 %}
 
+{%- capture apgo_card_limit_text -%}
+  {%- render 'apgo-max-per-order', product: product, variant: apgo_listing_variant -%}
+{%- endcapture -%}
+{%- assign apgo_card_limit = apgo_card_limit_text | plus: 0 -%}
+
 <product-card
   class="product-card apgo-event-listing-card"
   data-product-id="{{ product.id }}"
   data-product-name="{{ product.title | escape }}"
   data-product-handle="{{ product.handle | escape }}"
   data-variant-id="{{ apgo_listing_variant.id }}"
+  {% if apgo_card_limit > 0 %}
+    data-apgo-event-limit="{{ apgo_card_limit }}"
+    data-apgo-event-limit-message="{{ 'apgo_order_limit_reached' | t: limit: apgo_card_limit | escape }}"
+  {% endif %}
   data-card-position="{{ card_position }}"
   data-product-variants-size="{{ product.variants.size }}"
   id="product-card-{{ card_uid }}"

@@ -1,4 +1,5 @@
 {
+  "apgo_order_limit_reached": "Tối đa {{ limit }} cho mỗi sản phẩm trong một đơn hàng.",
   "blocks": {
     "load_video": "Tải video: {{ description }}",
     "sold_out": "Hết hàng",
