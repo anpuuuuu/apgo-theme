@@ -1,5 +1,5 @@
 import { Component } from '@theme/component';
-import { fetchConfig, debounce, onAnimationEnd, prefersReducedMotion, resetShimmer } from '@theme/utilities';
+import { fetchConfig, debounce, prefersReducedMotion, resetShimmer } from '@theme/utilities';
 import { morphSection, sectionRenderer } from '@theme/section-renderer';
 import {
   ThemeEvents,
@@ -309,20 +309,18 @@ class CartItemsComponent extends Component {
       action: 'clear',
     });
 
-    const cartItemRowToRemove = this.refs.cartItemRows[line - 1];
+    const cartItemRowToRemove = guardRow;
 
     if (!cartItemRowToRemove) return;
 
-    const remove = () => cartItemRowToRemove.remove();
-
-    if (prefersReducedMotion()) return remove();
+    if (prefersReducedMotion()) return;
 
     // Add class to the row to trigger the animation
     cartItemRowToRemove.style.setProperty('--row-height', `${cartItemRowToRemove.clientHeight}px`);
     cartItemRowToRemove.classList.add('removing');
 
-    // Remove the row after the animation ends
-    onAnimationEnd(cartItemRowToRemove, remove);
+    // The confirmed section response removes the row. A delayed animation
+    // callback can otherwise delete a node the cart morph has already reused.
   }
 
   /**
@@ -367,6 +365,7 @@ class CartItemsComponent extends Component {
     state.inflight = true;
 
     const cartPerformaceUpdateMarker = cartPerformance.createStartingMarker(`${action}:user-action`);
+    const updatingRow = this.refs.cartItemRows[line - 1];
 
     this.#disableCartItems();
 
@@ -436,6 +435,11 @@ class CartItemsComponent extends Component {
           });
       })
       .finally(() => {
+        // A rejected request must restore the row instead of leaving it collapsed.
+        if (updatingRow?.isConnected) {
+          updatingRow.classList.remove('removing');
+          updatingRow.style.removeProperty('--row-height');
+        }
         this.#enableCartItems();
         cartPerformance.measureFromMarker(cartPerformaceUpdateMarker);
         state.inflight = false;
