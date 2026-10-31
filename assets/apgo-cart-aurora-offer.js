@@ -244,14 +244,60 @@
       this.updateTimer();
     }
 
-    disconnectedCallback() { window.clearInterval(this.timer); }
+    disconnectedCallback() {
+      window.clearInterval(this.timer);
+      this.visibilityAnimation?.cancel();
+      this.visibilityAnimation = null;
+      this.removeAttribute('data-offer-transition');
+      if (this.wantsVisible !== undefined) this.hidden = !this.wantsVisible;
+    }
+
+    setVisible(visible) {
+      if (this.wantsVisible === visible) return;
+      const initial = this.wantsVisible === undefined;
+      this.wantsVisible = visible;
+      const previous = this.visibilityAnimation;
+      const style = getComputedStyle(this);
+      const current = previous ? {
+        height: style.height, opacity: style.opacity, transform: style.transform,
+        marginTop: style.marginTop, marginBottom: style.marginBottom,
+      } : null;
+      previous?.cancel();
+      this.visibilityAnimation = null;
+      this.inert = !visible;
+      this.setAttribute('aria-hidden', String(!visible));
+      if (initial || !this.isConnected || !this.animate || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        this.hidden = !visible;
+        this.removeAttribute('data-offer-transition');
+        return;
+      }
+
+      this.hidden = false;
+      const expanded = {
+        height: this.getBoundingClientRect().height + 'px', opacity: 1, transform: 'translateY(0)',
+        marginTop: getComputedStyle(this).marginTop, marginBottom: getComputedStyle(this).marginBottom,
+      };
+      const collapsed = { height: '0px', opacity: 0, transform: 'translateY(-6px)', marginTop: '0px', marginBottom: '0px' };
+      this.setAttribute('data-offer-transition', visible ? 'opening' : 'closing');
+      const animation = this.animate([current || (visible ? collapsed : expanded), visible ? expanded : collapsed], {
+        duration: 320, easing: 'cubic-bezier(.22, 1, .36, 1)', fill: 'both',
+      });
+      this.visibilityAnimation = animation;
+      animation.onfinish = () => {
+        if (this.visibilityAnimation !== animation) return;
+        this.hidden = !this.wantsVisible;
+        this.removeAttribute('data-offer-transition');
+        this.visibilityAnimation = null;
+        animation.cancel();
+      };
+    }
 
     update(controller) {
       const added = controller.offerQuantity(controller.cart) > 0;
-      if (controller.cart) this.hidden = !controller.eligible(controller.cart) || added;
-      const unavailable = this.dataset.available !== 'true';
-      this.dataset.state = added ? 'added' : controller.busy ? 'loading' : 'available';
+      if (controller.cart) this.setVisible(controller.eligible(controller.cart) && !added);
       const button = this.querySelector('.aurora-offer__button');
+      const unavailable = button.dataset.available !== 'true';
+      this.dataset.state = added ? 'added' : controller.busy ? 'loading' : 'available';
       button.disabled = Boolean(controller.isBusy() || added || unavailable);
       button.setAttribute('aria-busy', String(Boolean(controller.busy)));
       const label = this.querySelector('[data-offer-button-label]');

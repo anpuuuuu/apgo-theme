@@ -38,12 +38,13 @@ async function run() {
       const data = { cart: { ...cart, currency: { iso_code: cart.currency } }, localization: { country: { iso_code: country } }, original_price: 60, all_products: { 'apgo-car-interior-eco-friendly-coating': { title: 'Interior Set', variants: [{ id: OFFER, title: 'Car Interior Set', available }] } } };
       const config = await liquid.parseAndRender(cleanLiquid(source('snippets/apgo-cart-aurora-config.liquid')), data);
       const card = noCard ? '' : await liquid.parseAndRender(cleanLiquid(source('snippets/apgo-cart-aurora-offer.liquid')), data);
-      return `<!doctype html><html><head><style>body{background:#000;color:#fff;font-family:Arial}.cart-page{max-width:700px;margin:auto}.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}</style><link rel="stylesheet" href="/assets/apgo-cart-aurora-offer.css"></head><body><cart-items-component data-section-id="main"><div class="cart-page">${card}</div></cart-items-component><button name="checkout">Checkout</button>${config}</body></html>`;
+      return `<!doctype html><html><head><script type="importmap">{"imports":{"@theme/component":"/qa-component.js"}}</script><style>body{background:#000;color:#fff;font-family:Arial}.cart-page{max-width:700px;margin:auto}.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}</style><link rel="stylesheet" href="/assets/apgo-cart-aurora-offer.css"></head><body><cart-items-component data-section-id="main"><div class="cart-page">${card}</div></cart-items-component><button name="checkout">Checkout</button>${config}</body></html>`;
     };
     await context.route('https://pwp.test/**', async route => {
       const pathname = new URL(route.request().url()).pathname;
       const json = data => route.fulfill({ contentType: 'application/json', body: JSON.stringify(data) });
       cart.item_count = cart.items.reduce((sum, item) => sum + item.quantity, 0);
+      if (pathname === '/qa-component.js') return route.fulfill({ contentType: 'application/javascript', body: 'export class Component extends HTMLElement {}' });
       if (pathname.startsWith('/assets/')) return route.fulfill({ contentType: pathname.endsWith('.js') ? 'application/javascript' : 'text/css', body: source(pathname.slice(1)) });
       if (pathname === '/cart.js') return controls.readFailure ? route.fulfill({ status: 503, body: '{}' }) : json(cart);
       if (pathname === '/cart/add.js') {
@@ -75,10 +76,11 @@ async function run() {
     await page.goto('https://pwp.test/cart');
     await page.waitForFunction(() => window.apgoAuroraOffer?.cart && !window.apgoAuroraOffer.refreshPending);
     assert.equal(await page.locator('apgo-aurora-offer').count(), !noCard && country === 'MY' && currency === 'MYR' && items.some(item => item.variant_id === TRIGGER) ? 1 : 0);
-    const refresh = () => page.evaluate(() => window.apgoAuroraOffer.refresh());
+    const settled = () => page.waitForFunction(() => !document.querySelector('[data-offer-transition]'));
+    const refresh = async () => { await page.evaluate(() => window.apgoAuroraOffer.refresh()); await settled(); };
     const add = () => page.locator('.aurora-offer__button').click();
-    const waitDone = () => page.waitForFunction(() => !window.apgoAuroraOffer.busy && !window.apgoAuroraOffer.writing);
-    return { context, page, cart, controls, refresh, add, waitDone, count: () => cart.items.filter(item => item.variant_id === OFFER).reduce((sum, item) => sum + item.quantity, 0) };
+    const waitDone = () => page.waitForFunction(() => !window.apgoAuroraOffer.busy && !window.apgoAuroraOffer.writing && !document.querySelector('[data-offer-transition]'));
+    return { context, page, cart, controls, refresh, add, waitDone, render, count: () => cart.items.filter(item => item.variant_id === OFFER).reduce((sum, item) => sum + item.quantity, 0) };
   }
   try {
     for (const width of [393, 1440]) {
@@ -209,6 +211,57 @@ async function run() {
       assert.equal(test.count(), 1);
       assert.equal(test.controls.posts, 1);
       check('two tabs share countdown and simultaneous adds still create one set');
+      await test.context.close();
+    }
+    {
+      const test = await setup();
+      const { page, cart } = test;
+      const fullHeight = await page.locator('apgo-aurora-offer').evaluate(el => el.getBoundingClientRect().height);
+      const closing = await page.evaluate(async () => {
+        await window.apgoAuroraOffer.add();
+        const el = document.querySelector('apgo-aurora-offer');
+        el.visibilityAnimation.pause(); el.visibilityAnimation.currentTime = 140;
+        return { height: el.getBoundingClientRect().height, opacity: Number(getComputedStyle(el).opacity), inert: el.inert };
+      });
+      assert(closing.height > 0 && closing.height < fullHeight);
+      assert(closing.opacity > 0 && closing.opacity < 1);
+      assert.equal(closing.inert, true);
+      const morph = async () => page.evaluate(async html => {
+        const { morph } = await import('/assets/morph.js');
+        const incoming = new DOMParser().parseFromString(html, 'text/html').querySelector('cart-items-component');
+        morph(document.querySelector('cart-items-component'), incoming);
+      }, await test.render());
+      await morph();
+      assert.equal(await page.locator('apgo-aurora-offer').getAttribute('data-offer-transition'), 'closing');
+      await page.evaluate(() => document.querySelector('apgo-aurora-offer').visibilityAnimation.finish());
+      await test.waitDone();
+      assert.equal(await page.locator('apgo-aurora-offer').isHidden(), true);
+      cart.items = cart.items.filter(item => item.variant_id !== OFFER);
+      await morph();
+      assert.equal(await page.locator('apgo-aurora-offer').isHidden(), true);
+      const opening = await page.evaluate(async () => {
+        await window.apgoAuroraOffer.refresh();
+        const el = document.querySelector('apgo-aurora-offer');
+        el.visibilityAnimation.pause(); el.visibilityAnimation.currentTime = 140;
+        return { height: el.getBoundingClientRect().height, opacity: Number(getComputedStyle(el).opacity) };
+      });
+      assert(opening.height > 0 && opening.height < fullHeight);
+      assert(opening.opacity > 0 && opening.opacity < 1);
+      await page.evaluate(async () => {
+        await window.apgoAuroraOffer.add();
+        document.querySelector('apgo-aurora-offer').visibilityAnimation.finish();
+      });
+      await test.waitDone();
+      assert.equal(await page.locator('apgo-aurora-offer').isHidden(), true);
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      cart.items = cart.items.filter(item => item.variant_id !== OFFER);
+      await test.refresh();
+      assert.equal(await page.locator('apgo-aurora-offer').isVisible(), true);
+      assert.equal(await page.evaluate(() => document.querySelector('apgo-aurora-offer').visibilityAnimation), null);
+      await test.add(); await test.waitDone();
+      assert.equal(await page.locator('apgo-aurora-offer').isHidden(), true);
+      assert.deepEqual(test.controls.errors, []);
+      check('height and opacity animate together; cart morph preserves transition; rapid reversal settles; reduced motion skips animation');
       await test.context.close();
     }
     {
