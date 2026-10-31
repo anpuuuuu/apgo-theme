@@ -24,6 +24,12 @@ async function goto(page, pathname, params) {
 
 const CHECKS = [
   {
+    id: 'R12',
+    title: 'Aurora PWP 条件加购、移除联动、重复请求、MY/SG、倒计时和失败恢复（本地模拟）',
+    until: 'Aurora PWP 活动结束',
+    async run() { return require('./aurora-pwp').run(); },
+  },
+  {
     id: 'R1',
     title: '手机往下滑后，跑马灯紧贴 header（867fa0e）',
     async run() {

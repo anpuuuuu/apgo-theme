@@ -1,5 +1,5 @@
 {% doc %}
-  Conditional Aurora add-on UI preview; never changes the cart or pricing.
+  Conditional Aurora add-on card. Checkout pricing is controlled by AIOD.
   @param {number} [original_price] - Confirmed reference price in MYR major units, or 0 when pending.
 {% enddoc %}
 {%- liquid
@@ -17,8 +17,8 @@
   assign reference_price_minor = original_price | default: 49 | times: 100 | round
   assign offer_savings_minor = reference_price_minor | minus: offer_price_minor
 -%}
-{%- if aurora_eligible and offer_variant != blank and cart.currency.iso_code == 'MYR' -%}
-  <apgo-aurora-offer class="aurora-offer" data-duration="600" data-timer-key="apgo:aurora-addon:preview:MYR" aria-labelledby="AuroraOfferTitle">
+{%- if aurora_eligible and offer_variant != blank and localization.country.iso_code == 'MY' and cart.currency.iso_code == 'MYR' -%}
+  <apgo-aurora-offer class="aurora-offer" data-available="{{ offer_variant.available }}" aria-labelledby="AuroraOfferTitle">
     <div class="aurora-offer__card">
         <svg class="aurora-offer__border" aria-hidden="true" focusable="false">
           {% for beam in (1..6) %}
@@ -51,11 +51,11 @@
             {% if offer_savings_minor > 0 %}
               <span class="aurora-offer__saving">Save {{ offer_savings_minor | money | replace: cart.currency.iso_code, '' | strip | replace: '.00', '' }}</span>
             {% endif %}
-            <span class="aurora-offer__preview" id="AuroraOfferPreviewNote" title="UI preview only. No item will be added or discounted.">Preview</span>
           </div>
           <p class="aurora-offer__exclusivity"><em>Exclusive 1 set for this order only</em></p>
         </div>
-        <button class="aurora-offer__button" type="button" disabled aria-describedby="AuroraOfferPreviewNote"><span class="visually-hidden" data-offer-button-label>Add for {{ offer_price_minor | money | replace: cart.currency.iso_code, '' | strip }} (UI preview only)</span><span aria-hidden="true">＋</span></button>
+        <button class="aurora-offer__button" type="button" disabled aria-describedby="AuroraOfferStatus"><span class="visually-hidden" data-offer-button-label>{{ 'actions.add_to_cart' | t }} — {{ offer_variant.title | escape }}</span><span data-offer-button-icon aria-hidden="true">＋</span></button>
+        <p class="aurora-offer__status" id="AuroraOfferStatus" data-offer-status role="status" aria-live="polite" hidden></p>
     </div>
   </apgo-aurora-offer>
 {%- endif -%}

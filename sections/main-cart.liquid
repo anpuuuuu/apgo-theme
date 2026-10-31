@@ -38,7 +38,6 @@
 </cart-items-component>
 
 {{ 'apgo-cart-aurora-offer.css' | asset_url | stylesheet_tag }}
-<script src="{{ 'apgo-cart-aurora-offer.js' | asset_url }}" defer></script>
 
 {% stylesheet %}
   .cart-page {
@@ -484,21 +483,21 @@
   "settings": [
     {
       "type": "header",
-      "content": "Aurora add-on UI preview"
+      "content": "Aurora add-on"
     },
     {
       "type": "checkbox",
       "id": "aurora_offer_preview",
-      "label": "Show conditional add-on preview",
+      "label": "Show conditional Aurora add-on",
       "default": true,
-      "info": "UI only. Appears with the Aurora trigger variant in MY carts. No discount or add-to-cart action is connected."
+      "info": "Appears with the Aurora trigger variant in MY carts. The RM39 checkout price requires a separate AIOD discount."
     },
     {
       "type": "number",
       "id": "aurora_offer_original_price",
-      "label": "Preview original price (RM)",
+      "label": "Original price (RM)",
       "default": 49,
-      "info": "Reference price for UI preview only. The preview offer is RM39; no actual discount is applied."
+      "info": "Reference price shown on the card. Configure the actual RM39 price separately in AIOD."
     },
     {
       "type": "select",
