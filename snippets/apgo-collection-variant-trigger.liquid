@@ -66,8 +66,14 @@
   "featured_image_high": {% if product.featured_media %}{{ product.featured_media | image_url: width: 1200 | json }}{% else %}null{% endif %},
   "variants": [
     {% for v in product.variants %}
+      {%- capture apgo_variant_limit_text -%}
+        {%- render 'apgo-max-per-order', product: product, variant: v -%}
+      {%- endcapture -%}
+      {%- assign apgo_variant_limit = apgo_variant_limit_text | plus: 0 -%}
       {
         "id": {{ v.id }},
+        "max_per_order": {{ apgo_variant_limit }},
+        "limit_message": {{ 'apgo_order_limit_reached' | t: limit: apgo_variant_limit | json }},
         "title": {{ v.title | json }},
         "price_cents": {{ v.price }},
         "available": {{ v.available }},

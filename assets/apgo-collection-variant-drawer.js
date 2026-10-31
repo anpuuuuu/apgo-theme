@@ -1,7 +1,7 @@
 import { CartAddEvent } from '@theme/events';
 
 /**
- * @typedef {{ id: number; title: string; price_cents: number; available: boolean; inventory_quantity: number; show_inventory: boolean; featured_image: string | null; featured_image_high: string | null; is_bundle: boolean }} ApgoCollVariant
+ * @typedef {{ id: number; title: string; price_cents: number; available: boolean; inventory_quantity: number; show_inventory: boolean; featured_image: string | null; featured_image_high: string | null; is_bundle: boolean; max_per_order: number; limit_message: string }} ApgoCollVariant
  * @typedef {{ product_id: number; handle: string; title: string; subtitle: string; currency: string; featured_image: string | null; featured_image_high: string | null; variants: ApgoCollVariant[] }} ApgoCollProduct
  */
 
@@ -12,6 +12,27 @@ const state = {
   currentPriceCents: 0,
   currentQuantity: 1,
 };
+
+let cartRequestInFlight = false;
+
+async function checkOrderLimit(variantId, quantity, limit, message) {
+  if (!limit) return;
+  const response = await fetch('/cart.js?_=' + Date.now(), {
+    headers: { Accept: 'application/json' },
+    cache: 'no-store',
+  });
+  if (!response.ok) throw new Error('Cart verification failed');
+  const cart = await response.json();
+  const inCart = (cart.items || []).reduce((total, item) =>
+    total + (String(item.variant_id) === String(variantId) ? item.quantity : 0), 0);
+  if (inCart + quantity > limit) {
+    throw Object.assign(new Error(message), { code: 'max_per_order' });
+  }
+}
+
+function showLimitNotification(message) {
+  showCartNotification(message, '', '', true);
+}
 
 function escapeHtml(s) {
   return String(s ?? '')
@@ -54,22 +75,22 @@ function formatMoney(cents, currency) {
  * @param {string} successLine
  * @param {string} viewCartLabel
  */
-function showSuccessNotification(productTitle, successLine, viewCartLabel) {
+function showCartNotification(productTitle, successLine, viewCartLabel, isError = false) {
   document.querySelectorAll('.apgo-cart-success-toast').forEach((el) => el.remove());
 
   const notification = document.createElement('div');
-  notification.className = 'apgo-cart-success-toast';
-  notification.setAttribute('role', 'status');
-  notification.setAttribute('aria-live', 'polite');
+  notification.className = 'apgo-cart-success-toast' + (isError ? ' apgo-cart-success-toast--error' : '');
+  notification.setAttribute('role', isError ? 'alert' : 'status');
+  notification.setAttribute('aria-live', isError ? 'assertive' : 'polite');
   notification.innerHTML = `
     <span class="apgo-cart-success-toast__check" aria-hidden="true">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.25 4.75L6.5 12.25L2.75 8.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      ${isError ? '!' : '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.25 4.75L6.5 12.25L2.75 8.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'}
     </span>
     <div class="apgo-cart-success-toast__body">
       <span class="apgo-cart-success-toast__title">${escapeHtml(productTitle)}</span>
       <span class="apgo-cart-success-toast__sub">${escapeHtml(successLine)}</span>
     </div>
-    <a href="/cart" class="apgo-cart-success-toast__cta">${escapeHtml(viewCartLabel)}</a>
+    ${isError ? '' : `<a href="/cart" class="apgo-cart-success-toast__cta">${escapeHtml(viewCartLabel)}</a>`}
     <button type="button" class="apgo-cart-success-toast__close" aria-label="Close">
       <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L11 11M11 1L1 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
     </button>
@@ -367,17 +388,24 @@ function closeDrawer() {
 
 async function addToCart(shell) {
   const btn = document.getElementById('apgoCollAddBtn');
-  if (!btn || btn.disabled || state.currentVariantId == null) return;
+  if (!btn || btn.disabled || state.currentVariantId == null || cartRequestInFlight) return;
+
+  cartRequestInFlight = true;
+  const variantId = state.currentVariantId;
+  const quantity = state.currentQuantity;
+  const product = state.product;
+  const variant = product?.variants.find((v) => v.id === variantId);
 
   const original = btn.innerHTML;
   btn.innerHTML = `<span class="apgo-loading-spinner"></span> ${escapeHtml(strFromShell(shell, 'i18nAdding'))}`;
   btn.disabled = true;
 
   try {
+    await checkOrderLimit(variantId, quantity, variant?.max_per_order, variant?.limit_message);
     const res = await fetch('/cart/add.js', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: state.currentVariantId, quantity: state.currentQuantity }),
+      body: JSON.stringify({ id: variantId, quantity }),
     });
     if (!res.ok) throw new Error('add failed');
     await res.json();
@@ -389,16 +417,16 @@ async function addToCart(shell) {
 
     const shellEl = getShell();
     shellEl?.dispatchEvent(
-      new CartAddEvent({}, String(state.currentVariantId), {
+      new CartAddEvent({}, String(variantId), {
         didError: false,
         source: 'apgo-collection-variant-drawer',
         itemCount: cart.item_count,
-        productId: state.product ? String(state.product.product_id) : undefined,
+        productId: product ? String(product.product_id) : undefined,
       })
     );
 
-    const name = state.product?.title || '';
-    showSuccessNotification(name, strFromShell(shell, 'i18nAddedToast'), strFromShell(shell, 'i18nViewCart'));
+    const name = product?.title || '';
+    showCartNotification(name, strFromShell(shell, 'i18nAddedToast'), strFromShell(shell, 'i18nViewCart'));
 
     /* GWP: trigger gift reconciler so any auto-add gifts come along.
        Fire-and-forget here is OK since we're not navigating away —
@@ -414,27 +442,37 @@ async function addToCart(shell) {
       btn.disabled = false;
       closeDrawer();
     }, 600);
-  } catch {
+  } catch (error) {
     btn.innerHTML = original;
     btn.disabled = false;
-    window.alert(strFromShell(shell, 'i18nAtcErr'));
+    if (error.code === 'max_per_order') showLimitNotification(error.message);
+    else window.alert(strFromShell(shell, 'i18nAtcErr'));
+  } finally {
+    cartRequestInFlight = false;
   }
 }
 
 async function buyNow(shell) {
   const btn = document.getElementById('apgoCollBuyBtn');
-  if (!btn || btn.disabled || state.currentVariantId == null) return;
+  if (!btn || btn.disabled || state.currentVariantId == null || cartRequestInFlight) return;
+
+  cartRequestInFlight = true;
+  const variantId = state.currentVariantId;
+  const quantity = state.currentQuantity;
+  const variant = state.product?.variants.find((v) => v.id === variantId);
 
   const original = btn.innerHTML;
   btn.innerHTML = `<span class="apgo-loading-spinner"></span> ${escapeHtml(strFromShell(shell, 'i18nProcessing'))}`;
   btn.disabled = true;
 
   try {
-    await fetch('/cart/add.js', {
+    await checkOrderLimit(variantId, quantity, variant?.max_per_order, variant?.limit_message);
+    const response = await fetch('/cart/add.js', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: state.currentVariantId, quantity: state.currentQuantity }),
+      body: JSON.stringify({ id: variantId, quantity }),
     });
+    if (!response.ok) throw new Error('add failed');
     /* GWP: let the global reconciler add any free gifts BEFORE we navigate
        away. Without this await the /cart redirect happens before the gift
        POST settles, so the customer lands in checkout without Y. */
@@ -442,10 +480,13 @@ async function buyNow(shell) {
       try { await window.apgoReconcileFreeGifts(); } catch (_) {}
     }
     window.location.href = '/cart';
-  } catch {
+  } catch (error) {
     btn.innerHTML = original;
     btn.disabled = false;
-    window.alert(strFromShell(shell, 'i18nAtcErr'));
+    if (error.code === 'max_per_order') showLimitNotification(error.message);
+    else window.alert(strFromShell(shell, 'i18nAtcErr'));
+  } finally {
+    cartRequestInFlight = false;
   }
 }
 
@@ -478,6 +519,11 @@ function bindShellDelegation() {
     if (dq) {
       const ch = Number(dq.getAttribute('data-apgo-qty'));
       const nq = state.currentQuantity + ch;
+      const variant = state.product?.variants.find((v) => v.id === state.currentVariantId);
+      if (variant?.max_per_order && nq > variant.max_per_order) {
+        showLimitNotification(variant.limit_message);
+        return;
+      }
       if (nq >= 1 && nq <= 10) {
         state.currentQuantity = nq;
         const qel = document.getElementById('apgoCollQtyValue');
@@ -526,11 +572,13 @@ document.addEventListener('click', (e) => {
 document.addEventListener('click', async (e) => {
   const t = e.target instanceof Element ? e.target : null;
   const btn = /** @type {HTMLButtonElement | null} */ (t ? t.closest('[data-apgo-quick-add-variant]') : null);
-  if (!btn || btn.disabled || btn.getAttribute('aria-busy') === 'true') return;
+  if (!btn || btn.disabled || btn.getAttribute('aria-busy') === 'true' || cartRequestInFlight) return;
   e.preventDefault();
 
   const variantId = Number(btn.getAttribute('data-apgo-quick-add-variant') || '0');
   if (!variantId) return;
+
+  cartRequestInFlight = true;
 
   const shell = getShell();
   const original = btn.innerHTML;
@@ -539,6 +587,7 @@ document.addEventListener('click', async (e) => {
   btn.textContent = strFromShell(shell, 'i18nAdding') || 'Adding…';
 
   try {
+    await checkOrderLimit(variantId, 1, Number(btn.dataset.apgoMaxPerOrder) || 0, btn.dataset.apgoLimitMessage);
     const res = await fetch('/cart/add.js', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -560,7 +609,7 @@ document.addEventListener('click', async (e) => {
       })
     );
 
-    showSuccessNotification(
+    showCartNotification(
       btn.getAttribute('data-product-title') || '',
       strFromShell(shell, 'i18nAddedToast'),
       strFromShell(shell, 'i18nViewCart')
@@ -569,9 +618,11 @@ document.addEventListener('click', async (e) => {
     if (typeof window.apgoReconcileFreeGifts === 'function') {
       try { window.apgoReconcileFreeGifts(); } catch (_) {}
     }
-  } catch {
-    window.alert(strFromShell(shell, 'i18nAtcErr') || 'Could not add to cart. Please try again.');
+  } catch (error) {
+    if (error.code === 'max_per_order') showLimitNotification(error.message);
+    else window.alert(strFromShell(shell, 'i18nAtcErr') || 'Could not add to cart. Please try again.');
   } finally {
+    cartRequestInFlight = false;
     btn.innerHTML = original;
     btn.removeAttribute('aria-busy');
     btn.classList.remove('is-busy');

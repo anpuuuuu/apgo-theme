@@ -197,6 +197,14 @@ const CHECKS = [
     },
   },
   {
+    id: 'R11',
+    title: 'All Products 抽屉数量上限、重复加购、Buy now 和限购提示',
+    until: '11.11 三包装活动结束',
+    async run() {
+      return require('./collection-order-limits').run();
+    },
+  },
+  {
     id: 'R10',
     title: '11.11 洗车精、雨刷精每单各限 2 套，活动页重复加购及旧购物车',
     until: '11.11 三包装活动结束',
