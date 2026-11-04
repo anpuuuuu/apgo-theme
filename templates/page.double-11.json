@@ -213,6 +213,7 @@
         },
         "sg_deal_acg": {
           "type": "promo_banner",
+          "disabled": true,
           "settings": {
             "market_visibility": "sg",
             "heading": "Small Packs, Big Savings",
@@ -240,6 +241,7 @@
         },
         "sg_deal_aurora": {
           "type": "promo_banner",
+          "disabled": true,
           "settings": {
             "market_visibility": "sg",
             "heading": "Small Packs, Big Savings",
@@ -267,6 +269,7 @@
         },
         "sg_deal_crystal": {
           "type": "promo_banner",
+          "disabled": true,
           "settings": {
             "market_visibility": "sg",
             "heading": "Must-Grab Box",
