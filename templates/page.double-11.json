@@ -105,7 +105,8 @@
             "banner": "shopify://shop_images/Boss_exclusive_1920_x_1080.jpg",
             "product": "11-11-boss-exclusive-coating-bundle",
             "variant_id": "",
-            "product_sg": "",
+            "banner_sg": "shopify://shop_images/sg_boss_exclusive.jpg",
+            "product_sg": "11-11-boss-exclusive-coating-bundle-sg",
             "variant_id_sg": "",
             "cta_mode": "add_buy",
             "single_cta_label": "Grab Deals Now",
@@ -150,7 +151,7 @@
         "row_b1f1": {
           "type": "product_carousel",
           "settings": {
-            "market_visibility": "both",
+            "market_visibility": "my",
             "heading": "11.11 Mega Deals",
             "message": "Buy 1 Free 1 and more on everyday car care favourites. Pick your deal below.",
             "sub_label": "",
@@ -158,7 +159,6 @@
             "badge_text": "",
             "badge_texts": "",
             "banner": "shopify://shop_images/mega_deals_1920_x_1080.jpg",
-            "banner_sg": "shopify://shop_images/mega_deal_sg_2.jpg",
             "products": [
               "apgo-car-interior-cleaner-200ml",
               "apgo-car-interior-coating-200ml-copy",
@@ -173,6 +173,36 @@
               "apgo-atomic-sealing-car-nano-coating-refill-pack-300ml-copy",
               "apgo-atomic-crystal-car-nano-coating-refill-pack-standard-300ml-copy-1",
               "apgo-atomic-glaze-car-nano-coating-refill-pack-standard-300ml-copy"
+            ],
+            "variant_ids": "",
+            "hide_compare_at": true,
+            "show_promo_limit": false,
+            "show_scroll_cue": true,
+            "view_all_link": ""
+          }
+        },
+        "product_carousel_jaYiQy": {
+          "type": "product_carousel",
+          "settings": {
+            "market_visibility": "sg",
+            "heading": "11.11 Mega Deals",
+            "message": "Buy 1 Free 1 and more on everyday car care favourites. Pick your deal below.",
+            "sub_label": "",
+            "anchor_id": "mega-deals",
+            "badge_text": "",
+            "badge_texts": "",
+            "banner": "shopify://shop_images/sg_mega_deals.jpg",
+            "products": [
+              "11-11-apgo-car-glass-cleaner-500ml",
+              "11-11-apgo-car-paint-restorer-200ml",
+              "11-11-apgo-headlight-restorer-200ml",
+              "11-11-apgo-car-microfiber-drying-towel-m-50-100cm",
+              "11-11-apgo-gloss-tire-dressing-300ml",
+              "apgo-car-exterior-plastic-hard-coating-30ml-copy",
+              "11-11-apgo-car-microfiber-drying-towel-l-60-160cm",
+              "apgo-titanium-car-nano-coating-premium-300ml-copy",
+              "apgo-aurora-car-nano-coating-premium-300ml-copy",
+              "apgo-atomic-glaze-car-nano-coating-standard-200ml-copy"
             ],
             "variant_ids": "",
             "hide_compare_at": true,
@@ -297,6 +327,7 @@
         "deal_boss",
         "deal_aurora",
         "row_b1f1",
+        "product_carousel_jaYiQy",
         "sg_deal_acg",
         "sg_deal_aurora",
         "sg_deal_crystal",
