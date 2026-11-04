@@ -191,7 +191,6 @@
             "anchor_id": "mega-deals",
             "badge_text": "",
             "badge_texts": "",
-            "banner": "shopify://shop_images/sg_mega_deals.jpg",
             "banner_sg": "shopify://shop_images/sg_mega_deals.jpg",
             "products": [
               "11-11-apgo-car-glass-cleaner-500ml",
@@ -214,6 +213,7 @@
         },
         "sg_deal_acg": {
           "type": "promo_banner",
+          "disabled": true,
           "settings": {
             "market_visibility": "sg",
             "heading": "Small Packs, Big Savings",
@@ -241,6 +241,7 @@
         },
         "sg_deal_aurora": {
           "type": "promo_banner",
+          "disabled": true,
           "settings": {
             "market_visibility": "sg",
             "heading": "Small Packs, Big Savings",
@@ -268,6 +269,7 @@
         },
         "sg_deal_crystal": {
           "type": "promo_banner",
+          "disabled": true,
           "settings": {
             "market_visibility": "sg",
             "heading": "Must-Grab Box",
