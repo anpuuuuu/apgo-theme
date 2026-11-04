@@ -192,6 +192,7 @@
             "badge_text": "",
             "badge_texts": "",
             "banner": "shopify://shop_images/sg_mega_deals.jpg",
+            "banner_sg": "shopify://shop_images/sg_mega_deals.jpg",
             "products": [
               "11-11-apgo-car-glass-cleaner-500ml",
               "11-11-apgo-car-paint-restorer-200ml",
