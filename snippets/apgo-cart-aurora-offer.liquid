@@ -8,12 +8,13 @@
   for item in cart.items
     if item.variant_id == 67976724512922 and item.quantity > 0
       assign aurora_eligible = true
-    elsif item.variant_id == 47521770668186 and item.quantity > 0
+    elsif item.variant_id == 68049930027162 and item.quantity > 0
       assign aurora_offer_in_cart = true
     endif
   endfor
-  assign offer_product = all_products['apgo-car-interior-eco-friendly-coating']
-  assign offer_variant = offer_product.variants | where: 'id', 47521770668186 | first
+  # The add-on is its own unlisted product (2026-11-04); AIOD "11.11 Aurora Hidden PWP" prices this variant.
+  assign offer_product = all_products['pwp-apgo-car-interior-bundle']
+  assign offer_variant = offer_product.variants | where: 'id', 68049930027162 | first
   assign offer_image = offer_variant.featured_image | default: offer_product.featured_image
   assign offer_price_minor = 3000
   assign reference_price_minor = original_price | default: 60 | times: 100 | round
