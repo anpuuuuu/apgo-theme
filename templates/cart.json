@@ -66,6 +66,8 @@
       "custom_css": [],
       "name": "原始購物車",
       "settings": {
+        "aurora_offer_preview": true,
+        "aurora_offer_original_price": 60,
         "section_width": "page-width",
         "color_scheme": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26",
         "padding-block-start": 0,
@@ -75,65 +77,6 @@
     "cart_offers_tabs": {
       "type": "cart-offers-tabs",
       "blocks": {
-        "tab_f4GpTw": {
-          "type": "tab",
-          "settings": {
-            "enabled": true,
-            "market_visibility": "all",
-            "slot": "tab_1",
-            "label": "Warehouse Sales PWP",
-            "subtitle_my": "",
-            "subtitle_sg": "",
-            "audience": "trigger",
-            "trigger_products": [
-              "warehouse-clearance-sale-bundle-sg"
-            ],
-            "trigger_variant_ids": "",
-            "trigger_min_quantity": 1,
-            "view_all_label": "",
-            "view_all_url": ""
-          }
-        },
-        "tab_pxghyY": {
-          "type": "tab",
-          "settings": {
-            "enabled": true,
-            "market_visibility": "all",
-            "slot": "tab_5",
-            "label": "Crystal PWP",
-            "subtitle_my": "Special price for Merdeka Promo · 2 set per product, per order",
-            "subtitle_sg": "Special price for merdeka Promo · 2 set per product, per order",
-            "audience": "trigger",
-            "trigger_products": [
-              "atomic-crystal-merdeka-set",
-              "jc-birthday-special-atomic-crystal-plus-promotion"
-            ],
-            "trigger_variant_ids": "",
-            "trigger_min_quantity": 1,
-            "view_all_label": "",
-            "view_all_url": ""
-          }
-        },
-        "tab_RdreJB": {
-          "type": "tab",
-          "settings": {
-            "enabled": true,
-            "market_visibility": "all",
-            "slot": "tab_4",
-            "label": "Atomic PWP",
-            "subtitle_my": "Special price for Atomic Promo · 2 set per product, per order",
-            "subtitle_sg": "Special price for Atomic Promo · 2 set per product, per order",
-            "audience": "trigger",
-            "trigger_products": [
-              "✨atomic-coating-special-ltd-bundle-✨",
-              "✨atomic-coating-starter-pack✨"
-            ],
-            "trigger_variant_ids": "49007551250586 , 49247421792410",
-            "trigger_min_quantity": 1,
-            "view_all_label": "",
-            "view_all_url": ""
-          }
-        },
         "tab_glaze": {
           "type": "tab",
           "settings": {
@@ -164,108 +107,51 @@
             "subtitle_sg": "Special price for Detergent Promo · 1 set per product, per order",
             "audience": "trigger",
             "trigger_products": [
-              "apgo-laundry-detergent-special-promotion-1"
+              "apgo-laundry-detergent-1l-promotion-copy"
             ],
             "trigger_variant_ids": "",
-            "trigger_min_quantity": 6,
+            "trigger_min_quantity": 4,
             "view_all_label": "",
             "view_all_url": ""
           }
         },
-        "offer_item_YNpXn3": {
-          "type": "offer_item",
+        "tab_RdreJB": {
+          "type": "tab",
           "settings": {
-            "tab_slot": "tab_1",
-            "product": "wh-sales-pwp-apgo-shoe-cleaner-300ml",
-            "variant_id": "",
-            "price_mode": "promo",
-            "promo_price_my": "",
-            "promo_price_sg": "$5.90",
-            "max_quantity": 2
+            "enabled": true,
+            "market_visibility": "all",
+            "slot": "tab_4",
+            "label": "Atomic PWP",
+            "subtitle_my": "Special price for Atomic Promo · 2 set per product, per order",
+            "subtitle_sg": "Special price for Atomic Promo · 2 set per product, per order",
+            "audience": "trigger",
+            "trigger_products": [
+              "✨atomic-coating-special-ltd-bundle-✨",
+              "✨atomic-coating-starter-pack✨"
+            ],
+            "trigger_variant_ids": "49007551250586 , 49247421792410",
+            "trigger_min_quantity": 1,
+            "view_all_label": "",
+            "view_all_url": ""
           }
         },
-        "offer_item_ibrDCq": {
-          "type": "offer_item",
+        "tab_pxghyY": {
+          "type": "tab",
           "settings": {
-            "tab_slot": "tab_1",
-            "product": "wh-sales-pwp-apgo-shoe-cleaner-30ml",
-            "variant_id": "",
-            "price_mode": "promo",
-            "promo_price_my": "",
-            "promo_price_sg": "$2.90",
-            "max_quantity": 2
-          }
-        },
-        "offer_item_tU8Njp": {
-          "type": "offer_item",
-          "settings": {
-            "tab_slot": "tab_1",
-            "product": "wh-sales-pwp-apgo-gloss-tire-dressing-300ml-copy",
-            "variant_id": "",
-            "price_mode": "promo",
-            "promo_price_my": "",
-            "promo_price_sg": "$9.90",
-            "max_quantity": 2
-          }
-        },
-        "offer_item_99RWBL": {
-          "type": "offer_item",
-          "settings": {
-            "tab_slot": "tab_1",
-            "product": "wh-sales-pwp-apgo-gloss-tire-dressing-300ml-3",
-            "variant_id": "",
-            "price_mode": "promo",
-            "promo_price_my": "",
-            "promo_price_sg": "$19.90",
-            "max_quantity": 2
-          }
-        },
-        "offer_item_VD9gnr": {
-          "type": "offer_item",
-          "settings": {
-            "tab_slot": "tab_1",
-            "product": "wh-sales-pwp-apgo-magnetic-clay-lubricant-clay-bar-set-300ml",
-            "variant_id": "",
-            "price_mode": "promo",
-            "promo_price_my": "",
-            "promo_price_sg": "$8.80",
-            "max_quantity": 2
-          }
-        },
-        "offer_item_4dHqk4": {
-          "type": "offer_item",
-          "settings": {
-            "tab_slot": "tab_1",
-            "product": "wh-sales-pwp-apgo-magnetic-clay-lubricant-clay-bar-set-300ml-3",
-            "variant_id": "",
-            "price_mode": "promo",
-            "promo_price_my": "",
-            "promo_price_sg": "$19.90",
-            "max_quantity": 2
-          }
-        },
-        "offer_item_D7g6Dj": {
-          "type": "offer_item",
-          "settings": {
-            "tab_slot": "tab_1",
-            "product": "apgo-car-glass-oil-film-remover-200ml-copy",
-            "variant_id": "",
-            "price_mode": "promo",
-            "promo_price_my": "",
-            "promo_price_sg": "$15.90",
-            "max_quantity": 2
-          }
-        },
-        "offer_item_YGLnQ9": {
-          "type": "offer_item",
-          "settings": {
-            "tab_slot": "tab_1",
-            "product": "wh-sales-pwp-apgo-car-glass-oil-film-remover-200ml-2",
-            "variant_id": "",
-            "price_mode": "promo",
-            "promo_price_my": "",
-            "promo_price_sg": "$24.90",
-            "max_quantity": 2
+            "enabled": true,
+            "market_visibility": "all",
+            "slot": "tab_5",
+            "label": "Crystal PWP",
+            "subtitle_my": "Special price for Merdeka Promo · 2 set per product, per order",
+            "subtitle_sg": "Special price for merdeka Promo · 2 set per product, per order",
+            "audience": "trigger",
+            "trigger_products": [
+              "jc-birthday-special-atomic-crystal-plus-promotion"
+            ],
+            "trigger_variant_ids": "",
+            "trigger_min_quantity": 1,
+            "view_all_label": "",
+            "view_all_url": ""
           }
         },
         "glaze_paint": {
@@ -474,19 +360,10 @@
         }
       },
       "block_order": [
-        "tab_f4GpTw",
-        "tab_pxghyY",
-        "tab_RdreJB",
         "tab_glaze",
         "tab_detergent",
-        "offer_item_YNpXn3",
-        "offer_item_ibrDCq",
-        "offer_item_tU8Njp",
-        "offer_item_99RWBL",
-        "offer_item_VD9gnr",
-        "offer_item_4dHqk4",
-        "offer_item_D7g6Dj",
-        "offer_item_YGLnQ9",
+        "tab_RdreJB",
+        "tab_pxghyY",
         "glaze_paint",
         "glaze_wheel",
         "glaze_sprayer",
