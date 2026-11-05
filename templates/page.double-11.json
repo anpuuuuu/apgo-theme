@@ -212,6 +212,32 @@
             "view_all_link": ""
           }
         },
+        "promo_banner_3gj7WQ": {
+          "type": "promo_banner",
+          "settings": {
+            "market_visibility": "my",
+            "heading": "11.11 Detergent Deal",
+            "message": "",
+            "anchor_id": "",
+            "banner": "shopify://shop_images/my_detergent_58730dd4-5a25-4af3-b86d-e41d2d697f5f.jpg",
+            "product": "apgo-laundry-detergent-1l-promotion-copy",
+            "variant_id": "",
+            "product_sg": "",
+            "variant_id_sg": "",
+            "cta_mode": "product_link",
+            "single_cta_label": "Grab Deals Now",
+            "show_price_range": false,
+            "gift_enabled": false,
+            "gift_pool": [],
+            "gift_count": 2,
+            "gift_heading": "Choose your free gifts",
+            "show_counter": false,
+            "counter_milestone_total": "500",
+            "counter_release_total": "88",
+            "counter_manual_deduction": "0",
+            "counter_flow_baseline": "0"
+          }
+        },
         "row_household": {
           "type": "product_carousel",
           "settings": {
@@ -248,6 +274,7 @@
         "deal_aurora",
         "row_b1f1",
         "product_carousel_jaYiQy",
+        "promo_banner_3gj7WQ",
         "row_household"
       ],
       "name": "Event Collection Grid",
