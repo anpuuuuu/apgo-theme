@@ -164,10 +164,17 @@ class CartOffersTabs extends HTMLElement {
        rather than whole products. */
     const variantQuantities = new Map();
 
+    /* What the cards count: free gift lines left out, so a gift of the same
+       product (the 11.11 bundle's free Floor Cleaner 500ml) doesn't mark
+       its RM11.11 add-on card as already ADDED. */
+    const offerQuantities = new Map();
+
     cart.items.forEach((item) => {
       const qty = Number(item.quantity || 0);
       const productId = String(item.product_id || item.product?.id || '');
       if (productId) quantities.set(productId, (quantities.get(productId) || 0) + qty);
+      const isGift = Boolean(item.properties?._aiod_free_gift) || item.properties?._free_gift === 'true';
+      if (productId && !isGift) offerQuantities.set(productId, (offerQuantities.get(productId) || 0) + qty);
       /* In cart.js a line item's own id IS the variant id. */
       const variantId = String(item.variant_id || item.id || '');
       if (variantId) variantQuantities.set(variantId, (variantQuantities.get(variantId) || 0) + qty);
@@ -194,7 +201,7 @@ class CartOffersTabs extends HTMLElement {
     this.activateGroup(stillActive ? this.activeGroupId : eligibleGroups[0].dataset.groupId);
 
     this.querySelectorAll('[data-offer-card]').forEach((card) => {
-      const productQuantity = quantities.get(String(card.dataset.productId)) || 0;
+      const productQuantity = offerQuantities.get(String(card.dataset.productId)) || 0;
       const maximum = Number(card.dataset.maxQuantity || 0);
       const button = card.querySelector('[data-offer-add]');
       if (!button) return;

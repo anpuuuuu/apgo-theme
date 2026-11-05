@@ -27,9 +27,11 @@
   endif
 
   assign product_quantity_in_cart = 0
+  # Free gift lines don't count (assets/cart-offers-tabs.js does the same), so
+  # a free gift of this product doesn't mark its add-on card ADDED.
   if offer_product != blank
     for cart_item in cart.items
-      if cart_item.product_id == offer_product.id
+      if cart_item.product_id == offer_product.id and cart_item.properties._aiod_free_gift == blank and cart_item.properties._free_gift != 'true'
         assign product_quantity_in_cart = product_quantity_in_cart | plus: cart_item.quantity
       endif
     endfor
