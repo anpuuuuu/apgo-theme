@@ -99,12 +99,12 @@
         "tab_detergent": {
           "type": "tab",
           "settings": {
-            "enabled": false,
+            "enabled": true,
             "market_visibility": "my",
             "slot": "tab_3",
-            "label": "Detergent PWP",
-            "subtitle_my": "Special price for Detergent Promo · 1 set per product, per order",
-            "subtitle_sg": "Special price for Detergent Promo · 1 set per product, per order",
+            "label": "11.11 PWP",
+            "subtitle_my": "Exclusive add-on with Laundry Value Bundle · RM11.11 each, 1 per order",
+            "subtitle_sg": "",
             "audience": "trigger",
             "trigger_products": [
               "apgo-laundry-detergent-1l-promotion-copy"
@@ -209,7 +209,7 @@
             "product": "apgo-tencel-special-cleaning-formula",
             "variant_id": "",
             "price_mode": "promo",
-            "promo_price_my": "RM 23.00",
+            "promo_price_my": "RM11.11",
             "promo_price_sg": "",
             "max_quantity": 1
           }
@@ -221,7 +221,19 @@
             "product": "apgo-floor-cleaner-made-in-taiwan",
             "variant_id": "",
             "price_mode": "promo",
-            "promo_price_my": "RM 23.00",
+            "promo_price_my": "RM11.11",
+            "promo_price_sg": "",
+            "max_quantity": 1
+          }
+        },
+        "pwp_kitchen_cleaner": {
+          "type": "offer_item",
+          "settings": {
+            "tab_slot": "tab_3",
+            "product": "apgo-kitchen-cleaner",
+            "variant_id": "",
+            "price_mode": "promo",
+            "promo_price_my": "RM11.11",
             "promo_price_sg": "",
             "max_quantity": 1
           }
@@ -233,7 +245,19 @@
             "product": "apgo-white-shoe-cleaner-made-in-taiwan",
             "variant_id": "",
             "price_mode": "promo",
-            "promo_price_my": "RM 17.00",
+            "promo_price_my": "RM11.11",
+            "promo_price_sg": "",
+            "max_quantity": 1
+          }
+        },
+        "pwp_water_spot": {
+          "type": "offer_item",
+          "settings": {
+            "tab_slot": "tab_3",
+            "product": "apgo-water-spot-remover",
+            "variant_id": "",
+            "price_mode": "promo",
+            "promo_price_my": "RM11.11",
             "promo_price_sg": "",
             "max_quantity": 1
           }
@@ -368,9 +392,11 @@
         "glaze_wheel",
         "glaze_sprayer",
         "offer_item_V8Xzyb",
-        "detergent_tencel",
         "detergent_floor",
+        "pwp_kitchen_cleaner",
         "detergent_shoe",
+        "pwp_water_spot",
+        "detergent_tencel",
         "offer_item_XVrdXC",
         "offer_item_U3FEd8",
         "offer_item_X8EMPn",
