@@ -15,11 +15,11 @@
   Tag is hardcoded so admins can drop it on any product / variant
   from the Shopify Products page without touching theme code.
 
-  Also qualifies: a full set of the bundle picker's set offer (any 3 for
-  RM99, theme settings → APGO — Bundle Widget → Set offer, Malaysia
-  only) when "Free shipping with a set" is ticked. Packs of every
-  bundle-enabled product count together; free gift lines don't count.
-  The JS side of the same rule is in snippets/apgo-cart-free-shipping-lookup.
+  Also qualifies: a full set of one bundle product whose set comes with
+  free shipping (snippets/apgo-bundle-set-config: any 3 for RM99 in
+  Malaysia, the 11.11 Value Bundle's any 4). Packs of different products
+  don't add up; free gift lines don't count. The JS side of the same rule
+  is in snippets/apgo-cart-free-shipping-lookup.
 {%- enddoc -%}
 {%- liquid
   assign apgo_fs_out = ''
@@ -31,25 +31,29 @@
   endfor
 
   if apgo_fs_out == blank
-    capture apgo_fs_set_on
-      render 'apgo-bundle-set-offer'
-    endcapture
-    if apgo_fs_set_on == 'on' and settings.apgo_bundle_set_free_ship_my
+    for line in cart.items
+      if line.properties._free_gift == 'true' or line.final_price == 0
+        continue
+      endif
+      capture apgo_fs_cfg
+        render 'apgo-bundle-set-config', product: line.product
+      endcapture
+      assign apgo_fs_cfg = apgo_fs_cfg | strip | split: '|'
+      if apgo_fs_cfg[3] != '1'
+        continue
+      endif
       assign apgo_fs_packs = 0
-      assign apgo_fs_set_title = ''
-      for line in cart.items
-        if line.product.metafields.apgo.bundle_enabled and line.properties._free_gift != 'true' and line.final_price > 0
-          assign apgo_fs_packs = apgo_fs_packs | plus: line.quantity
-          if apgo_fs_set_title == blank
-            assign apgo_fs_set_title = line.product.title
-          endif
+      for other in cart.items
+        if other.product_id == line.product_id and other.properties._free_gift != 'true' and other.final_price > 0
+          assign apgo_fs_packs = apgo_fs_packs | plus: other.quantity
         endif
       endfor
-      assign apgo_fs_set_count = settings.apgo_bundle_set_count | default: 3
+      assign apgo_fs_set_count = apgo_fs_cfg[1] | plus: 0
       if apgo_fs_packs >= apgo_fs_set_count
-        assign apgo_fs_out = apgo_fs_set_title
+        assign apgo_fs_out = line.product.title
+        break
       endif
-    endif
+    endfor
   endif
 
   echo apgo_fs_out

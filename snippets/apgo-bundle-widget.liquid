@@ -98,21 +98,41 @@
     real price cut, gifts and free shipping are the admin discount's / AIOD's.
     Malaysia only (the snippet stays off in Singapore, which keeps 3+1).
     No set price shows Single pack only.
+    The 11.11 Value Bundle products (theme settings → APGO — Value Bundle,
+    2026-11-05) get their own any-4 set in both markets instead; which set
+    applies comes from snippets/apgo-bundle-set-config.
   endcomment
-  capture set_on
-    render 'apgo-bundle-set-offer'
+  capture set_cfg
+    render 'apgo-bundle-set-config', product: product
   endcapture
+  assign set_cfg = set_cfg | strip | split: '|'
+  assign set_kind = set_cfg[0]
   assign set_count = 0
   assign set_price = 0
-  if set_on == 'on'
-    assign set_count = settings.apgo_bundle_set_count | default: 3
-    assign set_price = settings.apgo_bundle_set_price_my | strip | times: 100 | round
-    assign set_gifts = settings.apgo_bundle_set_gifts_my
-    assign set_free_ship = settings.apgo_bundle_set_free_ship_my
+  if set_kind != blank
+    assign set_count = set_cfg[1] | plus: 0
+    assign set_price = set_cfg[2] | plus: 0
+    assign set_free_ship = false
+    if set_cfg[3] == '1'
+      assign set_free_ship = true
+    endif
+    if set_kind == 'vb'
+      assign set_chip = settings.apgo_vb_chip
+      assign set_note = settings.apgo_vb_note
+      if localization.country.iso_code == 'SG'
+        assign set_gifts = settings.apgo_vb_gifts_sg
+      else
+        assign set_gifts = settings.apgo_vb_gifts_my
+      endif
+    else
+      assign set_chip = settings.apgo_bundle_set_chip
+      assign set_note = settings.apgo_bundle_set_note
+      assign set_gifts = settings.apgo_bundle_set_gifts_my
+    endif
     assign tiers_str = '1|0|Single pack|'
     if set_price > 0
       assign set_price_fmt = set_price | money | replace: cart.currency.iso_code, '' | strip
-      assign tiers_str = tiers_str | append: '::' | append: set_count | append: '|0|Any ' | append: set_count | append: ' for ' | append: set_price_fmt | append: '|' | append: settings.apgo_bundle_set_chip
+      assign tiers_str = tiers_str | append: '::' | append: set_count | append: '|0|Any ' | append: set_count | append: ' for ' | append: set_price_fmt | append: '|' | append: set_chip
     endif
     assign tiers = tiers_str | split: '::'
   endif
@@ -264,9 +284,9 @@
       {%- endif -%}
     {%- endif -%}
   {%- endfor -%}
-  {%- if set_on == 'on' -%}
-    {%- if set_price > 0 and settings.apgo_bundle_set_note != blank -%}
-      <p class="apgo-bundle__stack-note">{{ settings.apgo_bundle_set_note | escape }}</p>
+  {%- if set_kind != blank -%}
+    {%- if set_price > 0 and set_note != blank -%}
+      <p class="apgo-bundle__stack-note">{{ set_note | escape }}</p>
     {%- endif -%}
   {%- elsif promo_pairs != blank -%}
     <p class="apgo-bundle__stack-note">{{ promo_pairs }} promotion is limited to once per order*</p>
@@ -402,7 +422,7 @@
 
       <div class="apgo-bundle__min-note">
         Choose <span data-apgo-bundle-max-note>3</span> scent packs
-        <span data-apgo-bundle-gift-part{% if set_on == 'on' %} hidden{% endif %}>· includes <span data-apgo-bundle-gift-note>1</span> free gift pack</span>
+        <span data-apgo-bundle-gift-part{% if set_kind != blank %} hidden{% endif %}>· includes <span data-apgo-bundle-gift-note>1</span> free gift pack</span>
       </div>
     </div>
   {%- endif -%}

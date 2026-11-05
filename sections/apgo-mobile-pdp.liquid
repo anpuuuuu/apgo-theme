@@ -59,13 +59,21 @@
 
   # While the bundle picker's set offer is on (any 3 for RM99), the
   # subtitle comes from the theme settings: the product's own still
-  # talks about 6+3 / 3+1. Malaysia only; Singapore keeps 3+1.
+  # talks about 6+3 / 3+1. Malaysia only; Singapore keeps 3+1. The 11.11
+  # Value Bundle products take their market's subtitle from APGO — Value Bundle.
   if product.metafields.apgo.bundle_enabled
-    capture apgo_set_on
-      render 'apgo-bundle-set-offer'
+    capture apgo_set_kind
+      render 'apgo-bundle-set-config', product: product
     endcapture
-    if apgo_set_on == 'on'
+    assign apgo_set_kind = apgo_set_kind | strip | split: '|' | first
+    if apgo_set_kind == 'set'
       assign apgo_subtitle = settings.apgo_bundle_set_subtitle_my
+    elsif apgo_set_kind == 'vb'
+      if localization.country.iso_code == 'SG'
+        assign apgo_subtitle = settings.apgo_vb_subtitle_sg
+      else
+        assign apgo_subtitle = settings.apgo_vb_subtitle_my
+      endif
     endif
   endif
 -%}

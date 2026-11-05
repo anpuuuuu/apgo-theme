@@ -204,6 +204,84 @@
     ]
   },
   {
+    "name": "APGO — Value Bundle (any 4)",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "A laundry product of its own (one for Malaysia, one for Singapore) sold as Single pack or any N packs per set. Every N packs make one set, so shoppers can add more sets. The card only shows the offer: the real price cut (Shopify discount), gifts and free shipping (AIOD) must be set up for these products. The products below no longer take the \"any 3 for RM99\" set offer above."
+      },
+      {
+        "type": "product",
+        "id": "apgo_vb_product_my",
+        "label": "Malaysia product"
+      },
+      {
+        "type": "product",
+        "id": "apgo_vb_product_sg",
+        "label": "Singapore product"
+      },
+      {
+        "type": "range",
+        "id": "apgo_vb_count",
+        "label": "Packs per set",
+        "min": 2,
+        "max": 9,
+        "step": 1,
+        "default": 4
+      },
+      {
+        "type": "text",
+        "id": "apgo_vb_price_my",
+        "label": "Set price, Malaysia (RM)",
+        "default": "111",
+        "info": "Number only. Singapore has no set price: its card shows N × the single price."
+      },
+      {
+        "type": "text",
+        "id": "apgo_vb_chip",
+        "label": "Chip on the set card",
+        "default": "11.11 Deal"
+      },
+      {
+        "type": "text",
+        "id": "apgo_vb_gifts_my",
+        "label": "Free gifts line, Malaysia",
+        "default": "Free 1× Floor Cleaner 500ml"
+      },
+      {
+        "type": "text",
+        "id": "apgo_vb_gifts_sg",
+        "label": "Free gifts line, Singapore",
+        "default": "Free 2× White Shoe Cleaner 300ml"
+      },
+      {
+        "type": "checkbox",
+        "id": "apgo_vb_free_ship",
+        "label": "Free shipping with a set",
+        "default": true,
+        "info": "Shows Free shipping on the set card, and the cart counts shipping as free once it holds a full set of that product. The real free shipping comes from AIOD."
+      },
+      {
+        "type": "text",
+        "id": "apgo_vb_note",
+        "label": "Note under the options",
+        "default": "11.11 deal! Every 4 packs make one set, and each set gets its own free gifts."
+      },
+      {
+        "type": "text",
+        "id": "apgo_vb_subtitle_my",
+        "label": "Product subtitle, Malaysia",
+        "default": "Choose any 4 scents for RM111.00, with a free Floor Cleaner 500ml and free shipping!"
+      },
+      {
+        "type": "text",
+        "id": "apgo_vb_subtitle_sg",
+        "label": "Product subtitle, Singapore",
+        "default": "Choose any 4 scents and get 2 free White Shoe Cleaner 300ml, plus free shipping!"
+      }
+    ]
+  },
+  {
     "name": "APGO — Product page banner",
     "settings": [
       {
