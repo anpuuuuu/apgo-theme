@@ -304,13 +304,19 @@ class CartOffersTabs extends HTMLElement {
       if (component.dataset.sectionId) sectionIds.add(component.dataset.sectionId);
     });
 
+    /* A card with its own image (Malaysia only, set in the card's Liquid)
+       hands it to the line, so the cart shows the PWP picture for it. */
+    const item = { id: variantId, quantity: 1 };
+    const offerImage = button.closest('[data-offer-card]')?.dataset.offerImage;
+    if (offerImage) item.properties = { _apgo_offer_image: offerImage };
+
     try {
       const root = window.Shopify?.routes?.root || '/';
       const addResponse = await fetch(`${root}cart/add.js`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({
-          items: [{ id: variantId, quantity: 1 }],
+          items: [item],
           sections: Array.from(sectionIds).slice(0, 5),
           sections_url: window.location.pathname,
         }),

@@ -199,12 +199,21 @@
                   role="cell"
                   headers="productImage"
                 >
-                  {% if item.image -%}
+                  {%- liquid
+                    # Added from a cart add-on card with its own image (e.g. an 11.11
+                    # PWP graphic, assets/cart-offers-tabs.js): show that picture.
+                    # Malaysia only, and only Shopify-hosted files.
+                    assign apgo_offer_img = item.properties._apgo_offer_image | default: ''
+                    unless apgo_offer_img contains '/cdn/shop/files/' and localization.country.iso_code != 'SG'
+                      assign apgo_offer_img = ''
+                    endunless
+                  -%}
+                  {% if item.image or apgo_offer_img != blank -%}
                     {% liquid
                       assign ratio = 1
                       if block.settings.image_ratio == 'portrait'
                         assign ratio = 0.8
-                      elsif block.settings.image_ratio == 'adapt'
+                      elsif block.settings.image_ratio == 'adapt' and apgo_offer_img == blank
                         assign ratio = item.image.aspect_ratio
                       endif
                     %}
@@ -213,9 +222,13 @@
                       class="cart-items__media-container"
                       style="--ratio:{{ ratio }};"
                     >
-                      {%- liquid
-                        echo item.image | image_url: width: 250 | image_tag: class: 'cart-items__media-image'
-                      -%}
+                      {%- if apgo_offer_img != blank -%}
+                        <img src="{{ apgo_offer_img | escape }}" alt="{{ item.product.title | escape }}" class="cart-items__media-image" width="500" height="500" loading="lazy">
+                      {%- else -%}
+                        {%- liquid
+                          echo item.image | image_url: width: 250 | image_tag: class: 'cart-items__media-image'
+                        -%}
+                      {%- endif -%}
                     </a>
                   {%- endif %}
                 </td>

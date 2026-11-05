@@ -171,6 +171,8 @@
     data-offer-card
     data-product-id="{{ offer_product.id }}"
     data-max-quantity="{{ max_quantity }}"
+    {%- comment -%} Malaysia only: the line added from this card keeps the card image in the cart (snippets/cart-products). {%- endcomment -%}
+    {% if offer_block.settings.card_image != blank and is_sg == false %}data-offer-image="{{ offer_block.settings.card_image | image_url: width: 500 }}"{% endif %}
     {{ offer_block.shopify_attributes }}
   >
     <a class="cart-offers-tabs__card-link" href="{{ product_url }}">
