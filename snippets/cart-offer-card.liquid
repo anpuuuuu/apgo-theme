@@ -53,7 +53,9 @@
     assign can_add_more = true
   endif
 
-  assign offer_image = display_variant.featured_image | default: offer_product.featured_image
+  # A card image of its own (e.g. an 11.11 PWP graphic) shows only on this
+  # card; the product keeps its usual pictures everywhere else.
+  assign offer_image = offer_block.settings.card_image | default: display_variant.featured_image | default: offer_product.featured_image
   assign product_url = offer_product.url
   if offer_variant != blank and configured_variant_id != blank
     assign product_url = offer_variant.url
