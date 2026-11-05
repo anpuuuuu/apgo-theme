@@ -202,23 +202,12 @@
             "max_quantity": 2
           }
         },
-        "detergent_tencel": {
-          "type": "offer_item",
-          "settings": {
-            "tab_slot": "tab_3",
-            "product": "apgo-tencel-special-cleaning-formula",
-            "variant_id": "",
-            "price_mode": "promo",
-            "promo_price_my": "RM11.11",
-            "promo_price_sg": "",
-            "max_quantity": 1
-          }
-        },
         "detergent_floor": {
           "type": "offer_item",
           "settings": {
             "tab_slot": "tab_3",
             "product": "apgo-floor-cleaner-made-in-taiwan",
+            "card_image": "shopify://shop_images/photo_2026-11-01_19-42-43.jpg",
             "variant_id": "",
             "price_mode": "promo",
             "promo_price_my": "RM11.11",
@@ -231,6 +220,7 @@
           "settings": {
             "tab_slot": "tab_3",
             "product": "apgo-kitchen-cleaner",
+            "card_image": "shopify://shop_images/photo_2026-11-01_19-42-43_2.jpg",
             "variant_id": "",
             "price_mode": "promo",
             "promo_price_my": "RM11.11",
@@ -243,6 +233,7 @@
           "settings": {
             "tab_slot": "tab_3",
             "product": "apgo-white-shoe-cleaner-made-in-taiwan",
+            "card_image": "shopify://shop_images/photo_2026-11-01_19-42-43_3.jpg",
             "variant_id": "",
             "price_mode": "promo",
             "promo_price_my": "RM11.11",
@@ -255,6 +246,20 @@
           "settings": {
             "tab_slot": "tab_3",
             "product": "apgo-water-spot-remover",
+            "card_image": "shopify://shop_images/photo_2026-11-01_19-42-44.jpg",
+            "variant_id": "",
+            "price_mode": "promo",
+            "promo_price_my": "RM11.11",
+            "promo_price_sg": "",
+            "max_quantity": 1
+          }
+        },
+        "detergent_tencel": {
+          "type": "offer_item",
+          "settings": {
+            "tab_slot": "tab_3",
+            "product": "apgo-tencel-special-cleaning-formula",
+            "card_image": "shopify://shop_images/photo_2026-11-01_19-45-52.jpg",
             "variant_id": "",
             "price_mode": "promo",
             "promo_price_my": "RM11.11",
