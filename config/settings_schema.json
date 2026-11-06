@@ -230,6 +230,16 @@
         "default": 4
       },
       {
+        "type": "range",
+        "id": "apgo_vb_free_packs_sg",
+        "label": "Free packs per set, Singapore",
+        "min": 0,
+        "max": 6,
+        "step": 1,
+        "default": 2,
+        "info": "Singapore's set becomes \"Buy N Free M\": the shopper picks N + M scents and pays for N. The free packs come from the discount \"11.11 Detergent 4+2\". 0 shows \"Any N\" again."
+      },
+      {
         "type": "text",
         "id": "apgo_vb_price_my",
         "label": "Set price, Malaysia (RM)",
@@ -269,6 +279,12 @@
       },
       {
         "type": "text",
+        "id": "apgo_vb_note_sg",
+        "label": "Note under the options, Singapore with free packs",
+        "default": "11.11 deal! Pick any 6 scents and pay for 4. Buy 4 Free 2 is limited to once per order."
+      },
+      {
+        "type": "text",
         "id": "apgo_vb_subtitle_my",
         "label": "Product subtitle, Malaysia",
         "default": "Choose any 4 scents for RM111.00, with a free Floor Cleaner 500ml and free shipping!"
@@ -277,7 +293,7 @@
         "type": "text",
         "id": "apgo_vb_subtitle_sg",
         "label": "Product subtitle, Singapore",
-        "default": "Choose any 4 scents and get 2 free White Shoe Cleaner 300ml, plus free shipping!"
+        "default": "Buy 4 Free 2! Choose any 6 scents for $67.60, with 2 free White Shoe Cleaner 300ml and free shipping!"
       }
     ]
   },
