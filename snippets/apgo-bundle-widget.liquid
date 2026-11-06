@@ -128,7 +128,7 @@
       assign set_note = settings.apgo_vb_note
       if localization.country.iso_code == 'SG'
         assign set_gifts = settings.apgo_vb_gifts_sg
-        assign set_free_packs = settings.apgo_vb_free_packs_sg | plus: 0
+        assign set_free_packs = set_cfg[4] | plus: 0
         if set_free_packs > 0
           assign set_note = settings.apgo_vb_note_sg
         endif

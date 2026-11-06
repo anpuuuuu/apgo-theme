@@ -1,7 +1,7 @@
 {%- doc -%}
   Which "any N packs" set a bundle product sells in this market, for the
-  bundle picker, the product subtitle and the cart. Prints
-  "kind|count|price_cents|free_ship" or nothing:
+  bundle picker, the product subtitle, the cart and the event-page cards.
+  Prints "kind|count|price_cents|free_ship|free_packs" or nothing:
     vb  — theme settings → APGO — Value Bundle (any 4): its own Malaysia
           and Singapore products (11.11, 2026-11-05). Malaysia has a set
           price; Singapore's set costs N × its single price. count is the
@@ -12,7 +12,9 @@
           while snippets/apgo-bundle-set-offer is on.
   free_ship is 1 when the set comes with free shipping (shown on the card,
   counted by the cart); the real discounts, gifts and free shipping are
-  Shopify's / AIOD's. Capture it and split on "|".
+  Shopify's / AIOD's. free_packs is the packs a set adds for free on top
+  of count (Singapore's "Buy 4 Free 2"), else 0. Capture it and split
+  on "|".
 
   @param {product} product - The bundle product.
 {%- enddoc -%}
@@ -41,7 +43,11 @@
     if settings.apgo_vb_free_ship
       assign apgo_cfg_ship = 1
     endif
-    echo 'vb|' | append: apgo_cfg_count | append: '|' | append: apgo_cfg_price | append: '|' | append: apgo_cfg_ship
+    assign apgo_cfg_free = 0
+    if apgo_cfg_sg
+      assign apgo_cfg_free = settings.apgo_vb_free_packs_sg | plus: 0
+    endif
+    echo 'vb|' | append: apgo_cfg_count | append: '|' | append: apgo_cfg_price | append: '|' | append: apgo_cfg_ship | append: '|' | append: apgo_cfg_free
   elsif product != blank and product.metafields.apgo.bundle_enabled
     capture apgo_cfg_set_on
       render 'apgo-bundle-set-offer'
@@ -53,7 +59,7 @@
       if settings.apgo_bundle_set_free_ship_my
         assign apgo_cfg_ship = 1
       endif
-      echo 'set|' | append: apgo_cfg_count | append: '|' | append: apgo_cfg_price | append: '|' | append: apgo_cfg_ship
+      echo 'set|' | append: apgo_cfg_count | append: '|' | append: apgo_cfg_price | append: '|' | append: apgo_cfg_ship | append: '|0'
     endif
   endif
 -%}
