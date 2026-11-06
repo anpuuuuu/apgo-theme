@@ -237,24 +237,16 @@
       {%- liquid
         # 11.11 Value Bundle (theme settings → APGO — Value Bundle, 2026-11-07):
         # price the set, e.g. Singapore's Buy 4 Free 2 at $67.60, not one
-        # pack, with a line saying what the set is. "Choose scent" opens the
-        # set picker on the product page.
-        assign apgo_card_set_note = blank
+        # pack. No line under it saying what the set is (owner, 2026-11-07).
+        # "Choose scent" opens the set picker on the product page.
         unless apgo_resolved_from_block
           capture apgo_card_set
             render 'apgo-bundle-set-config', product: product
           endcapture
           assign apgo_card_set = apgo_card_set | strip | split: '|'
           if apgo_card_set[0] == 'vb'
-            assign apgo_card_set_count = apgo_card_set[1] | plus: 0
-            assign apgo_card_set_free = apgo_card_set[4] | plus: 0
             assign apgo_card_price_cents = apgo_card_set[2] | plus: 0
             assign apgo_card_compare_cents = 0
-            assign apgo_card_set_note = apgo_card_set_count | append: ' packs'
-            if apgo_card_set_free > 0
-              assign apgo_card_set_note = apgo_card_set_count | plus: apgo_card_set_free | append: ' packs'
-              assign apgo_card_set_note = 'Buy ' | append: apgo_card_set_count | append: ' Free ' | append: apgo_card_set_free | append: ' · ' | append: apgo_card_set_note
-            endif
           endif
         endunless
       -%}
@@ -275,9 +267,6 @@
             <span class="apgo-event-listing-card__price-int">{{ apgo_card_price_parts[0] }}</span>{%- if apgo_card_price_parts[1] -%}<span class="apgo-event-listing-card__price-frac">.{{ apgo_card_price_parts[1] }}</span>{%- endif -%}
           </span>
         </div>
-        {%- if apgo_card_set_note != blank -%}
-          <p class="apgo-crate-stock apgo-event-listing-card__set-note">{{ apgo_card_set_note }}</p>
-        {%- endif -%}
         {%- if crate and apgo_card_sold_out == false and apgo_crate_qty > 0 and apgo_crate_qty <= 20 -%}
           <p class="apgo-crate-stock{% if apgo_crate_qty <= 5 %} apgo-crate-stock--low{% endif %}">Only {{ apgo_crate_qty }} left</p>
         {%- endif -%}
