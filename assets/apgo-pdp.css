@@ -2028,16 +2028,6 @@ body.template-suffix-apgo-v1s-plus [id^="shopify-section-apgo_tactical_hub"] {
   pointer-events: none;
 }
 
-/* Single mode: scents-head label changes color subtly so user knows it's
-   a different selection mode */
-.apgo-bundle[data-mode="single"] .apgo-bundle__scents-head .apgo-bundle__scents-title::after {
-  content: " · 選一款";
-  color: var(--apgo-muted);
-  font-weight: 400;
-  font-size: 11px;
-  margin-left: 4px;
-}
-
 /* Bundle widget bottom margin — separate it from the ship card / tabs
    that follow. Without this, the widget's rounded corner sits flush
    against the next card and the page reads as one solid block. */
