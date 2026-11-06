@@ -193,7 +193,6 @@
             "badge_texts": "",
             "banner_sg": "shopify://shop_images/11.11_banner_SG_MEGA_DEALS.jpg",
             "products": [
-              "11-11-laundry-value-bundle-copy",
               "11-11-apgo-car-glass-cleaner-500ml",
               "11-11-apgo-car-paint-restorer-200ml",
               "11-11-apgo-headlight-restorer-200ml",
@@ -204,7 +203,8 @@
               "11-11-apgo-car-microfiber-drying-towel-l-60-160cm",
               "apgo-titanium-car-nano-coating-premium-300ml-copy",
               "apgo-aurora-car-nano-coating-premium-300ml-copy",
-              "apgo-atomic-glaze-car-nano-coating-standard-200ml-copy"
+              "apgo-atomic-glaze-car-nano-coating-standard-200ml-copy",
+              "11-11-laundry-value-bundle-copy"
             ],
             "variant_ids": "",
             "hide_compare_at": true,
