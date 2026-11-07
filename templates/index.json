@@ -32,6 +32,16 @@
             "market_visibility": "my"
           }
         },
+        "banner_QXjPUf": {
+          "type": "banner",
+          "settings": {
+            "image": "shopify://shop_images/sg_boss_exclusive.jpg",
+            "link": "shopify://products/11-11-boss-exclusive-coating-bundle-sg",
+            "alt": "",
+            "tracking_id": "",
+            "market_visibility": "sg"
+          }
+        },
         "banner_jin73F": {
           "type": "banner",
           "settings": {
@@ -39,7 +49,17 @@
             "link": "shopify://pages/11-11-sale",
             "alt": "",
             "tracking_id": "",
-            "market_visibility": "both"
+            "market_visibility": "my"
+          }
+        },
+        "banner_D4NfEr": {
+          "type": "banner",
+          "settings": {
+            "image": "shopify://shop_images/sg_mega_deals_1713139f-a9d4-441e-a69f-c859e48082a6.jpg",
+            "link": "shopify://pages/11-11-sale",
+            "alt": "",
+            "tracking_id": "",
+            "market_visibility": "sg"
           }
         },
         "banner_9GwjTp": {
@@ -59,7 +79,17 @@
             "link": "",
             "alt": "",
             "tracking_id": "",
-            "market_visibility": "both"
+            "market_visibility": "my"
+          }
+        },
+        "banner_VeMXDE": {
+          "type": "banner",
+          "settings": {
+            "image": "shopify://shop_images/11.11_banner_sg_detergent_b7b9aa50-bec5-4bd7-bc6d-42fe66085d5f.jpg",
+            "link": "",
+            "alt": "",
+            "tracking_id": "",
+            "market_visibility": "sg"
           }
         },
         "banner_9NBpHW": {
@@ -86,9 +116,12 @@
       "block_order": [
         "banner_gwB9LQ",
         "banner_a7egwR",
+        "banner_QXjPUf",
         "banner_jin73F",
+        "banner_D4NfEr",
         "banner_9GwjTp",
         "banner_9A6qCX",
+        "banner_VeMXDE",
         "banner_9NBpHW",
         "banner_golden_bull"
       ],
