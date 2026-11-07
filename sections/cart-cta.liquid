@@ -53,7 +53,7 @@
       # Per-market threshold — mirrors sections/cart-totals.liquid (SG/MY only)
       assign sticky_threshold_minor = 0
       if localization.country.iso_code == 'SG'
-        assign sticky_threshold_minor = 7000
+        assign sticky_threshold_minor = 5500
       elsif localization.country.iso_code == 'MY'
         assign sticky_threshold_minor = 15500
       endif
@@ -916,7 +916,7 @@
         shipMinor = window.apgoEstimatedShippingMinor(cart) || 0;
       } else if (freeShipTagTitle) {
         shipMinor = 0;
-      } else if ((ccy === 'MYR' && basis < 15500) || (ccy === 'SGD' && basis < 7000)) {
+      } else if ((ccy === 'MYR' && basis < 15500) || (ccy === 'SGD' && basis < 5500)) {
         var shipTiers = (window.APGO_SHIPPING_TIERS || {% render 'apgo-shipping-estimate', tiers_json: true %})[ccy].split(',');
         for (var shipTierIdx = 0; shipTierIdx < shipTiers.length; shipTierIdx++) {
           var shipTier = shipTiers[shipTierIdx].split(':');

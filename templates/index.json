@@ -138,7 +138,7 @@
             "icon": "truck",
             "title": "Free shipping",
             "text": "Over RM155, West Malaysia",
-            "text_sg": "Over $70 to Singapore"
+            "text_sg": "Over $55 to Singapore"
           }
         },
         "perk_delivery": {
@@ -341,7 +341,7 @@
           "settings": {
             "question": "How much is shipping?",
             "answer": "<p>Free on orders over RM155 to West Malaysia. Orders usually arrive in 2–3 business days. Below that, shipping is weight-based and shown at checkout before you pay.</p>",
-            "answer_sg": "<p>Free on orders over $70 to Singapore. Orders usually arrive in 3–5 business days. Below that, shipping is weight-based and shown at checkout before you pay.</p>"
+            "answer_sg": "<p>Free on orders over $55 to Singapore. Orders usually arrive in 3–5 business days. Below that, shipping is weight-based and shown at checkout before you pay.</p>"
           }
         },
         "q_choose": {

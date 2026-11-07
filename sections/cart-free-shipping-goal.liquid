@@ -1,5 +1,5 @@
 {% comment %}
-  Cart free shipping goal section: MY (West Malaysia MYR 155) / SG (SGD 70)
+  Cart free shipping goal section: MY (West Malaysia MYR 155) / SG (SGD 55)
 
   Tag override: any cart line whose product carries the 'free-shipping'
   tag unlocks the whole order. UI fills the progress bar to 100% and
@@ -111,7 +111,7 @@
 
     const getRule = (iso) => {
       if (iso === 'MY') return { thresholdMinor: 15500, currency: 'MYR' };
-      if (iso === 'SG') return { thresholdMinor: 7000,  currency: 'SGD' };
+      if (iso === 'SG') return { thresholdMinor: 5500,  currency: 'SGD' };
       return null;
     };
 

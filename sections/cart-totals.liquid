@@ -26,7 +26,7 @@
       assign is_my_market = false
       if localization.country.iso_code == 'SG'
         assign is_sg_market = true
-        assign market_threshold_minor = 7000
+        assign market_threshold_minor = 5500
       elsif localization.country.iso_code == 'MY'
         assign is_my_market = true
         assign market_threshold_minor = 15500
@@ -949,7 +949,7 @@
         : Number(cart.total_price || 0);
       const grams = Number(cart.total_weight || 0);
       if (ccy === 'MYR') return basis >= 15500 ? 0 : tierPriceMinor(ccy, grams);
-      if (ccy === 'SGD') return basis >= 7000 ? 0 : tierPriceMinor(ccy, grams);
+      if (ccy === 'SGD') return basis >= 5500 ? 0 : tierPriceMinor(ccy, grams);
       return 0;
     }
     // Exposed so cart-cta sticky bar can compute the same estimated total.
