@@ -5,24 +5,27 @@
   Malaysia's flat RM15.00 only applies once the shopper enters an address.
 
   Each tier is "grams:price" — the price, in the market currency's minor
-  units, while the cart weighs less than those grams. Checkout weighs the
-  parcel a few grams over the products (checked 2026-09-28: 1.500 kg of
-  bottles paid Singapore's 1.5–2 kg rate), so a cart of exactly 2.000 kg
-  already pays the 2–3 kg rate — hence "less than". Past the last tier
+  units, while the cart weighs less than those grams. Checkout adds the
+  store's default package (Settings → Shipping and delivery → Packages:
+  XS Box, 50 g) to the products' weight, so each limit here is the admin
+  rate's top weight + 1 − 50 g: Singapore's "1.502–2.001 kg $3.80" ends at
+  1952 g of products (checked 2026-11-07: a 2.000 kg cart paid $4.30, the
+  2.002–2.501 kg rate). A cart under the lowest rate's weight still gets
+  that rate (a 300 g Singapore cart paid $2.90). Past the last tier
   checkout offers no rate; the estimate keeps the top price.
 
-  Update both lists whenever the rates change in the admin. Last checked
-  against the admin (Admin API, General profile) on 2026-10-02: West
-  Malaysia had gone up (under 2 kg RM2.90 -> RM4.80, ...); Singapore was
-  unchanged.
+  Update both lists whenever the rates or the default package change in
+  the admin. Last checked against the admin (General profile) on
+  2026-11-07: Singapore went down ($2.90 up to 1.001 kg … $16.80 up to
+  17 kg) and West Malaysia gained RM2.90 for 0.1–0.15 kg.
 
   @param {string} [market] - 'MY' or 'SG': prints the estimate in minor units
   @param {number} [weight] - cart weight in grams (cart.total_weight)
   @param {boolean} [tiers_json] - prints the tiers as a JSON object keyed by currency, for the cart scripts
 {%- enddoc -%}
 {%- liquid
-  assign tiers_myr = '2000:480,3000:650,4000:750,5000:850,9000:950,15000:1500'
-  assign tiers_sgd = '1000:348,1500:396,2000:456,2500:516,3000:576,3500:636,4000:696,4500:756,5000:816,5500:936,6000:996,6500:1056,7000:1116,7500:1176,8000:1236,10500:1536,13500:1896,17000:2016'
+  assign tiers_myr = '101:290,1952:480,2952:650,3952:750,4952:850,8952:950,14952:1500'
+  assign tiers_sgd = '952:290,1452:330,1952:380,2452:430,2952:480,3452:530,3952:580,4452:630,4952:680,5452:780,5952:830,6452:880,6952:930,7452:980,7952:1030,10452:1280,13452:1580,16951:1680'
 
   if tiers_json
     echo '{"MYR":"' | append: tiers_myr | append: '","SGD":"' | append: tiers_sgd | append: '"}'
