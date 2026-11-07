@@ -213,6 +213,30 @@
             "view_all_link": ""
           }
         },
+        "product_carousel_gYTPpM": {
+          "type": "product_carousel",
+          "settings": {
+            "market_visibility": "both",
+            "heading": "11.11 Secret Vault Deal",
+            "message": "",
+            "sub_label": "",
+            "anchor_id": "",
+            "badge_text": "",
+            "badge_texts": "",
+            "products": [
+              "apgo-car-glass-oil-film-remover-200ml-quartz-glass-coating-30ml-set",
+              "11-11-apgo-atomic-car-nano-coating-refill-pack-standard-300ml-buy-1-free-2-copy",
+              "11-11-apgo-atomic-crystal-car-nano-coating-refill-pack-standard-300ml-buy-1-free-2-copy",
+              "11-11-apgo-atomic-sealing-car-nano-coating-refill-pack-300ml-buy-1-free-2-copy",
+              "11-11-apgo-atomic-glaze-car-nano-coating-refill-pack-standard-300ml-buy-1-free-2-copy"
+            ],
+            "variant_ids": "",
+            "hide_compare_at": false,
+            "show_promo_limit": false,
+            "show_scroll_cue": false,
+            "view_all_link": ""
+          }
+        },
         "promo_banner_3gj7WQ": {
           "type": "promo_banner",
           "settings": {
@@ -275,6 +299,7 @@
         "deal_aurora",
         "row_b1f1",
         "product_carousel_jaYiQy",
+        "product_carousel_gYTPpM",
         "promo_banner_3gj7WQ",
         "row_household"
       ],
