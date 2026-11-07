@@ -276,6 +276,7 @@
             "badge_texts": "",
             "banner": "shopify://shop_images/household_banner.png",
             "products": [
+              "11-11-laundry-value-bundle-copy",
               "apgo-floor-cleaner-special-bundle",
               "apgo-tencel-laundry-detergent-500ml-copy",
               "apgo-white-shoe-cleaner-made-in-taiwan",
@@ -284,8 +285,7 @@
               "apgo-laundry-whitening-salt-500g-copy",
               "apgo-kitchen-cleaner",
               "apgo-kitchenware-burnt-marks-remover",
-              "apgo-water-spot-remover",
-              "11-11-laundry-value-bundle-copy"
+              "apgo-water-spot-remover"
             ],
             "variant_ids": "",
             "hide_compare_at": true,
