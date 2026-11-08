@@ -51,7 +51,9 @@
 
 `npm --prefix qa run security` 使用实际 Liquid 片段和遥测脚本验证：输入编码、上传链接及加购图片域名校验、监控与活动事件脱敏、遗留区块清理。不会访问店铺、创建订单或加载真实顾客资料。
 
-`.github/workflows/security.yml` 在 PR、main/staging 更新及手动运行时检查密钥（Gitleaks）、代码（Semgrep）、依赖（OSV-Scanner）及离线安全回归。工具版本、Action SHA、镜像 digest／二进制校验和固定；不继承部署凭证，也不自动修复或发布。PR 的密钥和代码扫描检查新增问题，依赖扫描检查完整 lockfile。
+`.github/workflows/security.yml` 在 PR、main/staging 更新及手动运行时检查密钥（Gitleaks）、代码（Semgrep）、依赖（OSV-Scanner）及离线安全回归。工具版本、Action SHA、镜像 digest／二进制校验和固定；不继承部署凭证，也不自动修复或发布。PR 的密钥扫描检查新增提交；Semgrep 在 PR 和 main/staging 都检查完整代码，依赖扫描检查完整 lockfile。
+
+`node qa/security.js` 也会运行 `qa/semgrep-regression.js`：检查实际视频组件的消息目标域名、测试文件读取边界和购物车请求目标，不连接网站。16 条既有 Semgrep 告警的逐条判断见 [semgrep-triage-20261108.md](semgrep-triage-20261108.md)；已确认的误报只在对应行标注精确规则 ID，不排除整个测试目录。
 
 密钥扫描报告删除匹配原文后才上传。报告保留 7 天。分支保护是否强制这些检查，由仓库管理员另外配置。
 

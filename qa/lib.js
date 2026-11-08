@@ -57,6 +57,10 @@ async function cart(page) {
 }
 
 async function cartPost(page, endpoint, body) {
+  if (!['/cart/add.js', '/cart/change.js', '/cart/update.js'].includes(endpoint)) throw new Error('Unsupported cart endpoint');
+  // Playwright serializes these arguments as data for a fixed callback; no script text is evaluated.
+  // The only fetch targets are the three same-origin cart routes validated above.
+  // nosemgrep: javascript.playwright.security.audit.playwright-evaluate-arg-injection.playwright-evaluate-arg-injection
   return page.evaluate(async ([e, b]) => {
     const r = await fetch(e, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(b) });
     return r.status;

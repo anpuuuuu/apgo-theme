@@ -92,16 +92,32 @@ class DeferredMedia extends Component {
     }
   }
 
+  /**
+   * @param {HTMLIFrameElement} iframe
+   * @param {boolean} playing
+   */
+  #sendPlayerCommand(iframe, playing) {
+    try {
+      const url = new URL(iframe.src);
+      const youtube = iframe.dataset.videoType === 'youtube';
+      const origins = youtube
+        ? ['https://www.youtube.com', 'https://youtube.com', 'https://www.youtube-nocookie.com', 'https://youtube-nocookie.com']
+        : iframe.dataset.videoType === 'vimeo' ? ['https://player.vimeo.com'] : [];
+      if (!origins.includes(url.origin) || url.username || url.password) return;
+      const message = youtube
+        ? JSON.stringify({ event: 'command', func: playing ? 'playVideo' : 'pauseVideo', args: '' })
+        : JSON.stringify({ method: playing ? 'play' : 'pause' });
+      iframe.contentWindow?.postMessage(message, url.origin);
+    } catch {
+      return;
+    }
+  }
+
   playMedia() {
     /** @type {HTMLIFrameElement | null} */
     const iframe = this.querySelector('iframe[data-video-type]');
     if (iframe) {
-      iframe.contentWindow?.postMessage(
-        iframe.dataset.videoType === 'youtube'
-          ? '{"event":"command","func":"playVideo","args":""}'
-          : '{"method":"play"}',
-        '*'
-      );
+      this.#sendPlayerCommand(iframe, true);
     } else {
       this.querySelector('video')?.play();
     }
@@ -117,12 +133,7 @@ class DeferredMedia extends Component {
     const iframe = this.querySelector('iframe[data-video-type]');
 
     if (iframe) {
-      iframe.contentWindow?.postMessage(
-        iframe.dataset.videoType === 'youtube'
-          ? '{"event":"command","func":"' + 'pauseVideo' + '","args":""}'
-          : '{"method":"pause"}',
-        '*'
-      );
+      this.#sendPlayerCommand(iframe, false);
     } else {
       this.querySelector('video')?.pause();
     }
