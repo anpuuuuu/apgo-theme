@@ -122,6 +122,32 @@
             "counter_flow_baseline": "0"
           }
         },
+        "promo_banner_9j6cKe": {
+          "type": "promo_banner",
+          "settings": {
+            "market_visibility": "my",
+            "heading": "Boss Exclusive Bundle",
+            "message": "Atomic Coloured Glaze bur 1 free 1, First 300 order get extra 1 more.",
+            "anchor_id": "car-care",
+            "banner": "shopify://shop_images/11.11_acg_banner_2.jpg",
+            "product": "apgo-birthday-carnival-atomic-coloured-glaze-special-copy",
+            "variant_id": "",
+            "product_sg": "",
+            "variant_id_sg": "",
+            "cta_mode": "add_buy",
+            "single_cta_label": "Grab Deals Now",
+            "show_price_range": false,
+            "gift_enabled": false,
+            "gift_pool": [],
+            "gift_count": 2,
+            "gift_heading": "Choose your free gifts",
+            "show_counter": false,
+            "counter_milestone_total": "500",
+            "counter_release_total": "88",
+            "counter_manual_deduction": "0",
+            "counter_flow_baseline": "0"
+          }
+        },
         "deal_aurora": {
           "type": "promo_banner",
           "settings": {
@@ -297,6 +323,7 @@
       },
       "block_order": [
         "deal_boss",
+        "promo_banner_9j6cKe",
         "deal_aurora",
         "row_b1f1",
         "product_carousel_jaYiQy",
