@@ -1,8 +1,7 @@
 {%- doc -%}
-  Banner under the buy box on APGO product pages. Product banner blocks can
-  override the global Theme settings banner for selected products and markets.
-  The first matching block with an image wins; the global banner remains the
-  fallback so existing storefront content is preserved.
+  Banner under the buy box on APGO product pages. Product banner blocks select
+  the products and markets where each banner appears. The first matching block
+  with an image wins.
 
   Rendered at the end of .apgo-cc-pdp__buy-col (sections/apgo_product_page_v3.liquid):
   on desktop that is inside the right-hand buy card, under Add to cart / Buy
@@ -87,25 +86,6 @@
     endif
   endfor
 
-  if apgo_pdp_banner == blank
-    assign apgo_pdp_banner = settings.apgo_pdp_banner_image
-    assign apgo_pdp_banner_link = settings.apgo_pdp_banner_link
-    assign apgo_pdp_banner_cta = settings.apgo_pdp_banner_cta
-    assign apgo_pdp_banner_alt = settings.apgo_pdp_banner_alt
-    if apgo_pdp_banner != blank and settings.apgo_pdp_banner_products.size > 0
-      assign apgo_pdp_banner_here = false
-      for apgo_pdp_banner_product in settings.apgo_pdp_banner_products
-        if apgo_pdp_banner_product.id == product.id
-          assign apgo_pdp_banner_here = true
-          break
-        endif
-      endfor
-      unless apgo_pdp_banner_here
-        assign apgo_pdp_banner = blank
-      endunless
-    endif
-  endif
-
   if apgo_pdp_banner != blank and apgo_pdp_banner_link != blank
     capture apgo_pdp_banner_market
       render 'apgo-market-only-pages', part: 'check', url: apgo_pdp_banner_link
@@ -129,6 +109,8 @@
   <div class="apgo-pdp-banner{% if tone == 'light' %} apgo-pdp-banner--light{% endif %}"{% if apgo_pdp_banner_block != blank %} {{ apgo_pdp_banner_block.shopify_attributes }}{% endif %}>
     {%- if apgo_pdp_banner_link != blank -%}
       <a class="apgo-pdp-banner__link" href="{{ apgo_pdp_banner_link }}">
+    {%- else -%}
+      <div class="apgo-pdp-banner__link apgo-pdp-banner__link--static">
     {%- endif -%}
     {{ apgo_pdp_banner
       | image_url: width: 1200
@@ -149,6 +131,8 @@
         </span>
       {%- endif -%}
       </a>
+    {%- else -%}
+      </div>
     {%- endif -%}
   </div>
   <style>
@@ -192,23 +176,23 @@
       color: #0b0b0b;
       transition: transform .2s ease;
     }
-    .apgo-pdp-banner__link:hover { border-color: rgba(240, 132, 24, 0.75); }
-    .apgo-pdp-banner__link:hover .apgo-pdp-banner__img { transform: scale(1.02); }
-    .apgo-pdp-banner__link:hover .apgo-pdp-banner__cta-arrow { transform: translateX(3px); }
-    .apgo-pdp-banner__link:focus-visible { outline: 2px solid #f08418; outline-offset: 3px; }
+    a.apgo-pdp-banner__link:hover { border-color: rgba(240, 132, 24, 0.75); }
+    a.apgo-pdp-banner__link:hover .apgo-pdp-banner__img { transform: scale(1.02); }
+    a.apgo-pdp-banner__link:hover .apgo-pdp-banner__cta-arrow { transform: translateX(3px); }
+    a.apgo-pdp-banner__link:focus-visible { outline: 2px solid #f08418; outline-offset: 3px; }
     /* Laundry page (cream): its own tokens from assets/apgo-pdp.css. */
     .apgo-pdp-banner--light .apgo-pdp-banner__link {
       border-color: var(--apgo-line, rgba(94, 111, 93, 0.15));
       background: var(--apgo-bg-alt, #fdfaf2);
       color: var(--apgo-ink, #2d2e28);
     }
-    .apgo-pdp-banner--light .apgo-pdp-banner__link:hover { border-color: var(--apgo-sage, #5e6f5d); }
+    .apgo-pdp-banner--light a.apgo-pdp-banner__link:hover { border-color: var(--apgo-sage, #5e6f5d); }
     .apgo-pdp-banner--light .apgo-pdp-banner__cta { border-top-color: var(--apgo-line, rgba(94, 111, 93, 0.15)); }
     .apgo-pdp-banner--light .apgo-pdp-banner__cta-arrow {
       background: var(--apgo-ink, #2d2e28);
       color: var(--apgo-bg, #f6f1e7);
     }
-    .apgo-pdp-banner--light .apgo-pdp-banner__link:focus-visible { outline-color: var(--apgo-ink, #2d2e28); }
+    .apgo-pdp-banner--light a.apgo-pdp-banner__link:focus-visible { outline-color: var(--apgo-ink, #2d2e28); }
     @media (prefers-reduced-motion: reduce) {
       .apgo-pdp-banner__img,
       .apgo-pdp-banner__cta-arrow { transition: none; }

@@ -298,45 +298,6 @@
     ]
   },
   {
-    "name": "APGO — Product page banner",
-    "settings": [
-      {
-        "type": "paragraph",
-        "content": "Default fallback banner for v3 and laundry product pages. Add Product banner blocks inside the product page section to show different banners for selected products or markets. A matching block overrides this default. Leave the image empty to show no fallback."
-      },
-      {
-        "type": "image_picker",
-        "id": "apgo_pdp_banner_image",
-        "label": "Banner image"
-      },
-      {
-        "type": "product_list",
-        "id": "apgo_pdp_banner_products",
-        "label": "Show only on these products",
-        "limit": 50,
-        "info": "Pick the product pages that show the banner. Leave empty to show it on every product page above."
-      },
-      {
-        "type": "url",
-        "id": "apgo_pdp_banner_link",
-        "label": "Link (optional)"
-      },
-      {
-        "type": "text",
-        "id": "apgo_pdp_banner_cta",
-        "label": "Button text",
-        "default": "Shop now",
-        "info": "Shown in a bar under the banner, with an arrow, so shoppers can tell it opens. Only when there is a link; empty hides the bar."
-      },
-      {
-        "type": "text",
-        "id": "apgo_pdp_banner_alt",
-        "label": "Alt text (optional)",
-        "info": "Describes the banner for screen readers."
-      }
-    ]
-  },
-  {
     "name": "t:names.logo_and_favicon",
     "settings": [
       {
