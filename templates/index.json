@@ -62,6 +62,16 @@
             "market_visibility": "sg"
           }
         },
+        "banner_9RzK7M": {
+          "type": "banner",
+          "settings": {
+            "image": "shopify://shop_images/11.11_acg_banner_2.jpg",
+            "link": "shopify://products/apgo-birthday-carnival-atomic-coloured-glaze-special-copy",
+            "alt": "",
+            "tracking_id": "",
+            "market_visibility": "both"
+          }
+        },
         "banner_9GwjTp": {
           "type": "banner",
           "settings": {
@@ -119,6 +129,7 @@
         "banner_QXjPUf",
         "banner_jin73F",
         "banner_D4NfEr",
+        "banner_9RzK7M",
         "banner_9GwjTp",
         "banner_9A6qCX",
         "banner_VeMXDE",
