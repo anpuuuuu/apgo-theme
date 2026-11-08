@@ -328,7 +328,7 @@
             {%- endif -%}
 
             {%- comment -%} Product page banner (Theme settings), same as the v3 template. {%- endcomment -%}
-            {%- render 'apgo-pdp-banner', tone: 'light' -%}
+            {%- render 'apgo-pdp-banner', tone: 'light', banner_blocks: section.blocks, product: product -%}
 
           </aside>
         </div>
@@ -531,7 +531,7 @@
       {%- endif -%}
 
       {%- comment -%} Product page banner (Theme settings), same as the v3 template. {%- endcomment -%}
-      {%- render 'apgo-pdp-banner', tone: 'light' -%}
+      {%- render 'apgo-pdp-banner', tone: 'light', banner_blocks: section.blocks, product: product -%}
 
     </div>
 
@@ -1057,6 +1057,36 @@
     { "type": "collection", "id": "related_collection", "label": "Related products collection" }
   ],
   "blocks": [
+    {
+      "type": "product_banner",
+      "name": "Product banner",
+      "limit": 20,
+      "settings": [
+        { "type": "text", "id": "title", "label": "Internal label", "default": "Product banner" },
+        { "type": "product_list", "id": "products", "label": "Show on these products", "limit": 50, "info": "Required. The first matching Product banner block is shown." },
+        {
+          "type": "select",
+          "id": "market",
+          "label": "Show to",
+          "options": [
+            { "value": "all", "label": "Malaysia and Singapore" },
+            { "value": "my", "label": "Malaysia only" },
+            { "value": "sg", "label": "Singapore only" }
+          ],
+          "default": "all"
+        },
+        { "type": "header", "content": "Malaysia / default" },
+        { "type": "image_picker", "id": "image", "label": "Banner image" },
+        { "type": "url", "id": "link", "label": "Link (optional)" },
+        { "type": "text", "id": "cta", "label": "Button text", "default": "Shop now" },
+        { "type": "text", "id": "alt", "label": "Alt text (optional)" },
+        { "type": "header", "content": "Singapore override" },
+        { "type": "image_picker", "id": "image_sg", "label": "Singapore banner (optional)", "info": "Leave empty to use the Malaysia / default banner." },
+        { "type": "url", "id": "link_sg", "label": "Singapore link (optional)", "info": "Leave empty to use the Malaysia / default link." },
+        { "type": "text", "id": "cta_sg", "label": "Singapore button text (optional)", "info": "Leave empty to use the Malaysia / default button text." },
+        { "type": "text", "id": "alt_sg", "label": "Singapore alt text (optional)" }
+      ]
+    },
     {
       "type": "ship_row",
       "name": "Ship/Guarantee Row",

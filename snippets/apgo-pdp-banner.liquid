@@ -1,9 +1,8 @@
 {%- doc -%}
-  Banner under the buy box on the v3 product page (2026-10). One banner for
-  every product on the template (owner's choice), set in Theme settings ->
-  "APGO — Product page banner"; no image, no banner. With a link, a bar
-  under the image (button text + arrow, same tap area) shows it opens:
-  the owner found shoppers would not know the picture was clickable.
+  Banner under the buy box on APGO product pages. Product banner blocks can
+  override the global Theme settings banner for selected products and markets.
+  The first matching block with an image wins; the global banner remains the
+  fallback so existing storefront content is preserved.
 
   Rendered at the end of .apgo-cc-pdp__buy-col (sections/apgo_product_page_v3.liquid):
   on desktop that is inside the right-hand buy card, under Add to cart / Buy
@@ -21,38 +20,103 @@
   can't buy (all_products is empty for it there), e.g. the Malaysian clearance
   bundle for Singapore shoppers.
 
-  "Show only on these products" (2026-10, owner's request): with products
-  picked, only their pages show it; empty keeps every page. Uses the
-  template's own product object, which rendered snippets can read.
-
   @param {string} [tone] - 'light' for the cream laundry page; default dark.
+  @param {array} [banner_blocks] - Section blocks containing product banners.
+  @param {product} product - Current product.
 {%- enddoc -%}
 {%- liquid
-  assign apgo_pdp_banner = settings.apgo_pdp_banner_image
-  if apgo_pdp_banner != blank and settings.apgo_pdp_banner_products.size > 0
-    assign apgo_pdp_banner_here = false
-    for apgo_pdp_banner_product in settings.apgo_pdp_banner_products
-      if apgo_pdp_banner_product.id == product.id
-        assign apgo_pdp_banner_here = true
-        break
+  assign apgo_pdp_banner = blank
+  assign apgo_pdp_banner_link = blank
+  assign apgo_pdp_banner_cta = blank
+  assign apgo_pdp_banner_alt = blank
+  assign apgo_pdp_banner_block = blank
+  assign apgo_pdp_banner_market_code = localization.country.iso_code
+
+  for apgo_pdp_banner_candidate in banner_blocks
+    if apgo_pdp_banner_candidate.type == 'product_banner'
+      assign apgo_pdp_banner_market_allowed = false
+      case apgo_pdp_banner_candidate.settings.market
+        when 'my'
+          if apgo_pdp_banner_market_code == 'MY'
+            assign apgo_pdp_banner_market_allowed = true
+          endif
+        when 'sg'
+          if apgo_pdp_banner_market_code == 'SG'
+            assign apgo_pdp_banner_market_allowed = true
+          endif
+        else
+          assign apgo_pdp_banner_market_allowed = true
+      endcase
+
+      if apgo_pdp_banner_market_allowed and apgo_pdp_banner_candidate.settings.products.size > 0
+        assign apgo_pdp_banner_product_matches = false
+        for apgo_pdp_banner_product in apgo_pdp_banner_candidate.settings.products
+          if apgo_pdp_banner_product.id == product.id
+            assign apgo_pdp_banner_product_matches = true
+            break
+          endif
+        endfor
+
+        if apgo_pdp_banner_product_matches
+          assign apgo_pdp_banner_candidate_image = apgo_pdp_banner_candidate.settings.image
+          if apgo_pdp_banner_market_code == 'SG' and apgo_pdp_banner_candidate.settings.image_sg != blank
+            assign apgo_pdp_banner_candidate_image = apgo_pdp_banner_candidate.settings.image_sg
+          endif
+
+          if apgo_pdp_banner_candidate_image != blank
+            assign apgo_pdp_banner = apgo_pdp_banner_candidate_image
+            assign apgo_pdp_banner_link = apgo_pdp_banner_candidate.settings.link
+            assign apgo_pdp_banner_cta = apgo_pdp_banner_candidate.settings.cta
+            assign apgo_pdp_banner_alt = apgo_pdp_banner_candidate.settings.alt
+            if apgo_pdp_banner_market_code == 'SG'
+              if apgo_pdp_banner_candidate.settings.link_sg != blank
+                assign apgo_pdp_banner_link = apgo_pdp_banner_candidate.settings.link_sg
+              endif
+              if apgo_pdp_banner_candidate.settings.cta_sg != blank
+                assign apgo_pdp_banner_cta = apgo_pdp_banner_candidate.settings.cta_sg
+              endif
+              if apgo_pdp_banner_candidate.settings.alt_sg != blank
+                assign apgo_pdp_banner_alt = apgo_pdp_banner_candidate.settings.alt_sg
+              endif
+            endif
+            assign apgo_pdp_banner_block = apgo_pdp_banner_candidate
+            break
+          endif
+        endif
       endif
-    endfor
-    unless apgo_pdp_banner_here
-      assign apgo_pdp_banner = blank
-    endunless
+    endif
+  endfor
+
+  if apgo_pdp_banner == blank
+    assign apgo_pdp_banner = settings.apgo_pdp_banner_image
+    assign apgo_pdp_banner_link = settings.apgo_pdp_banner_link
+    assign apgo_pdp_banner_cta = settings.apgo_pdp_banner_cta
+    assign apgo_pdp_banner_alt = settings.apgo_pdp_banner_alt
+    if apgo_pdp_banner != blank and settings.apgo_pdp_banner_products.size > 0
+      assign apgo_pdp_banner_here = false
+      for apgo_pdp_banner_product in settings.apgo_pdp_banner_products
+        if apgo_pdp_banner_product.id == product.id
+          assign apgo_pdp_banner_here = true
+          break
+        endif
+      endfor
+      unless apgo_pdp_banner_here
+        assign apgo_pdp_banner = blank
+      endunless
+    endif
   endif
-  if apgo_pdp_banner != blank and settings.apgo_pdp_banner_link != blank
+
+  if apgo_pdp_banner != blank and apgo_pdp_banner_link != blank
     capture apgo_pdp_banner_market
-      render 'apgo-market-only-pages', part: 'check', url: settings.apgo_pdp_banner_link
+      render 'apgo-market-only-pages', part: 'check', url: apgo_pdp_banner_link
     endcapture
     if apgo_pdp_banner_market contains 'hidden'
       assign apgo_pdp_banner = blank
     endif
   endif
-  # Nor where it links to a product this market can't buy (2026-10-19: the
-  # Malaysian bundle, a 404 for Singapore shoppers on the laundry page).
-  if apgo_pdp_banner != blank and settings.apgo_pdp_banner_link contains '/products/'
-    assign apgo_pdp_banner_handle = settings.apgo_pdp_banner_link | split: '/products/' | last | split: '?' | first | split: '#' | first
+
+  if apgo_pdp_banner != blank and apgo_pdp_banner_link contains '/products/'
+    assign apgo_pdp_banner_handle = apgo_pdp_banner_link | split: '/products/' | last | split: '?' | first | split: '#' | first
     assign apgo_pdp_banner_target = all_products[apgo_pdp_banner_handle]
     if apgo_pdp_banner_target == blank or apgo_pdp_banner_target.id == blank
       assign apgo_pdp_banner = blank
@@ -60,11 +124,11 @@
   endif
 -%}
 {%- if apgo_pdp_banner != blank -%}
-  {%- assign apgo_pdp_banner_alt = settings.apgo_pdp_banner_alt | default: apgo_pdp_banner.alt -%}
-  {%- assign apgo_pdp_banner_cta = settings.apgo_pdp_banner_cta | strip -%}
-  <div class="apgo-pdp-banner{% if tone == 'light' %} apgo-pdp-banner--light{% endif %}">
-    {%- if settings.apgo_pdp_banner_link != blank -%}
-      <a class="apgo-pdp-banner__link" href="{{ settings.apgo_pdp_banner_link }}">
+  {%- assign apgo_pdp_banner_alt = apgo_pdp_banner_alt | default: apgo_pdp_banner.alt -%}
+  {%- assign apgo_pdp_banner_cta = apgo_pdp_banner_cta | strip -%}
+  <div class="apgo-pdp-banner{% if tone == 'light' %} apgo-pdp-banner--light{% endif %}"{% if apgo_pdp_banner_block != blank %} {{ apgo_pdp_banner_block.shopify_attributes }}{% endif %}>
+    {%- if apgo_pdp_banner_link != blank -%}
+      <a class="apgo-pdp-banner__link" href="{{ apgo_pdp_banner_link }}">
     {%- endif -%}
     {{ apgo_pdp_banner
       | image_url: width: 1200
@@ -75,7 +139,7 @@
         loading: 'lazy',
         alt: apgo_pdp_banner_alt
     }}
-    {%- if settings.apgo_pdp_banner_link != blank -%}
+    {%- if apgo_pdp_banner_link != blank -%}
       {%- if apgo_pdp_banner_cta != blank -%}
         <span class="apgo-pdp-banner__cta">
           <span class="apgo-pdp-banner__cta-text">{{ apgo_pdp_banner_cta | escape }}</span>

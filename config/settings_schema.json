@@ -302,7 +302,7 @@
     "settings": [
       {
         "type": "paragraph",
-        "content": "One banner on v3 product pages (under Add to cart / Buy now on desktop, under the delivery line on phones) and on the laundry product pages (under the shipping card). Leave the image empty to show nothing."
+        "content": "Default fallback banner for v3 and laundry product pages. Add Product banner blocks inside the product page section to show different banners for selected products or markets. A matching block overrides this default. Leave the image empty to show no fallback."
       },
       {
         "type": "image_picker",
