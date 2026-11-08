@@ -126,8 +126,8 @@
           "type": "promo_banner",
           "settings": {
             "market_visibility": "my",
-            "heading": "Boss Exclusive Bundle",
-            "message": "Atomic Coloured Glaze bur 1 free 1, First 300 order get extra 1 more.",
+            "heading": "Coloured Glaze Bundle",
+            "message": "Atomic Coloured Glaze buy 1 free 1, First 300 order get extra 1 more.",
             "anchor_id": "car-care",
             "banner": "shopify://shop_images/11.11_acg_banner_2.jpg",
             "product": "apgo-atomic-coloured-glaze-special-copy",
