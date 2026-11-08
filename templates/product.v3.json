@@ -18,14 +18,16 @@
             "title": "Product banner",
             "products": [
               "11-11-boss-exclusive-coating-bundle",
-              "apgo-11-11aurora-car-nano-coating-300ml-b1f2"
+              "apgo-11-11aurora-car-nano-coating-300ml-b1f2",
+              "11-11-boss-exclusive-coating-bundle-sg"
             ],
             "market": "my",
             "image": "shopify://shop_images/11.11_acg_banner_2.jpg",
             "link": "shopify://products/apgo-atomic-coloured-glaze-special-copy",
             "cta": "",
             "alt": "",
-            "link_sg": "",
+            "image_sg": "shopify://shop_images/11.11_acg_banner_2.jpg",
+            "link_sg": "shopify://products/atomic-coloured-glaze-coating-special-promotion-copy",
             "cta_sg": "",
             "alt_sg": ""
           }
@@ -35,14 +37,16 @@
           "settings": {
             "title": "Product banner",
             "products": [
-              "apgo-atomic-coloured-glaze-special-copy"
+              "apgo-atomic-coloured-glaze-special-copy",
+              "atomic-coloured-glaze-coating-special-promotion-copy"
             ],
             "market": "my",
             "image": "shopify://shop_images/Boss_exclusive_1920_x_1080.jpg",
             "link": "shopify://products/11-11-boss-exclusive-coating-bundle",
             "cta": "",
             "alt": "",
-            "link_sg": "",
+            "image_sg": "shopify://shop_images/sg_boss_exclusive.jpg",
+            "link_sg": "shopify://products/11-11-boss-exclusive-coating-bundle-sg",
             "cta_sg": "",
             "alt_sg": ""
           }

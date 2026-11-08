@@ -242,7 +242,7 @@
         "product_carousel_gYTPpM": {
           "type": "product_carousel",
           "settings": {
-            "market_visibility": "sg",
+            "market_visibility": "both",
             "heading": "11.11 Secret Vault Deal",
             "message": "",
             "sub_label": "",
