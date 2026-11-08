@@ -33,11 +33,8 @@
     "apgo_bundle_set_on": true,
     "apgo_vb_product_my": "apgo-laundry-detergent-1l-promotion-copy",
     "apgo_vb_product_sg": "11-11-laundry-value-bundle-copy",
-    "apgo_pdp_banner_image": "shopify://shop_images/warehouse-sales-rm388-last-2-day.png",
-    "apgo_pdp_banner_products": [
-      "pocket-friendly-deals",
-      "apgo-laundry-detergent-special-promotion-1"
-    ],
+    "apgo_pdp_banner_image": "shopify://shop_images/11.11_acg_banner_2.jpg",
+    "apgo_pdp_banner_products": [],
     "apgo_pdp_banner_link": "shopify://products/warehouse-clearance-sale-bundle",
     "logo": "shopify://shop_images/Untitled-1_4ef42425-f5e2-4f58-866d-c58ceb4f3268.png",
     "favicon": "shopify://shop_images/apgo-logo-bg-transparent.png",

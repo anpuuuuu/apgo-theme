@@ -22,10 +22,8 @@
         "aurora_counter_release_total": "118",
         "aurora_counter_manual_deduction": "88",
         "aurora_counter_flow_baseline": "0",
-        "promo_popup_enabled": true,
-        "promo_popup_products": [
-          "✨atomic-coating-special-ltd-bundle-✨"
-        ],
+        "promo_popup_enabled": false,
+        "promo_popup_products": [],
         "promo_popup_heading": "A free gift with your order",
         "promo_popup_image": "shopify://shop_images/0fd8f868f7081c3c87d7445d4670f266.png",
         "promo_popup_gift_name": "APGO Car Wiper Fluid Refill Pack 300ml",
@@ -35,13 +33,8 @@
         "promo_popup_hours": "2",
         "promo_popup_end_at": "",
         "gift_picker_enabled": true,
-        "gift_picker_products": [
-          "atomic-glaze-coating-sg61-promotion",
-          "atomic-glaze-coating-8-8-promotion"
-        ],
+        "gift_picker_products": [],
         "gift_picker_pool": [
-          "apgo-car-interior-eco-friendly-coating-500ml",
-          "apgo-car-interior-eco-friendly-cleaner-500ml",
           "apgo-glass-cleaner-500ml",
           "apgo-car-wiper-fluid-refill-pack",
           "apgo-car-wash-shampoo-special-formula-refill-pack"
