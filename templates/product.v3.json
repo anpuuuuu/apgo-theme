@@ -12,6 +12,23 @@
     "apgo_product_v3": {
       "type": "apgo_product_page_v3",
       "blocks": {
+        "product_banner_ThUmci": {
+          "type": "product_banner",
+          "settings": {
+            "title": "Product banner",
+            "products": [
+              "11-11-boss-exclusive-coating-bundle"
+            ],
+            "market": "my",
+            "image": "shopify://shop_images/11.11_acg_banner_2.jpg",
+            "link": "shopify://products/apgo-atomic-coloured-glaze-special-copy",
+            "cta": "",
+            "alt": "",
+            "link_sg": "",
+            "cta_sg": "",
+            "alt_sg": ""
+          }
+        },
         "product_banner_PUGwRX": {
           "type": "product_banner",
           "settings": {
@@ -31,6 +48,7 @@
         }
       },
       "block_order": [
+        "product_banner_ThUmci",
         "product_banner_PUGwRX"
       ],
       "name": "APGO 商品頁 (v3)",
