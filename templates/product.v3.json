@@ -11,6 +11,28 @@
   "sections": {
     "apgo_product_v3": {
       "type": "apgo_product_page_v3",
+      "blocks": {
+        "product_banner_PUGwRX": {
+          "type": "product_banner",
+          "settings": {
+            "title": "Product banner",
+            "products": [
+              "apgo-atomic-coloured-glaze-special-copy"
+            ],
+            "market": "my",
+            "image": "shopify://shop_images/Boss_exclusive_1920_x_1080.jpg",
+            "link": "",
+            "cta": "Shop now",
+            "alt": "",
+            "link_sg": "",
+            "cta_sg": "",
+            "alt_sg": ""
+          }
+        }
+      },
+      "block_order": [
+        "product_banner_PUGwRX"
+      ],
       "name": "APGO 商品頁 (v3)",
       "settings": {
         "show_particles": true,
