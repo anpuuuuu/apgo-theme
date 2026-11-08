@@ -242,7 +242,7 @@
         "product_carousel_gYTPpM": {
           "type": "product_carousel",
           "settings": {
-            "market_visibility": "both",
+            "market_visibility": "sg",
             "heading": "11.11 Secret Vault Deal",
             "message": "",
             "sub_label": "",
@@ -251,6 +251,7 @@
             "badge_texts": "",
             "banner_sg": "shopify://shop_images/11.11_Secret_Vault.png",
             "products": [
+              "apgo-birthday-carnival-atomic-coloured-glaze-special-copy",
               "apgo-car-glass-oil-film-remover-200ml-quartz-glass-coating-30ml-set",
               "11-11-apgo-atomic-car-nano-coating-refill-pack-standard-300ml-buy-1-free-2-copy",
               "11-11-apgo-atomic-crystal-car-nano-coating-refill-pack-standard-300ml-buy-1-free-2-copy",
