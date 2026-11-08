@@ -203,8 +203,18 @@
                     # Added from a cart add-on card with its own image (e.g. an 11.11
                     # PWP graphic, assets/cart-offers-tabs.js): show that picture.
                     # Malaysia only, and only Shopify-hosted files.
-                    assign apgo_offer_img = item.properties._apgo_offer_image | default: ''
-                    unless apgo_offer_img contains '/cdn/shop/files/' and localization.country.iso_code != 'SG'
+                    assign apgo_offer_img = item.properties._apgo_offer_image | default: '' | strip
+                    assign apgo_offer_prefix = apgo_offer_img | slice: 0, 2
+                    if apgo_offer_prefix == '//'
+                      assign apgo_offer_img = 'https:' | append: apgo_offer_img
+                    endif
+                    assign apgo_offer_prefix = apgo_offer_img | slice: 0, 8
+                    assign apgo_offer_host = apgo_offer_img | split: '/' | slice: 2 | first | downcase
+                    assign apgo_offer_host_allowed = false
+                    if apgo_offer_host == request.host or apgo_offer_host == shop.permanent_domain or apgo_offer_host == 'cdn.shopify.com'
+                      assign apgo_offer_host_allowed = true
+                    endif
+                    unless apgo_offer_prefix == 'https://' and apgo_offer_host_allowed and apgo_offer_img contains '/cdn/shop/files/' and localization.country.iso_code != 'SG'
                       assign apgo_offer_img = ''
                     endunless
                   -%}
@@ -285,14 +295,7 @@
                         {%- assign property_first_char = property.first | slice: 0 -%}
                         {%- if property.last != blank and property_first_char != '_' -%}
                           <div class="cart-items__properties">
-                            <dt>{{ property.first }}:</dt>
-                            <dd>
-                              {%- if property.last contains '/uploads/' -%}
-                                <a href="{{ property.last }}">{{ property.last | split: '/' | last }}</a>
-                              {%- else -%}
-                                {{ property.last }}
-                              {%- endif -%}
-                            </dd>
+                            {% render 'apgo-cart-property', name: property.first, value: property.last %}
                           </div>
                         {%- endif -%}
                       {%- endfor -%}

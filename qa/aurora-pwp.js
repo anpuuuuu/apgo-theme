@@ -5,7 +5,7 @@ const { Liquid } = require('liquidjs');
 const { chromium, webkit } = require('playwright');
 const ROOT = path.join(__dirname, '..');
 const TRIGGER = 67976724512922;
-const OFFER = 47521770668186;
+const OFFER = 68049930027162;
 const PROP = '_apgo_aurora_pwp';
 const MARKER = 'aurora-39';
 const locale = JSON.parse(fs.readFileSync(path.join(ROOT, 'locales/en.default.json'), 'utf8').replace(/^\s*\/\*[\s\S]*?\*\/\s*/, ''));
@@ -35,7 +35,7 @@ async function run() {
     const page = await context.newPage();
     page.on('pageerror', error => controls.errors.push(error.message));
     const render = async () => {
-      const data = { cart: { ...cart, currency: { iso_code: cart.currency } }, localization: { country: { iso_code: country } }, original_price: 60, all_products: { 'apgo-car-interior-eco-friendly-coating': { title: 'Interior Set', variants: [{ id: OFFER, title: 'Car Interior Set', available }] } } };
+      const data = { cart: { ...cart, currency: { iso_code: cart.currency } }, localization: { country: { iso_code: country } }, original_price: 60, all_products: { 'pwp-apgo-car-interior-bundle': { title: 'Interior Set', variants: [{ id: OFFER, title: 'Car Interior Set', available }] } } };
       const config = await liquid.parseAndRender(cleanLiquid(source('snippets/apgo-cart-aurora-config.liquid')), data);
       const card = noCard ? '' : await liquid.parseAndRender(cleanLiquid(source('snippets/apgo-cart-aurora-offer.liquid')), data);
       return `<!doctype html><html><head><script type="importmap">{"imports":{"@theme/component":"/qa-component.js"}}</script><style>body{background:#000;color:#fff;font-family:Arial}.cart-page{max-width:700px;margin:auto}.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}</style><link rel="stylesheet" href="/assets/apgo-cart-aurora-offer.css"></head><body><cart-items-component data-section-id="main"><div class="cart-page">${card}</div></cart-items-component><button name="checkout">Checkout</button>${config}</body></html>`;

@@ -1,0 +1,129 @@
+name: Security
+
+on:
+  pull_request:
+  push:
+    branches: [main, staging]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: security-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  regression:
+    name: Offline security regression
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+        working-directory: qa
+      - run: node qa/security.js
+
+  secrets:
+    name: Secrets (Gitleaks)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      VERSION: '8.30.1'
+      SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install verified Gitleaks binary
+        run: |
+          set -euo pipefail
+          curl -sSfL -o "$RUNNER_TEMP/gitleaks.tgz" "https://github.com/gitleaks/gitleaks/releases/download/v${VERSION}/gitleaks_${VERSION}_linux_x64.tar.gz"
+          echo "$SHA256  $RUNNER_TEMP/gitleaks.tgz" | sha256sum -c -
+          tar -xzf "$RUNNER_TEMP/gitleaks.tgz" -C "$RUNNER_TEMP" gitleaks
+      - name: Scan commit history
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          range="$HEAD"
+          if [ "$EVENT" = pull_request ]; then range="$BASE..$HEAD"; fi
+          "$RUNNER_TEMP/gitleaks" git --redact --no-banner --log-opts "$range" --report-format json --report-path "$RUNNER_TEMP/gitleaks.json" .
+      - name: Remove sensitive report fields
+        if: always()
+        run: |
+          if [ -f "$RUNNER_TEMP/gitleaks.json" ]; then
+            jq 'map(del(.Secret, .Match))' "$RUNNER_TEMP/gitleaks.json" > "$RUNNER_TEMP/gitleaks-safe.json"
+          fi
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: gitleaks-report
+          path: ${{ runner.temp }}/gitleaks-safe.json
+          retention-days: 7
+          if-no-files-found: ignore
+
+  sast:
+    name: Code analysis (Semgrep)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    container:
+      image: semgrep/semgrep:1.180.0@sha256:529ee8a277ec8adc5b534d7c74eea0a47e9de21d62852b6ba7ac6ba9566845c3
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Scan source
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE: ${{ github.event.pull_request.base.sha }}
+          SEMGREP_SEND_METRICS: 'off'
+        run: |
+          set -eu
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          set -- scan --config p/default --metrics=off --error --strict --json --output "$RUNNER_TEMP/semgrep.json"
+          if [ "$EVENT" = pull_request ]; then set -- "$@" --baseline-commit "$BASE"; fi
+          semgrep "$@"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: semgrep-report
+          path: ${{ runner.temp }}/semgrep.json
+          retention-days: 7
+          if-no-files-found: ignore
+
+  dependencies:
+    name: Dependencies (OSV-Scanner)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      VERSION: '2.7.0'
+      SHA256: 160c6253e2922e9e0a6a9771c5c4c40a4b3c6090b34a3cdd5e80c96cc2e4218b
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install verified OSV-Scanner binary
+        run: |
+          set -euo pipefail
+          curl -sSfL -o "$RUNNER_TEMP/osv-scanner" "https://github.com/google/osv-scanner/releases/download/v${VERSION}/osv-scanner_linux_amd64"
+          echo "$SHA256  $RUNNER_TEMP/osv-scanner" | sha256sum -c -
+          chmod +x "$RUNNER_TEMP/osv-scanner"
+      - name: Scan locked dependencies
+        run: '"$RUNNER_TEMP/osv-scanner" scan source --recursive --format json --output "$RUNNER_TEMP/osv.json" .'
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: osv-report
+          path: ${{ runner.temp }}/osv.json
+          retention-days: 7
+          if-no-files-found: ignore

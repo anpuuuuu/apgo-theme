@@ -41,7 +41,7 @@
 | **Footer 連結 hover** | `sections/APGO-footer.liquid` | 預設灰，hover 時文字與底線為橙色 `#f08418`。 |
 | **Header 主選單 hover** | `blocks/_header-menu.liquid` | `.menu-list__link` hover 時橙色＋底線。 |
 | **Collection 次級選單（橫向分類）** | `blocks/_collection-link.liquid` | 不是 header mega menu，而是 **collection 頁**的 collection-links 區塊；`.collection-links__link` 當前頁用 `aria-current`（由 section 傳入的 `selected`），其餘 hover 時橙色＋底線。 |
-| **自動推送** | `.cursor/rules/auto-push.mdc` | 完成程式碼修改後自動 `git add`、`commit`、`push origin main`。 |
+| **版本控制與發布** | `.cursor/rules/auto-push.mdc` | 修改及測試後提供可審閱的工作分支／PR；合併或發布需使用者明確授權。 |
 
 ---
 

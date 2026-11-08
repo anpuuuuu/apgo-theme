@@ -1,0 +1,22 @@
+{%- doc -%}
+  Render a customer-supplied cart property as text, or a Shopify upload link.
+  @param {string} name - Property name.
+  @param {string} value - Property value.
+{%- enddoc -%}
+{%- liquid
+  assign upload_url = value | strip
+  assign upload_prefix = upload_url | slice: 0, 8
+  assign upload_authority = upload_url | split: '/' | slice: 2 | first | downcase
+  assign upload_host_allowed = false
+  if upload_authority == 'cdn.shopify.com' or upload_authority == shop.permanent_domain or upload_authority == request.host
+    assign upload_host_allowed = true
+  endif
+-%}
+<dt>{{ name | escape }}:</dt>
+<dd>
+  {%- if upload_prefix == 'https://' and upload_host_allowed and upload_url contains '/uploads/' -%}
+    <a href="{{ upload_url | escape }}">{{ upload_url | split: '/' | last | escape }}</a>
+  {%- else -%}
+    {{- value | escape -}}
+  {%- endif -%}
+</dd>

@@ -1,0 +1,80 @@
+{%- doc -%}
+  Shared privacy boundary for APGO error reports and custom analytics.
+  Render before telemetry producers; never sends data itself.
+{%- enddoc -%}
+<script>
+(function () {
+  'use strict';
+  if (window.apgoTelemetryPrivacy) return;
+
+  function pathOnly(value) {
+    if (!value) return '';
+    try {
+      var url = new URL(String(value), location.origin);
+      if (url.protocol !== 'https:' && url.protocol !== 'http:') return '';
+      var path = url.pathname.replace(/\/(checkouts?|orders|account\/(?:reset|activate|recover))(?:\/.*)?$/i, '/$1/[redacted]');
+      return path.replace(/[A-Z0-9._%+-]+(?:@|%40)[A-Z0-9.-]+\.[A-Z]{2,}/gi, '[redacted]');
+    } catch (error) { return ''; }
+  }
+
+  function text(value) {
+    return String(value || '')
+      .replace(/(?:https?:\/\/|\/\/)[^\s<>"'`]+/gi, function (url) { return pathOnly(url); })
+      .replace(/\b(?:Bearer|Basic)\s+[A-Z0-9._~+/=-]+/gi, '[redacted]')
+      .replace(/\b(?:email|phone|address|password|secret|(?:access[_-]?)?token|api[_-]?key|authorization|cookie)\b["']?\s*[:=]\s*["']?[^\s,;"'<>]+/gi, '[redacted]')
+      .replace(/[A-Z0-9._%+-]+(?:@|%40)[A-Z0-9.-]+\.[A-Z]{2,}/gi, '[redacted]')
+      .replace(/\+?\d[\d ()-]{7,}\d/g, '[redacted]');
+  }
+
+  // Free-form exception messages can contain form values. Keep only fixed labels.
+  function errorMessage(value, kind) {
+    var message = String(value || '');
+    var http = /^Cart API returned HTTP (\d{3})$/.exec(message);
+    if (http) return 'Cart API returned HTTP ' + http[1];
+    var known = ['apgo-em-selftest', 'First-party resource failed to load', 'Cart add confirmed after lost response'];
+    if (known.indexOf(message) !== -1) return message;
+    var type = /\b(TypeError|ReferenceError|SyntaxError|RangeError|URIError|EvalError|AbortError|NetworkError)\b/.exec(message);
+    if (type) return type[1];
+    return kind === 'cart' ? 'Shopify cart request failed' : (kind === 'rejection' ? 'Unhandled promise rejection' : 'First-party JavaScript error');
+  }
+
+  function stack(value) {
+    var frames = [];
+    String(value || '').split(/\r?\n/).forEach(function (line) {
+      if (frames.length >= 10) return;
+      // Retain script paths and line/column numbers, not function names or messages.
+      var frame = /((?:https?:\/\/|\/)[^\s()]+?):(\d+)(?::(\d+))?\)?\s*$/.exec(line);
+      if (!frame) return;
+      var path = pathOnly(frame[1]);
+      if (path) frames.push('at ' + path + ':' + frame[2] + (frame[3] ? ':' + frame[3] : ''));
+    });
+    return frames.join('\n');
+  }
+
+  function label(value) {
+    return /^[a-z][a-z0-9_-]{0,79}$/i.test(String(value || '')) ? String(value) : 'unknown';
+  }
+
+  function payload(input, depth) {
+    depth = depth || 0;
+    if (!input || typeof input !== 'object' || depth > 4) return {};
+    var result = {};
+    Object.keys(input).slice(0, 60).forEach(function (key) {
+      if (/__proto__|constructor|prototype|email|phone|address|password|secret|token|authorization|cookie|customer|carrier|tax_id/i.test(key)) return;
+      var value = input[key];
+      if (typeof value === 'string') {
+        if (/^(?:page_(?:path|location|referrer|url)|destination_(?:path|url)|url|src|href)$/i.test(key)) result[key] = pathOnly(value);
+        else if (/^(?:message|description|error)$/i.test(key)) result[key] = errorMessage(value, 'cart');
+        else if (key === 'stack') result[key] = stack(value);
+        else if (/^(?:campaign|section|product|variant|item|promotion|video|item_list)_id$/.test(key) && /^[a-z0-9][a-z0-9_.:-]{0,160}$/i.test(value)) result[key] = value;
+        else result[key] = text(value).slice(0, 300);
+      } else if (typeof value === 'number' && isFinite(value) || typeof value === 'boolean') result[key] = value;
+      else if (Array.isArray(value)) result[key] = value.slice(0, 30).map(function (entry) { return entry && typeof entry === 'object' ? payload(entry, depth + 1) : text(entry).slice(0, 300); });
+      else if (value && typeof value === 'object') result[key] = payload(value, depth + 1);
+    });
+    return result;
+  }
+
+  window.apgoTelemetryPrivacy = Object.freeze({ pathOnly: pathOnly, errorMessage: errorMessage, stack: stack, label: label, payload: payload });
+})();
+</script>
