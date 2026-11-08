@@ -73,7 +73,7 @@
           id="{{ section_id }}-blog-post-comment-author"
           class="blog-post-comments__form-input field__input"
           autocomplete="name"
-          value="{{- form.author -}}"
+          value="{{- form.author | escape -}}"
           aria-required="true"
           placeholder="{{ 'blogs.comment_form.name' | t }}"
           required
@@ -98,7 +98,7 @@
           id="{{ section_id }}-blog-post-comment-email"
           autocomplete="email"
           class="blog-post-comments__form-input field__input"
-          value="{{ form.email }}"
+          value="{{ form.email | escape }}"
           autocorrect="off"
           autocapitalize="off"
           aria-required="true"
@@ -132,7 +132,7 @@
             aria-describedby="blog-post-comment-body-error"
           {% endif %}
         >
-          {{- form.body -}}
+          {{- form.body | escape -}}
         </textarea>
       </div>
     </div>

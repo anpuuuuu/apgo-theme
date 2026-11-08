@@ -4,10 +4,12 @@
   strings. Synthetic APGO-HealthCheck traffic and Theme Editor previews are
   excluded. Use ?apgo_em_test=1 once on desktop and mobile after deployment.
 {%- endcomment -%}
+{% render 'apgo-telemetry-privacy' %}
 {%- unless request.design_mode -%}
 <script>
 !function(){try{
 var EP='https://apgo-error-monitor.wadeyeh.workers.dev/beacon',VER={{ monitor_version | default: 4 | json }};
+var privacy=window.apgoTelemetryPrivacy;if(!privacy)return;
 if(EP.indexOf('APGO_ERROR')>-1||!window.addEventListener||!window.JSON)return;
 if(window.__apgoHealthCheck||/APGO-HealthCheck/.test(navigator.userAgent)){window.__apgoEM='excluded';return;}
 if(window.__apgoEM)return;window.__apgoEM='loading';
@@ -19,11 +21,12 @@ window.addEventListener('pagehide',function(){pageLeaving=true;},true);
 window.addEventListener('pageshow',function(){pageLeaving=false;},true);
 function own(s){return !!s&&(s.indexOf(location.origin)===0||/cdn\.shopify\.com\/.+\/(assets|files)\//.test(s));}
 function ownStack(s){return !!s&&(s.indexOf(location.host)>-1||/cdn\.shopify\.com\/.+\/assets\//.test(s));}
-function pathOnly(v){try{return new URL(v||location.href,location.origin).pathname;}catch(e){return '/';}}
+function pathOnly(v){return privacy.pathOnly(v||location.href);}
 function resourceStage(t){var tag=String(t&&t.tagName||'').toLowerCase();if(tag==='script')return 'script';if(tag==='link')return 'style';if(tag==='img')return 'image';if(tag==='video'||tag==='audio'||tag==='source')return 'media';return 'other';}
 function ignoredRuntime(m){return /_AutofillCallbackHandler|window\.webkit\.messageHandlers/.test(String(m||''));}
 function emit(d){try{
 if(n>=MAX)return;
+d.m=privacy.errorMessage(d.m,d.kind);d.src=pathOnly(d.src);d.stack=privacy.stack(d.stack);
 var key=[d.kind,d.m,d.src,d.line,d.action,d.stage].join('|');if(seen[key])return;seen[key]=1;n++;
 d.v=VER;d.sid=sid;d.url=pathOnly(location.href);
 var p=JSON.stringify(d);
@@ -38,7 +41,7 @@ var m=e.message||'',f=e.filename||'';if(!m||m==='Script error.'||ignoredRuntime(
 runtime(m,f,e.lineno,e.colno,e.error&&e.error.stack,'error');
 }catch(x){}},true);
 window.addEventListener('unhandledrejection',function(e){try{var r=e&&e.reason,st=(r&&r.stack)||'';if(ownStack(st))runtime('Unhandled rejection: '+String((r&&r.message)||r).slice(0,220),'',0,0,st,'rejection');}catch(x){}},true);
-function cartContext(detail){detail=detail||{};return {kind:'cart',m:String(detail.message||'Shopify cart request failed').slice(0,300),action:String(detail.action||'cart').slice(0,80),stage:String(detail.stage||'request').slice(0,80),status:Number(detail.status)||0,critical:!!detail.critical,src:pathOnly(detail.url||location.href),line:0,col:0,stack:'',duration_ms:Math.max(0,Math.round(Number(detail.duration_ms)||0)),visibility:String(document.visibilityState||'unknown').slice(0,20),online:navigator.onLine===true?1:(navigator.onLine===false?0:-1),page_leaving:pageLeaving?1:0};}
+function cartContext(detail){detail=detail||{};return {kind:'cart',m:String(detail.message||'Shopify cart request failed'),action:privacy.label(detail.action||'cart'),stage:privacy.label(detail.stage||'request'),status:Number(detail.status)||0,critical:!!detail.critical,src:pathOnly(detail.url||location.href),line:0,col:0,stack:'',duration_ms:Math.max(0,Math.round(Number(detail.duration_ms)||0)),visibility:privacy.label(document.visibilityState||'unknown'),online:navigator.onLine===true?1:(navigator.onLine===false?0:-1),page_leaving:pageLeaving?1:0};}
 window.apgoReportCartError=function(detail){emit(cartContext(detail));};
 window.addEventListener('apgo:cart-error',function(e){window.apgoReportCartError(e&&e.detail);});
 window.addEventListener('apgo:cart-recovered',function(){var d=cartContext({message:'Cart add confirmed after lost response',action:'add',stage:'verified-success',status:0,url:'/cart/add.js'});emit(d);});

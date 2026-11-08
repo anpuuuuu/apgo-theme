@@ -51,11 +51,13 @@
   }
 
   function publish(name, data) {
-    var payload = compact(Object.assign({
+    var privacy = window.apgoTelemetryPrivacy;
+    if (!privacy) return;
+    var payload = compact(privacy.payload(Object.assign({
       campaign_id: campaignId,
       page_path: window.location.pathname,
       page_location: window.location.href
-    }, data || {}));
+    }, data || {})));
 
     publishQueue.push({ name: name, data: payload });
     if (!publishTimer) flushQueue();

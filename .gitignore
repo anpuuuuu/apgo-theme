@@ -11,3 +11,15 @@ gha-creds-*.json
 .claude/
 /apgo-theme/
 /apgo-theme-1/
+
+# Local secrets and scanner output do not belong in the theme repository.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+id_rsa*
+id_ed25519*
+*credentials*.json
+security-results/

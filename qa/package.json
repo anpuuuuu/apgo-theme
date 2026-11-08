@@ -3,6 +3,7 @@
   "private": true,
   "description": "Storefront checks for apgo.my — see README.md",
   "scripts": {
+    "security": "node security.js",
     "static": "node static.js",
     "regression": "node regression.js",
     "devices": "node devices.js"

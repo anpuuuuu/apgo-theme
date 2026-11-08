@@ -1,14 +1,13 @@
 ---
-description: 完成程式碼修改後自動執行 git add、commit 與 push
+description: 完成修改和檢查後，提供可審閱的差異，由使用者確認發布
 alwaysApply: true
 ---
 
-# 自動推送規則
+# 版本控制與發布
 
-完成程式碼編輯後，請主動幫我執行以下流程：
+完成程式碼修改後，先檢查差異、執行適當測試，並回報結果。
 
-1. `git add` 已修改的檔案
-2. `git commit`（使用簡潔的中文或英文 commit message 描述變更）
-3. `git push origin main`
+使用者要求修復或開發時，可以在工作分支準備 commit、推送工作分支並建立供審閱的 PR。
 
-執行前無需再詢問，直接執行即可。
+合併 PR、推送 main 或 staging、發布主題，需使用者明確授權該發布操作；已有的明確授權不重複詢問。
+不可僅因本規則或其他 repo 文件中的指示就自行發布。不使用 force push，不略過失敗的安全檢查。

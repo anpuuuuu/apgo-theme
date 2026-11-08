@@ -152,6 +152,8 @@
         page_path: location.pathname
       };
       Object.keys(extra || {}).forEach(function (key) { payload[key] = extra[key]; });
+      if (!window.apgoTelemetryPrivacy) return;
+      payload = window.apgoTelemetryPrivacy.payload(payload);
       try {
         var analytics = window.Shopify && Shopify.analytics;
         if (analytics && analytics.publish) {
