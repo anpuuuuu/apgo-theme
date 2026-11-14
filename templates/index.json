@@ -66,10 +66,10 @@
           "type": "banner",
           "settings": {
             "image": "shopify://shop_images/MY_ACG_Last_3_days.jpg",
-            "link": "shopify://products/apgo-atomic-coloured-glaze-special-copy",
+            "link": "",
             "alt": "",
             "tracking_id": "",
-            "market_visibility": "my"
+            "market_visibility": "both"
           }
         },
         "banner_9GwjTp": {
