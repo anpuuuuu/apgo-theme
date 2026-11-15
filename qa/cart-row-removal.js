@@ -9,9 +9,16 @@ const {chromium,webkit}=require('playwright');
 const ROOT=path.join(__dirname,'..');
 const baseline=process.argv.includes('--baseline');
 const BASELINE='c394f7a176d5492707c39db3194712ebfff94e00';
-const source=file=>baseline&&['snippets/cart-products.liquid','assets/component-cart-items.js'].includes(file)
-  ?execFileSync('git',['show',BASELINE+':'+file],{cwd:ROOT,encoding:'utf8'})
-  :fs.readFileSync(path.join(ROOT,file),'utf8');
+const source=file=>{
+  // Asset requests remain inside the fixture repository, including after resolving symlinks.
+  // nosemgrep: javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal
+  const target=fs.realpathSync(path.resolve(ROOT,file));
+  const relative=path.relative(fs.realpathSync(ROOT),target);
+  if(relative==='..'||relative.startsWith('..'+path.sep)||path.isAbsolute(relative))throw new Error('Fixture path escapes repository');
+  return baseline&&['snippets/cart-products.liquid','assets/component-cart-items.js'].includes(file)
+    ?execFileSync('git',['show',BASELINE+':'+file],{cwd:ROOT,encoding:'utf8'})
+    :fs.readFileSync(target,'utf8');
+};
 const snippet=source('snippets/cart-products.liquid');
 const rowStart=snippet.lastIndexOf('<tr',snippet.indexOf('ref="cartItemRows[]"'));
 const rowTemplate=snippet.slice(rowStart).match(/^[\s\S]*?\r?\n\s*>/)[0];

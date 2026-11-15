@@ -34,6 +34,7 @@ function noSensitive(value) {
 }
 
 async function main() {
+  await require('./semgrep-regression')();
   const env = environment();
   const privacy = env.context.apgoTelemetryPrivacy;
   assert.equal(privacy.pathOnly(loc.href), '/cart');
