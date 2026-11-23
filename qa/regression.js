@@ -13,8 +13,6 @@ fs.mkdirSync(OUT, { recursive: true });
 
 // An everyday product that stays on sale in both markets (was Pocket-Friendly Deals until 2026-11-23).
 const EVERYDAY = '/products/apgo-atomic-car-nano-coating-standard';
-const SG_BUNDLE = 67699980959898; // WAREHOUSE CLEARANCE SALE BUNDLE (SG)
-const SG_PWP_SHOE300 = 67701885108378; // Shoe Cleaner 300ml (WH Sales PWP)
 
 async function goto(page, pathname, params) {
   const resp = await page.goto(url(pathname, params), { waitUntil: 'load', timeout: 60000 });
@@ -61,7 +59,8 @@ const CHECKS = [
     title: '洗衣精页手机选单横排是米色底、字看得到（05d3a77）',
     async run() {
       const { browser, page } = await open('iphoneSE-safari');
-      await goto(page, '/products/apgo-laundry-detergent-special-promotion-1');
+      // Everyday laundry product on the apgo-v1s-plus template (the old promo product is a draft since 11.11).
+      await goto(page, '/products/' + encodeURIComponent('apgo-laundry-detergent-oceans海洋晨曦-copy'));
       const r = await page.evaluate(() => {
         const row = document.querySelector('.apgo-menu-row');
         const link = document.querySelector('.apgo-menu-row__link:not(.apgo-menu-row__link--hot)');
@@ -89,34 +88,6 @@ const CHECKS = [
         await browser.close();
         out.push({ ok: r.firstLeft !== null && r.firstLeft >= 0 && r.overflow <= 1, detail: `${w}x${h}: 第一个分类 left=${r.firstLeft}，超出 ${r.overflow}px` });
       }
-      return out;
-    },
-  },
-  {
-    id: 'R6',
-    title: '新加坡 PWP：有 Bundle 才有加购价，拿掉 Bundle 就恢复原价',
-    until: 'SG WH Sales PWP 活动结束',
-    async run() {
-      const out = [];
-      const { browser, page } = await open('iphone15-safari');
-      await goto(page, '/', { country: 'SG' });
-      await cartPost(page, '/cart/add.js', { items: [{ id: SG_BUNDLE, quantity: 1 }, { id: SG_PWP_SHOE300, quantity: 1 }] });
-      let c = await cart(page);
-      const line = (id) => c.items.find((i) => i.variant_id === id);
-      out.push({ ok: c.currency === 'SGD', detail: `购物车币别 ${c.currency}` });
-      out.push({ ok: !!line(SG_PWP_SHOE300) && line(SG_PWP_SHOE300).final_line_price === 590, detail: `有 Bundle：Shoe 300ml $${((line(SG_PWP_SHOE300) || {}).final_line_price / 100).toFixed(2)}（应为 $5.90）` });
-      await goto(page, '/cart', { country: 'SG' });
-      const adds = await page.locator('cart-offers-tabs button', { hasText: /^ADD$/ }).count();
-      out.push({ ok: adds > 0, detail: `购物车 PWP 区块 ${adds} 个 ADD 按钮` });
-      await page.screenshot({ path: path.join(OUT, 'R6.png') });
-      // Off the cart page first: changed under it through the API, the cart
-      // page reloads to match (snippets/apgo-cart-resync) and cuts off the read.
-      await goto(page, '/', { country: 'SG' });
-      await cartPost(page, '/cart/change.js', { id: String(SG_BUNDLE), quantity: 0 });
-      c = await cart(page);
-      out.push({ ok: !!line(SG_PWP_SHOE300) && line(SG_PWP_SHOE300).final_line_price === 990, detail: `拿掉 Bundle：Shoe 300ml $${((line(SG_PWP_SHOE300) || {}).final_line_price / 100).toFixed(2)}（应为 $9.90）` });
-      await clearCart(page);
-      await browser.close();
       return out;
     },
   },
@@ -157,7 +128,7 @@ const CHECKS = [
     async run() {
       const out = [];
       const { browser, page } = await open('desktop-chrome');
-      for (const p of ['/', '/pages/clearance-sale', EVERYDAY, '/products/apgo-laundry-detergent-special-promotion-1']) {
+      for (const p of ['/', '/pages/clearance-sale', EVERYDAY, '/products/' + encodeURIComponent('apgo-laundry-detergent-oceans海洋晨曦-copy')]) {
         await goto(page, p, { country: 'SG' });
         const text = await page.evaluate(() => document.body.innerText);
         const old = text.match(/5\s*[-–~]\s*7\s*(business|working)?\s*days?/i);
