@@ -18,12 +18,12 @@
   to the product page instead. Pocket-Friendly Deals has 27 options; in
   the drawer the photo sits above a long list and is out of view while
   shoppers pick, while its product page has the selected-item card, the
-  thumbnail strip and preloaded photos. Tag apgo-plus-to-pdp does the
-  same for another product.
+  thumbnail strip and preloaded photos. Product tag apgo-plus-to-pdp turns
+  it on.
 {%- endcomment -%}
 {%- liquid
   assign apgo_plus_to_pdp = false
-  if product.handle == 'pocket-friendly-deals' or product.tags contains 'apgo-plus-to-pdp'
+  if product.tags contains 'apgo-plus-to-pdp'
     assign apgo_plus_to_pdp = true
   endif
   assign apgo_plus_href = product.url

@@ -22,8 +22,7 @@
        be overridden by product metafields.
     2. Otherwise (rendered from a collection page), use the global
        Customizer settings → apgo_promo_banner_product.
-    3. Final fallback — the original Father's Day handle so nothing
-       renders blank if the merchant hasn't configured anything yet.
+    Nothing configured → nothing renders.
 
   Per-product metafield overrides for headline / body / cta (set via
   Shopify Admin → Products → [product] → Metafields):
@@ -51,12 +50,6 @@
   # 2. Fallback to global Customizer product picker.
   if promo_product == blank
     assign promo_product = settings.apgo_promo_banner_product
-  endif
-
-  # 3. Final legacy fallback so nothing renders blank if merchant
-  #    hasn't configured anything yet.
-  if promo_product == blank or promo_product.handle == blank
-    assign promo_product = all_products['fathers-day-aurora-coating-special-buy-1-free-1']
   endif
 
   assign promo_handle = promo_product.handle

@@ -4,7 +4,7 @@
   The strip is off for every v3 product (show_thumbnails in
   templates/product.v3.json, 2026-09-20). Some products still want it:
   Pocket-Friendly Deals has 31 photos, one per deal, and the strip lets
-  shoppers jump straight to one. Turn it on for another product with the
+  shoppers jump straight to one. Turn it on for a product with the
   tag apgo-thumbs-on.
 
   sections/apgo_product_page_v3.liquid is too large to edit, so this
@@ -20,7 +20,7 @@
 
 {%- liquid
   assign apgo_thumbs_on = false
-  if product.handle == 'pocket-friendly-deals' or product.tags contains 'apgo-thumbs-on'
+  if product.tags contains 'apgo-thumbs-on'
     assign apgo_thumbs_on = true
   endif
   if product.images.size < 2

@@ -16,13 +16,20 @@
       },
       {
         "type": "paragraph",
-        "content": "Turn OFF to instantly hide every storefront element tied to the Hari Raya free shampoo promo: the collection promo banner, the daily gift popup, the mobile buybar reassurance toast, the cart-page \"Free gift\" badge, AND the automatic add of the free 300ml shampoo when the bundle is added to cart. No code changes needed."
+        "content": "Buy a product, get a gift added to the cart automatically. Turn OFF to hide every element of it at once: the collection promo banner, the gift popup, the mobile buy-bar reminder, the cart-page \"Free gift\" badge, and the automatic add of the gift. No code changes needed."
       },
       {
         "type": "checkbox",
         "id": "apgo_gwp_enabled",
         "label": "Enable Free Gift promo (all UI + auto-add behavior)",
         "default": true
+      },
+      {
+        "type": "product_list",
+        "id": "apgo_gwp_products",
+        "label": "Products that come with a gift",
+        "limit": 20,
+        "info": "On each product, set the metafield \"Free gift variant\" (custom.free_gift_variant) to the gift option. The gift is added on every page (product page, collection +, cart). Make it free at checkout with an AIOD or Shopify Buy X Get Y discount."
       },
       {
         "type": "header",
@@ -294,6 +301,67 @@
         "id": "apgo_vb_subtitle_sg",
         "label": "Product subtitle, Singapore",
         "default": "Buy 4 Free 2! Choose any 6 scents for $67.60, with 2 free White Shoe Cleaner 300ml and free shipping!"
+      }
+    ]
+  },
+  {
+    "name": "APGO — Order limits",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Most a shopper can put in one order, checked on the product page, collection +, and cart. Theme only: another order is still possible. For every option of a product, add the product tag apgo-max-per-order-N (e.g. apgo-max-per-order-3)."
+      },
+      {
+        "type": "textarea",
+        "id": "apgo_variant_order_limits",
+        "label": "Limits for single options",
+        "info": "One option's own limit, beating the product tag. One per line: option (variant) ID:limit, e.g. 67638526705818:1. The variant ID is the number at the end of the option's admin URL."
+      }
+    ]
+  },
+  {
+    "name": "APGO — Cart add-on offer",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "Malaysia only. When the trigger product is in the cart, the cart page shows a card with a 10-minute countdown to add one offer product, limited to 1 per order. The card only shows the price; make the real checkout price with an AIOD rule for the same two products."
+      },
+      {
+        "type": "checkbox",
+        "id": "apgo_addon_enabled",
+        "label": "Show the add-on offer",
+        "default": false
+      },
+      {
+        "type": "product",
+        "id": "apgo_addon_trigger",
+        "label": "When this product is in the cart",
+        "info": "Any of its options counts."
+      },
+      {
+        "type": "product",
+        "id": "apgo_addon_offer",
+        "label": "Offer this product",
+        "info": "Its first available option is added. Can be Unlisted."
+      },
+      {
+        "type": "text",
+        "id": "apgo_addon_name",
+        "label": "Short name in the heading",
+        "default": "Interior Clean & Coat",
+        "info": "Heading reads: Add RM30 for [name] worth RM60"
+      },
+      {
+        "type": "number",
+        "id": "apgo_addon_price",
+        "label": "Add-on price shown (RM)",
+        "default": 30
+      },
+      {
+        "type": "number",
+        "id": "apgo_addon_original_price",
+        "label": "Worth (RM)",
+        "default": 60
       }
     ]
   },

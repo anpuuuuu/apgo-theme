@@ -1,23 +1,23 @@
 {% doc %}
-  Conditional Aurora add-on card. Checkout pricing is controlled by AIOD.
-  @param {number} [original_price] - Confirmed reference price in MYR major units, or 0 when pending.
+  Cart add-on offer card (first used for the 11.11 Aurora bundle). Products,
+  name and prices come from Theme settings → APGO — Cart add-on offer;
+  checkout pricing is controlled by an AIOD rule.
 {% enddoc %}
 {%- liquid
+  assign offer_product = settings.apgo_addon_offer
+  assign offer_variant = offer_product.selected_or_first_available_variant
   assign aurora_eligible = false
   assign aurora_offer_in_cart = false
   for item in cart.items
-    if item.variant_id == 67976724512922 and item.quantity > 0
+    if item.product_id == settings.apgo_addon_trigger.id and item.quantity > 0
       assign aurora_eligible = true
-    elsif item.variant_id == 68049930027162 and item.quantity > 0
+    elsif item.variant_id == offer_variant.id and item.quantity > 0
       assign aurora_offer_in_cart = true
     endif
   endfor
-  # The add-on is its own unlisted product (2026-11-04); AIOD "11.11 Aurora Hidden PWP" prices this variant.
-  assign offer_product = all_products['pwp-apgo-car-interior-bundle']
-  assign offer_variant = offer_product.variants | where: 'id', 68049930027162 | first
   assign offer_image = offer_variant.featured_image | default: offer_product.featured_image
-  assign offer_price_minor = 3000
-  assign reference_price_minor = original_price | default: 60 | times: 100 | round
+  assign offer_price_minor = settings.apgo_addon_price | default: 30 | times: 100 | round
+  assign reference_price_minor = settings.apgo_addon_original_price | default: 60 | times: 100 | round
   assign offer_savings_minor = reference_price_minor | minus: offer_price_minor
 -%}
 {%- if aurora_eligible and offer_variant != blank and localization.country.iso_code == 'MY' and cart.currency.iso_code == 'MYR' -%}
@@ -40,7 +40,7 @@
             <span class="aurora-offer__timer" role="timer" aria-label="Time remaining" aria-live="off"><span data-offer-minutes>10</span><span>:</span><span data-offer-seconds>00</span></span>
           </div>
         </div>
-        <h2 class="aurora-offer__heading" id="AuroraOfferTitle" title="{{ offer_product.title | escape }} — {{ offer_variant.title | escape }}">Add {{ offer_price_minor | money | replace: cart.currency.iso_code, '' | strip | replace: '.00', '' }} for Interior Clean &amp; Coat <span class="aurora-offer__worth">worth {{ reference_price_minor | money | replace: cart.currency.iso_code, '' | strip | replace: '.00', '' }}</span></h2>
+        <h2 class="aurora-offer__heading" id="AuroraOfferTitle" title="{{ offer_product.title | escape }} — {{ offer_variant.title | escape }}">Add {{ offer_price_minor | money | replace: cart.currency.iso_code, '' | strip | replace: '.00', '' }} for {{ settings.apgo_addon_name | default: offer_product.title | escape }} <span class="aurora-offer__worth">worth {{ reference_price_minor | money | replace: cart.currency.iso_code, '' | strip | replace: '.00', '' }}</span></h2>
         <div class="aurora-offer__image-wrap">
           {% if offer_image != blank %}
             {{ offer_image | image_url: width: 216 | image_tag: class: 'aurora-offer__image', widths: '72, 144, 216', sizes: '(max-width: 749px) 56px, 64px', loading: 'lazy', alt: offer_product.title }}

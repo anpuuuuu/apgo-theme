@@ -509,10 +509,12 @@
       Loaded on every page so quick-add (collection page), cart drawer,
       app-driven cart updates etc. all trigger gift reconciliation.
 
-      To run a new GWP promo: add an entry below, then make sure the
-      matching Shopify Discount (Buy X get Y) is set up so Y is free at
-      checkout. The PDP-level emission in apgo_product_page_v3.liquid
-      still works — both add into the same window.APGO_GIFT_MAP.
+      To run a new GWP promo (no code, 2026-11-23): set the product's
+      metafield custom.free_gift_variant to the gift option, add the
+      product to Theme settings → APGO — Free Gift Promo → "Products that
+      come with a gift", and make Y free at checkout (AIOD / Buy X get Y).
+      The v3 product page also reads the same metafield for its own page
+      — both add into the same window.APGO_GIFT_MAP.
     {%- endcomment -%}
     {%- comment -%}
       Whole GWP system — emission of APGO_GIFT_MAP + reconciler script —
@@ -525,9 +527,15 @@
       <script>
         window.APGO_GIFT_MAP = window.APGO_GIFT_MAP || {};
         window.APGO_GIFT_PRODUCT_TITLES = window.APGO_GIFT_PRODUCT_TITLES || {};
-        /* APGO Birthday Carnival – Sprayer Special → Car Wash Shampoo Refill Pack */
-        window.APGO_GIFT_MAP[48515394764954] = 46516355006618;
-        window.APGO_GIFT_PRODUCT_TITLES[48515394764954] = "APGO Birthday Carnival – Sprayer Special";
+        {%- for apgo_gwp_p in settings.apgo_gwp_products -%}
+          {%- assign apgo_gwp_gift = apgo_gwp_p.metafields.custom.free_gift_variant.value -%}
+          {%- if apgo_gwp_gift != blank and apgo_gwp_gift.id != blank -%}
+            {%- for apgo_gwp_v in apgo_gwp_p.variants %}
+        window.APGO_GIFT_MAP[{{ apgo_gwp_v.id }}] = {{ apgo_gwp_gift.id }};
+        window.APGO_GIFT_PRODUCT_TITLES[{{ apgo_gwp_v.id }}] = {{ apgo_gwp_p.title | json }};
+            {%- endfor -%}
+          {%- endif -%}
+        {%- endfor %}
       </script>
       <script src="{{ 'apgo-gift-reconciler.js' | asset_url }}" defer></script>
     {% endif %}
@@ -571,14 +579,16 @@
 
     {%- comment -%}
       GWP buybar hint — small semi-transparent toast that pops above the
-      mobile buybar/select-option sheet on the bundle PDP only. Reassures
-      the customer that hitting Add to cart will auto-include the gift.
+      mobile buybar/select-option sheet on a product that comes with a gift
+      (metafield custom.free_gift_variant). Reassures the customer that
+      hitting Add to cart will auto-include the gift.
     {%- endcomment -%}
-    {% if settings.apgo_gwp_enabled
-       and template.name == 'product'
-       and product.handle == 'fathers-day-aurora-coating-special-buy-1-free-1' %}
-      {% render 'apgo-gwp-buybar-hint' %}
-    {% endif %}
+    {%- if settings.apgo_gwp_enabled and template.name == 'product' -%}
+      {%- assign apgo_hint_gift = product.metafields.custom.free_gift_variant.value -%}
+      {%- if apgo_hint_gift != blank and apgo_hint_gift.id != blank -%}
+        {% render 'apgo-gwp-buybar-hint', gift: apgo_hint_gift %}
+      {%- endif -%}
+    {%- endif -%}
 
     {% # theme-check-disable ParserBlockingScript %}
     <script src="{{ 'critical.js' | asset_url }}"></script>

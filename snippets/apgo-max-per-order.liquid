@@ -8,32 +8,31 @@
   A per-order limit in the theme only: a shopper can still place another
   order, and the cart API itself is not blocked.
 
-  Pocket-Friendly Deals: 3 (owner, 2026-10). Tag apgo-max-per-order-N sets
-  N for any other product. Given a variant, one option can have a limit of
-  its own: the deal's Car Wiper Fluid 200ml (RM1) is 1 (owner, 2026-10-06;
-  2 from 10-05), whatever the product's limit or tag says.
-  The 11.11 shampoo and wiper refill three-pack products are each limited
-  to 2 sets per order (owner, 2026-10-31).
+  No product is named here (2026-11-23): everything comes from the admin.
+    - Product tag apgo-max-per-order-N: every option of the product, N each.
+    - Theme settings → APGO — Order limits → "Limits for single options":
+      "variant_id:limit" pairs, one option's own limit that beats the tag
+      (e.g. a RM1 option limited to 1 inside a deal otherwise limited to 3).
 
   @param {product} product - The product.
   @param {variant} [variant] - One option of it, for an option's own limit.
 {%- enddoc -%}
 {%- liquid
   assign apgo_limit = 0
-  if product.handle == 'pocket-friendly-deals'
-    assign apgo_limit = 3
-  endif
   for apgo_tag in product.tags
     if apgo_tag contains 'apgo-max-per-order-'
       assign apgo_limit = apgo_tag | remove: 'apgo-max-per-order-' | plus: 0
     endif
   endfor
-  if product.id == 15468443173018 or product.id == 15468456673434
-    assign apgo_limit = 2
-  endif
-  # Pocket-Friendly Deals: APGO Car Wiper Fluid 200ml.
-  if variant.id == 67638526705818
-    assign apgo_limit = 1
+  if variant != blank and settings.apgo_variant_order_limits != blank
+    assign apgo_vid = variant.id | append: ''
+    assign apgo_pairs = settings.apgo_variant_order_limits | newline_to_br | replace: '<br />', ',' | replace: ' ', '' | split: ','
+    for apgo_pair in apgo_pairs
+      assign apgo_parts = apgo_pair | strip | split: ':'
+      if apgo_parts.size == 2 and apgo_parts[0] == apgo_vid
+        assign apgo_limit = apgo_parts[1] | plus: 0
+      endif
+    endfor
   endif
   echo apgo_limit
 -%}

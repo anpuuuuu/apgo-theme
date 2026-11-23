@@ -222,4 +222,4 @@
   };
 </script>
 
-{% render 'apgo-cart-aurora-config' %}
+{% if settings.apgo_addon_enabled %}{% render 'apgo-cart-aurora-config' %}{% endif %}

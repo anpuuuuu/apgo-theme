@@ -46,7 +46,7 @@
     items(cart) { return Array.isArray(cart?.items) ? cart.items : []; }
 
     eligible(cart) {
-      return config.country === 'MY' && cart?.currency === 'MYR' && this.items(cart).some(item => Number(item.variant_id) === config.triggerVariant && item.quantity > 0);
+      return config.country === 'MY' && cart?.currency === 'MYR' && this.items(cart).some(item => config.triggerVariants.includes(Number(item.variant_id)) && item.quantity > 0);
     }
 
     marked(cart) {

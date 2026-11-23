@@ -6,8 +6,11 @@ const { chromium, webkit } = require('playwright');
 const ROOT = path.join(__dirname, '..');
 const TRIGGER = 67976724512922;
 const OFFER = 68049930027162;
-const PROP = '_apgo_aurora_pwp';
-const MARKER = 'aurora-39';
+// Theme settings → APGO — Cart add-on offer (2026-11-23): products come from settings, not hardcoded ids.
+const TRIGGER_PRODUCT = 1001;
+const OFFER_PRODUCT = 1002;
+const PROP = '_apgo_addon_pwp';
+const MARKER = 'cart-addon';
 const locale = JSON.parse(fs.readFileSync(path.join(ROOT, 'locales/en.default.json'), 'utf8').replace(/^\s*\/\*[\s\S]*?\*\/\s*/, ''));
 const liquid = new Liquid();
 liquid.registerFilter('json', value => JSON.stringify(value ?? null));
@@ -20,7 +23,7 @@ liquid.registerFilter('t', (key, ...args) => {
 });
 const source = file => fs.readFileSync(path.join(ROOT, file), 'utf8');
 const cleanLiquid = text => text.replace(/{%-?\s*doc\s*-?%}[\s\S]*?{%-?\s*enddoc\s*-?%}/g, '');
-const line = (variant_id, quantity = 1, properties = {}, key) => ({ variant_id, id: variant_id, quantity, properties, key: key || `${variant_id}:${JSON.stringify(properties)}`, final_line_price: quantity * (variant_id === OFFER ? 6000 : 11100) });
+const line = (variant_id, quantity = 1, properties = {}, key) => ({ variant_id, id: variant_id, product_id: variant_id === TRIGGER ? TRIGGER_PRODUCT : variant_id === OFFER ? OFFER_PRODUCT : 1, quantity, properties, key: key || `${variant_id}:${JSON.stringify(properties)}`, final_line_price: quantity * (variant_id === OFFER ? 6000 : 11100) });
 const marked = (quantity = 1, key) => line(OFFER, quantity, { [PROP]: MARKER }, key);
 
 async function run() {
@@ -35,7 +38,7 @@ async function run() {
     const page = await context.newPage();
     page.on('pageerror', error => controls.errors.push(error.message));
     const render = async () => {
-      const data = { cart: { ...cart, currency: { iso_code: cart.currency } }, localization: { country: { iso_code: country } }, original_price: 60, all_products: { 'pwp-apgo-car-interior-bundle': { title: 'Interior Set', variants: [{ id: OFFER, title: 'Car Interior Set', available }] } } };
+      const data = { cart: { ...cart, currency: { iso_code: cart.currency } }, localization: { country: { iso_code: country } }, settings: { apgo_addon_enabled: true, apgo_addon_trigger: { id: TRIGGER_PRODUCT, variants: [{ id: TRIGGER }] }, apgo_addon_offer: { title: 'Interior Set', selected_or_first_available_variant: { id: OFFER, title: 'Car Interior Set', available } }, apgo_addon_name: 'Interior Clean & Coat', apgo_addon_price: 30, apgo_addon_original_price: 60 } };
       const config = await liquid.parseAndRender(cleanLiquid(source('snippets/apgo-cart-aurora-config.liquid')), data);
       const card = noCard ? '' : await liquid.parseAndRender(cleanLiquid(source('snippets/apgo-cart-aurora-offer.liquid')), data);
       return `<!doctype html><html><head><script type="importmap">{"imports":{"@theme/component":"/qa-component.js"}}</script><style>body{background:#000;color:#fff;font-family:Arial}.cart-page{max-width:700px;margin:auto}.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}</style><link rel="stylesheet" href="/assets/apgo-cart-aurora-offer.css"></head><body><cart-items-component data-section-id="main"><div class="cart-page">${card}</div></cart-items-component><button name="checkout">Checkout</button>${config}</body></html>`;

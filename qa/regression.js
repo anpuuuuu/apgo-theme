@@ -11,8 +11,8 @@ const { url, THEME_ID, open, sleep, cart, cartPost, clearCart, stickyGap, layout
 const OUT = path.join(__dirname, 'out', 'regression');
 fs.mkdirSync(OUT, { recursive: true });
 
-const PFD = '/products/pocket-friendly-deals';
-const WIPER = 67638526705818; // Pocket-Friendly: Car Wiper Fluid 200ml, limit 1
+// An everyday product that stays on sale in both markets (was Pocket-Friendly Deals until 2026-11-23).
+const EVERYDAY = '/products/apgo-atomic-car-nano-coating-standard';
 const SG_BUNDLE = 67699980959898; // WAREHOUSE CLEARANCE SALE BUNDLE (SG)
 const SG_PWP_SHOE300 = 67701885108378; // Shoe Cleaner 300ml (WH Sales PWP)
 
@@ -30,9 +30,13 @@ const CHECKS = [
   },
   {
     id: 'R12',
-    title: 'Aurora PWP 条件加购、移除联动、重复请求、MY/SG、倒计时和失败恢复（本地模拟）',
-    until: 'Aurora PWP 活动结束',
+    title: '购物车加购条（主题设定选商品）：条件加购、移除联动、重复请求、MY/SG、倒计时和失败恢复（本地模拟）',
     async run() { return require('./aurora-pwp').run(); },
+  },
+  {
+    id: 'R14',
+    title: '限购只来自商品标签和主题设定，代码里没有写死商品（本地）',
+    async run() { return require('./order-limits').run(); },
   },
   {
     id: 'R1',
@@ -89,49 +93,6 @@ const CHECKS = [
     },
   },
   {
-    id: 'R4',
-    title: 'Pocket-Friendly 限购：每样 3、雨刷精 1（f046843、4a091d9）',
-    until: 'Pocket-Friendly Deals 活动结束',
-    async run() {
-      const { browser, page } = await open('desktop-chrome');
-      await goto(page, PFD);
-      const r = await page.evaluate(() => {
-        const bar = document.querySelector('[data-apgo-cc-buybar]');
-        return bar && { all: bar.getAttribute('data-apgo-cc-max-per-order'), perVariant: bar.getAttribute('data-apgo-cc-max-per-variant') };
-      });
-      await browser.close();
-      if (!r) return { ok: false, detail: '找不到购买列' };
-      return { ok: r.all === '3' && (r.perVariant || '').split(',').includes(`${WIPER}:1`), detail: `每样 ${r.all}，个别 ${r.perVariant}` };
-    },
-  },
-  {
-    id: 'R5',
-    title: '购物车超过限购（「Buy again」、旧购物车）会自动降回上限（ac10bd2）',
-    until: 'Pocket-Friendly Deals 活动结束',
-    async run() {
-      const { browser, page } = await open('desktop-chrome');
-      await goto(page, '/');
-      const product = await page.evaluate(async (h) => (await fetch(h + '.js')).json(), PFD);
-      const v = product.variants.find((x) => x.available && x.id !== WIPER);
-      if (!v) { await browser.close(); return { ok: false, detail: '找不到有货的选项' }; }
-      const status = await cartPost(page, '/cart/add.js', { items: [{ id: v.id, quantity: 5 }] });
-      const before = (await cart(page)).items.find((i) => i.variant_id === v.id);
-      await goto(page, '/cart');
-      let qty = before && before.quantity;
-      for (let t = 0; t < 10 && qty > 3; t++) {
-        await sleep(1000);
-        const line = (await cart(page)).items.find((i) => i.variant_id === v.id);
-        qty = line ? line.quantity : 0;
-      }
-      await sleep(1500);
-      const toast = await page.evaluate(() => document.body.innerText.includes('in your cart'));
-      await page.screenshot({ path: path.join(OUT, 'R5.png') });
-      await clearCart(page);
-      await browser.close();
-      return { ok: qty === 3, detail: `用 API 加入 5 件（${status}），进购物车页后变成 ${qty} 件；提示${toast ? '有' : '没有'}出现` };
-    },
-  },
-  {
     id: 'R6',
     title: '新加坡 PWP：有 Bundle 才有加购价，拿掉 Bundle 就恢复原价',
     until: 'SG WH Sales PWP 活动结束',
@@ -165,8 +126,8 @@ const CHECKS = [
     async run() {
       const { browser, page } = await open('android-chrome');
       await goto(page, '/');
-      const product = await page.evaluate(async (h) => (await fetch(h + '.js')).json(), PFD);
-      const v = product.variants.find((x) => x.available && x.id !== WIPER);
+      const product = await page.evaluate(async (h) => (await fetch(h + '.js')).json(), EVERYDAY);
+      const v = product.variants.find((x) => x.available);
       await cartPost(page, '/cart/add.js', { items: [{ id: v.id, quantity: 1 }] });
       await goto(page, '/cart');
       const btn = page.locator('button[name="checkout"]:visible').first();
@@ -196,7 +157,7 @@ const CHECKS = [
     async run() {
       const out = [];
       const { browser, page } = await open('desktop-chrome');
-      for (const p of ['/', '/pages/clearance-sale', PFD, '/products/apgo-laundry-detergent-special-promotion-1']) {
+      for (const p of ['/', '/pages/clearance-sale', EVERYDAY, '/products/apgo-laundry-detergent-special-promotion-1']) {
         await goto(page, p, { country: 'SG' });
         const text = await page.evaluate(() => document.body.innerText);
         const old = text.match(/5\s*[-–~]\s*7\s*(business|working)?\s*days?/i);
@@ -204,81 +165,6 @@ const CHECKS = [
         out.push({ ok: !old && now, detail: `${p}: ${old ? '还有「' + old[0] + '」' : now ? '显示 3–5 天' : '找不到 3–5 天'}` });
       }
       await browser.close();
-      return out;
-    },
-  },
-  {
-    id: 'R11',
-    title: 'All Products 抽屉数量上限、重复加购、Buy now 和限购提示',
-    until: '11.11 三包装活动结束',
-    async run() {
-      return require('./collection-order-limits').run();
-    },
-  },
-  {
-    id: 'R10',
-    title: '11.11 洗车精、雨刷精每单各限 2 套，活动页重复加购及旧购物车',
-    until: '11.11 三包装活动结束',
-    async run() {
-      const products = [
-        { id: 15468443173018, variant: 67986611273882, handle: 'apgo-car-wash-shampoo-refill-pack-300ml-copy' },
-        { id: 15468456673434, variant: 67986732351642, handle: 'apgo-car-wiper-fluid-refill-pack-300ml-copy' },
-      ];
-      const out = [];
-      const { browser, page } = await open('android-chrome');
-      const dialogs = [];
-      page.on('dialog', async (dialog) => { dialogs.push(dialog.message()); await dialog.accept(); });
-      const quantities = (c) => products.map((p) => c.items.filter((i) => i.variant_id === p.variant).reduce((n, i) => n + i.quantity, 0));
-      const waitQuantities = async (wanted) => {
-        for (let attempt = 0; attempt < 20; attempt++) {
-          const actual = quantities(await cart(page));
-          if (actual.every((q, i) => q === wanted[i])) return actual;
-          await sleep(500);
-        }
-        throw new Error('Unexpected cart quantities: ' + quantities(await cart(page)).join(','));
-      };
-      try {
-        for (const p of products) {
-          await goto(page, '/products/' + p.handle, { country: 'MY' });
-          const limit = await page.locator('[data-apgo-cc-buybar]').getAttribute('data-apgo-cc-max-per-order');
-          out.push({ ok: limit === '2', detail: `${p.handle}: 商品页限额 ${limit}` });
-        }
-        await clearCart(page);
-        await cartPost(page, '/cart/add.js', { items: products.map((p) => ({ id: p.variant, quantity: 1 })) });
-        await goto(page, '/pages/11-11-sale', { country: 'MY' });
-        for (const p of products) {
-          const card = page.locator(`product-card[data-product-id="${p.id}"]`).first();
-          out.push({ ok: await card.getAttribute('data-apgo-event-limit') === '2', detail: `${p.handle}: 活动页限额 2` });
-          const add = card.locator('.apgo-event-listing-card__btn--add');
-          await add.click({ force: true });
-          await page.waitForFunction((id) => !document.querySelector(`product-card[data-product-id="${id}"] .apgo-event-listing-card__btn--add`).disabled, p.id);
-          await add.click({ force: true });
-          await page.waitForFunction((id) => !document.querySelector(`product-card[data-product-id="${id}"] .apgo-event-listing-card__btn--add`).disabled, p.id);
-        }
-        await waitQuantities([2, 2]);
-        out.push({ ok: dialogs.length === 2 && dialogs.every((m) => m.includes('Limit 2') && !m.includes('Translation missing')), detail: `第三套被拦截，两款各保留 2；提示 ${JSON.stringify(dialogs)}` });
-        const firstCard = page.locator(`product-card[data-product-id="${products[0].id}"]`).first();
-        await firstCard.locator('.apgo-event-listing-card__btn--buy').click({ force: true });
-        await page.waitForURL(/\/cart(?:\?|$)/);
-        await waitQuantities([2, 2]);
-        out.push({ ok: true, detail: '满额后 Buy now 进入购物车，没有多加一套' });
-        await goto(page, '/');
-        await clearCart(page);
-        await cartPost(page, '/cart/add.js', { items: products.flatMap((p) => [
-          { id: p.variant, quantity: 2 },
-          { id: p.variant, quantity: 2, properties: { _qa_limit: 'split' } },
-        ]) });
-        await goto(page, '/cart');
-        await waitQuantities([2, 2]);
-        await page.waitForFunction(() => document.querySelectorAll('input[data-apgo-max-per-order]').length === 2);
-        const maxes = await page.locator('input[data-apgo-max-per-order]').evaluateAll((inputs) => inputs.map((input) => input.max));
-        out.push({ ok: maxes.length === 2 && maxes.every((m) => m === '2'), detail: `同款分行超量自动降至各 2，数量输入框上限 ${maxes.join(',')}` });
-        await page.screenshot({ path: path.join(OUT, 'R10.png') });
-      } finally {
-        await goto(page, '/').catch(() => {});
-        await clearCart(page).catch(() => {});
-        await browser.close();
-      }
       return out;
     },
   },

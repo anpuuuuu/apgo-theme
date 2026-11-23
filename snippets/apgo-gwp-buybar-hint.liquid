@@ -1,9 +1,12 @@
 {%- doc -%}
   Semi-transparent reassurance toast that appears on mobile when the
-  bottom buybar / select-option / variant-shell modal opens on the
-  Hari Raya Haji Bundle PDP. Tells the user "✅ You're on the right
-  page — clicking Add to cart will automatically include the FREE
-  gift" so they don't worry they have to do anything extra.
+  bottom buybar / select-option / variant-shell modal opens on a
+  product that comes with a gift (custom.free_gift_variant). Tells the
+  user "✅ You're on the right page — clicking Add to cart will
+  automatically include the FREE gift" so they don't worry they have
+  to do anything extra.
+
+  @param {variant} gift - The gift option, for its product title.
 
   Mobile only (≤749px). Watches `.is-open` class on three possible
   containers and fires every time any of them opens. No auto-dismiss
@@ -15,7 +18,7 @@
   <span class="apgo-gwp-buybar-hint__accent" aria-hidden="true"></span>
   <span class="apgo-gwp-buybar-hint__icon" aria-hidden="true">🎁</span>
   <span class="apgo-gwp-buybar-hint__text">
-    <strong>Your free 300ml shampoo is ready.</strong>
+    <strong>Your free {{ gift.product.title | escape }} is ready.</strong>
     Just tap the <em>button below</em> — we'll auto-include it for you.
   </span>
   <button type="button"

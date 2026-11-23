@@ -1,13 +1,22 @@
 {% doc %}
-  Supplies market context for the Aurora add-on controller across storefront pages.
+  Config for the cart add-on offer controller (assets/apgo-cart-aurora-offer.js).
+  First built for the 11.11 Aurora bundle; since 2026-11-23 both products come
+  from Theme settings → APGO — Cart add-on offer. Rendered from
+  snippets/scripts.liquid only while the offer is switched on and both products
+  are set, so the script costs nothing the rest of the time.
 {% enddoc %}
+{%- liquid
+  assign addon_trigger = settings.apgo_addon_trigger
+  assign addon_offer_variant = settings.apgo_addon_offer.selected_or_first_available_variant
+-%}
+{%- if addon_trigger != blank and addon_offer_variant != blank -%}
 <script type="application/json" id="apgo-aurora-config">
   {
     "country": {{ localization.country.iso_code | json }},
-    "triggerVariant": 67976724512922,
-    "offerVariant": 68049930027162,
-    "property": "_apgo_aurora_pwp",
-    "propertyValue": "aurora-39",
+    "triggerVariants": [{% for v in addon_trigger.variants %}{{ v.id }}{% unless forloop.last %},{% endunless %}{% endfor %}],
+    "offerVariant": {{ addon_offer_variant.id }},
+    "property": "_apgo_addon_pwp",
+    "propertyValue": "cart-addon",
     "duration": 600000,
     "messages": {
       "adding": {{ 'product.adding_to_cart' | t | json }},
@@ -19,3 +28,4 @@
   }
 </script>
 <script src="{{ 'apgo-cart-aurora-offer.js' | asset_url }}" defer></script>
+{%- endif -%}
