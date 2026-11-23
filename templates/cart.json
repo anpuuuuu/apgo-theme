@@ -66,7 +66,7 @@
       "custom_css": [],
       "name": "原始購物車",
       "settings": {
-        "aurora_offer_preview": true,
+        "aurora_offer_preview": false,
         "aurora_offer_original_price": 60,
         "section_width": "page-width",
         "color_scheme": "scheme-a27d2d12-7174-40fe-a01c-a128174b4c26",
