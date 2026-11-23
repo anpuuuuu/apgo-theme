@@ -71,6 +71,7 @@
 | R9 | 清仓页对 SG 开放 | d5746d6 | — |
 | R12 | 购物车加购条（主题设定 → APGO — Cart add-on offer 选商品）：实际 Liquid 卡片与模拟购物车 API 的交互测试，MY/SG、去除触发品、保留普通商品、限购、请求失败、计时重置与到期流光 | 2026-10-31，11-23 改成设定 | — |
 | R14 | 限购只来自商品标签 apgo-max-per-order-N 和主题设定「Limits for single options」，代码里没有写死商品（本地） | 2026-11-23 | — |
+| R15 | 活动追踪（`assets/apgo-campaign-tracking.js`）：banner／商品卡事件的 item_id 是 `shopify_ZZ_商品_规格`（跟 Google app 的加购、结帐一致）；点过的 banner 记在购物车属性 `apgo_promo_clicked`（最新的在最后、不重复、换购物车就重来）；闲置超过 25 分钟后不送 `apgo_campaign_exit`（本地） | 2026-11-23 | — |
 | R13 | 实际购物车模块及 section morph：删除首行/中间行后保留其他商品；慢速与失败请求、同规格拆行、抽屉同步、减少动态效果 | 2026-10-31 | — |
 
 另外 `node qa/sg-checkout.js`：新加坡的清仓 Bundle 能走到结帐页（不下单），确认金额是 SGD、没有「无法配送」之类的讯息，而且看得到付款区块。新加坡的结帐转换被监控标成异常时，先跑这个。

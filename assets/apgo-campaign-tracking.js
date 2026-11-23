@@ -12,6 +12,18 @@
   var gaQueue = [];
   var gaAttempts = 0;
   var gaTimer = null;
+  // GA4 ends a session after 30 minutes without a hit; an exit event sent
+  // later opens a new session with no traffic source, so it is skipped.
+  var EXIT_IDLE_LIMIT = 25 * 60 * 1000;
+  var lastHitAt = Date.now();
+  // Same item IDs as the Shopify Google app (shopify_<target country>_
+  // <product>_<variant>), so banner and card events match its cart and
+  // checkout items in GA4.
+  var GOOGLE_ITEM_PREFIX = 'shopify_ZZ_';
+  // Banners clicked before an order, on this cart attribute (order page →
+  // Additional details). The list restarts when the cart changes.
+  var PROMO_ATTRIBUTE = 'apgo_promo_clicked';
+  var PROMO_LIMIT = 8;
 
   function compact(payload) {
     var result = {};
@@ -53,6 +65,7 @@
   function publish(name, data) {
     var privacy = window.apgoTelemetryPrivacy;
     if (!privacy) return;
+    lastHitAt = Date.now();
     var payload = compact(privacy.payload(Object.assign({
       campaign_id: campaignId,
       page_path: window.location.pathname,
@@ -70,6 +83,50 @@
     } catch (error) {}
   }
 
+  function googleItemId(productId, variantId) {
+    if (!productId) return undefined;
+    return variantId ? GOOGLE_ITEM_PREFIX + productId + '_' + variantId : String(productId);
+  }
+
+  function cartToken() {
+    try {
+      var match = /(?:^|;\s*)cart=([^;]*)/.exec(document.cookie || '');
+      return match ? decodeURIComponent(match[1]).split('?')[0] : '';
+    } catch (error) {
+      return '';
+    }
+  }
+
+  function rememberPromotionClick(promotionId) {
+    var id = String(promotionId || '').replace(/[^A-Za-z0-9_.:-]+/g, '_').slice(0, 80);
+    if (!id || typeof window.fetch !== 'function') return;
+    var token = cartToken();
+    var saved = {};
+    try {
+      saved = JSON.parse(window.localStorage.getItem(PROMO_ATTRIBUTE) || '{}') || {};
+    } catch (error) {}
+    var ids = Array.isArray(saved.ids) ? saved.ids : [];
+    if (saved.cart && saved.cart !== token) ids = [];
+    ids = ids.filter(function (entry) { return entry !== id; });
+    ids.push(id);
+    ids = ids.slice(-PROMO_LIMIT);
+    try {
+      window.localStorage.setItem(PROMO_ATTRIBUTE, JSON.stringify({ cart: token, ids: ids }));
+    } catch (error) {}
+    var attributes = {};
+    attributes[PROMO_ATTRIBUTE] = ids.join(', ');
+    try {
+      // keepalive lets the write finish while the click opens the next page.
+      var sent = window.fetch('/cart/update.js', {
+        method: 'POST',
+        keepalive: true,
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ attributes: attributes })
+      });
+      if (sent && typeof sent.catch === 'function') sent.catch(function () {});
+    } catch (error) {}
+  }
+
   function gaEvent(name, payload) {
     var params = Object.assign({}, payload);
     var eventName = name;
@@ -84,7 +141,7 @@
         promotion_name: payload.promotion_name,
         creative_name: payload.promotion_name,
         creative_slot: params.creative_slot,
-        item_id: payload.product_id,
+        item_id: googleItemId(payload.product_id, payload.variant_id),
         item_name: payload.product_name
       });
       params.items = [promotionItem];
@@ -97,7 +154,7 @@
         promotion_name: payload.promotion_name,
         creative_name: payload.promotion_name,
         creative_slot: params.creative_slot,
-        item_id: payload.product_id,
+        item_id: googleItemId(payload.product_id, payload.variant_id),
         item_name: payload.product_name
       });
       params.items = [promotionItem];
@@ -106,7 +163,7 @@
       params.item_list_id = payload.section_id;
       params.item_list_name = payload.section_name;
       params.items = [{
-        item_id: payload.product_id,
+        item_id: googleItemId(payload.product_id, payload.variant_id),
         item_name: payload.product_name,
         item_variant: payload.variant_id,
         index: payload.card_position
@@ -206,9 +263,8 @@
         product_id: linkedZone && linkedZone.getAttribute('data-product-id'),
         product_name: linkedZone && linkedZone.getAttribute('data-product-name'),
         product_handle: linkedZone && linkedZone.getAttribute('data-product-handle'),
-        variant_id: element && element.getAttribute
-          ? element.getAttribute('data-variant-id')
-          : null
+        variant_id: (element && element.getAttribute && element.getAttribute('data-variant-id')) ||
+          (linkedZone && linkedZone.getAttribute('data-apgo-track-variant-id'))
       };
     }
     return {
@@ -264,6 +320,7 @@
       link.addEventListener('click', function () {
         var placement = link.getAttribute('data-campaign-placement') || 'homepage_carousel';
         writeEntrySource('homepage_carousel', placement);
+        rememberPromotionClick(link.getAttribute('data-campaign-promotion-id') || link.getAttribute('data-campaign-promotion-name'));
         publish('apgo_homepage_campaign_click', {
           campaign_id: 'homepage',
           source: 'homepage',
@@ -310,9 +367,8 @@
         var items = Array.prototype.map.call(cards, function (card) {
           var item = getHomeItemContext(card);
           return compact({
-            item_id: item.product_id,
+            item_id: googleItemId(item.product_id, item.variant_id),
             item_name: item.product_name,
-            item_variant: item.variant_id,
             index: item.card_position,
             item_list_id: listContext.section_id,
             item_list_name: listContext.section_name
@@ -489,6 +545,7 @@
     function recordExit() {
       if (exitRecorded) return;
       exitRecorded = true;
+      if (Date.now() - lastHitAt > EXIT_IDLE_LIMIT) return;
       var bucket = 'under_3_seconds';
       if (activeSeconds >= 60) {
         bucket = '60_seconds_or_more';
@@ -716,6 +773,7 @@
 
       var promotionLink = target.closest('[data-apgo-campaign-promotion-link]');
       if (promotionLink) {
+        rememberPromotionClick(promotionLink.getAttribute('data-promotion-id') || promotionLink.getAttribute('data-promotion-name'));
         publish('apgo_promotion_click', Object.assign(
           {},
           context,

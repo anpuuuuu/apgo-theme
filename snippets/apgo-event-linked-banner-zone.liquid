@@ -133,6 +133,7 @@
     data-product-id="{{ product.id }}"
     data-product-name="{{ product.title | escape }}"
     data-product-handle="{{ product.handle | escape }}"
+    data-apgo-track-variant-id="{{ action_variant.id }}"
     {% if crate and lot != blank %}data-lot="{{ lot }}"{% endif %}
     {{ block_attributes }}
   >

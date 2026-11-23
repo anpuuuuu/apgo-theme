@@ -37,6 +37,11 @@ const CHECKS = [
     async run() { return require('./order-limits').run(); },
   },
   {
+    id: 'R15',
+    title: '活动追踪：商品编号用 Google 格式、点过的 banner 记进购物车属性、闲置后不送离开事件（本地）',
+    async run() { return require('./campaign-tracking').run(); },
+  },
+  {
     id: 'R1',
     title: '手机往下滑后，跑马灯紧贴 header（867fa0e）',
     async run() {
