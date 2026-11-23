@@ -103,7 +103,7 @@
           "type": "banner",
           "settings": {
             "image": "shopify://shop_images/11.11_banner_sg_detergent_b7b9aa50-bec5-4bd7-bc6d-42fe66085d5f.jpg",
-            "link": "",
+            "link": "shopify://products/11-11-laundry-value-bundle-copy",
             "alt": "",
             "tracking_id": "",
             "market_visibility": "sg"
@@ -165,12 +165,12 @@
         "desktop_rows": "1",
         "background": "black",
         "ghost_text": "DEALS",
-        "featured_product": "11-11-boss-exclusive-coating-bundle",
+        "featured_product": "apgo-laundry-detergent-1l-promotion-copy",
         "featured_label": "Deal of the week",
         "featured_note": "Limited time only · while stocks last",
         "featured_contents": "",
         "featured_sticker": false,
-        "featured_product_sg": "11-11-boss-exclusive-coating-bundle-sg",
+        "featured_product_sg": "11-11-laundry-value-bundle-copy",
         "featured_label_sg": "Deal of the week",
         "featured_note_sg": "Limited time only · while stocks last",
         "featured_contents_sg": "",
