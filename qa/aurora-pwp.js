@@ -18,7 +18,14 @@ liquid.registerFilter('t', (key, ...args) => {
   args.forEach(arg => { if (Array.isArray(arg)) value = value.replace('{{ ' + arg[0] + ' }}', arg[1]); });
   return value;
 });
-const source = file => fs.readFileSync(path.join(ROOT, file), 'utf8');
+const source = file => {
+  // The intercepted browser URL may select an asset, but never a file outside this fixture's repository.
+  // nosemgrep: javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal
+  const target = fs.realpathSync(path.resolve(ROOT, file));
+  const relative = path.relative(fs.realpathSync(ROOT), target);
+  if (relative === '..' || relative.startsWith('..' + path.sep) || path.isAbsolute(relative)) throw new Error('Fixture path escapes repository');
+  return fs.readFileSync(target, 'utf8');
+};
 const cleanLiquid = text => text.replace(/{%-?\s*doc\s*-?%}[\s\S]*?{%-?\s*enddoc\s*-?%}/g, '');
 const line = (variant_id, quantity = 1, properties = {}, key) => ({ variant_id, id: variant_id, quantity, properties, key: key || `${variant_id}:${JSON.stringify(properties)}`, final_line_price: quantity * (variant_id === OFFER ? 6000 : 11100) });
 const marked = (quantity = 1, key) => line(OFFER, quantity, { [PROP]: MARKER }, key);

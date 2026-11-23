@@ -13,7 +13,7 @@
 //       before the 11.11 page exists: renders the template on another page (?view=double-11)
 const fs = require('fs');
 const path = require('path');
-const { url, open, sleep, cart, clearCart, layout } = require('./lib');
+const { url, DEVICES: DEVICE_OPTIONS, open, sleep, cart, clearCart, layout } = require('./lib');
 
 const OUT = path.join(__dirname, 'out', 'sale-1111');
 fs.mkdirSync(OUT, { recursive: true });
@@ -22,7 +22,6 @@ const VIEW_ON = process.env.VIEW_ON || '';
 const PAGE = VIEW_ON || process.env.PAGE_PATH || '/pages/11-11-sale';
 const DEVICES = (process.env.DEVICES || 'android-chrome,ipad-safari,desktop-chrome').split(',');
 const COUNTRIES = (process.env.COUNTRIES || 'MY,SG').split(',');
-const CLEARANCE_WORDS = /\bLOT \d|Clearance · Box|OLD FACTORY|MIXED STOCK|PACKED BY/i;
 
 let failures = 0;
 function check(label, ok, detail) {
@@ -34,6 +33,7 @@ function note(label, detail) {
 }
 
 async function run(device, country) {
+  if (!Object.hasOwn(DEVICE_OPTIONS, device) || !['MY', 'SG'].includes(country)) throw new Error('Unsupported test device or market');
   const params = { country };
   if (VIEW_ON) params.view = 'double-11';
   const s = await open(device);
@@ -44,8 +44,8 @@ async function run(device, country) {
     check('HTTP 200', resp && resp.status() === 200, resp && resp.status());
     await sleep(1500);
 
-    const info = await page.evaluate((wordsSrc) => {
-      const words = new RegExp(wordsSrc, 'i');
+    const info = await page.evaluate(() => {
+      const words = /\bLOT \d|Clearance · Box|OLD FACTORY|MIXED STOCK|PACKED BY/i;
       const main = document.getElementById('MainContent');
       const anchors = [...document.querySelectorAll('.apgo-event-banner__hotspot, .apgo-event-banner__jump')].map((a) => {
         const href = a.getAttribute('href') || '';
@@ -67,7 +67,7 @@ async function run(device, country) {
         priceClip: price ? getComputedStyle(price).clipPath : null,
         groundColor: getComputedStyle(main).backgroundColor,
       };
-    }, CLEARANCE_WORDS.source);
+    });
 
     check('body has apgo-clearance-sale-page + apgo-ticket-page', info.classes);
     check('apgo-ticket-skin.css loaded', info.css);
@@ -106,6 +106,8 @@ async function run(device, country) {
       check('left half lands below the header', land.top >= land.headerBottom - 2 && land.top < 400, land);
     }
 
+    // country and device were checked against fixed allowlists before opening this test session.
+    // nosemgrep: javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal
     await page.screenshot({ path: path.join(OUT, `${country}-${device}.png`), fullPage: true });
 
     // Add to cart from the first card that can be bought.

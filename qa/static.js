@@ -17,14 +17,20 @@ const warnings = [];
 let counts = { json: 0, js: 0, blocks: 0, liquid: 0 };
 
 const files = (dir, ext) => {
+  // dir starts in the literal list below and recurses only through local Dirent names, not request data.
+  // nosemgrep: javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal
   const abs = path.join(ROOT, dir);
   if (!fs.existsSync(abs)) return [];
   return fs.readdirSync(abs, { withFileTypes: true }).flatMap((d) => {
+    // Both path components come from this repository walk; no external caller supplies either.
+    // nosemgrep: javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal
     const rel = path.join(dir, d.name);
     if (d.isDirectory()) return files(rel, ext);
     return d.name.endsWith(ext) ? [rel] : [];
   });
 };
+// All callers pass paths returned by files(); this CLI is not a request handler.
+// nosemgrep: javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal
 const read = (rel) => fs.readFileSync(path.join(ROOT, rel), 'utf8');
 
 function parseJs(src) {

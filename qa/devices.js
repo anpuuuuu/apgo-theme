@@ -56,6 +56,8 @@ async function flow(page, dir) {
     step('加入购物车', after === before + 1, `购物车 ${before} → ${after}`);
     await page.goto(url('/cart'), { waitUntil: 'load', timeout: 60000 });
     await sleep(1500);
+    // dir comes from runDevice's allowlisted device ID; the filename is a literal.
+    // nosemgrep: javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal
     await page.screenshot({ path: path.join(dir, 'flow-cart.png') });
     const checkout = await visibleFirst(page, ['button[name="checkout"]']);
     if (!checkout) throw new Error('看不到 Check out 按钮');
@@ -64,6 +66,8 @@ async function flow(page, dir) {
     await page.waitForLoadState('load');
     await sleep(3000);
     const text = (await page.locator('body').innerText()).replace(/\s+/g, ' ');
+    // Same allowlisted device directory, with a literal filename.
+    // nosemgrep: javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal
     await page.screenshot({ path: path.join(dir, 'flow-checkout.png') });
     step('进到结帐页（不下单）', /Contact|Delivery|Payment/.test(text), '金额 ' + (text.match(/(RM|MYR|SGD|\$)\s?[\d.,]+/) || ['（没读到）'])[0]);
   } catch (e) {
@@ -77,7 +81,10 @@ async function flow(page, dir) {
 }
 
 async function runDevice(id) {
+  if (!Object.hasOwn(DEVICES, id)) throw new Error('Unknown device');
   const { browser, page, device } = await open(id);
+  // id is an own key of the fixed DEVICES table, checked above before opening a browser.
+  // nosemgrep: javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal
   const dir = path.join(OUT, id);
   fs.mkdirSync(dir, { recursive: true });
   const phone = device.ctx.isMobile && device.ctx.viewport.width < 750;
@@ -92,6 +99,8 @@ async function runDevice(id) {
       const resp = await page.goto(url(pg.path), { waitUntil: 'load', timeout: 60000 });
       await sleep(1500);
       const l = await layout(page);
+      // pg.id is from the literal PAGES table; dir uses only an allowlisted device ID.
+      // nosemgrep: javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal
       await page.screenshot({ path: path.join(dir, pg.id + '.png') });
       if (resp.status() !== 200) problems.push(`${pg.id}: HTTP ${resp.status()}`);
       if (l.overflow) problems.push(`${pg.id}: 横向超出 ${l.overflow}px（${l.offenders.join('、')}）`);
@@ -99,6 +108,8 @@ async function runDevice(id) {
       if (l.brokenImgs.length) problems.push(`${pg.id}: 图片坏掉 ${l.brokenImgs.join('、')}`);
       if (phone) {
         const g = await stickyGap(page);
+        // Both directory and page ID have the same fixed-table provenance as the screenshot above.
+        // nosemgrep: javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal
         await page.screenshot({ path: path.join(dir, pg.id + '-scrolled.png') });
         if (!g.skipped && Math.abs(g.gap) > 1) problems.push(`${pg.id}: 往下滑后跑马灯和 header 之间有 ${g.gap}px 缝`);
       }
@@ -120,7 +131,7 @@ async function runDevice(id) {
 (async () => {
   const only = process.argv.slice(2);
   const ids = only.length ? only : Object.keys(DEVICES);
-  const unknown = ids.filter((i) => !DEVICES[i]);
+  const unknown = ids.filter((i) => !Object.hasOwn(DEVICES, i));
   if (unknown.length) {
     console.log('不认识的装置：' + unknown.join('、') + '\n可用：' + Object.keys(DEVICES).join('、'));
     process.exit(2);
