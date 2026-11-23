@@ -14,6 +14,7 @@
       "blocks": {
         "banner_gwB9LQ": {
           "type": "banner",
+          "disabled": true,
           "settings": {
             "image": "shopify://shop_images/main_banner_1920_x_1080.jpg",
             "link": "shopify://pages/11-11-sale",
@@ -24,6 +25,7 @@
         },
         "banner_a7egwR": {
           "type": "banner",
+          "disabled": true,
           "settings": {
             "image": "shopify://shop_images/MY_Boss_Coating_Last_3_days.jpg",
             "link": "shopify://products/11-11-boss-exclusive-coating-bundle",
@@ -34,6 +36,7 @@
         },
         "banner_QXjPUf": {
           "type": "banner",
+          "disabled": true,
           "settings": {
             "image": "shopify://shop_images/SG_Boss_Coating_Last_3_days.jpg",
             "link": "shopify://products/11-11-boss-exclusive-coating-bundle-sg",
@@ -44,6 +47,7 @@
         },
         "banner_jin73F": {
           "type": "banner",
+          "disabled": true,
           "settings": {
             "image": "shopify://shop_images/MY_Mega_Deals_Last_3_days.jpg",
             "link": "shopify://pages/11-11-sale",
@@ -54,6 +58,7 @@
         },
         "banner_D4NfEr": {
           "type": "banner",
+          "disabled": true,
           "settings": {
             "image": "shopify://shop_images/SG_Mega_Deals_Last_3_days.jpg",
             "link": "shopify://pages/11-11-sale",
@@ -64,6 +69,7 @@
         },
         "banner_9RzK7M": {
           "type": "banner",
+          "disabled": true,
           "settings": {
             "image": "shopify://shop_images/MY_ACG_Last_3_days.jpg",
             "link": "",
@@ -74,6 +80,7 @@
         },
         "banner_9GwjTp": {
           "type": "banner",
+          "disabled": true,
           "settings": {
             "image": "shopify://shop_images/MY_Aurora_Last_3_days.jpg",
             "link": "shopify://products/apgo-11-11aurora-car-nano-coating-300ml-b1f2",
@@ -104,6 +111,7 @@
         },
         "banner_9NBpHW": {
           "type": "banner",
+          "disabled": true,
           "settings": {
             "image": "shopify://shop_images/household_banner.png",
             "link": "shopify://pages/11-11-sale",
